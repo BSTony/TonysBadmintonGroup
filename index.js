@@ -327,6 +327,53 @@ app.post('/webhook', middleware(config), (req, res) => {
 });
 
 async function handleEvent(event) {
+  // 處理機器人被加入群組的事件（memberJoined）
+  if (event.type === 'memberJoined') {
+    const gid = event.source.groupId || event.source.roomId;
+    if (!gid) return null;
+    
+    try {
+      // 發送歡迎訊息確認機器人已加入
+      const welcomeMessage = '👋 大家好！我是羽球接龍機器人。\n\n' +
+        '📖 使用「接龍開始」來建立新的接龍活動\n' +
+        '💡 輸入「+1」可以報名，「-1」可以取消\n' +
+        '📋 輸入「接龍名單」可以查看當前名單\n\n' +
+        '如需更多資訊，請隨時提問！';
+      
+      await client.pushMessage(gid, { type: 'text', text: welcomeMessage });
+      logToFile(`[SUCCESS] Bot joined group/room ${gid}`);
+      console.log(`✅ Bot successfully joined group/room: ${gid}`);
+      return null;
+    } catch (e) {
+      console.error('Failed to send welcome message:', e);
+      logToFile(`[ERROR] Failed to send welcome message: ${e.message}`);
+      // 即使發送訊息失敗，也返回 null 表示事件已處理，避免 LINE 重試
+      return null;
+    }
+  }
+
+  // 處理用戶加機器人為好友的事件（follow）
+  if (event.type === 'follow') {
+    try {
+      const uid = event.source.userId;
+      const welcomeMessage = '👋 您好！感謝加我為好友。\n\n' +
+        '我是羽球接龍機器人，請邀請我加入群組後使用「接龍開始」來建立接龍活動。\n\n' +
+        '在群組中可以使用以下功能：\n' +
+        '📖 接龍開始 - 建立新接龍\n' +
+        '💡 +1 / -1 - 報名/取消\n' +
+        '📋 接龍名單 - 查看名單';
+      
+      await client.replyMessage(event.replyToken, { type: 'text', text: welcomeMessage });
+      logToFile(`[SUCCESS] Bot followed by user ${uid}`);
+      console.log(`✅ Bot followed by user: ${uid}`);
+      return null;
+    } catch (e) {
+      console.error('Failed to respond to follow event:', e);
+      logToFile(`[ERROR] Failed to respond to follow event: ${e.message}`);
+      return null;
+    }
+  }
+
   if (event.type !== 'message' || event.message.type !== 'text') return null;
 
   const gid = event.source.groupId || event.source.userId;
