@@ -89,6 +89,16 @@ let games = {};
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '鈞鈞是豬豬';
 const adminUsers = new Set(); // 儲存已登入的管理員 UserID (重啟後會清空)
 
+// 用戶名稱快取，減少 API 呼叫以節省額度
+const userNameCache = new Map(); // key: "gid_uid", value: { name, timestamp }
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24小時快取過期時間
+
+// UID 到名稱的映射（從名單中提取），用於快速匹配，減少 API 呼叫
+const uidToNameMap = new Map(); // key: "gid_uid", value: name
+
+// 追蹤首次使用指令的群組（用於顯示歡迎訊息，而非加入時推播）
+const firstUseGroups = new Set(); // 記錄已經顯示過歡迎訊息的群組
+
 // PostgreSQL 連線設定
 // 避免未設定環境變數時崩潰
 if (!process.env.DATABASE_URL) console.warn('⚠️ 未設定 DATABASE_URL，資料庫功能將無法使用');
@@ -328,28 +338,15 @@ app.post('/webhook', middleware(config), (req, res) => {
 
 async function handleEvent(event) {
   // 處理機器人被加入群組的事件（memberJoined）
+  // 優化：不立即發送 pushMessage（會消耗額度），改為記錄等待首次使用時顯示
   if (event.type === 'memberJoined') {
     const gid = event.source.groupId || event.source.roomId;
     if (!gid) return null;
     
-    try {
-      // 發送歡迎訊息確認機器人已加入
-      const welcomeMessage = '👋 大家好！我是羽球接龍機器人。\n\n' +
-        '📖 使用「接龍開始」來建立新的接龍活動\n' +
-        '💡 輸入「+1」可以報名，「-1」可以取消\n' +
-        '📋 輸入「接龍名單」可以查看當前名單\n\n' +
-        '如需更多資訊，請隨時提問！';
-      
-      await client.pushMessage(gid, { type: 'text', text: welcomeMessage });
-      logToFile(`[SUCCESS] Bot joined group/room ${gid}`);
-      console.log(`✅ Bot successfully joined group/room: ${gid}`);
-      return null;
-    } catch (e) {
-      console.error('Failed to send welcome message:', e);
-      logToFile(`[ERROR] Failed to send welcome message: ${e.message}`);
-      // 即使發送訊息失敗，也返回 null 表示事件已處理，避免 LINE 重試
-      return null;
-    }
+    // 僅記錄日誌，不發送推播訊息（節省 pushMessage 額度）
+    logToFile(`[INFO] Bot joined group/room ${gid} - waiting for first command`);
+    console.log(`✅ Bot joined group/room: ${gid} - will show welcome on first use`);
+    return null;
   }
 
   // 處理用戶加機器人為好友的事件（follow）
@@ -379,6 +376,13 @@ async function handleEvent(event) {
   const gid = event.source.groupId || event.source.userId;
   const uid = event.source.userId;
   const text = event.message.text.trim();
+
+  // 檢查是否為群組首次使用（僅針對群組，使用 replyMessage 而非 pushMessage 節省額度）
+  let showWelcome = false;
+  if (gid && (gid.startsWith('C') || gid.startsWith('R')) && !firstUseGroups.has(gid)) {
+    firstUseGroups.add(gid);
+    showWelcome = true;
+  }
 
   // --- 指令解析輔助函數 ---
   const getParams = (str) => {
@@ -481,20 +485,30 @@ async function handleEvent(event) {
         ]
       };
       await saveGame(gid);
+      
+      // 首次使用時顯示歡迎訊息（使用 replyMessage 免費，不消耗額度）
+      let welcomePrefix = '';
+      if (showWelcome) {
+        welcomePrefix = '👋 大家好！我是羽球接龍機器人。\n\n';
+      }
+      
       if (scheduleTime) {
         // 若時間已過則立即觸發一次
         if (scheduleTime <= Date.now()) {
           try { await sendList(null, gid, "⏰ 定時提醒"); } catch (e) { console.error('Immediate scheduled send failed:', e); }
         }
         const displayTime = scheduleInput || (() => { const d = new Date(scheduleTime); return `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`; })();
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `設定完成，將會在 ${displayTime} 開始接龍` });
+        return await client.replyMessage(event.replyToken, { type: 'text', text: welcomePrefix + `設定完成，將會在 ${displayTime} 開始接龍` });
       }
-      return await sendList(event.replyToken, gid, "🚀 接龍設定成功！");
+      return await sendList(event.replyToken, gid, welcomePrefix + "🚀 接龍設定成功！");
     }
 
     if (text === '接龍結束') {
       await deleteGame(gid);
-      return await client.replyMessage(event.replyToken, { type: 'text', text: 'OK' });
+      // 優化：不發送回覆訊息，直接更新名單顯示結束狀態（節省一次 replyMessage）
+      // 用戶可以通過查看名單確認，或我們可以在 sendList 中顯示結束訊息
+      // 但為了更好的體驗，還是回覆一個簡短訊息，但使用更簡潔的文字
+      return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 已結束' });
     }
 
     // 接龍修改/接龍修正 - 只有在有接龍資料時才能使用
@@ -615,7 +629,41 @@ async function handleEvent(event) {
       } else if (content) {
         namesToAdd = content.split(/[\s,]+/).filter(n => n);
       } else if (count === 1) {
-        namesToAdd = [await getName(gid, uid)];
+        // 優化：先檢查快取或名單映射，減少 API 呼叫
+        const cacheKey = `${gid}_${uid}`;
+        let userName = null;
+        
+        // 1. 檢查快取
+        if (userNameCache.has(cacheKey)) {
+          const cached = userNameCache.get(cacheKey);
+          if (Date.now() - cached.timestamp < CACHE_EXPIRY) {
+            userName = cached.name;
+          }
+        }
+        
+        // 2. 檢查名單映射（如果快取沒有）
+        if (!userName && uidToNameMap.has(cacheKey)) {
+          userName = uidToNameMap.get(cacheKey);
+          // 如果名稱存在於當前名單中，可以直接使用
+          if (currentList.includes(userName)) {
+            namesToAdd = [userName];
+          } else {
+            // 名稱不在名單中，可能需要更新，呼叫 API 獲取最新名稱
+            userName = await getName(gid, uid);
+            namesToAdd = [userName];
+          }
+        } else if (!userName) {
+          // 3. 都沒有的話才呼叫 API
+          userName = await getName(gid, uid);
+          namesToAdd = [userName];
+        } else {
+          namesToAdd = [userName];
+        }
+        
+        // 更新映射
+        if (userName) {
+          uidToNameMap.set(cacheKey, userName);
+        }
       }
 
       if (namesToAdd.length > 0) {
@@ -626,7 +674,13 @@ async function handleEvent(event) {
         if (hasDuplicate || hasSelfDuplicate) {
           return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
         }
-        namesToAdd.forEach(n => addToList(gid, 0, n));
+        namesToAdd.forEach(n => {
+          addToList(gid, 0, n);
+          // 更新 UID 到名稱的映射（僅對實名）
+          if (n !== '__ANON__') {
+            uidToNameMap.set(`${gid}_${uid}`, n);
+          }
+        });
       }
 
       await saveGame(gid);
@@ -657,7 +711,35 @@ async function handleEvent(event) {
       }
       let name = text.slice(2).trim();
       if (!name) {
-        name = await getName(gid, uid);
+        // 優化：先從名單映射中查找，減少 API 呼叫
+        const cacheKey = `${gid}_${uid}`;
+        let userName = null;
+        
+        // 1. 檢查快取
+        if (userNameCache.has(cacheKey)) {
+          const cached = userNameCache.get(cacheKey);
+          if (Date.now() - cached.timestamp < CACHE_EXPIRY) {
+            userName = cached.name;
+          }
+        }
+        
+        // 2. 檢查名單映射
+        if (!userName && uidToNameMap.has(cacheKey)) {
+          userName = uidToNameMap.get(cacheKey);
+          // 檢查名稱是否在名單中
+          const currentList = games[gid].sections[0].list;
+          if (!currentList.includes(userName)) {
+            // 如果名稱不在名單中，呼叫 API 獲取最新名稱
+            userName = await getName(gid, uid);
+            uidToNameMap.set(cacheKey, userName);
+          }
+        } else if (!userName) {
+          // 3. 都沒有的話才呼叫 API
+          userName = await getName(gid, uid);
+          uidToNameMap.set(cacheKey, userName);
+        }
+        
+        name = userName || await getName(gid, uid);
         removeFromList(gid, name);
       } else if (name === '匿名' || /匿名/.test(name)) {
         // 移除最後一個匿名占位符
@@ -722,7 +804,13 @@ async function handleEvent(event) {
         return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
       }
 
-      namesToAdd.forEach(n => addToList(gid, 0, n));
+      namesToAdd.forEach(n => {
+        addToList(gid, 0, n);
+        // 更新 UID 到名稱的映射（僅對實名）
+        if (n !== '__ANON__') {
+          uidToNameMap.set(`${gid}_${uid}`, n);
+        }
+      });
       await saveGame(gid);
       return await sendList(event.replyToken, gid);
     }
@@ -847,12 +935,46 @@ async function handleEvent(event) {
 
 // --- 工具函式 ---
 async function getName(gid, uid) {
+  // 使用快取減少 API 呼叫以節省額度
+  const cacheKey = `${gid}_${uid}`;
+  const now = Date.now();
+  
+  // 檢查快取
+  if (userNameCache.has(cacheKey)) {
+    const cached = userNameCache.get(cacheKey);
+    if (now - cached.timestamp < CACHE_EXPIRY) {
+      return cached.name; // 返回快取的名稱
+    } else {
+      userNameCache.delete(cacheKey); // 快取過期，刪除
+    }
+  }
+  
   try {
     const profile = (gid.startsWith('C') || gid.startsWith('R')) 
       ? await client.getGroupMemberProfile(gid, uid) 
       : await client.getProfile(uid);
-    return profile.displayName;
-  } catch (e) { return '球友'; }
+    const name = profile.displayName;
+    
+    // 存入快取
+    userNameCache.set(cacheKey, { name, timestamp: now });
+    
+    // 定期清理過期快取（每100次呼叫時檢查一次）
+    if (userNameCache.size > 1000) {
+      for (const [key, value] of userNameCache.entries()) {
+        if (now - value.timestamp >= CACHE_EXPIRY) {
+          userNameCache.delete(key);
+        }
+      }
+    }
+    
+    return name;
+  } catch (e) { 
+    // API 失敗時使用快取的最後已知名稱，或返回預設值
+    if (userNameCache.has(cacheKey)) {
+      return userNameCache.get(cacheKey).name;
+    }
+    return '球友'; 
+  }
 }
 
 function addToList(gid, idx, name) {
@@ -872,6 +994,7 @@ function removeFromList(gid, name) {
     const i = s.list.indexOf(name);
     if (i > -1) s.list.splice(i, 1);
   });
+  // 注意：不刪除映射，因為用戶可能會再次報名，保留映射可以減少 API 呼叫
 }
 
 function removeAnon(gid) {
