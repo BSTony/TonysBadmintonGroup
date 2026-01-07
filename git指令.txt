@@ -1,0 +1,72 @@
+
+
+
+
+==== README（快速說明） ====
+- 啟動：`npm start`（預設 port 3000）
+- 時區：強制 Asia/Taipei
+- 定時：每分鐘 00 秒檢查排程；到期推播
+- 保活：每 10 分鐘自動 ping `/health`
+- 資料：有 `DATABASE_URL` 用 Postgres；否則落地 `games.json`
+- 日誌：只記錄 ERROR / TRIGGER / WARN / SUCCESS（避免爆量）
+- 健康檢查：`/health`、根路徑 `/` 也回傳健康狀態
+- PING 日誌已靜音，`[checkSchedules]` 也被過濾
+
+==== 環境變數設定（重要！） ====
+必須在 Render 上設定以下環境變數：
+1. LINE_CHANNEL_ACCESS_TOKEN - LINE Bot 的 Access Token
+2. LINE_CHANNEL_SECRET - LINE Bot 的 Channel Secret
+3. ADMIN_PASSWORD - 管理員密碼（可選，未設定則使用預設值）
+
+設定位置：Render Dashboard > 你的服務 > Settings > Environment Variables
+
+==== Git 常用指令（備份） ====
+
+【基本操作】
+git status                          # 查看當前狀態
+git add <檔案名>                    # 將檔案加入暫存區
+git add .                           # 將所有變更加入暫存區
+git commit -m "訊息"                # 提交變更
+git push origin main                # 推送到遠端 main 分支
+git pull origin main                # 從遠端拉取最新變更
+
+【查看資訊】
+git log                             # 查看提交歷史
+git log --oneline                   # 簡潔版提交歷史
+git diff                            # 查看未暫存的變更
+git diff --staged                   # 查看已暫存的變更
+
+【分支操作】
+git branch                          # 查看所有分支
+git branch <分支名>                 # 建立新分支
+git checkout <分支名>               # 切換分支
+git checkout -b <分支名>            # 建立並切換到新分支
+git merge <分支名>                  # 合併分支
+
+【遠端操作】
+git remote -v                       # 查看遠端倉庫
+git fetch origin                    # 從遠端獲取最新資訊（不合併）
+git pull                            # 拉取並合併（等同 fetch + merge）
+git push                            # 推送到遠端
+git push -u origin main             # 首次推送並設定追蹤
+
+【撤銷操作】
+git reset HEAD <檔案>               # 取消暫存
+git checkout -- <檔案>              # 撤銷工作區變更
+git reset --soft HEAD~1             # 撤銷最後一次 commit（保留變更）
+git reset --hard HEAD~1             # 撤銷最後一次 commit（丟棄變更）
+
+【常用組合指令】
+git add index.js git指令.txt
+git commit -m "Override console.log to filter checkSchedules logs and set TZ"
+git push origin main
+
+==== 指令示例 ====
+接龍開始
+標題{}
+人數{21}
+候補{5}
+名單{AA,BB,CC}
+時間{2026/01/06 20:00}
+
+管理員登入 鈞鈞是豬豬
