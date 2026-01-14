@@ -595,7 +595,28 @@ async function handleEvent(event) {
     }
 
     // 2. 報名 (+1) / 取消 (-1)
-    const addMatch = text.match(/^\+(\d+)(.*)/);
+    // 支援 "+1 XXX" (開頭) 或 "XXX +1" (結尾) 格式，但 +1 必須在頭或尾
+    let addMatch = null;
+    let count = 0;
+    let content = '';
+    
+    // 檢查是否以 +1 開頭（後面可以有空白和名字，或直接結束）
+    const startMatch = text.match(/^\+1(\s+|$)/);
+    if (startMatch) {
+      const rest = text.slice(2).trim();
+      addMatch = { count: 1, content: rest };
+      count = 1;
+      content = rest;
+    } else {
+      // 檢查是否以 +1 結尾（前面必須有名字，+1 前必須有空白）
+      const endMatch = text.match(/^(.+?)\s+\+1$/);
+      if (endMatch) {
+        addMatch = { count: 1, content: endMatch[1].trim() };
+        count = 1;
+        content = endMatch[1].trim();
+      }
+    }
+    
     if (addMatch) {
       // 檢查接龍是否存在
       if (!games[gid]) {
@@ -618,12 +639,10 @@ async function handleEvent(event) {
         const timeStr = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
         return await client.replyMessage(event.replyToken, { type: 'text', text: `尚未開始，將會在 ${timeStr} 開始接龍，請在機器人開始後再使用 + / - 指令` });
       }
-      const count = parseInt(addMatch[1], 10);
-      let content = addMatch[2].trim();
       const currentList = games[gid].sections[0].list;
       let namesToAdd = [];
 
-      // 支援 +N 匿名 或 +N匿名
+      // 支援 +1 匿名 或 +1匿名
       if (content && /匿名/.test(content)) {
         namesToAdd = Array(count).fill('__ANON__');
       } else if (content) {
