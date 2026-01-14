@@ -709,7 +709,30 @@ async function handleEvent(event) {
       await saveGame(gid);
       return await sendList(event.replyToken, gid);
     }
-    if (text.startsWith('-1')) {
+    // 取消報名 (-1)，支援 "-1 XXX" (開頭) 或 "XXX -1" (結尾) 格式，但 -1 必須在頭或尾
+    let removeMatch = null;
+    let removeName = '';
+    
+    // 檢查是否以 -1 開頭（後面可以有空白和名字，或直接結束）
+    const removeStartMatch = text.match(/^-1(\s+|$)/);
+    if (removeStartMatch) {
+      const rest = text.slice(2).trim();
+      removeMatch = true;
+      removeName = rest;
+    } 
+    // 檢查是否以 -1 結尾（前面必須有名字，-1 前必須有空白）
+    else {
+      const removeEndMatch = text.match(/^(.+)\s+-1$/);
+      if (removeEndMatch) {
+        const namePart = removeEndMatch[1].trim();
+        if (namePart) {
+          removeMatch = true;
+          removeName = namePart;
+        }
+      }
+    }
+    
+    if (removeMatch) {
       // 檢查接龍是否存在
       if (!games[gid]) {
         return await client.replyMessage(event.replyToken, { 
@@ -732,7 +755,7 @@ async function handleEvent(event) {
         const timeStr = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
         return await client.replyMessage(event.replyToken, { type: 'text', text: `尚未開始，將會在 ${timeStr} 開始接龍，請在機器人開始後再使用 + / - 指令` });
       }
-      let name = text.slice(2).trim();
+      let name = removeName;
       if (!name) {
         // 優化：先從名單映射中查找，減少 API 呼叫
         const cacheKey = `${gid}_${uid}`;
