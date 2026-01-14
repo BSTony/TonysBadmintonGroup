@@ -24,9 +24,15 @@ const USE_GITHUB = !!(GITHUB_TOKEN && GITHUB_OWNER && GITHUB_REPO);
 
 if (USE_GITHUB) {
   console.log(`✅ 使用 GitHub 儲存 CSV: ${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_CSV_PATH}`);
+  console.log(`   分支: ${GITHUB_BRANCH}`);
+  console.log(`   Token: ${GITHUB_TOKEN ? GITHUB_TOKEN.substring(0, 8) + '...' : '未設定'}`);
 } else {
   console.log('⚠️  未設定 GitHub 環境變數，將使用本地檔案儲存');
   console.log('   需要設定: GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO');
+  console.log('   目前狀態:');
+  console.log(`     GITHUB_TOKEN: ${GITHUB_TOKEN ? '已設定' : '❌ 未設定'}`);
+  console.log(`     GITHUB_OWNER: ${GITHUB_OWNER || '❌ 未設定'}`);
+  console.log(`     GITHUB_REPO: ${GITHUB_REPO || '❌ 未設定'}`);
 }
 
 let regCsvWriteChain = Promise.resolve(); // 併發保護：所有寫入串成單一 Promise 佇列
@@ -52,57 +58,77 @@ function ymd(date) {
 // GitHub API 輔助函數
 async function githubApiRequest(method, endpoint, data = null) {
   const url = `https://api.github.com${endpoint}`;
-  const options = {
-    method,
-    headers: {
-      'Authorization': `token ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'line-bot-csv-storage'
-    }
+  
+  const headers = {
+    'Authorization': `Bearer ${GITHUB_TOKEN}`, // 使用 Bearer 格式
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'line-bot-csv-storage',
+    'X-GitHub-Api-Version': '2022-11-28'
   };
   
+  let body = null;
   if (data) {
-    options.headers['Content-Type'] = 'application/json';
-    options.body = JSON.stringify(data);
+    headers['Content-Type'] = 'application/json';
+    body = JSON.stringify(data);
   }
   
   return new Promise((resolve, reject) => {
-    const httpModule = https;
     const urlObj = new URL(url);
-    const req = httpModule.request({
+    const req = https.request({
       hostname: urlObj.hostname,
+      port: 443,
       path: urlObj.pathname + urlObj.search,
-      method: options.method,
-      headers: options.headers
+      method: method,
+      headers: headers,
+      timeout: 10000 // 10秒超時
     }, (res) => {
-      let body = '';
-      res.on('data', (chunk) => { body += chunk; });
+      let responseBody = '';
+      res.on('data', (chunk) => { responseBody += chunk; });
       res.on('end', () => {
         try {
-          const json = JSON.parse(body);
           if (res.statusCode >= 200 && res.statusCode < 300) {
+            const json = responseBody ? JSON.parse(responseBody) : {};
             resolve(json);
           } else {
-            reject(new Error(`GitHub API Error: ${res.statusCode} - ${json.message || body}`));
+            const errorJson = responseBody ? JSON.parse(responseBody) : {};
+            const errorMsg = errorJson.message || responseBody || `HTTP ${res.statusCode}`;
+            console.error(`❌ GitHub API 錯誤 [${res.statusCode}]:`, errorMsg);
+            reject(new Error(`GitHub API Error: ${res.statusCode} - ${errorMsg}`));
           }
         } catch (e) {
-          reject(new Error(`Failed to parse response: ${body}`));
+          console.error('❌ 解析 GitHub API 回應失敗:', e.message, 'Response:', responseBody.substring(0, 200));
+          reject(new Error(`Failed to parse response: ${e.message}`));
         }
       });
     });
     
-    req.on('error', reject);
-    if (options.body) req.write(options.body);
+    req.on('error', (err) => {
+      console.error('❌ GitHub API 請求失敗:', err.message);
+      reject(err);
+    });
+    
+    req.on('timeout', () => {
+      req.destroy();
+      reject(new Error('GitHub API request timeout'));
+    });
+    
+    if (body) {
+      req.write(body);
+    }
     req.end();
   });
 }
 
 // 從 GitHub 讀取 CSV
 async function loadCsvFromGitHub() {
-  if (!USE_GITHUB) return null;
+  if (!USE_GITHUB) {
+    console.log('⚠️  GitHub 模式未啟用，跳過讀取');
+    return null;
+  }
   
   try {
-    const endpoint = `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(GITHUB_CSV_PATH)}`;
+    const endpoint = `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(GITHUB_CSV_PATH)}?ref=${GITHUB_BRANCH}`;
+    console.log(`📥 從 GitHub 讀取 CSV: ${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_CSV_PATH}`);
     const response = await githubApiRequest('GET', endpoint);
     
     if (response.content) {
@@ -110,24 +136,46 @@ async function loadCsvFromGitHub() {
       const content = Buffer.from(response.content, 'base64').toString('utf8');
       regCsvSha = response.sha;
       regCsvContent = content;
-      console.log(`✅ 從 GitHub 載入 CSV: ${content.split('\n').length - 1} 筆記錄`);
+      const recordCount = content.split('\n').length - 1; // 減去標題行
+      console.log(`✅ 從 GitHub 載入 CSV: ${recordCount} 筆記錄`);
+      logToFile(`[SUCCESS] Loaded CSV from GitHub: ${recordCount} records`);
       return content;
+    } else {
+      throw new Error('GitHub API 回應中沒有 content 欄位');
     }
   } catch (e) {
-    if (e.message.includes('404')) {
+    if (e.message.includes('404') || e.message.includes('Not Found')) {
       console.log('ℹ️  GitHub 上尚未有 CSV 檔案，將建立新檔案');
       regCsvContent = 'timestamp,gid,action,sectionIdx,name,uid\n';
+      regCsvSha = null; // 新檔案沒有 SHA
       return null;
     }
     console.error('❌ 從 GitHub 讀取 CSV 失敗:', e.message);
+    console.error('   端點:', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_CSV_PATH}`);
     logToFile(`[ERROR] Failed to load CSV from GitHub: ${e.message}`);
+    
+    // 如果讀取失敗，嘗試從本地檔案載入（如果有）
+    try {
+      if (fs.existsSync(REG_CSV_FILE)) {
+        const localContent = await fs.promises.readFile(REG_CSV_FILE, 'utf8');
+        regCsvContent = localContent;
+        console.log('⚠️  已從本地檔案載入 CSV（GitHub 讀取失敗）');
+        return localContent;
+      }
+    } catch (localError) {
+      console.error('❌ 本地檔案載入也失敗:', localError.message);
+    }
+    
     return null;
   }
 }
 
 // 寫入 CSV 到 GitHub
 async function writeCsvToGitHub(content, message = 'Update registrations.csv') {
-  if (!USE_GITHUB) return false;
+  if (!USE_GITHUB) {
+    console.log('⚠️  GitHub 模式未啟用，跳過寫入');
+    return false;
+  }
   
   try {
     const endpoint = `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(GITHUB_CSV_PATH)}`;
@@ -141,16 +189,38 @@ async function writeCsvToGitHub(content, message = 'Update registrations.csv') {
     
     if (regCsvSha) {
       data.sha = regCsvSha; // 更新現有檔案需要 SHA
+      console.log(`📝 更新 GitHub CSV (SHA: ${regCsvSha.substring(0, 8)}...)`);
+    } else {
+      console.log(`📝 建立新 GitHub CSV 檔案`);
     }
     
     const response = await githubApiRequest('PUT', endpoint, data);
-    regCsvSha = response.content.sha;
-    regCsvContent = content;
-    console.log(`✅ CSV 已寫入 GitHub`);
-    return true;
+    
+    if (response.content && response.content.sha) {
+      regCsvSha = response.content.sha;
+      regCsvContent = content;
+      console.log(`✅ CSV 已寫入 GitHub (${content.split('\n').length - 1} 筆記錄)`);
+      logToFile(`[SUCCESS] CSV written to GitHub: ${content.split('\n').length - 1} records`);
+      return true;
+    } else {
+      throw new Error('GitHub API 回應格式錯誤：缺少 content.sha');
+    }
   } catch (e) {
     console.error('❌ 寫入 CSV 到 GitHub 失敗:', e.message);
+    console.error('   端點:', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_CSV_PATH}`);
+    console.error('   分支:', GITHUB_BRANCH);
     logToFile(`[ERROR] Failed to write CSV to GitHub: ${e.message}`);
+    
+    // 如果寫入失敗，降級到本地檔案模式（至少保留資料）
+    try {
+      await fs.promises.mkdir(DATA_DIR, { recursive: true });
+      await fs.promises.writeFile(REG_CSV_FILE, content, 'utf8');
+      console.log('⚠️  已降級到本地檔案模式儲存');
+      logToFile(`[WARN] Fallback to local file storage`);
+    } catch (fallbackError) {
+      console.error('❌ 本地檔案備份也失敗:', fallbackError.message);
+    }
+    
     return false;
   }
 }
@@ -208,31 +278,48 @@ function appendRegistrationCsvRow({ gid, action, sectionIdx, name, uid, ts }, wa
 
   const writePromise = regCsvWriteChain
     .then(async () => {
-      await ensureRegCsvReady();
-      
-      if (USE_GITHUB) {
-        // GitHub 模式：追加到內容並寫入
-        if (!regCsvContent) {
-          await loadCsvFromGitHub();
+      try {
+        await ensureRegCsvReady();
+        
+        if (USE_GITHUB) {
+          // GitHub 模式：追加到內容並寫入
           if (!regCsvContent) {
-            regCsvContent = 'timestamp,gid,action,sectionIdx,name,uid\n';
+            console.log('📥 載入 GitHub CSV 內容...');
+            await loadCsvFromGitHub();
+            if (!regCsvContent) {
+              regCsvContent = 'timestamp,gid,action,sectionIdx,name,uid\n';
+              console.log('📝 建立新的 CSV 內容');
+            }
           }
+          
+          const beforeCount = regCsvContent.split('\n').length - 1;
+          regCsvContent += row;
+          const afterCount = regCsvContent.split('\n').length - 1;
+          
+          console.log(`📝 準備寫入 GitHub: ${action} ${name || 'anonymous'} (記錄數: ${beforeCount} -> ${afterCount})`);
+          const success = await writeCsvToGitHub(regCsvContent, `Add registration: ${action} ${name || 'anonymous'}`);
+          
+          if (!success) {
+            throw new Error('GitHub 寫入失敗');
+          }
+        } else {
+          // 本地檔案模式
+          await maybeBackupRegCsv(when);
+          await fs.promises.appendFile(REG_CSV_FILE, row, 'utf8');
+          console.log(`✅ 已寫入本地 CSV: ${action} ${name || 'anonymous'}`);
         }
-        regCsvContent += row;
-        await writeCsvToGitHub(regCsvContent, `Add registration: ${action} ${name || 'anonymous'}`);
-      } else {
-        // 本地檔案模式
-        await maybeBackupRegCsv(when);
-        await fs.promises.appendFile(REG_CSV_FILE, row, 'utf8');
+      } catch (e) {
+        console.error('❌ Failed to write registration CSV:', e);
+        console.error('   詳細錯誤:', e.stack || e.message);
+        logToFile(`[ERROR] Failed to write registration CSV: ${e.message}`);
+        throw e; // 重新拋出錯誤，讓呼叫者知道失敗
       }
-    })
-    .catch((e) => {
-      console.error('❌ Failed to write registration CSV:', e);
-      logToFile(`[ERROR] Failed to write registration CSV: ${e.message}`);
-      throw e; // 重新拋出錯誤，讓呼叫者知道失敗
     });
 
-  regCsvWriteChain = writePromise.catch(() => {}); // 繼續鏈，即使失敗也不中斷
+  regCsvWriteChain = writePromise.catch((e) => {
+    // 記錄錯誤但不中斷鏈
+    console.error('⚠️  CSV 寫入鏈中的錯誤（已記錄，繼續處理）:', e.message);
+  });
 
   // 如果需要等待寫入完成（關鍵時刻），返回 Promise
   if (waitForWrite) {
@@ -1190,7 +1277,33 @@ async function handleEvent(event) {
           dbStatus = '❌ 資料庫連線異常';
         }
       }
-      return await client.replyMessage(event.replyToken, { type: 'text', text: `📊 系統狀態\n${dbStatus}\n目前載入接龍數: ${Object.keys(games).length}` });
+      
+      let csvStatus = '';
+      if (USE_GITHUB) {
+        try {
+          // 測試 GitHub 連線
+          const testEndpoint = `/repos/${GITHUB_OWNER}/${GITHUB_REPO}`;
+          await githubApiRequest('GET', testEndpoint);
+          const recordCount = regCsvContent ? regCsvContent.split('\n').length - 1 : 0;
+          csvStatus = `✅ GitHub CSV 正常\n   倉庫: ${GITHUB_OWNER}/${GITHUB_REPO}\n   路徑: ${GITHUB_CSV_PATH}\n   記錄數: ${recordCount}`;
+        } catch (e) {
+          csvStatus = `❌ GitHub CSV 連線失敗: ${e.message}`;
+        }
+      } else {
+        const localExists = fs.existsSync(REG_CSV_FILE);
+        if (localExists) {
+          const content = await fs.promises.readFile(REG_CSV_FILE, 'utf8').catch(() => '');
+          const recordCount = content ? content.split('\n').length - 1 : 0;
+          csvStatus = `📁 本地 CSV 模式\n   記錄數: ${recordCount}`;
+        } else {
+          csvStatus = '📁 本地 CSV 模式（尚未建立檔案）';
+        }
+      }
+      
+      return await client.replyMessage(event.replyToken, { 
+        type: 'text', 
+        text: `📊 系統狀態\n\n${dbStatus}\n\n${csvStatus}\n\n目前載入接龍數: ${Object.keys(games).length}` 
+      });
     }
 
     // 7. 資料庫列表 (檢查 DB 內容)
