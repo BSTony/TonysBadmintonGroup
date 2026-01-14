@@ -594,29 +594,28 @@ async function handleEvent(event) {
       return await sendList(event.replyToken, gid, updateMsg);
     }
 
-    // 2. 報名 (+1) / 取消 (-1)
-    // 支援 "+1 XXX" (開頭) 或 "XXX +1" (結尾) 格式，但 +1 必須在頭或尾
+    // 2. 報名 (+1 到 +9) / 取消 (-1 到 -9)
+    // 支援 "+1AA"、"+1 AA"、"AA+1"、"AA +1" 等格式（+1 到 +9）
     let addMatch = null;
     let count = 0;
     let content = '';
     
-    // 檢查是否以 +1 開頭（後面可以有空白和名字，或直接結束）
-    const startMatch = text.match(/^\+1(\s+|$)/);
+    // 檢查是否以 +1 到 +9 開頭（後面可以有空白和名字，或直接連接名字，或直接結束）
+    const startMatch = text.match(/^\+([1-9])(\s*)(.*)/);
     if (startMatch) {
-      const rest = text.slice(2).trim();
-      addMatch = { count: 1, content: rest };
-      count = 1;
-      content = rest;
+      count = parseInt(startMatch[1], 10);
+      content = startMatch[3].trim();
+      addMatch = { count: count, content: content };
     } 
-    // 檢查是否以 +1 結尾（前面必須有名字，+1 前必須有空白）
+    // 檢查是否以 +1 到 +9 結尾（前面必須有名字，+1 前可以有空白或直接連接）
     else {
-      const endMatch = text.match(/^(.+)\s+\+1$/);
+      const endMatch = text.match(/^(.+?)(\s*)\+([1-9])$/);
       if (endMatch) {
         const namePart = endMatch[1].trim();
         if (namePart) {
-          addMatch = { count: 1, content: namePart };
-          count = 1;
+          count = parseInt(endMatch[3], 10);
           content = namePart;
+          addMatch = { count: count, content: content };
         }
       }
     }
@@ -709,20 +708,19 @@ async function handleEvent(event) {
       await saveGame(gid);
       return await sendList(event.replyToken, gid);
     }
-    // 取消報名 (-1)，支援 "-1 XXX" (開頭) 或 "XXX -1" (結尾) 格式，但 -1 必須在頭或尾
+    // 取消報名 (-1 到 -9)，支援 "-1AA"、"-1 AA"、"AA-1"、"AA -1" 等格式
     let removeMatch = null;
     let removeName = '';
     
-    // 檢查是否以 -1 開頭（後面可以有空白和名字，或直接結束）
-    const removeStartMatch = text.match(/^-1(\s+|$)/);
+    // 檢查是否以 -1 到 -9 開頭（後面可以有空白和名字，或直接連接名字，或直接結束）
+    const removeStartMatch = text.match(/^-([1-9])(\s*)(.*)/);
     if (removeStartMatch) {
-      const rest = text.slice(2).trim();
+      removeName = removeStartMatch[3].trim();
       removeMatch = true;
-      removeName = rest;
     } 
-    // 檢查是否以 -1 結尾（前面必須有名字，-1 前必須有空白）
+    // 檢查是否以 -1 到 -9 結尾（前面必須有名字，-1 前可以有空白或直接連接）
     else {
-      const removeEndMatch = text.match(/^(.+)\s+-1$/);
+      const removeEndMatch = text.match(/^(.+?)(\s*)-([1-9])$/);
       if (removeEndMatch) {
         const namePart = removeEndMatch[1].trim();
         if (namePart) {

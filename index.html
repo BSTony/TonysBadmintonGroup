@@ -236,17 +236,19 @@
         
         <hr>
         
-        <h3>2. 報名 (+N)</h3>
+        <h3>2. 報名 (+1 到 +9)</h3>
         <p>報名參加接龍，可一次報名多人或匿名。</p>
         
         <p><strong>格式：</strong></p>
-        <pre><code>+N [名字1] [名字2] ...
+        <pre><code>+N [名字]
+[名字] +N
 +N 匿名
-+1</code></pre>
++N</code></pre>
         
         <p><strong>說明：</strong></p>
         <ul>
-            <li><code>+N</code>：N 為數字，表示報名 N 人</li>
+            <li><code>+N</code>：N 為 1-9 的數字，表示報名 N 人</li>
+            <li>支援多種格式：<code>+1AA</code>、<code>+1 AA</code>、<code>AA+1</code>、<code>AA +1</code>（名字和 +N 之間可以沒有空白）</li>
             <li>若輸入名字，則使用指定名字報名</li>
             <li>若輸入「匿名」，則報名匿名名額</li>
             <li>若只輸入 <code>+1</code> 且無名字，則自動使用 LINE 顯示名稱報名</li>
@@ -255,6 +257,10 @@
         <div class="example-box">
             <p><strong>範例：</strong></p>
             <pre><code>+1
++1AA
++1 AA
+AA+1
+AA +1
 +2 小明 小華
 +3 匿名
 +1 張三</code></pre>
@@ -270,16 +276,19 @@
         
         <hr>
         
-        <h3>3. 取消報名 (-1)</h3>
+        <h3>3. 取消報名 (-1 到 -9)</h3>
         <p>取消自己的報名或指定名字的報名。</p>
         
         <p><strong>格式：</strong></p>
-        <pre><code>-1
--1 [名字]
--1 匿名</code></pre>
+        <pre><code>-N [名字]
+[名字] -N
+-N 匿名
+-N</code></pre>
         
         <p><strong>說明：</strong></p>
         <ul>
+            <li><code>-N</code>：N 為 1-9 的數字</li>
+            <li>支援多種格式：<code>-1AA</code>、<code>-1 AA</code>、<code>AA-1</code>、<code>AA -1</code>（名字和 -N 之間可以沒有空白）</li>
             <li><code>-1</code>：取消自己的報名（使用 LINE 顯示名稱）</li>
             <li><code>-1 [名字]</code>：取消指定名字的報名</li>
             <li><code>-1 匿名</code>：取消最後一個匿名名額</li>
@@ -288,6 +297,10 @@
         <div class="example-box">
             <p><strong>範例：</strong></p>
             <pre><code>-1
+-1AA
+-1 AA
+AA-1
+AA -1
 -1 小明
 -1 匿名</code></pre>
         </div>
