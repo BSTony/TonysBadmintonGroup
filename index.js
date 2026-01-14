@@ -7,6 +7,85 @@ const https = require('https');
 const GAMES_FILE = path.join(__dirname, 'games.json');
 const LOG_FILE = path.join(__dirname, 'schedule.log');
 
+// --- 報名資料 CSV 記錄（最簡單的檔案型儲存） ---
+// 位置：data/registrations.csv
+// 欄位：timestamp,gid,action,sectionIdx,name,uid
+const DATA_DIR = path.join(__dirname, 'data');
+const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
+const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
+
+let regCsvWriteChain = Promise.resolve(); // 併發保護：所有寫入串成單一 Promise 佇列
+let regCsvLastBackupYMD = null;
+
+function csvEscape(v) {
+  if (v === null || v === undefined) return '';
+  const s = String(v);
+  // 有逗號、引號、換行就必須用雙引號包起來，並把引號變成兩個引號
+  if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+function ymd(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+async function ensureRegCsvReady() {
+  await fs.promises.mkdir(DATA_DIR, { recursive: true });
+  const exists = fs.existsSync(REG_CSV_FILE);
+  if (!exists) {
+    const header = 'timestamp,gid,action,sectionIdx,name,uid\n';
+    await fs.promises.writeFile(REG_CSV_FILE, header, 'utf8');
+  }
+}
+
+async function maybeBackupRegCsv(now = new Date()) {
+  const today = ymd(now);
+  if (regCsvLastBackupYMD === today) return;
+  regCsvLastBackupYMD = today;
+
+  try {
+    // 沒有檔案就不備份
+    if (!fs.existsSync(REG_CSV_FILE)) return;
+    await fs.promises.mkdir(REG_CSV_BACKUP_DIR, { recursive: true });
+    const backupPath = path.join(REG_CSV_BACKUP_DIR, `registrations-${today}.csv`);
+    // 同一天只備份一次（若已存在就跳過）
+    if (fs.existsSync(backupPath)) return;
+    await fs.promises.copyFile(REG_CSV_FILE, backupPath);
+  } catch (e) {
+    console.error('Failed to backup registrations.csv:', e);
+    logToFile(`[WARN] Failed to backup registrations.csv: ${e.message}`);
+  }
+}
+
+function appendRegistrationCsvRow({ gid, action, sectionIdx, name, uid, ts }) {
+  // 不要讓寫入失敗影響主要流程：這裡採 fire-and-forget + 併發佇列
+  const when = ts instanceof Date ? ts : new Date();
+  const row = [
+    when.toISOString(),
+    gid || '',
+    action || '',
+    (sectionIdx === 0 || sectionIdx) ? String(sectionIdx) : '',
+    name || '',
+    uid || ''
+  ].map(csvEscape).join(',') + '\n';
+
+  regCsvWriteChain = regCsvWriteChain
+    .then(async () => {
+      await ensureRegCsvReady();
+      await maybeBackupRegCsv(when);
+      await fs.promises.appendFile(REG_CSV_FILE, row, 'utf8');
+    })
+    .catch((e) => {
+      console.error('Failed to write registration CSV:', e);
+      logToFile(`[WARN] Failed to write registration CSV: ${e.message}`);
+    });
+
+  return regCsvWriteChain;
+}
+
 // 強制以台灣時間運行（台北時區），避免顯示成 UTC
 if (!process.env.TZ) process.env.TZ = 'Asia/Taipei';
 
@@ -697,7 +776,7 @@ async function handleEvent(event) {
           return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
         }
         namesToAdd.forEach(n => {
-          addToList(gid, 0, n);
+          addToList(gid, 0, n, { uid });
           // 更新 UID 到名稱的映射（僅對實名）
           if (n !== '__ANON__') {
             uidToNameMap.set(`${gid}_${uid}`, n);
@@ -784,12 +863,12 @@ async function handleEvent(event) {
         }
         
         name = userName || await getName(gid, uid);
-        removeFromList(gid, name);
+        removeFromList(gid, name, { uid });
       } else if (name === '匿名' || /匿名/.test(name)) {
         // 移除最後一個匿名占位符
-        removeAnon(gid);
+        removeAnon(gid, { uid });
       } else {
-        removeFromList(gid, name);
+        removeFromList(gid, name, { uid });
       }
       await saveGame(gid);
       return await sendList(event.replyToken, gid);
@@ -849,7 +928,7 @@ async function handleEvent(event) {
       }
 
       namesToAdd.forEach(n => {
-        addToList(gid, 0, n);
+        addToList(gid, 0, n, { uid });
         // 更新 UID 到名稱的映射（僅對實名）
         if (n !== '__ANON__') {
           uidToNameMap.set(`${gid}_${uid}`, n);
@@ -1021,32 +1100,38 @@ async function getName(gid, uid) {
   }
 }
 
-function addToList(gid, idx, name) {
+function addToList(gid, idx, name, meta = {}) {
   if (!games[gid].sections[idx]) return;
   // 匿名占位符允許重複出現
   if (name === '__ANON__') {
     games[gid].sections[idx].list.push(name);
+    appendRegistrationCsvRow({ gid, action: 'add', sectionIdx: idx, name, uid: meta.uid || null });
     return;
   }
   if (!games[gid].sections[idx].list.includes(name)) {
     games[gid].sections[idx].list.push(name);
+    appendRegistrationCsvRow({ gid, action: 'add', sectionIdx: idx, name, uid: meta.uid || null });
   }
 }
 
-function removeFromList(gid, name) {
-  games[gid].sections.forEach(s => {
+function removeFromList(gid, name, meta = {}) {
+  games[gid].sections.forEach((s, idx) => {
     const i = s.list.indexOf(name);
-    if (i > -1) s.list.splice(i, 1);
+    if (i > -1) {
+      s.list.splice(i, 1);
+      appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: idx, name, uid: meta.uid || null });
+    }
   });
   // 注意：不刪除映射，因為用戶可能會再次報名，保留映射可以減少 API 呼叫
 }
 
-function removeAnon(gid) {
+function removeAnon(gid, meta = {}) {
   const s = games[gid].sections[0];
   if (!s) return;
   for (let i = s.list.length - 1; i >= 0; i--) {
     if (s.list[i] === '__ANON__') {
       s.list.splice(i, 1);
+      appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: 0, name: '__ANON__', uid: meta.uid || null });
       return;
     }
   }
