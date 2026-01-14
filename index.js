@@ -607,13 +607,17 @@ async function handleEvent(event) {
       addMatch = { count: 1, content: rest };
       count = 1;
       content = rest;
-    } else {
-      // 檢查是否以 +1 結尾（前面必須有名字，+1 前必須有空白）
-      const endMatch = text.match(/^(.+?)\s+\+1$/);
+    } 
+    // 檢查是否以 +1 結尾（前面必須有名字，+1 前必須有空白）
+    else {
+      const endMatch = text.match(/^(.+)\s+\+1$/);
       if (endMatch) {
-        addMatch = { count: 1, content: endMatch[1].trim() };
-        count = 1;
-        content = endMatch[1].trim();
+        const namePart = endMatch[1].trim();
+        if (namePart) {
+          addMatch = { count: 1, content: namePart };
+          count = 1;
+          content = namePart;
+        }
       }
     }
     
