@@ -264,69 +264,70 @@ async function maybeBackupRegCsv(now = new Date()) {
   }
 }
 
-function appendRegistrationCsvRow({ gid, action, sectionIdx, name, uid, ts }, waitForWrite = false) {
-  // 併發保護：所有寫入串成單一 Promise 佇列
-  const when = ts instanceof Date ? ts : new Date();
-  const row = [
-    when.toISOString(),
-    gid || '',
-    action || '',
-    (sectionIdx === 0 || sectionIdx) ? String(sectionIdx) : '',
-    name || '',
-    uid || ''
-  ].map(csvEscape).join(',') + '\n';
-
+// 保存當前接龍名單快照到 CSV（只記錄當前狀態，不記錄歷史操作）
+async function saveCurrentListSnapshot(gid, waitForWrite = false) {
+  if (!games[gid]) return Promise.resolve();
+  
+  const g = games[gid];
+  const when = new Date();
+  const rows = [];
+  
+  // 建立 CSV 內容：只記錄當前名單中的每個人
+  g.sections.forEach((section, sectionIdx) => {
+    section.list.forEach((name) => {
+      // 只記錄實名，不記錄匿名占位符
+      if (name !== '__ANON__') {
+        rows.push([
+          when.toISOString(),
+          gid || '',
+          'current', // 標記為當前名單
+          String(sectionIdx),
+          name || '',
+          '' // 不記錄 uid（因為是快照，不是操作記錄）
+        ].map(csvEscape).join(','));
+      }
+    });
+  });
+  
+  // 如果沒有名單，就不寫入
+  if (rows.length === 0) {
+    return Promise.resolve();
+  }
+  
+  const csvContent = 'timestamp,gid,action,sectionIdx,name,uid\n' + rows.join('\n') + '\n';
+  
   const writePromise = regCsvWriteChain
     .then(async () => {
       try {
         await ensureRegCsvReady();
         
         if (USE_GITHUB) {
-          // GitHub 模式：追加到內容並寫入
-          if (!regCsvContent) {
-            console.log('📥 載入 GitHub CSV 內容...');
-            await loadCsvFromGitHub();
-            if (!regCsvContent) {
-              regCsvContent = 'timestamp,gid,action,sectionIdx,name,uid\n';
-              console.log('📝 建立新的 CSV 內容');
-            }
-          }
-          
-          const beforeCount = regCsvContent.split('\n').length - 1;
-          regCsvContent += row;
-          const afterCount = regCsvContent.split('\n').length - 1;
-          
-          console.log(`📝 準備寫入 GitHub: ${action} ${name || 'anonymous'} (記錄數: ${beforeCount} -> ${afterCount})`);
-          const success = await writeCsvToGitHub(regCsvContent, `Add registration: ${action} ${name || 'anonymous'}`);
+          console.log(`📝 保存接龍名單快照到 GitHub: ${gid} (${rows.length} 人)`);
+          const success = await writeCsvToGitHub(csvContent, `Update current list snapshot: ${g.title || gid}`);
           
           if (!success) {
             throw new Error('GitHub 寫入失敗');
           }
         } else {
-          // 本地檔案模式
-          await maybeBackupRegCsv(when);
-          await fs.promises.appendFile(REG_CSV_FILE, row, 'utf8');
-          console.log(`✅ 已寫入本地 CSV: ${action} ${name || 'anonymous'}`);
+          // 本地檔案模式：覆蓋寫入（不是追加）
+          await fs.promises.writeFile(REG_CSV_FILE, csvContent, 'utf8');
+          console.log(`✅ 已保存接龍名單快照: ${gid} (${rows.length} 人)`);
         }
       } catch (e) {
-        console.error('❌ Failed to write registration CSV:', e);
-        console.error('   詳細錯誤:', e.stack || e.message);
-        logToFile(`[ERROR] Failed to write registration CSV: ${e.message}`);
-        throw e; // 重新拋出錯誤，讓呼叫者知道失敗
+        console.error('❌ Failed to save list snapshot:', e);
+        logToFile(`[ERROR] Failed to save list snapshot: ${e.message}`);
+        throw e;
       }
     });
 
   regCsvWriteChain = writePromise.catch((e) => {
-    // 記錄錯誤但不中斷鏈
     console.error('⚠️  CSV 寫入鏈中的錯誤（已記錄，繼續處理）:', e.message);
   });
 
-  // 如果需要等待寫入完成（關鍵時刻），返回 Promise
   if (waitForWrite) {
     return writePromise;
   }
   
-  // 否則 fire-and-forget
   return Promise.resolve();
 }
 
@@ -844,6 +845,9 @@ async function handleEvent(event) {
       };
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
       
+      // 保存初始名單快照到 CSV
+      await saveCurrentListSnapshot(gid, false);
+      
       // 首次使用時顯示歡迎訊息（使用 replyMessage 免費，不消耗額度）
       let welcomePrefix = '';
       if (showWelcome) {
@@ -862,6 +866,10 @@ async function handleEvent(event) {
     }
 
     if (text === '接龍結束') {
+      // 保存最終名單快照到 CSV（在刪除前）
+      if (games[gid]) {
+        await saveCurrentListSnapshot(gid, true);
+      }
       await deleteGame(gid);
       // 優化：不發送回覆訊息，直接更新名單顯示結束狀態（節省一次 replyMessage）
       // 用戶可以通過查看名單確認，或我們可以在 sendList 中顯示結束訊息
@@ -1054,18 +1062,12 @@ async function handleEvent(event) {
         if (hasDuplicate || hasSelfDuplicate) {
           return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
         }
-        const csvPromises = [];
         namesToAdd.forEach(n => {
-          const csvPromise = addToList(gid, 0, n, { uid }, true); // 等待 CSV 寫入
-          if (csvPromise) csvPromises.push(csvPromise);
+          addToList(gid, 0, n, { uid });
           // 更新 UID 到名稱的映射（僅對實名）
           if (n !== '__ANON__') {
             uidToNameMap.set(`${gid}_${uid}`, n);
           }
-        });
-        // 等待所有 CSV 寫入完成
-        await Promise.all(csvPromises).catch(e => {
-          console.error('部分 CSV 寫入失敗（不影響報名）:', e);
         });
       }
 
@@ -1148,12 +1150,12 @@ async function handleEvent(event) {
         }
         
         name = userName || await getName(gid, uid);
-        await removeFromList(gid, name, { uid }, true); // 等待 CSV 寫入
+        await removeFromList(gid, name, { uid });
       } else if (name === '匿名' || /匿名/.test(name)) {
         // 移除最後一個匿名占位符
-        await removeAnon(gid, { uid }, true); // 等待 CSV 寫入
+        await removeAnon(gid, { uid });
       } else {
-        await removeFromList(gid, name, { uid }, true); // 等待 CSV 寫入
+        await removeFromList(gid, name, { uid });
       }
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
       return await sendList(event.replyToken, gid);
@@ -1212,18 +1214,12 @@ async function handleEvent(event) {
         return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
       }
 
-      const csvPromises = [];
       namesToAdd.forEach(n => {
-        const csvPromise = addToList(gid, 0, n, { uid }, true); // 等待 CSV 寫入
-        if (csvPromise) csvPromises.push(csvPromise);
+        addToList(gid, 0, n, { uid });
         // 更新 UID 到名稱的映射（僅對實名）
         if (n !== '__ANON__') {
           uidToNameMap.set(`${gid}_${uid}`, n);
         }
-      });
-      // 等待所有 CSV 寫入完成
-      await Promise.all(csvPromises).catch(e => {
-        console.error('部分 CSV 寫入失敗（不影響報名）:', e);
       });
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
       return await sendList(event.replyToken, gid);
@@ -1249,6 +1245,8 @@ async function handleEvent(event) {
     if (text === '接龍清空') {
       games[gid].sections.forEach(s => s.list = []);
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
+      // 清空後保存空名單快照
+      await saveCurrentListSnapshot(gid, false);
       return await client.replyMessage(event.replyToken, { type: 'text', text: '🧹 名單已清空' });
     }
     if (text === '接龍刪除') {
@@ -1422,31 +1420,26 @@ function addToList(gid, idx, name, meta = {}, waitForCsv = false) {
   // 匿名占位符允許重複出現
   if (name === '__ANON__') {
     games[gid].sections[idx].list.push(name);
-    return appendRegistrationCsvRow({ gid, action: 'add', sectionIdx: idx, name, uid: meta.uid || null }, waitForCsv);
+    // 不記錄到 CSV（只保存名單快照）
+    return null;
   }
   if (!games[gid].sections[idx].list.includes(name)) {
     games[gid].sections[idx].list.push(name);
-    return appendRegistrationCsvRow({ gid, action: 'add', sectionIdx: idx, name, uid: meta.uid || null }, waitForCsv);
+    // 不記錄到 CSV（只保存名單快照）
+    return null;
   }
   return null;
 }
 
 async function removeFromList(gid, name, meta = {}, waitForCsv = false) {
-  const csvPromises = [];
   games[gid].sections.forEach((s, idx) => {
     const i = s.list.indexOf(name);
     if (i > -1) {
       s.list.splice(i, 1);
-      const csvPromise = appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: idx, name, uid: meta.uid || null }, waitForCsv);
-      if (csvPromise) csvPromises.push(csvPromise);
     }
   });
   // 注意：不刪除映射，因為用戶可能會再次報名，保留映射可以減少 API 呼叫
-  if (waitForCsv && csvPromises.length > 0) {
-    await Promise.all(csvPromises).catch(e => {
-      console.error('CSV 寫入失敗（不影響取消報名）:', e);
-    });
-  }
+  // 不記錄到 CSV（只保存名單快照）
 }
 
 async function removeAnon(gid, meta = {}, waitForCsv = false) {
@@ -1455,11 +1448,7 @@ async function removeAnon(gid, meta = {}, waitForCsv = false) {
   for (let i = s.list.length - 1; i >= 0; i--) {
     if (s.list[i] === '__ANON__') {
       s.list.splice(i, 1);
-      if (waitForCsv) {
-        await appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: 0, name: '__ANON__', uid: meta.uid || null }, true);
-      } else {
-        appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: 0, name: '__ANON__', uid: meta.uid || null }, false);
-      }
+      // 不記錄到 CSV（只保存名單快照）
       return;
     }
   }
