@@ -178,11 +178,19 @@ const uidToNameMap = new Map(); // key: "gid_uid", value: name
 // 追蹤首次使用指令的群組（用於顯示歡迎訊息，而非加入時推播）
 const firstUseGroups = new Set(); // 記錄已經顯示過歡迎訊息的群組
 
-// PostgreSQL 連線設定
-// 避免未設定環境變數時崩潰
-if (!process.env.DATABASE_URL) console.warn('⚠️ 未設定 DATABASE_URL，資料庫功能將無法使用');
+// PostgreSQL 連線設定（已停用，改用 CSV 檔案儲存）
+// 如果不需要 PostgreSQL，可以移除或註解掉以下程式碼
+// 目前強制使用檔案模式，避免連線錯誤訊息
+if (!process.env.DATABASE_URL) {
+  console.log('ℹ️  使用檔案模式儲存資料（games.json + registrations.csv）');
+} else {
+  console.log('ℹ️  已停用 PostgreSQL，使用檔案模式儲存資料（games.json + registrations.csv）');
+}
 
 let pool = null;
+// 停用 PostgreSQL 連線，強制使用檔案模式
+// 如果需要重新啟用，請取消以下註解並移除 pool = null
+/*
 if (Pool && process.env.DATABASE_URL) {
   console.log('嘗試連線至資料庫:', process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':****@'));
   pool = new Pool({
@@ -198,9 +206,11 @@ if (Pool && process.env.DATABASE_URL) {
     console.error('Unexpected database pool error:', err);
   });
 }
+*/
 
 // 初始化資料庫與載入資料
 let loadPromise = Promise.resolve();
+// 停用 PostgreSQL，直接使用檔案模式
 if (pool) {
   loadPromise = pool.query(`
     CREATE TABLE IF NOT EXISTS games (
@@ -209,7 +219,7 @@ if (pool) {
     );
   `).then(() => loadGames())
     .catch(err => {
-      console.error('❌ 資料庫連線失敗 (將切換回記憶體模式):', err);
+      console.log('ℹ️  資料庫連線失敗，已切換到檔案模式');
       pool = null;
       return loadGames();
     });
