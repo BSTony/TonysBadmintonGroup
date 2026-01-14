@@ -60,8 +60,8 @@ async function maybeBackupRegCsv(now = new Date()) {
   }
 }
 
-function appendRegistrationCsvRow({ gid, action, sectionIdx, name, uid, ts }) {
-  // 不要讓寫入失敗影響主要流程：這裡採 fire-and-forget + 併發佇列
+function appendRegistrationCsvRow({ gid, action, sectionIdx, name, uid, ts }, waitForWrite = false) {
+  // 併發保護：所有寫入串成單一 Promise 佇列
   const when = ts instanceof Date ? ts : new Date();
   const row = [
     when.toISOString(),
@@ -72,18 +72,27 @@ function appendRegistrationCsvRow({ gid, action, sectionIdx, name, uid, ts }) {
     uid || ''
   ].map(csvEscape).join(',') + '\n';
 
-  regCsvWriteChain = regCsvWriteChain
+  const writePromise = regCsvWriteChain
     .then(async () => {
       await ensureRegCsvReady();
       await maybeBackupRegCsv(when);
       await fs.promises.appendFile(REG_CSV_FILE, row, 'utf8');
     })
     .catch((e) => {
-      console.error('Failed to write registration CSV:', e);
-      logToFile(`[WARN] Failed to write registration CSV: ${e.message}`);
+      console.error('❌ Failed to write registration CSV:', e);
+      logToFile(`[ERROR] Failed to write registration CSV: ${e.message}`);
+      throw e; // 重新拋出錯誤，讓呼叫者知道失敗
     });
 
-  return regCsvWriteChain;
+  regCsvWriteChain = writePromise.catch(() => {}); // 繼續鏈，即使失敗也不中斷
+
+  // 如果需要等待寫入完成（關鍵時刻），返回 Promise
+  if (waitForWrite) {
+    return writePromise;
+  }
+  
+  // 否則 fire-and-forget
+  return Promise.resolve();
 }
 
 // 強制以台灣時間運行（台北時區），避免顯示成 UTC
@@ -256,8 +265,23 @@ async function loadGames() {
 // 檔案寫入防抖，避免頻繁寫入
 let saveFileTimeout = null;
 let pendingSaves = new Set();
+let isShuttingDown = false;
 
-async function saveGame(gid) {
+// 立即寫入檔案（用於關鍵時刻或關閉時）
+async function flushFileSave() {
+  if (pendingSaves.size === 0) return;
+  try {
+    await fs.promises.writeFile(GAMES_FILE, JSON.stringify(games, null, 2), 'utf8');
+    pendingSaves.clear();
+    console.log('✅ 接龍資料已寫入檔案');
+  } catch (e) {
+    console.error('❌ 儲存接龍資料至檔案失敗:', e);
+    logToFile(`[ERROR] Failed to save games.json: ${e.message}`);
+    // 失敗時保留pendingSaves，下次再試
+  }
+}
+
+async function saveGame(gid, immediate = false) {
   if (!games[gid]) return;
   if (pool) {
     try {
@@ -269,11 +293,19 @@ async function saveGame(gid) {
       console.error('資料庫儲存失敗:', e);
       // 降級到檔案備份
       pendingSaves.add(gid);
-      scheduleFileSave();
+      if (immediate) {
+        await flushFileSave();
+      } else {
+        scheduleFileSave();
+      }
     }
   } else {
     pendingSaves.add(gid);
-    scheduleFileSave();
+    if (immediate || isShuttingDown) {
+      await flushFileSave();
+    } else {
+      scheduleFileSave();
+    }
   }
 }
 
@@ -281,14 +313,7 @@ function scheduleFileSave() {
   if (saveFileTimeout) return; // 已有排程，等待執行
   saveFileTimeout = setTimeout(async () => {
     saveFileTimeout = null;
-    if (pendingSaves.size === 0) return;
-    try {
-      await fs.promises.writeFile(GAMES_FILE, JSON.stringify(games, null, 2), 'utf8');
-      pendingSaves.clear();
-    } catch (e) {
-      console.error('儲存接龍資料至檔案失敗:', e);
-      // 失敗時保留pendingSaves，下次再試
-    }
+    await flushFileSave();
   }, 500); // 防抖：500ms內的多個保存請求合併為一次
 }
 
@@ -573,7 +598,7 @@ async function handleEvent(event) {
           { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
         ]
       };
-      await saveGame(gid);
+      await saveGame(gid, true); // 立即寫入，確保資料不丟失
       
       // 首次使用時顯示歡迎訊息（使用 replyMessage 免費，不消耗額度）
       let welcomePrefix = '';
@@ -671,7 +696,7 @@ async function handleEvent(event) {
         return await client.replyMessage(event.replyToken, { type: 'text', text: '❌ 請指定要修改的項目（標題、人數、候補或名單）' });
       }
 
-      await saveGame(gid);
+      await saveGame(gid, true); // 立即寫入，確保資料不丟失
       
       // 生成更新訊息
       let updateMsg = "✏️ 接龍已更新";
@@ -785,16 +810,22 @@ async function handleEvent(event) {
         if (hasDuplicate || hasSelfDuplicate) {
           return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
         }
+        const csvPromises = [];
         namesToAdd.forEach(n => {
-          addToList(gid, 0, n, { uid });
+          const csvPromise = addToList(gid, 0, n, { uid }, true); // 等待 CSV 寫入
+          if (csvPromise) csvPromises.push(csvPromise);
           // 更新 UID 到名稱的映射（僅對實名）
           if (n !== '__ANON__') {
             uidToNameMap.set(`${gid}_${uid}`, n);
           }
         });
+        // 等待所有 CSV 寫入完成
+        await Promise.all(csvPromises).catch(e => {
+          console.error('部分 CSV 寫入失敗（不影響報名）:', e);
+        });
       }
 
-      await saveGame(gid);
+      await saveGame(gid, true); // 立即寫入，確保資料不丟失
       return await sendList(event.replyToken, gid);
     }
     // 取消報名 (-1 到 -9)，支援 "-1AA"、"-1 AA"、"AA-1"、"AA -1" 等格式
@@ -873,14 +904,14 @@ async function handleEvent(event) {
         }
         
         name = userName || await getName(gid, uid);
-        removeFromList(gid, name, { uid });
+        await removeFromList(gid, name, { uid }, true); // 等待 CSV 寫入
       } else if (name === '匿名' || /匿名/.test(name)) {
         // 移除最後一個匿名占位符
-        removeAnon(gid, { uid });
+        await removeAnon(gid, { uid }, true); // 等待 CSV 寫入
       } else {
-        removeFromList(gid, name, { uid });
+        await removeFromList(gid, name, { uid }, true); // 等待 CSV 寫入
       }
-      await saveGame(gid);
+      await saveGame(gid, true); // 立即寫入，確保資料不丟失
       return await sendList(event.replyToken, gid);
     }
 
@@ -937,14 +968,20 @@ async function handleEvent(event) {
         return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
       }
 
+      const csvPromises = [];
       namesToAdd.forEach(n => {
-        addToList(gid, 0, n, { uid });
+        const csvPromise = addToList(gid, 0, n, { uid }, true); // 等待 CSV 寫入
+        if (csvPromise) csvPromises.push(csvPromise);
         // 更新 UID 到名稱的映射（僅對實名）
         if (n !== '__ANON__') {
           uidToNameMap.set(`${gid}_${uid}`, n);
         }
       });
-      await saveGame(gid);
+      // 等待所有 CSV 寫入完成
+      await Promise.all(csvPromises).catch(e => {
+        console.error('部分 CSV 寫入失敗（不影響報名）:', e);
+      });
+      await saveGame(gid, true); // 立即寫入，確保資料不丟失
       return await sendList(event.replyToken, gid);
     }
 
@@ -960,14 +997,14 @@ async function handleEvent(event) {
         label: p[3] || '',
         list: games[gid].sections[idx]?.list || []
       };
-      await saveGame(gid);
+      await saveGame(gid, true); // 立即寫入，確保資料不丟失
       return await sendList(event.replyToken, gid, `⚙️ 區段${idx + 1} 更新成功`);
     }
 
     // 5. 清除/刪除/結束
     if (text === '接龍清空') {
       games[gid].sections.forEach(s => s.list = []);
-      await saveGame(gid);
+      await saveGame(gid, true); // 立即寫入，確保資料不丟失
       return await client.replyMessage(event.replyToken, { type: 'text', text: '🧹 名單已清空' });
     }
     if (text === '接龍刪除') {
@@ -1110,38 +1147,49 @@ async function getName(gid, uid) {
   }
 }
 
-function addToList(gid, idx, name, meta = {}) {
-  if (!games[gid].sections[idx]) return;
+function addToList(gid, idx, name, meta = {}, waitForCsv = false) {
+  if (!games[gid].sections[idx]) return null;
   // 匿名占位符允許重複出現
   if (name === '__ANON__') {
     games[gid].sections[idx].list.push(name);
-    appendRegistrationCsvRow({ gid, action: 'add', sectionIdx: idx, name, uid: meta.uid || null });
-    return;
+    return appendRegistrationCsvRow({ gid, action: 'add', sectionIdx: idx, name, uid: meta.uid || null }, waitForCsv);
   }
   if (!games[gid].sections[idx].list.includes(name)) {
     games[gid].sections[idx].list.push(name);
-    appendRegistrationCsvRow({ gid, action: 'add', sectionIdx: idx, name, uid: meta.uid || null });
+    return appendRegistrationCsvRow({ gid, action: 'add', sectionIdx: idx, name, uid: meta.uid || null }, waitForCsv);
   }
+  return null;
 }
 
-function removeFromList(gid, name, meta = {}) {
+async function removeFromList(gid, name, meta = {}, waitForCsv = false) {
+  const csvPromises = [];
   games[gid].sections.forEach((s, idx) => {
     const i = s.list.indexOf(name);
     if (i > -1) {
       s.list.splice(i, 1);
-      appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: idx, name, uid: meta.uid || null });
+      const csvPromise = appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: idx, name, uid: meta.uid || null }, waitForCsv);
+      if (csvPromise) csvPromises.push(csvPromise);
     }
   });
   // 注意：不刪除映射，因為用戶可能會再次報名，保留映射可以減少 API 呼叫
+  if (waitForCsv && csvPromises.length > 0) {
+    await Promise.all(csvPromises).catch(e => {
+      console.error('CSV 寫入失敗（不影響取消報名）:', e);
+    });
+  }
 }
 
-function removeAnon(gid, meta = {}) {
+async function removeAnon(gid, meta = {}, waitForCsv = false) {
   const s = games[gid].sections[0];
   if (!s) return;
   for (let i = s.list.length - 1; i >= 0; i--) {
     if (s.list[i] === '__ANON__') {
       s.list.splice(i, 1);
-      appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: 0, name: '__ANON__', uid: meta.uid || null });
+      if (waitForCsv) {
+        await appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: 0, name: '__ANON__', uid: meta.uid || null }, true);
+      } else {
+        appendRegistrationCsvRow({ gid, action: 'remove', sectionIdx: 0, name: '__ANON__', uid: meta.uid || null }, false);
+      }
       return;
     }
   }
@@ -1246,6 +1294,33 @@ async function pingSelf() {
     logToFile(`[ERROR] [PING] Self-ping error: ${err.message}`);
   }
 }
+
+// Graceful shutdown：確保資料寫入
+async function gracefulShutdown() {
+  console.log('🛑 正在關閉服務器，確保資料寫入...');
+  isShuttingDown = true;
+  
+  // 等待所有待寫入的資料
+  if (saveFileTimeout) {
+    clearTimeout(saveFileTimeout);
+    saveFileTimeout = null;
+  }
+  await flushFileSave();
+  
+  // 等待所有 CSV 寫入完成
+  try {
+    await regCsvWriteChain;
+    console.log('✅ 所有資料已寫入完成');
+  } catch (e) {
+    console.error('⚠️ CSV 寫入過程中發生錯誤:', e);
+  }
+  
+  process.exit(0);
+}
+
+// 監聽關閉信號
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 // 啟動服務器
 app.listen(port, () => {
