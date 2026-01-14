@@ -286,9 +286,11 @@ AA-1            // 取消 AA 的報名
 ## ⚙️ 系統說明
 
 ### 資料儲存機制
-- **PostgreSQL 模式**：若設定 `DATABASE_URL` 環境變數，資料會儲存到 PostgreSQL
-- **檔案模式**：若無資料庫，資料會儲存到 `games.json` 檔案
-- **自動備份**：資料庫模式失敗時會自動降級到檔案模式
+- **接龍設定**：儲存到 `games.json` 檔案
+- **報名記錄**：
+  - **GitHub 模式（推薦）**：若設定 GitHub 環境變數，報名資料會儲存到 GitHub 倉庫的 CSV 檔案
+  - **本地檔案模式**：若未設定 GitHub，資料會儲存到 `data/registrations.csv` 檔案
+- **自動備份**：GitHub 模式提供版本控制，本地模式會自動建立每日備份
 
 ### 定時推播機制
 - 每分鐘的 00 秒檢查一次排程
@@ -330,8 +332,39 @@ AA-1            // 取消 AA 的報名
 - **運行環境**：Node.js
 - **框架**：Express.js
 - **LINE Bot SDK**：@line/bot-sdk
-- **資料庫**：PostgreSQL
+- **資料儲存**：`games.json`（接龍設定）+ GitHub CSV 或本地 CSV（報名記錄）
 - **預設 Port**：3000
+
+---
+
+## 🔧 環境變數設定
+
+### 必要環境變數
+- `LINE_CHANNEL_ACCESS_TOKEN`：LINE Bot 的 Access Token
+- `LINE_CHANNEL_SECRET`：LINE Bot 的 Channel Secret
+
+### GitHub 儲存（推薦）
+若要使用 GitHub 儲存報名記錄，請設定以下環境變數：
+- `GITHUB_TOKEN`：GitHub Personal Access Token（需要 `repo` 權限）
+- `GITHUB_OWNER`：GitHub 使用者名稱或組織名稱
+- `GITHUB_REPO`：倉庫名稱
+- `GITHUB_CSV_PATH`（可選）：CSV 檔案路徑，預設為 `data/registrations.csv`
+
+**建立 GitHub Token 步驟：**
+1. 前往 GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)
+2. 點擊 "Generate new token (classic)"
+3. 勾選 `repo` 權限
+4. 複製產生的 token 並設定為 `GITHUB_TOKEN` 環境變數
+
+**範例：**
+```
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+GITHUB_OWNER=your-username
+GITHUB_REPO=line-bot
+GITHUB_CSV_PATH=data/registrations.csv
+```
+
+若未設定 GitHub 環境變數，系統會自動使用本地檔案模式（`data/registrations.csv`）。
 
 ---
 
