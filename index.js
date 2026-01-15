@@ -322,6 +322,117 @@ async function saveCurrentListSnapshot(gid, waitForWrite = false) {
   return Promise.resolve();
 }
 
+function parseCsvLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"' && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else if (ch === '"') {
+        inQuotes = false;
+      } else {
+        current += ch;
+      }
+    } else {
+      if (ch === ',') {
+        result.push(current);
+        current = '';
+      } else if (ch === '"') {
+        inQuotes = true;
+      } else {
+        current += ch;
+      }
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+async function restoreGamesFromCsv() {
+  if (Object.keys(games).length > 0) return false;
+
+  let content = regCsvContent;
+  if (!content && fs.existsSync(REG_CSV_FILE)) {
+    content = await fs.promises.readFile(REG_CSV_FILE, 'utf8');
+  }
+  if (!content) return false;
+
+  const lines = content.trim().split(/\r?\n/);
+  if (lines.length <= 1) return false;
+
+  const header = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase());
+  const idxGid = header.indexOf('gid');
+  const idxSection = header.indexOf('sectionidx');
+  const idxName = header.indexOf('name');
+
+  if (idxGid < 0 || idxSection < 0 || idxName < 0) {
+    return false;
+  }
+
+  const byGid = new Map();
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cols = parseCsvLine(line);
+    const gid = (cols[idxGid] || '').trim();
+    const name = (cols[idxName] || '').trim();
+    const sectionIdx = parseInt((cols[idxSection] || '0').trim(), 10);
+
+    if (!gid || !name) continue;
+    const safeSectionIdx = Number.isFinite(sectionIdx) && sectionIdx >= 0 ? sectionIdx : 0;
+
+    if (!byGid.has(gid)) {
+      byGid.set(gid, new Map());
+    }
+    const sectionMap = byGid.get(gid);
+    if (!sectionMap.has(safeSectionIdx)) {
+      sectionMap.set(safeSectionIdx, []);
+    }
+    const list = sectionMap.get(safeSectionIdx);
+    if (!list.includes(name)) {
+      list.push(name);
+    }
+  }
+
+  if (byGid.size === 0) return false;
+
+  for (const [gid, sectionMap] of byGid.entries()) {
+    const sectionIndices = Array.from(sectionMap.keys());
+    const maxIdx = Math.max(...sectionIndices, 0);
+    const sections = [];
+    for (let idx = 0; idx <= maxIdx; idx++) {
+      const list = sectionMap.get(idx) || [];
+      const limit = Math.max(20, list.length);
+      sections.push({
+        title: idx === 0 ? '報名名單' : `區段${idx + 1}`,
+        limit: limit,
+        backupLimit: 5,
+        label: '',
+        list: list
+      });
+    }
+    games[gid] = {
+      title: '羽球接龍',
+      note: '',
+      active: true,
+      startTime: Date.now(),
+      scheduleTime: null,
+      scheduleInput: null,
+      anonymous: [],
+      anonymousCount: 0,
+      sections: sections
+    };
+    await saveGame(gid, true);
+  }
+
+  return true;
+}
+
 // 強制以台灣時間運行（台北時區），避免顯示成 UTC
 if (!process.env.TZ) process.env.TZ = 'Asia/Taipei';
 
@@ -650,7 +761,14 @@ function startMinuteCheck() {
 }
 
 // 待載入完成後立即檢查一次，以恢復並觸發在停機期間已到期或保留的排程
-loadPromise.then(() => {
+loadPromise.then(async () => {
+  const restored = await restoreGamesFromCsv().catch((e) => {
+    console.error('Failed to restore games from CSV:', e);
+    return false;
+  });
+  if (restored) {
+    console.log('✅ 已從 CSV 還原接龍名單');
+  }
   console.log('[Startup] Data loaded, performing initial schedule check');
   return checkSchedules().catch(console.error);
 }).then(() => {
@@ -835,6 +953,9 @@ async function handleEvent(event) {
         ]
       };
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
+      if (listMatch) {
+        await saveCurrentListSnapshot(gid, false);
+      }
       
       // 保存初始名單快照到 CSV
       await saveCurrentListSnapshot(gid, false);
@@ -1063,6 +1184,7 @@ async function handleEvent(event) {
       }
 
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
+      await saveCurrentListSnapshot(gid, false);
       return await sendList(event.replyToken, gid);
     }
     // 取消報名 (-1 到 -9)，支援 "-1AA"、"-1 AA"、"AA-1"、"AA -1" 等格式
@@ -1149,6 +1271,7 @@ async function handleEvent(event) {
         await removeFromList(gid, name, { uid });
       }
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
+      await saveCurrentListSnapshot(gid, false);
       return await sendList(event.replyToken, gid);
     }
 
@@ -1213,6 +1336,7 @@ async function handleEvent(event) {
         }
       });
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
+      await saveCurrentListSnapshot(gid, false);
       return await sendList(event.replyToken, gid);
     }
 
