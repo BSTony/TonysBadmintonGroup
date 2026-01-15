@@ -1692,7 +1692,7 @@ async function sendList(token, gid, prefix = "") {
 
 const port = process.env.PORT || 3000;
 const AUTO_WAKE_ENABLED = (process.env.AUTO_WAKE_ENABLED || 'true').toLowerCase() !== 'false';
-const AUTO_WAKE_INTERVAL_MINUTES = Math.max(5, parseInt(process.env.AUTO_WAKE_INTERVAL_MINUTES || '60', 10) || 60);
+const AUTO_WAKE_INTERVAL_MINUTES = Math.max(5, parseInt(process.env.AUTO_WAKE_INTERVAL_MINUTES || '10', 10) || 10);
 
 // 內部定時器：定期訪問自己的健康檢查端點以保持喚醒
 async function pingSelf() {
