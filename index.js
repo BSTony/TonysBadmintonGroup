@@ -171,7 +171,7 @@ async function loadCsvFromGitHub() {
 }
 
 // 寫入 CSV 到 GitHub
-async function writeCsvToGitHub(content, message = 'Update registrations.csv') {
+async function writeCsvToGitHub(content, message = 'Update registrations.csv', allowRetry = true) {
   if (!USE_GITHUB) {
     console.log('⚠️  GitHub 模式未啟用，跳過寫入');
     return false;
@@ -206,6 +206,18 @@ async function writeCsvToGitHub(content, message = 'Update registrations.csv') {
       throw new Error('GitHub API 回應格式錯誤：缺少 content.sha');
     }
   } catch (e) {
+    // 若遇到 SHA 衝突（409），先重新載入最新檔案再重試一次
+    const isShaConflict = String(e.message).includes('409') || String(e.message).includes('does not match');
+    if (isShaConflict && allowRetry) {
+      console.warn('⚠️  偵測到 GitHub SHA 衝突，重新載入後重試一次');
+      try {
+        await loadCsvFromGitHub();
+      } catch (reloadErr) {
+        console.error('❌ 重新載入 GitHub CSV 失敗:', reloadErr.message);
+      }
+      return await writeCsvToGitHub(content, message, false);
+    }
+
     console.error('❌ 寫入 CSV 到 GitHub 失敗:', e.message);
     console.error('   端點:', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_CSV_PATH}`);
     console.error('   分支:', GITHUB_BRANCH);
