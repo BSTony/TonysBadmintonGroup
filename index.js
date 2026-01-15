@@ -266,10 +266,8 @@ async function maybeBackupRegCsv(now = new Date()) {
 
 // 保存當前接龍名單快照到 CSV（只記錄當前狀態，不記錄歷史操作）
 async function saveCurrentListSnapshot(gid, waitForWrite = false) {
-  if (gid && !games[gid]) return Promise.resolve();
-  
   const rows = [];
-  const gids = gid ? [gid] : Object.keys(games);
+  const gids = Object.keys(games);
   
   // 建立 CSV 內容：只記錄當前名單中的每個人（所有群組）
   gids.forEach((currentGid) => {
