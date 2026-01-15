@@ -7,9 +7,9 @@ const https = require('https');
 const GAMES_FILE = path.join(__dirname, 'games.json');
 const LOG_FILE = path.join(__dirname, 'schedule.log');
 
-// --- 報名資料 CSV 記錄（使用 GitHub 儲存） ---
+// --- 名單快照 CSV（最精簡，使用 GitHub 儲存） ---
 // 位置：data/registrations.csv（GitHub）
-// 欄位：timestamp,gid,action,sectionIdx,name,uid
+// 欄位：gid,sectionIdx,name
 const DATA_DIR = path.join(__dirname, 'data');
 const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
@@ -146,7 +146,7 @@ async function loadCsvFromGitHub() {
   } catch (e) {
     if (e.message.includes('404') || e.message.includes('Not Found')) {
       console.log('ℹ️  GitHub 上尚未有 CSV 檔案，將建立新檔案');
-      regCsvContent = 'timestamp,gid,action,sectionIdx,name,uid\n';
+      regCsvContent = 'gid,sectionIdx,name\n';
       regCsvSha = null; // 新檔案沒有 SHA
       return null;
     }
@@ -231,7 +231,7 @@ async function ensureRegCsvReady() {
     if (!regCsvContent) {
       await loadCsvFromGitHub();
       if (!regCsvContent) {
-        regCsvContent = 'timestamp,gid,action,sectionIdx,name,uid\n';
+        regCsvContent = 'gid,sectionIdx,name\n';
       }
     }
   } else {
@@ -239,7 +239,7 @@ async function ensureRegCsvReady() {
     await fs.promises.mkdir(DATA_DIR, { recursive: true });
     const exists = fs.existsSync(REG_CSV_FILE);
     if (!exists) {
-      const header = 'timestamp,gid,action,sectionIdx,name,uid\n';
+      const header = 'gid,sectionIdx,name\n';
       await fs.promises.writeFile(REG_CSV_FILE, header, 'utf8');
     }
   }
@@ -269,7 +269,6 @@ async function saveCurrentListSnapshot(gid, waitForWrite = false) {
   if (!games[gid]) return Promise.resolve();
   
   const g = games[gid];
-  const when = new Date();
   const rows = [];
   
   // 建立 CSV 內容：只記錄當前名單中的每個人
@@ -278,23 +277,15 @@ async function saveCurrentListSnapshot(gid, waitForWrite = false) {
       // 只記錄實名，不記錄匿名占位符
       if (name !== '__ANON__') {
         rows.push([
-          when.toISOString(),
           gid || '',
-          'current', // 標記為當前名單
           String(sectionIdx),
-          name || '',
-          '' // 不記錄 uid（因為是快照，不是操作記錄）
+          name || ''
         ].map(csvEscape).join(','));
       }
     });
   });
-  
-  // 如果沒有名單，就不寫入
-  if (rows.length === 0) {
-    return Promise.resolve();
-  }
-  
-  const csvContent = 'timestamp,gid,action,sectionIdx,name,uid\n' + rows.join('\n') + '\n';
+
+  const csvContent = 'gid,sectionIdx,name\n' + (rows.length > 0 ? rows.join('\n') + '\n' : '');
   
   const writePromise = regCsvWriteChain
     .then(async () => {
@@ -1500,8 +1491,10 @@ async function sendList(token, gid, prefix = "") {
 }
 
 const port = process.env.PORT || 3000;
+const AUTO_WAKE_ENABLED = (process.env.AUTO_WAKE_ENABLED || 'true').toLowerCase() !== 'false';
+const AUTO_WAKE_INTERVAL_MINUTES = Math.max(5, parseInt(process.env.AUTO_WAKE_INTERVAL_MINUTES || '60', 10) || 60);
 
-// 內部定時器：每10分鐘訪問自己的健康檢查端點以保持喚醒
+// 內部定時器：定期訪問自己的健康檢查端點以保持喚醒
 async function pingSelf() {
   // 優先使用 RENDER_EXTERNAL_URL，如果沒有則嘗試其他環境變數或使用 localhost
   const baseUrl = process.env.RENDER_EXTERNAL_URL || 
@@ -1591,16 +1584,20 @@ process.on('SIGINT', gracefulShutdown);
 app.listen(port, () => {
   console.log(`Badminton Bot Running on port ${port}...`);
   
-  // 立即執行一次（延遲5秒，確保服務器完全啟動）
-  setTimeout(() => {
-    pingSelf().catch(console.error);
-  }, 5000);
-  
-  // 每10分鐘執行一次自我PING（600000毫秒 = 10分鐘）
-  setInterval(() => {
-    pingSelf().catch(console.error);
-  }, 10 * 60 * 1000);
-  
-  console.log('✅ 自動喚醒定時器已啟動（每10分鐘）');
-  logToFile('[STARTUP] Auto-wake timer started (every 10 minutes)');
+  if (AUTO_WAKE_ENABLED) {
+    // 立即執行一次（延遲5秒，確保服務器完全啟動）
+    setTimeout(() => {
+      pingSelf().catch(console.error);
+    }, 5000);
+    
+    // 依設定頻率執行自我PING
+    setInterval(() => {
+      pingSelf().catch(console.error);
+    }, AUTO_WAKE_INTERVAL_MINUTES * 60 * 1000);
+    
+    console.log(`✅ 自動喚醒定時器已啟動（每 ${AUTO_WAKE_INTERVAL_MINUTES} 分鐘）`);
+    logToFile(`[STARTUP] Auto-wake timer started (every ${AUTO_WAKE_INTERVAL_MINUTES} minutes)`);
+  } else {
+    console.log('ℹ️ 已停用自動喚醒定時器（AUTO_WAKE_ENABLED=false）');
+  }
 });

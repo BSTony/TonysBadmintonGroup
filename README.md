@@ -286,11 +286,11 @@ AA-1            // 取消 AA 的報名
 ## ⚙️ 系統說明
 
 ### 資料儲存機制
-- **接龍設定**：儲存到 `games.json` 檔案
-- **報名記錄**：
-  - **GitHub 模式（推薦）**：若設定 GitHub 環境變數，報名資料會儲存到 GitHub 倉庫的 CSV 檔案
+- **接龍設定**：儲存到 `games.json` 檔案（支援不同群組/聊天室）
+- **名單快照（最精簡）**：
+  - **GitHub 模式（推薦）**：若設定 GitHub 環境變數，僅保存「當前名單」到 GitHub 倉庫的 CSV 檔案
   - **本地檔案模式**：若未設定 GitHub，資料會儲存到 `data/registrations.csv` 檔案
-- **自動備份**：GitHub 模式提供版本控制，本地模式會自動建立每日備份
+- **CSV 欄位**：`gid,sectionIdx,name`（不記錄時間、操作紀錄或 uid）
 
 ### 定時推播機制
 - 每分鐘的 00 秒檢查一次排程
@@ -302,8 +302,9 @@ AA-1            // 取消 AA 的報名
 - 每小時檢查一次過期資料
 
 ### 保活機制
-- 每 10 分鐘自動 ping `/health` 端點
+- 預設每 60 分鐘自動 ping `/health` 端點（可調整）
 - 用於保持服務器喚醒（適用於 Render、Heroku 等平台）
+- 可透過環境變數調整或關閉（`AUTO_WAKE_ENABLED=false`）
 
 ### 日誌記錄
 - 只記錄重要事件：`ERROR`、`TRIGGER`、`WARN`、`SUCCESS`
@@ -332,7 +333,7 @@ AA-1            // 取消 AA 的報名
 - **運行環境**：Node.js
 - **框架**：Express.js
 - **LINE Bot SDK**：@line/bot-sdk
-- **資料儲存**：`games.json`（接龍設定）+ GitHub CSV 或本地 CSV（報名記錄）
+- **資料儲存**：`games.json`（接龍設定）+ GitHub CSV 或本地 CSV（名單快照）
 - **預設 Port**：3000
 
 ---
@@ -349,6 +350,10 @@ AA-1            // 取消 AA 的報名
 - `GITHUB_OWNER`：GitHub 使用者名稱或組織名稱
 - `GITHUB_REPO`：倉庫名稱
 - `GITHUB_CSV_PATH`（可選）：CSV 檔案路徑，預設為 `data/registrations.csv`
+
+### 保活設定（可選）
+- `AUTO_WAKE_ENABLED`：是否啟用自我喚醒（預設 `true`，設為 `false` 可減少流量）
+- `AUTO_WAKE_INTERVAL_MINUTES`：喚醒間隔分鐘數（預設 `60`，最小 `5`）
 
 **建立 GitHub Token 步驟：**
 1. 前往 GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)

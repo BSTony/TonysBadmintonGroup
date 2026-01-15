@@ -1,7 +1,7 @@
-timestamp,gid,action,sectionIdx,name,uid
-2026-01-15T00:50:08.129Z,C73ead06e46f4c3a00a3f87d946c7d18a,current,0,AA,
-2026-01-15T00:50:08.129Z,C73ead06e46f4c3a00a3f87d946c7d18a,current,0,BB,
-2026-01-15T00:50:08.129Z,C73ead06e46f4c3a00a3f87d946c7d18a,current,0,CC,
-2026-01-15T00:50:08.129Z,C73ead06e46f4c3a00a3f87d946c7d18a,current,0,豬豬鈞,
-2026-01-15T00:50:08.129Z,C73ead06e46f4c3a00a3f87d946c7d18a,current,0,大豬鈞,
-2026-01-15T00:50:08.129Z,C73ead06e46f4c3a00a3f87d946c7d18a,current,0,豬頭鈞,
+gid,sectionIdx,name
+C73ead06e46f4c3a00a3f87d946c7d18a,0,AA
+C73ead06e46f4c3a00a3f87d946c7d18a,0,BB
+C73ead06e46f4c3a00a3f87d946c7d18a,0,CC
+C73ead06e46f4c3a00a3f87d946c7d18a,0,豬豬鈞
+C73ead06e46f4c3a00a3f87d946c7d18a,0,大豬鈞
+C73ead06e46f4c3a00a3f87d946c7d18a,0,豬頭鈞
