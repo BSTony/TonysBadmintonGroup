@@ -266,22 +266,26 @@ async function maybeBackupRegCsv(now = new Date()) {
 
 // 保存當前接龍名單快照到 CSV（只記錄當前狀態，不記錄歷史操作）
 async function saveCurrentListSnapshot(gid, waitForWrite = false) {
-  if (!games[gid]) return Promise.resolve();
+  if (gid && !games[gid]) return Promise.resolve();
   
-  const g = games[gid];
   const rows = [];
+  const gids = gid ? [gid] : Object.keys(games);
   
-  // 建立 CSV 內容：只記錄當前名單中的每個人
-  g.sections.forEach((section, sectionIdx) => {
-    section.list.forEach((name) => {
-      // 只記錄實名，不記錄匿名占位符
-      if (name !== '__ANON__') {
-        rows.push([
-          gid || '',
-          String(sectionIdx),
-          name || ''
-        ].map(csvEscape).join(','));
-      }
+  // 建立 CSV 內容：只記錄當前名單中的每個人（所有群組）
+  gids.forEach((currentGid) => {
+    const g = games[currentGid];
+    if (!g || !g.sections) return;
+    g.sections.forEach((section, sectionIdx) => {
+      section.list.forEach((name) => {
+        // 只記錄實名，不記錄匿名占位符
+        if (name !== '__ANON__') {
+          rows.push([
+            currentGid || '',
+            String(sectionIdx),
+            name || ''
+          ].map(csvEscape).join(','));
+        }
+      });
     });
   });
 
@@ -421,6 +425,7 @@ async function restoreGamesFromCsv() {
       note: '',
       active: true,
       startTime: Date.now(),
+      lastActiveTime: Date.now(),
       scheduleTime: null,
       scheduleInput: null,
       anonymous: [],
@@ -656,6 +661,11 @@ async function saveGame(gid, immediate = false) {
   }
 }
 
+function touchGame(gid) {
+  if (!games[gid]) return;
+  games[gid].lastActiveTime = Date.now();
+}
+
 function scheduleFileSave() {
   if (saveFileTimeout) return; // 已有排程，等待執行
   saveFileTimeout = setTimeout(async () => {
@@ -687,16 +697,29 @@ async function checkExpiredGames() {
     if (!games[gid]) continue;
     if (!games[gid].startTime) {
       games[gid].startTime = now;
-      await saveGame(gid);
+      games[gid].lastActiveTime = now;
+      await saveGame(gid, true);
     }
-    if (now - games[gid].startTime > EXPIRY_TIME) {
+    const lastActive = games[gid].lastActiveTime || games[gid].startTime || now;
+    if (now - lastActive > EXPIRY_TIME) {
       console.log(`群組 ${gid} 接龍已過期自動刪除`);
       await deleteGame(gid);
+      await saveCurrentListSnapshot(null, false);
     }
   }
 }
 checkExpiredGames().catch(console.error); // 啟動時檢查一次
-setInterval(() => checkExpiredGames().catch(console.error), 60 * 60 * 1000); // 每小時檢查一次
+
+function startDailyExpiryCheck() {
+  const now = new Date();
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const msUntilMidnight = nextMidnight.getTime() - now.getTime();
+  setTimeout(() => {
+    checkExpiredGames().catch(console.error);
+    setInterval(() => checkExpiredGames().catch(console.error), 24 * 60 * 60 * 1000);
+  }, msUntilMidnight);
+}
+startDailyExpiryCheck();
 
 // 排程檢查的執行鎖，避免重入
 let checkingSchedules = false;
@@ -944,6 +967,7 @@ async function handleEvent(event) {
         note: '',
         active: true,
         startTime: Date.now(),
+        lastActiveTime: Date.now(),
         scheduleTime: scheduleTime,
         scheduleInput: scheduleInput,
         anonymous: anonList, // 兼容舊的匿名名單（若為數字則用 placeholder 存入 list）
@@ -983,6 +1007,8 @@ async function handleEvent(event) {
         await saveCurrentListSnapshot(gid, true);
       }
       await deleteGame(gid);
+      // 刪除後更新 CSV，移除該群組資料
+      await saveCurrentListSnapshot(null, false);
       // 優化：不發送回覆訊息，直接更新名單顯示結束狀態（節省一次 replyMessage）
       // 用戶可以通過查看名單確認，或我們可以在 sendList 中顯示結束訊息
       // 但為了更好的體驗，還是回覆一個簡短訊息，但使用更簡潔的文字
@@ -1060,7 +1086,11 @@ async function handleEvent(event) {
         return await client.replyMessage(event.replyToken, { type: 'text', text: '❌ 請指定要修改的項目（標題、人數、候補或名單）' });
       }
 
+      touchGame(gid);
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
+      if (listMatch) {
+        await saveCurrentListSnapshot(gid, false);
+      }
       
       // 生成更新訊息
       let updateMsg = "✏️ 接龍已更新";
@@ -1183,6 +1213,9 @@ async function handleEvent(event) {
         });
       }
 
+      touchGame(gid);
+      touchGame(gid);
+      touchGame(gid);
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
       await saveCurrentListSnapshot(gid, false);
       return await sendList(event.replyToken, gid);
@@ -1352,6 +1385,7 @@ async function handleEvent(event) {
         label: p[3] || '',
         list: games[gid].sections[idx]?.list || []
       };
+      touchGame(gid);
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
       return await sendList(event.replyToken, gid, `⚙️ 區段${idx + 1} 更新成功`);
     }
@@ -1359,6 +1393,7 @@ async function handleEvent(event) {
     // 5. 清除/刪除/結束
     if (text === '接龍清空') {
       games[gid].sections.forEach(s => s.list = []);
+      touchGame(gid);
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
       // 清空後保存空名單快照
       await saveCurrentListSnapshot(gid, false);
@@ -1366,6 +1401,8 @@ async function handleEvent(event) {
     }
     if (text === '接龍刪除') {
       await deleteGame(gid);
+      // 刪除後更新 CSV，移除該群組資料
+      await saveCurrentListSnapshot(null, false);
       return await client.replyMessage(event.replyToken, { type: 'text', text: '🗑️ 設置已移除' });
     }
 
