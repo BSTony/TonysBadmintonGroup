@@ -297,8 +297,9 @@ async function saveCurrentListSnapshot(gid, waitForWrite = false) {
         await ensureRegCsvReady();
         
         if (USE_GITHUB) {
-          console.log(`📝 保存接龍名單快照到 GitHub: ${gid} (${rows.length} 人)`);
-          const success = await writeCsvToGitHub(csvContent, `Update current list snapshot: ${g.title || gid}`);
+          const label = gid ? (games[gid]?.title || gid) : 'all-groups';
+          console.log(`📝 保存接龍名單快照到 GitHub: ${label} (${rows.length} 人)`);
+          const success = await writeCsvToGitHub(csvContent, `Update current list snapshot: ${label}`);
           
           if (!success) {
             throw new Error('GitHub 寫入失敗');
@@ -306,7 +307,8 @@ async function saveCurrentListSnapshot(gid, waitForWrite = false) {
         } else {
           // 本地檔案模式：覆蓋寫入（不是追加）
           await fs.promises.writeFile(REG_CSV_FILE, csvContent, 'utf8');
-          console.log(`✅ 已保存接龍名單快照: ${gid} (${rows.length} 人)`);
+          const label = gid ? (games[gid]?.title || gid) : 'all-groups';
+          console.log(`✅ 已保存接龍名單快照: ${label} (${rows.length} 人)`);
         }
       } catch (e) {
         console.error('❌ Failed to save list snapshot:', e);
