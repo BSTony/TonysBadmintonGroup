@@ -243,7 +243,7 @@ async function ensureRegCsvReady() {
     if (!regCsvContent) {
       await loadCsvFromGitHub();
       if (!regCsvContent) {
-        regCsvContent = 'gid,sectionIdx,name\n';
+        regCsvContent = 'gid,sectionIdx,name,limit,backupLimit\n';
       }
     }
   } else {
@@ -251,7 +251,7 @@ async function ensureRegCsvReady() {
     await fs.promises.mkdir(DATA_DIR, { recursive: true });
     const exists = fs.existsSync(REG_CSV_FILE);
     if (!exists) {
-      const header = 'gid,sectionIdx,name\n';
+      const header = 'gid,sectionIdx,name,limit,backupLimit\n';
       await fs.promises.writeFile(REG_CSV_FILE, header, 'utf8');
     }
   }
@@ -292,14 +292,16 @@ async function saveCurrentListSnapshot(gid, waitForWrite = false) {
           rows.push([
             currentGid || '',
             String(sectionIdx),
-            name || ''
+            name || '',
+            String(section.limit || ''),
+            String(section.backupLimit ?? '')
           ].map(csvEscape).join(','));
         }
       });
     });
   });
 
-  const csvContent = 'gid,sectionIdx,name\n' + (rows.length > 0 ? rows.join('\n') + '\n' : '');
+  const csvContent = 'gid,sectionIdx,name,limit,backupLimit\n' + (rows.length > 0 ? rows.join('\n') + '\n' : '');
   
   const writePromise = regCsvWriteChain
     .then(async () => {
@@ -384,12 +386,15 @@ async function restoreGamesFromCsv() {
   const idxGid = header.indexOf('gid');
   const idxSection = header.indexOf('sectionidx');
   const idxName = header.indexOf('name');
+  const idxLimit = header.indexOf('limit');
+  const idxBackup = header.indexOf('backuplimit');
 
   if (idxGid < 0 || idxSection < 0 || idxName < 0) {
     return false;
   }
 
   const byGid = new Map();
+  const metaByGid = new Map();
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
@@ -406,8 +411,28 @@ async function restoreGamesFromCsv() {
       byGid.set(gid, new Map());
     }
     const sectionMap = byGid.get(gid);
+    if (!metaByGid.has(gid)) {
+      metaByGid.set(gid, new Map());
+    }
+    const metaMap = metaByGid.get(gid);
     if (!sectionMap.has(safeSectionIdx)) {
       sectionMap.set(safeSectionIdx, []);
+    }
+    if (!metaMap.has(safeSectionIdx)) {
+      metaMap.set(safeSectionIdx, {});
+    }
+    const sectionMeta = metaMap.get(safeSectionIdx);
+    if (idxLimit >= 0) {
+      const rawLimit = parseInt((cols[idxLimit] || '').trim(), 10);
+      if (Number.isFinite(rawLimit) && rawLimit > 0) {
+        sectionMeta.limit = Math.max(sectionMeta.limit || 0, rawLimit);
+      }
+    }
+    if (idxBackup >= 0) {
+      const rawBackup = parseInt((cols[idxBackup] || '').trim(), 10);
+      if (Number.isFinite(rawBackup) && rawBackup >= 0) {
+        sectionMeta.backupLimit = Math.max(sectionMeta.backupLimit || 0, rawBackup);
+      }
     }
     const list = sectionMap.get(safeSectionIdx);
     if (!list.includes(name)) {
@@ -421,13 +446,15 @@ async function restoreGamesFromCsv() {
     const sectionIndices = Array.from(sectionMap.keys());
     const maxIdx = Math.max(...sectionIndices, 0);
     const sections = [];
+    const metaMap = metaByGid.get(gid) || new Map();
     for (let idx = 0; idx <= maxIdx; idx++) {
       const list = sectionMap.get(idx) || [];
-      const limit = Math.max(20, list.length);
+      const meta = metaMap.get(idx) || {};
+      const limit = meta.limit || Math.max(20, list.length);
       sections.push({
         title: idx === 0 ? '報名名單' : `區段${idx + 1}`,
         limit: limit,
-        backupLimit: 5,
+        backupLimit: meta.backupLimit ?? 5,
         label: '',
         list: list
       });
