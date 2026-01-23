@@ -1041,10 +1041,12 @@ async function handleEvent(event) {
     }
 
     if (text === '接龍結束') {
-      // 保存最終名單快照到 CSV（在刪除前）
-      if (games[gid]) {
-        await saveCurrentListSnapshot(gid, true);
+      // 沒有接龍時不回覆
+      if (!games[gid]) {
+        return null;
       }
+      // 保存最終名單快照到 CSV（在刪除前）
+      await saveCurrentListSnapshot(gid, true);
       await deleteGame(gid);
       // 刪除後更新 CSV，移除該群組資料
       await saveCurrentListSnapshot(null, false);
@@ -1056,8 +1058,9 @@ async function handleEvent(event) {
 
     // 接龍修改/接龍修正 - 只有在有接龍資料時才能使用
     if (text.startsWith('接龍修改') || text.startsWith('接龍修正')) {
+      // 沒有接龍或已結束時不回覆
       if (!games[gid] || !games[gid].active) {
-        return await client.replyMessage(event.replyToken, { type: 'text', text: '❌ 目前沒有進行中的接龍，請先使用「接龍開始」建立接龍' });
+        return null;
       }
 
       const titleMatch = text.match(/標題\s*[:：]?\s*[{\uff5b]([\s\S]*?)[}\uff5d]/);
@@ -1168,26 +1171,18 @@ async function handleEvent(event) {
     }
     
     if (addMatch) {
-      // 檢查接龍是否存在
+      // 檢查接龍是否存在 - 沒有接龍時不回覆
       if (!games[gid]) {
-        return await client.replyMessage(event.replyToken, { 
-          type: 'text', 
-          text: '❌ 目前沒有進行中的接龍\n請先使用「接龍開始」建立接龍' 
-        });
+        return null;
       }
       
-      // 檢查接龍是否活躍
+      // 檢查接龍是否活躍 - 已結束時不回覆
       if (!games[gid].active) {
-        return await client.replyMessage(event.replyToken, { 
-          type: 'text', 
-          text: '❌ 此接龍已結束\n請使用「接龍開始」建立新的接龍' 
-        });
+        return null;
       }
-      // 若已有排程且尚未到時間，禁止提前 + / - 操作
+      // 若已有排程且尚未到時間，禁止提前 + / - 操作 - 不回覆
       if (games[gid] && games[gid].scheduleTime && Number(games[gid].scheduleTime) > Date.now()) {
-        const d = new Date(Number(games[gid].scheduleTime));
-        const timeStr = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `尚未開始，將會在 ${timeStr} 開始接龍，請在機器人開始後再使用 + / - 指令` });
+        return null;
       }
       const currentList = games[gid].sections[0].list;
       let namesToAdd = [];
@@ -1282,27 +1277,19 @@ async function handleEvent(event) {
     }
     
     if (removeMatch) {
-      // 檢查接龍是否存在
+      // 檢查接龍是否存在 - 沒有接龍時不回覆
       if (!games[gid]) {
-        return await client.replyMessage(event.replyToken, { 
-          type: 'text', 
-          text: '❌ 目前沒有進行中的接龍\n請先使用「接龍開始」建立接龍' 
-        });
+        return null;
       }
       
-      // 檢查接龍是否活躍
+      // 檢查接龍是否活躍 - 已結束時不回覆
       if (!games[gid].active) {
-        return await client.replyMessage(event.replyToken, { 
-          type: 'text', 
-          text: '❌ 此接龍已結束\n請使用「接龍開始」建立新的接龍' 
-        });
+        return null;
       }
       
-      // 若已有排程且尚未到時間，禁止提前 + / - 操作
+      // 若已有排程且尚未到時間，禁止提前 + / - 操作 - 不回覆
       if (games[gid] && games[gid].scheduleTime && Number(games[gid].scheduleTime) > Date.now()) {
-        const d = new Date(Number(games[gid].scheduleTime));
-        const timeStr = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `尚未開始，將會在 ${timeStr} 開始接龍，請在機器人開始後再使用 + / - 指令` });
+        return null;
       }
       let name = removeName;
       if (!name) {
@@ -1349,11 +1336,9 @@ async function handleEvent(event) {
 
     // 3. 接龍狀態查詢
     if (text === '接龍狀態' || text === '接龍查詢') {
+      // 沒有接龍時不回覆
       if (!games[gid]) {
-        return await client.replyMessage(event.replyToken, { 
-          type: 'text', 
-          text: '❌ 目前沒有進行中的接龍\n請先使用「接龍開始」建立接龍' 
-        });
+        return null;
       }
       const g = games[gid];
       const now = Date.now();
@@ -1376,20 +1361,16 @@ async function handleEvent(event) {
     if (text.startsWith('接龍名單')) {
       const input = text.replace('接龍名單', '').trim();
       if (input === '' || input === '#') {
+        // 沒有接龍時不回覆
         if (!games[gid]) {
-          return await client.replyMessage(event.replyToken, { 
-            type: 'text', 
-            text: '❌ 目前沒有進行中的接龍\n請先使用「接龍開始」建立接龍' 
-          });
+          return null;
         }
         return await sendList(event.replyToken, gid);
       }
       
+      // 沒有接龍或已結束時不回覆
       if (!games[gid] || !games[gid].active) {
-        return await client.replyMessage(event.replyToken, { 
-          type: 'text', 
-          text: '❌ 目前沒有進行中的接龍\n請先使用「接龍開始」建立接龍' 
-        });
+        return null;
       }
       
       const namesToAdd = input.split(/\s+/).filter(n => n);
@@ -1415,6 +1396,10 @@ async function handleEvent(event) {
     // 5. 多區段設定: 接龍 {段標題}{人數}{候補}{標籤} 或 接龍2...
     // 注意：必須在"接龍修改/接龍修正"之後檢查，且不能是"接龍修改"或"接龍修正"
     if (text.startsWith('接龍') && text.includes('{') && !text.startsWith('接龍修改') && !text.startsWith('接龍修正') && !text.startsWith('接龍名單') && !text.startsWith('接龍開始') && !text.startsWith('接龍結束') && !text.startsWith('接龍清空') && !text.startsWith('接龍刪除')) {
+      // 沒有接龍時不回覆
+      if (!games[gid]) {
+        return null;
+      }
       const p = getParams(text);
       const idx = text.startsWith('接龍2') ? 1 : 0;
       games[gid].sections[idx] = {
@@ -1431,6 +1416,10 @@ async function handleEvent(event) {
 
     // 5. 清除/刪除/結束
     if (text === '接龍清空') {
+      // 沒有接龍時不回覆
+      if (!games[gid]) {
+        return null;
+      }
       games[gid].sections.forEach(s => s.list = []);
       touchGame(gid);
       await saveGame(gid, true); // 立即寫入，確保資料不丟失
@@ -1439,6 +1428,10 @@ async function handleEvent(event) {
       return await client.replyMessage(event.replyToken, { type: 'text', text: '🧹 名單已清空' });
     }
     if (text === '接龍刪除') {
+      // 沒有接龍時不回覆
+      if (!games[gid]) {
+        return null;
+      }
       await deleteGame(gid);
       // 刪除後更新 CSV，移除該群組資料
       await saveCurrentListSnapshot(null, false);
