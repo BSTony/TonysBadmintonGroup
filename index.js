@@ -243,7 +243,7 @@ async function ensureRegCsvReady() {
     if (!regCsvContent) {
       await loadCsvFromGitHub();
       if (!regCsvContent) {
-        regCsvContent = 'gid,sectionIdx,name,limit,backupLimit\n';
+        regCsvContent = 'gid,sectionIdx,name,limit,backupLimit,title\n';
       }
     }
   } else {
@@ -251,7 +251,7 @@ async function ensureRegCsvReady() {
     await fs.promises.mkdir(DATA_DIR, { recursive: true });
     const exists = fs.existsSync(REG_CSV_FILE);
     if (!exists) {
-      const header = 'gid,sectionIdx,name,limit,backupLimit\n';
+      const header = 'gid,sectionIdx,name,limit,backupLimit,title\n';
       await fs.promises.writeFile(REG_CSV_FILE, header, 'utf8');
     }
   }
@@ -294,14 +294,15 @@ async function saveCurrentListSnapshot(gid, waitForWrite = false) {
             String(sectionIdx),
             name || '',
             String(section.limit || ''),
-            String(section.backupLimit ?? '')
+            String(section.backupLimit ?? ''),
+            String(g.title || '')
           ].map(csvEscape).join(','));
         }
       });
     });
   });
 
-  const csvContent = 'gid,sectionIdx,name,limit,backupLimit\n' + (rows.length > 0 ? rows.join('\n') + '\n' : '');
+  const csvContent = 'gid,sectionIdx,name,limit,backupLimit,title\n' + (rows.length > 0 ? rows.join('\n') + '\n' : '');
   
   const writePromise = regCsvWriteChain
     .then(async () => {
@@ -388,6 +389,7 @@ async function restoreGamesFromCsv() {
   const idxName = header.indexOf('name');
   const idxLimit = header.indexOf('limit');
   const idxBackup = header.indexOf('backuplimit');
+  const idxTitle = header.indexOf('title');
 
   if (idxGid < 0 || idxSection < 0 || idxName < 0) {
     return false;
@@ -434,6 +436,14 @@ async function restoreGamesFromCsv() {
         sectionMeta.backupLimit = Math.max(sectionMeta.backupLimit || 0, rawBackup);
       }
     }
+    // Restore title if available
+    if (idxTitle >= 0) {
+      const rawTitle = (cols[idxTitle] || '').trim();
+      if (rawTitle && !metaMap.get('title')) {
+        metaMap.set('title', rawTitle);
+      }
+    }
+
     const list = sectionMap.get(safeSectionIdx);
     if (!list.includes(name)) {
       list.push(name);
@@ -447,6 +457,8 @@ async function restoreGamesFromCsv() {
     const maxIdx = Math.max(...sectionIndices, 0);
     const sections = [];
     const metaMap = metaByGid.get(gid) || new Map();
+    const restoredTitle = metaMap.get('title');
+
     for (let idx = 0; idx <= maxIdx; idx++) {
       const list = sectionMap.get(idx) || [];
       const meta = metaMap.get(idx) || {};
@@ -460,7 +472,7 @@ async function restoreGamesFromCsv() {
       });
     }
     games[gid] = {
-      title: '羽球接龍',
+      title: restoredTitle || '羽球接龍',
       note: '',
       active: true,
       startTime: Date.now(),
