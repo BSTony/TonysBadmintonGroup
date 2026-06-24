@@ -975,7 +975,7 @@ async function handleEvent(event) {
 
   if (event.type !== 'message' || event.message.type !== 'text') return null;
 
-  const gid = event.source.groupId || event.source.userId;
+  const gid = event.source.groupId || event.source.roomId || event.source.userId;
   const uid = event.source.userId;
   const text = event.message.text.trim();
 
@@ -1713,37 +1713,21 @@ async function removeAnon(gid, meta = {}, waitForCsv = false) {
 async function sendList(token, gid, prefix = "") {
   const g = games[gid];
   if (!g) return;
-  let msg = `${prefix}\n${g.title}\n`;
-  g.sections.forEach(sec => {
-    msg += `\n【${sec.title}】\n`;
-    for (let i = 0; i < sec.limit; i++) {
-      if (i < sec.list.length) {
-        const name = sec.list[i];
-        const isAnon = (name === '__ANON__') || ((g.anonymous || []).includes && (g.anonymous || []).includes(name));
-        // 若當前與下一位皆為匿名，則隱藏當前行 (摺疊顯示)
-        if (isAnon && ((sec.list[i + 1] === '__ANON__') || ((g.anonymous || []).includes && (g.anonymous || []).includes(sec.list[i + 1])))) continue;
-        const displayName = isAnon ? '***' : name;
-        msg += `${sec.label}${i + 1}. ${displayName}\n`;
-      } else {
-        if (i === sec.limit - 1) msg += `${sec.label}${i + 1}. \n`;
-        else if (i === sec.list.length) msg += `..\n`;
-      }
-    }
-    if (sec.list.length >= sec.limit) {
-      msg += `--- 候補 ---\n`;
-      for (let i = sec.limit; i < sec.list.length; i++) {
-        if (i < sec.limit + sec.backupLimit) {
-          const name = sec.list[i];
-          const displayName = (g.anonymous || []).includes(name) ? '***' : name;
-          msg += `候補${i - sec.limit + 1}. ${displayName}\n`;
-        }
-      }
-    }
-  });
+  
+  let msg = prefix ? `${prefix}\n` : '';
+  msg += `🏸 ${g.title}`;
+  
+  // 顯示簡短統計
+  if (g.sections && g.sections[0]) {
+    const listCount = g.sections[0].list.length;
+    const limit = g.sections[0].limit;
+    msg += `\n目前報名：${listCount} / ${limit} 人`;
+  }
+
   if (g.note) msg += `\n📝 ${g.note}`;
   
   if (process.env.LIFF_ID) {
-    msg += `\n\n👇 點擊下方連結開啟快速報名\nhttps://liff.line.me/${process.env.LIFF_ID}`;
+    msg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}`;
   }
   
   const message = { type: 'text', text: msg.trim() };
