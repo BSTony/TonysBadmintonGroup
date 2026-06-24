@@ -889,6 +889,7 @@ app.get('/api/config', (req, res) => {
 app.get('/api/game/:gid', (req, res) => {
   const gid = req.params.gid;
   const groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
+  console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
   if (groupGames.length === 0) {
     return res.status(404).json({ error: 'Game not found' });
   }
@@ -1016,12 +1017,13 @@ async function handleEvent(event) {
   try {
     // 1. 接龍開始
     if (text.startsWith('接龍開始')) {
-      const titleMatch = text.match(/標題\s*[:：]?\s*[{\uff5b]([\s\S]*?)[}\uff5d]/);
-      const limitMatch = text.match(/人數\s*[:：]?\s*[{\uff5b](\d+)[}\uff5d]/);
-      const backupMatch = text.match(/候補\s*[:：]?\s*[{\uff5b](\d+)[}\uff5d]/);
-      const title = titleMatch ? titleMatch[1].trim() : '羽球接龍';
-      const limit = limitMatch ? parseInt(limitMatch[1], 10) : 20;
-      const backupLimit = backupMatch ? parseInt(backupMatch[1], 10) : 5;
+      // 支援有大括號或沒有大括號 (用空格/換行分隔)
+      const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]+))/);
+      const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
+      const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
+      const title = titleMatch ? (titleMatch[1] || titleMatch[2]).trim() : '羽球接龍';
+      const limit = limitMatch ? parseInt(limitMatch[1] || limitMatch[2], 10) : 20;
+      const backupLimit = backupMatch ? parseInt(backupMatch[1] || backupMatch[2], 10) : 5;
       
       const gameId = Date.now().toString() + Math.floor(Math.random()*1000);
       
@@ -1278,6 +1280,14 @@ process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
 // 啟動服務器
+
+// 隱藏的 debug 端點，用來印出當前記憶體狀態
+app.get('/api/debug_games', (req, res) => {
+  res.json({
+    total: Object.keys(games).length,
+    games: games
+  });
+});
 app.listen(port, () => {
   console.log(`Badminton Bot Running on port ${port}...`);
   
