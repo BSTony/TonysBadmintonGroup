@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>羽球報名系統</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="loading" class="overlay active">
+    <div class="spinner"></div>
+    <p>載入中...</p>
+  </div>
+
+  <div id="error-screen" class="overlay hidden">
+    <div class="error-icon">⚠️</div>
+    <h2 id="error-title">發生錯誤</h2>
+    <p id="error-message">請稍後再試或聯繫管理員</p>
+    <button class="btn btn-primary" onclick="liff.closeWindow()">關閉</button>
+  </div>
+
+  <div class="container" id="app-container" style="display: none;">
+    <header class="header">
+      <div class="header-content">
+        <h1 id="game-title">載入中...</h1>
+        <div class="status-badge" id="game-status">進行中</div>
+      </div>
+      <div class="user-profile">
+        <img id="user-avatar" src="" alt="Avatar" class="avatar hidden">
+        <span id="user-name">訪客</span>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="stats-card">
+        <div class="stat-item">
+          <span class="stat-label">已報名</span>
+          <span class="stat-value" id="count-enrolled">0</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-label">總名額</span>
+          <span class="stat-value" id="count-limit">0</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <span class="stat-label">候補</span>
+          <span class="stat-value" id="count-backup">0</span>
+        </div>
+      </div>
+
+      <div class="action-panel">
+        <h3 class="section-title">快速報名</h3>
+        <div class="action-buttons">
+          <button class="btn btn-danger" id="btn-minus" onclick="handleAction('cancel', 1)">-1 取消</button>
+          <button class="btn btn-primary" id="btn-plus-1" onclick="handleAction('register', 1)">+1 報名</button>
+          <button class="btn btn-secondary" id="btn-plus-2" onclick="handleAction('register', 2)">+2</button>
+        </div>
+        <div class="custom-action hidden">
+          <input type="text" id="custom-name" placeholder="代報名稱 (選填)" class="input-text">
+        </div>
+      </div>
+
+      <div class="list-section">
+        <div class="list-header">
+          <h3 class="section-title">正取名單</h3>
+          <span class="badge badge-success" id="badge-enrolled">0</span>
+        </div>
+        <ul class="player-list" id="list-enrolled">
+          <!-- 正取名單由 JS 渲染 -->
+        </ul>
+      </div>
+
+      <div class="list-section" id="backup-section" style="display: none;">
+        <div class="list-header">
+          <h3 class="section-title">候補名單</h3>
+          <span class="badge badge-warning" id="badge-backup">0</span>
+        </div>
+        <ul class="player-list" id="list-backup">
+          <!-- 候補名單由 JS 渲染 -->
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

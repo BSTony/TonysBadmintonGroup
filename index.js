@@ -564,6 +564,7 @@ if (!config.channelAccessToken || !config.channelSecret) {
 
 const client = new Client(config);
 const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
 
 // 全域存儲：支援多群組、多區段
 let games = {};
@@ -860,13 +861,72 @@ app.get('/health', (req, res) => {
   });
 });
 
-// 根路徑也返回健康狀態（方便外部監控）
-app.get('/', (req, res) => {
-  res.status(200).json({ 
-    status: 'ok', 
-    message: 'Badminton Bot is running',
-    timestamp: new Date().toISOString()
-  });
+// LIFF 系統設定
+app.get('/api/config', (req, res) => {
+  res.json({ liffId: process.env.LIFF_ID || '' });
+});
+
+// 取得特定群組接龍狀態
+app.get('/api/game/:gid', (req, res) => {
+  const gid = req.params.gid;
+  const game = games[gid];
+  if (!game) {
+    return res.status(404).json({ error: 'Game not found' });
+  }
+  res.json(game);
+});
+
+// 處理 LIFF 前端傳來的報名或取消請求
+app.post('/api/action', express.json(), async (req, res) => {
+  try {
+    const { gid, uid, name, action, count } = req.body;
+    if (!gid || !uid || !name || !action) {
+      return res.status(400).json({ error: 'Missing parameters' });
+    }
+    const game = games[gid];
+    if (!game || !game.active) {
+      return res.status(400).json({ error: '接龍不存在或已結束' });
+    }
+    
+    const currentList = game.sections[0].list;
+    const c = count || 1;
+    
+    if (action === 'register') {
+      const namesToAdd = [name];
+      for(let i=1; i<c; i++) namesToAdd.push('__ANON__');
+      
+      const hasDuplicate = currentList.includes(name);
+      if (hasDuplicate) { 
+        return res.status(400).json({ error: '您已經報名過了' });
+      }
+      
+      namesToAdd.forEach(n => {
+        addToList(gid, 0, n, { uid });
+        if (n !== '__ANON__') {
+          uidToNameMap.set(`${gid}_${uid}`, n);
+        }
+      });
+    } else if (action === 'cancel') {
+      if (!currentList.includes(name)) {
+        return res.status(400).json({ error: '您不在名單中' });
+      }
+      await removeFromList(gid, name, { uid });
+      for(let i=1; i<c; i++) {
+        await removeAnon(gid, { uid });
+      }
+    } else {
+      return res.status(400).json({ error: 'Unknown action' });
+    }
+
+    touchGame(gid);
+    await saveGame(gid, true);
+    await saveCurrentListSnapshot(gid, false);
+    
+    res.json({ success: true, game: games[gid] });
+  } catch (err) {
+    console.error('API Action Error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.post('/webhook', middleware(config), (req, res) => {
@@ -1681,6 +1741,10 @@ async function sendList(token, gid, prefix = "") {
     }
   });
   if (g.note) msg += `\n📝 ${g.note}`;
+  
+  if (process.env.LIFF_ID) {
+    msg += `\n\n👇 點擊下方連結開啟快速報名\nhttps://liff.line.me/${process.env.LIFF_ID}`;
+  }
   
   const message = { type: 'text', text: msg.trim() };
   if (token) {
