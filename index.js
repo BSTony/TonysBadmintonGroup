@@ -932,10 +932,29 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (!currentList.includes(name)) {
         return res.status(400).json({ error: '您不在名單中' });
       }
+      
+      const limit = game.sections[0].limit;
+      const mainListBefore = game.sections[0].list.slice(0, limit);
+      
       await removeFromList(gameId, name, { uid });
       for(let i=1; i<c; i++) {
         await removeAnon(gameId, { uid });
       }
+      
+      const mainListAfter = game.sections[0].list.slice(0, limit);
+      
+      // 找出遞補上來的人 (在 mainListAfter 但不在 mainListBefore)
+      const bumpedNames = mainListAfter.filter(n => !mainListBefore.includes(n) && n !== '__ANON__');
+      
+      if (bumpedNames.length > 0) {
+        try {
+          const bumpMsg = bumpedNames.join('、');
+          await client.pushMessage(game.gid, { type: 'text', text: `🎉 【${game.title}】\n恭喜 ${bumpMsg} 候補成功！` });
+        } catch(e) {
+          console.error('遞補推播失敗:', e);
+        }
+      }
+      
     } else {
       return res.status(400).json({ error: 'Unknown action' });
     }
