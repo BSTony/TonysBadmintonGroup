@@ -42,8 +42,13 @@ async function initializeLiff() {
     currentUser = profile;
 
     // 4. 取得群組 Context
+    const urlParams = new URLSearchParams(window.location.search);
+    const gidFromUrl = urlParams.get('gid');
     const context = liff.getContext();
-    if (context && (context.type === 'group' || context.type === 'room')) {
+    
+    if (gidFromUrl) {
+      currentGroupId = gidFromUrl;
+    } else if (context && (context.type === 'group' || context.type === 'room')) {
       currentGroupId = context.groupId || context.roomId;
     } else if (context && context.type === 'utou') {
       currentGroupId = currentUser.userId;

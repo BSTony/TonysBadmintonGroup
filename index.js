@@ -1173,7 +1173,7 @@ async function sendList(token, gid, prefix = "") {
   if (g.note) msg += `\n📝 ${g.note}`;
   
   if (process.env.LIFF_ID) {
-    msg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}`;
+    msg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
   }
   
   const message = { type: 'text', text: msg.trim() };
@@ -1319,7 +1319,7 @@ async function sendLobbyLink(token, gid, prefix = "") {
   }
   
   if (process.env.LIFF_ID) {
-    msg += `\n👇 點擊下方連結進入報名大廳\nhttps://liff.line.me/${process.env.LIFF_ID}`;
+    msg += `\n👇 點擊下方連結進入報名大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
   }
   
   const message = { type: 'text', text: msg.trim() };
