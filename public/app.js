@@ -123,8 +123,8 @@ function renderLobby() {
       </div>
       <div class="card-actions">
         ${isMeRegistered 
-          ? `<button class="btn-danger" onclick="handleAction('${game.gameId}', 'cancel')">➖ 取消報名</button>`
-          : `<button class="btn-primary" onclick="handleAction('${game.gameId}', 'register')">➕ 本人報名</button>`
+          ? `<button class="btn-danger" onclick="handleAction('${game.gameId}', 'cancel')">-1</button>`
+          : `<button class="btn-primary" onclick="handleAction('${game.gameId}', 'register')">+1</button>`
         }
       </div>
       <div class="proxy-register">
