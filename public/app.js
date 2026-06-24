@@ -117,22 +117,28 @@ function renderLobby() {
     const hasTags = game.date || game.time || game.location || game.fee;
     let tagsHtml = '';
     if (hasTags) {
-       tagsHtml = '<div class="info-tags" style="cursor: pointer" onclick="showDetail(\'' + game.gameId + '\')">';
+       tagsHtml = '<div class="info-tags" style="cursor: pointer; margin: 0; flex: 1;" onclick="showDetail(\'' + game.gameId + '\')">';
        if (game.date) tagsHtml += `<span class="info-tag">📅 ${escapeHTML(game.date)}</span>`;
        if (game.time) tagsHtml += `<span class="info-tag">⏰ ${escapeHTML(game.time)}</span>`;
        if (game.location) tagsHtml += `<span class="info-tag">📍 ${escapeHTML(game.location)}</span>`;
        if (game.fee) tagsHtml += `<span class="info-tag">💰 ${escapeHTML(game.fee)}</span>`;
        tagsHtml += '</div>';
     }
+    
+    // 判斷 title 是否只是自動生成的字串
+    const autoTitle = [game.date, game.time, game.location].filter(Boolean).join(' ');
+    const showTitle = game.title && game.title !== autoTitle && game.title !== '羽球接龍';
 
     const card = document.createElement('div');
     card.className = 'game-card';
     card.innerHTML = `
-      <div class="card-header" style="cursor: pointer" onclick="showDetail('${game.gameId}')">
-        <div class="card-title">${escapeHTML(game.title)}</div>
-        <div class="card-badge ${isFull ? 'full' : ''}">${count} / ${limit}</div>
+      <div class="card-header" style="cursor: pointer; align-items: flex-start;" onclick="showDetail('${game.gameId}')">
+        ${showTitle ? `<div class="card-title" style="margin-bottom: ${hasTags?'8px':'0'}">${escapeHTML(game.title)}</div>` : ''}
+        ${!showTitle && hasTags ? tagsHtml : ''}
+        ${!showTitle && !hasTags ? `<div class="card-title">羽球接龍</div>` : ''}
+        <div class="card-badge ${isFull ? 'full' : ''}" style="margin-left: 12px; flex-shrink: 0;">${count} / ${limit}</div>
       </div>
-      ${tagsHtml}
+      ${showTitle && hasTags ? `<div style="margin-top: -4px; margin-bottom: 12px;">${tagsHtml}</div>` : ''}
       ${game.note ? `<div class="game-note" style="cursor: pointer" onclick="showDetail('${game.gameId}')">${escapeHTML(game.note)}</div>` : ''}
       <div class="card-actions">
         ${isMeRegistered 
@@ -251,7 +257,11 @@ function renderDetail(gameId) {
   detailView.classList.remove('hidden');
   window.scrollTo(0, 0);
   
-  detailTitle.innerText = game.title;
+  const autoTitle = [game.date, game.time, game.location].filter(Boolean).join(' ');
+  const showTitle = game.title && game.title !== autoTitle && game.title !== '羽球接龍';
+  detailTitle.innerText = showTitle ? game.title : '場次明細';
+  if (!showTitle) detailTitle.style.display = 'none';
+  else detailTitle.style.display = 'block';
   
   const section = game.sections[0] || { list: [], limit: 20 };
   detailCount.innerText = `${section.list.length} / ${section.limit}`;
@@ -260,7 +270,7 @@ function renderDetail(gameId) {
   
   const hasTags = game.date || game.time || game.location || game.fee;
   if (hasTags) {
-     let tagsHtml = '<div class="info-tags">';
+     let tagsHtml = '<div class="info-tags" style="margin-top: 0;">';
      if (game.date) tagsHtml += `<span class="info-tag">📅 ${escapeHTML(game.date)}</span>`;
      if (game.time) tagsHtml += `<span class="info-tag">⏰ ${escapeHTML(game.time)}</span>`;
      if (game.location) tagsHtml += `<span class="info-tag">📍 ${escapeHTML(game.location)}</span>`;
