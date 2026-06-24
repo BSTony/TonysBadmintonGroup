@@ -1,10 +1,25 @@
-let currentUser = null;
 let currentGroupId = null;
+let currentUser = null;
+let gamesList = [];
+let currentGameDetailId = null;
 
-// 在載入時初始化
-document.addEventListener('DOMContentLoaded', async () => {
+// DOM 元素
+const appDiv = document.getElementById('app');
+const statusMsg = document.getElementById('status-msg');
+const lobbyView = document.getElementById('lobby-view');
+const detailView = document.getElementById('detail-view');
+const gamesContainer = document.getElementById('games-container');
+const noGamesMsg = document.getElementById('no-games-msg');
+
+const btnBack = document.getElementById('btn-back');
+const detailTitle = document.getElementById('detail-title');
+const detailCount = document.getElementById('detail-count');
+const detailList = document.getElementById('detail-list');
+
+// 初始化 LIFF
+async function initializeLiff() {
   try {
-    // 1. 取得後端的設定 (包含 LIFF ID)
+    // 1. 取得後端系統設定
     const configRes = await fetch('/api/config');
     if (!configRes.ok) throw new Error('無法取得系統設定');
     const config = await configRes.json();
@@ -13,200 +28,287 @@ document.addEventListener('DOMContentLoaded', async () => {
       throw new Error('系統未設定 LIFF ID');
     }
 
-    // 2. 初始化 LIFF
+    // 2. 初始化 LIFF SDK
     await liff.init({ liffId: config.liffId });
-    
+
+    // 3. 確保使用者已登入
     if (!liff.isLoggedIn()) {
       liff.login();
       return;
     }
 
-    // 3. 取得使用者資料
+    // 取得使用者資料
     const profile = await liff.getProfile();
-    currentUser = {
-      uid: profile.userId,
-      name: profile.displayName,
-      pictureUrl: profile.pictureUrl
-    };
-
-    // 顯示使用者資訊
-    document.getElementById('user-name').textContent = currentUser.name;
-    if (currentUser.pictureUrl) {
-      const avatar = document.getElementById('user-avatar');
-      avatar.src = currentUser.pictureUrl;
-      avatar.classList.remove('hidden');
-    }
+    currentUser = profile;
 
     // 4. 取得群組 Context
     const context = liff.getContext();
     if (context && (context.type === 'group' || context.type === 'room')) {
       currentGroupId = context.groupId || context.roomId;
     } else if (context && context.type === 'utou') {
-      // 1對1聊天室：後端將使用者的 uid 作為 gid
-      currentGroupId = currentUser.uid;
+      currentGroupId = currentUser.userId;
     } else {
-      // 退化模式：若在外部瀏覽器打開，就用自己的 uid 作為群組ID來測試
-      currentGroupId = currentUser.uid;
+      currentGroupId = currentUser.userId;
     }
 
-    // 5. 載入接龍資料
-    await fetchGameData();
-    
-    // 隱藏載入畫面
-    document.getElementById('loading').classList.add('hidden');
-    document.getElementById('app-container').style.display = 'block';
+    // 5. 載入大廳資料
+    await loadGamesLobby();
 
-  } catch (error) {
-    console.error('Initialization error:', error);
-    showError(error.message);
+  } catch (err) {
+    console.error('LIFF Init Error:', err);
+    statusMsg.innerText = err.message || '發生錯誤';
+    statusMsg.style.color = '#ff5252';
   }
-});
+}
 
-async function fetchGameData() {
+// 載入多場次大廳資料
+async function loadGamesLobby() {
   try {
+    appDiv.className = 'loading';
+    statusMsg.innerText = '載入場次中...';
+    
     const res = await fetch(`/api/game/${currentGroupId}`);
     if (!res.ok) {
       if (res.status === 404) {
-        throw new Error('目前群組沒有正在進行的接龍');
+        gamesList = [];
+      } else {
+        throw new Error('無法取得場次資料');
       }
-      throw new Error('讀取資料失敗');
+    } else {
+      const data = await res.json();
+      gamesList = data.games || [];
     }
-    
-    const game = await res.json();
-    renderGame(game);
+
+    renderLobby();
   } catch (err) {
-    showError(err.message);
+    console.error(err);
+    statusMsg.innerText = err.message;
   }
 }
 
-function renderGame(game) {
-  if (!game.active) {
-    showError('此接龍已經結束囉！');
+// 渲染大廳畫面
+function renderLobby() {
+  appDiv.className = '';
+  lobbyView.classList.remove('hidden');
+  detailView.classList.add('hidden');
+  
+  gamesContainer.innerHTML = '';
+  
+  if (gamesList.length === 0) {
+    noGamesMsg.classList.remove('hidden');
     return;
   }
-
-  // 設定標題
-  document.getElementById('game-title').textContent = game.title || '羽球接龍';
   
-  // 取得第一區段（預設主報名區）
-  const section = game.sections[0];
-  if (!section) return;
+  noGamesMsg.classList.add('hidden');
+  
+  gamesList.forEach(game => {
+    const section = game.sections[0] || { list: [], limit: 20 };
+    const count = section.list.length;
+    const limit = section.limit;
+    const isFull = count >= limit;
+    
+    const isMeRegistered = section.list.includes(currentUser.displayName);
 
-  const list = section.list || [];
-  const limit = section.limit || 0;
-  const backupLimit = section.backupLimit || 0;
-
-  // 計算正取與候補
-  const enrolledList = list.slice(0, limit);
-  const backupList = list.slice(limit, limit + backupLimit);
-
-  // 更新統計數字
-  document.getElementById('count-enrolled').textContent = enrolledList.length;
-  document.getElementById('count-limit').textContent = limit;
-  document.getElementById('count-backup').textContent = backupList.length;
-  document.getElementById('badge-enrolled').textContent = `${enrolledList.length}/${limit}`;
-  document.getElementById('badge-backup').textContent = backupList.length;
-
-  // 渲染正取名單
-  const enrolledHtml = enrolledList.map((name, i) => {
-    const isMe = name === currentUser?.name;
-    const displayName = isAnon(name, game) ? '***' : name;
-    return `
-      <li class="player-item ${isMe ? 'is-me' : ''}">
-        <span class="player-index">${i + 1}.</span>
-        <span class="player-name">${displayName}</span>
-      </li>
+    const card = document.createElement('div');
+    card.className = 'game-card';
+    card.innerHTML = `
+      <div class="card-header" style="cursor: pointer" onclick="showDetail('${game.gameId}')">
+        <div class="card-title">${escapeHTML(game.title)}</div>
+        <div class="card-badge ${isFull ? 'full' : ''}">${count} / ${limit}</div>
+      </div>
+      <div class="card-actions">
+        ${isMeRegistered 
+          ? `<button class="btn-danger" onclick="handleAction('${game.gameId}', 'cancel')">➖ 取消報名</button>`
+          : `<button class="btn-primary" onclick="handleAction('${game.gameId}', 'register')">➕ 本人報名</button>`
+        }
+      </div>
+      <div class="proxy-register">
+        <input type="text" id="proxy-name-${game.gameId}" placeholder="輸入名稱 (代報名)">
+        <button class="btn-secondary" onclick="handleProxyRegister('${game.gameId}')">報名</button>
+      </div>
     `;
-  }).join('');
-  document.getElementById('list-enrolled').innerHTML = enrolledHtml || '<li class="player-item"><span class="player-name" style="color:var(--text-muted)">尚無人報名</span></li>';
-
-  // 渲染候補名單
-  if (backupList.length > 0) {
-    document.getElementById('backup-section').style.display = 'block';
-    const backupHtml = backupList.map((name, i) => {
-      const isMe = name === currentUser?.name;
-      const displayName = isAnon(name, game) ? '***' : name;
-      return `
-        <li class="player-item ${isMe ? 'is-me' : ''}">
-          <span class="player-index">補${i + 1}.</span>
-          <span class="player-name">${displayName}</span>
-        </li>
-      `;
-    }).join('');
-    document.getElementById('list-backup').innerHTML = backupHtml;
-  } else {
-    document.getElementById('backup-section').style.display = 'none';
-  }
-
-  // 按鈕狀態控制
-  const hasEnrolled = list.includes(currentUser?.name);
-  const btnMinus = document.getElementById('btn-minus');
-  const btnPlus1 = document.getElementById('btn-plus-1');
-
-  if (hasEnrolled) {
-    btnMinus.disabled = false;
-  } else {
-    btnMinus.disabled = true;
-  }
+    gamesContainer.appendChild(card);
+  });
 }
 
-function isAnon(name, game) {
-  if (name === '__ANON__') return true;
-  if (game.anonymous && game.anonymous.includes(name)) return true;
-  return false;
-}
-
-async function handleAction(actionType, count) {
-  if (!currentGroupId || !currentUser) return;
-
-  const btnMinus = document.getElementById('btn-minus');
-  const btnPlus1 = document.getElementById('btn-plus-1');
-  const btnPlus2 = document.getElementById('btn-plus-2');
-  
-  // 禁用按鈕避免重複點擊
-  btnMinus.disabled = true;
-  btnPlus1.disabled = true;
-  btnPlus2.disabled = true;
-
+// 處理一般報名或取消
+async function handleAction(gameId, action) {
   try {
+    appDiv.className = 'loading';
+    statusMsg.innerText = '處理中...';
+    
     const res = await fetch('/api/action', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         gid: currentGroupId,
-        uid: currentUser.uid,
-        name: currentUser.name,
-        action: actionType,
-        count: count
+        gameId: gameId,
+        uid: currentUser.userId,
+        name: currentUser.displayName,
+        action: action
       })
     });
-
+    
     const result = await res.json();
-    
     if (!res.ok) {
-      throw new Error(result.error || '操作失敗');
+      alert(result.error || '發生錯誤');
+      await loadGamesLobby();
+      return;
     }
-
-    // 重新拉取資料更新畫面
-    await fetchGameData();
     
-    // 給予視覺回饋 (可選，例如顯示一個勾勾)
-    // liff.closeWindow(); // 如果希望操作完直接關閉，可以打開這行
+    // 成功後更新資料庫陣列並重新渲染
+    const idx = gamesList.findIndex(g => g.gameId === gameId);
+    if (idx !== -1) gamesList[idx] = result.game;
     
+    if (currentGameDetailId) {
+      renderDetail(gameId);
+    } else {
+      renderLobby();
+    }
   } catch (err) {
-    alert(err.message);
-    // 恢復按鈕狀態
-    fetchGameData();
+    console.error(err);
+    alert('網路錯誤，請稍後再試');
+    await loadGamesLobby();
   }
 }
 
-function showError(message) {
-  document.getElementById('loading').classList.add('hidden');
-  document.getElementById('app-container').style.display = 'none';
+// 處理代報名
+async function handleProxyRegister(gameId) {
+  const input = document.getElementById(`proxy-name-${gameId}`);
+  if (!input) return;
+  const name = input.value.trim();
+  if (!name) {
+    alert('請輸入代報名名稱');
+    return;
+  }
   
-  const errorScreen = document.getElementById('error-screen');
-  document.getElementById('error-message').textContent = message;
-  errorScreen.classList.remove('hidden');
+  try {
+    appDiv.className = 'loading';
+    statusMsg.innerText = '代報名處理中...';
+    
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        gameId: gameId,
+        uid: currentUser.userId,
+        name: name,
+        action: 'register'
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) {
+      alert(result.error || '發生錯誤');
+      await loadGamesLobby();
+      return;
+    }
+    
+    input.value = '';
+    const idx = gamesList.findIndex(g => g.gameId === gameId);
+    if (idx !== -1) gamesList[idx] = result.game;
+    renderLobby();
+    
+  } catch (err) {
+    console.error(err);
+    alert('網路錯誤，請稍後再試');
+    await loadGamesLobby();
+  }
 }
+
+// 切換至明細畫面
+window.showDetail = function(gameId) {
+  currentGameDetailId = gameId;
+  renderDetail(gameId);
+};
+
+// 渲染明細畫面
+function renderDetail(gameId) {
+  const game = gamesList.find(g => g.gameId === gameId);
+  if (!game) return;
+  
+  appDiv.className = '';
+  lobbyView.classList.add('hidden');
+  detailView.classList.remove('hidden');
+  window.scrollTo(0, 0);
+  
+  detailTitle.innerText = game.title;
+  
+  const section = game.sections[0] || { list: [], limit: 20 };
+  detailCount.innerText = `${section.list.length} / ${section.limit}`;
+  
+  detailList.innerHTML = '';
+  
+  // 顯示所有區段 (含候補)
+  game.sections.forEach((sec, sIdx) => {
+    const secDiv = document.createElement('div');
+    secDiv.className = 'list-section';
+    secDiv.innerHTML = `<h3>${escapeHTML(sec.title)} (限額 ${sec.limit})</h3>`;
+    
+    for (let i = 0; i < sec.limit; i++) {
+      if (i < sec.list.length) {
+        const name = sec.list[i];
+        const isMe = name === currentUser.displayName;
+        const displayName = (name === '__ANON__') ? '***' : name;
+        
+        // 判斷是否為我代報的 (可以給取消按鈕，但實作上稍微複雜，這裡先簡單顯示名稱)
+        secDiv.innerHTML += `
+          <div class="list-item">
+            <div class="list-num">${i + 1}.</div>
+            <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}</div>
+          </div>
+        `;
+      } else {
+        secDiv.innerHTML += `
+          <div class="list-item" style="opacity: 0.3">
+            <div class="list-num">${i + 1}.</div>
+            <div class="list-name">-- 虛位以待 --</div>
+          </div>
+        `;
+      }
+    }
+    
+    // 候補名單
+    if (sec.list.length > sec.limit) {
+      secDiv.innerHTML += `<h3 style="margin-top:20px; color:#ff9800">候補名單</h3>`;
+      for (let i = sec.limit; i < sec.list.length; i++) {
+        const name = sec.list[i];
+        const isMe = name === currentUser.displayName;
+        const displayName = (name === '__ANON__') ? '***' : name;
+        
+        secDiv.innerHTML += `
+          <div class="list-item">
+            <div class="list-num">候${i - sec.limit + 1}.</div>
+            <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}</div>
+          </div>
+        `;
+      }
+    }
+    
+    detailList.appendChild(secDiv);
+  });
+}
+
+// 返回大廳
+btnBack.addEventListener('click', () => {
+  currentGameDetailId = null;
+  renderLobby();
+});
+
+// HTML 逃脫函數防 XSS
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
+// 啟動
+initializeLiff();

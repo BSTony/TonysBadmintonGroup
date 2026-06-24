@@ -1,298 +1,270 @@
 :root {
-  --bg-dark: #0f172a;
-  --bg-card: rgba(30, 41, 59, 0.7);
-  --bg-card-hover: rgba(30, 41, 59, 0.9);
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
-  --secondary: #3b82f6;
-  --secondary-hover: #2563eb;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --glass-blur: 12px;
+  --bg-color: #121212;
+  --surface-color: #1e1e1e;
+  --surface-color-light: #2c2c2c;
+  --primary-color: #00e676; /* 霓虹綠，運動風 */
+  --primary-hover: #00c853;
+  --danger-color: #ff5252;
+  --text-main: #ffffff;
+  --text-muted: #aaaaaa;
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background-color: var(--bg-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
   color: var(--text-main);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
-  background-attachment: fixed;
-  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
-.container {
+#app {
   max-width: 600px;
   margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.view {
   padding: 20px;
-  padding-bottom: 40px;
+  animation: slideIn var(--transition-speed) ease forwards;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-.header-content h1 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  background: rgba(16, 185, 129, 0.2);
-  color: var(--primary);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg-card);
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid var(--border-color);
-  backdrop-filter: blur(var(--glass-blur));
-}
-
-.avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.avatar.hidden {
-  display: none;
-}
-
-#user-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.stats-card {
-  display: flex;
-  justify-content: space-around;
-  background: var(--bg-card);
-  backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-}
-
-.stat-item {
+/* 載入中畫面 */
+#app.loading {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.stat-divider {
-  width: 1px;
-  background-color: var(--border-color);
-}
-
-.action-panel {
-  background: var(--bg-card);
-  backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 32px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: var(--text-main);
-}
-
-.action-buttons {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  gap: 12px;
-}
-
-.btn {
-  border: none;
-  border-radius: 12px;
-  padding: 14px 0;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: white;
-  display: flex;
   justify-content: center;
+}
+.loader {
+  border: 4px solid var(--surface-color);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* 大廳標頭 */
+.lobby-header {
+  margin-bottom: 24px;
+}
+.lobby-header h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 4px;
+}
+.lobby-header p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* 遊戲卡片 */
+.games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.game-card {
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition-speed);
+}
+.game-card:active {
+  transform: scale(0.98);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  flex: 1;
+}
+
+.card-badge {
+  background-color: var(--surface-color-light);
+  color: var(--primary-color);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.card-badge.full {
+  color: var(--danger-color);
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  flex: 1;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity var(--transition-speed);
 }
-
-.btn:active {
-  transform: scale(0.96);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
+button:active {
+  opacity: 0.7;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, #047857 100%);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+  background-color: var(--primary-color);
+  color: #000;
 }
-
 .btn-danger {
-  background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+  background-color: var(--danger-color);
+  color: #fff;
+}
+.btn-secondary {
+  background-color: var(--surface-color-light);
+  color: var(--text-main);
+}
+.btn-icon {
+  background: none;
+  color: var(--text-muted);
+  padding: 0;
+  font-size: 14px;
+  justify-content: flex-start;
+  margin-bottom: 16px;
 }
 
-.btn-secondary {
-  background: linear-gradient(135deg, var(--secondary) 0%, #1d4ed8 100%);
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+/* 代報名區塊 */
+.proxy-register {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  border-top: 1px solid var(--surface-color-light);
+  padding-top: 12px;
+}
+.proxy-register input {
+  flex: 1;
+  background-color: var(--bg-color);
+  border: 1px solid var(--surface-color-light);
+  color: var(--text-main);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.proxy-register input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+.proxy-register button {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* 明細視圖 */
+.detail-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-box {
+  background-color: var(--surface-color);
+  padding: 12px;
+  border-radius: 8px;
+  flex: 1;
+  text-align: center;
+}
+.stat-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--primary-color);
 }
 
 .list-section {
   margin-bottom: 24px;
 }
-
-.list-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.badge {
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.badge-success { background: rgba(16, 185, 129, 0.2); color: var(--primary); }
-.badge-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-
-.player-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.player-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  backdrop-filter: blur(var(--glass-blur));
-}
-
-.player-item.is-me {
-  border-color: var(--primary);
-  background: rgba(16, 185, 129, 0.1);
-}
-
-.player-index {
-  font-size: 14px;
+.list-section h3 {
+  font-size: 16px;
   color: var(--text-muted);
-  width: 28px;
-  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--surface-color);
 }
 
-.player-name {
-  font-size: 15px;
-  font-weight: 500;
-  flex: 1;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg-dark);
-  z-index: 100;
+.list-item {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  transition: opacity 0.3s ease;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--surface-color);
+}
+.list-item:last-child {
+  border-bottom: none;
+}
+.list-num {
+  width: 30px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.list-name {
+  flex: 1;
+  font-size: 16px;
+}
+.list-name.me {
+  color: var(--primary-color);
+  font-weight: bold;
 }
 
-.overlay.hidden {
-  opacity: 0;
-  pointer-events: none;
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius);
 }
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255,255,255,0.1);
-  border-left-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.error-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-#error-title {
-  font-size: 20px;
+.empty-state p {
+  font-size: 16px;
   margin-bottom: 8px;
 }
-
-#error-message {
+.empty-state .hint {
+  font-size: 14px;
   color: var(--text-muted);
-  margin-bottom: 24px;
-  text-align: center;
-  max-width: 80%;
 }

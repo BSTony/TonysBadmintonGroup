@@ -279,30 +279,29 @@ async function maybeBackupRegCsv(now = new Date()) {
 // 保存當前接龍名單快照到 CSV（只記錄當前狀態，不記錄歷史操作）
 async function saveCurrentListSnapshot(gid, waitForWrite = false) {
   const rows = [];
-  const gids = Object.keys(games);
   
-  // 建立 CSV 內容：只記錄當前名單中的每個人（所有群組）
-  gids.forEach((currentGid) => {
-    const g = games[currentGid];
+  // 建立 CSV 內容：只記錄當前名單中的每個人（所有場次）
+  Object.values(games).forEach((g) => {
     if (!g || !g.sections) return;
     g.sections.forEach((section, sectionIdx) => {
       section.list.forEach((name) => {
         // 只記錄實名，不記錄匿名占位符
         if (name !== '__ANON__') {
           rows.push([
-            currentGid || '',
+            g.gid || '',
             String(sectionIdx),
             name || '',
             String(section.limit || ''),
             String(section.backupLimit ?? ''),
-            String(g.title || '')
+            String(g.title || ''),
+            String(g.gameId || '')
           ].map(csvEscape).join(','));
         }
       });
     });
   });
 
-  const csvContent = 'gid,sectionIdx,name,limit,backupLimit,title\n' + (rows.length > 0 ? rows.join('\n') + '\n' : '');
+  const csvContent = 'gid,sectionIdx,name,limit,backupLimit,title,gameId\n' + (rows.length > 0 ? rows.join('\n') + '\n' : '');
   
   const writePromise = regCsvWriteChain
     .then(async () => {
@@ -390,13 +389,13 @@ async function restoreGamesFromCsv() {
   const idxLimit = header.indexOf('limit');
   const idxBackup = header.indexOf('backuplimit');
   const idxTitle = header.indexOf('title');
+  const idxGameId = header.indexOf('gameid');
 
   if (idxGid < 0 || idxSection < 0 || idxName < 0) {
     return false;
   }
 
-  const byGid = new Map();
-  const metaByGid = new Map();
+  const byGameId = new Map();
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
@@ -405,25 +404,31 @@ async function restoreGamesFromCsv() {
     const gid = (cols[idxGid] || '').trim();
     const name = (cols[idxName] || '').trim();
     const sectionIdx = parseInt((cols[idxSection] || '0').trim(), 10);
+    const rawTitle = idxTitle >= 0 ? (cols[idxTitle] || '').trim() : '羽球接龍';
+    const gameId = idxGameId >= 0 && cols[idxGameId] ? cols[idxGameId].trim() : `${gid}_${rawTitle}`;
 
     if (!gid || !name) continue;
     const safeSectionIdx = Number.isFinite(sectionIdx) && sectionIdx >= 0 ? sectionIdx : 0;
 
-    if (!byGid.has(gid)) {
-      byGid.set(gid, new Map());
+    if (!byGameId.has(gameId)) {
+      byGameId.set(gameId, {
+        gid: gid,
+        gameId: gameId,
+        title: rawTitle,
+        sectionsMap: new Map(),
+        metaMap: new Map()
+      });
     }
-    const sectionMap = byGid.get(gid);
-    if (!metaByGid.has(gid)) {
-      metaByGid.set(gid, new Map());
+    const gameData = byGameId.get(gameId);
+
+    if (!gameData.sectionsMap.has(safeSectionIdx)) {
+      gameData.sectionsMap.set(safeSectionIdx, []);
     }
-    const metaMap = metaByGid.get(gid);
-    if (!sectionMap.has(safeSectionIdx)) {
-      sectionMap.set(safeSectionIdx, []);
+    if (!gameData.metaMap.has(safeSectionIdx)) {
+      gameData.metaMap.set(safeSectionIdx, {});
     }
-    if (!metaMap.has(safeSectionIdx)) {
-      metaMap.set(safeSectionIdx, {});
-    }
-    const sectionMeta = metaMap.get(safeSectionIdx);
+    const sectionMeta = gameData.metaMap.get(safeSectionIdx);
+    
     if (idxLimit >= 0) {
       const rawLimit = parseInt((cols[idxLimit] || '').trim(), 10);
       if (Number.isFinite(rawLimit) && rawLimit > 0) {
@@ -436,32 +441,23 @@ async function restoreGamesFromCsv() {
         sectionMeta.backupLimit = Math.max(sectionMeta.backupLimit || 0, rawBackup);
       }
     }
-    // Restore title if available
-    if (idxTitle >= 0) {
-      const rawTitle = (cols[idxTitle] || '').trim();
-      if (rawTitle && !metaMap.get('title')) {
-        metaMap.set('title', rawTitle);
-      }
-    }
 
-    const list = sectionMap.get(safeSectionIdx);
+    const list = gameData.sectionsMap.get(safeSectionIdx);
     if (!list.includes(name)) {
       list.push(name);
     }
   }
 
-  if (byGid.size === 0) return false;
+  if (byGameId.size === 0) return false;
 
-  for (const [gid, sectionMap] of byGid.entries()) {
-    const sectionIndices = Array.from(sectionMap.keys());
+  for (const [gameId, data] of byGameId.entries()) {
+    const sectionIndices = Array.from(data.sectionsMap.keys());
     const maxIdx = Math.max(...sectionIndices, 0);
     const sections = [];
-    const metaMap = metaByGid.get(gid) || new Map();
-    const restoredTitle = metaMap.get('title');
 
     for (let idx = 0; idx <= maxIdx; idx++) {
-      const list = sectionMap.get(idx) || [];
-      const meta = metaMap.get(idx) || {};
+      const list = data.sectionsMap.get(idx) || [];
+      const meta = data.metaMap.get(idx) || {};
       const limit = meta.limit || Math.max(20, list.length);
       sections.push({
         title: idx === 0 ? '報名名單' : `區段${idx + 1}`,
@@ -471,8 +467,10 @@ async function restoreGamesFromCsv() {
         list: list
       });
     }
-    games[gid] = {
-      title: restoredTitle || '羽球接龍',
+    games[gameId] = {
+      gid: data.gid,
+      gameId: gameId,
+      title: data.title,
       note: '',
       active: true,
       startTime: Date.now(),
@@ -483,7 +481,7 @@ async function restoreGamesFromCsv() {
       anonymousCount: 0,
       sections: sections
     };
-    await saveGame(gid, true);
+    await saveGame(gameId, true);
   }
 
   return true;
@@ -661,6 +659,27 @@ async function loadGames() {
         }
       }
     }
+
+    // 升級資料結構：確保所有 game 都有 gameId 且以 gameId 為 key
+    const newGames = {};
+    for (const [key, val] of Object.entries(games)) {
+      if (Array.isArray(val)) {
+        val.forEach(g => {
+          const id = g.gameId || Date.now().toString() + Math.floor(Math.random()*1000);
+          g.gameId = id;
+          if(!g.gid) g.gid = key;
+          newGames[id] = g;
+        });
+      } else if (!val.gameId) {
+        val.gid = key;
+        val.gameId = Date.now().toString() + Math.floor(Math.random()*1000);
+        newGames[val.gameId] = val;
+      } else {
+        newGames[key] = val;
+      }
+    }
+    games = newGames;
+
   } catch (e) {
     console.error('載入資料失敗:', e);
   }
@@ -866,24 +885,26 @@ app.get('/api/config', (req, res) => {
   res.json({ liffId: process.env.LIFF_ID || '' });
 });
 
-// 取得特定群組接龍狀態
+// 取得特定群組所有進行中的接龍
 app.get('/api/game/:gid', (req, res) => {
   const gid = req.params.gid;
-  const game = games[gid];
-  if (!game) {
+  const groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
+  if (groupGames.length === 0) {
     return res.status(404).json({ error: 'Game not found' });
   }
-  res.json(game);
+  // 依建立時間排序，新的在前面
+  groupGames.sort((a, b) => b.startTime - a.startTime);
+  res.json({ games: groupGames });
 });
 
 // 處理 LIFF 前端傳來的報名或取消請求
 app.post('/api/action', express.json(), async (req, res) => {
   try {
-    const { gid, uid, name, action, count } = req.body;
-    if (!gid || !uid || !name || !action) {
+    const { gid, gameId, uid, name, action, count } = req.body;
+    if (!gameId || !uid || !name || !action) {
       return res.status(400).json({ error: 'Missing parameters' });
     }
-    const game = games[gid];
+    const game = games[gameId];
     if (!game || !game.active) {
       return res.status(400).json({ error: '接龍不存在或已結束' });
     }
@@ -901,28 +922,28 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       namesToAdd.forEach(n => {
-        addToList(gid, 0, n, { uid });
+        addToList(gameId, 0, n, { uid });
         if (n !== '__ANON__') {
-          uidToNameMap.set(`${gid}_${uid}`, n);
+          uidToNameMap.set(`${gameId}_${uid}`, n);
         }
       });
     } else if (action === 'cancel') {
       if (!currentList.includes(name)) {
         return res.status(400).json({ error: '您不在名單中' });
       }
-      await removeFromList(gid, name, { uid });
+      await removeFromList(gameId, name, { uid });
       for(let i=1; i<c; i++) {
-        await removeAnon(gid, { uid });
+        await removeAnon(gameId, { uid });
       }
     } else {
       return res.status(400).json({ error: 'Unknown action' });
     }
 
-    touchGame(gid);
-    await saveGame(gid, true);
-    await saveCurrentListSnapshot(gid, false);
+    touchGame(gameId);
+    await saveGame(gameId, true);
+    await saveCurrentListSnapshot(gameId, false);
     
-    res.json({ success: true, game: games[gid] });
+    res.json({ success: true, game: games[gameId] });
   } catch (err) {
     console.error('API Action Error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -998,628 +1019,51 @@ async function handleEvent(event) {
       const titleMatch = text.match(/標題\s*[:：]?\s*[{\uff5b]([\s\S]*?)[}\uff5d]/);
       const limitMatch = text.match(/人數\s*[:：]?\s*[{\uff5b](\d+)[}\uff5d]/);
       const backupMatch = text.match(/候補\s*[:：]?\s*[{\uff5b](\d+)[}\uff5d]/);
-      const anonMatch = text.match(/匿名名單\s*[:：]?\s*[{\uff5b]([\s\S]*?)[}\uff5d]/);
-      const timeMatch = text.match(/時間\s*[:：]?\s*[{\uff5b]([\s\S]*?)[}\uff5d]/);
-
-      let textForList = text;
-      if (anonMatch) textForList = text.replace(anonMatch[0], '');
-      const listMatch = textForList.match(/名單\s*[:：]?\s*[{\uff5b]([\s\S]*?)[}\uff5d]/);
-
       const title = titleMatch ? titleMatch[1].trim() : '羽球接龍';
       const limit = limitMatch ? parseInt(limitMatch[1], 10) : 20;
       const backupLimit = backupMatch ? parseInt(backupMatch[1], 10) : 5;
       
-      let initialList = [];
-      if (listMatch) {
-        initialList = listMatch[1]
-          .split(/[,\n]+/)
-          .map(line => line.trim())
-          .filter(line => line)
-          .map(line => line.replace(/^\d+[.\s]*\s*/, ''));
-      }
-
-      let anonList = [];
-      let anonCount = 0;
-      if (anonMatch) {
-        const rawAnon = anonMatch[1].trim();
-        if (/^\d+$/.test(rawAnon)) {
-          anonCount = parseInt(rawAnon, 10);
-          const placeholders = Array(anonCount).fill('__ANON__');
-          initialList = initialList.concat(placeholders);
-        } else {
-          anonList = anonMatch[1]
-            .split(/[,\n]+/)
-            .map(line => line.trim())
-            .filter(line => line)
-            .map(line => line.replace(/^\d+[.\s]*\s*/, ''));
-          initialList = initialList.concat(anonList);
-        }
-      }
-
-      let scheduleTime = null;
-      let scheduleInput = null;
-      if (timeMatch) {
-        const raw = timeMatch[1].trim();
-        console.log(`Parsing time string: "${raw}"`);
-        // 嘗試解析 YYYY/MM/DD HH:mm 或 YYYY-MM-DD HH:mm 格式
-        const dateTimeMatch = raw.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})\s+(\d{1,2}):(\d{2})/);
-        if (dateTimeMatch) {
-          const [, year, month, day, hours, minutes] = dateTimeMatch;
-          const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes), 0);
-          // 將輸入視為台灣時間 (UTC+8)，轉換為 UTC timestamp
-          const TAIPEI_OFFSET_HOURS = 8;
-          const utcMillisForInput = Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
-          scheduleTime = utcMillisForInput - (TAIPEI_OFFSET_HOURS * 60 * 60 * 1000);
-          scheduleInput = raw;
-          console.log(`Parsed as Taipei local ${dateObj.toString()} -> UTC ${new Date(scheduleTime).toUTCString()} (timestamp: ${scheduleTime})`);
-        } else {
-          // 備用：嘗試 Date.parse
-          let ts = Date.parse(raw);
-          if (isNaN(ts)) {
-            const alt = raw.replace(/-/g, '/');
-            ts = Date.parse(alt);
-          }
-          if (!isNaN(ts)) {
-            scheduleTime = ts;
-            scheduleInput = raw;
-          }
-          console.log(`Fallback Date.parse result: ${scheduleTime}`);
-        }
-      }
-
-      // 檢查重複：忽略匿名占位符 '__ANON__' 的重複
-      const nonAnonList = initialList.filter(n => n !== '__ANON__');
-      if (new Set(nonAnonList).size !== nonAnonList.length) {
-        return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
-      }
-
-      games[gid] = {
+      const gameId = Date.now().toString() + Math.floor(Math.random()*1000);
+      
+      games[gameId] = {
+        gid: gid,
+        gameId: gameId,
         title: title,
         note: '',
         active: true,
         startTime: Date.now(),
         lastActiveTime: Date.now(),
-        scheduleTime: scheduleTime,
-        scheduleInput: scheduleInput,
-        anonymous: anonList, // 兼容舊的匿名名單（若為數字則用 placeholder 存入 list）
-        anonymousCount: anonCount,
+        scheduleTime: null,
+        scheduleInput: null,
+        anonymous: [],
+        anonymousCount: 0,
         sections: [
-          { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
+          { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: [] }
         ]
       };
-      await saveGame(gid, true); // 立即寫入，確保資料不丟失
-      if (listMatch) {
-        await saveCurrentListSnapshot(gid, false);
-      }
+      await saveGame(gameId, true);
+      await saveCurrentListSnapshot(gameId, false);
       
-      // 保存初始名單快照到 CSV
-      await saveCurrentListSnapshot(gid, false);
-      
-      // 首次使用時顯示歡迎訊息（使用 replyMessage 免費，不消耗額度）
-      let welcomePrefix = '';
-      if (showWelcome) {
-        welcomePrefix = '👋 大家好！我是羽球接龍機器人。\n\n';
-      }
-      
-      if (scheduleTime) {
-        // 若時間已過則立即觸發一次
-        if (scheduleTime <= Date.now()) {
-          try { await sendList(null, gid, "⏰ 定時提醒"); } catch (e) { console.error('Immediate scheduled send failed:', e); }
-        }
-        const displayTime = scheduleInput || (() => { const d = new Date(scheduleTime); return `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`; })();
-        return await client.replyMessage(event.replyToken, { type: 'text', text: welcomePrefix + `設定完成，將會在 ${displayTime} 開始接龍` });
-      }
-      return await sendList(event.replyToken, gid, welcomePrefix + "🚀 接龍設定成功！");
+      let welcomePrefix = showWelcome ? '👋 大家好！我是羽球接龍機器人。\n\n' : '';
+      return await sendLobbyLink(event.replyToken, gid, welcomePrefix + "🚀 場次建立成功！");
     }
 
-    if (text === '接龍結束') {
-      // 沒有接龍時不回覆
-      if (!games[gid]) {
-        return null;
+    if (text === '接龍結束' || text === '接龍清空') {
+      const groupGames = Object.values(games).filter(g => g.gid === gid);
+      for(const g of groupGames) {
+        delete games[g.gameId];
       }
-      // 保存最終名單快照到 CSV（在刪除前）
-      await saveCurrentListSnapshot(gid, true);
-      await deleteGame(gid);
-      // 刪除後更新 CSV，移除該群組資料
       await saveCurrentListSnapshot(null, false);
-      // 優化：不發送回覆訊息，直接更新名單顯示結束狀態（節省一次 replyMessage）
-      // 用戶可以通過查看名單確認，或我們可以在 sendList 中顯示結束訊息
-      // 但為了更好的體驗，還是回覆一個簡短訊息，但使用更簡潔的文字
-      return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 已結束' });
+      return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 群組內所有場次已結束/清空' });
     }
 
-    // 接龍修改/接龍修正 - 只有在有接龍資料時才能使用
-    if (text.startsWith('接龍修改') || text.startsWith('接龍修正')) {
-      // 沒有接龍或已結束時不回覆
-      if (!games[gid] || !games[gid].active) {
-        return null;
-      }
-
-      const titleMatch = text.match(/標題\s*[:：]?\s*[{\uff5b]([\s\S]*?)[}\uff5d]/);
-      const limitMatch = text.match(/人數\s*[:：]?\s*[{\uff5b](\d+)[}\uff5d]/);
-      const backupMatch = text.match(/候補\s*[:：]?\s*[{\uff5b](\d+)[}\uff5d]/);
-      
-      let textForList = text;
-      const listMatch = textForList.match(/名單\s*[:：]?\s*[{\uff5b]([\s\S]*?)[}\uff5d]/);
-
-      let hasChanges = false;
-      const section = games[gid].sections[0];
-      const currentList = section.list;
-      const oldLimit = section.limit;
-
-      // 修改標題
-      if (titleMatch) {
-        const newTitle = titleMatch[1].trim();
-        games[gid].title = newTitle;
-        hasChanges = true;
-      }
-
-      // 修改人數
-      if (limitMatch) {
-        const newLimit = parseInt(limitMatch[1], 10);
-        if (newLimit > 0) {
-          // 如果新的人數低於當前報名人數，需要處理超出的人
-          if (newLimit < oldLimit && currentList.length > newLimit) {
-            // 人數減少：將超出的人保持在名單中（他們會自動顯示為候補）
-            // 不需要移動，因為sendList會根據limit自動判斷哪些是候補
-          }
-          section.limit = newLimit;
-          hasChanges = true;
-        }
-      }
-
-      // 修改候補
-      if (backupMatch) {
-        const newBackupLimit = parseInt(backupMatch[1], 10);
-        if (newBackupLimit >= 0) {
-          section.backupLimit = newBackupLimit;
-          hasChanges = true;
-        }
-      }
-
-      // 修改名單
-      if (listMatch) {
-        const newListStr = listMatch[1].trim();
-        const newList = newListStr
-          .split(/[,\n]+/)
-          .map(line => line.trim())
-          .filter(line => line)
-          .map(line => line.replace(/^\d+[.\s]*\s*/, ''));
-
-        // 檢查重複（忽略匿名占位符）
-        const nonAnonList = newList.filter(n => n !== '__ANON__');
-        if (new Set(nonAnonList).size !== nonAnonList.length) {
-          return await client.replyMessage(event.replyToken, { type: 'text', text: '❌ 名單中有重複的項目' });
-        }
-
-        section.list = newList;
-        hasChanges = true;
-      }
-
-      if (!hasChanges) {
-        return await client.replyMessage(event.replyToken, { type: 'text', text: '❌ 請指定要修改的項目（標題、人數、候補或名單）' });
-      }
-
-      touchGame(gid);
-      await saveGame(gid, true); // 立即寫入，確保資料不丟失
-      if (listMatch) {
-        await saveCurrentListSnapshot(gid, false);
-      }
-      
-      // 生成更新訊息
-      let updateMsg = "✏️ 接龍已更新";
-      if (limitMatch && parseInt(limitMatch[1], 10) < oldLimit && currentList.length > parseInt(limitMatch[1], 10)) {
-        const movedCount = Math.min(currentList.length - parseInt(limitMatch[1], 10), currentList.length);
-        updateMsg += `\n📋 人數已從 ${oldLimit} 調整為 ${parseInt(limitMatch[1], 10)}，超出的人員將顯示為候補`;
-      }
-      
-      return await sendList(event.replyToken, gid, updateMsg);
-    }
-
-    // 2. 報名 (+1 到 +9) / 取消 (-1 到 -9)
-    // 支援 "+1AA"、"+1 AA"、"AA+1"、"AA +1" 等格式（+1 到 +9）
-    let addMatch = null;
-    let count = 0;
-    let content = '';
-    
-    // 檢查是否以 +1 到 +9 開頭（後面可以有空白和名字，或直接連接名字，或直接結束）
-    const startMatch = text.match(/^\+([1-9])(\s*)(.*)/);
-    if (startMatch) {
-      count = parseInt(startMatch[1], 10);
-      content = startMatch[3].trim();
-      addMatch = { count: count, content: content };
-    } 
-    // 檢查是否以 +1 到 +9 結尾（前面必須有名字，+1 前可以有空白或直接連接）
-    else {
-      const endMatch = text.match(/^(.+?)(\s*)\+([1-9])$/);
-      if (endMatch) {
-        const namePart = endMatch[1].trim();
-        if (namePart) {
-          count = parseInt(endMatch[3], 10);
-          content = namePart;
-          addMatch = { count: count, content: content };
-        }
-      }
+    if (text === '接龍名單' || text === '接龍狀態' || text === '接龍查詢') {
+      return await sendLobbyLink(event.replyToken, gid);
     }
     
-    if (addMatch) {
-      // 檢查接龍是否存在 - 沒有接龍時不回覆
-      if (!games[gid]) {
-        return null;
-      }
-      
-      // 檢查接龍是否活躍 - 已結束時不回覆
-      if (!games[gid].active) {
-        return null;
-      }
-      // 若已有排程且尚未到時間，禁止提前 + / - 操作 - 不回覆
-      if (games[gid] && games[gid].scheduleTime && Number(games[gid].scheduleTime) > Date.now()) {
-        return null;
-      }
-      const currentList = games[gid].sections[0].list;
-      let namesToAdd = [];
-
-      // 支援 +1 匿名 或 +1匿名
-      if (content && /匿名/.test(content)) {
-        namesToAdd = Array(count).fill('__ANON__');
-      } else if (content) {
-        namesToAdd = content.split(/[\s,]+/).filter(n => n);
-      } else if (count === 1) {
-        // 優化：先檢查快取或名單映射，減少 API 呼叫
-        const cacheKey = `${gid}_${uid}`;
-        let userName = null;
-        
-        // 1. 檢查快取
-        if (userNameCache.has(cacheKey)) {
-          const cached = userNameCache.get(cacheKey);
-          if (Date.now() - cached.timestamp < CACHE_EXPIRY) {
-            userName = cached.name;
-          }
-        }
-        
-        // 2. 檢查名單映射（如果快取沒有）
-        if (!userName && uidToNameMap.has(cacheKey)) {
-          userName = uidToNameMap.get(cacheKey);
-          // 如果名稱存在於當前名單中，可以直接使用
-          if (currentList.includes(userName)) {
-            namesToAdd = [userName];
-          } else {
-            // 名稱不在名單中，可能需要更新，呼叫 API 獲取最新名稱
-            userName = await getName(gid, uid);
-            namesToAdd = [userName];
-          }
-        } else if (!userName) {
-          // 3. 都沒有的話才呼叫 API
-          userName = await getName(gid, uid);
-          namesToAdd = [userName];
-        } else {
-          namesToAdd = [userName];
-        }
-        
-        // 更新映射
-        if (userName) {
-          uidToNameMap.set(cacheKey, userName);
-        }
-      }
-
-      if (namesToAdd.length > 0) {
-        // 對於匿名占位符允許重複，對於實名則檢查重複
-        const realNames = namesToAdd.filter(n => n !== '__ANON__');
-        const hasDuplicate = realNames.some(n => currentList.includes(n));
-        const hasSelfDuplicate = new Set(realNames).size !== realNames.length;
-        if (hasDuplicate || hasSelfDuplicate) {
-          return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
-        }
-        namesToAdd.forEach(n => {
-          addToList(gid, 0, n, { uid });
-          // 更新 UID 到名稱的映射（僅對實名）
-          if (n !== '__ANON__') {
-            uidToNameMap.set(`${gid}_${uid}`, n);
-          }
-        });
-      }
-
-      touchGame(gid);
-      touchGame(gid);
-      touchGame(gid);
-      await saveGame(gid, true); // 立即寫入，確保資料不丟失
-      await saveCurrentListSnapshot(gid, false);
-      return await sendList(event.replyToken, gid);
-    }
-    // 取消報名 (-1 到 -9)，支援 "-1AA"、"-1 AA"、"AA-1"、"AA -1" 等格式
-    let removeMatch = null;
-    let removeName = '';
-    
-    // 檢查是否以 -1 到 -9 開頭（後面可以有空白和名字，或直接連接名字，或直接結束）
-    const removeStartMatch = text.match(/^-([1-9])(\s*)(.*)/);
-    if (removeStartMatch) {
-      removeName = removeStartMatch[3].trim();
-      removeMatch = true;
-    } 
-    // 檢查是否以 -1 到 -9 結尾（前面必須有名字，-1 前可以有空白或直接連接）
-    else {
-      const removeEndMatch = text.match(/^(.+?)(\s*)-([1-9])$/);
-      if (removeEndMatch) {
-        const namePart = removeEndMatch[1].trim();
-        if (namePart) {
-          removeMatch = true;
-          removeName = namePart;
-        }
-      }
-    }
-    
-    if (removeMatch) {
-      // 檢查接龍是否存在 - 沒有接龍時不回覆
-      if (!games[gid]) {
-        return null;
-      }
-      
-      // 檢查接龍是否活躍 - 已結束時不回覆
-      if (!games[gid].active) {
-        return null;
-      }
-      
-      // 若已有排程且尚未到時間，禁止提前 + / - 操作 - 不回覆
-      if (games[gid] && games[gid].scheduleTime && Number(games[gid].scheduleTime) > Date.now()) {
-        return null;
-      }
-      let name = removeName;
-      if (!name) {
-        // 優化：先從名單映射中查找，減少 API 呼叫
-        const cacheKey = `${gid}_${uid}`;
-        let userName = null;
-        
-        // 1. 檢查快取
-        if (userNameCache.has(cacheKey)) {
-          const cached = userNameCache.get(cacheKey);
-          if (Date.now() - cached.timestamp < CACHE_EXPIRY) {
-            userName = cached.name;
-          }
-        }
-        
-        // 2. 檢查名單映射
-        if (!userName && uidToNameMap.has(cacheKey)) {
-          userName = uidToNameMap.get(cacheKey);
-          // 檢查名稱是否在名單中
-          const currentList = games[gid].sections[0].list;
-          if (!currentList.includes(userName)) {
-            // 如果名稱不在名單中，呼叫 API 獲取最新名稱
-            userName = await getName(gid, uid);
-            uidToNameMap.set(cacheKey, userName);
-          }
-        } else if (!userName) {
-          // 3. 都沒有的話才呼叫 API
-          userName = await getName(gid, uid);
-          uidToNameMap.set(cacheKey, userName);
-        }
-        
-        name = userName || await getName(gid, uid);
-        await removeFromList(gid, name, { uid });
-      } else if (name === '匿名' || /匿名/.test(name)) {
-        // 移除最後一個匿名占位符
-        await removeAnon(gid, { uid });
-      } else {
-        await removeFromList(gid, name, { uid });
-      }
-      await saveGame(gid, true); // 立即寫入，確保資料不丟失
-      await saveCurrentListSnapshot(gid, false);
-      return await sendList(event.replyToken, gid);
-    }
-
-    // 3. 接龍狀態查詢
-    if (text === '接龍狀態' || text === '接龍查詢') {
-      // 沒有接龍時不回覆
-      if (!games[gid]) {
-        return null;
-      }
-      const g = games[gid];
-      const now = Date.now();
-      const startTime = g.startTime ? new Date(g.startTime).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }) : '未知';
-      const age = g.startTime ? Math.floor((now - g.startTime) / (24 * 60 * 60 * 1000)) : 0;
-      let statusMsg = `📋 接龍狀態\n\n`;
-      statusMsg += `標題：${g.title || '未設定'}\n`;
-      statusMsg += `狀態：${g.active ? '✅ 進行中' : '❌ 已結束'}\n`;
-      statusMsg += `開始時間：${startTime}\n`;
-      statusMsg += `已進行：${age} 天\n`;
-      if (g.scheduleTime) {
-        const schedTime = new Date(Number(g.scheduleTime)).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
-        statusMsg += `定時推播：${schedTime}\n`;
-      }
-      statusMsg += `報名人數：${g.sections[0]?.list?.length || 0} / ${g.sections[0]?.limit || 0}\n`;
-      return await client.replyMessage(event.replyToken, { type: 'text', text: statusMsg });
-    }
-
-    // 4. 批量名單 或 查詢
-    if (text.startsWith('接龍名單')) {
-      const input = text.replace('接龍名單', '').trim();
-      if (input === '' || input === '#') {
-        // 沒有接龍時不回覆
-        if (!games[gid]) {
-          return null;
-        }
-        return await sendList(event.replyToken, gid);
-      }
-      
-      // 沒有接龍或已結束時不回覆
-      if (!games[gid] || !games[gid].active) {
-        return null;
-      }
-      
-      const namesToAdd = input.split(/\s+/).filter(n => n);
-      const currentList = games[gid].sections[0].list;
-      const hasDuplicate = namesToAdd.some(n => currentList.includes(n));
-      const hasSelfDuplicate = new Set(namesToAdd).size !== namesToAdd.length;
-      if (hasDuplicate || hasSelfDuplicate) {
-        return await client.replyMessage(event.replyToken, { type: 'text', text: '名單已重複' });
-      }
-
-      namesToAdd.forEach(n => {
-        addToList(gid, 0, n, { uid });
-        // 更新 UID 到名稱的映射（僅對實名）
-        if (n !== '__ANON__') {
-          uidToNameMap.set(`${gid}_${uid}`, n);
-        }
-      });
-      await saveGame(gid, true); // 立即寫入，確保資料不丟失
-      await saveCurrentListSnapshot(gid, false);
-      return await sendList(event.replyToken, gid);
-    }
-
-    // 5. 多區段設定: 接龍 {段標題}{人數}{候補}{標籤} 或 接龍2...
-    // 注意：必須在"接龍修改/接龍修正"之後檢查，且不能是"接龍修改"或"接龍修正"
-    if (text.startsWith('接龍') && text.includes('{') && !text.startsWith('接龍修改') && !text.startsWith('接龍修正') && !text.startsWith('接龍名單') && !text.startsWith('接龍開始') && !text.startsWith('接龍結束') && !text.startsWith('接龍清空') && !text.startsWith('接龍刪除')) {
-      // 沒有接龍時不回覆
-      if (!games[gid]) {
-        return null;
-      }
-      const p = getParams(text);
-      const idx = text.startsWith('接龍2') ? 1 : 0;
-      games[gid].sections[idx] = {
-        title: p[0] || `區段${idx + 1}`,
-        limit: parseInt(p[1]) || 10,
-        backupLimit: parseInt(p[2]) || 0,
-        label: p[3] || '',
-        list: games[gid].sections[idx]?.list || []
-      };
-      touchGame(gid);
-      await saveGame(gid, true); // 立即寫入，確保資料不丟失
-      return await sendList(event.replyToken, gid, `⚙️ 區段${idx + 1} 更新成功`);
-    }
-
-    // 5. 清除/刪除/結束
-    if (text === '接龍清空') {
-      // 沒有接龍時不回覆
-      if (!games[gid]) {
-        return null;
-      }
-      games[gid].sections.forEach(s => s.list = []);
-      touchGame(gid);
-      await saveGame(gid, true); // 立即寫入，確保資料不丟失
-      // 清空後保存空名單快照
-      await saveCurrentListSnapshot(gid, false);
-      return await client.replyMessage(event.replyToken, { type: 'text', text: '🧹 名單已清空' });
-    }
-    if (text === '接龍刪除') {
-      // 沒有接龍時不回覆
-      if (!games[gid]) {
-        return null;
-      }
-      await deleteGame(gid);
-      // 刪除後更新 CSV，移除該群組資料
-      await saveCurrentListSnapshot(null, false);
-      return await client.replyMessage(event.replyToken, { type: 'text', text: '🗑️ 設置已移除' });
-    }
-
-    // 管理員登入
-    if (text.startsWith('管理員登入')) {
-      const pwd = text.replace('管理員登入', '').trim();
-      if (pwd === ADMIN_PASSWORD) {
-        adminUsers.add(uid);
-        return await client.replyMessage(event.replyToken, { type: 'text', text: '🔓 管理員登入成功，已開啟查詢權限' });
-      }
-    }
-
-    // 6. 系統狀態檢查
-    if (text === '系統狀態') {
-      if (!adminUsers.has(uid)) return null; // 未登入則忽略指令
-      let dbStatus = '⚠️ 僅使用記憶體 (無資料庫)';
-      if (pool) {
-        try {
-          await pool.query('SELECT 1'); // 嘗試執行簡單查詢測試連線
-          dbStatus = '✅ 資料庫連線正常';
-        } catch (e) {
-          dbStatus = '❌ 資料庫連線異常';
-        }
-      }
-      
-      let csvStatus = '';
-      if (USE_GITHUB) {
-        try {
-          // 測試 GitHub 連線
-          const testEndpoint = `/repos/${GITHUB_OWNER}/${GITHUB_REPO}`;
-          await githubApiRequest('GET', testEndpoint);
-          const recordCount = regCsvContent ? regCsvContent.split('\n').length - 1 : 0;
-          csvStatus = `✅ GitHub CSV 正常\n   倉庫: ${GITHUB_OWNER}/${GITHUB_REPO}\n   路徑: ${GITHUB_CSV_PATH}\n   記錄數: ${recordCount}`;
-        } catch (e) {
-          csvStatus = `❌ GitHub CSV 連線失敗: ${e.message}`;
-        }
-      } else {
-        const localExists = fs.existsSync(REG_CSV_FILE);
-        if (localExists) {
-          const content = await fs.promises.readFile(REG_CSV_FILE, 'utf8').catch(() => '');
-          const recordCount = content ? content.split('\n').length - 1 : 0;
-          csvStatus = `📁 本地 CSV 模式\n   記錄數: ${recordCount}`;
-        } else {
-          csvStatus = '📁 本地 CSV 模式（尚未建立檔案）';
-        }
-      }
-      
-      return await client.replyMessage(event.replyToken, { 
-        type: 'text', 
-        text: `📊 系統狀態\n\n${dbStatus}\n\n${csvStatus}\n\n目前載入接龍數: ${Object.keys(games).length}` 
-      });
-    }
-
-    // 7. 資料庫列表 (檢查 DB 內容)
-    if (text === '資料庫列表') {
-      if (!adminUsers.has(uid)) return null; // 未登入則忽略指令
-      if (!pool) return await client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 無資料庫連線' });
-      try {
-        const res = await pool.query('SELECT gid, data FROM games');
-        if (res.rows.length === 0) {
-          return await client.replyMessage(event.replyToken, { type: 'text', text: '📭 資料庫內無資料' });
-        }
-        let msg = '📦 資料庫存檔列表:\n';
-        res.rows.forEach((row, i) => {
-          const g = row.data;
-          msg += `${i + 1}. ${g.title || '未命名'} (${row.gid})\n`;
-        });
-        return await client.replyMessage(event.replyToken, { type: 'text', text: msg.trim() });
-      } catch (e) {
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `❌ 查詢失敗: ${e.message}` });
-      }
-    }
-
-    // 8. 排程檢查 (調試用)
-    if (text === '排程檢查') {
-      if (!adminUsers.has(uid)) return null; // 未登入則忽略指令
-      const gids = Object.keys(games);
-      let msg = `📋 目前有 ${gids.length} 筆接龍資料\n`;
-      const now = Date.now();
-      for (const gid of gids) {
-        const g = games[gid];
-        if (g.scheduleTime) {
-          const sched = Number(g.scheduleTime);
-          const diff = sched - now;
-          msg += `\n${g.title || '未命名'} (${gid})\n`;
-          msg += `排程時間: ${new Date(sched).toString()}\n`;
-          msg += `距離現在: ${diff}ms (${(diff / 1000 / 60).toFixed(1)} 分鐘)\n`;
-          msg += `active: ${g.active}\n`;
-        }
-      }
-      if (msg === `📋 目前有 ${gids.length} 筆接龍資料\n`) msg += '\n無排程設定';
-      return await client.replyMessage(event.replyToken, { type: 'text', text: msg.trim() });
-    }
-
-    // 9. 測試推播
-    if (text === '測試推播') {
-      if (!adminUsers.has(uid)) return null; // 未登入則忽略指令
-      try {
-        await client.pushMessage(gid, { type: 'text', text: '✅ 測試推播成功！' });
-        logToFile(`[TEST] Push message succeeded for ${gid}`);
-        return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 推播測試成功！群組應已收到訊息' });
-      } catch (e) {
-        logToFile(`[TEST] Push message failed for ${gid}: ${e.message}`);
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗: ${e.message}` });
-      }
-    }
-
-    // 10. 強制檢查排程
-    if (text === '強制檢查排程') {
-      if (!adminUsers.has(uid)) return null; // 未登入則忽略指令
-      logToFile(`[FORCE] Manual schedule check triggered`);
-      await checkSchedules();
-      return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 已執行排程檢查，請查看日誌' });
+    // 如果使用者輸入 +1 / -1，提示他們使用 LIFF
+    if (text.match(/^\+[1-9]/) || text.match(/^-[1-9]/) || text.match(/\+[1-9]$/) || text.match(/-[1-9]$/)) {
+       return await sendLobbyLink(event.replyToken, gid, '⚠️ 現在已經全面升級為「大廳報名模式」囉！\n請點擊下方連結進入大廳報名，以免報錯場次：');
     }
 
   } catch (e) {
@@ -1854,3 +1298,27 @@ app.listen(port, () => {
     console.log('ℹ️ 已停用自動喚醒定時器（AUTO_WAKE_ENABLED=false）');
   }
 });
+async function sendLobbyLink(token, gid, prefix = "") {
+  let msg = prefix ? `${prefix}\n` : '';
+  
+  const groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
+  if (groupGames.length === 0) {
+    msg += '目前沒有進行中的場次喔！請輸入「接龍開始」來建立。';
+  } else {
+    msg += `目前共有 ${groupGames.length} 個場次開放報名中 🏸\n`;
+  }
+  
+  if (process.env.LIFF_ID) {
+    msg += `\n👇 點擊下方連結進入報名大廳\nhttps://liff.line.me/${process.env.LIFF_ID}`;
+  }
+  
+  const message = { type: 'text', text: msg.trim() };
+  if (token) {
+    return await client.replyMessage(token, message);
+  }
+  try {
+    return await client.pushMessage(gid, message);
+  } catch (e) {
+    console.error(`pushMessage failed for ${gid}:`, e);
+  }
+}

@@ -1,87 +1,51 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>羽球報名系統</title>
+  <title>羽球接龍報名大廳</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="loading" class="overlay active">
-    <div class="spinner"></div>
-    <p>載入中...</p>
-  </div>
-
-  <div id="error-screen" class="overlay hidden">
-    <div class="error-icon">⚠️</div>
-    <h2 id="error-title">發生錯誤</h2>
-    <p id="error-message">請稍後再試或聯繫管理員</p>
-    <button class="btn btn-primary" onclick="liff.closeWindow()">關閉</button>
-  </div>
-
-  <div class="container" id="app-container" style="display: none;">
-    <header class="header">
-      <div class="header-content">
-        <h1 id="game-title">載入中...</h1>
-        <div class="status-badge" id="game-status">進行中</div>
+  <div id="app" class="loading">
+    <div class="loader"></div>
+    <p id="status-msg">載入中...</p>
+    
+    <!-- 大廳視圖 (顯示所有場次) -->
+    <div id="lobby-view" class="view hidden">
+      <header class="lobby-header">
+        <h1>🏸 報名大廳</h1>
+        <p>請選擇您要報名的場次</p>
+      </header>
+      
+      <div id="games-container" class="games-list">
+        <!-- JS 將在這裡生成卡片 -->
       </div>
-      <div class="user-profile">
-        <img id="user-avatar" src="" alt="Avatar" class="avatar hidden">
-        <span id="user-name">訪客</span>
+      
+      <div id="no-games-msg" class="hidden empty-state">
+        <p>目前沒有開放報名的場次喔！</p>
+        <p class="hint">請在 LINE 群組輸入「接龍開始」來建立新場次。</p>
       </div>
-    </header>
+    </div>
 
-    <main class="main-content">
-      <div class="stats-card">
-        <div class="stat-item">
+    <!-- 明細視圖 (單一場次名單) -->
+    <div id="detail-view" class="view hidden">
+      <header class="detail-header">
+        <button id="btn-back" class="btn-icon">⬅ 返回大廳</button>
+        <h2 id="detail-title">場次明細</h2>
+      </header>
+      
+      <div class="detail-stats">
+        <div class="stat-box">
           <span class="stat-label">已報名</span>
-          <span class="stat-value" id="count-enrolled">0</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-label">總名額</span>
-          <span class="stat-value" id="count-limit">0</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-label">候補</span>
-          <span class="stat-value" id="count-backup">0</span>
+          <span class="stat-value" id="detail-count">0 / 20</span>
         </div>
       </div>
 
-      <div class="action-panel">
-        <h3 class="section-title">快速報名</h3>
-        <div class="action-buttons">
-          <button class="btn btn-danger" id="btn-minus" onclick="handleAction('cancel', 1)">-1 取消</button>
-          <button class="btn btn-primary" id="btn-plus-1" onclick="handleAction('register', 1)">+1 報名</button>
-          <button class="btn btn-secondary" id="btn-plus-2" onclick="handleAction('register', 2)">+2</button>
-        </div>
-        <div class="custom-action hidden">
-          <input type="text" id="custom-name" placeholder="代報名稱 (選填)" class="input-text">
-        </div>
+      <div id="detail-list" class="list-container">
+        <!-- JS 將在這裡生成名單 -->
       </div>
-
-      <div class="list-section">
-        <div class="list-header">
-          <h3 class="section-title">正取名單</h3>
-          <span class="badge badge-success" id="badge-enrolled">0</span>
-        </div>
-        <ul class="player-list" id="list-enrolled">
-          <!-- 正取名單由 JS 渲染 -->
-        </ul>
-      </div>
-
-      <div class="list-section" id="backup-section" style="display: none;">
-        <div class="list-header">
-          <h3 class="section-title">候補名單</h3>
-          <span class="badge badge-warning" id="badge-backup">0</span>
-        </div>
-        <ul class="player-list" id="list-backup">
-          <!-- 候補名單由 JS 渲染 -->
-        </ul>
-      </div>
-    </main>
+    </div>
   </div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
