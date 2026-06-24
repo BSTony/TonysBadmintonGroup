@@ -1092,18 +1092,26 @@ async function handleEvent(event) {
     }
 
     if (text.startsWith('接龍修改')) {
-      // 支援有大括號或沒有大括號
-      const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:人數|候補|時間|備註|名單|$))))/);
+      const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
+      const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
+      const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
+      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|費用|人數|候補|備註|名單|$))))/);
+      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|人數|候補|備註|名單|$))))/);
+      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|名單|$))))/);
+      
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
       const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|人數|候補|時間|名單|$))))/);
       
       // 取出除了 "接龍修改" 與 屬性 以外的文字當作 keyword
       let keyword = text.replace('接龍修改', '').trim();
       if (titleMatch) keyword = keyword.replace(titleMatch[0], '');
+      if (dateMatch) keyword = keyword.replace(dateMatch[0], '');
+      if (timeMatch) keyword = keyword.replace(timeMatch[0], '');
+      if (locMatch) keyword = keyword.replace(locMatch[0], '');
+      if (feeMatch) keyword = keyword.replace(feeMatch[0], '');
+      if (noteMatch) keyword = keyword.replace(noteMatch[0], '');
       if (limitMatch) keyword = keyword.replace(limitMatch[0], '');
       if (backupMatch) keyword = keyword.replace(backupMatch[0], '');
-      if (noteMatch) keyword = keyword.replace(noteMatch[0], '');
       keyword = keyword.trim();
 
       let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
@@ -1119,14 +1127,28 @@ async function handleEvent(event) {
         }
       } else {
         if (groupGames.length > 1) {
-           // 如果沒指定，取最新建立的
            targetGame = groupGames.sort((a,b) => b.startTime - a.startTime)[0];
         } else {
            targetGame = groupGames[0];
         }
       }
 
-      if (titleMatch) targetGame.title = (titleMatch[1] || titleMatch[2]).trim();
+      if (dateMatch) targetGame.date = (dateMatch[1] || dateMatch[2]).trim();
+      if (timeMatch) targetGame.time = (timeMatch[1] || timeMatch[2]).trim();
+      if (locMatch) targetGame.location = (locMatch[1] || locMatch[2]).trim();
+      if (feeMatch) targetGame.fee = (feeMatch[1] || feeMatch[2]).trim();
+      
+      if (titleMatch) {
+         targetGame.title = (titleMatch[1] || titleMatch[2]).trim();
+      } else if (dateMatch || timeMatch || locMatch) {
+         // 若修改了其中一項且沒有指定標題，更新自動生成的標題
+         const currentTitleWasAuto = targetGame.title === [targetGame.date, targetGame.time, targetGame.location].filter(Boolean).join(' ');
+         if (targetGame.title === '羽球接龍' || currentTitleWasAuto || true) {
+             const newAuto = [targetGame.date, targetGame.time, targetGame.location].filter(Boolean).join(' ');
+             if (newAuto) targetGame.title = newAuto;
+         }
+      }
+
       if (limitMatch && targetGame.sections[0]) targetGame.sections[0].limit = parseInt(limitMatch[1] || limitMatch[2], 10);
       if (backupMatch && targetGame.sections[0]) targetGame.sections[0].backupLimit = parseInt(backupMatch[1] || backupMatch[2], 10);
       if (noteMatch) {
