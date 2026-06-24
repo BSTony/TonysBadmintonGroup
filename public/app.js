@@ -41,15 +41,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const context = liff.getContext();
     if (context && (context.type === 'group' || context.type === 'room')) {
       currentGroupId = context.groupId || context.roomId;
+    } else if (context && context.type === 'utou') {
+      // 1對1聊天室：後端將使用者的 uid 作為 gid
+      currentGroupId = currentUser.uid;
     } else {
-      // 開發測試用：如果不是在群組內打開，詢問測試用的 Group ID
-      // 實際使用時，這段會被註解掉，因為只能在群組內使用
-      const testGid = localStorage.getItem('test_gid');
-      if (testGid) {
-        currentGroupId = testGid;
-      } else {
-        throw new Error('此功能只能在 LINE 群組內使用喔！');
-      }
+      // 退化模式：若在外部瀏覽器打開，就用自己的 uid 作為群組ID來測試
+      currentGroupId = currentUser.uid;
     }
 
     // 5. 載入接龍資料
