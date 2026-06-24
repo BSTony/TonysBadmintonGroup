@@ -125,9 +125,11 @@ function renderLobby() {
        tagsHtml += '</div>';
     }
     
-    // 判斷 title 是否只是自動生成的字串
-    const autoTitle = [game.date, game.time, game.location].filter(Boolean).join(' ');
-    const showTitle = game.title && game.title !== autoTitle && game.title !== '羽球接龍';
+    // 判斷 title 是否只是自動生成的字串 (忽略空白)
+    const normalize = s => (s||'').replace(/\s+/g, '');
+    const autoStr = normalize([game.date, game.time, game.location].filter(Boolean).join(''));
+    const isAutoTitle = normalize(game.title) === autoStr || game.title === '羽球接龍';
+    const showTitle = game.title && !isAutoTitle;
 
     const card = document.createElement('div');
     card.className = 'game-card';
@@ -257,8 +259,10 @@ function renderDetail(gameId) {
   detailView.classList.remove('hidden');
   window.scrollTo(0, 0);
   
-  const autoTitle = [game.date, game.time, game.location].filter(Boolean).join(' ');
-  const showTitle = game.title && game.title !== autoTitle && game.title !== '羽球接龍';
+  const normalize = s => (s||'').replace(/\s+/g, '');
+  const autoStr = normalize([game.date, game.time, game.location].filter(Boolean).join(''));
+  const isAutoTitle = normalize(game.title) === autoStr || game.title === '羽球接龍';
+  const showTitle = game.title && !isAutoTitle;
   detailTitle.innerText = showTitle ? game.title : '場次明細';
   if (!showTitle) detailTitle.style.display = 'none';
   else detailTitle.style.display = 'block';
