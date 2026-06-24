@@ -1036,11 +1036,29 @@ async function handleEvent(event) {
   try {
     // 1. 接龍開始
     if (text.startsWith('接龍開始')) {
-      // 支援有大括號或沒有大括號 (用空格/換行分隔)
-      const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:人數|候補|時間|備註|名單|$))))/);
+      const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
+      const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
+      const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
+      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|費用|人數|候補|備註|名單|$))))/);
+      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|人數|候補|備註|名單|$))))/);
+      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|名單|$))))/);
+      
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
       const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
-      const title = titleMatch ? (titleMatch[1] || titleMatch[2]).trim() : '羽球接龍';
+      
+      const pDate = dateMatch ? (dateMatch[1] || dateMatch[2]).trim() : '';
+      const pTime = timeMatch ? (timeMatch[1] || timeMatch[2]).trim() : '';
+      const pLoc = locMatch ? (locMatch[1] || locMatch[2]).trim() : '';
+      const pFee = feeMatch ? (feeMatch[1] || feeMatch[2]).trim() : '';
+      const pNote = noteMatch ? (noteMatch[1] || noteMatch[2]).trim() : '';
+      
+      let title = '羽球接龍';
+      if (titleMatch) {
+         title = (titleMatch[1] || titleMatch[2]).trim();
+      } else if (pDate || pTime || pLoc) {
+         title = [pDate, pTime, pLoc].filter(Boolean).join(' ');
+      }
+      
       const limit = limitMatch ? parseInt(limitMatch[1] || limitMatch[2], 10) : 20;
       const backupLimit = backupMatch ? parseInt(backupMatch[1] || backupMatch[2], 10) : 5;
       
@@ -1050,7 +1068,11 @@ async function handleEvent(event) {
         gid: gid,
         gameId: gameId,
         title: title,
-        note: '',
+        date: pDate,
+        time: pTime,
+        location: pLoc,
+        fee: pFee,
+        note: pNote === '無' || pNote === '空' ? '' : pNote,
         active: true,
         startTime: Date.now(),
         lastActiveTime: Date.now(),
