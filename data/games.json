@@ -14,7 +14,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379080075,
-    "lastActiveTime": 1782393265796,
+    "lastActiveTime": 1782393340568,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -43,7 +43,8 @@
           "CC",
           "Iven",
           "Mina",
-          "Jim"
+          "Jim",
+          "King"
         ]
       }
     ]
