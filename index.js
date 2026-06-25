@@ -1193,6 +1193,54 @@ app.post('/api/action', express.json(), async (req, res) => {
       return res.json({ success: true });
     }
     
+    if (action === 'editGame') {
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能編輯場次' });
+      }
+      if (!gameId || !games[gameId]) {
+        return res.status(404).json({ error: '找不到該場次' });
+      }
+      
+      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder } = req.body;
+      const game = games[gameId];
+      
+      game.title = title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽球接龍';
+      game.date = date || '';
+      game.time = time || '';
+      game.location = loc || '';
+      game.fee = fee || '';
+      game.note = note || '';
+      game.tag = tag || '';
+      
+      if (game.sections && game.sections[0]) {
+        game.sections[0].limit = parseInt(limit, 10) || 20;
+        game.sections[0].backupLimit = parseInt(backupLimit, 10) || 0;
+      }
+      
+      let pPublish = null;
+      if (publish) {
+         let ptStr = publish.replace('T', ' ');
+         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
+         const dt = new Date(ptStr);
+         if (!isNaN(dt.getTime())) pPublish = dt.getTime();
+      }
+      game.scheduleTime = pPublish;
+      
+      let pReminder = null;
+      if (reminder) {
+         let rtStr = reminder.replace('T', ' ');
+         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
+         const dt = new Date(rtStr);
+         if (!isNaN(dt.getTime())) pReminder = dt.getTime();
+      }
+      game.reminderTime = pReminder;
+      
+      await saveGame(gameId, true);
+      
+      return res.json({ success: true });
+    }
+    
     if (action === 'customPush') {
       const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {

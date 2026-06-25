@@ -121,7 +121,10 @@
           <button id="btn-back" class="btn-icon">⬅ 返回</button>
           <h2 id="detail-title" style="margin-left: 10px; margin-bottom: 0;">場次明細</h2>
         </div>
-        <button id="btn-close-game" class="btn-danger hidden" style="padding: 5px 10px; font-size: 12px; margin: 0;">結束場次</button>
+        <div style="display:flex; gap: 5px;">
+          <button id="btn-edit-game" class="btn-primary hidden" style="padding: 5px 10px; font-size: 12px; margin: 0; background-color: #2196F3;">編輯</button>
+          <button id="btn-close-game" class="btn-danger hidden" style="padding: 5px 10px; font-size: 12px; margin: 0;">結束</button>
+        </div>
       </header>
       
       <div class="detail-stats">
@@ -133,6 +136,71 @@
 
       <div id="detail-list" class="list-container">
         <!-- JS 將在這裡生成名單 -->
+      </div>
+    </div>
+
+    <!-- 編輯場次視圖 -->
+    <div id="edit-game-view" class="view hidden">
+      <header class="detail-header">
+        <button id="btn-cancel-edit" class="btn-icon">⬅ 取消</button>
+        <h2>編輯場次</h2>
+      </header>
+      
+      <div class="form-container">
+        <input type="hidden" id="eg-gameId">
+        <div class="form-group">
+          <label>標題 (選填)</label>
+          <input type="text" id="eg-title" placeholder="例如：週二晚間快樂打">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>日期 (必填)</label>
+            <input type="text" id="eg-date" placeholder="例如：10/25 (二)">
+          </div>
+          <div class="form-group">
+            <label>時間 (必填)</label>
+            <input type="text" id="eg-time" placeholder="例如：18:00~20:00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>地點 (必填)</label>
+          <input type="text" id="eg-loc" placeholder="例如：南港運動中心">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>費用 (選填)</label>
+            <input type="text" id="eg-fee" placeholder="例如：200">
+          </div>
+          <div class="form-group">
+            <label>標籤 (選填)</label>
+            <input type="text" id="eg-tag" placeholder="例如：歡樂場,新手友善">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>人數上限</label>
+            <input type="number" id="eg-limit" min="1">
+          </div>
+          <div class="form-group">
+            <label>候補上限</label>
+            <input type="number" id="eg-backup" min="0">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>發布時間 (選填)</label>
+            <input type="datetime-local" id="eg-publish">
+          </div>
+          <div class="form-group">
+            <label>提醒時間 (選填)</label>
+            <input type="datetime-local" id="eg-reminder">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>備註 (選填)</label>
+          <textarea id="eg-note" rows="3" placeholder="其他注意事項..."></textarea>
+        </div>
+        <button id="btn-submit-edit" class="btn-primary" style="margin-top: 15px;">儲存變更</button>
       </div>
     </div>
   </div>

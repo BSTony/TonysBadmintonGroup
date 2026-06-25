@@ -357,9 +357,16 @@ function renderDetail(gameId) {
   else detailTitle.style.display = 'block';
   
   const btnCloseGame = document.getElementById('btn-close-game');
-  if (btnCloseGame) {
-    if (globalIsAdmin) btnCloseGame.classList.remove('hidden');
-    else btnCloseGame.classList.add('hidden');
+  const btnEditGame = document.getElementById('btn-edit-game');
+  if (globalIsAdmin) {
+    if (btnCloseGame) btnCloseGame.classList.remove('hidden');
+    if (btnEditGame) {
+      btnEditGame.classList.remove('hidden');
+      btnEditGame.onclick = () => showEditGameForm(gameId);
+    }
+  } else {
+    if (btnCloseGame) btnCloseGame.classList.add('hidden');
+    if (btnEditGame) btnEditGame.classList.add('hidden');
   }
   
   const section = game.sections[0] || { list: [], limit: 20 };
@@ -993,4 +1000,103 @@ document.getElementById('btn-submit-create').onclick = async () => {
     statusMsg.style.display = 'none';
   }
 };
+
+// ================= Edit Game UI =================
+const editGameView = document.getElementById('edit-game-view');
+
+function showEditGameForm(gameId) {
+  const game = gamesList.find(g => g.gameId === gameId);
+  if (!game) return;
+  
+  detailView.classList.add('hidden');
+  editGameView.classList.remove('hidden');
+  
+  document.getElementById('eg-gameId').value = gameId;
+  document.getElementById('eg-title').value = game.title || '';
+  document.getElementById('eg-date').value = game.date || '';
+  document.getElementById('eg-time').value = game.time || '';
+  document.getElementById('eg-loc').value = game.location || '';
+  document.getElementById('eg-fee').value = game.fee || '';
+  document.getElementById('eg-tag').value = game.tag || '';
+  
+  const section = game.sections[0] || {};
+  document.getElementById('eg-limit').value = section.limit || 20;
+  document.getElementById('eg-backup').value = section.backupLimit || 0;
+  document.getElementById('eg-note').value = game.note || '';
+  
+  // Format timestamps to datetime-local
+  const fmt = (ts) => {
+    if (!ts) return '';
+    const d = new Date(ts);
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(d - tzOffset)).toISOString().slice(0, 16);
+    return localISOTime;
+  };
+  document.getElementById('eg-publish').value = fmt(game.scheduleTime);
+  document.getElementById('eg-reminder').value = fmt(game.reminderTime);
+}
+
+document.getElementById('btn-cancel-edit').onclick = () => {
+  editGameView.classList.add('hidden');
+  detailView.classList.remove('hidden');
+};
+
+document.getElementById('btn-submit-edit').onclick = async () => {
+  const gameId = document.getElementById('eg-gameId').value;
+  const dateStr = document.getElementById('eg-date').value.trim();
+  const timeStr = document.getElementById('eg-time').value.trim();
+  const locStr = document.getElementById('eg-loc').value.trim();
+  
+  if (!dateStr || !timeStr || !locStr) {
+    alert('「日期」、「時間」、「地點」為必填欄位！');
+    return;
+  }
+  
+  try {
+    appDiv.className = 'loading';
+    statusMsg.style.display = 'block';
+    statusMsg.innerText = '儲存變更中...';
+    
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        gameId: gameId,
+        uid: currentUser.userId,
+        name: currentUser.displayName,
+        action: 'editGame',
+        title: document.getElementById('eg-title').value.trim(),
+        date: dateStr,
+        time: timeStr,
+        loc: locStr,
+        fee: document.getElementById('eg-fee').value.trim(),
+        tag: document.getElementById('eg-tag').value.trim(),
+        limit: document.getElementById('eg-limit').value,
+        backupLimit: document.getElementById('eg-backup').value,
+        publish: document.getElementById('eg-publish').value,
+        reminder: document.getElementById('eg-reminder').value,
+        note: document.getElementById('eg-note').value.trim()
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) {
+      alert(result.error || '儲存失敗');
+    } else {
+      alert('儲存成功！');
+      editGameView.classList.add('hidden');
+      await loadGamesLobby();
+      if (currentGameDetailId === gameId) {
+         renderDetail(gameId);
+      }
+    }
+  } catch(e) {
+    alert('網路錯誤');
+  } finally {
+    appDiv.className = '';
+    statusMsg.style.display = 'none';
+  }
+};
+
 
