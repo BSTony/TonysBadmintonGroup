@@ -70,7 +70,7 @@ async function initializeLiff() {
 async function loadGamesLobby() {
   try {
     appDiv.className = 'loading';
-    statusMsg.innerText = '載入場次中...';
+    statusMsg.innerText = '載入中...';
     
     const res = await fetch(`/api/game/${currentGroupId}`);
     if (!res.ok) {
@@ -87,6 +87,7 @@ async function loadGamesLobby() {
     renderLobby();
   } catch (err) {
     console.error(err);
+    appDiv.className = ''; // 確保發生錯誤時也關閉轉圈圈
     statusMsg.innerText = err.message;
   }
 }
@@ -118,10 +119,14 @@ function renderLobby() {
     let tagsHtml = '';
     if (hasTags) {
        tagsHtml = '<div class="info-tags" style="cursor: pointer; margin: 0; flex: 1;" onclick="showDetail(\'' + game.gameId + '\')">';
+       tagsHtml += '<div class="info-row">';
        if (game.date) tagsHtml += `<span class="info-tag">📅 ${escapeHTML(game.date)}</span>`;
        if (game.time) tagsHtml += `<span class="info-tag">⏰ ${escapeHTML(game.time)}</span>`;
+       tagsHtml += '</div>';
+       tagsHtml += '<div class="info-row" style="margin-top: 4px;">';
        if (game.location) tagsHtml += `<span class="info-tag">📍 ${escapeHTML(game.location)}</span>`;
        if (game.fee) tagsHtml += `<span class="info-tag">💰 ${escapeHTML(game.fee)}</span>`;
+       tagsHtml += '</div>';
        tagsHtml += '</div>';
     }
     
@@ -142,19 +147,21 @@ function renderLobby() {
       </div>
       ${showTitle && hasTags ? `<div style="margin-top: -4px; margin-bottom: 12px;">${tagsHtml}</div>` : ''}
       ${game.note ? `<div class="game-note" style="cursor: pointer" onclick="showDetail('${game.gameId}')">${escapeHTML(game.note)}</div>` : ''}
-      <div class="card-actions">
-        ${isMeRegistered 
-          ? `<button class="btn-danger" onclick="handleAction('${game.gameId}', 'cancel')">-1</button>`
-          : `<button class="btn-primary" onclick="handleAction('${game.gameId}', 'register')">+1</button>`
-        }
+      <div class="action-row">
+        <button class="btn btn-primary btn-square" onclick="handleActionWithInput('${game.gameId}', 'register')">+1</button>
+        <button class="btn btn-danger btn-square" onclick="handleActionWithInput('${game.gameId}', 'cancel')">-1</button>
+        <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="代報名稱 (留空為本人)" />
       </div>
-      <div class="proxy-register">
-        <input type="text" id="proxy-name-${game.gameId}" placeholder="輸入名稱 (代報名)">
-        <button class="btn-secondary" onclick="handleProxyRegister('${game.gameId}')">報名</button>
-      </div>
+      <div id="error-msg-${game.gameId}" class="error-msg"></div>
     `;
     gamesContainer.appendChild(card);
   });
+  
+  // 更新狀態文字 (原本是轉圈圈，現在因為 appDiv.className='' 所以圈圈消失，我們更新文字)
+  const headerP = document.querySelector('.lobby-header p');
+  if (headerP) headerP.innerText = '點選標題進入後，可查看、取消名單';
+  const statusEl = document.getElementById('status-msg');
+  if (statusEl) statusEl.style.display = 'none';
 }
 
 // 處理一般報名或取消
@@ -275,10 +282,14 @@ function renderDetail(gameId) {
   const hasTags = game.date || game.time || game.location || game.fee;
   if (hasTags) {
      let tagsHtml = '<div class="info-tags" style="margin-top: 0;">';
+     tagsHtml += '<div class="info-row">';
      if (game.date) tagsHtml += `<span class="info-tag">📅 ${escapeHTML(game.date)}</span>`;
      if (game.time) tagsHtml += `<span class="info-tag">⏰ ${escapeHTML(game.time)}</span>`;
+     tagsHtml += '</div>';
+     tagsHtml += '<div class="info-row" style="margin-top: 4px;">';
      if (game.location) tagsHtml += `<span class="info-tag">📍 ${escapeHTML(game.location)}</span>`;
      if (game.fee) tagsHtml += `<span class="info-tag">💰 ${escapeHTML(game.fee)}</span>`;
+     tagsHtml += '</div>';
      tagsHtml += '</div>';
      detailList.innerHTML += tagsHtml;
   }
@@ -399,3 +410,71 @@ window.handleCancelByName = async function(gameId, name) {
     await loadGamesLobby();
   }
 };
+
+// 處理新的輸入框報名與防呆
+async function handleActionWithInput(gameId, action) {
+  const inputEl = document.getElementById(`name-input-${gameId}`);
+  const errorEl = document.getElementById(`error-msg-${gameId}`);
+  let name = currentUser.displayName;
+  
+  if (inputEl && inputEl.value.trim()) {
+    name = inputEl.value.trim();
+  }
+  
+  errorEl.style.display = 'none';
+  errorEl.innerText = '';
+  
+  const game = gamesList.find(g => g.gameId === gameId);
+  if (!game) return;
+  
+  const section = game.sections[0] || { list: [] };
+  const exists = section.list.includes(name);
+  
+  if (action === 'register' && exists) {
+    errorEl.innerText = '名稱已重複';
+    errorEl.style.display = 'block';
+    return;
+  }
+  
+  if (action === 'cancel' && !exists) {
+    errorEl.innerText = '找不到此名稱';
+    errorEl.style.display = 'block';
+    return;
+  }
+  
+  try {
+    appDiv.className = 'loading';
+    statusMsg.style.display = 'block';
+    statusMsg.innerText = action === 'register' ? '報名中...' : '取消中...';
+    
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        gameId: gameId,
+        uid: currentUser.userId,
+        name: name,
+        action: action
+      })
+    });
+    
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || '操作失敗');
+    }
+    
+    // 如果是代報，自動清空輸入框，方便報下一個
+    if (inputEl && inputEl.value.trim()) {
+      inputEl.value = '';
+    }
+    
+    await loadGamesLobby();
+  } catch (err) {
+    console.error(err);
+    appDiv.className = '';
+    statusMsg.style.display = 'none';
+    errorEl.innerText = err.message;
+    errorEl.style.display = 'block';
+  }
+}

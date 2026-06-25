@@ -1019,6 +1019,18 @@ async function handleEvent(event) {
   const gid = event.source.groupId || event.source.roomId || event.source.userId;
   const uid = event.source.userId;
   const text = event.message.text.trim();
+  
+  if (text === '接龍密碼 Tony好帥') {
+    if (!groupAdmins[gid]) groupAdmins[gid] = new Set();
+    groupAdmins[gid].add(uid);
+    return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 權限已開通！您現在是本群組的管理員了。' });
+  }
+  
+  // 只允許管理員下達文字指令
+  const isAdmin = groupAdmins[gid] && groupAdmins[gid].has(uid);
+  if (!isAdmin) {
+    return null; // 非管理員，已讀不回
+  }
 
   // 檢查是否為群組首次使用（僅針對群組，使用 replyMessage 而非 pushMessage 節省額度）
   let showWelcome = false;
