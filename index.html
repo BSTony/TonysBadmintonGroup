@@ -3,136 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINE 羽球接龍機器人 - 使用說明</title>
+    <title>LINE 羽球接龍機器人 V2.0</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-            line-height: 1.8;
+            font-family: 'Helvetica Neue', Helvetica, Arial, '微軟正黑體', sans-serif;
+            line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
-            min-height: 100vh;
+            background-color: #f9f9f9;
         }
         
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background-color: #fff;
             padding: 40px;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
-        h1 {
-            color: #2c3e50;
-            border-bottom: 4px solid #667eea;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-            font-size: 2.5em;
-        }
+        h1, h2, h3, h4 { color: #2c3e50; }
         
-        h2 {
-            color: #34495e;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #ecf0f1;
-            font-size: 1.8em;
-        }
+        h1 { border-bottom: 2px solid #D88D93; padding-bottom: 10px; margin-bottom: 30px; }
+        h2 { margin-top: 40px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         
-        h3 {
-            color: #555;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-        
-        p {
-            margin-bottom: 15px;
-        }
-        
-        ul, ol {
-            margin-left: 30px;
-            margin-bottom: 20px;
-        }
-        
-        li {
-            margin-bottom: 8px;
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
         }
         
         code {
-            background: #f4f4f4;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: "Courier New", "Consolas", monospace;
-            font-size: 0.9em;
+            background-color: #f8f9fa;
             color: #e83e8c;
-        }
-        
-        pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 20px 0;
-            border-left: 4px solid #667eea;
-        }
-        
-        pre code {
-            background: transparent;
-            color: inherit;
-            padding: 0;
-        }
-        
-        strong {
-            color: #2c3e50;
-            font-weight: 600;
-        }
-        
-        hr {
-            border: none;
-            border-top: 2px solid #ecf0f1;
-            margin: 30px 0;
-        }
-        
-        .toc {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 4px solid #667eea;
-        }
-        
-        .toc ul {
-            list-style: none;
-            margin-left: 0;
-        }
-        
-        .toc li {
-            margin-bottom: 8px;
-        }
-        
-        .toc a {
-            color: #667eea;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .toc a:hover {
-            color: #764ba2;
-            text-decoration: underline;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
         }
         
         .example-box {
+            background: #e9ecef;
+            border-left: 4px solid #D88D93;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .note-box {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
             padding: 15px;
@@ -140,431 +60,118 @@
             border-radius: 4px;
         }
         
-        .note-box {
-            background: #d1ecf1;
-            border-left: 4px solid #0dcaf0;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        
-        .warning-box {
-            background: #f8d7da;
-            border-left: 4px solid #dc3545;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 4px;
-        }
-        
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            h2 {
-                font-size: 1.5em;
-            }
+            .container { padding: 20px; margin: 10px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>LINE 羽球接龍機器人</h1>
+        <h1>🏸 LINE 羽球接龍機器人 V2.0</h1>
         
-        <p>這是一個用於 LINE 群組的羽球接龍管理機器人，支援多人報名、候補名單、定時提醒等功能。</p>
+        <p>這是一個專為 LINE 群組打造的羽球接龍管理機器人 V2.0，全面升級為「LIFF 網頁大廳」報名模式，並具備嚴格的「管理員權限防護」，確保群組不受機器人洗版，且名單管理安全不手誤。</p>
         
-        <div class="toc">
-            <h2>📋 目錄</h2>
-            <ul>
-                <li><a href="#基本指令">基本指令</a></li>
-                <li><a href="#指令範例">指令範例</a></li>
-                <li><a href="#系統說明">系統說明</a></li>
-                <li><a href="#注意事項">注意事項</a></li>
-                <li><a href="#技術規格">技術規格</a></li>
-            </ul>
-            <h4>5. 查詢報名名單</h4>
-            <p>輸入 <code>接龍名單</code>，機器人會直接在聊天室輸出目前的報名名單與候補狀況。<br>
-            您也可以加上關鍵字，例如 <code>接龍名單 週二</code> 來指定場次。<br>
-            如果在私訊中，同樣支援 <code>接龍名單 群組{代碼} 週二</code> 的語法！</p>
-        </div>
-        <hr>
-        
-        <h2 id="基本指令">📝 基本指令</h2>
-        
-        <h3>1. 接龍開始</h3>
-        <p>建立新的接龍活動，可設定標題、人數、候補、初始名單、匿名名單和定時時間。</p>
-        
-        <p><strong>格式：</strong></p>
-        <pre><code>接龍開始
-標題{標題名稱}
-人數{正取名額}
-候補{候補名額}
-名單{初始名單，用逗號或換行分隔}
-匿名名單{匿名數量或匿名名單}
-標籤{客製化標籤，如：微初至中階}
-時間{YYYY/MM/DD HH:mm}</code></pre>
-        
-        <p><strong>說明：</strong></p>
-        <ul>
-            <li><code>群組</code>：可選，輸入目標群組的 4 位數代碼（由 <code>群組代碼</code> 指令獲取），即可從私訊或其他群組遠端建立場次</li>
-            <li><code>標題</code>：接龍活動的標題（預設：羽球接龍）</li>
-            <li><code>人數</code>：正取名額（預設：20）</li>
-            <li><code>候補</code>：候補名額（預設：5）</li>
-            <li><code>名單</code>：初始報名名單，可用逗號或換行分隔多個名字。若要設定程度可用括號或減號（例如 <code>Tony(高階)</code> 或 <code>Kay-新手</code>）</li>
-            <li><code>匿名名單</code>：可輸入數字（如 <code>{3}</code> 表示 3 個匿名）或匿名名單</li>
-            <li><code>標籤</code>：客製化標籤，會顯示在 LIFF 介面上方的灰色小牌子</li>
-            <li><code>時間</code>：定時開始時間，格式為 <code>YYYY/MM/DD HH:mm</code>（台灣時間）</li>
-        </ul>
-        
-        <div class="example-box">
-            <p><strong>範例：</strong></p>
-            <pre><code>接龍開始
-群組{5821}
-標題{週末羽球團}
-人數{21}
-候補{5}
-名單{AA(高階), BB-新手, CC}
-標籤{中階場}
-時間{2026/01/06 20:00}</code></pre>
-        </div>
-        
-        <div class="example-box">
-            <pre><code>接龍開始
-標題{平日晨間團}
-人數{10}
-候補{3}
-匿名名單{2}
-時間{2026/01/10 08:00}</code></pre>
-            <h4>4. 查詢群組代碼</h4>
-            <p>輸入 <code>群組代碼</code> 或是 <code>群組碼</code>，機器人會告訴您本群組專屬的 4 位數代碼。<br>您可以在與機器人的一對一私訊中，於建立指令中加入 <code>群組{代碼}</code>，這樣機器人就會把場次直接發送到該群組，不會在群組內留下設定的文字喔！</p>
-            <h4>5. 查詢報名名單</h4>
-            <p>輸入 <code>接龍名單</code>，機器人會直接在聊天室輸出目前的報名名單與候補狀況。<br>
-            您也可以加上關鍵字，例如 <code>接龍名單 週二</code> 來指定場次。<br>
-            如果在私訊中，同樣支援 <code>接龍名單 群組{代碼} 週二</code> 的語法！</p>
-        </div>
-        <hr>
-        
-        <h3>2. 報名 (+1 到 +9)</h3>
-        <p>報名參加接龍，可一次報名多人或匿名。支援靈活的格式，+N 和名字之間可以沒有空白。</p>
-        
-        <p><strong>格式：</strong></p>
-        <pre><code>+N[名字]        // +N 在開頭，直接連接名字（無空白）
-+N [名字]       // +N 在開頭，後面有空白
-[名字]+N        // +N 在結尾，直接連接名字（無空白）
-[名字] +N       // +N 在結尾，前面有空白
-+N              // 只有 +N（N=1），自動使用 LINE 顯示名稱報名</code></pre>
-        
-        <p><strong>說明：</strong></p>
-        <ul>
-            <li><code>+N</code>：N 為 1-9 的數字，表示報名 N 人（只支援 +1 到 +9）</li>
-            <li>+N 可以在開頭或結尾，與名字之間可以沒有空白</li>
-            <li>若輸入名字，則使用指定名字報名</li>
-            <li>若輸入「匿名」，則報名匿名名額</li>
-            <li>若只輸入 <code>+1</code> 且無名字，則自動使用 LINE 顯示名稱報名</li>
-        </ul>
-        
-        <div class="example-box">
-            <p><strong>範例：</strong></p>
-            <pre><code>+1              // 使用 LINE 顯示名稱報名
-+1AA            // 報名 AA（無空白）
-+1 AA           // 報名 AA（有空白）
-AA+1            // 報名 AA（無空白）
-AA +1           // 報名 AA（有空白）
-+2 小明 小華     // 報名小明和小華
-+3 匿名          // 報名 3 個匿名
-+1 張三          // 報名張三</code></pre>
-        </div>
-        
-        <div class="note-box">
-            <p><strong>注意：</strong></p>
-            <ul>
-                <li>若接龍已設定定時開始時間且尚未到時間，會提示等待開始</li>
-                <li>名單中不能有重複的名字（匿名除外）</li>
-            </ul>
-            <h4>5. 查詢報名名單</h4>
-            <p>輸入 <code>接龍名單</code>，機器人會直接在聊天室輸出目前的報名名單與候補狀況。<br>
-            您也可以加上關鍵字，例如 <code>接龍名單 週二</code> 來指定場次。<br>
-            如果在私訊中，同樣支援 <code>接龍名單 群組{代碼} 週二</code> 的語法！</p>
-        </div>
-        <hr>
-        
-        <h3>3. 取消報名 (-1 到 -9)</h3>
-        <p>取消自己的報名或指定名字的報名。支援靈活的格式，-N 和名字之間可以沒有空白。</p>
-        
-        <p><strong>格式：</strong></p>
-        <pre><code>-N[名字]        // -N 在開頭，直接連接名字（無空白）
--N [名字]       // -N 在開頭，後面有空白
-[名字]-N        // -N 在結尾，直接連接名字（無空白）
-[名字] -N       // -N 在結尾，前面有空白
--N              // 只有 -N（N=1），取消自己的報名</code></pre>
-        
-        <p><strong>說明：</strong></p>
-        <ul>
-            <li><code>-N</code>：N 為 1-9 的數字（只支援 -1 到 -9）</li>
-            <li>-N 可以在開頭或結尾，與名字之間可以沒有空白</li>
-            <li><code>-1</code>：取消自己的報名（使用 LINE 顯示名稱）</li>
-            <li><code>-1 [名字]</code> 或 <code>[名字] -1</code>：取消指定名字的報名</li>
-            <li><code>-1 匿名</code>：取消最後一個匿名名額</li>
-        </ul>
-        
-        <div class="example-box">
-            <p><strong>範例：</strong></p>
-            <pre><code>-1              // 取消自己的報名
--1AA            // 取消 AA 的報名（無空白）
--1 AA           // 取消 AA 的報名（有空白）
-AA-1            // 取消 AA 的報名（無空白）
-AA -1           // 取消 AA 的報名（有空白）
--1 小明          // 取消小明的報名
--1 匿名          // 取消最後一個匿名名額</code></pre>
-        </div>
-        
-        <div class="note-box">
-            <p><strong>注意：</strong></p>
-            <p>若接龍已設定定時開始時間且尚未到時間，會提示等待開始</p>
-            <h4>5. 查詢報名名單</h4>
-            <p>輸入 <code>接龍名單</code>，機器人會直接在聊天室輸出目前的報名名單與候補狀況。<br>
-            您也可以加上關鍵字，例如 <code>接龍名單 週二</code> 來指定場次。<br>
-            如果在私訊中，同樣支援 <code>接龍名單 群組{代碼} 週二</code> 的語法！</p>
-        </div>
-        <hr>
-        
-        <h3>4. 接龍名單</h3>
-        <p>查詢當前接龍名單，或批量添加名單。</p>
-        
-        <p><strong>格式：</strong></p>
-        <pre><code>接龍名單
-接龍名單#
-接龍名單 名字1 名字2 名字3</code></pre>
-        
-        <p><strong>說明：</strong></p>
-        <ul>
-            <li><code>接龍名單</code> 或 <code>接龍名單#</code>：查詢當前名單</li>
-            <li><code>接龍名單 [名字...]</code>：批量添加多個名字到名單中</li>
-        </ul>
-        
-        <div class="example-box">
-            <p><strong>範例：</strong></p>
-            <pre><code>接龍名單
-接龍名單 王五 李六 陳七</code></pre>
-            <h4>5. 查詢報名名單</h4>
-            <p>輸入 <code>接龍名單</code>，機器人會直接在聊天室輸出目前的報名名單與候補狀況。<br>
-            您也可以加上關鍵字，例如 <code>接龍名單 週二</code> 來指定場次。<br>
-            如果在私訊中，同樣支援 <code>接龍名單 群組{代碼} 週二</code> 的語法！</p>
-        </div>
-        <hr>
-        
-        <h3>5. 接龍修改 / 接龍修正</h3>
-        <p>修改進行中的接龍設定（標題、人數、候補、名單）。</p>
-        
-        <p><strong>格式：</strong></p>
-        <pre><code>接龍修改
-標題{新標題}
-人數{新人數}
-候補{新候補數}
-標籤{新標籤}
-名單{新名單}</code></pre>
-        
-        <p><strong>說明：</strong></p>
-        <ul>
-            <li>可單獨修改任一項目，或同時修改多個項目</li>
-            <li>修改人數時，若新人數低於當前報名人數，超出的人員會自動顯示為候補</li>
-            <li>修改名單時會檢查重複</li>
-        </ul>
-        
-        <div class="example-box">
-            <p><strong>範例：</strong></p>
-            <pre><code>接龍修改
-標題{週末羽球團（更新）}
-人數{25}
-候補{10}</code></pre>
-        </div>
-        
-        <div class="example-box">
-            <pre><code>接龍修正
-名單{AA,BB,CC,DD,EE}</code></pre>
-            <h4>5. 查詢報名名單</h4>
-            <p>輸入 <code>接龍名單</code>，機器人會直接在聊天室輸出目前的報名名單與候補狀況。<br>
-            您也可以加上關鍵字，例如 <code>接龍名單 週二</code> 來指定場次。<br>
-            如果在私訊中，同樣支援 <code>接龍名單 群組{代碼} 週二</code> 的語法！</p>
-        </div>
-        <hr>
-        
-        <h3>6. 接龍結束</h3>
-        <p>結束當前的接龍活動，刪除所有資料。</p>
-        
-        <p><strong>格式：</strong></p>
-        <pre><code>接龍結束</code></pre>
-        
-        <p><strong>說明：</strong></p>
-        <ul>
-            <li>會完全刪除該群組的接龍資料</li>
-            <li>無法復原</li>
-        </ul>
-        
-        <hr>
-        
-        <h3>7. 接龍清空</h3>
-        <p>清空當前接龍的所有報名名單，但保留接龍設定。</p>
-        
-        <p><strong>格式：</strong></p>
-        <pre><code>接龍清空</code></pre>
-        
-        <p><strong>說明：</strong></p>
-        <ul>
-            <li>只清空名單，不刪除接龍設定（標題、人數等）</li>
-            <li>接龍仍可繼續使用</li>
-        </ul>
-        
-        <hr>
-        
-        <h3>8. 接龍刪除</h3>
-        <p>刪除接龍設定（等同於接龍結束）。</p>
-        
-        <p><strong>格式：</strong></p>
-        <pre><code>接龍刪除</code></pre>
-        
-        <hr>
-        
-        <h2 id="指令範例">📖 指令範例</h2>
-        
-        <h3>完整範例 1：基本接龍流程</h3>
-        <div class="example-box">
-            <pre><code>1. 建立接龍：
-接龍開始
-群組{5821}
-標題{週末羽球團}
-人數{21}
-候補{5}
-名單{AA,BB,CC}
-時間{2026/01/06 20:00}
-
-2. 報名：
-+1              // 使用 LINE 顯示名稱
-+1AA            // 報名 AA（無空白格式）
-+1 小明          // 報名小明（有空白格式）
-AA+1            // 報名 AA（結尾格式）
-+2 小華 小美     // 報名多人
-
-3. 查看名單：
-接龍名單
-
-4. 取消報名：
--1              // 取消自己的報名
-AA-1            // 取消 AA 的報名
--1 小明          // 取消小明的報名
-
-5. 結束接龍：
-接龍結束</code></pre>
-        </div>
-        
-        <h3>完整範例 2：匿名接龍</h3>
-        <div class="example-box">
-            <pre><code>1. 建立匿名接龍：
-接龍開始
-標題{匿名羽球團}
-人數{10}
-候補{3}
-匿名名單{5}
-
-2. 報名匿名：
-+3 匿名
-
-3. 取消匿名：
--1 匿名</code></pre>
-        </div>
-        
-        <h3>完整範例 3：修改接龍</h3>
-        <div class="example-box">
-            <pre><code>1. 建立接龍：
-接龍開始
-標題{羽球團}
-人數{20}
-候補{5}
-
-2. 修改設定：
-接龍修改
-標題{羽球團（更新）}
-人數{25}
-候補{10}</code></pre>
-            <h4>5. 查詢報名名單</h4>
-            <p>輸入 <code>接龍名單</code>，機器人會直接在聊天室輸出目前的報名名單與候補狀況。<br>
-            您也可以加上關鍵字，例如 <code>接龍名單 週二</code> 來指定場次。<br>
-            如果在私訊中，同樣支援 <code>接龍名單 群組{代碼} 週二</code> 的語法！</p>
-        </div>
-        <hr>
-        
-        <h2 id="系統說明">⚙️ 系統說明</h2>
-        
-        <h3>資料儲存機制</h3>
-        <ul>
-            <li><strong>PostgreSQL 模式</strong>：若設定 <code>DATABASE_URL</code> 環境變數，資料會儲存到 PostgreSQL</li>
-            <li><strong>檔案模式</strong>：若無資料庫，資料會儲存到 <code>games.json</code> 檔案</li>
-            <li><strong>自動備份</strong>：資料庫模式失敗時會自動降級到檔案模式</li>
-        </ul>
-        
-        <h3>定時推播機制</h3>
-        <ul>
-            <li>每分鐘的 00 秒檢查一次排程</li>
-            <li>到達設定時間時會自動推播接龍名單</li>
-            <li>推播後會自動移除排程設定，避免重複觸發</li>
-        </ul>
-        
-        <h3>自動清理機制</h3>
-        <ul>
-            <li>若群組接龍 7 天無任何操作，會自動刪除該群組資料與 CSV 快照</li>
-            <li>每日 00:00 檢查一次過期資料</li>
-        </ul>
-        
-        <h3>保活機制</h3>
-        <ul>
-            <li>每 10 分鐘自動 ping <code>/health</code> 端點</li>
-            <li>用於保持服務器喚醒（適用於 Render、Heroku 等平台）</li>
-        </ul>
-        
-        <h3>日誌記錄</h3>
-        <ul>
-            <li>只記錄重要事件：<code>ERROR</code>、<code>TRIGGER</code>、<code>WARN</code>、<code>SUCCESS</code></li>
-            <li>日誌檔案：<code>schedule.log</code></li>
-            <li>當日誌檔案超過 1MB 時會自動清空</li>
-        </ul>
-        
-        <h3>健康檢查端點</h3>
-        <ul>
-            <li><code>GET /health</code>：返回系統健康狀態</li>
-            <li><code>GET /</code>：返回基本狀態資訊</li>
-        </ul>
-        
-        <hr>
-        
-        <h2 id="注意事項">📝 注意事項</h2>
+        <h2>🌟 V2.0 全新亮點</h2>
         <ol>
-            <li><strong>時區設定</strong>：系統強制使用台灣時間（Asia/Taipei）</li>
-            <li><strong>定時時間</strong>：輸入的時間會被視為台灣時間，系統會自動轉換為 UTC</li>
-            <li><strong>重複檢查</strong>：名單中不能有重複的名字（匿名占位符除外）</li>
-            <li><strong>定時限制</strong>：若設定了定時開始時間，在時間到達前無法使用 <code>+</code> / <code>-</code> 指令</li>
-            <li><strong>資料過期</strong>：接龍資料超過 7 天會自動刪除</li>
-            <li><strong>匿名顯示</strong>：匿名名額在名單中會顯示為 <code>***</code>，連續的匿名會摺疊顯示</li>
+            <li><strong>全面採用 LIFF 網頁大廳</strong>：告別過去在群組內 +1 洗版的困擾！所有報名、取消、查看名單的操作，皆在精緻的網頁 UI 中完成。</li>
+            <li><strong>管理員專屬權限</strong>：只有透過通關密語升級為「管理員」的人，才能對機器人下達文字指令。其他群友輸入指令，機器人將一律「已讀不回」。</li>
+            <li><strong>即時防呆與取消保護</strong>：網頁介面即時檢查名稱是否重複。防誤刪機制確保只有幫該名稱報名的人（或本人）才有權限取消報名。</li>
+            <li><strong>貼心狀態顯示</strong>：進入名單明細，若您（或您代報的人）已在名單中，會貼心顯示 <code>(已報名)</code>。</li>
         </ol>
         
         <hr>
         
-        <h2 id="技術規格">🛠️ 技術規格</h2>
+        <h2>👑 管理員權限開通</h2>
+        <p>在群組內輸入以下通關密語，即可成為該群組的管理員：</p>
+        <pre><code>接龍密碼 Tony好帥</code></pre>
+        <p>機器人會回覆：「✅ 權限已開通！您現在是本群組的管理員了。」</p>
+        <div class="note-box">
+            <p>⚠️ <strong>注意：</strong>只有取得管理員身分的人，機器人才會回應下方的文字指令。一般群友請直接點擊大廳網址進行報名。</p>
+        </div>
+        
+        <hr>
+        
+        <h2>📝 管理員專用文字指令</h2>
+        
+        <h3>1. 建立場次 (接龍開始)</h3>
+        <p>在群組內輸入 <code>接龍開始</code> 並加上欄位資訊。系統會自動在網頁大廳建立精緻的卡片。</p>
+        
+        <div class="example-box">
+            <p><strong>格式範例：</strong></p>
+            <pre><code>接龍開始
+群組{5821}
+日期：星期二
+時間：晚6~8
+地點：南港運動中心
+費用：230
+人數{21}
+候補{5}
+名單{AA(高階), BB-新手, CC}
+標籤{中階場}
+發布時間{2026/01/06 20:00}備註：新手友善，請自備零錢</code></pre>
+        </div>
+        
         <ul>
-            <li><strong>運行環境</strong>：Node.js</li>
-            <li><strong>框架</strong>：Express.js</li>
-            <li><strong>LINE Bot SDK</strong>：@line/bot-sdk</li>
-            <li><strong>資料庫</strong>：PostgreSQL</li>
+            <li><code>群組：</code>（選填，輸入目標群組的 4 位數代碼，即可從外部將場次直接發布至該群組）</li>
+            <li><code>標題：</code>（選填，若無填寫則自動組合日期時間地點作為標題）</li>
+            <li><code>日期：</code>、<code>時間：</code>、<code>地點：</code>、<code>費用：</code>（皆選填）</li>
+            <li><code>人數：</code>（正取名額，預設 20）</li>
+            <li><code>候補{n}</code>：候補名額，預設 5</li>
+            <li><code>名單{初始名單}</code>：預先帶入的名單，用逗號或換行分隔多個名字。</li>
+            <li><code>發布時間：</code>（設定自動推播大廳連結的時間，格式 YYYY/MM/DD HH:mm）</li>
+            <li><code>提醒時間：</code>（設定開打前的溫馨提醒推播時間，格式 YYYY/MM/DD HH:mm）</li>
+        </ul>
+        
+        <h3>2. 修改場次 (接龍修改)</h3>
+        <p>若要修改特定場次的資訊，可加上「關鍵字」指定要修改哪一天的場次。</p>
+        <div class="example-box">
+            <pre><code>接龍修改 星期二 人數：25
+接龍修改 星期四 地點：玉成國小
+接龍修改 南港 備註：改成自備羽球</code></pre>
+        </div>
+        
+        <h3>3. 結束/清空場次</h3>
+        <ul>
+            <li><code>接龍結束 星期二</code>：關閉並移除標題包含「星期二」的場次。</li>
+            <li><code>接龍清空</code>：一鍵刪除群組內所有的場次。</li>
+            <li>💡 <strong>進階用法</strong>：在私訊中輸入 <code>接龍清空 群組{代碼}</code> 可以直接清空遠端群組內的場次。</li>
+        </ul>
+        
+        <h3>4. 查詢報名名單</h3>
+        <ul>
+            <li><code>接龍名單</code>：機器人會直接輸出目前群組所有場次的詳細報名名單與候補名單。</li>
+            <li><code>接龍名單 關鍵字</code>：例如 <code>接龍名單 週二</code>，只列出包含「週二」的場次名單。</li>
+            <li><code>接龍名單 群組{代碼}</code>：從私訊查詢遠端群組的名單，例如 <code>接龍名單 群組{5821} 週二</code>。</li>
+        </ul>
+        
+        <h3>5. 群組代碼</h3>
+        <ul>
+            <li>輸入 <code>群組代碼</code>，機器人會回覆該群組的 4 位數專屬代碼。</li>
+            <li>您可以記下此代碼，並在私訊建立場次時加上 <code>群組{代碼}</code>，機器人就會將建立好的場次直接推播到該群組！</li>
+        </ul>
+        
+        <h3>6. 呼叫大廳</h3>
+        <ul>
+            <li><code>接龍大廳</code>：機器人會再次發送大廳的專屬連結到群組中。</li>
         </ul>
         
         <hr>
         
-        <h2 id="問題回報">📞 問題回報</h2>
-        <p>如有問題或建議，請聯繫開發者。</p>
+        <h2>🏸 一般群友如何報名？</h2>
+        <p>一般使用者<strong>不需要</strong>輸入任何文字指令。</p>
+        <ol>
+            <li>點擊群組內的<strong>「羽球接龍大廳」網址</strong>。</li>
+            <li>進入大廳後，選擇想打球的場次。</li>
+            <li>點擊卡片上的 <code>[+1]</code> 即可以自己的 LINE 名稱報名。</li>
+            <li>若要幫朋友代報，只要在名稱框框內打字，再點擊 <code>[+1]</code> 即可。</li>
+            <li>取消同理，點擊 <code>[-1]</code> 即可取消本人報名，或在框框內輸入朋友名字後點擊 <code>[-1]</code> 來取消代報。</li>
+        </ol>
+        
+        <div class="note-box">
+            <p>🛡️ <strong>防護機制：</strong>系統嚴格規定，如果您沒有幫「小明」報名，您就無法點擊 <code>-1</code> 取消小明的位置！會跳出紅字錯誤保護名單安全。</p>
+        </div>
         
     </div>
 </body>
