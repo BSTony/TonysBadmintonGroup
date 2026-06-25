@@ -1332,6 +1332,11 @@ app.get('/api/game/:gid', async (req, res) => {
     if (g.gid === gid) return true;
     if (g.targetGids && g.targetGids.includes(gid)) return true;
     
+    // 超級管理員模式：如果在個人聊天室中，且是 SUPER_ADMIN，則顯示系統內「所有」活躍場次
+    if (gid === uid && process.env.SUPER_ADMIN_USER_ID && uid === process.env.SUPER_ADMIN_USER_ID) {
+      return true;
+    }
+    
     // 如果管理員是從個人聊天室/直接網址進入 (gid === uid)，顯示所有他管理的群組的場次
     if (gid === uid) {
       // 檢查此場次是否屬於他管理的任何一個群組
