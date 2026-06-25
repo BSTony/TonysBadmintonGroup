@@ -20,11 +20,14 @@ function showFloatingEmoji(e, emoji) {
   setTimeout(() => el.remove(), 800);
 }
 
-let currentGroupId = null;
+// === 全域狀態 ===
 let currentUser = null;
+let currentGroupId = null;
+let currentDetailGame = null;
+let gamesList = [];
 let globalIsAdmin = false;
 let globalManagedGroups = [];
-let gamesList = [];
+let globalLobbyTitle = '羽球接龍大廳';
 let currentGameDetailId = null;
 
 // DOM 元素
@@ -108,6 +111,7 @@ async function loadGamesLobby() {
       gamesList = data.games || [];
       globalIsAdmin = !!data.isAdmin;
       globalManagedGroups = data.managedGroups || [];
+      globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
     }
 
     renderLobby();
@@ -124,6 +128,15 @@ function renderLobby() {
     appDiv.className = '';
     lobbyView.classList.remove('hidden');
     detailView.classList.add('hidden');
+    
+    document.getElementById('lobby-title-text').innerText = globalLobbyTitle || '羽球接龍大廳';
+    const btnEditTitle = document.getElementById('btn-edit-title');
+    if (globalIsAdmin && btnEditTitle) {
+      btnEditTitle.classList.remove('hidden');
+      btnEditTitle.onclick = handleEditLobbyTitle;
+    } else if (btnEditTitle) {
+      btnEditTitle.classList.add('hidden');
+    }
     
     let pushBtn = document.getElementById('admin-create-game-btn');
     if (globalIsAdmin) {
@@ -243,6 +256,37 @@ function renderLobby() {
   if (headerP) headerP.innerText = '點選標題進入後，可查看、取消名單';
   const statusEl = document.getElementById('status-msg');
   if (statusEl) statusEl.style.display = 'none';
+}
+
+async function handleEditLobbyTitle() {
+  const newTitle = prompt('請輸入新的大廳標題：', globalLobbyTitle || '');
+  if (newTitle === null) return;
+  try {
+    appDiv.className = 'loading';
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        uid: currentUser.userId,
+        action: 'updateLobbyTitle',
+        text: newTitle
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.lobbyTitle) {
+        globalLobbyTitle = data.lobbyTitle;
+        renderLobby();
+      }
+    } else {
+      alert('修改失敗');
+    }
+  } catch(e) {
+    alert('網路錯誤');
+  } finally {
+    appDiv.className = '';
+  }
 }
 
 // 處理一般報名或取消
@@ -932,18 +976,31 @@ function showCreateGameForm() {
   document.getElementById('cg-time-end').value = '20:00';
   
   // 填入目標群組選單
-  const targetGidSelect = document.getElementById('cg-target-gid');
-  targetGidSelect.innerHTML = '';
+  const cgTargetGidsContainer = document.getElementById('cg-target-gids-container');
+  cgTargetGidsContainer.innerHTML = '';
   if (globalManagedGroups.length > 0) {
     globalManagedGroups.forEach(g => {
-      const opt = document.createElement('option');
-      opt.value = g.gid;
-      opt.innerText = `群組代碼：${g.code}`;
-      if (g.gid === currentGroupId) opt.selected = true;
-      targetGidSelect.appendChild(opt);
+      const lbl = document.createElement('label');
+      lbl.style.display = 'flex';
+      lbl.style.alignItems = 'center';
+      lbl.style.gap = '8px';
+      lbl.style.cursor = 'pointer';
+      
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.name = 'targetGids';
+      chk.value = g.gid;
+      if (g.gid === currentGroupId) chk.checked = true; // 預設勾選目前群組
+      
+      const span = document.createElement('span');
+      span.innerText = g.code === '目前群組' ? `${g.groupName} (目前群組)` : `${g.groupName} (${g.code})`;
+      
+      lbl.appendChild(chk);
+      lbl.appendChild(span);
+      cgTargetGidsContainer.appendChild(lbl);
     });
   } else {
-    targetGidSelect.innerHTML = `<option value="${currentGroupId}">目前群組</option>`;
+    cgTargetGidsContainer.innerHTML = '<p>無法取得您的管理群組</p>';
   }
   
   loadTemplates();
@@ -965,9 +1022,9 @@ document.getElementById('btn-submit-create').onclick = async () => {
   const timeStr = (tsStart && tsEnd) ? `${tsStart}~${tsEnd}` : (tsStart || tsEnd || '');
   
   const locStr = document.getElementById('cg-loc').value.trim();
-  const targetGid = document.getElementById('cg-target-gid').value;
+  const targetGids = Array.from(document.querySelectorAll('input[name="targetGids"]:checked')).map(el => el.value);
   
-  if (!rawDateStr || !timeStr || !locStr || !targetGid) {
+  if (!rawDateStr || !timeStr || !locStr || targetGids.length === 0) {
     alert('「目標群組」、「日期」、「時間」、「地點」為必填欄位！');
     return;
   }
@@ -982,7 +1039,7 @@ document.getElementById('btn-submit-create').onclick = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         gid: currentGroupId,
-        targetGid: targetGid,
+        targetGids: targetGids,
         gameId: 'dummy',
         uid: currentUser.userId,
         name: currentUser.displayName,

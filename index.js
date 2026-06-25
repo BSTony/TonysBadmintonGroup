@@ -12,18 +12,21 @@ const LOG_FILE = path.join(__dirname, 'schedule.log');
 // 欄位：gid,sectionIdx,name
 let groupAdmins = {}; // { gid: Set<uid> }
 let groupCodes = {}; // { '1234': 'Cxxxx' }
+let groupSettings = {}; // { gid: { lobbyTitle, groupName } }
 
 const DATA_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 
 const ADMINS_FILE = path.join(__dirname, 'data/groupAdmins.json');
 const GROUP_CODES_FILE = path.join(__dirname, 'data/groupCodes.json');
+const GROUP_SETTINGS_FILE = path.join(__dirname, 'data/groupSettings.json');
 const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 
 // 讀取既有設定
 let adminsSha = null;
 let codesSha = null;
+let settingsSha = null;
 
 async function loadData() {
   // Load from local fallback first
@@ -39,6 +42,11 @@ async function loadData() {
   if (fs.existsSync(GROUP_CODES_FILE)) {
     try {
       groupCodes = JSON.parse(fs.readFileSync(GROUP_CODES_FILE, 'utf8'));
+    } catch(e) {}
+  }
+  if (fs.existsSync(GROUP_SETTINGS_FILE)) {
+    try {
+      groupSettings = JSON.parse(fs.readFileSync(GROUP_SETTINGS_FILE, 'utf8'));
     } catch(e) {}
   }
 
@@ -65,6 +73,15 @@ async function loadData() {
         groupCodes = JSON.parse(Buffer.from(codesRes.content, 'base64').toString('utf8'));
       }
     } catch(e) { console.error('無法從 GitHub 讀取 groupCodes.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 groupSettings.json...');
+      const settingsRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupSettings.json?ref=${GITHUB_BRANCH}`);
+      if (settingsRes.content) {
+        settingsSha = settingsRes.sha;
+        groupSettings = JSON.parse(Buffer.from(settingsRes.content, 'base64').toString('utf8'));
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 groupSettings.json:', e.message); }
   }
 }
 
@@ -107,6 +124,25 @@ async function saveGroupCodes() {
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupCodes.json`, payload);
       if (res.content && res.content.sha) codesSha = res.content.sha;
     } catch(e) { console.error('備份 groupCodes 至 GitHub 失敗:', e.message); }
+  }
+}
+
+async function saveGroupSettings() {
+  const jsonStr = JSON.stringify(groupSettings, null, 2);
+  await fs.promises.writeFile(GROUP_SETTINGS_FILE, jsonStr, 'utf8');
+  
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update groupSettings',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (settingsSha) payload.sha = settingsSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupSettings.json`, payload);
+      if (res.content && res.content.sha) settingsSha = res.content.sha;
+    } catch(e) { console.error('備份 groupSettings 至 GitHub 失敗:', e.message); }
   }
 }
 
@@ -1038,8 +1074,37 @@ app.get('/api/config', (req, res) => {
 });
 
 // 取得特定群組所有進行中的接龍
-app.get('/api/game/:gid', (req, res) => {
+async function fetchGroupName(gid) {
+  if (!gid || !gid.startsWith('C')) return null;
+  try {
+    const res = await fetch(`https://api.line.me/v2/bot/group/${gid}/summary`, {
+      headers: { Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.groupName;
+    }
+  } catch (e) {
+    console.error('Failed to fetch group name:', e.message);
+  }
+  return null;
+}
+
+async function ensureGroupSettings(gid) {
+  if (!groupSettings[gid]) groupSettings[gid] = {};
+  if (!groupSettings[gid].groupName && gid.startsWith('C')) {
+    const name = await fetchGroupName(gid);
+    if (name) {
+      groupSettings[gid].groupName = name;
+      await saveGroupSettings();
+    }
+  }
+}
+
+app.get('/api/game/:gid', async (req, res) => {
   const gid = req.params.gid;
+  await ensureGroupSettings(gid);
+  const lobbyTitle = groupSettings[gid]?.lobbyTitle || '羽球接龍大廳';
   const uid = req.query.uid;
   let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
   console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
@@ -1050,15 +1115,20 @@ app.get('/api/game/:gid', (req, res) => {
     for (const g of adminGids) {
       const codes = Object.keys(groupCodes).filter(k => groupCodes[k] === g);
       if (codes.length > 0) {
-        codes.forEach(c => managedGroups.push({ gid: g, code: c }));
+        for (const c of codes) {
+          await ensureGroupSettings(g);
+          const gName = groupSettings[g]?.groupName || g;
+          managedGroups.push({ gid: g, code: c, groupName: gName });
+        }
       } else if (g === gid) {
-        managedGroups.push({ gid: g, code: '目前群組' });
+        const gName = groupSettings[g]?.groupName || '目前群組';
+        managedGroups.push({ gid: g, code: '目前群組', groupName: gName });
       }
     }
   }
 
   if (groupGames.length === 0) {
-      return res.json({ games: [], isAdmin: !!isAdmin, managedGroups }); // 不報錯，回傳空陣列
+      return res.json({ games: [], isAdmin: !!isAdmin, managedGroups, lobbyTitle }); // 不報錯，回傳空陣列
   }
   
   // 深拷貝以避免污染記憶體中的 games 物件
@@ -1095,7 +1165,8 @@ app.get('/api/game/:gid', (req, res) => {
     return b.startTime - a.startTime;
   });
   
-  res.json({ games: groupGames, isAdmin: !!isAdmin, managedGroups });
+  // 回傳結果
+  res.json({ games: groupGames, isAdmin: !!isAdmin, managedGroups, lobbyTitle });
 });
 
 // 處理 LIFF 前端傳來的報名或取消請求
@@ -1109,8 +1180,8 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(403).json({ error: '只有管理員能建立場次' });
       }
       
-      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, initialListStr, targetGid } = req.body;
-      const actualGid = targetGid || gid;
+      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, initialListStr, targetGid, targetGids } = req.body;
+      const actualGid = (targetGids && targetGids.length > 0) ? targetGids[0] : (targetGid || gid);
       
       const newGameId = Date.now().toString() + Math.floor(Math.random()*1000);
       
@@ -1186,7 +1257,10 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       if (!pPublish) {
           try {
-             await sendLobbyLink(null, actualGid, "🚀 場次建立成功！\n" + (title || '新場次開放報名中'));
+             const gidsToPush = (targetGids && targetGids.length > 0) ? targetGids : [actualGid];
+             for (const gId of gidsToPush) {
+                await sendLobbyLink(null, gId, "🚀 場次建立成功！\n" + (title || '新場次開放報名中'));
+             }
           } catch(e) {}
       }
       
@@ -1279,6 +1353,17 @@ app.post('/api/action', express.json(), async (req, res) => {
         } catch(e) { console.error('Push error:', e); }
       }
       return res.json({ success: true, count: successCount });
+    }
+    
+    if (action === 'updateLobbyTitle') {
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+      if (!isAdmin) return res.status(403).json({ error: '只有管理員能修改大廳標題' });
+      
+      const newTitle = text ? text.trim() : '';
+      await ensureGroupSettings(gid);
+      groupSettings[gid].lobbyTitle = newTitle;
+      await saveGroupSettings();
+      return res.json({ success: true, lobbyTitle: newTitle });
     }
 
     if (action === 'pushList') {
