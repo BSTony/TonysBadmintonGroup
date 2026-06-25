@@ -909,21 +909,38 @@ async function flushFileSave() {
   // 同步儲存到 GitHub
   if (USE_GITHUB) {
     gamesSaveChain = gamesSaveChain.then(async () => {
-      try {
-        const jsonStr = JSON.stringify(games, null, 2);
-        const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
-        const payload = {
-          message: 'chore: update games data',
-          content: encodedContent,
-          branch: GITHUB_BRANCH
-        };
-        if (gamesSha) payload.sha = gamesSha;
-        const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/games.json`, payload);
-        if (res.content && res.content.sha) gamesSha = res.content.sha;
-        console.log('✅ 場次資料已同步儲存至 GitHub (data/games.json)');
-      } catch(e) {
-        console.error('❌ 儲存 games.json 至 GitHub 失敗:', e.message);
+      const jsonStr = JSON.stringify(games, null, 2);
+      
+      async function attemptSave(allowRetry) {
+        try {
+          const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+          const payload = {
+            message: 'chore: update games data',
+            content: encodedContent,
+            branch: GITHUB_BRANCH
+          };
+          if (gamesSha) payload.sha = gamesSha;
+          const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/games.json`, payload);
+          if (res.content && res.content.sha) gamesSha = res.content.sha;
+          console.log('✅ 場次資料已同步儲存至 GitHub (data/games.json)');
+        } catch(e) {
+          const isShaConflict = String(e.message).includes('409') || String(e.message).includes('does not match');
+          if (isShaConflict && allowRetry) {
+            console.warn('⚠️ 偵測到 GitHub games.json SHA 衝突，重新取得最新 SHA 後重試');
+            try {
+              const getRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/games.json?ref=${GITHUB_BRANCH}`);
+              if (getRes.sha) gamesSha = getRes.sha;
+            } catch (getErr) {
+              console.error('❌ 無法取得最新的 games.json SHA:', getErr.message);
+            }
+            await attemptSave(false);
+          } else {
+            console.error('❌ 儲存 games.json 至 GitHub 失敗:', e.message);
+          }
+        }
       }
+      
+      await attemptSave(true);
     });
   }
 }
@@ -1194,6 +1211,68 @@ app.get('/api/group/code/:code', async (req, res) => {
   }
 });
 
+// --- Server-Sent Events (SSE) 推播機制 ---
+const sseClients = new Map(); // gid -> Set of Response objects
+
+app.get('/api/events/:gid', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  // 發送 X-Accel-Buffering 來關閉 Nginx 的緩衝
+  res.setHeader('X-Accel-Buffering', 'no');
+  
+  // 避免連線過期，發送初始空註解，並加入 2KB 的 padding 強制推送緩衝區
+  res.write(':' + Array(2048).join(' ') + '\n\n');
+  if (res.flush) res.flush();
+
+  const gid = req.params.gid;
+  if (!sseClients.has(gid)) {
+    sseClients.set(gid, new Set());
+  }
+  const clientsSet = sseClients.get(gid);
+  clientsSet.add(res);
+
+  // 每隔一段時間發送 ping 以保持連線
+  const pingInterval = setInterval(() => {
+    try { 
+      res.write(':\n\n'); 
+      if (res.flush) res.flush();
+    } catch(e) {}
+  }, 30000);
+
+  req.on('close', () => {
+    clearInterval(pingInterval);
+    clientsSet.delete(res);
+    if (clientsSet.size === 0) {
+      sseClients.delete(gid);
+    }
+  });
+});
+
+function notifySSEClients(gameOrGid) {
+  if (!gameOrGid) return;
+  const gidsToNotify = new Set();
+  if (typeof gameOrGid === 'string') {
+    gidsToNotify.add(gameOrGid);
+  } else {
+    if (gameOrGid.gid) gidsToNotify.add(gameOrGid.gid);
+    if (gameOrGid.targetGids && Array.isArray(gameOrGid.targetGids)) {
+      gameOrGid.targetGids.forEach(g => gidsToNotify.add(g));
+    }
+  }
+  
+  for (const gid of gidsToNotify) {
+    if (sseClients.has(gid)) {
+      sseClients.get(gid).forEach(res => {
+        try {
+          res.write('data: refresh\n\n');
+          if (res.flush) res.flush();
+        } catch(e) {}
+      });
+    }
+  }
+}
+
 app.get('/api/game/:gid', async (req, res) => {
   const gid = req.params.gid;
   await ensureGroupSettings(gid);
@@ -1282,6 +1361,20 @@ app.get('/api/game/:gid', async (req, res) => {
 
 // 處理 LIFF 前端傳來的報名或取消請求
 app.post('/api/action', express.json(), async (req, res) => {
+  const originalJson = res.json;
+  res.json = function(body) {
+    if (body && body.success) {
+      if (body.gameId && games[body.gameId]) {
+        notifySSEClients(games[body.gameId]);
+      } else if (body.game) {
+        notifySSEClients(body.game);
+      } else if (req.body && req.body.gid) {
+        notifySSEClients(req.body.gid);
+      }
+    }
+    return originalJson.call(this, body);
+  };
+
   try {
     const { gid, gameId, uid, name, level, action, count, text, pushToAll } = req.body;
     

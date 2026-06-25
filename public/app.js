@@ -29,6 +29,7 @@ let globalIsAdmin = false;
 let globalManagedGroups = [];
 let globalLobbyTitle = '羽球接龍大廳';
 let currentGameDetailId = null;
+let lastGamesJson = '';
 
 // DOM 元素
 const appDiv = document.getElementById('app');
@@ -110,6 +111,7 @@ async function loadGamesLobby() {
     } else {
       const data = await res.json();
       gamesList = data.games || [];
+      lastGamesJson = JSON.stringify(gamesList);
       globalIsAdmin = !!data.isAdmin;
       globalManagedGroups = data.managedGroups || [];
       globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
@@ -656,8 +658,81 @@ function escapeHTML(str) {
   );
 }
 
+// 靜默重新整理資料 (不顯示 loading)
+let refreshPending = false;
+
+async function silentRefreshGames() {
+  if (!currentGroupId || !currentUser) return;
+  
+  // 若使用者正在輸入，暫停更新以免打斷輸入
+  const activeTag = document.activeElement ? document.activeElement.tagName : '';
+  if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
+    if (!refreshPending) {
+      refreshPending = true;
+      setTimeout(() => {
+        refreshPending = false;
+        silentRefreshGames();
+      }, 1500); // 1.5 秒後重試
+    }
+    return;
+  }
+  
+  try {
+    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
+    if (res.ok) {
+      const data = await res.json();
+      const newGamesJson = JSON.stringify(data.games || []);
+      
+      if (newGamesJson !== lastGamesJson) {
+        lastGamesJson = newGamesJson;
+        gamesList = data.games || [];
+        globalIsAdmin = !!data.isAdmin;
+        globalManagedGroups = data.managedGroups || [];
+        globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
+        globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+        
+        // 根據目前所在畫面重新渲染
+        if (currentGameDetailId) {
+          renderDetail(currentGameDetailId);
+        } else {
+          renderLobby();
+        }
+      }
+    }
+  } catch (err) {
+    // 靜默失敗不提示
+  }
+}
+
+// --- SSE 主動推播機制 ---
+let eventSource = null;
+
+function setupSSE() {
+  if (!currentGroupId) return;
+  if (eventSource) {
+    eventSource.close();
+  }
+  
+  eventSource = new EventSource(`/api/events/${currentGroupId}`);
+  
+  eventSource.onmessage = (e) => {
+    if (e.data === 'refresh') {
+      silentRefreshGames();
+    }
+  };
+  
+  eventSource.onerror = () => {
+    // 發生錯誤或斷線時，關閉並在幾秒後嘗試重連
+    eventSource.close();
+    eventSource = null;
+    setTimeout(setupSSE, 5000);
+  };
+}
+
 // 啟動
-initializeLiff();
+initializeLiff().then(() => {
+  setupSSE();
+});
 
 // 透過名稱取消報名
 window.handleCancelByName = async function(gameId, name) {
