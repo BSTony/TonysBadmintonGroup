@@ -1333,11 +1333,12 @@ async function handleEvent(event) {
       
       if (text.startsWith('接龍清空') || text === '接龍結束') {
         // 全清
+        const count = groupGames.length;
         for(const g of groupGames) delete games[g.gameId];
         await saveCurrentListSnapshot(null, false);
         pendingSaves.add('__force_save__');
         await flushFileSave();
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `✅ ${targetGid !== gid ? '指定群組的' : '群組內所有'}場次已結束/清空` });
+        return await client.replyMessage(event.replyToken, { type: 'text', text: `✅ 找到 ${count} 個場次並已清空` });
       } else {
         // 結束特定場次
         groupGames = groupGames.filter(g => g.title.includes(keyword));
@@ -1428,6 +1429,11 @@ async function handleEvent(event) {
       }
       
       return client.replyMessage(event.replyToken, replyMsgs);
+    }
+    
+    if (text === '測試場次') {
+        const myGames = Object.values(games).map(g => `ID: ${g.gameId}, GID: ${g.gid}, Title: ${g.title}`).join('\n');
+        return client.replyMessage(event.replyToken, { type: 'text', text: `Games in memory:\n${myGames || 'none'}\nCurrent GID: ${gid}` });
     }
 
     if (text.startsWith('接龍修改')) {
