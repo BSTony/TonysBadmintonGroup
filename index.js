@@ -1101,12 +1101,36 @@ async function ensureGroupSettings(gid) {
   }
 }
 
+app.get('/api/group/code/:code', async (req, res) => {
+  const code = req.params.code;
+  let foundGid = null;
+  for (const [k, v] of Object.entries(groupCodes)) {
+    if (v === code) {
+      foundGid = k;
+      break;
+    }
+  }
+  
+  if (foundGid) {
+    await ensureGroupSettings(foundGid);
+    const gName = groupSettings[foundGid]?.groupName || foundGid;
+    return res.json({ success: true, gid: foundGid, groupName: gName });
+  } else {
+    return res.status(404).json({ error: '找不到該群組代號' });
+  }
+});
+
 app.get('/api/game/:gid', async (req, res) => {
   const gid = req.params.gid;
   await ensureGroupSettings(gid);
   const lobbyTitle = groupSettings[gid]?.lobbyTitle || '羽球接龍大廳';
   const uid = req.query.uid;
-  let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
+  let groupGames = Object.values(games).filter(g => {
+    if (!g.active) return false;
+    if (g.gid === gid) return true;
+    if (g.targetGids && g.targetGids.includes(gid)) return true;
+    return false;
+  });
   console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   let managedGroups = [];
@@ -1229,6 +1253,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       games[newGameId] = {
         gid: actualGid,
+        targetGids: (targetGids && targetGids.length > 0) ? targetGids : [actualGid],
         gameId: newGameId,
         title: title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽球接龍',
         date: date || '',
@@ -1295,9 +1320,22 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(404).json({ error: '找不到該場次' });
       }
       
-      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder } = req.body;
+      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, targetGids } = req.body;
       const game = games[gameId];
       
+      const oldTargetGids = game.targetGids || [game.gid];
+      if (targetGids && Array.isArray(targetGids) && targetGids.length > 0) {
+        const newlyAdded = targetGids.filter(g => !oldTargetGids.includes(g));
+        game.targetGids = targetGids;
+        if (newlyAdded.length > 0) {
+          for (const gId of newlyAdded) {
+            try {
+              await sendLobbyLink(null, gId, `🚀 新增跨群組開放報名！\n\n🏸 ${title || game.title || '新場次'}`);
+            } catch(e) {}
+          }
+        }
+      }
+
       game.title = title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽球接龍';
       game.date = date || '';
       game.time = time || '';
@@ -1406,18 +1444,23 @@ app.post('/api/action', express.json(), async (req, res) => {
         }
       });
       
-      if (process.env.LIFF_ID) {
-        msg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${g.gid}`;
+      let pushTargetGids = g.targetGids || [g.gid];
+      let hasError = false;
+      
+      for (const targetGid of pushTargetGids) {
+        let currentMsg = msg;
+        if (process.env.LIFF_ID) {
+          currentMsg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
+        }
+        try {
+          await client.pushMessage(targetGid, { type: 'text', text: currentMsg.trim() });
+        } catch (e) {
+          console.error(`Push list error for ${targetGid}:`, e);
+          hasError = true;
+        }
       }
       
-      try {
-        await client.pushMessage(g.gid, { type: 'text', text: msg.trim() });
-      } catch (e) {
-        console.error(e);
-        return res.status(500).json({ error: '推播失敗' });
-      }
-      
-      return res.json({ success: true, game: g });
+      return res.json({ success: true, game: g, partialError: hasError });
     }
 
     if (!gameId || !uid || !name || !action) {

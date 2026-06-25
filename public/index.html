@@ -44,6 +44,10 @@
       <div class="form-container">
         <div class="form-group">
           <label>發布目標群組 (必填)</label>
+          <div style="display:flex; gap:5px; margin-bottom: 10px;">
+            <input type="text" id="cg-new-group-code" placeholder="輸入群組代號 (例: 1234)" style="flex: 1;">
+            <button id="btn-cg-add-group" type="button" class="btn-secondary" style="white-space: nowrap; padding: 0 10px;">加入</button>
+          </div>
           <div id="cg-target-gids-container" class="checkbox-group" style="display: flex; flex-direction: column; gap: 8px;">
             <p>載入中...</p>
           </div>
@@ -167,6 +171,18 @@
       
       <div class="form-container">
         <input type="hidden" id="eg-gameId">
+        
+        <div class="form-group">
+          <label>發布目標群組 (必填)</label>
+          <div style="display:flex; gap:5px; margin-bottom: 10px;">
+            <input type="text" id="eg-new-group-code" placeholder="輸入群組代號 (例: 1234)" style="flex: 1;">
+            <button id="btn-eg-add-group" type="button" class="btn-secondary" style="white-space: nowrap; padding: 0 10px;">加入</button>
+          </div>
+          <div id="eg-target-gids-container" class="checkbox-group" style="display: flex; flex-direction: column; gap: 8px;">
+            <p>載入中...</p>
+          </div>
+        </div>
+
         <div class="form-group">
           <label>標題 (選填)</label>
           <input type="text" id="eg-title" placeholder="例如：週二晚間快樂打">

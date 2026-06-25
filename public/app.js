@@ -900,6 +900,71 @@ window.handlePushList = async function(gameId) {
   }
 };
 
+// ================= Target Groups UI Helpers =================
+function createTargetGroupCheckbox(container, gid, code, groupName, isChecked) {
+  if (container.querySelector(`input[value="${gid}"]`)) return;
+  
+  const lbl = document.createElement('label');
+  lbl.style.display = 'flex';
+  lbl.style.alignItems = 'center';
+  lbl.style.gap = '8px';
+  lbl.style.cursor = 'pointer';
+  
+  const chk = document.createElement('input');
+  chk.type = 'checkbox';
+  chk.name = 'targetGids';
+  chk.value = gid;
+  chk.checked = isChecked;
+  
+  const span = document.createElement('span');
+  span.innerText = code === '目前群組' ? `${groupName} (目前群組)` : `${groupName} (${code})`;
+  span.style.flex = '1';
+  
+  lbl.appendChild(chk);
+  lbl.appendChild(span);
+  
+  const delBtn = document.createElement('span');
+  delBtn.innerText = '❌';
+  delBtn.style.cursor = 'pointer';
+  delBtn.style.padding = '0 5px';
+  delBtn.onclick = (e) => {
+    e.preventDefault();
+    lbl.remove();
+  };
+  lbl.appendChild(delBtn);
+  
+  container.appendChild(lbl);
+}
+
+async function handleAddGroupCode(inputId, containerId) {
+  const inputEl = document.getElementById(inputId);
+  const code = inputEl.value.trim();
+  if (!code) return alert('請輸入群組代號');
+  
+  appDiv.className = 'loading';
+  try {
+    const res = await fetch(`/api/group/code/${code}`);
+    const data = await res.json();
+    if (res.ok && data.success) {
+      const container = document.getElementById(containerId);
+      if (container.innerHTML.includes('<p>')) container.innerHTML = '';
+      createTargetGroupCheckbox(container, data.gid, code, data.groupName, true);
+      inputEl.value = '';
+    } else {
+      alert(data.error || '找不到該群組');
+    }
+  } catch(e) {
+    alert('網路錯誤');
+  } finally {
+    appDiv.className = '';
+  }
+}
+
+document.getElementById('btn-cg-add-group').onclick = () => handleAddGroupCode('cg-new-group-code', 'cg-target-gids-container');
+if (document.getElementById('btn-eg-add-group')) {
+  document.getElementById('btn-eg-add-group').onclick = () => handleAddGroupCode('eg-new-group-code', 'eg-target-gids-container');
+}
+
 // ================= Create Game UI & Templates =================
 const createGameView = document.getElementById('create-game-view');
 const cgTemplateSelect = document.getElementById('cg-template-select');
@@ -980,24 +1045,7 @@ function showCreateGameForm() {
   cgTargetGidsContainer.innerHTML = '';
   if (globalManagedGroups.length > 0) {
     globalManagedGroups.forEach(g => {
-      const lbl = document.createElement('label');
-      lbl.style.display = 'flex';
-      lbl.style.alignItems = 'center';
-      lbl.style.gap = '8px';
-      lbl.style.cursor = 'pointer';
-      
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.name = 'targetGids';
-      chk.value = g.gid;
-      if (g.gid === currentGroupId) chk.checked = true; // 預設勾選目前群組
-      
-      const span = document.createElement('span');
-      span.innerText = g.code === '目前群組' ? `${g.groupName} (目前群組)` : `${g.groupName} (${g.code})`;
-      
-      lbl.appendChild(chk);
-      lbl.appendChild(span);
-      cgTargetGidsContainer.appendChild(lbl);
+      createTargetGroupCheckbox(cgTargetGidsContainer, g.gid, g.code, g.groupName, g.gid === currentGroupId);
     });
   } else {
     cgTargetGidsContainer.innerHTML = '<p>無法取得您的管理群組</p>';
@@ -1088,6 +1136,25 @@ function showEditGameForm(gameId) {
   document.getElementById('eg-gameId').value = gameId;
   document.getElementById('eg-title').value = game.title || '';
   
+  const egTargetGidsContainer = document.getElementById('eg-target-gids-container');
+  egTargetGidsContainer.innerHTML = '';
+  const gameTargetGids = game.targetGids || [game.gid];
+  
+  if (globalManagedGroups.length > 0) {
+    globalManagedGroups.forEach(g => {
+      createTargetGroupCheckbox(egTargetGidsContainer, g.gid, g.code, g.groupName, gameTargetGids.includes(g.gid));
+    });
+  } else {
+    egTargetGidsContainer.innerHTML = '<p>無法取得您的管理群組</p>';
+  }
+  
+  // 處理目前沒有在管理群組，但已存在於 game.targetGids 的群組（需手動補上，或就讓它先隱藏/無名稱顯示）
+  gameTargetGids.forEach(tgid => {
+    if (!globalManagedGroups.some(g => g.gid === tgid)) {
+       createTargetGroupCheckbox(egTargetGidsContainer, tgid, '未知', '已選擇群組', true);
+    }
+  });
+  
   let egDateVal = '';
   if (game.date) {
     const match = game.date.match(/(\d{1,2})\/(\d{1,2})/);
@@ -1147,9 +1214,10 @@ document.getElementById('btn-submit-edit').onclick = async () => {
   const timeStr = (tsStart && tsEnd) ? `${tsStart}~${tsEnd}` : (tsStart || tsEnd || '');
   
   const locStr = document.getElementById('eg-loc').value.trim();
+  const targetGids = Array.from(document.querySelectorAll('#eg-target-gids-container input[name="targetGids"]:checked')).map(el => el.value);
   
-  if (!rawDateStr || !timeStr || !locStr) {
-    alert('「日期」、「時間」、「地點」為必填欄位！');
+  if (!rawDateStr || !timeStr || !locStr || targetGids.length === 0) {
+    alert('「目標群組」、「日期」、「時間」、「地點」為必填欄位！');
     return;
   }
   
@@ -1167,6 +1235,7 @@ document.getElementById('btn-submit-edit').onclick = async () => {
         uid: currentUser.userId,
         name: currentUser.displayName,
         action: 'editGame',
+        targetGids: targetGids,
         title: document.getElementById('eg-title').value.trim(),
         date: dateStr,
         time: timeStr,
