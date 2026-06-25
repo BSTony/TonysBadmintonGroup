@@ -1096,10 +1096,24 @@ const createGameView = document.getElementById('create-game-view');
 const cgTemplateSelect = document.getElementById('cg-template-select');
 const cgInitialList = document.getElementById('cg-initial-list');
 
-function loadTemplates() {
-  const templates = JSON.parse(localStorage.getItem('cgRosterTemplates') || '{}');
+let currentGroupTemplates = {};
+
+async function loadTemplates() {
+  try {
+    const res = await fetch(`/api/templates/${currentGroupId}?_t=${Date.now()}`);
+    if (res.ok) {
+      const data = await res.json();
+      currentGroupTemplates = data.templates || {};
+    } else {
+      currentGroupTemplates = {};
+    }
+  } catch (e) {
+    console.error('載入範本失敗:', e);
+    currentGroupTemplates = {};
+  }
+  
   cgTemplateSelect.innerHTML = '<option value="">-- 選擇群組範本 --</option>';
-  for (const name in templates) {
+  for (const name in currentGroupTemplates) {
     const opt = document.createElement('option');
     opt.value = name;
     opt.innerText = name;
@@ -1107,29 +1121,68 @@ function loadTemplates() {
   }
 }
 
-document.getElementById('btn-save-template').onclick = () => {
+document.getElementById('btn-save-template').onclick = async () => {
   const text = cgInitialList.value.trim();
   if (!text) return alert('名單不可為空！');
   const name = prompt('請輸入此範本的名稱 (例如：週二固定咖)：');
   if (!name) return;
-  const templates = JSON.parse(localStorage.getItem('cgRosterTemplates') || '{}');
-  templates[name] = text;
-  localStorage.setItem('cgRosterTemplates', JSON.stringify(templates));
-  loadTemplates();
-  cgTemplateSelect.value = name;
-  alert('儲存成功！');
+  
+  appDiv.className = 'loading';
+  try {
+    const res = await fetch(`/api/templates/${currentGroupId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid: currentUser.userId,
+        action: 'save',
+        name: name,
+        content: text
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      await loadTemplates();
+      cgTemplateSelect.value = name;
+      alert('儲存成功且已同步至 Git！');
+    } else {
+      alert(data.error || '儲存失敗');
+    }
+  } catch (e) {
+    alert('網路錯誤，無法儲存至伺服器');
+  } finally {
+    appDiv.className = '';
+  }
 };
 
-document.getElementById('btn-delete-template').onclick = () => {
+document.getElementById('btn-delete-template').onclick = async () => {
   const name = cgTemplateSelect.value;
   if (!name) return alert('請先選擇一個範本！');
   if (!confirm(`確定要刪除範本「${name}」嗎？`)) return;
-  const templates = JSON.parse(localStorage.getItem('cgRosterTemplates') || '{}');
-  delete templates[name];
-  localStorage.setItem('cgRosterTemplates', JSON.stringify(templates));
-  loadTemplates();
-  cgInitialList.value = '';
-  alert('刪除成功！');
+  
+  appDiv.className = 'loading';
+  try {
+    const res = await fetch(`/api/templates/${currentGroupId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid: currentUser.userId,
+        action: 'delete',
+        name: name
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      await loadTemplates();
+      cgInitialList.value = '';
+      alert('刪除成功且已同步至 Git！');
+    } else {
+      alert(data.error || '刪除失敗');
+    }
+  } catch (e) {
+    alert('網路錯誤，無法刪除');
+  } finally {
+    appDiv.className = '';
+  }
 };
 
 cgTemplateSelect.onchange = () => {
@@ -1138,9 +1191,8 @@ cgTemplateSelect.onchange = () => {
     cgInitialList.value = '';
     return;
   }
-  const templates = JSON.parse(localStorage.getItem('cgRosterTemplates') || '{}');
-  if (templates[name]) {
-    cgInitialList.value = templates[name];
+  if (currentGroupTemplates[name]) {
+    cgInitialList.value = currentGroupTemplates[name];
   }
 };
 
@@ -1206,7 +1258,7 @@ document.getElementById('btn-submit-create').onclick = async () => {
   const timeStr = (tsStart && tsEnd) ? `${tsStart}~${tsEnd}` : (tsStart || tsEnd || '');
   
   const locStr = document.getElementById('cg-loc').value.trim();
-  const targetGids = Array.from(document.querySelectorAll('input[name="targetGids"]:checked')).map(el => el.value);
+  const targetGids = Array.from(document.querySelectorAll('#cg-target-gids-container input[name="targetGids"]:checked')).map(el => el.value);
   
   if (!rawDateStr || !timeStr || !locStr || targetGids.length === 0) {
     alert('「目標群組」、「日期」、「時間」、「地點」為必填欄位！');

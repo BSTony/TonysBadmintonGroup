@@ -13,6 +13,7 @@ const LOG_FILE = path.join(__dirname, 'schedule.log');
 let groupAdmins = {}; // { gid: Set<uid> }
 let groupCodes = {}; // { '1234': 'Cxxxx' }
 let groupSettings = {}; // { gid: { lobbyTitle, groupName } }
+let rosterTemplates = {}; // { gid: { templateName: text } }
 
 const DATA_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
@@ -20,6 +21,7 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 const ADMINS_FILE = path.join(__dirname, 'data/groupAdmins.json');
 const GROUP_CODES_FILE = path.join(__dirname, 'data/groupCodes.json');
 const GROUP_SETTINGS_FILE = path.join(__dirname, 'data/groupSettings.json');
+const ROSTER_TEMPLATES_FILE = path.join(__dirname, 'data/rosterTemplates.json');
 const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 
@@ -27,6 +29,7 @@ const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 let adminsSha = null;
 let codesSha = null;
 let settingsSha = null;
+let templatesSha = null;
 let gamesSha = null; // GitHub games.json 的 SHA
 let gamesSaveChain = Promise.resolve(); // 防併發串行保存
 
@@ -49,6 +52,11 @@ async function loadData() {
   if (fs.existsSync(GROUP_SETTINGS_FILE)) {
     try {
       groupSettings = JSON.parse(fs.readFileSync(GROUP_SETTINGS_FILE, 'utf8'));
+    } catch(e) {}
+  }
+  if (fs.existsSync(ROSTER_TEMPLATES_FILE)) {
+    try {
+      rosterTemplates = JSON.parse(fs.readFileSync(ROSTER_TEMPLATES_FILE, 'utf8'));
     } catch(e) {}
   }
 
@@ -84,6 +92,15 @@ async function loadData() {
         groupSettings = JSON.parse(Buffer.from(settingsRes.content, 'base64').toString('utf8'));
       }
     } catch(e) { console.error('無法從 GitHub 讀取 groupSettings.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 rosterTemplates.json...');
+      const templatesRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/rosterTemplates.json?ref=${GITHUB_BRANCH}`);
+      if (templatesRes.content) {
+        templatesSha = templatesRes.sha;
+        rosterTemplates = JSON.parse(Buffer.from(templatesRes.content, 'base64').toString('utf8'));
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 rosterTemplates.json:', e.message); }
 
     try {
       console.log('從 GitHub 讀取 games.json...');
@@ -164,6 +181,25 @@ async function saveGroupSettings() {
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupSettings.json`, payload);
       if (res.content && res.content.sha) settingsSha = res.content.sha;
     } catch(e) { console.error('備份 groupSettings 至 GitHub 失敗:', e.message); }
+  }
+}
+
+async function saveRosterTemplates() {
+  const jsonStr = JSON.stringify(rosterTemplates, null, 2);
+  await fs.promises.writeFile(ROSTER_TEMPLATES_FILE, jsonStr, 'utf8');
+  
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update rosterTemplates',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (templatesSha) payload.sha = templatesSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/rosterTemplates.json`, payload);
+      if (res.content && res.content.sha) templatesSha = res.content.sha;
+    } catch(e) { console.error('備份 rosterTemplates 至 GitHub 失敗:', e.message); }
   }
 }
 
@@ -770,35 +806,39 @@ if (Pool && process.env.DATABASE_URL) {
 }
 */
 
-// 初始化資料庫與載入資料
-loadData();
-
-let loadPromise = Promise.resolve();
-// 停用 PostgreSQL，直接使用檔案模式
-if (pool) {
-  loadPromise = pool.query(`
-    CREATE TABLE IF NOT EXISTS games (
-      gid TEXT PRIMARY KEY,
-      data JSONB
-    );
-  `).then(() => loadGames())
-    .catch(err => {
+async function initializeApp() {
+  console.log('🔄 啟動中：正在自 GitHub 載入系統設定與備份資料...');
+  await loadData();
+  
+  console.log('🔄 啟動中：正在載入本地/本地緩存場次...');
+  if (pool) {
+    try {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS games (
+          gid TEXT PRIMARY KEY,
+          data JSONB
+        );
+      `);
+      await loadGames();
+    } catch(err) {
       console.log('ℹ️  資料庫連線失敗，已切換到檔案模式');
       pool = null;
-      return loadGames();
-    });
-} else {
-  loadPromise = loadGames();
+      await loadGames();
+    }
+  } else {
+    await loadGames();
+  }
+
+  if (USE_GITHUB) {
+    try {
+      await loadCsvFromGitHub();
+    } catch (err) {
+      console.error('⚠️  載入 GitHub CSV 失敗（將繼續使用本地模式）:', err.message);
+    }
+  }
 }
 
-// 同時載入 GitHub CSV（如果啟用）
-if (USE_GITHUB) {
-  loadPromise = loadPromise.then(async () => {
-    await loadCsvFromGitHub();
-  }).catch(err => {
-    console.error('⚠️  載入 GitHub CSV 失敗（將繼續使用本地模式）:', err.message);
-  });
-}
+const loadPromise = initializeApp();
 
 function deeplyParseJson(val) {
   if (typeof val === 'string') {
@@ -947,37 +987,58 @@ async function flushFileSave() {
 
 async function checkSchedules() {
   const now = Date.now();
-  const gids = Object.keys(games);
+  const gameIds = Object.keys(games);
   
-  for (const gid of gids) {
-    const g = games[gid];
+  for (const gameId of gameIds) {
+    const g = games[gameId];
     if (!g) continue;
     
+    // 1. 處理預約發布 (scheduleTime)
     if (g.scheduleTime) {
       const sched = Number(g.scheduleTime);
       if (isNaN(sched)) {
+        logToFile(`[WARN] Invalid scheduleTime for ${gameId}: ${g.scheduleTime}`);
         delete g.scheduleTime;
-        await saveGame(gid);
+        await saveGame(gameId);
       } else if (sched <= now) {
-        delete g.scheduleTime;
-        await saveGame(gid);
+        logToFile(`[TRIGGER] TRIGGER! Sending scheduled list for ${gameId}`);
+        delete g.scheduleTime; // 移除設定避免重複觸發
+        await saveGame(gameId);
         try { 
-          await sendLobbyLink(null, g.gid, "⏰ 定時推播");
-        } catch (e) { console.error(e); }
+          await sendList(null, gameId, "⏰ 定時推播");
+          logToFile(`[SUCCESS] Scheduled push sent for ${gameId}`);
+        } catch (e) { 
+          console.error('Failed to push scheduled list:', e);
+          logToFile(`[ERROR] Failed to push scheduled list: ${e.message}`);
+        }
       }
     }
     
+    // 2. 處理溫馨提醒 (reminderTime)
     if (g.reminderTime) {
       const rem = Number(g.reminderTime);
       if (isNaN(rem)) {
+        logToFile(`[WARN] Invalid reminderTime for ${gameId}: ${g.reminderTime}`);
         delete g.reminderTime;
-        await saveGame(gid);
+        await saveGame(gameId);
       } else if (rem <= now) {
-        delete g.reminderTime;
-        await saveGame(gid);
-        try { 
-          await client.pushMessage(g.gid, { type: 'text', text: `⏰ 溫馨提醒：【 ${g.title} 】 即將開始！\n請有報名的群友注意時間喔！` });
-        } catch (e) { console.error(e); }
+        logToFile(`[TRIGGER] TRIGGER! Sending reminder for ${gameId}`);
+        delete g.reminderTime; // 移除設定避免重複觸發
+        await saveGame(gameId);
+        try {
+          const pushTargets = g.targetGids || [g.gid];
+          for (const targetGid of pushTargets) {
+            try {
+              await client.pushMessage(targetGid, { type: 'text', text: `⏰ 溫馨提醒：【 ${g.title} 】 即將開始！\n請有報名的群友注意時間喔！` });
+            } catch (e) {
+              console.error(`Failed to push reminder to ${targetGid}:`, e);
+            }
+          }
+          logToFile(`[SUCCESS] Reminder sent for ${gameId}`);
+        } catch (e) {
+          console.error('Failed to send reminder:', e);
+          logToFile(`[ERROR] Failed to send reminder: ${e.message}`);
+        }
       }
     }
   }
@@ -1074,39 +1135,7 @@ startDailyExpiryCheck();
 // 排程檢查的執行鎖，避免重入
 let checkingSchedules = false;
 
-// 定時推播檢查
-async function checkSchedules() {
-  const now = Date.now();
-  const gids = Object.keys(games);
-  
-  for (const gid of gids) {
-    const g = games[gid];
-    if (!g || !g.scheduleTime) continue;
-    const sched = Number(g.scheduleTime);
-    if (isNaN(sched)) {
-      const warnMsg = `Invalid scheduleTime for ${gid}: ${g.scheduleTime}`;
-      logToFile(`[WARN] ${warnMsg}`);
-      delete g.scheduleTime;
-      await saveGame(gid);
-      continue;
-    }
-    
-    // 只在觸發時記錄，減少日誌輸出
-    if (sched <= now) {
-      const triggerMsg = `TRIGGER! Sending scheduled list for ${gid}`;
-      logToFile(`[TRIGGER] ${triggerMsg}`);
-      delete g.scheduleTime; // 移除設定避免重複觸發
-      await saveGame(gid);
-      try { 
-        await sendList(null, gid, "⏰ 定時提醒");
-        logToFile(`[SUCCESS] Scheduled push sent for ${gid}`);
-      } catch (e) { 
-        console.error('Failed to push scheduled list:', e);
-        logToFile(`[ERROR] Failed to push scheduled list: ${e.message}`);
-      }
-    }
-  }
-}
+// 定時推播檢查 (已合併至上方 checkSchedules 實作中)
 // 每分鐘的00秒時檢查一次排程
 function startMinuteCheck() {
   const executeCheck = async () => {
@@ -1357,6 +1386,48 @@ app.get('/api/game/:gid', async (req, res) => {
   
   // 回傳結果
   res.json({ games: groupGames, isAdmin: !!isAdmin, managedGroups, lobbyTitle, lobbyDesc });
+});
+
+// 取得特定群組的預設名單範本
+app.get('/api/templates/:gid', (req, res) => {
+  const gid = req.params.gid;
+  const templates = rosterTemplates[gid] || {};
+  res.json({ success: true, templates });
+});
+
+// 儲存/刪除特定群組的預設名單範本
+app.post('/api/templates/:gid', express.json(), async (req, res) => {
+  const gid = req.params.gid;
+  const { action, name, content, uid } = req.body;
+  
+  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+  if (!isAdmin) {
+    return res.status(403).json({ error: '只有管理員能修改預設名單' });
+  }
+  
+  if (!rosterTemplates[gid]) rosterTemplates[gid] = {};
+  
+  if (action === 'save') {
+    if (!name || !content) {
+      return res.status(400).json({ error: '名稱與內容不可為空' });
+    }
+    rosterTemplates[gid][name] = content;
+  } else if (action === 'delete') {
+    if (!name) {
+      return res.status(400).json({ error: '未指定要刪除的範本名稱' });
+    }
+    delete rosterTemplates[gid][name];
+  } else {
+    return res.status(400).json({ error: '無效的 action' });
+  }
+  
+  try {
+    await saveRosterTemplates();
+    res.json({ success: true, templates: rosterTemplates[gid] });
+  } catch (e) {
+    console.error('儲存範本失敗:', e);
+    res.status(500).json({ error: '伺服器儲存錯誤' });
+  }
 });
 
 // 處理 LIFF 前端傳來的報名或取消請求
@@ -1723,7 +1794,14 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (bumpedNames.length > 0) {
         try {
           const bumpMsg = bumpedNames.join('、');
-          await client.pushMessage(game.gid, { type: 'text', text: `${game.title}\n『${bumpMsg}』後補上 請注意訊息` });
+          const pushTargets = game.targetGids || [game.gid];
+          for (const targetGid of pushTargets) {
+            try {
+              await client.pushMessage(targetGid, { type: 'text', text: `${game.title}\n『${bumpMsg}』後補上 請注意訊息` });
+            } catch (e) {
+              console.error(`遞補推播失敗 for ${targetGid}:`, e);
+            }
+          }
         } catch(e) {
           console.error('遞補推播失敗:', e);
         }
@@ -2021,7 +2099,7 @@ async function handleEvent(event) {
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.trim();
       
-      let groupGames = Object.values(games).filter(g => g.gid === targetGid && g.active);
+      let groupGames = Object.values(games).filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active);
       
       if (text.startsWith('接龍清空') || text === '接龍結束') {
         // 全清
@@ -2071,7 +2149,7 @@ async function handleEvent(event) {
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.trim();
       
-      let groupGames = Object.values(games).filter(g => g.gid === targetGid && g.active);
+      let groupGames = Object.values(games).filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active);
       if (keyword) {
           groupGames = groupGames.filter(g => g.title.includes(keyword));
       }
@@ -2192,7 +2270,7 @@ async function handleEvent(event) {
       if (reminderMatch) keyword = keyword.replace(reminderMatch[0], '');
       keyword = keyword.trim();
 
-      let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
+      let groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active);
       if (groupGames.length === 0) {
           return await client.replyMessage(event.replyToken, { type: 'text', text: '目前沒有進行中的場次可以修改喔！' });
       }
@@ -2393,8 +2471,8 @@ async function removeAnon(gid, meta = {}, waitForCsv = false) {
   }
 }
 
-async function sendList(token, gid, prefix = "") {
-  const g = games[gid];
+async function sendList(token, gameId, prefix = "") {
+  const g = games[gameId];
   if (!g) return;
   
   let msg = prefix ? `${prefix}\n` : '';
@@ -2409,20 +2487,26 @@ async function sendList(token, gid, prefix = "") {
 
   if (g.note) msg += `\n📝 ${g.note}`;
   
-  if (process.env.LIFF_ID) {
-    msg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
-  }
+  const pushTargets = g.targetGids || [g.gid];
   
-  const message = { type: 'text', text: msg.trim() };
   if (token) {
-    return await client.replyMessage(token, message);
+    let replyMsg = msg;
+    if (process.env.LIFF_ID) {
+      replyMsg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${g.gid}`;
+    }
+    return await client.replyMessage(token, { type: 'text', text: replyMsg.trim() });
   }
   // 若無 token 則使用 Push Message (用於定時推播)
-  try {
-    return await client.pushMessage(gid, message);
-  } catch (e) {
-    console.error(`pushMessage failed for ${gid}:`, e);
-    throw e;
+  for (const targetGid of pushTargets) {
+    let currentMsg = msg;
+    if (process.env.LIFF_ID) {
+      currentMsg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
+    }
+    try {
+      await client.pushMessage(targetGid, { type: 'text', text: currentMsg.trim() });
+    } catch (e) {
+      console.error(`pushMessage failed for ${targetGid}:`, e);
+    }
   }
 }
 
@@ -2525,30 +2609,34 @@ app.get('/api/debug_games', (req, res) => {
     games: games
   });
 });
-app.listen(port, () => {
-  console.log(`Badminton Bot Running on port ${port}...`);
-  
-  if (AUTO_WAKE_ENABLED) {
-    // 立即執行一次（延遲5秒，確保服務器完全啟動）
-    setTimeout(() => {
-      pingSelf().catch(console.error);
-    }, 5000);
+loadPromise.then(() => {
+  app.listen(port, () => {
+    console.log(`Badminton Bot Running on port ${port}...`);
     
-    // 依設定頻率執行自我PING
-    setInterval(() => {
-      pingSelf().catch(console.error);
-    }, AUTO_WAKE_INTERVAL_MINUTES * 60 * 1000);
-    
-    console.log(`✅ 自動喚醒定時器已啟動（每 ${AUTO_WAKE_INTERVAL_MINUTES} 分鐘）`);
-    logToFile(`[STARTUP] Auto-wake timer started (every ${AUTO_WAKE_INTERVAL_MINUTES} minutes)`);
-  } else {
-    console.log('ℹ️ 已停用自動喚醒定時器（AUTO_WAKE_ENABLED=false）');
-  }
+    if (AUTO_WAKE_ENABLED) {
+      // 立即執行一次（延遲5秒，確保服務器完全啟動）
+      setTimeout(() => {
+        pingSelf().catch(console.error);
+      }, 5000);
+      
+      // 依設定頻率執行自我PING
+      setInterval(() => {
+        pingSelf().catch(console.error);
+      }, AUTO_WAKE_INTERVAL_MINUTES * 60 * 1000);
+      
+      console.log(`✅ 自動喚醒定時器已啟動（每 ${AUTO_WAKE_INTERVAL_MINUTES} 分鐘）`);
+      logToFile(`[STARTUP] Auto-wake timer started (every ${AUTO_WAKE_INTERVAL_MINUTES} minutes)`);
+    } else {
+      console.log('ℹ️ 已停用自動喚醒定時器（AUTO_WAKE_ENABLED=false）');
+    }
+  });
+}).catch(err => {
+  console.error('❌ 伺服器啟動初始化失敗:', err);
 });
 async function sendLobbyLink(token, gid, prefix = "") {
   let msg = prefix ? `${prefix}\n` : '';
   
-  const groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
+  const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active);
   if (groupGames.length === 0) {
     msg += '目前沒有進行中的場次喔！請輸入「接龍開始」來建立。';
   } else {
