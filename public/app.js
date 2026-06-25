@@ -123,27 +123,6 @@ function renderLobby() {
     lobbyView.classList.remove('hidden');
     detailView.classList.add('hidden');
     
-    let pushBtn = document.getElementById('admin-push-btn');
-    if (globalIsAdmin) {
-      if (!pushBtn) {
-        const headerEl = document.querySelector('.lobby-header');
-        if (headerEl) {
-          pushBtn = document.createElement('button');
-          pushBtn.id = 'admin-push-btn';
-          pushBtn.className = 'btn btn-primary';
-          pushBtn.style.marginTop = '10px';
-          pushBtn.style.width = '100%';
-          pushBtn.style.backgroundColor = '#4CAF50';
-          pushBtn.innerText = '📢 發送大廳推播 (廣播)';
-          pushBtn.onclick = handleCustomPush;
-          headerEl.appendChild(pushBtn);
-        }
-      }
-      if (pushBtn) pushBtn.style.display = 'block';
-    } else if (pushBtn) {
-      pushBtn.style.display = 'none';
-    }
-    
     gamesContainer.innerHTML = '';
     
     if (gamesList.length === 0) {
@@ -163,7 +142,7 @@ function renderLobby() {
       const isFull = count >= totalLimit;
       const isWaitlist = count >= limit && count < totalLimit;
       
-      const isMeRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
+      const isMeRegistered = section.list.includes(currentUser.displayName);
       
       let badgeStyle = isFull ? 'background-color: #E0E0E0; color: #888888;' : (isWaitlist ? 'background-color: #FFF3E0; color: #E65100;' : '');
       let badgeText = isFull ? '已額滿' : (isWaitlist ? '⚠ 候補中' : '✓ 開放報名');
@@ -179,7 +158,6 @@ function renderLobby() {
       const progressColor = count > limit ? 'var(--danger-color)' : 'var(--primary-color)';
       
       card.className = 'game-card';
-      const prefName = localStorage.getItem('preferredName') || '';
       
       card.innerHTML = `
         <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer; flex-wrap: wrap;">
@@ -228,7 +206,7 @@ function renderLobby() {
         <div class="action-row" style="flex-wrap: wrap;">
           <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
           <button class="btn btn-danger btn-square" onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
-          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="${escapeHTML(currentUser.displayName)}" value="${escapeHTML(prefName)}" style="flex: 2; min-width: 100px; font-weight: bold;" />
+          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="名稱" style="flex: 2; min-width: 100px; font-weight: bold;" />
           <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度" style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
         </div>
         <div id="error-msg-${game.gameId}" class="error-msg"></div>
@@ -328,6 +306,7 @@ async function handleProxyRegister(gameId) {
     await loadGamesLobby();
   }
 }
+
 // 切換至明細畫面
 window.showDetail = function(gameId) {
   currentGameDetailId = gameId;
@@ -340,8 +319,6 @@ function renderDetail(gameId) {
   if (!game) return;
   
   appDiv.className = '';
-  const statusMsgEl = document.getElementById('status-msg');
-  if (statusMsgEl) statusMsgEl.style.display = 'none';
   lobbyView.classList.add('hidden');
   detailView.classList.remove('hidden');
   window.scrollTo(0, 0);
@@ -359,26 +336,6 @@ function renderDetail(gameId) {
   detailCount.innerText = `${isRegistered ? '(已報名) ' : ''}${section.list.length} / ${section.limit}`;
   
   detailList.innerHTML = '';
-  
-  if (globalIsAdmin) {
-    let pushListBtn = document.getElementById('admin-push-list-btn');
-    if (!pushListBtn) {
-      pushListBtn = document.createElement('button');
-      pushListBtn.id = 'admin-push-list-btn';
-      pushListBtn.className = 'btn btn-primary';
-      pushListBtn.style.marginTop = '10px';
-      pushListBtn.style.marginBottom = '15px';
-      pushListBtn.style.width = '100%';
-      pushListBtn.style.backgroundColor = '#FF9800';
-      pushListBtn.innerText = '📢 推播目前詳細名單';
-      detailView.insertBefore(pushListBtn, detailList);
-    }
-    pushListBtn.onclick = () => handlePushList(gameId);
-    pushListBtn.style.display = 'block';
-  } else {
-    const pushListBtn = document.getElementById('admin-push-list-btn');
-    if (pushListBtn) pushListBtn.style.display = 'none';
-  }
   
   const hasTags = game.date || game.time || game.location || game.fee;
   if (hasTags) {
@@ -407,7 +364,7 @@ function renderDetail(gameId) {
     for (let i = 0; i < sec.limit; i++) {
       if (i < sec.list.length) {
         const name = sec.list[i];
-        const isMe = game.myRegisteredNames && game.myRegisteredNames.includes(name);
+        const isMe = name === currentUser.displayName;
         const displayName = (name === '__ANON__') ? '***' : name;
         const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
         
@@ -423,21 +380,8 @@ function renderDetail(gameId) {
           }
         }
         
-        let moveHtml = '';
-        if (globalIsAdmin) {
-          const canMoveUp = i > 0;
-          const canMoveDown = i < sec.list.length - 1;
-          moveHtml = `
-            <div style="display:flex; flex-direction:column; margin-right: 5px; min-width: 20px;">
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1})"` : 'disabled'}>🔼</button>
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1})"` : 'disabled'}>🔽</button>
-            </div>
-          `;
-        }
-        
         secDiv.innerHTML += `
           <div class="list-item">
-            ${moveHtml}
             <div class="list-num">${i + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
@@ -459,7 +403,7 @@ function renderDetail(gameId) {
       secDiv.innerHTML += `<h3 style="margin-top:20px; color:#ff9800">候補名單</h3>`;
       for (let i = sec.limit; i < sec.list.length; i++) {
         const name = sec.list[i];
-        const isMe = game.myRegisteredNames && game.myRegisteredNames.includes(name);
+        const isMe = name === currentUser.displayName;
         const displayName = (name === '__ANON__') ? '***' : name;
         const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
         
@@ -475,21 +419,8 @@ function renderDetail(gameId) {
           }
         }
         
-        let moveHtml = '';
-        if (globalIsAdmin) {
-          const canMoveUp = i > 0;
-          const canMoveDown = i < sec.list.length - 1;
-          moveHtml = `
-            <div style="display:flex; flex-direction:column; margin-right: 5px; min-width: 20px;">
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1})"` : 'disabled'}>🔼</button>
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1})"` : 'disabled'}>🔽</button>
-            </div>
-          `;
-        }
-        
         secDiv.innerHTML += `
           <div class="list-item" style="opacity: 0.8; background-color: #f9f9f9;">
-            ${moveHtml}
             <div class="list-num" style="color: #666; font-size: 12px;">候 ${i - sec.limit + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}" style="color: #666;">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
@@ -575,11 +506,6 @@ async function handleActionWithInput(event, gameId, action) {
   let name = currentUser.displayName;
   if (inputEl && inputEl.value.trim()) {
     name = inputEl.value.trim();
-    if (action === 'register') {
-      localStorage.setItem('preferredName', name);
-    }
-  } else if (action === 'register') {
-    localStorage.removeItem('preferredName');
   }
   
   let level = '';
@@ -688,318 +614,3 @@ async function handleTogglePaid(gameId, name) {
 
 window.handleTogglePaid = handleTogglePaid;
 
-window.handleReorder = async function(gameId, fromIdx, toIdx) {
-  try {
-    appDiv.className = 'loading';
-    statusMsg.style.display = 'block';
-    statusMsg.innerText = '更新順序中...';
-    
-    const res = await fetch('/api/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: gameId,
-        uid: currentUser.userId,
-        name: currentUser.displayName,
-        action: 'reorder',
-        fromIdx: fromIdx,
-        toIdx: toIdx
-      })
-    });
-    
-    const result = await res.json();
-    if (!res.ok) {
-      alert(result.error || '發生錯誤');
-      await loadGamesLobby();
-      return;
-    }
-    
-    const idx = gamesList.findIndex(g => g.gameId === gameId);
-    if (idx !== -1) gamesList[idx] = result.game;
-    renderDetail(gameId);
-    
-  } catch (err) {
-    console.error(err);
-    alert('網路錯誤，請稍後再試');
-    await loadGamesLobby();
-  }
-};
-
-window.handleCustomPush = async function() {
-  const text = prompt('請輸入要推播的訊息內容：\n(系統會自動在文字下方附上大廳連結)');
-  if (!text) return;
-  
-  const pushToAll = confirm('請問是否要「同時推播」到您所管理的所有群組？\n(若選取消，則只推播到當前群組)');
-  
-  try {
-    appDiv.className = 'loading';
-    if (statusMsg) {
-      statusMsg.style.display = 'block';
-      statusMsg.innerText = '推播發送中...';
-    }
-    
-    const res = await fetch('/api/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: 'dummy',
-        uid: currentUser.userId,
-        name: currentUser.displayName,
-        action: 'customPush',
-        text: text,
-        pushToAll: pushToAll
-      })
-    });
-    
-    const result = await res.json();
-    if (!res.ok) {
-      alert(result.error || '發送失敗');
-};
-
-// 處理新的輸入框報名與防呆
-async function handleActionWithInput(event, gameId, action) {
-    if (action === 'register') showFloatingEmoji(event, '👍');
-    else if (action === 'cancel') showFloatingEmoji(event, '😭');
-
-  const inputEl = document.getElementById(`name-input-${gameId}`);
-  const levelEl = document.getElementById(`level-input-${gameId}`);
-  const errorEl = document.getElementById(`error-msg-${gameId}`);
-  
-  let name = currentUser.displayName;
-  if (inputEl && inputEl.value.trim()) {
-    name = inputEl.value.trim();
-    if (action === 'register') {
-      localStorage.setItem('preferredName', name);
-    }
-  } else if (action === 'register') {
-    localStorage.removeItem('preferredName');
-  }
-  
-  let level = '';
-  if (levelEl && levelEl.value.trim()) {
-    level = levelEl.value.trim();
-  }
-  
-  errorEl.style.display = 'none';
-  errorEl.innerText = '';
-  
-  const game = gamesList.find(g => g.gameId === gameId);
-  if (!game) return;
-  
-  const section = game.sections[0] || { list: [] };
-  const exists = section.list.includes(name);
-  
-  if (action === 'register' && exists) {
-    errorEl.innerText = '名稱已重複';
-    errorEl.style.display = 'block';
-    return;
-  }
-  
-  if (action === 'cancel' && !exists) {
-    errorEl.innerText = '找不到此名稱';
-    errorEl.style.display = 'block';
-    return;
-  }
-  
-  try {
-    appDiv.className = 'loading';
-    statusMsg.style.display = 'block';
-    statusMsg.innerText = action === 'register' ? '報名中...' : '取消中...';
-    
-    const res = await fetch('/api/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: gameId,
-        uid: currentUser.userId,
-        name: name,
-        level: level,
-        action: action
-      })
-    });
-    
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || '操作失敗');
-    }
-    
-    // 如果是代報，自動清空輸入框，方便報下一個
-    if (inputEl && inputEl.value.trim()) {
-      inputEl.value = '';
-    }
-    if (levelEl) {
-      levelEl.value = '';
-    }
-    
-    await loadGamesLobby();
-  } catch (err) {
-    console.error(err);
-    appDiv.className = '';
-    statusMsg.style.display = 'none';
-    errorEl.innerText = err.message;
-    errorEl.style.display = 'block';
-  }
-}
-
-
-async function handleTogglePaid(gameId, name) {
-  try {
-    appDiv.className = 'loading';
-    statusMsg.style.display = 'block';
-    statusMsg.innerText = '更新中...';
-    
-    const res = await fetch('/api/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: gameId,
-        uid: currentUser.userId,
-        name: name,
-        action: 'togglePaid'
-      })
-    });
-    
-    const result = await res.json();
-    if (!res.ok) {
-      alert(result.error || '發生錯誤');
-      await loadGamesLobby();
-      return;
-    }
-    
-    const idx = gamesList.findIndex(g => g.gameId === gameId);
-    if (idx !== -1) gamesList[idx] = result.game;
-    renderDetail(gameId);
-    
-  } catch (err) {
-    console.error(err);
-    alert('網路錯誤，請稍後再試');
-    await loadGamesLobby();
-  }
-}
-
-window.handleTogglePaid = handleTogglePaid;
-
-window.handleReorder = async function(gameId, fromIdx, toIdx) {
-  try {
-    appDiv.className = 'loading';
-    statusMsg.style.display = 'block';
-    statusMsg.innerText = '更新順序中...';
-    
-    const res = await fetch('/api/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: gameId,
-        uid: currentUser.userId,
-        name: currentUser.displayName,
-        action: 'reorder',
-        fromIdx: fromIdx,
-        toIdx: toIdx
-      })
-    });
-    
-    const result = await res.json();
-    if (!res.ok) {
-      alert(result.error || '發生錯誤');
-      await loadGamesLobby();
-      return;
-    }
-    
-    const idx = gamesList.findIndex(g => g.gameId === gameId);
-    if (idx !== -1) gamesList[idx] = result.game;
-    renderDetail(gameId);
-  } catch (err) {
-    console.error(err);
-    alert('網路錯誤，請稍後再試');
-    await loadGamesLobby();
-  } finally {
-    appDiv.className = '';
-    const statusMsgEl = document.getElementById('status-msg');
-    if (statusMsgEl) statusMsgEl.style.display = 'none';
-  }
-};
-
-window.handleCustomPush = async function() {
-  const text = prompt('請輸入要推播的訊息內容：\n(系統會自動在文字下方附上大廳連結)');
-  if (!text) return;
-  
-  const pushToAll = confirm('請問是否要「同時推播」到您所管理的所有群組？\n(若選取消，則只推播到當前群組)');
-  
-  try {
-    appDiv.className = 'loading';
-    if (statusMsg) {
-      statusMsg.style.display = 'block';
-      statusMsg.innerText = '推播發送中...';
-    }
-    
-    const res = await fetch('/api/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: 'dummy',
-        uid: currentUser.userId,
-        name: currentUser.displayName,
-        action: 'customPush',
-        text: text,
-        pushToAll: pushToAll
-      })
-    });
-    
-    const result = await res.json();
-    if (!res.ok) {
-      alert(result.error || '發送失敗');
-    } else {
-      alert(`推播成功！已發送至 ${result.count} 個群組。`);
-    }
-  } catch(e) {
-    alert('網路錯誤');
-  } finally {
-    appDiv.className = '';
-    const statusMsg = document.getElementById('status-msg');
-    if (statusMsg) statusMsg.style.display = 'none';
-  }
-};
-
-window.handlePushList = async function(gameId) {
-  if (!confirm('確定要在群組內推播「目前詳細名單」嗎？\n(這將會把所有人的名字送到聊天室中)')) return;
-  
-  try {
-    appDiv.className = 'loading';
-    const statusMsg = document.getElementById('status-msg');
-    if (statusMsg) {
-      statusMsg.style.display = 'block';
-      statusMsg.innerText = '推播名單中...';
-    }
-    
-    const res = await fetch('/api/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: gameId,
-        uid: currentUser.userId,
-        name: currentUser.displayName,
-        action: 'pushList'
-      })
-    });
-    
-    const result = await res.json();
-    if (!res.ok) {
-      alert(result.error || '發送失敗');
-    } else {
-      alert('名單推播成功！');
-    }
-  } catch(e) {
-    alert('網路錯誤');
-  } finally {
-    appDiv.className = '';
-    const statusMsg = document.getElementById('status-msg');
-    if (statusMsg) statusMsg.style.display = 'none';
-  }
-};
