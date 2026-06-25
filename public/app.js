@@ -22,6 +22,7 @@ function showFloatingEmoji(e, emoji) {
     el.src = emoji;
     el.style.width = '70px'; // Make it slightly larger since it's an image
     el.style.height = 'auto';
+    el.style.mixBlendMode = 'multiply'; // Makes the white background transparent against light backgrounds
     // Add wiggle animation to the image itself
     el.style.animation = 'floatWiggle 0.4s ease-in-out infinite';
   } else {
@@ -37,7 +38,9 @@ function showFloatingEmoji(e, emoji) {
   wrapper.style.top = (e.clientY - (isImage ? 35 : 25)) + 'px';
   wrapper.style.pointerEvents = 'none';
   wrapper.style.zIndex = '9999';
-  wrapper.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))';
+  if (!isImage) {
+    wrapper.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))';
+  }
   wrapper.style.transform = 'translateY(0) scale(0.3)';
   wrapper.style.opacity = '1';
   wrapper.style.transition = 'transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1.5s ease-in-out';
