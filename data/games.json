@@ -1,0 +1,33 @@
+{
+  "1782378360270574": {
+    "gid": "C73ead06e46f4c3a00a3f87d946c7d18a",
+    "gameId": "1782378360270574",
+    "title": "週二冷氣團",
+    "note": "",
+    "active": true,
+    "startTime": 1782378953150,
+    "lastActiveTime": 1782378953150,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 12,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "Robert",
+          "偉舫",
+          "Ong",
+          "Perry",
+          "小周",
+          "海棠"
+        ]
+      }
+    ]
+  }
+}
