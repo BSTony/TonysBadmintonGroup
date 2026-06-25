@@ -105,6 +105,7 @@ async function loadGamesLobby() {
     } else {
       const data = await res.json();
       gamesList = data.games || [];
+      globalIsAdmin = !!data.isAdmin;
     }
 
     renderLobby();
