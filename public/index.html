@@ -52,16 +52,32 @@
         <div class="form-row">
           <div class="form-group">
             <label>日期 (必填)</label>
-            <input type="text" id="cg-date" placeholder="例如：10/25 (二)">
+            <input type="date" id="cg-date">
           </div>
           <div class="form-group">
             <label>時間 (必填)</label>
-            <input type="text" id="cg-time" placeholder="例如：18:00~20:00">
+            <div style="display:flex; align-items:center; gap: 5px;">
+              <input type="time" id="cg-time-start">
+              <span>~</span>
+              <input type="time" id="cg-time-end">
+            </div>
           </div>
         </div>
         <div class="form-group">
           <label>地點 (必填)</label>
-          <input type="text" id="cg-loc" placeholder="例如：南港運動中心">
+          <input type="text" id="cg-loc" list="loc-options" placeholder="輸入或選擇地點">
+          <datalist id="loc-options">
+            <option value="南港運動中心">
+            <option value="內湖運動中心">
+            <option value="信義運動中心">
+            <option value="松山運動中心">
+            <option value="大安運動中心">
+            <option value="中正運動中心">
+            <option value="中山運動中心">
+            <option value="北投運動中心">
+            <option value="文山運動中心">
+            <option value="士林運動中心">
+          </datalist>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -155,16 +171,20 @@
         <div class="form-row">
           <div class="form-group">
             <label>日期 (必填)</label>
-            <input type="text" id="eg-date" placeholder="例如：10/25 (二)">
+            <input type="date" id="eg-date">
           </div>
           <div class="form-group">
             <label>時間 (必填)</label>
-            <input type="text" id="eg-time" placeholder="例如：18:00~20:00">
+            <div style="display:flex; align-items:center; gap: 5px;">
+              <input type="time" id="eg-time-start">
+              <span>~</span>
+              <input type="time" id="eg-time-end">
+            </div>
           </div>
         </div>
         <div class="form-group">
           <label>地點 (必填)</label>
-          <input type="text" id="eg-loc" placeholder="例如：南港運動中心">
+          <input type="text" id="eg-loc" list="loc-options" placeholder="輸入或選擇地點">
         </div>
         <div class="form-row">
           <div class="form-group">

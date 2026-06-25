@@ -909,6 +909,14 @@ cgTemplateSelect.onchange = () => {
   }
 };
 
+function formatLocalGameDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const days = ['日', '一', '二', '三', '四', '五', '六'];
+  return `${d.getMonth() + 1}/${d.getDate()} (${days[d.getDay()]})`;
+}
+
 function showCreateGameForm() {
   lobbyView.classList.add('hidden');
   detailView.classList.add('hidden');
@@ -917,7 +925,11 @@ function showCreateGameForm() {
   // 初始化為明天的日期
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  document.getElementById('cg-date').value = `${tomorrow.getMonth()+1}/${tomorrow.getDate()}`;
+  const tzOffset = tomorrow.getTimezoneOffset() * 60000;
+  const localTomorrow = new Date(tomorrow - tzOffset).toISOString().split('T')[0];
+  document.getElementById('cg-date').value = localTomorrow;
+  document.getElementById('cg-time-start').value = '18:00';
+  document.getElementById('cg-time-end').value = '20:00';
   
   // 填入目標群組選單
   const targetGidSelect = document.getElementById('cg-target-gid');
@@ -945,12 +957,17 @@ document.getElementById('btn-cancel-create').onclick = () => {
 };
 
 document.getElementById('btn-submit-create').onclick = async () => {
-  const dateStr = document.getElementById('cg-date').value.trim();
-  const timeStr = document.getElementById('cg-time').value.trim();
+  const rawDateStr = document.getElementById('cg-date').value;
+  const dateStr = rawDateStr ? formatLocalGameDate(rawDateStr) : '';
+  
+  const tsStart = document.getElementById('cg-time-start').value;
+  const tsEnd = document.getElementById('cg-time-end').value;
+  const timeStr = (tsStart && tsEnd) ? `${tsStart}~${tsEnd}` : (tsStart || tsEnd || '');
+  
   const locStr = document.getElementById('cg-loc').value.trim();
   const targetGid = document.getElementById('cg-target-gid').value;
   
-  if (!dateStr || !timeStr || !locStr || !targetGid) {
+  if (!rawDateStr || !timeStr || !locStr || !targetGid) {
     alert('「目標群組」、「日期」、「時間」、「地點」為必填欄位！');
     return;
   }
@@ -1013,8 +1030,30 @@ function showEditGameForm(gameId) {
   
   document.getElementById('eg-gameId').value = gameId;
   document.getElementById('eg-title').value = game.title || '';
-  document.getElementById('eg-date').value = game.date || '';
-  document.getElementById('eg-time').value = game.time || '';
+  
+  let egDateVal = '';
+  if (game.date) {
+    const match = game.date.match(/(\d{1,2})\/(\d{1,2})/);
+    if (match) {
+      const year = new Date().getFullYear();
+      const month = match[1].padStart(2, '0');
+      const day = match[2].padStart(2, '0');
+      egDateVal = `${year}-${month}-${day}`;
+    } else {
+      egDateVal = game.date;
+    }
+  }
+  document.getElementById('eg-date').value = egDateVal;
+  
+  let tStart = '', tEnd = '';
+  if (game.time) {
+    const parts = game.time.split('~');
+    tStart = parts[0] ? parts[0].trim() : '';
+    tEnd = parts[1] ? parts[1].trim() : '';
+  }
+  document.getElementById('eg-time-start').value = tStart;
+  document.getElementById('eg-time-end').value = tEnd;
+  
   document.getElementById('eg-loc').value = game.location || '';
   document.getElementById('eg-fee').value = game.fee || '';
   document.getElementById('eg-tag').value = game.tag || '';
@@ -1043,11 +1082,16 @@ document.getElementById('btn-cancel-edit').onclick = () => {
 
 document.getElementById('btn-submit-edit').onclick = async () => {
   const gameId = document.getElementById('eg-gameId').value;
-  const dateStr = document.getElementById('eg-date').value.trim();
-  const timeStr = document.getElementById('eg-time').value.trim();
+  const rawDateStr = document.getElementById('eg-date').value;
+  const dateStr = rawDateStr ? formatLocalGameDate(rawDateStr) : '';
+  
+  const tsStart = document.getElementById('eg-time-start').value;
+  const tsEnd = document.getElementById('eg-time-end').value;
+  const timeStr = (tsStart && tsEnd) ? `${tsStart}~${tsEnd}` : (tsStart || tsEnd || '');
+  
   const locStr = document.getElementById('eg-loc').value.trim();
   
-  if (!dateStr || !timeStr || !locStr) {
+  if (!rawDateStr || !timeStr || !locStr) {
     alert('「日期」、「時間」、「地點」為必填欄位！');
     return;
   }
