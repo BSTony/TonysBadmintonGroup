@@ -964,7 +964,8 @@ app.get('/api/game/:gid', (req, res) => {
   let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
   console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
   if (groupGames.length === 0) {
-    return res.json({ games: [] }); // 不報錯，回傳空陣列
+    const isAdmin = groupAdmins[gid] && uid ? groupAdmins[gid].has(uid) : false;
+      return res.json({ games: [], isAdmin: !!isAdmin }); // 不報錯，回傳空陣列
   }
   
   // 深拷貝以避免污染記憶體中的 games 物件
@@ -1000,7 +1001,8 @@ app.get('/api/game/:gid', (req, res) => {
     // 如果日期相同，或者都沒寫日期，則依建立時間排序 (舊的在前面或新的在前面，預設為新的在前面)
     return b.startTime - a.startTime;
   });
-  res.json({ games: groupGames });
+  const isAdmin = groupAdmins[gid] && uid ? groupAdmins[gid].has(uid) : false;
+    res.json({ games: groupGames, isAdmin: !!isAdmin });
 });
 
 // 處理 LIFF 前端傳來的報名或取消請求
@@ -1033,6 +1035,13 @@ app.post('/api/action', express.json(), async (req, res) => {
           uidToNameMap.set(`${gameId}_${uid}`, n);
         }
       });
+        } else if (action === 'togglePaid') {
+      const isAdmin = groupAdmins[gid] && groupAdmins[gid].has(uid);
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能修改繳費狀態' });
+      }
+      game.paidMap = game.paidMap || {};
+      game.paidMap[name] = !game.paidMap[name];
     } else if (action === 'cancel') {
       if (!currentList.includes(name)) {
         return res.status(400).json({ error: '找不到此名稱' });

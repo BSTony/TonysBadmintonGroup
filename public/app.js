@@ -22,6 +22,7 @@ function showFloatingEmoji(e, emoji) {
 
 let currentGroupId = null;
 let currentUser = null;
+let globalIsAdmin = false;
 let gamesList = [];
 let currentGameDetailId = null;
 
@@ -366,12 +367,23 @@ function renderDetail(gameId) {
         const displayName = (name === '__ANON__') ? '***' : name;
         const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
         
-        // 加入取消按鈕，讓大家可以幫代報名的人取消
         const canCancel = name !== '__ANON__';
+        
+        const isPaid = game.paidMap && game.paidMap[name];
+        let paidHtml = '';
+        if (canCancel) {
+          if (globalIsAdmin) {
+            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
+          } else if (isPaid) {
+            paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
+          }
+        }
+        
         secDiv.innerHTML += `
           <div class="list-item">
             <div class="list-num">${i + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
+            ${paidHtml}
             ${canCancel ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
@@ -395,10 +407,22 @@ function renderDetail(gameId) {
         const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
         
         const canCancel = name !== '__ANON__';
+        
+        const isPaid = game.paidMap && game.paidMap[name];
+        let paidHtml = '';
+        if (canCancel) {
+          if (globalIsAdmin) {
+            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
+          } else if (isPaid) {
+            paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
+          }
+        }
+        
         secDiv.innerHTML += `
-          <div class="list-item">
-            <div class="list-num">候${i - sec.limit + 1}.</div>
-            <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
+          <div class="list-item" style="opacity: 0.8; background-color: #f9f9f9;">
+            <div class="list-num" style="color: #666; font-size: 12px;">候 ${i - sec.limit + 1}.</div>
+            <div class="list-name ${isMe ? 'me' : ''}" style="color: #666;">${escapeHTML(displayName)}${levelStr}</div>
+            ${paidHtml}
             ${canCancel ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
@@ -547,5 +571,42 @@ async function handleActionWithInput(event, gameId, action) {
     statusMsg.style.display = 'none';
     errorEl.innerText = err.message;
     errorEl.style.display = 'block';
+  }
+}
+
+
+async function handleTogglePaid(gameId, name) {
+  try {
+    appDiv.className = 'loading';
+    statusMsg.style.display = 'block';
+    statusMsg.innerText = '更新中...';
+    
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        gameId: gameId,
+        uid: currentUser.userId,
+        name: name,
+        action: 'togglePaid'
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) {
+      alert(result.error || '發生錯誤');
+      await loadGamesLobby();
+      return;
+    }
+    
+    const idx = gamesList.findIndex(g => g.gameId === gameId);
+    if (idx !== -1) gamesList[idx] = result.game;
+    renderDetail(gameId);
+    
+  } catch (err) {
+    console.error(err);
+    alert('網路錯誤，請稍後再試');
+    await loadGamesLobby();
   }
 }
