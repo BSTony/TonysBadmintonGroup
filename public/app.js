@@ -274,6 +274,23 @@ function isGameExpired(game) {
   return Date.now() > endTime.getTime();
 }
 
+// 初始載入大廳
+if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
+  showLobby();
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.btn-danger')) {
+    document.querySelectorAll('.btn-danger').forEach(b => {
+      if (b.dataset.dodged === 'true') {
+        b.dataset.dodged = 'false';
+        b.style.transition = 'transform 1s ease';
+        b.style.transform = 'translate(0px, 0px)';
+      }
+    });
+  }
+});
+
 // 渲染大廳畫面
 function renderLobby() {
     appDiv.className = '';
@@ -953,8 +970,41 @@ window.handleCancelByName = async function(gameId, name) {
 
 // 處理新的輸入框報名與防呆
 async function handleActionWithInput(event, gameId, action) {
-  if (action === 'register') showFloatingEmoji(event, 'images/dance.png');
-  else if (action === 'cancel') showFloatingEmoji(event, 'images/cry.png');
+  const btn = event.currentTarget || event.target;
+  
+  if (action === 'cancel' && btn) {
+    if (btn.dataset.dodged !== 'true') {
+      btn.dataset.dodged = 'true';
+      // Flash color
+      const originalBg = btn.style.backgroundColor;
+      btn.style.transition = 'background-color 0.1s, transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      btn.style.backgroundColor = '#FFEB3B';
+      setTimeout(() => btn.style.backgroundColor = originalBg, 150);
+      
+      // Dodge away
+      const moveX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 40 + 30);
+      const moveY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 20 + 10);
+      btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
+      
+      return; // Stop actual cancellation
+    } else {
+      // Second click: Reset position slowly and continue with cancellation
+      btn.dataset.dodged = 'false';
+      btn.style.transition = 'transform 2s ease';
+      btn.style.transform = 'translate(0px, 0px)';
+      showFloatingEmoji(event, 'images/cry.png');
+    }
+  } else if (action === 'register') {
+    showFloatingEmoji(event, 'images/dance.png');
+    // Reset all dodged buttons when +1 is clicked
+    document.querySelectorAll('button.btn-danger').forEach(b => {
+      if (b.dataset.dodged === 'true') {
+        b.dataset.dodged = 'false';
+        b.style.transition = 'transform 1s ease';
+        b.style.transform = 'translate(0px, 0px)';
+      }
+    });
+  }
 
   const inputEl = document.getElementById(`name-input-${gameId}`);
   const levelEl = document.getElementById(`level-input-${gameId}`);
@@ -1724,3 +1774,4 @@ document.getElementById('btn-submit-edit').onclick = async () => {
 };
 
 
+document.addEventListener('click', (e) => { if (!e.target.closest('.btn-danger')) { document.querySelectorAll('.btn-danger').forEach(b => { if (b.dataset.dodged === 'true') { b.dataset.dodged = 'false'; b.style.transition = 'transform 1s ease'; b.style.transform = 'translate(0px, 0px)'; } }); } });
