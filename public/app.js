@@ -842,8 +842,8 @@ window.handleCancelByName = async function(gameId, name) {
 
 // 處理新的輸入框報名與防呆
 async function handleActionWithInput(event, gameId, action) {
-    if (action === 'register') showFloatingEmoji(event, '👍');
-    else if (action === 'cancel') showFloatingEmoji(event, '😭');
+  if (action === 'register') showFloatingEmoji(event, '🐹💕');
+  else if (action === 'cancel') showFloatingEmoji(event, '🐹💦');
 
   const inputEl = document.getElementById(`name-input-${gameId}`);
   const levelEl = document.getElementById(`level-input-${gameId}`);
