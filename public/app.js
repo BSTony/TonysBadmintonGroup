@@ -611,3 +611,6 @@ async function handleTogglePaid(gameId, name) {
     await loadGamesLobby();
   }
 }
+
+window.handleTogglePaid = handleTogglePaid;
+
