@@ -98,5 +98,38 @@
         ]
       }
     ]
+  },
+  "1782385248300207": {
+    "gid": "C73ead06e46f4c3a00a3f87d946c7d18a",
+    "targetGids": [
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1782385248300207",
+    "title": "週日 港中 早8-10",
+    "date": "6/26 (五)",
+    "time": "08:00~10:00",
+    "location": "南港高中",
+    "fee": "男150/女100",
+    "note": "",
+    "tag": "4面,32人",
+    "active": true,
+    "startTime": 1782385248300,
+    "lastActiveTime": 1782385248300,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 7,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
