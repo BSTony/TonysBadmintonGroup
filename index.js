@@ -1283,7 +1283,8 @@ app.post('/api/action', express.json(), async (req, res) => {
             const n = sec.list[i];
             const name = n === '__ANON__' ? '***' : n;
             const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
-            msg += `${i+1}. ${name} ${level}\n`.trim() + '\n';
+            const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
+            msg += `${i+1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
           } else {
             msg += `${i+1}. \n`;
           }
@@ -1295,7 +1296,8 @@ app.post('/api/action', express.json(), async (req, res) => {
             const n = sec.list[i];
             const name = n === '__ANON__' ? '***' : n;
             const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
-            msg += `候${i - sec.limit + 1}. ${name} ${level}\n`.trim() + '\n';
+            const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
+            msg += `候${i - sec.limit + 1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
           }
         }
       });
@@ -1740,7 +1742,8 @@ async function handleEvent(event) {
               if (i < list.length) {
                   const name = list[i] === '__ANON__' ? '匿名' : list[i];
                   const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                  msg += `${i+1}. ${name}${levelStr}\n`;
+                  const paidStr = (g.paidMap && g.paidMap[name]) ? ' (已繳費)' : '';
+                  msg += `${i+1}. ${name}${levelStr}${paidStr}\n`;
               } else {
                   msg += `${i+1}. \n`;
               }
@@ -1752,7 +1755,8 @@ async function handleEvent(event) {
               for (let i = limit; i < list.length; i++) {
                   const name = list[i] === '__ANON__' ? '匿名' : list[i];
                   const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                  msg += `候補${backupCount+1}. ${name}${levelStr}\n`;
+                  const paidStr = (g.paidMap && g.paidMap[name]) ? ' (已繳費)' : '';
+                  msg += `候補${backupCount+1}. ${name}${levelStr}${paidStr}\n`;
                   backupCount++;
               }
               for (let i = backupCount; i < backupLimit; i++) {
