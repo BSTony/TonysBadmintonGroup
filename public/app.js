@@ -72,7 +72,7 @@ async function loadGamesLobby() {
     appDiv.className = 'loading';
     statusMsg.innerText = '載入中...';
     
-    const res = await fetch(`/api/game/${currentGroupId}`);
+    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}`);
     if (!res.ok) {
       if (res.status === 404) {
         gamesList = [];
@@ -275,7 +275,8 @@ function renderDetail(gameId) {
   else detailTitle.style.display = 'block';
   
   const section = game.sections[0] || { list: [], limit: 20 };
-  detailCount.innerText = `${section.list.length} / ${section.limit}`;
+  const isRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
+  detailCount.innerText = `${isRegistered ? '(已報名) ' : ''}${section.list.length} / ${section.limit}`;
   
   detailList.innerHTML = '';
   

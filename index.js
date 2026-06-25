@@ -888,11 +888,25 @@ app.get('/api/config', (req, res) => {
 // 取得特定群組所有進行中的接龍
 app.get('/api/game/:gid', (req, res) => {
   const gid = req.params.gid;
-  const groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
+  const uid = req.query.uid;
+  let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
   console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
   if (groupGames.length === 0) {
     return res.status(404).json({ error: 'Game not found' });
   }
+  
+  // 深拷貝以避免污染記憶體中的 games 物件
+  groupGames = JSON.parse(JSON.stringify(groupGames));
+  
+  // 若有提供 uid，附上該用戶報名的名單
+  if (uid) {
+    groupGames.forEach(g => {
+      g.myRegisteredNames = g.sections[0].list.filter(name => {
+        return nameToUidMap.get(`${g.gameId}_${name}`) === uid;
+      });
+    });
+  }
+  
   // 依建立時間排序，新的在前面
   groupGames.sort((a, b) => b.startTime - a.startTime);
   res.json({ games: groupGames });
