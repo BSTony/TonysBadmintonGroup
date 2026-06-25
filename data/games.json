@@ -15,14 +15,17 @@
     "tag": "",
     "active": true,
     "startTime": 1782379080075,
-    "lastActiveTime": 1782379422101,
+    "lastActiveTime": 1782379442579,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {
-      "柚子": "6"
+      "柚子": "6",
+      "柚子5": "18",
+      "柚子9": "20",
+      "柚子20": "13"
     },
     "paidMap": {
       "Tony": true,
@@ -41,7 +44,10 @@
           "柚子1",
           "柚子2",
           "柚子3",
-          "柚子4"
+          "柚子4",
+          "柚子5",
+          "柚子9",
+          "柚子20"
         ]
       }
     ]
