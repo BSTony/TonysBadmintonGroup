@@ -150,7 +150,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782385357664,
-    "lastActiveTime": 1782385459410,
+    "lastActiveTime": 1782385468639,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -165,7 +165,8 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "Tony"
+          "Tony",
+          "Kay"
         ]
       }
     ]
