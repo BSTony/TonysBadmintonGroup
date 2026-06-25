@@ -1,1 +1,42 @@
-{}
+{
+  "1782379080074955": {
+    "gid": "C73ead06e46f4c3a00a3f87d946c7d18a",
+    "targetGids": [
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
+    ],
+    "gameId": "1782379080074955",
+    "title": "週日 打四小 早起鳥兒",
+    "date": "6/28 (日)",
+    "time": "08:00~00:00",
+    "location": "南港高中",
+    "fee": "300",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1782379080075,
+    "lastActiveTime": 1782379080075,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "Tony": true,
+      "Kay": true
+    },
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay"
+        ]
+      }
+    ]
+  }
+}
