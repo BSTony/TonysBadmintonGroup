@@ -3,21 +3,27 @@ function showFloatingEmoji(e, emoji) {
   const el = document.createElement('div');
   el.innerText = emoji;
   el.style.position = 'fixed';
-  el.style.left = (e.clientX - 10) + 'px';
-  el.style.top = (e.clientY - 20) + 'px';
-  el.style.fontSize = '30px';
+  el.style.left = (e.clientX - 15) + 'px';
+  el.style.top = (e.clientY - 25) + 'px';
+  el.style.fontSize = '35px';
   el.style.pointerEvents = 'none';
   el.style.zIndex = '9999';
-  el.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  el.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))';
+  el.style.transform = 'translateY(0) scale(0.3) rotate(0deg)';
+  el.style.opacity = '1';
+  // Bouncy easing for transform, gentle fade for opacity
+  el.style.transition = 'transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1.5s ease-in-out';
   document.body.appendChild(el);
   
   // force reflow
   void el.offsetHeight;
   
-  el.style.transform = `translateY(-60px) scale(1.5) rotate(${Math.random() * 20 - 10}deg)`;
+  // Target state
+  const randomRotate = Math.random() * 60 - 30; // -30 to 30 degrees
+  el.style.transform = `translateY(-120px) scale(1.8) rotate(${randomRotate}deg)`;
   el.style.opacity = '0';
   
-  setTimeout(() => el.remove(), 800);
+  setTimeout(() => el.remove(), 1500);
 }
 
 // === 全域狀態 ===
