@@ -27,6 +27,8 @@ const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 let adminsSha = null;
 let codesSha = null;
 let settingsSha = null;
+let gamesSha = null; // GitHub games.json 的 SHA
+let gamesSaveChain = Promise.resolve(); // 防併發串行保存
 
 async function loadData() {
   // Load from local fallback first
@@ -82,6 +84,25 @@ async function loadData() {
         groupSettings = JSON.parse(Buffer.from(settingsRes.content, 'base64').toString('utf8'));
       }
     } catch(e) { console.error('無法從 GitHub 讀取 groupSettings.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 games.json...');
+      const gamesRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/games.json?ref=${GITHUB_BRANCH}`);
+      if (gamesRes.content) {
+        gamesSha = gamesRes.sha;
+        const rawStr = Buffer.from(gamesRes.content, 'base64').toString('utf8');
+        const parsedGames = JSON.parse(rawStr);
+        // 直接合併進全域 games 物件，loadGames() 後續會做結構正規化
+        for (const [k, v] of Object.entries(parsedGames)) {
+          if (typeof v === 'string') {
+            try { games[k] = JSON.parse(v); } catch(e) { games[k] = v; }
+          } else {
+            games[k] = v;
+          }
+        }
+        console.log(`已從 GitHub 載入 ${Object.keys(parsedGames).length} 筆場次資料`);
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 games.json:', e.message); }
   }
 }
 
@@ -809,8 +830,9 @@ async function loadGames() {
       });
       console.log(`已從資料庫載入 ${res.rowCount} 筆接龍資料`);
     } else {
-      // 檔案備援：若沒有資料庫則嘗試從本地檔案載入
-      if (fs.existsSync(GAMES_FILE)) {
+      // 如果已從 GitHub 載入資料，就不從本地檔案覆蓋
+      const alreadyLoadedFromGithub = USE_GITHUB && Object.keys(games).length > 0;
+      if (!alreadyLoadedFromGithub && fs.existsSync(GAMES_FILE)) {
         try {
           const content = fs.readFileSync(GAMES_FILE, 'utf8') || '{}';
           const obj = JSON.parse(content);
@@ -819,6 +841,8 @@ async function loadGames() {
         } catch (e) {
           console.error('從檔案載入接龍資料失敗:', e);
         }
+      } else if (alreadyLoadedFromGithub) {
+        console.log(`已從 GitHub 載入場次資料，跳過本地檔案讀取`);
       }
     }
 
@@ -880,6 +904,27 @@ async function flushFileSave() {
     console.log('✅ 接龍資料已寫入檔案');
   } catch (e) {
     console.error('❌ 儲存接龍資料至檔案失敗:', e);
+  }
+
+  // 同步儲存到 GitHub
+  if (USE_GITHUB) {
+    gamesSaveChain = gamesSaveChain.then(async () => {
+      try {
+        const jsonStr = JSON.stringify(games, null, 2);
+        const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+        const payload = {
+          message: 'chore: update games data',
+          content: encodedContent,
+          branch: GITHUB_BRANCH
+        };
+        if (gamesSha) payload.sha = gamesSha;
+        const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/games.json`, payload);
+        if (res.content && res.content.sha) gamesSha = res.content.sha;
+        console.log('✅ 場次資料已同步儲存至 GitHub (data/games.json)');
+      } catch(e) {
+        console.error('❌ 儲存 games.json 至 GitHub 失敗:', e.message);
+      }
+    });
   }
 }
 
