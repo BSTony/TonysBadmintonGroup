@@ -61,7 +61,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379188597,
-    "lastActiveTime": 1782383152279,
+    "lastActiveTime": 1782383155566,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -75,8 +75,7 @@
       "Ong": true,
       "Perry": true,
       "小周": true,
-      "海棠": true,
-      "Kay": true
+      "海棠": true
     },
     "sections": [
       {
@@ -93,8 +92,7 @@
           "小周",
           "海棠",
           "柚子5",
-          "謝東霖 Tony",
-          "Kay"
+          "謝東霖 Tony"
         ]
       }
     ]
