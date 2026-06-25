@@ -165,7 +165,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782385357664,
-    "lastActiveTime": 1782399456001,
+    "lastActiveTime": 1782399461703,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -189,7 +189,8 @@
           "CC",
           "ONG",
           "Iven",
-          "Mina"
+          "Mina",
+          "Jim"
         ]
       }
     ]
