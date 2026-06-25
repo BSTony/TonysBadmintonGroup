@@ -130,10 +130,13 @@ function renderLobby() {
       }
       
       const card = document.createElement('div');
-      card.className = 'game-card';
-      
-      // Progress calculation
+      const totalLimit = limit + backupLimit;
+      const isFull = count >= totalLimit;
+      const isWaitlist = count >= limit && count < totalLimit;
       const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
+      const progressColor = count > limit ? 'var(--danger-color)' : 'var(--primary-color)';
+      
+      card.className = 'game-card';
       
       card.innerHTML = `
         <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer; flex-wrap: wrap;">
@@ -172,10 +175,10 @@ function renderLobby() {
         <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
           <div class="progress-header">
             <span>名額進度</span>
-            <span class="progress-value">${count} / ${limit} 人</span>
+            <span class="progress-value" style="color: ${count > limit ? 'var(--danger-color)' : 'var(--text-main)'}">${count} / ${limit} 人</span>
           </div>
           <div class="progress-bar-bg">
-            <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
+            <div class="progress-bar-fill" style="width: ${progressPercent}%; background-color: ${progressColor};"></div>
           </div>
         </div>
         
