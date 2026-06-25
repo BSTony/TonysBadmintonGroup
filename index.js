@@ -1128,6 +1128,8 @@ async function ensureGroupSettings(gid) {
       await saveGroupSettings();
     }
   }
+}
+
 app.get('/api/group/code/:code', async (req, res) => {
   const code = req.params.code;
   let foundGid = null;
