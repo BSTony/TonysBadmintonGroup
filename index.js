@@ -991,7 +991,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (bumpedNames.length > 0) {
         try {
           const bumpMsg = bumpedNames.join('、');
-          await client.pushMessage(game.gid, { type: 'text', text: `標題 : ${game.title}\n『${bumpMsg}』後補上 請注意訊息` });
+          await client.pushMessage(game.gid, { type: 'text', text: `${game.title}\n『${bumpMsg}』後補上 請注意訊息` });
         } catch(e) {
           console.error('遞補推播失敗:', e);
         }
