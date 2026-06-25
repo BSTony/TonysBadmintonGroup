@@ -123,6 +123,12 @@ function renderLobby() {
       let badgeStyle = isFull ? 'background-color: #E0E0E0; color: #888888;' : (isWaitlist ? 'background-color: #FFF3E0; color: #E65100;' : '');
       let badgeText = isFull ? '已額滿' : (isWaitlist ? '⚠ 候補中' : '✓ 開放報名');
       
+      let customTagsHtml = '';
+      if (game.tag) {
+         const tagArr = game.tag.split(/[,、，]/).map(t => t.trim()).filter(Boolean);
+         customTagsHtml = tagArr.map(t => `<div class="badge default">${escapeHTML(t)}</div>`).join('');
+      }
+      
       const card = document.createElement('div');
       card.className = 'game-card';
       
@@ -130,11 +136,11 @@ function renderLobby() {
       const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
       
       card.innerHTML = `
-        <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+        <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer; flex-wrap: wrap;">
           <div class="badge ${isFull ? 'full' : 'open'}" style="${badgeStyle}">
             ${badgeText}
           </div>
-          ${game.tag ? `<div class="badge default">${escapeHTML(game.tag)}</div>` : ''}
+          ${customTagsHtml}
           ${isMeRegistered ? '<div class="badge open" style="background-color: var(--primary-color); color: white;">已報名</div>' : ''}
         </div>
         
