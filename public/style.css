@@ -224,9 +224,20 @@ button {
   transition: opacity var(--transition-speed);
 }
 button:active { opacity: 0.7; }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important; }
 
-.btn-primary { background-color: var(--primary-color); color: #FFF; flex: 1; }
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(216, 141, 147, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(216, 141, 147, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(216, 141, 147, 0); }
+}
+
+.btn-primary { 
+  background-color: var(--primary-color); 
+  color: #FFF; 
+  flex: 1; 
+  animation: pulseGlow 2s infinite;
+}
 .btn-danger { background-color: var(--surface-color-light); color: var(--text-main); flex: 1; border: 1px solid #E0E0E0; }
 .btn-square { flex: 0 0 auto; width: 44px; height: 44px; padding: 0; border-radius: 8px; font-size: 18px; }
 
