@@ -1071,6 +1071,95 @@ app.post('/api/action', express.json(), async (req, res) => {
   try {
     const { gid, gameId, uid, name, level, action, count, text, pushToAll } = req.body;
     
+    if (action === 'createGame') {
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能建立場次' });
+      }
+      
+      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, initialListStr } = req.body;
+      
+      const newGameId = Date.now().toString() + Math.floor(Math.random()*1000);
+      
+      let pPublish = null;
+      if (publish) {
+         let ptStr = publish.replace('T', ' ');
+         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
+         const dt = new Date(ptStr);
+         if (!isNaN(dt.getTime())) pPublish = dt.getTime();
+      }
+      
+      let pReminder = null;
+      if (reminder) {
+         let rtStr = reminder.replace('T', ' ');
+         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
+         const dt = new Date(rtStr);
+         if (!isNaN(dt.getTime())) pReminder = dt.getTime();
+      }
+      
+      let initialList = [];
+      let initialLevelMap = {};
+      let initialPaidMap = {};
+      
+      if (initialListStr) {
+          const rawList = initialListStr.split(/[\s,、，\n]+/).map(n => n.trim()).filter(Boolean);
+          rawList.forEach(n => {
+            let isPaid = false;
+            if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
+                isPaid = true;
+                n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+            }
+            const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
+            if (match) {
+              const trueName = match[1].trim();
+              const lvl = (match[2] || match[3]).trim();
+              initialList.push(trueName);
+              initialLevelMap[trueName] = lvl;
+              if (isPaid) initialPaidMap[trueName] = true;
+            } else {
+              initialList.push(n);
+              if (isPaid) initialPaidMap[n] = true;
+            }
+          });
+      }
+      
+      games[newGameId] = {
+        gid: gid,
+        gameId: newGameId,
+        title: title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽球接龍',
+        date: date || '',
+        time: time || '',
+        location: loc || '',
+        fee: fee || '',
+        note: note || '',
+        tag: tag || '',
+        active: true,
+        startTime: Date.now(),
+        lastActiveTime: Date.now(),
+        scheduleTime: pPublish,
+        reminderTime: pReminder,
+        scheduleInput: null,
+        anonymous: [],
+        anonymousCount: 0,
+        levelMap: initialLevelMap,
+        paidMap: initialPaidMap,
+        sections: [
+          { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList }
+        ]
+      };
+      
+      await saveGame(newGameId, true);
+      await saveCurrentListSnapshot(newGameId, false);
+      
+      if (!pPublish) {
+          try {
+             await sendLobbyLink(null, gid, "🚀 場次建立成功！\n" + (title || '新場次開放報名中'));
+          } catch(e) {}
+      }
+      
+      return res.json({ success: true, gameId: newGameId });
+    }
+    
     if (action === 'customPush') {
       const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {

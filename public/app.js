@@ -123,19 +123,19 @@ function renderLobby() {
     lobbyView.classList.remove('hidden');
     detailView.classList.add('hidden');
     
-    let pushBtn = document.getElementById('admin-push-btn');
+    let pushBtn = document.getElementById('admin-create-game-btn');
     if (globalIsAdmin) {
       if (!pushBtn) {
         const headerEl = document.querySelector('.lobby-header');
         if (headerEl) {
           pushBtn = document.createElement('button');
-          pushBtn.id = 'admin-push-btn';
+          pushBtn.id = 'admin-create-game-btn';
           pushBtn.className = 'btn btn-primary';
           pushBtn.style.marginTop = '10px';
           pushBtn.style.width = '100%';
-          pushBtn.style.backgroundColor = '#4CAF50';
-          pushBtn.innerText = '📢 發送大廳推播 (廣播)';
-          pushBtn.onclick = handleCustomPush;
+          pushBtn.style.backgroundColor = '#FF9800'; // Orange for creating
+          pushBtn.innerText = '➕ 管理者開團';
+          pushBtn.onclick = showCreateGameForm;
           headerEl.appendChild(pushBtn);
         }
       }
@@ -808,3 +808,132 @@ window.handlePushList = async function(gameId) {
     if (statusMsg) statusMsg.style.display = 'none';
   }
 };
+
+// ================= Create Game UI & Templates =================
+const createGameView = document.getElementById('create-game-view');
+const cgTemplateSelect = document.getElementById('cg-template-select');
+const cgInitialList = document.getElementById('cg-initial-list');
+
+function loadTemplates() {
+  const templates = JSON.parse(localStorage.getItem('cgRosterTemplates') || '{}');
+  cgTemplateSelect.innerHTML = '<option value="">-- 選擇群組範本 --</option>';
+  for (const name in templates) {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.innerText = name;
+    cgTemplateSelect.appendChild(opt);
+  }
+}
+
+document.getElementById('btn-save-template').onclick = () => {
+  const text = cgInitialList.value.trim();
+  if (!text) return alert('名單不可為空！');
+  const name = prompt('請輸入此範本的名稱 (例如：週二固定咖)：');
+  if (!name) return;
+  const templates = JSON.parse(localStorage.getItem('cgRosterTemplates') || '{}');
+  templates[name] = text;
+  localStorage.setItem('cgRosterTemplates', JSON.stringify(templates));
+  loadTemplates();
+  cgTemplateSelect.value = name;
+  alert('儲存成功！');
+};
+
+document.getElementById('btn-delete-template').onclick = () => {
+  const name = cgTemplateSelect.value;
+  if (!name) return alert('請先選擇一個範本！');
+  if (!confirm(`確定要刪除範本「${name}」嗎？`)) return;
+  const templates = JSON.parse(localStorage.getItem('cgRosterTemplates') || '{}');
+  delete templates[name];
+  localStorage.setItem('cgRosterTemplates', JSON.stringify(templates));
+  loadTemplates();
+  cgInitialList.value = '';
+  alert('刪除成功！');
+};
+
+cgTemplateSelect.onchange = () => {
+  const name = cgTemplateSelect.value;
+  if (!name) {
+    cgInitialList.value = '';
+    return;
+  }
+  const templates = JSON.parse(localStorage.getItem('cgRosterTemplates') || '{}');
+  if (templates[name]) {
+    cgInitialList.value = templates[name];
+  }
+};
+
+function showCreateGameForm() {
+  lobbyView.classList.add('hidden');
+  detailView.classList.add('hidden');
+  createGameView.classList.remove('hidden');
+  
+  // 初始化為明天的日期
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('cg-date').value = `${tomorrow.getMonth()+1}/${tomorrow.getDate()}`;
+  
+  loadTemplates();
+  cgInitialList.value = '';
+  cgTemplateSelect.value = '';
+}
+
+document.getElementById('btn-cancel-create').onclick = () => {
+  createGameView.classList.add('hidden');
+  lobbyView.classList.remove('hidden');
+};
+
+document.getElementById('btn-submit-create').onclick = async () => {
+  const dateStr = document.getElementById('cg-date').value.trim();
+  const timeStr = document.getElementById('cg-time').value.trim();
+  const locStr = document.getElementById('cg-loc').value.trim();
+  
+  if (!dateStr || !timeStr || !locStr) {
+    alert('「日期」、「時間」、「地點」為必填欄位！');
+    return;
+  }
+  
+  try {
+    appDiv.className = 'loading';
+    statusMsg.style.display = 'block';
+    statusMsg.innerText = '場次建立中...';
+    
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        gameId: 'dummy',
+        uid: currentUser.userId,
+        name: currentUser.displayName,
+        action: 'createGame',
+        title: document.getElementById('cg-title').value.trim(),
+        date: dateStr,
+        time: timeStr,
+        loc: locStr,
+        fee: document.getElementById('cg-fee').value.trim(),
+        tag: document.getElementById('cg-tag').value.trim(),
+        limit: document.getElementById('cg-limit').value,
+        backupLimit: document.getElementById('cg-backup').value,
+        publish: document.getElementById('cg-publish').value,
+        reminder: document.getElementById('cg-reminder').value,
+        note: document.getElementById('cg-note').value.trim(),
+        initialListStr: cgInitialList.value.trim()
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) {
+      alert(result.error || '建立失敗');
+    } else {
+      alert('開團成功！');
+      createGameView.classList.add('hidden');
+      await loadGamesLobby();
+    }
+  } catch(e) {
+    alert('網路錯誤');
+  } finally {
+    appDiv.className = '';
+    statusMsg.style.display = 'none';
+  }
+};
+
