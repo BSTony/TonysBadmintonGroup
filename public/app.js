@@ -96,10 +96,13 @@ async function initializeLiff() {
 }
 
 // 載入多場次大廳資料
-async function loadGamesLobby() {
+async function loadGamesLobby(silent = false) {
   try {
-    appDiv.className = 'loading';
-    statusMsg.innerText = '載入中...';
+    if (!silent) {
+      appDiv.className = 'loading';
+      statusMsg.innerText = '載入中...';
+      statusMsg.style.display = 'block';
+    }
     
     const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
     if (!res.ok) {
@@ -816,10 +819,13 @@ async function handleActionWithInput(event, gameId, action) {
     return;
   }
   
+  const btn = event ? event.currentTarget : null;
   try {
-    appDiv.className = 'loading';
-    statusMsg.style.display = 'block';
-    statusMsg.innerText = action === 'register' ? '報名中...' : '取消中...';
+    if (btn) {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.innerText;
+      btn.innerText = '...';
+    }
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -851,13 +857,16 @@ async function handleActionWithInput(event, gameId, action) {
       levelEl.value = '';
     }
     
-    await loadGamesLobby();
+    await loadGamesLobby(true); // 使用靜默加載，不轉圈圈，防止滾動條重置
   } catch (err) {
     console.error(err);
-    appDiv.className = '';
-    statusMsg.style.display = 'none';
     errorEl.innerText = err.message;
     errorEl.style.display = 'block';
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = btn.dataset.originalText || btn.innerText;
+    }
   }
 }
 
