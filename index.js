@@ -964,7 +964,7 @@ app.get('/api/game/:gid', (req, res) => {
   let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
   console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
   if (groupGames.length === 0) {
-    const isAdmin = groupAdmins[gid] && uid ? groupAdmins[gid].has(uid) : false;
+    const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       return res.json({ games: [], isAdmin: !!isAdmin }); // 不報錯，回傳空陣列
   }
   
@@ -1001,7 +1001,7 @@ app.get('/api/game/:gid', (req, res) => {
     // 如果日期相同，或者都沒寫日期，則依建立時間排序 (舊的在前面或新的在前面，預設為新的在前面)
     return b.startTime - a.startTime;
   });
-  const isAdmin = groupAdmins[gid] && uid ? groupAdmins[gid].has(uid) : false;
+  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
     res.json({ games: groupGames, isAdmin: !!isAdmin });
 });
 
@@ -1036,7 +1036,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         }
       });
         } else if (action === 'togglePaid') {
-      const isAdmin = groupAdmins[gid] && groupAdmins[gid].has(uid);
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能修改繳費狀態' });
       }
@@ -1047,7 +1047,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(400).json({ error: '找不到此名稱' });
       }
       
-      const isAdmin = groupAdmins[gid] && groupAdmins[gid].has(uid);
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
       
       if (!isAdmin && registeredUid && registeredUid !== uid) {
@@ -1170,7 +1170,7 @@ async function handleEvent(event) {
   }
 
   // 只允許管理員下達文字指令
-  const isAdmin = groupAdmins[gid] && groupAdmins[gid].has(uid);
+  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   if (!isAdmin) {
     return null; // 非管理員，已讀不回
   }
