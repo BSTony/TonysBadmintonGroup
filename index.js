@@ -1726,7 +1726,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         }
       }
       
-      return res.json({ success: true, game: g, partialError: hasError });
+      return res.json({ success: true, game: g, msg: msg, partialError: hasError });
     }
 
     if (!gameId || !uid || !name || !action) {

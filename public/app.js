@@ -838,6 +838,10 @@ async function handleActionWithInput(event, gameId, action) {
     if (!res.ok) {
       throw new Error(data.error || '操作失敗');
     }
+
+    if (liff.isInClient() && data.msg) {
+        await liff.sendMessages([{ type: 'text', text: data.msg }]);
+    }
     
     // 如果是代報，自動清空輸入框，方便報下一個
     if (inputEl && inputEl.value.trim()) {
@@ -1005,8 +1009,27 @@ window.handlePushList = async function(gameId) {
     const result = await res.json();
     if (!res.ok) {
       alert(result.error || '發送失敗');
+      return;
+    }
+    
+    // 如果在 LINE App 內，我們另外呼叫 liff.sendMessages() 直接以使用者身分發送訊息
+    // 這不消耗 Bot 的 200 則推播額度，且 100% 可以成功發送到聊天室！
+    if (liff.isInClient() && result.msg) {
+      let clientMsg = result.msg;
+      if (process.env.LIFF_ID || true) { // 附上大廳連結
+        const context = liff.getContext();
+        const liffId = (context && context.liffId) || '';
+        clientMsg += `\n\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${liffId}?gid=${currentGroupId}`;
+      }
+      try {
+        await liff.sendMessages([{ type: 'text', text: clientMsg.trim() }]);
+        alert('名單已成功傳送到聊天室！');
+      } catch (sendErr) {
+        console.error('liff.sendMessages failed:', sendErr);
+        alert('推播請求已送出（但以個人身份傳送失敗，可能需要權限）');
+      }
     } else {
-      alert('名單推播成功！');
+      alert('名單推播請求已送出！');
     }
   } catch(e) {
     alert('網路錯誤');
