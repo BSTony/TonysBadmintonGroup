@@ -1,1 +1,56 @@
-{}
+{
+  "1782401316870884": {
+    "gid": "C73ead06e46f4c3a00a3f87d946c7d18a",
+    "targetGids": [
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1782401316870884",
+    "title": "週二冷氣團",
+    "date": "6/30 (二)",
+    "time": "18:00~20:00",
+    "location": "南港運動中心",
+    "fee": "280",
+    "note": "",
+    "tag": "2面,冷氣",
+    "active": true,
+    "startTime": 1782401316870,
+    "lastActiveTime": 1782401316870,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "Tony": true,
+      "Kay": true,
+      "陳呈": true,
+      "程鈞": true,
+      "Perry": true,
+      "Robert": true,
+      "afrahuang": true
+    },
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 12,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "陳呈",
+          "程鈞",
+          "Perry",
+          "Robert",
+          "afrahuang",
+          "Ong",
+          "小可愛",
+          "Joe",
+          "Vicky",
+          "Sean"
+        ]
+      }
+    ]
+  }
+}
