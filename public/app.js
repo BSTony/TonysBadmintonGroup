@@ -1345,6 +1345,7 @@ document.getElementById('btn-submit-create').onclick = async () => {
     } else {
       // 如果沒有設定預約發布時間，且在 LINE 內，我們直接以使用者身分發送開團通知
       const publishVal = document.getElementById('cg-publish').value;
+      let liffSendOk = false;
       if (!publishVal && liff.isInClient()) {
         const titleVal = document.getElementById('cg-title').value.trim() || '羽球接龍';
         const dateVal = rawDateStr ? formatLocalGameDate(rawDateStr) : '';
@@ -1362,12 +1363,22 @@ document.getElementById('btn-submit-create').onclick = async () => {
         
         try {
           await liff.sendMessages([{ type: 'text', text: announceMsg.trim() }]);
+          liffSendOk = true;
         } catch (sendErr) {
           console.error('liff.sendMessages announce failed:', sendErr);
         }
       }
       
-      alert('開團成功！');
+      // 顯示診斷資訊
+      let alertMsg = '開團成功！';
+      if (result.pushErrors && result.pushErrors.length > 0) {
+        alertMsg += '\n\n⚠️ 機器人推播失敗:\n' + result.pushErrors.join('\n');
+      }
+      if (liffSendOk) {
+        alertMsg += '\n\n✅ 已透過個人帳號發送開團通知到聊天室';
+      }
+      alert(alertMsg);
+      
       createGameView.classList.add('hidden');
       await loadGamesLobby();
     }

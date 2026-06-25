@@ -1531,16 +1531,20 @@ app.post('/api/action', express.json(), async (req, res) => {
       await saveGame(newGameId, true);
       await saveCurrentListSnapshot(newGameId, false);
       
+      let pushErrors = [];
       if (!pPublish) {
-          try {
-             const gidsToPush = (targetGids && targetGids.length > 0) ? targetGids : [actualGid];
-             for (const gId of gidsToPush) {
+          const gidsToPush = (targetGids && targetGids.length > 0) ? targetGids : [actualGid];
+          for (const gId of gidsToPush) {
+             try {
                 await sendLobbyLink(null, gId, "🚀 場次建立成功！\n" + (title || '新場次開放報名中'));
+             } catch(e) {
+                console.error(`createGame pushMessage failed for ${gId}:`, e);
+                pushErrors.push(`${gId}: ${e.message}`);
              }
-          } catch(e) {}
+          }
       }
       
-      return res.json({ success: true, gameId: newGameId });
+      return res.json({ success: true, gameId: newGameId, pushErrors: pushErrors });
     }
     
     if (action === 'closeGame') {
@@ -2657,5 +2661,6 @@ async function sendLobbyLink(token, gid, prefix = "") {
     return await client.pushMessage(gid, message);
   } catch (e) {
     console.error(`pushMessage failed for ${gid}:`, e);
+    throw e;
   }
 }
