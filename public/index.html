@@ -40,6 +40,12 @@
       
       <div class="form-container">
         <div class="form-group">
+          <label>發布目標群組 (必填)</label>
+          <select id="cg-target-gid">
+            <option value="">-- 載入中 --</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label>標題 (選填)</label>
           <input type="text" id="cg-title" placeholder="例如：週二晚間快樂打">
         </div>
@@ -110,9 +116,12 @@
 
     <!-- 明細視圖 (單一場次名單) -->
     <div id="detail-view" class="view hidden">
-      <header class="detail-header">
-        <button id="btn-back" class="btn-icon">⬅ 返回大廳</button>
-        <h2 id="detail-title">場次明細</h2>
+      <header class="detail-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center;">
+          <button id="btn-back" class="btn-icon">⬅ 返回</button>
+          <h2 id="detail-title" style="margin-left: 10px; margin-bottom: 0;">場次明細</h2>
+        </div>
+        <button id="btn-close-game" class="btn-danger hidden" style="padding: 5px 10px; font-size: 12px; margin: 0;">結束場次</button>
       </header>
       
       <div class="detail-stats">

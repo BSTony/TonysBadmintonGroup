@@ -23,6 +23,7 @@ function showFloatingEmoji(e, emoji) {
 let currentGroupId = null;
 let currentUser = null;
 let globalIsAdmin = false;
+let globalManagedGroups = [];
 let gamesList = [];
 let currentGameDetailId = null;
 
@@ -106,6 +107,7 @@ async function loadGamesLobby() {
       const data = await res.json();
       gamesList = data.games || [];
       globalIsAdmin = !!data.isAdmin;
+      globalManagedGroups = data.managedGroups || [];
     }
 
     renderLobby();
@@ -354,6 +356,12 @@ function renderDetail(gameId) {
   if (!showTitle) detailTitle.style.display = 'none';
   else detailTitle.style.display = 'block';
   
+  const btnCloseGame = document.getElementById('btn-close-game');
+  if (btnCloseGame) {
+    if (globalIsAdmin) btnCloseGame.classList.remove('hidden');
+    else btnCloseGame.classList.add('hidden');
+  }
+  
   const section = game.sections[0] || { list: [], limit: 20 };
   const isRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
   detailCount.innerText = `${isRegistered ? '(已報名) ' : ''}${section.list.length} / ${section.limit}`;
@@ -508,6 +516,38 @@ btnBack.addEventListener('click', () => {
   currentGameDetailId = null;
   renderLobby();
 });
+
+const btnCloseGame = document.getElementById('btn-close-game');
+if (btnCloseGame) {
+  btnCloseGame.addEventListener('click', async () => {
+    if (!currentGameDetailId) return;
+    if (!confirm('確定要結束/關閉此場次嗎？\n關閉後將無法再報名，並且會從大廳隱藏。')) return;
+    
+    try {
+      appDiv.className = 'loading';
+      const res = await fetch('/api/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gid: currentGroupId,
+          gameId: currentGameDetailId,
+          uid: currentUser.userId,
+          name: currentUser.displayName,
+          action: 'closeGame'
+        })
+      });
+      const result = await res.json();
+      if (!res.ok) alert(result.error || '操作失敗');
+      else alert('場次已關閉！');
+      
+      currentGameDetailId = null;
+      await loadGamesLobby();
+    } catch (e) {
+      alert('網路錯誤');
+      appDiv.className = '';
+    }
+  });
+}
 
 // HTML 逃脫函數防 XSS
 function escapeHTML(str) {
@@ -872,6 +912,21 @@ function showCreateGameForm() {
   tomorrow.setDate(tomorrow.getDate() + 1);
   document.getElementById('cg-date').value = `${tomorrow.getMonth()+1}/${tomorrow.getDate()}`;
   
+  // 填入目標群組選單
+  const targetGidSelect = document.getElementById('cg-target-gid');
+  targetGidSelect.innerHTML = '';
+  if (globalManagedGroups.length > 0) {
+    globalManagedGroups.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g.gid;
+      opt.innerText = `群組代碼：${g.code}`;
+      if (g.gid === currentGroupId) opt.selected = true;
+      targetGidSelect.appendChild(opt);
+    });
+  } else {
+    targetGidSelect.innerHTML = `<option value="${currentGroupId}">目前群組</option>`;
+  }
+  
   loadTemplates();
   cgInitialList.value = '';
   cgTemplateSelect.value = '';
@@ -886,9 +941,10 @@ document.getElementById('btn-submit-create').onclick = async () => {
   const dateStr = document.getElementById('cg-date').value.trim();
   const timeStr = document.getElementById('cg-time').value.trim();
   const locStr = document.getElementById('cg-loc').value.trim();
+  const targetGid = document.getElementById('cg-target-gid').value;
   
-  if (!dateStr || !timeStr || !locStr) {
-    alert('「日期」、「時間」、「地點」為必填欄位！');
+  if (!dateStr || !timeStr || !locStr || !targetGid) {
+    alert('「目標群組」、「日期」、「時間」、「地點」為必填欄位！');
     return;
   }
   
@@ -902,6 +958,7 @@ document.getElementById('btn-submit-create').onclick = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         gid: currentGroupId,
+        targetGid: targetGid,
         gameId: 'dummy',
         uid: currentUser.userId,
         name: currentUser.displayName,

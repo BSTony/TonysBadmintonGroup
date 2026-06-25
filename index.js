@@ -1024,9 +1024,22 @@ app.get('/api/game/:gid', (req, res) => {
   const uid = req.query.uid;
   let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
   console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
+  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+  let managedGroups = [];
+  if (isAdmin) {
+    const adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
+    for (const g of adminGids) {
+      const codes = Object.keys(groupCodes).filter(k => groupCodes[k] === g);
+      if (codes.length > 0) {
+        codes.forEach(c => managedGroups.push({ gid: g, code: c }));
+      } else if (g === gid) {
+        managedGroups.push({ gid: g, code: '目前群組' });
+      }
+    }
+  }
+
   if (groupGames.length === 0) {
-    const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
-      return res.json({ games: [], isAdmin: !!isAdmin }); // 不報錯，回傳空陣列
+      return res.json({ games: [], isAdmin: !!isAdmin, managedGroups }); // 不報錯，回傳空陣列
   }
   
   // 深拷貝以避免污染記憶體中的 games 物件
@@ -1062,8 +1075,8 @@ app.get('/api/game/:gid', (req, res) => {
     // 如果日期相同，或者都沒寫日期，則依建立時間排序 (舊的在前面或新的在前面，預設為新的在前面)
     return b.startTime - a.startTime;
   });
-  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
-    res.json({ games: groupGames, isAdmin: !!isAdmin });
+  
+  res.json({ games: groupGames, isAdmin: !!isAdmin, managedGroups });
 });
 
 // 處理 LIFF 前端傳來的報名或取消請求
@@ -1077,7 +1090,8 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(403).json({ error: '只有管理員能建立場次' });
       }
       
-      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, initialListStr } = req.body;
+      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, initialListStr, targetGid } = req.body;
+      const actualGid = targetGid || gid;
       
       const newGameId = Date.now().toString() + Math.floor(Math.random()*1000);
       
@@ -1124,7 +1138,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       games[newGameId] = {
-        gid: gid,
+        gid: actualGid,
         gameId: newGameId,
         title: title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽球接龍',
         date: date || '',
@@ -1153,11 +1167,30 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       if (!pPublish) {
           try {
-             await sendLobbyLink(null, gid, "🚀 場次建立成功！\n" + (title || '新場次開放報名中'));
+             await sendLobbyLink(null, actualGid, "🚀 場次建立成功！\n" + (title || '新場次開放報名中'));
           } catch(e) {}
       }
       
       return res.json({ success: true, gameId: newGameId });
+    }
+    
+    if (action === 'closeGame') {
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能關閉場次' });
+      }
+      if (!gameId || !games[gameId]) {
+        return res.status(404).json({ error: '找不到該場次' });
+      }
+      
+      games[gameId].active = false;
+      await saveGame(gameId, true);
+      
+      try {
+        await client.pushMessage(games[gameId].gid, { type: 'text', text: `🔒 ${games[gameId].title || '此場次'} 已由管理員關閉，無法再報名。` });
+      } catch (e) {}
+      
+      return res.json({ success: true });
     }
     
     if (action === 'customPush') {
