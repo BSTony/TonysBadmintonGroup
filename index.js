@@ -1428,7 +1428,17 @@ async function handleEvent(event) {
           replyMsgs.push({ type: 'text', text: `...還有其他場次，請點擊大廳連結查看全部內容！` });
       }
       
-      return client.replyMessage(event.replyToken, replyMsgs);
+      if (targetGid !== gid) {
+          try {
+              await client.pushMessage(targetGid, replyMsgs);
+              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將場次名單推播至群組 ${groupMatch[1].trim()}` });
+          } catch (e) {
+              console.error(e);
+              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中。` });
+          }
+      } else {
+          return client.replyMessage(event.replyToken, replyMsgs);
+      }
     }
     
     if (text === '超級清空') {
