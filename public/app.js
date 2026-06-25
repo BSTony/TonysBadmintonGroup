@@ -187,9 +187,8 @@ function renderLobby() {
       </div>
       
       <div class="action-row">
-        <button class="btn ${isMeRegistered ? 'btn-danger' : 'btn-primary'} btn-square" ${isFull && !isMeRegistered ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput('${game.gameId}', '${isMeRegistered ? 'cancel' : 'register'}')">
-          ${isMeRegistered ? '-1' : '+1'}
-        </button>
+        <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput('${game.gameId}', 'register')">+1</button>
+        <button class="btn btn-danger btn-square" onclick="handleActionWithInput('${game.gameId}', 'cancel')">-1</button>
         <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="代報名稱 (留空為本人)" />
       </div>
       <div id="error-msg-${game.gameId}" class="error-msg"></div>

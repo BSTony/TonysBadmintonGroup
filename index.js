@@ -965,7 +965,14 @@ app.post('/api/action', express.json(), async (req, res) => {
       });
     } else if (action === 'cancel') {
       if (!currentList.includes(name)) {
-        return res.status(400).json({ error: '您不在名單中' });
+        return res.status(400).json({ error: '找不到此名稱' });
+      }
+      
+      const isAdmin = groupAdmins[gid] && groupAdmins[gid].has(uid);
+      const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
+      
+      if (!isAdmin && registeredUid && registeredUid !== uid) {
+        return res.status(403).json({ error: '只能取消自己或自己代報的名單' });
       }
       
       const limit = game.sections[0].limit;
