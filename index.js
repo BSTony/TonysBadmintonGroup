@@ -1121,9 +1121,21 @@ async function handleEvent(event) {
       const backupLimit = backupMatch ? parseInt(backupMatch[1] || backupMatch[2], 10) : 5;
       
       let initialList = [];
+      let initialLevelMap = {};
       if (listMatch) {
          const listStr = (listMatch[1] || listMatch[2]).trim();
-         initialList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+         const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+         rawList.forEach(n => {
+           const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
+           if (match) {
+             const trueName = match[1].trim();
+             const lvl = (match[2] || match[3]).trim();
+             initialList.push(trueName);
+             initialLevelMap[trueName] = lvl;
+           } else {
+             initialList.push(n);
+           }
+         });
       }
       
       if (anonMatch) {
@@ -1156,6 +1168,7 @@ async function handleEvent(event) {
         scheduleInput: null,
         anonymous: [],
         anonymousCount: 0,
+        levelMap: initialLevelMap,
         sections: [
           { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
         ]
@@ -1268,7 +1281,22 @@ async function handleEvent(event) {
       }
       if (listMatch && targetGame.sections[0]) {
          const listStr = (listMatch[1] || listMatch[2]).trim();
-         targetGame.sections[0].list = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+         const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+         let newList = [];
+         let newLevelMap = { ...(targetGame.levelMap || {}) };
+         rawList.forEach(n => {
+           const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
+           if (match) {
+             const trueName = match[1].trim();
+             const lvl = (match[2] || match[3]).trim();
+             newList.push(trueName);
+             newLevelMap[trueName] = lvl;
+           } else {
+             newList.push(n);
+           }
+         });
+         targetGame.sections[0].list = newList;
+         targetGame.levelMap = newLevelMap;
       }
       
       await saveGame(targetGame.gameId, true);
