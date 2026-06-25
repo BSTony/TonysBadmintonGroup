@@ -182,8 +182,8 @@ function renderLobby() {
         <div class="action-row" style="flex-wrap: wrap;">
           <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput('${game.gameId}', 'register')">+1</button>
           <button class="btn btn-danger btn-square" onclick="handleActionWithInput('${game.gameId}', 'cancel')">-1</button>
-          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="代報名稱 (留空本人)" style="flex: 2; min-width: 100px;" />
-          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度(選填)" style="flex: 1; min-width: 60px; margin-left: 8px;" />
+          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="名稱" style="flex: 2; min-width: 100px; font-weight: bold;" />
+          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度" style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
         </div>
         <div id="error-msg-${game.gameId}" class="error-msg"></div>
       `;

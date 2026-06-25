@@ -735,8 +735,44 @@ async function flushFileSave() {
     console.log('✅ 接龍資料已寫入檔案');
   } catch (e) {
     console.error('❌ 儲存接龍資料至檔案失敗:', e);
-    logToFile(`[ERROR] Failed to save games.json: ${e.message}`);
-    // 失敗時保留pendingSaves，下次再試
+  }
+}
+
+async function checkSchedules() {
+  const now = Date.now();
+  const gids = Object.keys(games);
+  
+  for (const gid of gids) {
+    const g = games[gid];
+    if (!g) continue;
+    
+    if (g.scheduleTime) {
+      const sched = Number(g.scheduleTime);
+      if (isNaN(sched)) {
+        delete g.scheduleTime;
+        await saveGame(gid);
+      } else if (sched <= now) {
+        delete g.scheduleTime;
+        await saveGame(gid);
+        try { 
+          await sendLobbyLink(null, g.gid, "⏰ 定時推播");
+        } catch (e) { console.error(e); }
+      }
+    }
+    
+    if (g.reminderTime) {
+      const rem = Number(g.reminderTime);
+      if (isNaN(rem)) {
+        delete g.reminderTime;
+        await saveGame(gid);
+      } else if (rem <= now) {
+        delete g.reminderTime;
+        await saveGame(gid);
+        try { 
+          await client.pushMessage(g.gid, { type: 'text', text: `⏰ 溫馨提醒：【 ${g.title} 】 即將開始！\n請有報名的群友注意時間喔！` });
+        } catch (e) { console.error(e); }
+      }
+    }
   }
 }
 
@@ -1156,12 +1192,14 @@ async function handleEvent(event) {
       const titleMatch = text.match(/標題(?:[:：])?\s*(?:\{|｛)?(.*?)(?:\}|｝)?(?:\n|$)/) || text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
       const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
       const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
-      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|費用|人數|候補|備註|名單|$))))/);
-      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|人數|候補|備註|名單|$))))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|名單|標籤|$))))/);
-      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|標籤|匿名名單|$))))/);
-      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|標籤|名單|$))))/);
+      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|費用|人數|候補|備註|名單|$))))/);
+      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|人數|候補|備註|名單|$))))/);
+      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|名單|標籤|$))))/);
+      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
+      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|匿名名單|$))))/);
+      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|$))))/);
+      const publishMatch = text.match(/發布時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
+      const reminderMatch = text.match(/提醒時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
       
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
       const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
@@ -1172,6 +1210,20 @@ async function handleEvent(event) {
       const pFee = feeMatch ? (feeMatch[1] || feeMatch[2]).trim() : '';
       const pNote = noteMatch ? (noteMatch[1] || noteMatch[2]).trim() : '';
       const pTag = tagMatch ? (tagMatch[1] || tagMatch[2]).trim() : '';
+      
+      let pPublish = null;
+      if (publishMatch) {
+         const ptStr = (publishMatch[1] || publishMatch[2]).trim();
+         const dt = new Date(ptStr);
+         if (!isNaN(dt.getTime())) pPublish = dt.getTime();
+      }
+      
+      let pReminder = null;
+      if (reminderMatch) {
+         const rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
+         const dt = new Date(rtStr);
+         if (!isNaN(dt.getTime())) pReminder = dt.getTime();
+      }
       
       let title = '羽球接龍';
       if (titleMatch) {
@@ -1227,7 +1279,8 @@ async function handleEvent(event) {
         active: true,
         startTime: Date.now(),
         lastActiveTime: Date.now(),
-        scheduleTime: null,
+        scheduleTime: pPublish,
+        reminderTime: pReminder,
         scheduleInput: null,
         anonymous: [],
         anonymousCount: 0,
@@ -1249,10 +1302,14 @@ async function handleEvent(event) {
       
       let welcomePrefix = showWelcome ? '🎉 大家好，我是羽球接龍機器人。\n\n' : '';
       if (isRemote) {
-          await sendLobbyLink(null, targetGid, welcomePrefix + "🚀 場次建立成功！");
-          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已成功將場次建立並推播至代碼 ${groupMatch[1].trim()} 的群組！` });
+          if (!pPublish) await sendLobbyLink(null, targetGid, welcomePrefix + "🚀 場次建立成功！");
+          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已成功將場次建立${pPublish ? '並排程發布' : '並推播'}至代碼 ${groupMatch[1].trim()} 的群組！` });
       } else {
-          return await sendLobbyLink(event.replyToken, gid, welcomePrefix + "🚀 場次建立成功！");
+          if (pPublish) {
+              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 場次建立成功！將於指定時間發布大廳連結。` });
+          } else {
+              return await sendLobbyLink(event.replyToken, gid, welcomePrefix + "🚀 場次建立成功！");
+          }
       }
     }
 
@@ -1282,11 +1339,14 @@ async function handleEvent(event) {
       const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
       const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
       const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
-      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|費用|人數|候補|備註|名單|$))))/);
-      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|人數|候補|備註|名單|$))))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|名單|標籤|$))))/);
-      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|標籤|$))))/);
+      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|費用|人數|候補|備註|名單|匿名名單|$))))/);
+      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|人數|候補|備註|名單|匿名名單|$))))/);
+      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|名單|標籤|匿名名單|$))))/);
+      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
+      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|匿名名單|$))))/);
+      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|$))))/);
+      const publishMatch = text.match(/發布時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
+      const reminderMatch = text.match(/提醒時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
       
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
       const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
@@ -1301,6 +1361,11 @@ async function handleEvent(event) {
       if (noteMatch) keyword = keyword.replace(noteMatch[0], '');
       if (limitMatch) keyword = keyword.replace(limitMatch[0], '');
       if (backupMatch) keyword = keyword.replace(backupMatch[0], '');
+      if (tagMatch) keyword = keyword.replace(tagMatch[0], '');
+      if (listMatch) keyword = keyword.replace(listMatch[0], '');
+      if (anonMatch) keyword = keyword.replace(anonMatch[0], '');
+      if (publishMatch) keyword = keyword.replace(publishMatch[0], '');
+      if (reminderMatch) keyword = keyword.replace(reminderMatch[0], '');
       keyword = keyword.trim();
 
       let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
@@ -1365,6 +1430,27 @@ async function handleEvent(event) {
          });
          targetGame.sections[0].list = newList;
          targetGame.levelMap = newLevelMap;
+      }
+      if (anonMatch && targetGame.sections[0]) {
+         targetGame.sections[0].list = targetGame.sections[0].list.filter(n => n !== '__ANON__');
+         const anonStr = (anonMatch[1] || anonMatch[2]).trim();
+         const num = parseInt(anonStr, 10);
+         if (!isNaN(num)) {
+             for(let i=0; i<num; i++) targetGame.sections[0].list.push('__ANON__');
+         } else {
+             const anons = anonStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+             for(let i=0; i<anons.length; i++) targetGame.sections[0].list.push('__ANON__');
+         }
+      }
+      if (publishMatch) {
+         const ptStr = (publishMatch[1] || publishMatch[2]).trim();
+         const dt = new Date(ptStr);
+         if (!isNaN(dt.getTime())) targetGame.scheduleTime = dt.getTime();
+      }
+      if (reminderMatch) {
+         const rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
+         const dt = new Date(rtStr);
+         if (!isNaN(dt.getTime())) targetGame.reminderTime = dt.getTime();
       }
       
       await saveGame(targetGame.gameId, true);
