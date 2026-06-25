@@ -567,6 +567,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 全域存儲：支援多群組、多區段
 let games = {};
 const groupAdmins = {};
+const nameToUidMap = new Map();
 // 從環境變數讀取管理員密碼，如果未設定則使用預設值（不建議）
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '鈞鈞是豬豬';
 const adminUsers = new Set(); // 儲存已登入的管理員 UserID (重啟後會清空)
@@ -1291,12 +1292,13 @@ function addToList(gid, idx, name, meta = {}, waitForCsv = false) {
   // 匿名占位符允許重複出現
   if (name === '__ANON__') {
     games[gid].sections[idx].list.push(name);
-    // 不記錄到 CSV（只保存名單快照）
     return null;
   }
   if (!games[gid].sections[idx].list.includes(name)) {
     games[gid].sections[idx].list.push(name);
-    // 不記錄到 CSV（只保存名單快照）
+    if (meta && meta.uid) {
+      nameToUidMap.set(`${gid}_${name}`, meta.uid);
+    }
     return null;
   }
   return null;
@@ -1307,10 +1309,9 @@ async function removeFromList(gid, name, meta = {}, waitForCsv = false) {
     const i = s.list.indexOf(name);
     if (i > -1) {
       s.list.splice(i, 1);
+      nameToUidMap.delete(`${gid}_${name}`);
     }
   });
-  // 注意：不刪除映射，因為用戶可能會再次報名，保留映射可以減少 API 呼叫
-  // 不記錄到 CSV（只保存名單快照）
 }
 
 async function removeAnon(gid, meta = {}, waitForCsv = false) {
