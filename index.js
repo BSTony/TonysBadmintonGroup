@@ -1932,6 +1932,13 @@ async function handleEvent(event) {
     });
   }
 
+  if (text === '我的UID' || text === '我的uid') {
+    return client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: `你的專屬 UID 是：\n${uid}\n\n(若要開啟全系統超級管理員模式，請將此字串設定到 Render 的 SUPER_ADMIN_USER_ID 環境變數中)`
+    });
+  }
+
   // 只允許管理員下達文字指令
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   if (!isAdmin) {
