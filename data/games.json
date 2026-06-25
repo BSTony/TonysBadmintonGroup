@@ -60,7 +60,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379188597,
-    "lastActiveTime": 1782384041885,
+    "lastActiveTime": 1782384044363,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -72,8 +72,7 @@
       "Robert": true,
       "偉舫": true,
       "Ong": true,
-      "Perry": true,
-      "小周": true
+      "Perry": true
     },
     "sections": [
       {
@@ -87,8 +86,7 @@
           "Robert",
           "偉舫",
           "Ong",
-          "Perry",
-          "小周"
+          "Perry"
         ]
       }
     ]
