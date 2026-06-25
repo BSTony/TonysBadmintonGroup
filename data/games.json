@@ -165,14 +165,16 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782385357664,
-    "lastActiveTime": 1782385468639,
+    "lastActiveTime": 1782399400887,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {},
-    "paidMap": {},
+    "paidMap": {
+      "Tony": true
+    },
     "sections": [
       {
         "title": "報名名單",
