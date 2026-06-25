@@ -566,6 +566,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 全域存儲：支援多群組、多區段
 let games = {};
+const groupAdmins = {};
 // 從環境變數讀取管理員密碼，如果未設定則使用預設值（不建議）
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '鈞鈞是豬豬';
 const adminUsers = new Set(); // 儲存已登入的管理員 UserID (重啟後會清空)
