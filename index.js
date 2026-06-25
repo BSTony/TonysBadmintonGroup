@@ -66,7 +66,9 @@ async function loadData() {
       }
     } catch(e) { console.error('無法從 GitHub 讀取 groupCodes.json:', e.message); }
   }
-}\n\nloadData();
+}
+
+loadData();
 
 async function saveAdmins() {
   const data = {};
