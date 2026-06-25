@@ -1539,7 +1539,8 @@ app.post('/api/action', express.json(), async (req, res) => {
                 await sendLobbyLink(null, gId, "🚀 場次建立成功！\n" + (title || '新場次開放報名中'));
              } catch(e) {
                 console.error(`createGame pushMessage failed for ${gId}:`, e);
-                pushErrors.push(`${gId}: ${e.message}`);
+                const detail = e.originalError?.response?.data?.message || e.response?.data?.message || e.message;
+                pushErrors.push(`${gId}: ${detail}`);
              }
           }
       }
@@ -1728,7 +1729,8 @@ app.post('/api/action', express.json(), async (req, res) => {
         } catch (e) {
           console.error(`Push list error for ${targetGid}:`, e);
           hasError = true;
-          errorMsgs.push(`${targetGid}: ${e.message}`);
+          const detail = e.originalError?.response?.data?.message || e.response?.data?.message || e.message;
+          errorMsgs.push(`${targetGid}: ${detail}`);
         }
       }
       
