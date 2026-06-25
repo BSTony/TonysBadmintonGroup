@@ -757,8 +757,8 @@ async function loadGames() {
       }
     }
 
-    // 升級資料結構：確保所有 game 都有 gameId 且以 gameId 為 key
     const newGames = {};
+    const oldKeysToDelete = [];
     for (const [key, val] of Object.entries(games)) {
       if (Array.isArray(val)) {
         val.forEach(g => {
@@ -767,15 +767,34 @@ async function loadGames() {
           if(!g.gid) g.gid = key;
           newGames[id] = g;
         });
+        oldKeysToDelete.push(key);
       } else if (!val.gameId) {
         val.gid = key;
         val.gameId = Date.now().toString() + Math.floor(Math.random()*1000);
         newGames[val.gameId] = val;
+        oldKeysToDelete.push(key);
       } else {
         newGames[key] = val;
       }
     }
     games = newGames;
+
+    if (oldKeysToDelete.length > 0) {
+      console.log('執行資料庫遷移：刪除舊結構並儲存新結構...');
+      if (pool) {
+        for (const k of oldKeysToDelete) {
+          try {
+            await pool.query('DELETE FROM games WHERE gid = $1', [k]);
+          } catch(e) {}
+        }
+      }
+      for (const [id, g] of Object.entries(games)) {
+        await saveGame(id);
+      }
+      if (!pool) {
+        scheduleFileSave();
+      }
+    }
 
   } catch (e) {
     console.error('載入資料失敗:', e);
