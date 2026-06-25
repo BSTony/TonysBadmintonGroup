@@ -1431,6 +1431,15 @@ async function handleEvent(event) {
       return client.replyMessage(event.replyToken, replyMsgs);
     }
     
+    if (text === '超級清空') {
+      const count = Object.keys(games).length;
+      Object.keys(games).forEach(k => delete games[k]);
+      await saveCurrentListSnapshot(null, false);
+      pendingSaves.add('__force_save__');
+      await flushFileSave();
+      return await client.replyMessage(event.replyToken, { type: 'text', text: `💥 超級清空啟動！已強制刪除伺服器上所有群組的 ${count} 個場次。` });
+    }
+
     if (text === '測試場次') {
         const myGames = Object.values(games).map(g => `ID: ${g.gameId}, GID: ${g.gid}, Title: ${g.title}`).join('\n');
         return client.replyMessage(event.replyToken, { type: 'text', text: `Games in memory:\n${myGames || 'none'}\nCurrent GID: ${gid}` });
