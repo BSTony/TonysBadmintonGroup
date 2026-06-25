@@ -95,106 +95,92 @@ async function loadGamesLobby() {
 
 // 渲染大廳畫面
 function renderLobby() {
-  appDiv.className = '';
-  lobbyView.classList.remove('hidden');
-  detailView.classList.add('hidden');
-  
-  gamesContainer.innerHTML = '';
-  
-  if (gamesList.length === 0) {
-    noGamesMsg.classList.remove('hidden');
-    return;
-  }
-  
-  noGamesMsg.classList.add('hidden');
-  
-  gamesList.forEach(game => {
-    const section = game.sections[0] || { list: [], limit: 20 };
-    const count = section.list.length;
-    const limit = section.limit;
-    const isFull = count >= limit;
+    appDiv.className = '';
+    lobbyView.classList.remove('hidden');
+    detailView.classList.add('hidden');
     
-    const isMeRegistered = section.list.includes(currentUser.displayName);
-
-    const hasTags = game.date || game.time || game.location || game.fee;
-    let tagsHtml = '';
-    if (hasTags) {
-       tagsHtml = '<div class="info-tags" style="cursor: pointer; margin: 0; flex: 1;" onclick="showDetail(\'' + game.gameId + '\')">';
-       tagsHtml += '<div class="info-row">';
-       if (game.date) tagsHtml += `<span class="info-tag">📅 ${escapeHTML(game.date)}</span>`;
-       if (game.time) tagsHtml += `<span class="info-tag">⏰ ${escapeHTML(game.time)}</span>`;
-       tagsHtml += '</div>';
-       tagsHtml += '<div class="info-row" style="margin-top: 4px;">';
-       if (game.location) tagsHtml += `<span class="info-tag">📍 ${escapeHTML(game.location)}</span>`;
-       if (game.fee) tagsHtml += `<span class="info-tag">💰 ${escapeHTML(game.fee)}</span>`;
-       tagsHtml += '</div>';
-       tagsHtml += '</div>';
+    gamesContainer.innerHTML = '';
+    
+    if (gamesList.length === 0) {
+      noGamesMsg.classList.remove('hidden');
+      return;
     }
     
-    // 判斷 title 是否只是自動生成的字串 (忽略空白)
-    const normalize = s => (s||'').replace(/\s+/g, '');
-    const autoStr = normalize([game.date, game.time, game.location].filter(Boolean).join(''));
-    const isAutoTitle = normalize(game.title) === autoStr || game.title === '羽球接龍';
-    const showTitle = game.title && !isAutoTitle;
-
-    const card = document.createElement('div');
-    card.className = 'game-card';
+    noGamesMsg.classList.add('hidden');
     
-    // Progress calculation
-    const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
-    
-    card.innerHTML = `
-      <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
-        <div class="badge ${isFull ? 'full' : 'open'}">
-          ${isFull ? '已額滿' : '✓ 開放報名'}
-        </div>
-        ${isMeRegistered ? '<div class="badge open" style="background-color: var(--primary-color); color: white;">已報名</div>' : ''}
-      </div>
+    gamesList.forEach(game => {
+      const section = game.sections[0] || { list: [], limit: 20 };
+      const count = section.list.length;
+      const limit = section.limit;
+      const backupLimit = section.backupLimit || 0;
+      const totalLimit = limit + backupLimit;
       
-      <div class="card-title" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
-        ${escapeHTML(game.title || '羽球接龍')}
-      </div>
+      const isFull = count >= totalLimit;
+      const isWaitlist = count >= limit && count < totalLimit;
       
-      <div class="info-grid" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
-        <div class="info-item">
-          <span class="info-icon">📅</span>
-          <span>${escapeHTML(game.date || '未設定')}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-icon">⏰</span>
-          <span>${escapeHTML(game.time || '未設定')}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-icon">📍</span>
-          <span>${escapeHTML(game.location || '未設定')}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-icon">💰</span>
-          <span>${escapeHTML(game.fee || '未設定')}</span>
-        </div>
-      </div>
+      const isMeRegistered = section.list.includes(currentUser.displayName);
       
-      ${game.note ? `<div class="game-note" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">${escapeHTML(game.note)}</div>` : ''}
+      let badgeStyle = isFull ? 'background-color: #E0E0E0; color: #888888;' : (isWaitlist ? 'background-color: #FFF3E0; color: #E65100;' : '');
+      let badgeText = isFull ? '已額滿' : (isWaitlist ? '⚠ 候補中' : '✓ 開放報名');
       
-      <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
-        <div class="progress-header">
-          <span>名額進度</span>
-          <span class="progress-value">${count} / ${limit} 人</span>
-        </div>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
-        </div>
-      </div>
+      const card = document.createElement('div');
+      card.className = 'game-card';
       
-      <div class="action-row">
-        <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput('${game.gameId}', 'register')">+1</button>
-        <button class="btn btn-danger btn-square" onclick="handleActionWithInput('${game.gameId}', 'cancel')">-1</button>
-        <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="代報名稱 (留空為本人)" />
-      </div>
-      <div id="error-msg-${game.gameId}" class="error-msg"></div>
-    `;
-    gamesContainer.appendChild(card);
-  });
+      // Progress calculation
+      const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
+      
+      card.innerHTML = `
+        <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+          <div class="badge ${isFull ? 'full' : 'open'}" style="${badgeStyle}">
+            ${badgeText}
+          </div>
+          ${isMeRegistered ? '<div class="badge open" style="background-color: var(--primary-color); color: white;">已報名</div>' : ''}
+        </div>
+        
+        <div class="card-title" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+          ${escapeHTML(game.title || '羽球接龍')}
+        </div>
+        
+        <div class="info-grid" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+          <div class="info-item">
+            <span class="info-icon">📅</span>
+            <span>${escapeHTML(game.date || '未設定')}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">⏰</span>
+            <span>${escapeHTML(game.time || '未設定')}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">📍</span>
+            <span>${escapeHTML(game.location || '未設定')}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">💰</span>
+            <span>${escapeHTML(game.fee || '未設定')}</span>
+          </div>
+        </div>
+        
+        ${game.note ? `<div class="game-note" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">${escapeHTML(game.note)}</div>` : ''}
+        
+        <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+          <div class="progress-header">
+            <span>名額進度</span>
+            <span class="progress-value">${count} / ${limit} 人</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
+          </div>
+        </div>
+        
+        <div class="action-row">
+          <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput('${game.gameId}', 'register')">+1</button>
+          <button class="btn btn-danger btn-square" onclick="handleActionWithInput('${game.gameId}', 'cancel')">-1</button>
+          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="代報名稱 (留空為本人)" />
+        </div>
+        <div id="error-msg-${game.gameId}" class="error-msg"></div>
+      `;
+      gamesContainer.appendChild(card);
+    });
   
   // 更新狀態文字 (原本是轉圈圈，現在因為 appDiv.className='' 所以圈圈消失，我們更新文字)
   const headerP = document.querySelector('.lobby-header p');
