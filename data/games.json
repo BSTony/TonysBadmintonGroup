@@ -70,7 +70,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1782402575244,
-    "lastActiveTime": 1782404171942,
+    "lastActiveTime": 1782404181421,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -85,7 +85,8 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "Alan"
+          "Alan",
+          "煥杰"
         ]
       }
     ]
