@@ -152,5 +152,55 @@
         ]
       }
     ]
+  },
+  "1782403585583866": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "1782403585583866",
+    "title": "週日 港中 早八 4小",
+    "date": "6/28 (日)",
+    "time": "08:00~12:00",
+    "location": "南港高中",
+    "fee": "300",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1782403585583,
+    "lastActiveTime": 1782403585583,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "Tony": true,
+      "Kay": true
+    },
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "Iven",
+          "Mina",
+          "胖子",
+          "Jim",
+          "Ashley",
+          "Tank",
+          "柚子",
+          "King",
+          "Alice",
+          "胞弟"
+        ]
+      }
+    ]
   }
 }
