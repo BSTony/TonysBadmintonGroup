@@ -771,12 +771,33 @@ if (USE_GITHUB) {
   });
 }
 
+function deeplyParseJson(val) {
+  if (typeof val === 'string') {
+    try {
+      return deeplyParseJson(JSON.parse(val));
+    } catch(e) {
+      return val;
+    }
+  }
+  if (Array.isArray(val)) {
+    return val.map(deeplyParseJson);
+  }
+  if (val !== null && typeof val === 'object') {
+    const res = {};
+    for (const [k, v] of Object.entries(val)) {
+      res[k] = deeplyParseJson(v);
+    }
+    return res;
+  }
+  return val;
+}
+
 async function loadGames() {
   try {
     if (pool) {
       const res = await pool.query('SELECT gid, data FROM games');
       res.rows.forEach(row => {
-        games[row.gid] = row.data;
+        games[row.gid] = deeplyParseJson(row.data);
       });
       console.log(`已從資料庫載入 ${res.rowCount} 筆接龍資料`);
     } else {
@@ -1301,12 +1322,16 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(404).json({ error: '找不到該場次' });
       }
       
-      games[gameId].active = false;
+      const targetGame = games[gameId];
+      targetGame.active = false;
       await saveGame(gameId, true);
       
-      try {
-        await client.pushMessage(games[gameId].gid, { type: 'text', text: `🔒 ${games[gameId].title || '此場次'} 已由管理員關閉，無法再報名。` });
-      } catch (e) {}
+      const pushTargets = targetGame.targetGids || [targetGame.gid];
+      for (const tGid of pushTargets) {
+        try {
+          await client.pushMessage(tGid, { type: 'text', text: `🔒 ${targetGame.title || '此場次'} 已由管理員關閉，無法再報名。` });
+        } catch (e) {}
+      }
       
       return res.json({ success: true });
     }
