@@ -130,9 +130,6 @@ function renderLobby() {
       }
       
       const card = document.createElement('div');
-      const totalLimit = limit + backupLimit;
-      const isFull = count >= totalLimit;
-      const isWaitlist = count >= limit && count < totalLimit;
       const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
       const progressColor = count > limit ? 'var(--danger-color)' : 'var(--primary-color)';
       
