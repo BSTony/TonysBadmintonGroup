@@ -165,7 +165,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782385357664,
-    "lastActiveTime": 1782399401746,
+    "lastActiveTime": 1782399417900,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -184,7 +184,8 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay"
+          "Kay",
+          "陳呈"
         ]
       }
     ]
