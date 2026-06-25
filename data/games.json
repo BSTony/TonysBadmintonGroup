@@ -15,7 +15,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379080075,
-    "lastActiveTime": 1782379372801,
+    "lastActiveTime": 1782379398017,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -36,7 +36,9 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay"
+          "Kay",
+          "柚子",
+          "柚子1"
         ]
       }
     ]
