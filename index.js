@@ -10,9 +10,46 @@ const LOG_FILE = path.join(__dirname, 'schedule.log');
 // --- 名單快照 CSV（最精簡，使用 GitHub 儲存） ---
 // 位置：data/registrations.csv（GitHub）
 // 欄位：gid,sectionIdx,name
+let groupAdmins = {}; // { gid: Set<uid> }
+let groupCodes = {}; // { '1234': 'Cxxxx' }
+
 const DATA_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
+
+const ADMINS_FILE = path.join(__dirname, 'data/groupAdmins.json');
+const GROUP_CODES_FILE = path.join(__dirname, 'data/groupCodes.json');
 const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
+
+// 讀取既有設定
+async function loadData() {
+  if (fs.existsSync(ADMINS_FILE)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(ADMINS_FILE, 'utf8'));
+      for (const [g, admins] of Object.entries(data)) {
+        groupAdmins[g] = new Set(admins);
+      }
+    } catch(e) { console.error(e); }
+  }
+  if (fs.existsSync(GROUP_CODES_FILE)) {
+    try {
+      groupCodes = JSON.parse(fs.readFileSync(GROUP_CODES_FILE, 'utf8'));
+    } catch(e) { console.error(e); }
+  }
+}
+loadData();
+
+async function saveAdmins() {
+  const data = {};
+  for (const [g, admins] of Object.entries(groupAdmins)) {
+    data[g] = Array.from(admins);
+  }
+  await fs.promises.writeFile(ADMINS_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+async function saveGroupCodes() {
+  await fs.promises.writeFile(GROUP_CODES_FILE, JSON.stringify(groupCodes, null, 2), 'utf8');
+}
 
 // GitHub 設定（從環境變數讀取）
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -566,11 +603,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 全域存儲：支援多群組、多區段
 let games = {};
-const groupAdmins = {};
 const nameToUidMap = new Map();
 // 從環境變數讀取管理員密碼，如果未設定則使用預設值（不建議）
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '鈞鈞是豬豬';
-const adminUsers = new Set(); // 儲存已登入的管理員 UserID (重啟後會清空)
 
 // 用戶名稱快取，減少 API 呼叫以節省額度
 const userNameCache = new Map(); // key: "gid_uid", value: { name, timestamp }
@@ -593,7 +628,6 @@ if (!process.env.DATABASE_URL) {
 
 let pool = null;
 // 停用 PostgreSQL 連線，強制使用檔案模式
-// 如果需要重新啟用，請取消以下註解並移除 pool = null
 /*
 if (Pool && process.env.DATABASE_URL) {
   console.log('嘗試連線至資料庫:', process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':****@'));
@@ -1023,14 +1057,11 @@ app.post('/webhook', middleware(config), (req, res) => {
 
 async function handleEvent(event) {
   // 處理機器人被加入群組的事件（memberJoined）
-  // 優化：不立即發送 pushMessage（會消耗額度），改為記錄等待首次使用時顯示
   if (event.type === 'memberJoined') {
     const gid = event.source.groupId || event.source.roomId;
     if (!gid) return null;
     
-    // 僅記錄日誌，不發送推播訊息（節省 pushMessage 額度）
     logToFile(`[INFO] Bot joined group/room ${gid} - waiting for first command`);
-    console.log(`✅ Bot joined group/room: ${gid} - will show welcome on first use`);
     return null;
   }
 
@@ -1047,7 +1078,6 @@ async function handleEvent(event) {
       
       await client.replyMessage(event.replyToken, { type: 'text', text: welcomeMessage });
       logToFile(`[SUCCESS] Bot followed by user ${uid}`);
-      console.log(`✅ Bot followed by user: ${uid}`);
       return null;
     } catch (e) {
       console.error('Failed to respond to follow event:', e);
@@ -1065,32 +1095,65 @@ async function handleEvent(event) {
   if (text.replace(/\s+/g, '') === '接龍密碼Tony好帥') {
     if (!groupAdmins[gid]) groupAdmins[gid] = new Set();
     groupAdmins[gid].add(uid);
+    saveAdmins();
     return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 權限已開通！您現在是本群組的管理員了。' });
   }
-  
+
+  if (text === '取消管理員') {
+    if (groupAdmins[gid] && groupAdmins[gid].has(uid)) {
+      groupAdmins[gid].delete(uid);
+      saveAdmins();
+      return client.replyMessage(event.replyToken, { type: 'text', text: '✅ 已取消您的管理員權限。' });
+    } else {
+      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 您本來就不是管理員喔。' });
+    }
+  }
+
+  if (text === '群組代碼' || text === '群組碼') {
+    let code = Object.keys(groupCodes).find(k => groupCodes[k] === gid);
+    if (!code) {
+      do {
+        code = Math.floor(1000 + Math.random() * 9000).toString();
+      } while (groupCodes[code]);
+      groupCodes[code] = gid;
+      saveGroupCodes();
+    }
+    return client.replyMessage(event.replyToken, { 
+      type: 'text', 
+      text: `本群組的專屬代碼為：\n【 ${code} 】\n\n您可以私訊機器人，並在「接龍開始」的指令中加入「群組{${code}}」，即可遠端將場次建立並推播至本群組！` 
+    });
+  }
+
   // 只允許管理員下達文字指令
   const isAdmin = groupAdmins[gid] && groupAdmins[gid].has(uid);
   if (!isAdmin) {
     return null; // 非管理員，已讀不回
   }
 
-  // 檢查是否為群組首次使用（僅針對群組，使用 replyMessage 而非 pushMessage 節省額度）
+  // 檢查是否為群組首次使用
   let showWelcome = false;
   if (gid && (gid.startsWith('C') || gid.startsWith('R')) && !firstUseGroups.has(gid)) {
     firstUseGroups.add(gid);
     showWelcome = true;
   }
 
-  // --- 指令解析輔助函數 ---
-  const getParams = (str) => {
-    const matches = str.match(/\{(.+?)\}/g);
-    return matches ? matches.map(m => m.slice(1, -1)) : [];
-  };
-
   try {
     // 1. 接龍開始
     if (text.startsWith('接龍開始')) {
-      const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
+      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
+      let targetGid = gid;
+      let isRemote = false;
+      if (groupMatch) {
+          const code = groupMatch[1].trim();
+          if (groupCodes[code]) {
+              targetGid = groupCodes[code];
+              isRemote = targetGid !== gid;
+          } else {
+              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組，請確認您已在目標群組輸入「群組代碼」獲取正確的代碼。` });
+          }
+      }
+
+      const titleMatch = text.match(/標題(?:[:：])?\s*(?:\{|｛)?(.*?)(?:\}|｝)?(?:\n|$)/) || text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
       const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
       const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
       const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|費用|人數|候補|備註|名單|$))))/);
@@ -1152,7 +1215,7 @@ async function handleEvent(event) {
       const gameId = Date.now().toString() + Math.floor(Math.random()*1000);
       
       games[gameId] = {
-        gid: gid,
+        gid: targetGid,
         gameId: gameId,
         title: title,
         date: pDate,
@@ -1184,8 +1247,13 @@ async function handleEvent(event) {
       await saveGame(gameId, true);
       await saveCurrentListSnapshot(gameId, false);
       
-      let welcomePrefix = showWelcome ? '👋 大家好！我是羽球接龍機器人。\n\n' : '';
-      return await sendLobbyLink(event.replyToken, gid, welcomePrefix + "🚀 場次建立成功！");
+      let welcomePrefix = showWelcome ? '🎉 大家好，我是羽球接龍機器人。\n\n' : '';
+      if (isRemote) {
+          await sendLobbyLink(null, targetGid, welcomePrefix + "🚀 場次建立成功！");
+          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已成功將場次建立並推播至代碼 ${groupMatch[1].trim()} 的群組！` });
+      } else {
+          return await sendLobbyLink(event.replyToken, gid, welcomePrefix + "🚀 場次建立成功！");
+      }
     }
 
     if (text.startsWith('接龍結束') || text.startsWith('接龍清空')) {
