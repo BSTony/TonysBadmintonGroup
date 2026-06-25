@@ -1314,14 +1314,30 @@ async function handleEvent(event) {
     }
 
     if (text.startsWith('接龍結束') || text.startsWith('接龍清空')) {
-      const keyword = text.replace(/接龍結束|接龍清空/, '').trim();
-      let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
+      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
+      let targetGid = gid;
+      if (groupMatch) {
+          const code = groupMatch[1].trim();
+          if (groupCodes[code]) {
+              targetGid = groupCodes[code];
+          } else {
+              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組，無法執行清空。` });
+          }
+      }
+
+      let keyword = text.replace(/接龍結束|接龍清空/, '');
+      if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
+      keyword = keyword.trim();
+      
+      let groupGames = Object.values(games).filter(g => g.gid === targetGid && g.active);
       
       if (text.startsWith('接龍清空') || text === '接龍結束') {
         // 全清
         for(const g of groupGames) delete games[g.gameId];
         await saveCurrentListSnapshot(null, false);
-        return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 群組內所有場次已結束/清空' });
+        pendingSaves.add('__force_save__');
+        await flushFileSave();
+        return await client.replyMessage(event.replyToken, { type: 'text', text: `✅ ${targetGid !== gid ? '指定群組的' : '群組內所有'}場次已結束/清空` });
       } else {
         // 結束特定場次
         groupGames = groupGames.filter(g => g.title.includes(keyword));
@@ -1330,6 +1346,8 @@ async function handleEvent(event) {
         }
         for(const g of groupGames) delete games[g.gameId];
         await saveCurrentListSnapshot(null, false);
+        pendingSaves.add('__force_save__');
+        await flushFileSave();
         const titles = groupGames.map(g => g.title).join('、');
         return await client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已結束場次：${titles}` });
       }
