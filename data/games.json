@@ -70,7 +70,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1782402575244,
-    "lastActiveTime": 1782402575244,
+    "lastActiveTime": 1782404164270,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -78,7 +78,6 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "Tony": true,
       "Kay": true
     },
     "sections": [
@@ -88,7 +87,6 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "Tony",
           "Kay"
         ]
       }
