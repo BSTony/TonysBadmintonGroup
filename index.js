@@ -1120,7 +1120,7 @@ async function handleEvent(event) {
     }
     return client.replyMessage(event.replyToken, { 
       type: 'text', 
-      text: `本群組的專屬代碼為：\n【 ${code} 】\n\n您可以私訊機器人，並在「接龍開始」的指令中加入「群組{${code}}」，即可遠端將場次建立並推播至本群組！` 
+      text: `本群組的專屬代碼為：【 ${code} 】` 
     });
   }
 
