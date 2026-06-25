@@ -1034,7 +1034,7 @@ async function handleEvent(event) {
   const uid = event.source.userId;
   const text = event.message.text.trim();
   
-  if (text === '接龍密碼 Tony好帥') {
+  if (text.replace(/\s+/g, '') === '接龍密碼Tony好帥') {
     if (!groupAdmins[gid]) groupAdmins[gid] = new Set();
     groupAdmins[gid].add(uid);
     return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 權限已開通！您現在是本群組的管理員了。' });
