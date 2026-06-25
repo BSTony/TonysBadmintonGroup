@@ -22,33 +22,92 @@ const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 
 // 讀取既有設定
+let adminsSha = null;
+let codesSha = null;
+
 async function loadData() {
+  // Load from local fallback first
   if (fs.existsSync(ADMINS_FILE)) {
     try {
       const data = JSON.parse(fs.readFileSync(ADMINS_FILE, 'utf8'));
+      groupAdmins = {};
       for (const [g, admins] of Object.entries(data)) {
         groupAdmins[g] = new Set(admins);
       }
-    } catch(e) { console.error(e); }
+    } catch(e) {}
   }
   if (fs.existsSync(GROUP_CODES_FILE)) {
     try {
       groupCodes = JSON.parse(fs.readFileSync(GROUP_CODES_FILE, 'utf8'));
-    } catch(e) { console.error(e); }
+    } catch(e) {}
   }
-}
-loadData();
+
+  // Then try to load from GitHub if configured
+  if (USE_GITHUB) {
+    try {
+      console.log('從 GitHub 讀取 groupAdmins.json...');
+      const adminRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupAdmins.json?ref=${GITHUB_BRANCH}`);
+      if (adminRes.content) {
+        adminsSha = adminRes.sha;
+        const data = JSON.parse(Buffer.from(adminRes.content, 'base64').toString('utf8'));
+        groupAdmins = {};
+        for (const [g, admins] of Object.entries(data)) {
+          groupAdmins[g] = new Set(admins);
+        }
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 groupAdmins.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 groupCodes.json...');
+      const codesRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupCodes.json?ref=${GITHUB_BRANCH}`);
+      if (codesRes.content) {
+        codesSha = codesRes.sha;
+        groupCodes = JSON.parse(Buffer.from(codesRes.content, 'base64').toString('utf8'));
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 groupCodes.json:', e.message); }
+  }
+}\n\nloadData();
 
 async function saveAdmins() {
   const data = {};
   for (const [g, admins] of Object.entries(groupAdmins)) {
     data[g] = Array.from(admins);
   }
-  await fs.promises.writeFile(ADMINS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  const jsonStr = JSON.stringify(data, null, 2);
+  await fs.promises.writeFile(ADMINS_FILE, jsonStr, 'utf8');
+  
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update groupAdmins',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (adminsSha) payload.sha = adminsSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupAdmins.json`, payload);
+      if (res.content && res.content.sha) adminsSha = res.content.sha;
+    } catch(e) { console.error('備份 groupAdmins 至 GitHub 失敗:', e.message); }
+  }
 }
 
 async function saveGroupCodes() {
-  await fs.promises.writeFile(GROUP_CODES_FILE, JSON.stringify(groupCodes, null, 2), 'utf8');
+  const jsonStr = JSON.stringify(groupCodes, null, 2);
+  await fs.promises.writeFile(GROUP_CODES_FILE, jsonStr, 'utf8');
+  
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update groupCodes',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (codesSha) payload.sha = codesSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupCodes.json`, payload);
+      if (res.content && res.content.sha) codesSha = res.content.sha;
+    } catch(e) { console.error('備份 groupCodes 至 GitHub 失敗:', e.message); }
+  }
 }
 
 // GitHub 設定（從環境變數讀取）
@@ -647,6 +706,8 @@ if (Pool && process.env.DATABASE_URL) {
 */
 
 // 初始化資料庫與載入資料
+loadData();
+
 let loadPromise = Promise.resolve();
 // 停用 PostgreSQL，直接使用檔案模式
 if (pool) {
