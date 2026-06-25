@@ -68,8 +68,6 @@ async function loadData() {
   }
 }
 
-loadData();
-
 async function saveAdmins() {
   const data = {};
   for (const [g, admins] of Object.entries(groupAdmins)) {
