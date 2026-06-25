@@ -29,5 +29,30 @@
         ]
       }
     ]
+  },
+  "17823784356243": {
+    "gid": "C73ead06e46f4c3a00a3f87d946c7d18a",
+    "gameId": "17823784356243",
+    "title": "週日 早起鳥兒",
+    "note": "",
+    "active": true,
+    "startTime": 1782378953157,
+    "lastActiveTime": 1782378953157,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay"
+        ]
+      }
+    ]
   }
 }
