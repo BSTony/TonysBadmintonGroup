@@ -1095,9 +1095,10 @@ async function handleEvent(event) {
       const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
       const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|費用|人數|候補|備註|名單|$))))/);
       const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|人數|候補|備註|名單|$))))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|匿名名單|$))))/);
-      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
+      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|名單|標籤|$))))/);
+      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
+      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|標籤|匿名名單|$))))/);
+      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|標籤|名單|$))))/);
       
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
       const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
@@ -1107,6 +1108,7 @@ async function handleEvent(event) {
       const pLoc = locMatch ? (locMatch[1] || locMatch[2]).trim() : '';
       const pFee = feeMatch ? (feeMatch[1] || feeMatch[2]).trim() : '';
       const pNote = noteMatch ? (noteMatch[1] || noteMatch[2]).trim() : '';
+      const pTag = tagMatch ? (tagMatch[1] || tagMatch[2]).trim() : '';
       
       let title = '羽球接龍';
       if (titleMatch) {
@@ -1146,6 +1148,7 @@ async function handleEvent(event) {
         location: pLoc,
         fee: pFee,
         note: pNote === '無' || pNote === '空' ? '' : pNote,
+        tag: pTag,
         active: true,
         startTime: Date.now(),
         lastActiveTime: Date.now(),
@@ -1200,8 +1203,9 @@ async function handleEvent(event) {
       const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
       const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|費用|人數|候補|備註|名單|$))))/);
       const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|人數|候補|備註|名單|$))))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|$))))/);
+      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|名單|標籤|$))))/);
+      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
+      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|地點|費用|人數|候補|備註|標籤|$))))/);
       
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
       const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
@@ -1258,6 +1262,9 @@ async function handleEvent(event) {
       if (noteMatch) {
         const n = (noteMatch[1] || noteMatch[2]).trim();
         targetGame.note = n === '無' || n === '空' ? '' : n;
+      }
+      if (tagMatch) {
+        targetGame.tag = (tagMatch[1] || tagMatch[2]).trim();
       }
       if (listMatch && targetGame.sections[0]) {
          const listStr = (listMatch[1] || listMatch[2]).trim();

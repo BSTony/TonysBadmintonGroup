@@ -134,6 +134,7 @@ function renderLobby() {
           <div class="badge ${isFull ? 'full' : 'open'}" style="${badgeStyle}">
             ${badgeText}
           </div>
+          ${game.tag ? `<div class="badge default">${escapeHTML(game.tag)}</div>` : ''}
           ${isMeRegistered ? '<div class="badge open" style="background-color: var(--primary-color); color: white;">已報名</div>' : ''}
         </div>
         
