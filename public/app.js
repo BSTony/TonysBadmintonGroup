@@ -274,10 +274,7 @@ function isGameExpired(game) {
   return Date.now() > endTime.getTime();
 }
 
-// 初始載入大廳
-if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
-  showLobby();
-}
+
 
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.btn-danger')) {
