@@ -1940,6 +1940,24 @@ async function handleEvent(event) {
     });
   }
 
+  const urlMatch = text.match(/^(?:網址|群組網址|大廳網址)\s*(\d{4})$/);
+  if (urlMatch) {
+    const queryCode = urlMatch[1];
+    const targetGid = groupCodes[queryCode];
+    if (targetGid) {
+      if (process.env.LIFF_ID) {
+        return client.replyMessage(event.replyToken, {
+          type: 'text',
+          text: `🔗 群組 ${queryCode} 的專屬大廳網址為：\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`
+        });
+      } else {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '系統尚未設定 LIFF_ID' });
+      }
+    } else {
+      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${queryCode} 的群組` });
+    }
+  }
+
   // 只允許管理員下達文字指令
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   if (!isAdmin) {
