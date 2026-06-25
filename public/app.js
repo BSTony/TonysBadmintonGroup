@@ -89,6 +89,7 @@ async function loadGamesLobby() {
     console.error(err);
     appDiv.className = ''; // 確保發生錯誤時也關閉轉圈圈
     statusMsg.innerText = err.message;
+    statusMsg.style.display = 'block';
   }
 }
 

@@ -893,7 +893,7 @@ app.get('/api/game/:gid', (req, res) => {
   let groupGames = Object.values(games).filter(g => g.gid === gid && g.active);
   console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
   if (groupGames.length === 0) {
-    return res.status(404).json({ error: 'Game not found' });
+    return res.json({ games: [] }); // 不報錯，回傳空陣列
   }
   
   // 深拷貝以避免污染記憶體中的 games 物件
