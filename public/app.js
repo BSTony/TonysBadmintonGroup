@@ -179,10 +179,11 @@ function renderLobby() {
           </div>
         </div>
         
-        <div class="action-row">
+        <div class="action-row" style="flex-wrap: wrap;">
           <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput('${game.gameId}', 'register')">+1</button>
           <button class="btn btn-danger btn-square" onclick="handleActionWithInput('${game.gameId}', 'cancel')">-1</button>
-          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="代報名稱 (留空為本人)" />
+          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="代報名稱 (留空本人)" style="flex: 2; min-width: 100px;" />
+          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度(選填)" style="flex: 1; min-width: 60px; margin-left: 8px;" />
         </div>
         <div id="error-msg-${game.gameId}" class="error-msg"></div>
       `;
@@ -341,14 +342,15 @@ function renderDetail(gameId) {
         const name = sec.list[i];
         const isMe = name === currentUser.displayName;
         const displayName = (name === '__ANON__') ? '***' : name;
+        const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
         
         // 加入取消按鈕，讓大家可以幫代報名的人取消
         const canCancel = name !== '__ANON__';
         secDiv.innerHTML += `
           <div class="list-item">
             <div class="list-num">${i + 1}.</div>
-            <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}</div>
-            ${canCancel ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">✖</button>` : ''}
+            <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
+            ${canCancel ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
       } else {
@@ -368,13 +370,14 @@ function renderDetail(gameId) {
         const name = sec.list[i];
         const isMe = name === currentUser.displayName;
         const displayName = (name === '__ANON__') ? '***' : name;
+        const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
         
         const canCancel = name !== '__ANON__';
         secDiv.innerHTML += `
           <div class="list-item">
             <div class="list-num">候${i - sec.limit + 1}.</div>
-            <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}</div>
-            ${canCancel ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">✖</button>` : ''}
+            <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
+            ${canCancel ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
       }
@@ -447,11 +450,17 @@ window.handleCancelByName = async function(gameId, name) {
 // 處理新的輸入框報名與防呆
 async function handleActionWithInput(gameId, action) {
   const inputEl = document.getElementById(`name-input-${gameId}`);
+  const levelEl = document.getElementById(`level-input-${gameId}`);
   const errorEl = document.getElementById(`error-msg-${gameId}`);
-  let name = currentUser.displayName;
   
+  let name = currentUser.displayName;
   if (inputEl && inputEl.value.trim()) {
     name = inputEl.value.trim();
+  }
+  
+  let level = '';
+  if (levelEl && levelEl.value.trim()) {
+    level = levelEl.value.trim();
   }
   
   errorEl.style.display = 'none';
@@ -488,6 +497,7 @@ async function handleActionWithInput(gameId, action) {
         gameId: gameId,
         uid: currentUser.userId,
         name: name,
+        level: level,
         action: action
       })
     });
@@ -500,6 +510,9 @@ async function handleActionWithInput(gameId, action) {
     // 如果是代報，自動清空輸入框，方便報下一個
     if (inputEl && inputEl.value.trim()) {
       inputEl.value = '';
+    }
+    if (levelEl) {
+      levelEl.value = '';
     }
     
     await loadGamesLobby();

@@ -936,7 +936,7 @@ app.get('/api/game/:gid', (req, res) => {
 // 處理 LIFF 前端傳來的報名或取消請求
 app.post('/api/action', express.json(), async (req, res) => {
   try {
-    const { gid, gameId, uid, name, action, count } = req.body;
+    const { gid, gameId, uid, name, level, action, count } = req.body;
     if (!gameId || !uid || !name || !action) {
       return res.status(400).json({ error: 'Missing parameters' });
     }
@@ -958,7 +958,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       namesToAdd.forEach(n => {
-        addToList(gameId, 0, n, { uid });
+        addToList(gameId, 0, n, { uid, level: n !== '__ANON__' ? level : undefined });
         if (n !== '__ANON__') {
           uidToNameMap.set(`${gameId}_${uid}`, n);
         }
@@ -1344,6 +1344,10 @@ function addToList(gid, idx, name, meta = {}, waitForCsv = false) {
     games[gid].sections[idx].list.push(name);
     if (meta && meta.uid) {
       nameToUidMap.set(`${gid}_${name}`, meta.uid);
+    }
+    if (meta && meta.level) {
+      if (!games[gid].levelMap) games[gid].levelMap = {};
+      games[gid].levelMap[name] = meta.level;
     }
     return null;
   }
