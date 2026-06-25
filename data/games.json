@@ -60,7 +60,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379188597,
-    "lastActiveTime": 1782384723718,
+    "lastActiveTime": 1782384755561,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -68,7 +68,6 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "Tony": true,
       "Robert": true,
       "Perry": true,
       "Kay": true
@@ -80,7 +79,6 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "Tony",
           "Kay",
           "Robert",
           "Perry",
