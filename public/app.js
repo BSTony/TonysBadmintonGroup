@@ -930,6 +930,9 @@ function createTargetGroupCheckbox(container, gid, code, groupName, isChecked) {
   delBtn.onclick = (e) => {
     e.preventDefault();
     lbl.remove();
+    let saved = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
+    saved = saved.filter(g => g.gid !== gid);
+    localStorage.setItem('savedTargetGroups', JSON.stringify(saved));
   };
   lbl.appendChild(delBtn);
   
@@ -951,6 +954,12 @@ async function handleAddGroupCode(inputId, containerId) {
       if (container.innerHTML.includes('<p>')) container.innerHTML = '';
       createTargetGroupCheckbox(container, data.gid, code, data.groupName, true);
       inputEl.value = '';
+      
+      let saved = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
+      if (!saved.some(g => g.gid === data.gid)) {
+        saved.push({ gid: data.gid, code: code, groupName: data.groupName });
+        localStorage.setItem('savedTargetGroups', JSON.stringify(saved));
+      }
     } else {
       setTimeout(() => alert(data.error || '找不到該群組'), 10);
     }
@@ -1051,6 +1060,16 @@ function showCreateGameForm() {
     cgTargetGidsContainer.innerHTML = '<p>無法取得您的管理群組</p>';
   }
   
+  const savedCg = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
+  if (savedCg.length > 0 && cgTargetGidsContainer.innerHTML.includes('<p>')) {
+    cgTargetGidsContainer.innerHTML = '';
+  }
+  savedCg.forEach(g => {
+    if (!globalManagedGroups.some(mg => mg.gid === g.gid)) {
+       createTargetGroupCheckbox(cgTargetGidsContainer, g.gid, g.code, g.groupName, false);
+    }
+  });
+  
   loadTemplates();
   cgInitialList.value = '';
   cgTemplateSelect.value = '';
@@ -1148,9 +1167,19 @@ function showEditGameForm(gameId) {
     egTargetGidsContainer.innerHTML = '<p>無法取得您的管理群組</p>';
   }
   
-  // 處理目前沒有在管理群組，但已存在於 game.targetGids 的群組（需手動補上，或就讓它先隱藏/無名稱顯示）
+  const savedEg = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
+  if (savedEg.length > 0 && egTargetGidsContainer.innerHTML.includes('<p>')) {
+    egTargetGidsContainer.innerHTML = '';
+  }
+  savedEg.forEach(g => {
+    if (!globalManagedGroups.some(mg => mg.gid === g.gid)) {
+       createTargetGroupCheckbox(egTargetGidsContainer, g.gid, g.code, g.groupName, gameTargetGids.includes(g.gid));
+    }
+  });
+  
+  // 處理目前沒有在管理群組與儲存名單中，但已存在於 game.targetGids 的群組
   gameTargetGids.forEach(tgid => {
-    if (!globalManagedGroups.some(g => g.gid === tgid)) {
+    if (!globalManagedGroups.some(g => g.gid === tgid) && !savedEg.some(g => g.gid === tgid)) {
        createTargetGroupCheckbox(egTargetGidsContainer, tgid, '未知', '已選擇群組', true);
     }
   });

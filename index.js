@@ -1827,7 +1827,11 @@ async function handleEvent(event) {
       if (text.startsWith('接龍清空') || text === '接龍結束') {
         // 全清
         const count = groupGames.length;
-        for(const g of groupGames) delete games[g.gameId];
+        for(const g of groupGames) {
+          const gId = g.gameId;
+          delete games[gId];
+          await saveGame(gId, true);
+        }
         await saveCurrentListSnapshot(null, false);
         pendingSaves.add('__force_save__');
         await flushFileSave();
@@ -1838,7 +1842,11 @@ async function handleEvent(event) {
         if (groupGames.length === 0) {
           return await client.replyMessage(event.replyToken, { type: 'text', text: `找不到包含「${keyword}」的場次喔！` });
         }
-        for(const g of groupGames) delete games[g.gameId];
+        for(const g of groupGames) {
+          const gId = g.gameId;
+          delete games[gId];
+          await saveGame(gId, true);
+        }
         await saveCurrentListSnapshot(null, false);
         pendingSaves.add('__force_save__');
         await flushFileSave();
@@ -1938,7 +1946,9 @@ async function handleEvent(event) {
     
     if (text === '超級清空') {
       const count = Object.keys(games).length;
-      Object.keys(games).forEach(k => delete games[k]);
+      const allKeys = Object.keys(games);
+      allKeys.forEach(k => delete games[k]);
+      for (const k of allKeys) await saveGame(k, true);
       await saveCurrentListSnapshot(null, false);
       pendingSaves.add('__force_save__');
       await flushFileSave();
