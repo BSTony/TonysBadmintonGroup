@@ -170,5 +170,39 @@
         ]
       }
     ]
+  },
+  "1782385543681427": {
+    "gid": "C73ead06e46f4c3a00a3f87d946c7d18a",
+    "targetGids": [
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1782385543681427",
+    "title": "週六 港中 打三小",
+    "date": "7/4 (六)",
+    "time": "09:00~12:00",
+    "location": "南港高中",
+    "fee": "250",
+    "note": "",
+    "tag": "3面",
+    "active": true,
+    "startTime": 1782385543681,
+    "lastActiveTime": 1782385543681,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 23,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
