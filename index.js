@@ -1353,6 +1353,83 @@ async function handleEvent(event) {
       }
     }
 
+
+    if (text.startsWith('接龍名單')) {
+      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
+      let targetGid = gid;
+      if (groupMatch) {
+          const code = groupMatch[1].trim();
+          if (groupCodes[code]) {
+              targetGid = groupCodes[code];
+          } else {
+              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組。` });
+          }
+      }
+
+      let keyword = text.replace(/接龍名單/, '');
+      if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
+      keyword = keyword.trim();
+      
+      let groupGames = Object.values(games).filter(g => g.gid === targetGid && g.active);
+      if (keyword) {
+          groupGames = groupGames.filter(g => g.title.includes(keyword));
+      }
+      
+      if (groupGames.length === 0) {
+          return client.replyMessage(event.replyToken, { type: 'text', text: keyword ? `找不到包含「${keyword}」的場次喔！` : `目前群組內沒有正在進行的場次。` });
+      }
+      
+      let replyMsgs = [];
+      for (const g of groupGames) {
+          let msg = `🏸 【 ${g.title} 】\n`;
+          if (g.date || g.time) msg += `🕒 ${g.date || ''} ${g.time || ''}\n`;
+          if (g.location) msg += `📍 ${g.location}\n`;
+          
+          const section = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 20 };
+          const list = section.list || [];
+          const limit = section.limit || 20;
+          const backupLimit = section.backupLimit || 0;
+          
+          msg += `\n📝 報名狀況 (${list.length}/${limit})\n`;
+          for (let i = 0; i < limit; i++) {
+              if (i < list.length) {
+                  const name = list[i] === '__ANON__' ? '匿名' : list[i];
+                  const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
+                  msg += `${i+1}. ${name}${levelStr}\n`;
+              } else {
+                  msg += `${i+1}. \n`;
+              }
+          }
+          
+          if (backupLimit > 0 || list.length > limit) {
+              msg += `\n⌛ 候補名單\n`;
+              let backupCount = 0;
+              for (let i = limit; i < list.length; i++) {
+                  const name = list[i] === '__ANON__' ? '匿名' : list[i];
+                  const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
+                  msg += `候補${backupCount+1}. ${name}${levelStr}\n`;
+                  backupCount++;
+              }
+              for (let i = backupCount; i < backupLimit; i++) {
+                  msg += `候補${i+1}. \n`;
+              }
+          }
+          
+          if (process.env.LIFF_ID) {
+              msg += `\n👉 大廳連結：\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
+          }
+          
+          replyMsgs.push({ type: 'text', text: msg.trim() });
+      }
+      
+      if (replyMsgs.length > 5) {
+          replyMsgs = replyMsgs.slice(0, 4);
+          replyMsgs.push({ type: 'text', text: `...還有其他場次，請點擊大廳連結查看全部內容！` });
+      }
+      
+      return client.replyMessage(event.replyToken, replyMsgs);
+    }
+
     if (text.startsWith('接龍修改')) {
       const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
       const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
