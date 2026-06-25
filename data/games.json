@@ -125,7 +125,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 7,
+        "limit": 9,
         "backupLimit": 5,
         "label": "",
         "list": [
