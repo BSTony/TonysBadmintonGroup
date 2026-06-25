@@ -1,29 +1,59 @@
 function showFloatingEmoji(e, emoji) {
   if (!e) return;
-  const el = document.createElement('div');
-  el.innerText = emoji;
-  el.style.position = 'fixed';
-  el.style.left = (e.clientX - 15) + 'px';
-  el.style.top = (e.clientY - 25) + 'px';
-  el.style.fontSize = '35px';
-  el.style.pointerEvents = 'none';
-  el.style.zIndex = '9999';
-  el.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))';
-  el.style.transform = 'translateY(0) scale(0.3) rotate(0deg)';
-  el.style.opacity = '1';
-  // Bouncy easing for transform, gentle fade for opacity
-  el.style.transition = 'transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1.5s ease-in-out';
-  document.body.appendChild(el);
+  
+  // Inject keyframes for wiggling animation if not already present
+  if (!document.getElementById('floating-anim-style')) {
+    const style = document.createElement('style');
+    style.id = 'floating-anim-style';
+    style.innerHTML = `
+      @keyframes floatWiggle {
+        0% { transform: rotate(-10deg); }
+        50% { transform: rotate(10deg); }
+        100% { transform: rotate(-10deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  const isImage = emoji.endsWith('.png') || emoji.endsWith('.jpg') || emoji.endsWith('.gif');
+  let el;
+  if (isImage) {
+    el = document.createElement('img');
+    el.src = emoji;
+    el.style.width = '70px'; // Make it slightly larger since it's an image
+    el.style.height = 'auto';
+    // Add wiggle animation to the image itself
+    el.style.animation = 'floatWiggle 0.4s ease-in-out infinite';
+  } else {
+    el = document.createElement('div');
+    el.innerText = emoji;
+    el.style.fontSize = '40px';
+  }
+
+  // Wrapper element to handle the upward floating transition
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'fixed';
+  wrapper.style.left = (e.clientX - (isImage ? 35 : 20)) + 'px';
+  wrapper.style.top = (e.clientY - (isImage ? 35 : 25)) + 'px';
+  wrapper.style.pointerEvents = 'none';
+  wrapper.style.zIndex = '9999';
+  wrapper.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))';
+  wrapper.style.transform = 'translateY(0) scale(0.3)';
+  wrapper.style.opacity = '1';
+  wrapper.style.transition = 'transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1.5s ease-in-out';
+  
+  wrapper.appendChild(el);
+  document.body.appendChild(wrapper);
   
   // force reflow
-  void el.offsetHeight;
+  void wrapper.offsetHeight;
   
   // Target state
-  const randomRotate = Math.random() * 60 - 30; // -30 to 30 degrees
-  el.style.transform = `translateY(-120px) scale(1.8) rotate(${randomRotate}deg)`;
-  el.style.opacity = '0';
+  const randomX = (Math.random() * 40 - 20); // Drift left/right slightly
+  wrapper.style.transform = `translate(${randomX}px, -150px) scale(1.5)`;
+  wrapper.style.opacity = '0';
   
-  setTimeout(() => el.remove(), 1500);
+  setTimeout(() => wrapper.remove(), 1500);
 }
 
 // === 全域狀態 ===
@@ -842,8 +872,8 @@ window.handleCancelByName = async function(gameId, name) {
 
 // 處理新的輸入框報名與防呆
 async function handleActionWithInput(event, gameId, action) {
-  if (action === 'register') showFloatingEmoji(event, '🐹💕');
-  else if (action === 'cancel') showFloatingEmoji(event, '🐹💦');
+  if (action === 'register') showFloatingEmoji(event, 'images/dance.png');
+  else if (action === 'cancel') showFloatingEmoji(event, 'images/cry.png');
 
   const inputEl = document.getElementById(`name-input-${gameId}`);
   const levelEl = document.getElementById(`level-input-${gameId}`);
