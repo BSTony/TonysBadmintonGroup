@@ -136,6 +136,33 @@ async function loadGamesLobby(silent = false) {
   }
 }
 
+// 判斷場次是否已過期 (根據日期與結束時間)
+function isGameExpired(game) {
+  if (!game.date) return false;
+  const dateMatch = game.date.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+  if (!dateMatch) return false;
+  
+  const year = parseInt(dateMatch[1]);
+  const month = parseInt(dateMatch[2]) - 1;
+  const day = parseInt(dateMatch[3]);
+  
+  let hour = 23;
+  let minute = 59;
+  
+  if (game.time) {
+     const timeMatches = game.time.match(/([01]?[0-9]|2[0-3]):([0-5][0-9])/g);
+     if (timeMatches && timeMatches.length > 0) {
+        const lastTime = timeMatches[timeMatches.length - 1];
+        const parts = lastTime.split(':');
+        hour = parseInt(parts[0]);
+        minute = parseInt(parts[1]);
+     }
+  }
+  
+  const endTime = new Date(year, month, day, hour, minute);
+  return Date.now() > endTime.getTime();
+}
+
 // 渲染大廳畫面
 function renderLobby() {
     appDiv.className = '';
@@ -197,13 +224,27 @@ function renderLobby() {
       const backupLimit = section.backupLimit || 0;
       const totalLimit = limit + backupLimit;
       
+      const isExpired = isGameExpired(game);
       const isFull = count >= totalLimit;
       const isWaitlist = count >= limit && count < totalLimit;
       
       const isMeRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
       
-      let badgeStyle = isFull ? 'background-color: #E0E0E0; color: #888888;' : (isWaitlist ? 'background-color: #FFF3E0; color: #E65100;' : '');
-      let badgeText = isFull ? '已額滿' : (isWaitlist ? '⚠ 候補中' : '✓ 開放報名');
+      let badgeStyle = '';
+      let badgeText = '';
+      
+      if (isExpired) {
+         badgeStyle = 'background-color: #666; color: #FFF;';
+         badgeText = '已結束';
+      } else if (isFull) {
+         badgeStyle = 'background-color: #E0E0E0; color: #888888;';
+         badgeText = '已額滿';
+      } else if (isWaitlist) {
+         badgeStyle = 'background-color: #FFF3E0; color: #E65100;';
+         badgeText = '⚠ 候補中';
+      } else {
+         badgeText = '✓ 開放報名';
+      }
       
       let customTagsHtml = '';
       if (game.tag) {
@@ -216,11 +257,15 @@ function renderLobby() {
       const progressColor = count > limit ? 'var(--danger-color)' : 'var(--primary-color)';
       
       card.className = 'game-card';
+      if (isExpired) {
+         card.style.opacity = '0.6';
+         card.style.filter = 'grayscale(1)';
+      }
       const prefName = localStorage.getItem('preferredName') || '';
       
       card.innerHTML = `
         <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer; flex-wrap: wrap;">
-          <div class="badge ${isFull ? 'full' : 'open'}" style="${badgeStyle}">
+          <div class="badge ${isFull || isExpired ? 'full' : 'open'}" style="${badgeStyle}">
             ${badgeText}
           </div>
           ${customTagsHtml}
@@ -455,8 +500,22 @@ function renderDetail(gameId) {
   
   const btnCloseGame = document.getElementById('btn-close-game');
   const btnEditGame = document.getElementById('btn-edit-game');
+  const btnCopyList = document.getElementById('btn-copy-list');
   if (globalIsAdmin) {
     if (btnCloseGame) btnCloseGame.classList.remove('hidden');
+    if (btnCopyList) {
+      btnCopyList.classList.remove('hidden');
+      btnCopyList.onclick = () => {
+        const list = game.sections[0]?.list || [];
+        const text = list.map(n => n === '__ANON__' ? '匿名球友' : n).join('\n');
+        navigator.clipboard.writeText(text).then(() => {
+          alert('名單已成功複製！\n\n' + text);
+        }).catch(() => {
+          // fallback if clipboard API fails
+          prompt('請複製以下名單：', text);
+        });
+      };
+    }
     if (btnEditGame) {
       btnEditGame.classList.remove('hidden');
       btnEditGame.onclick = () => showEditGameForm(gameId);
@@ -464,6 +523,7 @@ function renderDetail(gameId) {
   } else {
     if (btnCloseGame) btnCloseGame.classList.add('hidden');
     if (btnEditGame) btnEditGame.classList.add('hidden');
+    if (btnCopyList) btnCopyList.classList.add('hidden');
   }
   
   const section = game.sections[0] || { list: [], limit: 20 };
