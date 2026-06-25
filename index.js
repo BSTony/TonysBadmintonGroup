@@ -1246,18 +1246,26 @@ async function handleEvent(event) {
       
       let initialList = [];
       let initialLevelMap = {};
+      let initialPaidMap = {};
       if (listMatch) {
          const listStr = (listMatch[1] || listMatch[2]).trim();
          const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
          rawList.forEach(n => {
+           let isPaid = false;
+           if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
+               isPaid = true;
+               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+           }
            const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
            if (match) {
              const trueName = match[1].trim();
              const lvl = (match[2] || match[3]).trim();
              initialList.push(trueName);
              initialLevelMap[trueName] = lvl;
+             if (isPaid) initialPaidMap[trueName] = true;
            } else {
              initialList.push(n);
+             if (isPaid) initialPaidMap[n] = true;
            }
          });
       }
@@ -1294,6 +1302,7 @@ async function handleEvent(event) {
         anonymous: [],
         anonymousCount: 0,
         levelMap: initialLevelMap,
+        paidMap: initialPaidMap,
         sections: [
           { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
         ]
@@ -1546,19 +1555,28 @@ async function handleEvent(event) {
          const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
          let newList = [];
          let newLevelMap = { ...(targetGame.levelMap || {}) };
+         let newPaidMap = { ...(targetGame.paidMap || {}) };
          rawList.forEach(n => {
+           let isPaid = false;
+           if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
+               isPaid = true;
+               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+           }
            const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
            if (match) {
              const trueName = match[1].trim();
              const lvl = (match[2] || match[3]).trim();
              newList.push(trueName);
              newLevelMap[trueName] = lvl;
+             if (isPaid) newPaidMap[trueName] = true;
            } else {
              newList.push(n);
+             if (isPaid) newPaidMap[n] = true;
            }
          });
          targetGame.sections[0].list = newList;
          targetGame.levelMap = newLevelMap;
+         targetGame.paidMap = newPaidMap;
       }
       if (anonMatch && targetGame.sections[0]) {
          targetGame.sections[0].list = targetGame.sections[0].list.filter(n => n !== '__ANON__');
