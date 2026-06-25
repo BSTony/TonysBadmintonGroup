@@ -47,7 +47,7 @@ const detailList = document.getElementById('detail-list');
 async function initializeLiff() {
   try {
     // 1. 取得後端系統設定
-    const configRes = await fetch('/api/config');
+    const configRes = await fetch(`/api/config?_t=${Date.now()}`);
     if (!configRes.ok) throw new Error('無法取得系統設定');
     const config = await configRes.json();
     
@@ -99,7 +99,7 @@ async function loadGamesLobby() {
     appDiv.className = 'loading';
     statusMsg.innerText = '載入中...';
     
-    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}`);
+    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
     if (!res.ok) {
       if (res.status === 404) {
         gamesList = [];
@@ -946,7 +946,7 @@ async function handleAddGroupCode(inputId, containerId) {
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/group/code/${code}`);
+    const res = await fetch(`/api/group/code/${code}?_t=${Date.now()}`);
     const data = await res.json();
     appDiv.className = '';
     if (res.ok && data.success) {
