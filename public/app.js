@@ -1331,6 +1331,30 @@ document.getElementById('btn-submit-create').onclick = async () => {
     if (!res.ok) {
       alert(result.error || '建立失敗');
     } else {
+      // 如果沒有設定預約發布時間，且在 LINE 內，我們直接以使用者身分發送開團通知
+      const publishVal = document.getElementById('cg-publish').value;
+      if (!publishVal && liff.isInClient()) {
+        const titleVal = document.getElementById('cg-title').value.trim() || '羽球接龍';
+        const dateVal = rawDateStr ? formatLocalGameDate(rawDateStr) : '';
+        const timeVal = timeStr;
+        const locVal = locStr;
+        
+        let announceMsg = `🚀 開團成功！新場次開放報名中 🏸\n\n🏸 【 ${titleVal} 】\n`;
+        if (dateVal) announceMsg += `📅 日期：${dateVal}\n`;
+        if (timeVal) announceMsg += `⏰ 時間：${timeVal}\n`;
+        if (locVal) announceMsg += `📍 地點：${locVal}\n`;
+        
+        const context = liff.getContext();
+        const liffId = (context && context.liffId) || '';
+        announceMsg += `\n👇 點擊下方連結進入大廳報名\nhttps://liff.line.me/${liffId}?gid=${currentGroupId}`;
+        
+        try {
+          await liff.sendMessages([{ type: 'text', text: announceMsg.trim() }]);
+        } catch (sendErr) {
+          console.error('liff.sendMessages announce failed:', sendErr);
+        }
+      }
+      
       alert('開團成功！');
       createGameView.classList.add('hidden');
       await loadGamesLobby();
