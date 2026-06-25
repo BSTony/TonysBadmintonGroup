@@ -15,7 +15,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379080075,
-    "lastActiveTime": 1782379768449,
+    "lastActiveTime": 1782379771109,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -40,9 +40,7 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay",
-          "柚子17",
-          "柚子18"
+          "Kay"
         ]
       }
     ]
@@ -62,7 +60,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379188597,
-    "lastActiveTime": 1782379558335,
+    "lastActiveTime": 1782380292363,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -71,7 +69,6 @@
     "levelMap": {},
     "paidMap": {
       "Tony": true,
-      "Kay": true,
       "Robert": true,
       "偉舫": true,
       "Ong": true,
@@ -87,7 +84,6 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay",
           "Robert",
           "偉舫",
           "Ong",
