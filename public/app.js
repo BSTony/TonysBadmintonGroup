@@ -1032,13 +1032,25 @@ window.handlePushList = async function(gameId) {
       }
       try {
         await liff.sendMessages([{ type: 'text', text: clientMsg.trim() }]);
-        alert('名單已成功傳送到聊天室！');
+        if (result.partialError) {
+          alert('以個人身分傳送成功！\n(註：機器人主動推播失敗: ' + result.errors.join(', ') + ')');
+        } else {
+          alert('名單已成功傳送到聊天室！');
+        }
       } catch (sendErr) {
         console.error('liff.sendMessages failed:', sendErr);
-        alert('推播請求已送出（但以個人身份傳送失敗，可能需要權限）');
+        if (result.partialError) {
+          alert('個人發送與機器人推播皆失敗！\n機器人錯誤: ' + result.errors.join(', '));
+        } else {
+          alert('推播請求已送出（但以個人身份傳送失敗，可能需要權限）');
+        }
       }
     } else {
-      alert('名單推播請求已送出！');
+      if (result.partialError) {
+        alert('機器人主動推播失敗: ' + result.errors.join(', '));
+      } else {
+        alert('名單推播請求已送出！');
+      }
     }
   } catch(e) {
     alert('網路錯誤');

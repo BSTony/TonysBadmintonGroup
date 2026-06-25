@@ -1712,6 +1712,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       let pushTargetGids = g.targetGids || [g.gid];
       let hasError = false;
+      let errorMsgs = [];
       
       for (const targetGid of pushTargetGids) {
         let currentMsg = msg;
@@ -1723,10 +1724,11 @@ app.post('/api/action', express.json(), async (req, res) => {
         } catch (e) {
           console.error(`Push list error for ${targetGid}:`, e);
           hasError = true;
+          errorMsgs.push(`${targetGid}: ${e.message}`);
         }
       }
       
-      return res.json({ success: true, game: g, msg: msg, partialError: hasError });
+      return res.json({ success: true, game: g, msg: msg, partialError: hasError, errors: errorMsgs });
     }
 
     if (!gameId || !uid || !name || !action) {
