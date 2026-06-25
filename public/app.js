@@ -1,3 +1,32 @@
+const imageCache = {};
+
+function getTransparentImage(src, callback) {
+  if (imageCache[src]) {
+    callback(imageCache[src]);
+    return;
+  }
+  const img = new Image();
+  img.crossOrigin = 'Anonymous';
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i] > 230 && data[i+1] > 230 && data[i+2] > 230) {
+        data[i+3] = 0;
+      }
+    }
+    ctx.putImageData(imageData, 0, 0);
+    imageCache[src] = canvas.toDataURL('image/png');
+    callback(imageCache[src]);
+  };
+  img.src = src;
+}
+
 function showFloatingEmoji(e, emoji) {
   if (!e) return;
   
@@ -6,57 +35,106 @@ function showFloatingEmoji(e, emoji) {
     const style = document.createElement('style');
     style.id = 'floating-anim-style';
     style.innerHTML = `
-      @keyframes floatWiggle {
-        0% { transform: rotate(-10deg); }
-        50% { transform: rotate(10deg); }
-        100% { transform: rotate(-10deg); }
+      @keyframes danceWiggle {
+        0% { transform: rotate(-15deg) translateY(0); }
+        25% { transform: rotate(15deg) translateY(-10px); }
+        50% { transform: rotate(-15deg) translateY(0); }
+        75% { transform: rotate(15deg) translateY(-10px); }
+        100% { transform: rotate(-15deg) translateY(0); }
+      }
+      @keyframes cryShake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-3px) translateY(2px); }
+        50% { transform: translateX(3px) translateY(-2px); }
+        75% { transform: translateX(-3px) translateY(2px); }
+        100% { transform: translateX(0); }
+      }
+      @keyframes popNote {
+        0% { transform: translate(0, 0) scale(0); opacity: 0; }
+        20% { transform: translate(var(--dx), var(--dy)) scale(1.5); opacity: 1; }
+        80% { transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) * 2)) scale(1); opacity: 1; }
+        100% { transform: translate(calc(var(--dx) * 2), calc(var(--dy) * 3)) scale(0); opacity: 0; }
       }
     `;
     document.head.appendChild(style);
   }
   
   const isImage = emoji.endsWith('.png') || emoji.endsWith('.jpg') || emoji.endsWith('.gif');
-  let el;
+  
+  const createWrapper = (elContent) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'fixed';
+    wrapper.style.left = (e.clientX - (isImage ? 35 : 20)) + 'px';
+    wrapper.style.top = (e.clientY - (isImage ? 35 : 25)) + 'px';
+    wrapper.style.pointerEvents = 'none';
+    wrapper.style.zIndex = '9999';
+    if (!isImage) {
+      wrapper.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))';
+    }
+    wrapper.style.transform = 'translateY(0) scale(0.3)';
+    wrapper.style.opacity = '1';
+    // Increased duration to 2s
+    wrapper.style.transition = 'transform 2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 2s ease-in-out';
+    
+    wrapper.appendChild(elContent);
+    document.body.appendChild(wrapper);
+    
+    void wrapper.offsetHeight;
+    
+    const randomX = (Math.random() * 60 - 30);
+    wrapper.style.transform = `translate(${randomX}px, -200px) scale(1.5)`;
+    wrapper.style.opacity = '0';
+    
+    setTimeout(() => wrapper.remove(), 2000);
+    return wrapper;
+  };
+
   if (isImage) {
-    el = document.createElement('img');
-    el.src = emoji;
-    el.style.width = '70px'; // Make it slightly larger since it's an image
-    el.style.height = 'auto';
-    el.style.mixBlendMode = 'multiply'; // Makes the white background transparent against light backgrounds
-    // Add wiggle animation to the image itself
-    el.style.animation = 'floatWiggle 0.4s ease-in-out infinite';
+    getTransparentImage(emoji, (transparentSrc) => {
+      const el = document.createElement('img');
+      el.src = transparentSrc;
+      el.style.width = '70px';
+      el.style.height = 'auto';
+      // Removed mixBlendMode because background is now truly transparent
+      
+      const isDance = emoji.includes('dance.png');
+      const isCry = emoji.includes('cry.png');
+      
+      if (isDance) {
+        el.style.animation = 'danceWiggle 0.6s ease-in-out infinite';
+      } else if (isCry) {
+        el.style.animation = 'cryShake 0.3s ease-in-out infinite';
+      }
+      
+      const wrapper = createWrapper(el);
+      
+      // Spawn independent music notes or tears
+      const symbols = isDance ? ['🎵', '🎶', '✨'] : ['💧', '💦', '💧'];
+      for (let i = 0; i < 3; i++) {
+        const sym = document.createElement('div');
+        sym.innerText = symbols[i];
+        sym.style.position = 'absolute';
+        sym.style.fontSize = '24px';
+        sym.style.left = '20px';
+        sym.style.top = '20px';
+        sym.style.opacity = '0';
+        
+        // Random trajectory
+        const dx = (Math.random() - 0.5) * 80 + 'px';
+        const dy = (Math.random() * -60 - 20) + 'px';
+        sym.style.setProperty('--dx', dx);
+        sym.style.setProperty('--dy', dy);
+        
+        sym.style.animation = `popNote 1.5s ease-out ${Math.random() * 0.3}s forwards`;
+        wrapper.appendChild(sym);
+      }
+    });
   } else {
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.innerText = emoji;
     el.style.fontSize = '40px';
+    createWrapper(el);
   }
-
-  // Wrapper element to handle the upward floating transition
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'fixed';
-  wrapper.style.left = (e.clientX - (isImage ? 35 : 20)) + 'px';
-  wrapper.style.top = (e.clientY - (isImage ? 35 : 25)) + 'px';
-  wrapper.style.pointerEvents = 'none';
-  wrapper.style.zIndex = '9999';
-  if (!isImage) {
-    wrapper.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))';
-  }
-  wrapper.style.transform = 'translateY(0) scale(0.3)';
-  wrapper.style.opacity = '1';
-  wrapper.style.transition = 'transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1.5s ease-in-out';
-  
-  wrapper.appendChild(el);
-  document.body.appendChild(wrapper);
-  
-  // force reflow
-  void wrapper.offsetHeight;
-  
-  // Target state
-  const randomX = (Math.random() * 40 - 20); // Drift left/right slightly
-  wrapper.style.transform = `translate(${randomX}px, -150px) scale(1.5)`;
-  wrapper.style.opacity = '0';
-  
-  setTimeout(() => wrapper.remove(), 1500);
 }
 
 // === 全域狀態 ===
