@@ -1069,7 +1069,81 @@ app.get('/api/game/:gid', (req, res) => {
 // 處理 LIFF 前端傳來的報名或取消請求
 app.post('/api/action', express.json(), async (req, res) => {
   try {
-    const { gid, gameId, uid, name, level, action, count } = req.body;
+    const { gid, gameId, uid, name, level, action, count, text, pushToAll } = req.body;
+    
+    if (action === 'customPush') {
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能發送推播' });
+      }
+      
+      let targetGids = [gid];
+      if (pushToAll) {
+        targetGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
+      }
+      
+      let successCount = 0;
+      for (const tGid of targetGids) {
+        try {
+          await sendLobbyLink(null, tGid, `📢 管理員廣播：\n${text}`);
+          successCount++;
+        } catch(e) { console.error('Push error:', e); }
+      }
+      return res.json({ success: true, count: successCount });
+    }
+
+    if (action === 'pushList') {
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能推播名單' });
+      }
+      if (!gameId || !games[gameId]) {
+        return res.status(400).json({ error: '找不到此場次' });
+      }
+      const g = games[gameId];
+      let msg = `📢 管理員推播目前名單\n\n🏸 ${g.title}\n`;
+      if (g.date) msg += `📅 ${g.date}\n`;
+      if (g.time) msg += `⏰ ${g.time}\n`;
+      if (g.location) msg += `📍 ${g.location}\n`;
+      
+      g.sections.forEach(sec => {
+        msg += `\n【${sec.title}】 (目前 ${sec.list.length} / ${sec.limit} 人)\n`;
+        for (let i = 0; i < sec.limit; i++) {
+          if (i < sec.list.length) {
+            const n = sec.list[i];
+            const name = n === '__ANON__' ? '***' : n;
+            const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+            msg += `${i+1}. ${name} ${level}\n`.trim() + '\n';
+          } else {
+            msg += `${i+1}. \n`;
+          }
+        }
+        
+        if (sec.list.length > sec.limit) {
+          msg += `\n【候補名單】\n`;
+          for (let i = sec.limit; i < sec.list.length; i++) {
+            const n = sec.list[i];
+            const name = n === '__ANON__' ? '***' : n;
+            const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+            msg += `候${i - sec.limit + 1}. ${name} ${level}\n`.trim() + '\n';
+          }
+        }
+      });
+      
+      if (process.env.LIFF_ID) {
+        msg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${g.gid}`;
+      }
+      
+      try {
+        await client.pushMessage(g.gid, { type: 'text', text: msg.trim() });
+      } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: '推播失敗' });
+      }
+      
+      return res.json({ success: true, game: g });
+    }
+
     if (!gameId || !uid || !name || !action) {
       return res.status(400).json({ error: 'Missing parameters' });
     }
@@ -1136,6 +1210,25 @@ app.post('/api/action', express.json(), async (req, res) => {
           console.error('遞補推播失敗:', e);
         }
       }
+      
+    } else if (action === 'reorder') {
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能調整順序' });
+      }
+      
+      const { fromIdx, toIdx } = req.body;
+      const list = game.sections[0].list;
+      
+      if (typeof fromIdx !== 'number' || typeof toIdx !== 'number') {
+        return res.status(400).json({ error: '參數錯誤' });
+      }
+      if (fromIdx < 0 || fromIdx >= list.length || toIdx < 0 || toIdx >= list.length) {
+        return res.status(400).json({ error: '無效的順序' });
+      }
+      
+      const element = list.splice(fromIdx, 1)[0];
+      list.splice(toIdx, 0, element);
       
     } else {
       return res.status(400).json({ error: 'Unknown action' });
@@ -1283,14 +1376,16 @@ async function handleEvent(event) {
       
       let pPublish = null;
       if (publishMatch) {
-         const ptStr = (publishMatch[1] || publishMatch[2]).trim();
+         let ptStr = (publishMatch[1] || publishMatch[2]).trim();
+         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
          const dt = new Date(ptStr);
          if (!isNaN(dt.getTime())) pPublish = dt.getTime();
       }
       
       let pReminder = null;
       if (reminderMatch) {
-         const rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
+         let rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
+         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
          const dt = new Date(rtStr);
          if (!isNaN(dt.getTime())) pReminder = dt.getTime();
       }
@@ -1651,12 +1746,14 @@ async function handleEvent(event) {
          }
       }
       if (publishMatch) {
-         const ptStr = (publishMatch[1] || publishMatch[2]).trim();
+         let ptStr = (publishMatch[1] || publishMatch[2]).trim();
+         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
          const dt = new Date(ptStr);
          if (!isNaN(dt.getTime())) targetGame.scheduleTime = dt.getTime();
       }
       if (reminderMatch) {
-         const rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
+         let rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
+         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
          const dt = new Date(rtStr);
          if (!isNaN(dt.getTime())) targetGame.reminderTime = dt.getTime();
       }
