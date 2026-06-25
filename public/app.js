@@ -84,6 +84,7 @@ async function initializeLiff() {
     }
 
     // 5. 載入大廳資料
+    document.getElementById('create-game-view').classList.add('hidden');
     await loadGamesLobby();
 
   } catch (err) {
@@ -112,6 +113,7 @@ async function loadGamesLobby() {
       globalIsAdmin = !!data.isAdmin;
       globalManagedGroups = data.managedGroups || [];
       globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
+      globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
     }
 
     renderLobby();
@@ -136,6 +138,15 @@ function renderLobby() {
       btnEditTitle.onclick = handleEditLobbyTitle;
     } else if (btnEditTitle) {
       btnEditTitle.classList.add('hidden');
+    }
+    
+    document.getElementById('lobby-desc-text').innerText = globalLobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+    const btnEditDesc = document.getElementById('btn-edit-desc');
+    if (globalIsAdmin && btnEditDesc) {
+      btnEditDesc.classList.remove('hidden');
+      btnEditDesc.onclick = handleEditLobbyDesc;
+    } else if (btnEditDesc) {
+      btnEditDesc.classList.add('hidden');
     }
     
     let pushBtn = document.getElementById('admin-create-game-btn');
@@ -283,6 +294,37 @@ async function handleEditLobbyTitle() {
       alert('修改失敗');
     }
   } catch(e) {
+    alert('網路錯誤');
+  } finally {
+    appDiv.className = '';
+  }
+}
+
+async function handleEditLobbyDesc() {
+  const newDesc = prompt('請輸入新的大廳描述：', globalLobbyDesc || '');
+  if (newDesc === null) return;
+  try {
+    appDiv.className = 'loading';
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        uid: currentUser.userId,
+        action: 'updateLobbyDesc',
+        text: newDesc
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.lobbyDesc !== undefined) {
+        globalLobbyDesc = data.lobbyDesc;
+        renderLobby();
+      }
+    } else {
+      alert('修改失敗');
+    }
+  } catch (err) {
     alert('網路錯誤');
   } finally {
     appDiv.className = '';

@@ -694,7 +694,15 @@ if (!config.channelAccessToken || !config.channelSecret) {
 
 const client = new Client(config);
 const app = express();
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res, path) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+}));
 
 // 全域存儲：支援多群組、多區段
 let games = {};
@@ -1120,8 +1128,6 @@ async function ensureGroupSettings(gid) {
       await saveGroupSettings();
     }
   }
-}
-
 app.get('/api/group/code/:code', async (req, res) => {
   const code = req.params.code;
   let foundGid = null;
@@ -1145,14 +1151,8 @@ app.get('/api/game/:gid', async (req, res) => {
   const gid = req.params.gid;
   await ensureGroupSettings(gid);
   const lobbyTitle = groupSettings[gid]?.lobbyTitle || '羽球接龍大廳';
+  const lobbyDesc = groupSettings[gid]?.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
   const uid = req.query.uid;
-  let groupGames = Object.values(games).filter(g => {
-    if (!g.active) return false;
-    if (g.gid === gid) return true;
-    if (g.targetGids && g.targetGids.includes(gid)) return true;
-    return false;
-  });
-  console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   let managedGroups = [];
   if (isAdmin) {
@@ -1172,8 +1172,27 @@ app.get('/api/game/:gid', async (req, res) => {
     }
   }
 
+  let groupGames = Object.values(games).filter(g => {
+    if (!g.active) return false;
+    if (g.gid === gid) return true;
+    if (g.targetGids && g.targetGids.includes(gid)) return true;
+    
+    // 如果管理員是從個人聊天室/直接網址進入 (gid === uid)，顯示所有他管理的群組的場次
+    if (gid === uid) {
+      // 檢查此場次是否屬於他管理的任何一個群組
+      const isManaged = managedGroups.some(mg => 
+        mg.gid === g.gid || (g.targetGids && g.targetGids.includes(mg.gid))
+      );
+      if (isManaged) return true;
+    }
+    
+    return false;
+  });
+  console.log(`[API] Fetching games for gid: ${gid}, Found: ${groupGames.length}, Total games: ${Object.keys(games).length}`);
+
+
   if (groupGames.length === 0) {
-      return res.json({ games: [], isAdmin: !!isAdmin, managedGroups, lobbyTitle }); // 不報錯，回傳空陣列
+      return res.json({ games: [], isAdmin: !!isAdmin, managedGroups, lobbyTitle, lobbyDesc }); // 不報錯，回傳空陣列
   }
   
   // 深拷貝以避免污染記憶體中的 games 物件
@@ -1211,7 +1230,7 @@ app.get('/api/game/:gid', async (req, res) => {
   });
   
   // 回傳結果
-  res.json({ games: groupGames, isAdmin: !!isAdmin, managedGroups, lobbyTitle });
+  res.json({ games: groupGames, isAdmin: !!isAdmin, managedGroups, lobbyTitle, lobbyDesc });
 });
 
 // 處理 LIFF 前端傳來的報名或取消請求
@@ -1429,6 +1448,17 @@ app.post('/api/action', express.json(), async (req, res) => {
       return res.json({ success: true, lobbyTitle: newTitle });
     }
 
+    if (action === 'updateLobbyDesc') {
+      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+      if (!isAdmin) return res.status(403).json({ error: '只有管理員能修改大廳描述' });
+      
+      const newDesc = text ? text.trim() : '';
+      await ensureGroupSettings(gid);
+      groupSettings[gid].lobbyDesc = newDesc;
+      await saveGroupSettings();
+      return res.json({ success: true, lobbyDesc: newDesc });
+    }
+
     if (action === 'pushList') {
       const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
@@ -1539,6 +1569,10 @@ app.post('/api/action', express.json(), async (req, res) => {
       await removeFromList(gameId, name, { uid });
       for(let i=1; i<c; i++) {
         await removeAnon(gameId, { uid });
+      }
+      
+      if (game.paidMap) {
+        delete game.paidMap[name];
       }
       
       const mainListAfter = game.sections[0].list.slice(0, limit);
