@@ -139,18 +139,57 @@ function renderLobby() {
 
     const card = document.createElement('div');
     card.className = 'game-card';
+    
+    // Progress calculation
+    const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
+    
     card.innerHTML = `
-      <div class="card-header" style="cursor: pointer; align-items: flex-start;" onclick="showDetail('${game.gameId}')">
-        ${showTitle ? `<div class="card-title" style="margin-bottom: ${hasTags?'8px':'0'}">${escapeHTML(game.title)}</div>` : ''}
-        ${!showTitle && hasTags ? tagsHtml : ''}
-        ${!showTitle && !hasTags ? `<div class="card-title">羽球接龍</div>` : ''}
-        <div class="card-badge ${isFull ? 'full' : ''}" style="margin-left: 12px; flex-shrink: 0;">${count} / ${limit}</div>
+      <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+        <div class="badge ${isFull ? 'full' : 'open'}">
+          ${isFull ? '已額滿' : '✓ 開放報名'}
+        </div>
+        ${isMeRegistered ? '<div class="badge open" style="background-color: var(--primary-color); color: white;">已報名</div>' : ''}
       </div>
-      ${showTitle && hasTags ? `<div style="margin-top: -4px; margin-bottom: 12px;">${tagsHtml}</div>` : ''}
-      ${game.note ? `<div class="game-note" style="cursor: pointer" onclick="showDetail('${game.gameId}')">${escapeHTML(game.note)}</div>` : ''}
+      
+      <div class="card-title" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+        ${escapeHTML(game.title || '羽球接龍')}
+      </div>
+      
+      <div class="info-grid" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+        <div class="info-item">
+          <span class="info-icon">📅</span>
+          <span>${escapeHTML(game.date || '未設定')}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">⏰</span>
+          <span>${escapeHTML(game.time || '未設定')}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">📍</span>
+          <span>${escapeHTML(game.location || '未設定')}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">💰</span>
+          <span>${escapeHTML(game.fee || '未設定')}</span>
+        </div>
+      </div>
+      
+      ${game.note ? `<div class="game-note" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">${escapeHTML(game.note)}</div>` : ''}
+      
+      <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+        <div class="progress-header">
+          <span>名額進度</span>
+          <span class="progress-value">${count} / ${limit} 人</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
+        </div>
+      </div>
+      
       <div class="action-row">
-        <button class="btn btn-primary btn-square" onclick="handleActionWithInput('${game.gameId}', 'register')">+1</button>
-        <button class="btn btn-danger btn-square" onclick="handleActionWithInput('${game.gameId}', 'cancel')">-1</button>
+        <button class="btn ${isMeRegistered ? 'btn-danger' : 'btn-primary'} btn-square" ${isFull && !isMeRegistered ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput('${game.gameId}', '${isMeRegistered ? 'cancel' : 'register'}')">
+          ${isMeRegistered ? '-1' : '+1'}
+        </button>
         <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="代報名稱 (留空為本人)" />
       </div>
       <div id="error-msg-${game.gameId}" class="error-msg"></div>
