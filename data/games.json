@@ -61,7 +61,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379188597,
-    "lastActiveTime": 1782383226859,
+    "lastActiveTime": 1782383236926,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -69,7 +69,7 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "Tony": true,
+      "Tony": false,
       "Robert": true,
       "偉舫": true,
       "Ong": true,
