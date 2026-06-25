@@ -1,3 +1,25 @@
+function showFloatingEmoji(e, emoji) {
+  if (!e) return;
+  const el = document.createElement('div');
+  el.innerText = emoji;
+  el.style.position = 'fixed';
+  el.style.left = (e.clientX - 10) + 'px';
+  el.style.top = (e.clientY - 20) + 'px';
+  el.style.fontSize = '30px';
+  el.style.pointerEvents = 'none';
+  el.style.zIndex = '9999';
+  el.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  document.body.appendChild(el);
+  
+  // force reflow
+  void el.offsetHeight;
+  
+  el.style.transform = `translateY(-60px) scale(1.5) rotate(${Math.random() * 20 - 10}deg)`;
+  el.style.opacity = '0';
+  
+  setTimeout(() => el.remove(), 800);
+}
+
 let currentGroupId = null;
 let currentUser = null;
 let gamesList = [];
@@ -180,8 +202,8 @@ function renderLobby() {
         </div>
         
         <div class="action-row" style="flex-wrap: wrap;">
-          <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput('${game.gameId}', 'register')">+1</button>
-          <button class="btn btn-danger btn-square" onclick="handleActionWithInput('${game.gameId}', 'cancel')">-1</button>
+          <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
+          <button class="btn btn-danger btn-square" onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
           <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="名稱" style="flex: 2; min-width: 100px; font-weight: bold;" />
           <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度" style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
         </div>
@@ -448,7 +470,10 @@ window.handleCancelByName = async function(gameId, name) {
 };
 
 // 處理新的輸入框報名與防呆
-async function handleActionWithInput(gameId, action) {
+async function handleActionWithInput(event, gameId, action) {
+    if (action === 'register') showFloatingEmoji(event, '👍');
+    else if (action === 'cancel') showFloatingEmoji(event, '😭');
+
   const inputEl = document.getElementById(`name-input-${gameId}`);
   const levelEl = document.getElementById(`level-input-${gameId}`);
   const errorEl = document.getElementById(`error-msg-${gameId}`);
