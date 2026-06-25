@@ -945,18 +945,18 @@ async function handleAddGroupCode(inputId, containerId) {
   try {
     const res = await fetch(`/api/group/code/${code}`);
     const data = await res.json();
+    appDiv.className = '';
     if (res.ok && data.success) {
       const container = document.getElementById(containerId);
       if (container.innerHTML.includes('<p>')) container.innerHTML = '';
       createTargetGroupCheckbox(container, data.gid, code, data.groupName, true);
       inputEl.value = '';
     } else {
-      alert(data.error || '找不到該群組');
+      setTimeout(() => alert(data.error || '找不到該群組'), 10);
     }
   } catch(e) {
-    alert('網路錯誤');
-  } finally {
     appDiv.className = '';
+    setTimeout(() => alert('網路錯誤'), 10);
   }
 }
 

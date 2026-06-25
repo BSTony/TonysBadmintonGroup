@@ -1105,8 +1105,8 @@ app.get('/api/group/code/:code', async (req, res) => {
   const code = req.params.code;
   let foundGid = null;
   for (const [k, v] of Object.entries(groupCodes)) {
-    if (v === code) {
-      foundGid = k;
+    if (k === code) {
+      foundGid = v;
       break;
     }
   }
