@@ -1043,7 +1043,7 @@ async function handleActionWithInput(event, gameId, action) {
     return;
   }
   
-  const btn = event ? event.currentTarget : null;
+  // btn already declared at top of function — just use it
   try {
     if (btn) {
       btn.disabled = true;
@@ -1069,9 +1069,10 @@ async function handleActionWithInput(event, gameId, action) {
       throw new Error(data.error || '操作失敗');
     }
 
-    if (liff.isInClient() && data.msg) {
-        await liff.sendMessages([{ type: 'text', text: data.msg }]);
-    }
+    // 自動推撥已關閉，改為手動推撥以節省 LINE 額度
+    // if (liff.isInClient() && data.msg) {
+    //   await liff.sendMessages([{ type: 'text', text: data.msg }]);
+    // }
     
     // 如果是代報，自動清空輸入框，方便報下一個
     if (inputEl && inputEl.value.trim()) {
@@ -1245,36 +1246,11 @@ window.handlePushList = async function(gameId) {
       return;
     }
     
-    // 如果在 LINE App 內，我們另外呼叫 liff.sendMessages() 直接以使用者身分發送訊息
-    // 這不消耗 Bot 的 200 則推播額度，且 100% 可以成功發送到聊天室！
-    if (liff.isInClient() && result.msg) {
-      let clientMsg = result.msg;
-      if (process.env.LIFF_ID || true) { // 附上大廳連結
-        const context = liff.getContext();
-        const liffId = (context && context.liffId) || '';
-        clientMsg += `\n\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${liffId}?gid=${currentGroupId}`;
-      }
-      try {
-        await liff.sendMessages([{ type: 'text', text: clientMsg.trim() }]);
-        if (result.partialError) {
-          alert('以個人身分傳送成功！\n(註：機器人主動推播失敗: ' + result.errors.join(', ') + ')');
-        } else {
-          alert('名單已成功傳送到聊天室！');
-        }
-      } catch (sendErr) {
-        console.error('liff.sendMessages failed:', sendErr);
-        if (result.partialError) {
-          alert('個人發送與機器人推播皆失敗！\n機器人錯誤: ' + result.errors.join(', '));
-        } else {
-          alert('推播請求已送出（但以個人身份傳送失敗，可能需要權限）');
-        }
-      }
+    // 手動推播：直接透過 Bot API 傳送，不使用 liff.sendMessages 以節省額度
+    if (result.partialError) {
+      alert('機器人推播部分失敗: ' + result.errors.join(', '));
     } else {
-      if (result.partialError) {
-        alert('機器人主動推播失敗: ' + result.errors.join(', '));
-      } else {
-        alert('名單推播請求已送出！');
-      }
+      alert('✅ 名單推播成功！Bot 已發送到聊天室。');
     }
   } catch(e) {
     alert('網路錯誤');
@@ -1567,39 +1543,12 @@ document.getElementById('btn-submit-create').onclick = async () => {
     if (!res.ok) {
       alert(result.error || '建立失敗');
     } else {
-      // 如果沒有設定預約發布時間，且在 LINE 內，我們直接以使用者身分發送開團通知
-      const publishVal = document.getElementById('cg-publish').value;
-      let liffSendOk = false;
-      if (!publishVal && liff.isInClient()) {
-        const titleVal = document.getElementById('cg-title').value.trim() || '羽球接龍';
-        const dateVal = rawDateStr ? formatLocalGameDate(rawDateStr) : '';
-        const timeVal = timeStr;
-        const locVal = locStr;
-        
-        let announceMsg = `🚀 開團成功！新場次開放報名中 🏸\n\n🏸 【 ${titleVal} 】\n`;
-        if (dateVal) announceMsg += `📅 日期：${dateVal}\n`;
-        if (timeVal) announceMsg += `⏰ 時間：${timeVal}\n`;
-        if (locVal) announceMsg += `📍 地點：${locVal}\n`;
-        
-        const context = liff.getContext();
-        const liffId = (context && context.liffId) || '';
-        announceMsg += `\n👇 點擊下方連結進入大廳報名\nhttps://liff.line.me/${liffId}?gid=${currentGroupId}`;
-        
-        try {
-          await liff.sendMessages([{ type: 'text', text: announceMsg.trim() }]);
-          liffSendOk = true;
-        } catch (sendErr) {
-          console.error('liff.sendMessages announce failed:', sendErr);
-        }
-      }
-      
-      // 顯示診斷資訊
-      let alertMsg = '開團成功！';
+      // 開團成功，自動推撥已關閉，請管理者在詳細頁手動按「推播名單」以節省 LINE 額度
+      let alertMsg = '✅ 開團成功！';
       if (result.pushErrors && result.pushErrors.length > 0) {
         alertMsg += '\n\n⚠️ 機器人推播失敗:\n' + result.pushErrors.join('\n');
-      }
-      if (liffSendOk) {
-        alertMsg += '\n\n✅ 已透過個人帳號發送開團通知到聊天室';
+      } else {
+        alertMsg += '\n\n💡 如需通知群組，請進入場次詳細頁點「推播名單」。';
       }
       alert(alertMsg);
       
