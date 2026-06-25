@@ -165,7 +165,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782385357664,
-    "lastActiveTime": 1782399471486,
+    "lastActiveTime": 1782399504655,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -191,7 +191,8 @@
           "Iven",
           "Mina",
           "Jim",
-          "Ashley"
+          "Ashley",
+          "Wayne"
         ]
       }
     ]
