@@ -60,7 +60,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379188597,
-    "lastActiveTime": 1782384044363,
+    "lastActiveTime": 1782384047296,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -70,7 +70,6 @@
     "paidMap": {
       "Tony": false,
       "Robert": true,
-      "偉舫": true,
       "Ong": true,
       "Perry": true
     },
@@ -84,7 +83,6 @@
           "Tony",
           "Kay",
           "Robert",
-          "偉舫",
           "Ong",
           "Perry"
         ]
