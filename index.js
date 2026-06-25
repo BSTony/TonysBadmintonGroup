@@ -908,8 +908,27 @@ app.get('/api/game/:gid', (req, res) => {
     });
   }
   
-  // 依建立時間排序，新的在前面
-  groupGames.sort((a, b) => b.startTime - a.startTime);
+  // 智慧排序：嘗試解析日期 (如 7/3, 10/1)，越早的排上面。若無日期則依建立時間排序
+  const parseDateStr = (dateStr) => {
+    if (!dateStr) return Number.MAX_SAFE_INTEGER;
+    const match = dateStr.match(/(\d{1,2})\/(\d{1,2})/);
+    if (match) {
+      const month = parseInt(match[1], 10);
+      const day = parseInt(match[2], 10);
+      return month * 100 + day;
+    }
+    return Number.MAX_SAFE_INTEGER;
+  };
+
+  groupGames.sort((a, b) => {
+    const dateA = parseDateStr(a.date);
+    const dateB = parseDateStr(b.date);
+    if (dateA !== dateB) {
+      return dateA - dateB; // 日期早的排前面
+    }
+    // 如果日期相同，或者都沒寫日期，則依建立時間排序 (舊的在前面或新的在前面，預設為新的在前面)
+    return b.startTime - a.startTime;
+  });
   res.json({ games: groupGames });
 });
 
