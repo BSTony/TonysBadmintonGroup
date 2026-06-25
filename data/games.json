@@ -15,7 +15,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782379080075,
-    "lastActiveTime": 1782380435414,
+    "lastActiveTime": 1782380436574,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -40,8 +40,7 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay",
-          "Hugo"
+          "Kay"
         ]
       }
     ]
