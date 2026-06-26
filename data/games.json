@@ -166,13 +166,15 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782425433330,
+    "lastActiveTime": 1782438128500,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "Mia": "4"
+    },
     "paidMap": {
       "Tony": true,
       "Kay": true
@@ -197,7 +199,8 @@
           "Alice",
           "胞弟",
           "CC",
-          "程鈞"
+          "程鈞",
+          "Mia"
         ]
       }
     ]
