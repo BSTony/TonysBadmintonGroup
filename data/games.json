@@ -169,7 +169,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782438614983,
+    "lastActiveTime": 1782438722734,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -180,7 +180,8 @@
     },
     "paidMap": {
       "Tony": true,
-      "Kay": true
+      "Kay": true,
+      "CC": true
     },
     "sections": [
       {
