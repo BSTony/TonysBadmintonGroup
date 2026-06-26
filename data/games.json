@@ -112,13 +112,15 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782445224455,
+    "lastActiveTime": 1782445488229,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "John": "8"
+    },
     "paidMap": {
       "Tony": true,
       "Kay": true,
@@ -153,7 +155,8 @@
           "柚子",
           "花花",
           "小黑",
-          "Tank Lin"
+          "Tank Lin",
+          "John"
         ]
       }
     ]
