@@ -227,7 +227,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782403661731,
+    "lastActiveTime": 1782438460881,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -246,7 +246,8 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay"
+          "Kay",
+          "小可愛"
         ]
       }
     ]
