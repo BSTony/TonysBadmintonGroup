@@ -237,13 +237,15 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782442864167,
+    "lastActiveTime": 1782443909249,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "林立峰": "4"
+    },
     "paidMap": {
       "Tony": true,
       "Kay": true
@@ -259,7 +261,8 @@
           "Kay",
           "小可愛",
           "©️張CC～©️",
-          "小黑"
+          "小黑",
+          "林立峰"
         ]
       }
     ]
