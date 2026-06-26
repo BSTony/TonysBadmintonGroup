@@ -170,7 +170,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782439946961,
+    "lastActiveTime": 1782440884951,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -181,8 +181,7 @@
     },
     "paidMap": {
       "Tony": true,
-      "Kay": true,
-      "CC": true
+      "Kay": true
     },
     "sections": [
       {
@@ -203,7 +202,6 @@
           "King",
           "Alice",
           "胞弟",
-          "CC",
           "程鈞",
           "Kevin",
           "Mia",
