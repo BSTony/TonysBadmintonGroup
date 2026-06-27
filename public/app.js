@@ -697,11 +697,24 @@ function renderDetail(gameId) {
   
   let historyHtml = '<div class="history-section" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #fafafa; border-radius: 8px; border-left: 4px solid #90caf9;">';
   historyHtml += '<h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">歷史紀錄</h4>';
-  historyHtml += '<div style="max-height: 120px; overflow-y: auto; font-size: 13px; color: #555;">';
+  historyHtml += '<div style="font-size: 13px; color: #555;">';
   if (game.history && game.history.length > 0) {
-    game.history.forEach(h => {
+    const top3 = game.history.slice(0, 3);
+    const rest = game.history.slice(3);
+    
+    top3.forEach(h => {
        historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${escapeHTML(h.name)}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
     });
+    
+    if (rest.length > 0) {
+       historyHtml += `<details style="margin-top: 8px;">
+           <summary style="cursor: pointer; color: #1976d2; font-weight: bold; outline: none;">顯示更多 (${rest.length})</summary>
+           <div style="max-height: 120px; overflow-y: auto; margin-top: 6px; padding-left: 8px; border-left: 2px solid #ddd;">`;
+       rest.forEach(h => {
+           historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${escapeHTML(h.name)}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
+       });
+       historyHtml += `</div></details>`;
+    }
   } else {
     historyHtml += '<div style="color: #999; font-style: italic;">目前尚無歷史紀錄</div>';
   }
