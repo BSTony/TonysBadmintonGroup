@@ -72,7 +72,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1782402575244,
-    "lastActiveTime": 1782604462202,
+    "lastActiveTime": 1782604469140,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -82,7 +82,7 @@
     "paidMap": {
       "Alan": true,
       "煥杰": true,
-      "Jimmy": true
+      "Jimmy": false
     },
     "sections": [
       {
