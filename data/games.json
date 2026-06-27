@@ -202,7 +202,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782565218627,
+    "lastActiveTime": 1782566123685,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -241,7 +241,6 @@
           "Sammy Su",
           "Hsin",
           "©️張CC～©️",
-          "豪",
           "卡比",
           "昊平",
           "小高",
@@ -250,6 +249,11 @@
       }
     ],
     "history": [
+      {
+        "time": "06/27 21:15",
+        "name": "豪",
+        "action": "-1"
+      },
       {
         "time": "06/27 21:00",
         "name": "謝東霖 Tony",
