@@ -222,7 +222,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782569597492,
+    "lastActiveTime": 1782576435506,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -260,13 +260,17 @@
           "Hsin",
           "©️張CC～©️",
           "卡比",
-          "昊平",
           "小高",
           "John"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 00:07",
+        "name": "昊平",
+        "action": "-1"
+      },
       {
         "time": "06/27 22:13",
         "name": "Jim",
