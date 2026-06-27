@@ -222,7 +222,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782576435506,
+    "lastActiveTime": 1782578627565,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -231,7 +231,8 @@
     "levelMap": {
       "Mia": "4",
       "小黑": "4",
-      "John": "3"
+      "John": "3",
+      "Andrew": "0"
     },
     "paidMap": {
       "Tony": true,
@@ -261,11 +262,17 @@
           "©️張CC～©️",
           "卡比",
           "小高",
-          "John"
+          "John",
+          "Andrew"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 00:43",
+        "name": "Andrew",
+        "action": "+1"
+      },
       {
         "time": "06/28 00:07",
         "name": "昊平",
