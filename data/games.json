@@ -180,7 +180,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782563393172,
+    "lastActiveTime": 1782563553307,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -188,7 +188,8 @@
     "anonymousCount": 0,
     "levelMap": {
       "Mia": "4",
-      "小黑": "4"
+      "小黑": "4",
+      "John": "3"
     },
     "paidMap": {
       "Tony": true,
@@ -221,11 +222,17 @@
           "豪",
           "卡比",
           "昊平",
-          "小高"
+          "小高",
+          "John"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/27 20:32",
+        "name": "John",
+        "action": "+1"
+      },
       {
         "time": "06/27 20:29",
         "name": "謝東霖 Tony",
