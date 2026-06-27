@@ -216,7 +216,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782566123685,
+    "lastActiveTime": 1782569594307,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -243,7 +243,6 @@
           "Iven",
           "Mina",
           "Jim",
-          "Ashley",
           "Tank",
           "胞弟",
           "程鈞",
@@ -263,6 +262,11 @@
       }
     ],
     "history": [
+      {
+        "time": "06/27 22:13",
+        "name": "Ashley",
+        "action": "-1"
+      },
       {
         "time": "06/27 21:15",
         "name": "豪",
