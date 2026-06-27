@@ -695,16 +695,18 @@ function renderDetail(gameId) {
      detailList.innerHTML += `<div class="game-note">${escapeHTML(game.note)}</div>`;
   }
   
+  let historyHtml = '<div class="history-section" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #fafafa; border-radius: 8px; border-left: 4px solid #90caf9;">';
+  historyHtml += '<h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">歷史紀錄</h4>';
+  historyHtml += '<div style="max-height: 120px; overflow-y: auto; font-size: 13px; color: #555;">';
   if (game.history && game.history.length > 0) {
-    let historyHtml = '<div class="history-section" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #fafafa; border-radius: 8px; border-left: 4px solid #90caf9;">';
-    historyHtml += '<h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">歷史紀錄</h4>';
-    historyHtml += '<div style="max-height: 120px; overflow-y: auto; font-size: 13px; color: #555;">';
     game.history.forEach(h => {
        historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${escapeHTML(h.name)}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
     });
-    historyHtml += '</div></div>';
-    detailList.innerHTML += historyHtml;
+  } else {
+    historyHtml += '<div style="color: #999; font-style: italic;">目前尚無歷史紀錄</div>';
   }
+  historyHtml += '</div></div>';
+  detailList.innerHTML += historyHtml;
   
   // 顯示所有區段 (含候補)
   game.sections.forEach((sec, sIdx) => {
