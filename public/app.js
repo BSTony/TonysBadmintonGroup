@@ -1023,45 +1023,19 @@ function playPlusOneAnimation(btn) {
   const scrollListener = () => updatePosition();
   window.addEventListener('scroll', scrollListener, true);
   
-  const orbitWrapper = document.createElement('div');
-  orbitWrapper.style.position = 'absolute';
-  orbitWrapper.style.left = '0';
-  orbitWrapper.style.top = '0';
-  orbitWrapper.style.width = '0';
-  orbitWrapper.style.height = '0';
-  orbitWrapper.style.animation = 'quokkaOrbit 1.5s linear infinite';
-  
   const quokka = document.createElement('img');
   getTransparentImage('images/quokka_dance.png', (src) => {
     quokka.src = src;
   });
   quokka.style.position = 'absolute';
-  quokka.style.width = '110px';
+  quokka.style.width = '120px';
   quokka.style.height = 'auto';
-  quokka.style.marginTop = '-55px';
-  quokka.style.marginLeft = '-55px';
-  quokka.style.animation = 'quokkaBounce 0.4s ease-in-out infinite';
-  
-  orbitWrapper.appendChild(quokka);
-  container.appendChild(orbitWrapper);
-  
-  const flowerInterval = setInterval(() => {
-    const flower = document.createElement('div');
-    flower.innerText = ['🌸', '🌺', '🌼', '✨'][Math.floor(Math.random() * 4)];
-    flower.style.position = 'absolute';
-    flower.style.fontSize = '24px';
-    const angle = (Date.now() / 1500) * 360 * (Math.PI / 180);
-    const x = Math.cos(angle) * 70;
-    const y = Math.sin(angle) * 70;
-    flower.style.left = `${x}px`;
-    flower.style.top = `${y}px`;
-    flower.style.animation = 'flowerFall 1s forwards ease-in';
-    container.appendChild(flower);
-    setTimeout(() => flower.remove(), 1000);
-  }, 150);
+  quokka.style.marginTop = '-120px';
+  quokka.style.marginLeft = '-60px';
+  quokka.style.animation = 'quokkaJump 0.5s ease-in-out infinite alternate';
+  container.appendChild(quokka);
   
   const cleanup = () => {
-    clearInterval(flowerInterval);
     btn.classList.remove('glowing-prize');
     container.remove();
     window.removeEventListener('scroll', scrollListener, true);
@@ -1085,126 +1059,98 @@ function playPlusOneAnimation(btn) {
 
 function playMinusOneDodgeAnimation(btn) {
   btn.dataset.dodged = 'true';
-  btn.style.position = 'relative';
+  btn.style.visibility = 'hidden';
   
-  const moveX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 50 + 40);
-  const moveY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 30 + 15);
-  // Sneaky slow transition
-  btn.style.transition = 'transform 1.2s cubic-bezier(0.42, 0, 0.58, 1)';
-  btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
+  const startPos = getButtonCenter(btn);
   
-  if (!btn.querySelector('.quokka-carry')) {
-    const quokka = document.createElement('img');
-    getTransparentImage('images/quokka_carry.png', (src) => {
-      quokka.src = src;
-    });
-    quokka.className = 'quokka-carry';
-    quokka.style.position = 'absolute';
-    quokka.style.width = '70px';
-    quokka.style.height = 'auto';
-    quokka.style.right = '-35px'; // Overlap more to hide left arm behind button
-    quokka.style.top = '50%';
-    quokka.style.transform = 'translateY(-50%)';
-    quokka.style.pointerEvents = 'none';
-    quokka.style.zIndex = '-1'; // Place body and back arm BEHIND the button
-    quokka.style.animation = 'quokkaTiptoe 0.4s infinite';
-    btn.appendChild(quokka);
-
-    // Front paw on TOP of the button
-    const paw = document.createElement('div');
-    paw.className = 'quokka-paw';
-    paw.style.position = 'absolute';
-    paw.style.width = '16px';
-    paw.style.height = '12px';
-    paw.style.backgroundColor = '#A0522D'; // Sienna/brown color
-    paw.style.border = '1px solid #5C3A21'; // Dark outline
-    paw.style.borderRadius = '8px';
-    paw.style.right = '5px'; // On the button's right edge
-    paw.style.top = '50%';
-    paw.style.transform = 'translateY(-50%)';
-    paw.style.zIndex = '5'; // IN FRONT of the button
-    paw.style.pointerEvents = 'none';
-    paw.style.animation = 'quokkaTiptoe 0.4s infinite';
-    btn.appendChild(paw);
-  }
+  const floatingQuokka = document.createElement('div');
+  floatingQuokka.className = 'floating-quokka-carry';
+  floatingQuokka.style.position = 'fixed';
+  floatingQuokka.style.zIndex = '9999';
+  floatingQuokka.style.cursor = 'pointer';
+  floatingQuokka.style.transition = 'transform 2s ease-in-out';
+  floatingQuokka.style.left = (startPos.x - 60) + 'px';
+  floatingQuokka.style.top = (startPos.y - 60) + 'px';
+  
+  const img = document.createElement('img');
+  getTransparentImage('images/quokka_carry_1.png', (src) => {
+    img.src = src;
+  });
+  img.style.width = '120px';
+  img.style.height = 'auto';
+  img.style.pointerEvents = 'none'; // clicks go to the wrapper
+  floatingQuokka.appendChild(img);
+  
+  document.body.appendChild(floatingQuokka);
+  
+  const moveRandomly = () => {
+    const maxX = window.innerWidth - 120;
+    const maxY = window.innerHeight - 120;
+    const rx = Math.random() * maxX - (startPos.x - 60);
+    const ry = Math.random() * maxY - (startPos.y - 60);
+    floatingQuokka.style.transform = `translate(${rx}px, ${ry}px)`;
+  };
+  
+  setTimeout(moveRandomly, 100);
+  const moveInterval = setInterval(moveRandomly, 2000);
+  
+  floatingQuokka._moveInterval = moveInterval;
+  floatingQuokka._img = img;
+  floatingQuokka._startPos = startPos;
+  
+  floatingQuokka.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn._floatingQuokka = floatingQuokka;
+    btn.click();
+  });
 }
 
 function playMinusOneCancelAnimation(btn) {
   btn.dataset.dodged = 'false';
-  btn.style.transition = 'transform 0.5s ease';
-  btn.style.transform = 'translate(0px, 0px)';
   
-  const carryQuokka = btn.querySelector('.quokka-carry');
-  if (carryQuokka) carryQuokka.remove();
+  const floatingQuokka = btn._floatingQuokka;
+  if (!floatingQuokka) {
+    btn.style.visibility = 'visible';
+    return;
+  }
   
-  const paw = btn.querySelector('.quokka-paw');
-  if (paw) paw.remove();
+  clearInterval(floatingQuokka._moveInterval);
   
-  const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.pointerEvents = 'none';
-  container.style.zIndex = '9999';
-  document.body.appendChild(container);
-  
-  const updatePosition = () => {
-    const center = getButtonCenter(btn);
-    container.style.left = center.x + 'px';
-    container.style.top = center.y + 'px';
-  };
-  updatePosition();
-  
-  const scrollListener = () => updatePosition();
-  window.addEventListener('scroll', scrollListener, true);
-  
-  const quokkaMover = document.createElement('div');
-  quokkaMover.style.position = 'absolute';
-  quokkaMover.style.left = '40px';
-  quokkaMover.style.top = '-50px';
-  quokkaMover.style.width = '120px';
-  quokkaMover.style.height = '120px';
-  
-  const quokka = document.createElement('img');
-  getTransparentImage('images/quokka_cry.png', (src) => {
-    quokka.src = src;
+  // 圖2
+  getTransparentImage('images/quokka_carry_2.png', (src) => {
+    floatingQuokka._img.src = src;
   });
-  quokka.style.position = 'absolute';
-  quokka.style.width = '100%';
-  quokka.style.height = 'auto';
-  quokkaMover.appendChild(quokka);
-  container.appendChild(quokkaMover);
   
-  // 1. Walk in
-  quokkaMover.style.animation = 'quokkaWalkIn 1s ease-out forwards';
-  quokka.style.animation = 'quokkaWobble 0.4s infinite';
+  // 回歸原位
+  floatingQuokka.style.transition = 'transform 1s ease-in-out';
+  floatingQuokka.style.transform = 'translate(0px, 0px)';
   
   setTimeout(() => {
-    // 2. Stop wiggling, do press
-    quokka.style.animation = 'none';
-    quokkaMover.style.animation = 'quokkaPress 0.4s ease-in-out forwards';
+    // 按下去的動作
+    floatingQuokka.style.transition = 'transform 0.2s';
+    floatingQuokka.style.transform = 'translate(0px, 10px)';
     
     setTimeout(() => {
-      // 3. Show -1 text
-      const minusOne = document.createElement('div');
-      minusOne.innerText = '-1';
-      minusOne.style.position = 'absolute';
-      minusOne.style.color = 'var(--danger-color)';
-      minusOne.style.fontWeight = 'bold';
-      minusOne.style.fontSize = '32px';
-      minusOne.style.left = '-15px';
-      minusOne.style.top = '-30px';
-      minusOne.style.animation = 'floatUpFade 1s forwards';
-      container.appendChild(minusOne);
+      floatingQuokka.style.transform = 'translate(0px, 0px)';
       
-      // 4. Wave and leave
+      // 顯示真正的按鈕
+      btn.style.visibility = 'visible';
+      
+      // 圖3 揮手哭泣
+      getTransparentImage('images/quokka_cry.png', (src) => {
+        floatingQuokka._img.src = src;
+      });
+      
+      floatingQuokka.style.animation = 'quokkaLeave 4s forwards';
+      
       setTimeout(() => {
-        quokkaMover.style.animation = 'quokkaLeave 4.5s forwards';
-        setTimeout(() => {
-          container.remove();
-          window.removeEventListener('scroll', scrollListener, true);
-        }, 4500);
-      }, 500);
+        floatingQuokka.remove();
+      }, 4000);
+      
     }, 200);
   }, 1000);
+  
+  btn._floatingQuokka = null;
 }
 
 // 處理新的輸入框報名與防呆
@@ -1225,12 +1171,12 @@ async function handleActionWithInput(event, gameId, action) {
     document.querySelectorAll('button.btn-danger').forEach(b => {
       if (b.dataset.dodged === 'true') {
         b.dataset.dodged = 'false';
-        b.style.transition = 'transform 1s ease';
-        b.style.transform = 'translate(0px, 0px)';
-        const carryQ = b.querySelector('.quokka-carry');
-        if (carryQ) carryQ.remove();
-        const paw = b.querySelector('.quokka-paw');
-        if (paw) paw.remove();
+        b.style.visibility = 'visible';
+        if (b._floatingQuokka) {
+          clearInterval(b._floatingQuokka._moveInterval);
+          b._floatingQuokka.remove();
+          b._floatingQuokka = null;
+        }
       }
     });
   }

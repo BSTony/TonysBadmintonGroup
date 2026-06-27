@@ -398,3 +398,8 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
   0%, 100% { transform: translateY(0) rotate(-5deg); }
   50% { transform: translateY(-5px) rotate(5deg); }
 }
+
+@keyframes quokkaJump {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-20px); }
+}
