@@ -142,7 +142,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782445488229,
+    "lastActiveTime": 1782567776602,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -186,8 +186,16 @@
           "花花",
           "小黑",
           "Tank Lin",
-          "John"
+          "John",
+          "Howard"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "06/27 21:42",
+        "name": "Howard",
+        "action": "+1"
       }
     ]
   },
