@@ -72,7 +72,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1782402575244,
-    "lastActiveTime": 1782556364166,
+    "lastActiveTime": 1782565384678,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -92,8 +92,16 @@
           "Jimmy",
           "(AK) Seth Hu",
           "人云",
-          "閣緯"
+          "閣緯",
+          "Kay"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "06/27 21:03",
+        "name": "Kay",
+        "action": "+1"
       }
     ]
   },
