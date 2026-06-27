@@ -1102,12 +1102,30 @@ function playMinusOneDodgeAnimation(btn) {
     quokka.style.position = 'absolute';
     quokka.style.width = '70px';
     quokka.style.height = 'auto';
-    quokka.style.right = '-50px';
+    quokka.style.right = '-35px'; // Overlap more to hide left arm behind button
     quokka.style.top = '50%';
     quokka.style.transform = 'translateY(-50%)';
     quokka.style.pointerEvents = 'none';
+    quokka.style.zIndex = '-1'; // Place body and back arm BEHIND the button
     quokka.style.animation = 'quokkaTiptoe 0.4s infinite';
     btn.appendChild(quokka);
+
+    // Front paw on TOP of the button
+    const paw = document.createElement('div');
+    paw.className = 'quokka-paw';
+    paw.style.position = 'absolute';
+    paw.style.width = '16px';
+    paw.style.height = '12px';
+    paw.style.backgroundColor = '#A0522D'; // Sienna/brown color
+    paw.style.border = '1px solid #5C3A21'; // Dark outline
+    paw.style.borderRadius = '8px';
+    paw.style.right = '5px'; // On the button's right edge
+    paw.style.top = '50%';
+    paw.style.transform = 'translateY(-50%)';
+    paw.style.zIndex = '5'; // IN FRONT of the button
+    paw.style.pointerEvents = 'none';
+    paw.style.animation = 'quokkaTiptoe 0.4s infinite';
+    btn.appendChild(paw);
   }
 }
 
@@ -1118,6 +1136,9 @@ function playMinusOneCancelAnimation(btn) {
   
   const carryQuokka = btn.querySelector('.quokka-carry');
   if (carryQuokka) carryQuokka.remove();
+  
+  const paw = btn.querySelector('.quokka-paw');
+  if (paw) paw.remove();
   
   const container = document.createElement('div');
   container.style.position = 'fixed';
@@ -1208,6 +1229,8 @@ async function handleActionWithInput(event, gameId, action) {
         b.style.transform = 'translate(0px, 0px)';
         const carryQ = b.querySelector('.quokka-carry');
         if (carryQ) carryQ.remove();
+        const paw = b.querySelector('.quokka-paw');
+        if (paw) paw.remove();
       }
     });
   }
