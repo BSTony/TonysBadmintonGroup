@@ -1767,6 +1767,11 @@ app.post('/api/action', express.json(), async (req, res) => {
         addToList(gameId, 0, n, { uid, level: n !== '__ANON__' ? level : undefined });
         if (n !== '__ANON__') {
           uidToNameMap.set(`${gameId}_${uid}`, n);
+          if (!game.history) game.history = [];
+          const now = new Date();
+          const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+          game.history.unshift({ time: timeStr, name: n, action: '+1' });
+          if (game.history.length > 200) game.history.pop();
         }
       });
         } else if (action === 'togglePaid') {
@@ -1795,6 +1800,12 @@ app.post('/api/action', express.json(), async (req, res) => {
       for(let i=1; i<c; i++) {
         await removeAnon(gameId, { uid });
       }
+      
+      if (!game.history) game.history = [];
+      const now = new Date();
+      const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      game.history.unshift({ time: timeStr, name: name, action: '-1' });
+      if (game.history.length > 200) game.history.pop();
       
       if (game.paidMap) {
         delete game.paidMap[name];
