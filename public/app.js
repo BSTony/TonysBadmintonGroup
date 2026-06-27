@@ -1028,10 +1028,10 @@ function playPlusOneAnimation(btn) {
     quokka.src = src;
   });
   quokka.style.position = 'absolute';
-  quokka.style.width = '120px';
+  quokka.style.width = '240px';
   quokka.style.height = 'auto';
-  quokka.style.marginTop = '-120px';
-  quokka.style.marginLeft = '-60px';
+  quokka.style.marginTop = '-240px';
+  quokka.style.marginLeft = '-120px';
   quokka.style.animation = 'quokkaJump 0.5s ease-in-out infinite alternate';
   container.appendChild(quokka);
   
@@ -1069,14 +1069,14 @@ function playMinusOneDodgeAnimation(btn) {
   floatingQuokka.style.zIndex = '9999';
   floatingQuokka.style.cursor = 'pointer';
   floatingQuokka.style.transition = 'transform 2s ease-in-out';
-  floatingQuokka.style.left = (startPos.x - 60) + 'px';
-  floatingQuokka.style.top = (startPos.y - 60) + 'px';
+  floatingQuokka.style.left = (startPos.x - 120) + 'px';
+  floatingQuokka.style.top = (startPos.y - 120) + 'px';
   
   const img = document.createElement('img');
   getTransparentImage('images/quokka_carry_1.png', (src) => {
     img.src = src;
   });
-  img.style.width = '120px';
+  img.style.width = '240px';
   img.style.height = 'auto';
   img.style.pointerEvents = 'none'; // clicks go to the wrapper
   floatingQuokka.appendChild(img);
@@ -1084,10 +1084,10 @@ function playMinusOneDodgeAnimation(btn) {
   document.body.appendChild(floatingQuokka);
   
   const moveRandomly = () => {
-    const maxX = window.innerWidth - 120;
-    const maxY = window.innerHeight - 120;
-    const rx = Math.random() * maxX - (startPos.x - 60);
-    const ry = Math.random() * maxY - (startPos.y - 60);
+    const maxX = window.innerWidth - 240;
+    const maxY = window.innerHeight - 240;
+    const rx = Math.random() * maxX - (startPos.x - 120);
+    const ry = Math.random() * maxY - (startPos.y - 120);
     floatingQuokka.style.transform = `translate(${rx}px, ${ry}px)`;
   };
   
