@@ -1024,12 +1024,14 @@ function playPlusOneAnimation(btn) {
   window.addEventListener('scroll', scrollListener, true);
   
   const quokka = document.createElement('img');
-  quokka.src = 'images/quokka_dance.png';
+  getTransparentImage('images/quokka_dance.png', (src) => {
+    quokka.src = src;
+  });
   quokka.style.position = 'absolute';
-  quokka.style.width = '55px';
+  quokka.style.width = '110px';
   quokka.style.height = 'auto';
-  quokka.style.marginTop = '-27.5px';
-  quokka.style.marginLeft = '-27.5px';
+  quokka.style.marginTop = '-55px';
+  quokka.style.marginLeft = '-55px';
   quokka.style.animation = 'quokkaOrbit 1.5s linear infinite';
   container.appendChild(quokka);
   
@@ -1037,10 +1039,10 @@ function playPlusOneAnimation(btn) {
     const flower = document.createElement('div');
     flower.innerText = ['🌸', '🌺', '🌼', '✨'][Math.floor(Math.random() * 4)];
     flower.style.position = 'absolute';
-    flower.style.fontSize = '20px';
+    flower.style.fontSize = '24px';
     const angle = (Date.now() / 1500) * 360 * (Math.PI / 180);
-    const x = Math.cos(angle) * 50;
-    const y = Math.sin(angle) * 50;
+    const x = Math.cos(angle) * 70;
+    const y = Math.sin(angle) * 70;
     flower.style.left = `${x}px`;
     flower.style.top = `${y}px`;
     flower.style.animation = 'flowerFall 1s forwards ease-in';
@@ -1075,22 +1077,26 @@ function playMinusOneDodgeAnimation(btn) {
   btn.dataset.dodged = 'true';
   btn.style.position = 'relative';
   
-  const moveX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 40 + 30);
-  const moveY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 20 + 10);
-  btn.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  const moveX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 50 + 40);
+  const moveY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 30 + 15);
+  // Sneaky slow transition
+  btn.style.transition = 'transform 1.2s cubic-bezier(0.42, 0, 0.58, 1)';
   btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
   
   if (!btn.querySelector('.quokka-carry')) {
     const quokka = document.createElement('img');
-    quokka.src = 'images/quokka_carry.png';
+    getTransparentImage('images/quokka_carry.png', (src) => {
+      quokka.src = src;
+    });
     quokka.className = 'quokka-carry';
     quokka.style.position = 'absolute';
-    quokka.style.width = '35px';
+    quokka.style.width = '70px';
     quokka.style.height = 'auto';
-    quokka.style.right = '-25px';
+    quokka.style.right = '-50px';
     quokka.style.top = '50%';
     quokka.style.transform = 'translateY(-50%)';
     quokka.style.pointerEvents = 'none';
+    quokka.style.animation = 'quokkaTiptoe 0.4s infinite';
     btn.appendChild(quokka);
   }
 }
@@ -1124,22 +1130,24 @@ function playMinusOneCancelAnimation(btn) {
   minusOne.style.position = 'absolute';
   minusOne.style.color = 'var(--danger-color)';
   minusOne.style.fontWeight = 'bold';
-  minusOne.style.fontSize = '24px';
-  minusOne.style.left = '-10px';
-  minusOne.style.top = '-20px';
+  minusOne.style.fontSize = '32px';
+  minusOne.style.left = '-15px';
+  minusOne.style.top = '-30px';
   minusOne.style.animation = 'floatUpFade 1s forwards';
   container.appendChild(minusOne);
   
   const quokka = document.createElement('img');
-  quokka.src = 'images/quokka_cry.png';
+  getTransparentImage('images/quokka_cry.png', (src) => {
+    quokka.src = src;
+  });
   quokka.style.position = 'absolute';
-  quokka.style.width = '60px';
+  quokka.style.width = '120px';
   quokka.style.height = 'auto';
-  quokka.style.left = '20px';
-  quokka.style.top = '-30px';
+  quokka.style.left = '40px';
+  quokka.style.top = '-60px';
   
   // 點擊動作後哭泣離開
-  quokka.style.transform = 'translateX(-15px) scale(1)';
+  quokka.style.transform = 'translateX(-20px) scale(1)';
   quokka.style.transition = 'transform 0.2s';
   container.appendChild(quokka);
   

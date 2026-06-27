@@ -372,3 +372,8 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
   50% { transform: scale(0.8) translateX(20px); opacity: 0.8; }
   100% { transform: scale(0) translateX(80px); opacity: 0; }
 }
+
+@keyframes quokkaTiptoe {
+  0%, 100% { transform: translateY(-50%) rotate(-5deg); }
+  50% { transform: translateY(calc(-50% - 5px)) rotate(5deg); }
+}
