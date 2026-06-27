@@ -991,40 +991,190 @@ window.handleCancelByName = async function(gameId, name) {
   }
 };
 
+// --- Quokka 動畫邏輯 ---
+function getButtonCenter(btn) {
+  const rect = btn.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2
+  };
+}
+
+let currentPlusOneAnim = null;
+
+function playPlusOneAnimation(btn) {
+  if (currentPlusOneAnim) currentPlusOneAnim();
+  
+  btn.classList.add('glowing-prize');
+  
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.pointerEvents = 'none';
+  container.style.zIndex = '9999';
+  
+  const updatePosition = () => {
+    const center = getButtonCenter(btn);
+    container.style.left = center.x + 'px';
+    container.style.top = center.y + 'px';
+  };
+  updatePosition();
+  document.body.appendChild(container);
+  
+  const scrollListener = () => updatePosition();
+  window.addEventListener('scroll', scrollListener, true);
+  
+  const quokka = document.createElement('img');
+  quokka.src = 'images/quokka_dance.png';
+  quokka.style.position = 'absolute';
+  quokka.style.width = '55px';
+  quokka.style.height = 'auto';
+  quokka.style.marginTop = '-27.5px';
+  quokka.style.marginLeft = '-27.5px';
+  quokka.style.animation = 'quokkaOrbit 1.5s linear infinite';
+  container.appendChild(quokka);
+  
+  const flowerInterval = setInterval(() => {
+    const flower = document.createElement('div');
+    flower.innerText = ['🌸', '🌺', '🌼', '✨'][Math.floor(Math.random() * 4)];
+    flower.style.position = 'absolute';
+    flower.style.fontSize = '20px';
+    const angle = (Date.now() / 1500) * 360 * (Math.PI / 180);
+    const x = Math.cos(angle) * 50;
+    const y = Math.sin(angle) * 50;
+    flower.style.left = `${x}px`;
+    flower.style.top = `${y}px`;
+    flower.style.animation = 'flowerFall 1s forwards ease-in';
+    container.appendChild(flower);
+    setTimeout(() => flower.remove(), 1000);
+  }, 150);
+  
+  const cleanup = () => {
+    clearInterval(flowerInterval);
+    btn.classList.remove('glowing-prize');
+    container.remove();
+    window.removeEventListener('scroll', scrollListener, true);
+    document.removeEventListener('click', outsideClickListener, true);
+    currentPlusOneAnim = null;
+  };
+  
+  const outsideClickListener = (e) => {
+    if (!btn.contains(e.target)) {
+      cleanup();
+    }
+  };
+  
+  currentPlusOneAnim = cleanup;
+  document.addEventListener('click', outsideClickListener, true);
+  
+  setTimeout(() => {
+    if (currentPlusOneAnim === cleanup) cleanup();
+  }, 3000);
+}
+
+function playMinusOneDodgeAnimation(btn) {
+  btn.dataset.dodged = 'true';
+  btn.style.position = 'relative';
+  
+  const moveX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 40 + 30);
+  const moveY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 20 + 10);
+  btn.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
+  
+  if (!btn.querySelector('.quokka-carry')) {
+    const quokka = document.createElement('img');
+    quokka.src = 'images/quokka_carry.png';
+    quokka.className = 'quokka-carry';
+    quokka.style.position = 'absolute';
+    quokka.style.width = '35px';
+    quokka.style.height = 'auto';
+    quokka.style.right = '-25px';
+    quokka.style.top = '50%';
+    quokka.style.transform = 'translateY(-50%)';
+    quokka.style.pointerEvents = 'none';
+    btn.appendChild(quokka);
+  }
+}
+
+function playMinusOneCancelAnimation(btn) {
+  btn.dataset.dodged = 'false';
+  btn.style.transition = 'transform 0.5s ease';
+  btn.style.transform = 'translate(0px, 0px)';
+  
+  const carryQuokka = btn.querySelector('.quokka-carry');
+  if (carryQuokka) carryQuokka.remove();
+  
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.pointerEvents = 'none';
+  container.style.zIndex = '9999';
+  document.body.appendChild(container);
+  
+  const updatePosition = () => {
+    const center = getButtonCenter(btn);
+    container.style.left = center.x + 'px';
+    container.style.top = center.y + 'px';
+  };
+  updatePosition();
+  
+  const scrollListener = () => updatePosition();
+  window.addEventListener('scroll', scrollListener, true);
+  
+  const minusOne = document.createElement('div');
+  minusOne.innerText = '-1';
+  minusOne.style.position = 'absolute';
+  minusOne.style.color = 'var(--danger-color)';
+  minusOne.style.fontWeight = 'bold';
+  minusOne.style.fontSize = '24px';
+  minusOne.style.left = '-10px';
+  minusOne.style.top = '-20px';
+  minusOne.style.animation = 'floatUpFade 1s forwards';
+  container.appendChild(minusOne);
+  
+  const quokka = document.createElement('img');
+  quokka.src = 'images/quokka_cry.png';
+  quokka.style.position = 'absolute';
+  quokka.style.width = '60px';
+  quokka.style.height = 'auto';
+  quokka.style.left = '20px';
+  quokka.style.top = '-30px';
+  
+  // 點擊動作後哭泣離開
+  quokka.style.transform = 'translateX(-15px) scale(1)';
+  quokka.style.transition = 'transform 0.2s';
+  container.appendChild(quokka);
+  
+  setTimeout(() => {
+    quokka.style.transform = 'translateX(0px) scale(1)';
+    quokka.style.animation = 'quokkaLeave 4.8s forwards';
+    setTimeout(() => {
+      container.remove();
+      window.removeEventListener('scroll', scrollListener, true);
+    }, 4800);
+  }, 200);
+}
+
 // 處理新的輸入框報名與防呆
 async function handleActionWithInput(event, gameId, action) {
   const btn = event.currentTarget || event.target;
   
   if (action === 'cancel' && btn) {
     if (btn.dataset.dodged !== 'true') {
-      btn.dataset.dodged = 'true';
-      // Flash color
-      const originalBg = btn.style.backgroundColor;
-      btn.style.transition = 'background-color 0.1s, transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-      btn.style.backgroundColor = '#FFEB3B';
-      setTimeout(() => btn.style.backgroundColor = originalBg, 150);
-      
-      // Dodge away
-      const moveX = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 40 + 30);
-      const moveY = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 20 + 10);
-      btn.style.transform = `translate(${moveX}px, ${moveY}px)`;
-      
+      playMinusOneDodgeAnimation(btn);
       return; // Stop actual cancellation
     } else {
-      // Second click: Reset position slowly and continue with cancellation
-      btn.dataset.dodged = 'false';
-      btn.style.transition = 'transform 2s ease';
-      btn.style.transform = 'translate(0px, 0px)';
-      showFloatingEmoji(event, 'images/cry.png');
+      // Second click
+      playMinusOneCancelAnimation(btn);
     }
   } else if (action === 'register') {
-    showFloatingEmoji(event, 'images/dance.png');
+    if (btn) playPlusOneAnimation(btn);
     // Reset all dodged buttons when +1 is clicked
     document.querySelectorAll('button.btn-danger').forEach(b => {
       if (b.dataset.dodged === 'true') {
         b.dataset.dodged = 'false';
         b.style.transition = 'transform 1s ease';
         b.style.transform = 'translate(0px, 0px)';
+        const carryQ = b.querySelector('.quokka-carry');
+        if (carryQ) carryQ.remove();
       }
     });
   }

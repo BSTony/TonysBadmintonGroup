@@ -335,3 +335,40 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
 .paid-btn:hover {
   filter: brightness(0.95);
 }
+
+/* --- Quokka Animations --- */
+.glowing-prize {
+  animation: prizeGlow 1.5s ease-in-out infinite !important;
+  box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.6) !important;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+@keyframes prizeGlow {
+  0% { box-shadow: 0 0 10px 2px rgba(255, 215, 0, 0.4); }
+  50% { box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.8); }
+  100% { box-shadow: 0 0 10px 2px rgba(255, 215, 0, 0.4); }
+}
+
+@keyframes quokkaOrbit {
+  0% { transform: rotate(0deg) translateX(45px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(45px) rotate(-360deg); }
+}
+
+@keyframes flowerFall {
+  0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(50px) rotate(180deg) scale(0.5); opacity: 0; }
+}
+
+@keyframes floatUpFade {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
+}
+
+@keyframes quokkaLeave {
+  0% { transform: scale(1) translateX(0); opacity: 1; }
+  20% { transform: scale(1) translateX(0); opacity: 1; }
+  50% { transform: scale(0.8) translateX(20px); opacity: 0.8; }
+  100% { transform: scale(0) translateX(80px); opacity: 0; }
+}
