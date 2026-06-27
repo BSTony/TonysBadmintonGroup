@@ -72,7 +72,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1782402575244,
-    "lastActiveTime": 1782601393301,
+    "lastActiveTime": 1782601404771,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -95,11 +95,17 @@
           "閣緯",
           "Joe",
           "俞安",
-          "勇伯"
+          "勇伯",
+          "謝東霖 Tony"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 07:03",
+        "name": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "06/28 07:03",
         "name": "勇伯",
