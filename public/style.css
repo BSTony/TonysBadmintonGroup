@@ -377,3 +377,24 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
   0%, 100% { transform: translateY(-50%) rotate(-5deg); }
   50% { transform: translateY(calc(-50% - 5px)) rotate(5deg); }
 }
+
+@keyframes quokkaBounce {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  50% { transform: translateY(-15px) scale(1.05) rotate(5deg); }
+}
+
+@keyframes quokkaWalkIn {
+  0% { transform: translateX(120px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes quokkaPress {
+  0% { transform: translateX(0) scale(1); }
+  50% { transform: translateX(-15px) scale(0.95); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+@keyframes quokkaWobble {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-5px) rotate(5deg); }
+}

@@ -1023,6 +1023,14 @@ function playPlusOneAnimation(btn) {
   const scrollListener = () => updatePosition();
   window.addEventListener('scroll', scrollListener, true);
   
+  const orbitWrapper = document.createElement('div');
+  orbitWrapper.style.position = 'absolute';
+  orbitWrapper.style.left = '0';
+  orbitWrapper.style.top = '0';
+  orbitWrapper.style.width = '0';
+  orbitWrapper.style.height = '0';
+  orbitWrapper.style.animation = 'quokkaOrbit 1.5s linear infinite';
+  
   const quokka = document.createElement('img');
   getTransparentImage('images/quokka_dance.png', (src) => {
     quokka.src = src;
@@ -1032,8 +1040,10 @@ function playPlusOneAnimation(btn) {
   quokka.style.height = 'auto';
   quokka.style.marginTop = '-55px';
   quokka.style.marginLeft = '-55px';
-  quokka.style.animation = 'quokkaOrbit 1.5s linear infinite';
-  container.appendChild(quokka);
+  quokka.style.animation = 'quokkaBounce 0.4s ease-in-out infinite';
+  
+  orbitWrapper.appendChild(quokka);
+  container.appendChild(orbitWrapper);
   
   const flowerInterval = setInterval(() => {
     const flower = document.createElement('div');
@@ -1125,40 +1135,55 @@ function playMinusOneCancelAnimation(btn) {
   const scrollListener = () => updatePosition();
   window.addEventListener('scroll', scrollListener, true);
   
-  const minusOne = document.createElement('div');
-  minusOne.innerText = '-1';
-  minusOne.style.position = 'absolute';
-  minusOne.style.color = 'var(--danger-color)';
-  minusOne.style.fontWeight = 'bold';
-  minusOne.style.fontSize = '32px';
-  minusOne.style.left = '-15px';
-  minusOne.style.top = '-30px';
-  minusOne.style.animation = 'floatUpFade 1s forwards';
-  container.appendChild(minusOne);
+  const quokkaMover = document.createElement('div');
+  quokkaMover.style.position = 'absolute';
+  quokkaMover.style.left = '40px';
+  quokkaMover.style.top = '-50px';
+  quokkaMover.style.width = '120px';
+  quokkaMover.style.height = '120px';
   
   const quokka = document.createElement('img');
   getTransparentImage('images/quokka_cry.png', (src) => {
     quokka.src = src;
   });
   quokka.style.position = 'absolute';
-  quokka.style.width = '120px';
+  quokka.style.width = '100%';
   quokka.style.height = 'auto';
-  quokka.style.left = '40px';
-  quokka.style.top = '-60px';
+  quokkaMover.appendChild(quokka);
+  container.appendChild(quokkaMover);
   
-  // 點擊動作後哭泣離開
-  quokka.style.transform = 'translateX(-20px) scale(1)';
-  quokka.style.transition = 'transform 0.2s';
-  container.appendChild(quokka);
+  // 1. Walk in
+  quokkaMover.style.animation = 'quokkaWalkIn 1s ease-out forwards';
+  quokka.style.animation = 'quokkaWobble 0.4s infinite';
   
   setTimeout(() => {
-    quokka.style.transform = 'translateX(0px) scale(1)';
-    quokka.style.animation = 'quokkaLeave 4.8s forwards';
+    // 2. Stop wiggling, do press
+    quokka.style.animation = 'none';
+    quokkaMover.style.animation = 'quokkaPress 0.4s ease-in-out forwards';
+    
     setTimeout(() => {
-      container.remove();
-      window.removeEventListener('scroll', scrollListener, true);
-    }, 4800);
-  }, 200);
+      // 3. Show -1 text
+      const minusOne = document.createElement('div');
+      minusOne.innerText = '-1';
+      minusOne.style.position = 'absolute';
+      minusOne.style.color = 'var(--danger-color)';
+      minusOne.style.fontWeight = 'bold';
+      minusOne.style.fontSize = '32px';
+      minusOne.style.left = '-15px';
+      minusOne.style.top = '-30px';
+      minusOne.style.animation = 'floatUpFade 1s forwards';
+      container.appendChild(minusOne);
+      
+      // 4. Wave and leave
+      setTimeout(() => {
+        quokkaMover.style.animation = 'quokkaLeave 4.5s forwards';
+        setTimeout(() => {
+          container.remove();
+          window.removeEventListener('scroll', scrollListener, true);
+        }, 4500);
+      }, 500);
+    }, 200);
+  }, 1000);
 }
 
 // 處理新的輸入框報名與防呆
