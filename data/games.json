@@ -180,7 +180,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782564934738,
+    "lastActiveTime": 1782564940328,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -223,12 +223,16 @@
           "卡比",
           "昊平",
           "小高",
-          "John",
-          "謝東霖 Tony"
+          "John"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/27 20:55",
+        "name": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "06/27 20:55",
         "name": "謝東霖 Tony",
