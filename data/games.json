@@ -238,7 +238,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782578627565,
+    "lastActiveTime": 1782603053718,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -279,11 +279,17 @@
           "卡比",
           "小高",
           "John",
-          "Andrew"
+          "Andrew",
+          "瑋"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 07:30",
+        "name": "瑋",
+        "action": "+1"
+      },
       {
         "time": "06/28 00:43",
         "name": "Andrew",
