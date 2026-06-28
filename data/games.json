@@ -248,7 +248,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782619415895,
+    "lastActiveTime": 1782619418955,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -273,7 +273,8 @@
       "小高": true,
       "Hsin": true,
       "偉舫": true,
-      "John": true
+      "John": true,
+      "Kevin": true
     },
     "sections": [
       {
