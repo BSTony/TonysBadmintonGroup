@@ -248,7 +248,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782605426034,
+    "lastActiveTime": 1782606857610,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -264,7 +264,8 @@
       "Tony": true,
       "Kay": true,
       "瑋": true,
-      "卡比": true
+      "卡比": true,
+      "Sammy Su": true
     },
     "sections": [
       {
