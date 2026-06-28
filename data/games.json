@@ -187,7 +187,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782648910012,
+    "lastActiveTime": 1782648926234,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -234,12 +234,17 @@
           "John",
           "Howard",
           "陳呈友",
-          "海棠",
-          "謝東霖 Tony"
+          "海棠"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 20:15",
+        "name": "謝東霖 Tony",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "06/28 20:15",
         "name": "謝東霖 Tony",
