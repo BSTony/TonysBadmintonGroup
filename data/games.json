@@ -248,7 +248,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782606857610,
+    "lastActiveTime": 1782606860383,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -265,7 +265,8 @@
       "Kay": true,
       "瑋": true,
       "卡比": true,
-      "Sammy Su": true
+      "Sammy Su": true,
+      "Han-Hsing": true
     },
     "sections": [
       {
