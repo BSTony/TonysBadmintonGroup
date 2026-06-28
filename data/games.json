@@ -155,7 +155,8 @@
         "name": "Kay",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": true
   },
   "1782402786336475": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
