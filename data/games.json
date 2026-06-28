@@ -248,7 +248,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782609434312,
+    "lastActiveTime": 1782612657407,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -297,11 +297,17 @@
           "John",
           "Andrew",
           "瑋",
-          "偉舫"
+          "偉舫",
+          "謝東霖 Tony"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 10:10",
+        "name": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "06/28 08:57",
         "name": "偉舫",
