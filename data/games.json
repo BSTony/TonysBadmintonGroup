@@ -72,7 +72,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1782402575244,
-    "lastActiveTime": 1782605256033,
+    "lastActiveTime": 1782605273380,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -87,7 +87,8 @@
       "Joe": true,
       "勇伯": true,
       "(AK) Seth Hu": true,
-      "人云": true
+      "人云": true,
+      "俞安": true
     },
     "sections": [
       {
