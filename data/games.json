@@ -248,7 +248,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782403585583,
-    "lastActiveTime": 1782606967478,
+    "lastActiveTime": 1782608257425,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -295,11 +295,17 @@
           "小高",
           "John",
           "Andrew",
-          "瑋"
+          "瑋",
+          "偉舫"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 08:57",
+        "name": "偉舫",
+        "action": "+1"
+      },
       {
         "time": "06/28 07:30",
         "name": "瑋",
