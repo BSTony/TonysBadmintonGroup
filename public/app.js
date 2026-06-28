@@ -536,6 +536,7 @@ async function handleAction(gameId, action) {
         gameId: gameId,
         uid: currentUser.userId,
         name: currentUser.displayName,
+        operatorName: currentUser.displayName,
         action: action
       })
     });
@@ -585,6 +586,7 @@ async function handleProxyRegister(gameId) {
         gameId: gameId,
         uid: currentUser.userId,
         name: name,
+        operatorName: currentUser.displayName,
         action: 'register'
       })
     });
@@ -709,11 +711,19 @@ function renderDetail(gameId) {
   historyHtml += '<h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">歷史紀錄</h4>';
   historyHtml += '<div style="font-size: 13px; color: #555;">';
   if (game.history && game.history.length > 0) {
-    const top3 = game.history.slice(0, 3);
-    const rest = game.history.slice(3);
+    const top2 = game.history.slice(0, 2);
+    const rest = game.history.slice(2);
     
-    top3.forEach(h => {
-       historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${escapeHTML(h.name)}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
+    top2.forEach(h => {
+       let displayText = '';
+       if (h.operator && h.operator !== h.name) {
+         displayText = `${escapeHTML(h.operator)} 幫 ${escapeHTML(h.name)}`;
+       } else if (h.operator) {
+         displayText = escapeHTML(h.operator);
+       } else {
+         displayText = escapeHTML(h.name);
+       }
+       historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${displayText}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
     });
     
     if (rest.length > 0) {
@@ -721,7 +731,15 @@ function renderDetail(gameId) {
            <summary style="cursor: pointer; color: #1976d2; font-weight: bold; outline: none;">顯示更多 (${rest.length})</summary>
            <div style="max-height: 120px; overflow-y: auto; margin-top: 6px; padding-left: 8px; border-left: 2px solid #ddd;">`;
        rest.forEach(h => {
-           historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${escapeHTML(h.name)}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
+           let displayText = '';
+           if (h.operator && h.operator !== h.name) {
+             displayText = `${escapeHTML(h.operator)} 幫 ${escapeHTML(h.name)}`;
+           } else if (h.operator) {
+             displayText = escapeHTML(h.operator);
+           } else {
+             displayText = escapeHTML(h.name);
+           }
+           historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${displayText}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
        });
        historyHtml += `</div></details>`;
     }
@@ -979,6 +997,7 @@ window.handleCancelByName = async function(gameId, name) {
         gameId: gameId,
         uid: currentUser.userId,
         name: name,
+        operatorName: currentUser.displayName,
         action: 'cancel'
       })
     });
@@ -1247,6 +1266,7 @@ async function handleActionWithInput(event, gameId, action) {
         gameId: gameId,
         uid: currentUser.userId,
         name: name,
+        operatorName: currentUser.displayName,
         level: level,
         action: action
       })

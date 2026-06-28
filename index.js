@@ -1453,7 +1453,7 @@ app.post('/api/action', express.json(), async (req, res) => {
   };
 
   try {
-    const { gid, gameId, uid, name, level, action, count, text, pushToAll } = req.body;
+    const { gid, gameId, uid, name, level, action, count, text, pushToAll, operatorName } = req.body;
     
     if (action === 'createGame') {
       const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
@@ -1771,7 +1771,7 @@ app.post('/api/action', express.json(), async (req, res) => {
           if (!game.history) game.history = [];
           const now = new Date();
           const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-          game.history.unshift({ time: timeStr, name: n, action: '+1' });
+          game.history.unshift({ time: timeStr, name: n, operator: operatorName || name, action: '+1' });
           if (game.history.length > 200) game.history.pop();
         }
       });
@@ -1805,7 +1805,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (!game.history) game.history = [];
       const now = new Date();
       const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      game.history.unshift({ time: timeStr, name: name, action: '-1' });
+      game.history.unshift({ time: timeStr, name: name, operator: operatorName || name, action: '-1' });
       if (game.history.length > 200) game.history.pop();
       
       if (game.paidMap) {
