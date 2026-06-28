@@ -174,7 +174,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782567776602,
+    "lastActiveTime": 1782624302559,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -219,11 +219,17 @@
           "小黑",
           "Tank Lin",
           "John",
-          "Howard"
+          "Howard",
+          "陳呈友"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 13:25",
+        "name": "陳呈友",
+        "action": "+1"
+      },
       {
         "time": "06/27 21:42",
         "name": "Howard",
