@@ -249,6 +249,7 @@ async function loadGamesLobby(silent = false) {
 
 // 判斷場次是否已過期 (根據日期與結束時間)
 function isGameExpired(game) {
+  if (game.isManualEnded) return true;
   if (!game.date) return false;
   const dateMatch = game.date.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
   if (!dateMatch) return false;
@@ -342,7 +343,16 @@ function renderLobby() {
     
     noGamesMsg.classList.add('hidden');
     
-    gamesList.forEach(game => {
+    // Sort gamesList so that expired games are at the bottom
+    const sortedGames = [...gamesList].sort((a, b) => {
+      const aExpired = isGameExpired(a);
+      const bExpired = isGameExpired(b);
+      if (aExpired && !bExpired) return 1;
+      if (!aExpired && bExpired) return -1;
+      return 0;
+    });
+    
+    sortedGames.forEach(game => {
       const section = game.sections[0] || { list: [], limit: 20 };
       const count = section.list.length;
       const limit = section.limit;
@@ -1813,6 +1823,7 @@ function showEditGameForm(gameId) {
   const section = game.sections[0] || {};
   document.getElementById('eg-limit').value = section.limit || 20;
   document.getElementById('eg-backup').value = section.backupLimit || 0;
+  document.getElementById('eg-ended').checked = !!game.isManualEnded;
   document.getElementById('eg-note').value = game.note || '';
   
   // Format timestamps to datetime-local
@@ -1874,6 +1885,7 @@ document.getElementById('btn-submit-edit').onclick = async () => {
         backupLimit: document.getElementById('eg-backup').value,
         publish: document.getElementById('eg-publish').value,
         reminder: document.getElementById('eg-reminder').value,
+        isManualEnded: document.getElementById('eg-ended').checked,
         note: document.getElementById('eg-note').value.trim()
       })
     });

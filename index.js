@@ -1586,7 +1586,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(404).json({ error: '找不到該場次' });
       }
       
-      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, targetGids } = req.body;
+      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, targetGids, isManualEnded } = req.body;
       const game = games[gameId];
       
       const oldTargetGids = game.targetGids || [game.gid];
@@ -1609,6 +1609,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       game.fee = fee || '';
       game.note = note || '';
       game.tag = tag || '';
+      game.isManualEnded = !!isManualEnded;
       
       if (game.sections && game.sections[0]) {
         game.sections[0].limit = parseInt(limit, 10) || 20;
