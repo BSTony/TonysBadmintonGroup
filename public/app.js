@@ -443,10 +443,10 @@ function renderLobby() {
         </div>
         
         <div class="action-row" style="flex-wrap: wrap;">
-          <button class="btn btn-primary btn-square" ${isFull ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
-          <button class="btn btn-danger btn-square" onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
-          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="${escapeHTML(currentUser.displayName)}" value="${escapeHTML(prefName)}" style="flex: 2; min-width: 100px; font-weight: bold;" />
-          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度" style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+          <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
+          <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
+          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="${escapeHTML(currentUser.displayName)}" value="${escapeHTML(prefName)}" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold;" />
+          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
         </div>
         <div id="error-msg-${game.gameId}" class="error-msg"></div>
       `;
@@ -792,7 +792,7 @@ function renderDetail(gameId) {
             <div class="list-num">${i + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
-            ${canCancel ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
+            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
       } else {
@@ -844,7 +844,7 @@ function renderDetail(gameId) {
             <div class="list-num" style="color: #666; font-size: 12px;">候 ${i - sec.limit + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}" style="color: #666;">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
-            ${canCancel ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
+            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
       }
@@ -1042,9 +1042,8 @@ function playPlusOneAnimation(btn) {
   container.style.zIndex = '9999';
   
   const updatePosition = () => {
-    const center = getButtonCenter(btn);
-    container.style.left = center.x + 'px';
-    container.style.top = center.y + 'px';
+    container.style.left = '50%';
+    container.style.top = '50%';
   };
   updatePosition();
   document.body.appendChild(container);
@@ -1059,7 +1058,7 @@ function playPlusOneAnimation(btn) {
   quokka.style.position = 'absolute';
   quokka.style.width = '240px';
   quokka.style.height = 'auto';
-  quokka.style.marginTop = '-240px';
+  quokka.style.marginTop = '-120px';
   quokka.style.marginLeft = '-120px';
   quokka.style.animation = 'quokkaJump 0.5s ease-in-out infinite alternate';
   container.appendChild(quokka);
