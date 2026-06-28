@@ -187,7 +187,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782624302559,
+    "lastActiveTime": 1782636115376,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -233,11 +233,18 @@
           "Tank Lin",
           "John",
           "Howard",
-          "陳呈友"
+          "陳呈友",
+          "海棠"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/28 16:41",
+        "name": "海棠",
+        "operator": "海棠",
+        "action": "+1"
+      },
       {
         "time": "06/28 13:25",
         "name": "陳呈友",
