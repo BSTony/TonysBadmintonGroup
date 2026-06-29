@@ -1990,8 +1990,47 @@ async function handleEvent(event) {
       }
       
       const singleTargetGid = (g.targetGids && g.targetGids.length > 0) ? g.targetGids[0] : g.gid;
-      const urlMsg = `"${g.title}"${statusStr}\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
-      return await client.replyMessage(event.replyToken, { type: 'text', text: urlMsg });
+      const liffUrl = `https://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
+      
+      const flexMessage = {
+        type: 'flex',
+        altText: `"${g.title}"${statusStr} - 點我進大廳`,
+        contents: {
+          type: 'bubble',
+          size: 'kilo',
+          body: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'text',
+                text: `"${g.title}"${statusStr}`,
+                weight: 'bold',
+                wrap: true,
+                size: 'md'
+              }
+            ]
+          },
+          footer: {
+            type: 'box',
+            layout: 'vertical',
+            contents: [
+              {
+                type: 'button',
+                style: 'primary',
+                height: 'sm',
+                action: {
+                  type: 'uri',
+                  label: '點我進大廳',
+                  uri: liffUrl
+                }
+              }
+            ]
+          }
+        }
+      };
+      
+      return await client.replyMessage(event.replyToken, flexMessage);
     }
     return null;
   }
