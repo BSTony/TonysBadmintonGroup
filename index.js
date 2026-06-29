@@ -1889,18 +1889,21 @@ app.post('/api/action', express.json(), async (req, res) => {
       const sec = g.sections && g.sections[0] ? g.sections[0] : null;
       if (sec) {
         let msg = '';
-        const count = sec.list.length;
-        const limit = sec.limit;
         
-        msg += `🏸 "${g.title}"   ${count} / ${limit} 人\n`;
+        let opPart = name;
+        if (name === operatorName || name === '__ANON__') {
+          opPart = '';
+        } else {
+          opPart = ` ${name}`;
+        }
 
-        if (action === 'register') msg += `✅ [報名] ${name} 已加入\n`;
-        else if (action === 'cancel') msg += `❌ [取消] ${name} 已退出\n`;
-        else if (action === 'reorder') msg += `🔄 [更新] 管理員調整了順序\n`;
-        else if (action === 'togglePaid') msg += `💰 [更新] ${name} 繳費狀態變更\n`;
+        if (action === 'register') msg += `"${g.title}"${opPart} +1`;
+        else if (action === 'cancel') msg += `"${g.title}"${opPart} -1`;
+        else if (action === 'reorder') msg += `"${g.title}" 🔄順序更新`;
+        else if (action === 'togglePaid') msg += `"${g.title}"${opPart} 💰繳費更新`;
 
         if (triggerBumpMsg) {
-           msg += `🎉 【遞補通知】\n${triggerBumpMsg}\n`;
+           msg += `\n🎉 【遞補通知】\n${triggerBumpMsg}`;
         }
         
         triggerBumpMsg = msg.trim();
@@ -1965,11 +1968,29 @@ async function handleEvent(event) {
   const uid = event.source.userId;
   const text = event.message.text.trim();
   
-  // 攔截精簡版的自動更新指令，並由機器人回覆網址
-  const updateMatch = text.match(/^🏸 ".*?"\s+\d+ \/ \d+ 人\n(?:✅|❌|🔄|💰|🎉)/);
+  // 攔截精簡版的自動更新指令，並由機器人回覆網址與名額
+  const updateMatch = text.match(/^"(.*?)"(?:\s+.*?)?(?:\+1|-1|🔄順序更新|💰繳費更新)/);
   if (updateMatch) {
-    if (process.env.LIFF_ID) {
-      const urlMsg = `趕快來+1\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
+    const title = updateMatch[1];
+    const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded);
+    const g = groupGames.find(g => g.title === title);
+    
+    if (g && process.env.LIFF_ID) {
+      const sec = g.sections && g.sections[0] ? g.sections[0] : null;
+      let statusStr = '';
+      if (sec) {
+        const count = sec.list.length;
+        const limit = sec.limit;
+        statusStr = ` ${count} / ${limit} 人`;
+        if (count >= limit) {
+          statusStr += ' (已滿額！)';
+        } else {
+          statusStr += ' 趕快來+1';
+        }
+      }
+      
+      const singleTargetGid = (g.targetGids && g.targetGids.length > 0) ? g.targetGids[0] : g.gid;
+      const urlMsg = `"${g.title}"${statusStr}\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
       return await client.replyMessage(event.replyToken, { type: 'text', text: urlMsg });
     }
     return null;
