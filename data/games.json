@@ -16,7 +16,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1782401316870,
-    "lastActiveTime": 1782723484906,
+    "lastActiveTime": 1782723732216,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -55,6 +55,18 @@
       }
     ],
     "history": [
+      {
+        "time": "06/29 17:02",
+        "name": "AA",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
+      {
+        "time": "06/29 17:01",
+        "name": "AA",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "06/29 16:58",
         "name": "AA",
@@ -670,7 +682,7 @@
     "fee": "3000",
     "note": "",
     "tag": "",
-    "active": false,
+    "active": true,
     "startTime": 1782717026377,
     "lastActiveTime": 1782723334506,
     "scheduleTime": null,
