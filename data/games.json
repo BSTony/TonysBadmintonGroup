@@ -659,7 +659,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 20,
+        "limit": 2,
         "backupLimit": 5,
         "label": "",
         "list": [
@@ -734,6 +734,7 @@
         "operator": "謝東霖 Tony",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
