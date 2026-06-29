@@ -235,7 +235,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782706682014,
+    "lastActiveTime": 1782724616333,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -287,11 +287,18 @@
           "Winnie",
           "Emily",
           "紀凡",
-          "小洋"
+          "小洋",
+          "Win Shu"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/29 17:16",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1"
+      },
       {
         "time": "06/29 12:18",
         "name": "小洋",
