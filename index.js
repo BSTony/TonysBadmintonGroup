@@ -1981,11 +1981,10 @@ async function handleEvent(event) {
       if (sec) {
         const count = sec.list.length;
         const limit = sec.limit;
-        statusStr = ` ${count} / ${limit} 人`;
         if (count >= limit) {
-          statusStr += ' (已滿額！)';
+          statusStr = ` ${count} / ${limit} 人 (已滿額！)`;
         } else {
-          statusStr += ' 趕快來+1';
+          statusStr = ` 缺 ${limit - count} 人 趕快來+1`;
         }
       }
       
