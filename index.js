@@ -1436,6 +1436,41 @@ app.post('/api/templates/:gid', express.json(), async (req, res) => {
   }
 });
 
+// 產生完整名單字串的輔助函式
+function generateListMessage(g, customTitle = null) {
+  let msg = `📢 ${customTitle || '名單更新通知'}\n\n🏸 ${g.title}\n`;
+  if (g.date) msg += `📅 ${g.date}\n`;
+  if (g.time) msg += `⏰ ${g.time}\n`;
+  if (g.location) msg += `📍 ${g.location}\n`;
+  
+  g.sections.forEach(sec => {
+    msg += `\n【${sec.title}】 (目前 ${sec.list.length} / ${sec.limit} 人)\n`;
+    for (let i = 0; i < sec.limit; i++) {
+      if (i < sec.list.length) {
+        const n = sec.list[i];
+        const name = n === '__ANON__' ? '***' : n;
+        const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+        const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
+        msg += `${i+1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
+      } else {
+        msg += `${i+1}. \n`;
+      }
+    }
+    
+    if (sec.list.length > sec.limit) {
+      msg += `\n【候補名單】\n`;
+      for (let i = sec.limit; i < sec.list.length; i++) {
+        const n = sec.list[i];
+        const name = n === '__ANON__' ? '***' : n;
+        const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+        const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
+        msg += `候${i - sec.limit + 1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
+      }
+    }
+  });
+  return msg;
+}
+
 // 處理 LIFF 前端傳來的報名或取消請求
 app.post('/api/action', express.json(), async (req, res) => {
   const originalJson = res.json;
@@ -1453,10 +1488,15 @@ app.post('/api/action', express.json(), async (req, res) => {
   };
 
   try {
-    const { gid, gameId, uid, name, level, action, count, text, pushToAll, operatorName } = req.body;
+    const { gid, gameId, uid, name, level, action, count, text, pushToAll, operatorName, clientSupportsLiffSendMessage } = req.body;
+    
+    // 全局判斷是否為管理員
+    const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+    
+    // 儲存要讓前端觸發的訊息
+    let triggerBumpMsg = null;
     
     if (action === 'createGame') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能建立場次' });
       }
@@ -1555,7 +1595,6 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
     
     if (action === 'closeGame') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能關閉場次' });
       }
@@ -1570,7 +1609,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       const pushTargets = targetGame.targetGids || [targetGame.gid];
       for (const tGid of pushTargets) {
         try {
-          await client.pushMessage(tGid, { type: 'text', text: `🔒 ${targetGame.title || '此場次'} 已由管理員關閉，無法再報名。` });
+          await pushToAdmins(tGid, { type: 'text', text: `🔒 ${targetGame.title || '此場次'} 已由管理員關閉，無法再報名。` });
         } catch (e) {}
       }
       
@@ -1578,7 +1617,6 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
     
     if (action === 'editGame') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能編輯場次' });
       }
@@ -1640,7 +1678,6 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
     
     if (action === 'customPush') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能發送推播' });
       }
@@ -1661,7 +1698,6 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
     
     if (action === 'updateLobbyTitle') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) return res.status(403).json({ error: '只有管理員能修改大廳標題' });
       
       const newTitle = text ? text.trim() : '';
@@ -1672,7 +1708,6 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
 
     if (action === 'updateLobbyDesc') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) return res.status(403).json({ error: '只有管理員能修改大廳描述' });
       
       const newDesc = text ? text.trim() : '';
@@ -1683,7 +1718,6 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
 
     if (action === 'pushList') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能推播名單' });
       }
@@ -1691,57 +1725,46 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(400).json({ error: '找不到此場次' });
       }
       const g = games[gameId];
-      let msg = `📢 管理員推播目前名單\n\n🏸 ${g.title}\n`;
-      if (g.date) msg += `📅 ${g.date}\n`;
-      if (g.time) msg += `⏰ ${g.time}\n`;
-      if (g.location) msg += `📍 ${g.location}\n`;
-      
-      g.sections.forEach(sec => {
-        msg += `\n【${sec.title}】 (目前 ${sec.list.length} / ${sec.limit} 人)\n`;
-        for (let i = 0; i < sec.limit; i++) {
-          if (i < sec.list.length) {
-            const n = sec.list[i];
-            const name = n === '__ANON__' ? '***' : n;
-            const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
-            const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
-            msg += `${i+1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
-          } else {
-            msg += `${i+1}. \n`;
-          }
-        }
-        
-        if (sec.list.length > sec.limit) {
-          msg += `\n【候補名單】\n`;
-          for (let i = sec.limit; i < sec.list.length; i++) {
-            const n = sec.list[i];
-            const name = n === '__ANON__' ? '***' : n;
-            const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
-            const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
-            msg += `候${i - sec.limit + 1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
-          }
-        }
-      });
+      let msg = generateListMessage(g, '管理員推播目前名單');
       
       let pushTargetGids = g.targetGids || [g.gid];
       let hasError = false;
       let errorMsgs = [];
       
-      for (const targetGid of pushTargetGids) {
-        let currentMsg = msg;
-        if (process.env.LIFF_ID) {
-          currentMsg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
-        }
-        try {
-          await client.pushMessage(targetGid, { type: 'text', text: currentMsg.trim() });
-        } catch (e) {
-          console.error(`Push list error for ${targetGid}:`, e);
-          hasError = true;
-          const detail = e.originalError?.response?.data?.message || e.response?.data?.message || e.message;
-          errorMsgs.push(`${targetGid}: ${detail}`);
+      let singleTargetGid = pushTargetGids[0]; // 自動發話只能發到單一群組
+      let currentMsg = msg;
+      if (process.env.LIFF_ID) {
+        currentMsg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
+      }
+
+      if (clientSupportsLiffSendMessage && isAdmin) {
+        // 交給前端自動發話
+        triggerBumpMsg = currentMsg;
+      } else {
+        // 回退到私訊代理
+        for (const targetGid of pushTargetGids) {
+          let pushMsg = msg;
+          if (process.env.LIFF_ID) {
+            pushMsg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
+          }
+          try {
+            await pushToAdmins(targetGid, { type: 'text', text: pushMsg.trim() });
+          } catch (e) {
+            hasError = true;
+            errorMsgs.push(`${targetGid}: ${e.message}`);
+          }
         }
       }
       
-      return res.json({ success: true, game: g, msg: msg, partialError: hasError, errors: errorMsgs });
+      return res.json({ 
+        success: true, 
+        game: g, 
+        msg: msg, 
+        partialError: hasError, 
+        errors: errorMsgs,
+        triggerBumpMsg: triggerBumpMsg,
+        isAdmin: isAdmin
+      });
     }
 
     if (!gameId || !uid || !name || !action) {
@@ -1776,7 +1799,6 @@ app.post('/api/action', express.json(), async (req, res) => {
         }
       });
         } else if (action === 'togglePaid') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能修改繳費狀態' });
       }
@@ -1787,7 +1809,6 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(400).json({ error: '找不到此名稱' });
       }
       
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
       
       if (!isAdmin && registeredUid && registeredUid !== uid) {
@@ -1819,22 +1840,27 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       if (bumpedNames.length > 0) {
         try {
-          const bumpMsg = bumpedNames.join('、');
-          const pushTargets = game.targetGids || [game.gid];
-          for (const targetGid of pushTargets) {
-            try {
-              await client.pushMessage(targetGid, { type: 'text', text: `${game.title}\n『${bumpMsg}』後補上 請注意訊息` });
-            } catch (e) {
-              console.error(`遞補推播失敗 for ${targetGid}:`, e);
+          const bumpMsg = `${game.title}\n『${bumpedNames.join('、')}』後補上 請注意訊息`;
+          triggerBumpMsg = bumpMsg; // 記錄下來，稍後傳給前端
+          
+          if (clientSupportsLiffSendMessage && isAdmin) {
+            console.log('[Webhook] 前端支援且為管理員，跳過 pushToAdmins，交由前端 liff.sendMessages 觸發');
+          } else {
+            const pushTargets = game.targetGids || [game.gid];
+            for (const targetGid of pushTargets) {
+              try {
+                await pushToAdmins(targetGid, { type: 'text', text: bumpMsg });
+              } catch (e) {
+                console.error(`遞補推播代理失敗 for ${targetGid}:`, e);
+              }
             }
           }
         } catch(e) {
-          console.error('遞補推播失敗:', e);
+          console.error('遞補處理失敗:', e);
         }
       }
       
     } else if (action === 'reorder') {
-      const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能調整順序' });
       }
@@ -1860,7 +1886,34 @@ app.post('/api/action', express.json(), async (req, res) => {
     await saveGame(gameId, true);
     await saveCurrentListSnapshot(gameId, false);
     
-    res.json({ success: true, game: games[gameId] });
+    // 讓管理員操作時，不論是 +1 或 -1，都觸發自動發話並帶上完整名單
+    if ((action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid') && isAdmin && clientSupportsLiffSendMessage) {
+      const g = games[gameId];
+      let actionTitle = '名單變動通知';
+      if (action === 'register') actionTitle = `✅ [報名] ${name} 已加入`;
+      if (action === 'cancel') actionTitle = `❌ [取消] ${name} 已退出`;
+      if (action === 'reorder') actionTitle = `🔄 [更新] 管理員調整了順序`;
+      if (action === 'togglePaid') actionTitle = `💰 [更新] ${name} 繳費狀態變更`;
+
+      if (triggerBumpMsg) {
+         // 若原本已有遞補通知，則將其加在標題前面
+         actionTitle = `🎉 【遞補通知】\n${triggerBumpMsg}\n\n` + actionTitle;
+      }
+      
+      let msg = generateListMessage(g, actionTitle);
+      if (process.env.LIFF_ID) {
+        const singleTargetGid = (g.targetGids && g.targetGids.length > 0) ? g.targetGids[0] : g.gid;
+        msg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
+      }
+      triggerBumpMsg = msg;
+    }
+
+    res.json({ 
+      success: true, 
+      game: games[gameId],
+      isAdmin: isAdmin,
+      triggerBumpMsg: triggerBumpMsg 
+    });
   } catch (err) {
     console.error('API Action Error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -1912,6 +1965,12 @@ async function handleEvent(event) {
   const gid = event.source.groupId || event.source.roomId || event.source.userId;
   const uid = event.source.userId;
   const text = event.message.text.trim();
+  
+  const triggerMatch = text.match(/^🤖 【系統觸發：自動推播】\n([\s\S]*)/);
+  if (triggerMatch) {
+    const replyText = triggerMatch[1].trim();
+    return await client.replyMessage(event.replyToken, { type: 'text', text: replyText });
+  }
   
   if (text.replace(/\s+/g, '') === '接龍密碼Tony好帥') {
     if (!groupAdmins[gid]) groupAdmins[gid] = new Set();
@@ -2150,7 +2209,11 @@ async function handleEvent(event) {
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.trim();
       
-      let groupGames = Object.values(games).filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active);
+      let groupGames = Object.values(games).filter(g => 
+        (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && 
+        g.active && 
+        !g.isManualEnded
+      );
       
       if (text.startsWith('接龍清空') || text === '接龍結束') {
         // 全清
@@ -2200,7 +2263,7 @@ async function handleEvent(event) {
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.trim();
       
-      let groupGames = Object.values(games).filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active);
+      let groupGames = Object.values(games).filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active && !g.isManualEnded);
       if (keyword) {
           groupGames = groupGames.filter(g => g.title.includes(keyword));
       }
@@ -2554,9 +2617,36 @@ async function sendList(token, gameId, prefix = "") {
       currentMsg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
     }
     try {
-      await client.pushMessage(targetGid, { type: 'text', text: currentMsg.trim() });
+      await pushToAdmins(targetGid, { type: 'text', text: currentMsg.trim() });
     } catch (e) {
-      console.error(`pushMessage failed for ${targetGid}:`, e);
+      console.error(`pushToAdmins failed for ${targetGid}:`, e);
+    }
+  }
+}
+
+// 代理推播：將群組訊息轉送給群組管理員
+async function pushToAdmins(targetGid, messages) {
+  const admins = groupAdmins[targetGid];
+  if (!admins || admins.size === 0) {
+    console.log(`[Admin Proxy] 群組 ${targetGid} 沒有設定管理員，放棄發送。`);
+    return;
+  }
+
+  const groupName = groupSettings[targetGid]?.groupName || groupSettings[targetGid]?.lobbyTitle || '您的群組';
+  const prefixMsg = { 
+    type: 'text', 
+    text: `🔔 【系統通知】\n此為「${groupName}」的事件，請協助轉發以下訊息至群組：` 
+  };
+
+  const msgsArray = Array.isArray(messages) ? messages : [messages];
+  const finalMessages = [prefixMsg, ...msgsArray];
+
+  for (const adminUid of admins) {
+    try {
+      await client.pushMessage(adminUid, finalMessages);
+      console.log(`[Admin Proxy] 已發送通知給管理員: ${adminUid}`);
+    } catch (e) {
+      console.error(`[Admin Proxy] 發送給管理員 ${adminUid} 失敗:`, e);
     }
   }
 }
@@ -2687,7 +2777,7 @@ loadPromise.then(() => {
 async function sendLobbyLink(token, gid, prefix = "") {
   let msg = prefix ? `${prefix}\n` : '';
   
-  const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active);
+  const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded);
   if (groupGames.length === 0) {
     msg += '目前沒有進行中的場次喔！請輸入「接龍開始」來建立。';
   } else {
@@ -2703,9 +2793,9 @@ async function sendLobbyLink(token, gid, prefix = "") {
     return await client.replyMessage(token, message);
   }
   try {
-    return await client.pushMessage(gid, message);
+    return await pushToAdmins(gid, message);
   } catch (e) {
-    console.error(`pushMessage failed for ${gid}:`, e);
+    console.error(`pushToAdmins failed for ${gid}:`, e);
     throw e;
   }
 }

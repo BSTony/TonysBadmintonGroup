@@ -1267,7 +1267,8 @@ async function handleActionWithInput(event, gameId, action) {
         name: name,
         operatorName: currentUser.displayName,
         level: level,
-        action: action
+        action: action,
+        clientSupportsLiffSendMessage: typeof liff !== 'undefined' && liff.isInClient()
       })
     });
     
@@ -1276,10 +1277,15 @@ async function handleActionWithInput(event, gameId, action) {
       throw new Error(data.error || '操作失敗');
     }
 
-    // 自動推撥已關閉，改為手動推撥以節省 LINE 額度
-    // if (liff.isInClient() && data.msg) {
-    //   await liff.sendMessages([{ type: 'text', text: data.msg }]);
-    // }
+    // 自動推播名單機制：若為管理員且發生遞補，使用 liff.sendMessages 觸發後端免費回覆
+    if (typeof liff !== 'undefined' && liff.isInClient() && data.isAdmin && data.triggerBumpMsg) {
+      try {
+        await liff.sendMessages([{ type: 'text', text: `🤖 【系統觸發：自動推播】\n${data.triggerBumpMsg}` }]);
+        console.log('自動發話成功');
+      } catch (e) {
+        console.error('自動發話失敗:', e);
+      }
+    }
     
     // 如果是代報，自動清空輸入框，方便報下一個
     if (inputEl && inputEl.value.trim()) {
@@ -1443,7 +1449,8 @@ window.handlePushList = async function(gameId) {
         gameId: gameId,
         uid: currentUser.userId,
         name: currentUser.displayName,
-        action: 'pushList'
+        action: 'pushList',
+        clientSupportsLiffSendMessage: typeof liff !== 'undefined' && liff.isInClient()
       })
     });
     
@@ -1453,11 +1460,22 @@ window.handlePushList = async function(gameId) {
       return;
     }
     
-    // 手動推播：直接透過 Bot API 傳送，不使用 liff.sendMessages 以節省額度
-    if (result.partialError) {
-      alert('機器人推播部分失敗: ' + result.errors.join(', '));
+    // 如果後端有回傳 triggerBumpMsg，代表可以使用 liff 自動發話到群組
+    if (typeof liff !== 'undefined' && liff.isInClient() && result.isAdmin && result.triggerBumpMsg) {
+      try {
+        await liff.sendMessages([{ type: 'text', text: `🤖 【系統觸發：自動推播】\n${result.triggerBumpMsg}` }]);
+        alert('✅ 名單推播成功！已自動發送到聊天室。');
+      } catch (e) {
+        console.error('自動發話失敗:', e);
+        alert('自動發話失敗，可能未授權發言權限');
+      }
     } else {
-      alert('✅ 名單推播成功！Bot 已發送到聊天室。');
+      // 回退機制：手動推播：直接透過代理傳送給管理員
+      if (result.partialError) {
+        alert('機器人推播部分失敗: ' + result.errors.join(', '));
+      } else {
+        alert('✅ 名單推播指令已送出！請至您的私訊查看。');
+      }
     }
   } catch(e) {
     alert('網路錯誤');
