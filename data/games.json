@@ -187,7 +187,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782705371614,
+    "lastActiveTime": 1782705377192,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -236,11 +236,18 @@
           "陳呈友",
           "海棠",
           "莎莎",
-          "Winnie"
+          "Winnie",
+          "Emily"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/29 11:56",
+        "name": "Emily",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1"
+      },
       {
         "time": "06/29 11:56",
         "name": "Winnie",
