@@ -16,7 +16,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1782401316870,
-    "lastActiveTime": 1782723407677,
+    "lastActiveTime": 1782723415637,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -50,12 +50,17 @@
           "小可愛",
           "Joe",
           "Vicky",
-          "Sean",
-          "AA"
+          "Sean"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/29 16:56",
+        "name": "AA",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "06/29 16:56",
         "name": "AA",
