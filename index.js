@@ -1445,16 +1445,12 @@ function generateListMessage(g, customTitle = null) {
   
   g.sections.forEach(sec => {
     msg += `\n【${sec.title}】 (目前 ${sec.list.length} / ${sec.limit} 人)\n`;
-    for (let i = 0; i < sec.limit; i++) {
-      if (i < sec.list.length) {
-        const n = sec.list[i];
-        const name = n === '__ANON__' ? '***' : n;
-        const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
-        const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
-        msg += `${i+1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
-      } else {
-        msg += `${i+1}. \n`;
-      }
+    for (let i = 0; i < sec.list.length; i++) {
+      const n = sec.list[i];
+      const name = n === '__ANON__' ? '***' : n;
+      const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+      const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
+      msg += `${i+1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
     }
     
     if (sec.list.length > sec.limit) {
@@ -2284,15 +2280,11 @@ async function handleEvent(event) {
           const backupLimit = section.backupLimit || 0;
           
           msg += `\n📝 報名狀況 (${list.length}/${limit})\n`;
-          for (let i = 0; i < limit; i++) {
-              if (i < list.length) {
-                  const name = list[i] === '__ANON__' ? '匿名' : list[i];
-                  const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                  const paidStr = (g.paidMap && g.paidMap[name]) ? ' (已繳費)' : '';
-                  msg += `${i+1}. ${name}${levelStr}${paidStr}\n`;
-              } else {
-                  msg += `${i+1}. \n`;
-              }
+          for (let i = 0; i < list.length && i < limit; i++) {
+              const name = list[i] === '__ANON__' ? '匿名' : list[i];
+              const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
+              const paidStr = (g.paidMap && g.paidMap[name]) ? ' (已繳費)' : '';
+              msg += `${i+1}. ${name}${levelStr}${paidStr}\n`;
           }
           
           if (backupLimit > 0 || list.length > limit) {
