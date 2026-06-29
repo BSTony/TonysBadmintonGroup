@@ -1897,10 +1897,10 @@ app.post('/api/action', express.json(), async (req, res) => {
           opPart = ` ${name}`;
         }
 
-        if (action === 'register') msg += `"${g.title}"${opPart} +1`;
-        else if (action === 'cancel') msg += `"${g.title}"${opPart} -1`;
-        else if (action === 'reorder') msg += `"${g.title}" 🔄順序更新`;
-        else if (action === 'togglePaid') msg += `"${g.title}"${opPart} 💰繳費更新`;
+        if (action === 'register') msg += `${g.title}${opPart} +1`;
+        else if (action === 'cancel') msg += `${g.title}${opPart} -1`;
+        else if (action === 'reorder') msg += `${g.title} 🔄順序更新`;
+        else if (action === 'togglePaid') msg += `${g.title}${opPart} 💰繳費更新`;
 
         if (triggerBumpMsg) {
            msg += `\n🎉 【遞補通知】\n${triggerBumpMsg}`;
@@ -1969,11 +1969,10 @@ async function handleEvent(event) {
   const text = event.message.text.trim();
   
   // 攔截精簡版的自動更新指令，並由機器人回覆網址與名額
-  const updateMatch = text.match(/^"(.*?)"(?:\s+.*?)?(?:\+1|-1|🔄順序更新|💰繳費更新)/);
-  if (updateMatch) {
-    const title = updateMatch[1];
+  if (text.match(/(\+1|-1|🔄順序更新|💰繳費更新)$/)) {
     const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded);
-    const g = groupGames.find(g => g.title === title);
+    groupGames.sort((a, b) => (b.title || '').length - (a.title || '').length);
+    const g = groupGames.find(g => g.title && text.startsWith(g.title));
     
     if (g && process.env.LIFF_ID) {
       const sec = g.sections && g.sections[0] ? g.sections[0] : null;
@@ -1982,9 +1981,9 @@ async function handleEvent(event) {
         const count = sec.list.length;
         const limit = sec.limit;
         if (count >= limit) {
-          statusStr = ` ${count} / ${limit} 人 (已滿額！)`;
+          statusStr = ` 滿額`;
         } else {
-          statusStr = ` 缺 ${limit - count} 人 趕快來+1`;
+          statusStr = ` 缺 ${limit - count} 趕快來+1`;
         }
       }
       
@@ -1993,7 +1992,7 @@ async function handleEvent(event) {
       
       const flexMessage = {
         type: 'flex',
-        altText: `"${g.title}"${statusStr} - 點我進大廳`,
+        altText: `${g.title}${statusStr} - 點我進大廳`,
         contents: {
           type: 'bubble',
           size: 'kilo',
@@ -2003,7 +2002,7 @@ async function handleEvent(event) {
             contents: [
               {
                 type: 'text',
-                text: `"${g.title}"${statusStr}`,
+                text: `${g.title}${statusStr}`,
                 weight: 'bold',
                 wrap: true,
                 size: 'md'
