@@ -1836,7 +1836,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       if (bumpedNames.length > 0) {
         try {
-          const bumpMsg = `${game.title}\n『${bumpedNames.join('、')}』後補上 請注意訊息`;
+          const bumpMsg = `『${bumpedNames.join('、')}』後補上 請注意訊息`;
           triggerBumpMsg = bumpMsg; // 記錄下來，稍後傳給前端
           
           if (clientSupportsLiffSendMessage && isAdmin) {
@@ -1845,7 +1845,7 @@ app.post('/api/action', express.json(), async (req, res) => {
             const pushTargets = game.targetGids || [game.gid];
             for (const targetGid of pushTargets) {
               try {
-                await pushToAdmins(targetGid, { type: 'text', text: bumpMsg });
+                await pushToAdmins(targetGid, { type: 'text', text: `${game.title}\n${bumpMsg}` });
               } catch (e) {
                 console.error(`遞補推播代理失敗 for ${targetGid}:`, e);
               }
@@ -1882,26 +1882,38 @@ app.post('/api/action', express.json(), async (req, res) => {
     await saveGame(gameId, true);
     await saveCurrentListSnapshot(gameId, false);
     
-    // 讓管理員操作時，不論是 +1 或 -1，都觸發自動發話並帶上完整名單
+    // 讓管理員操作時，不論是 +1 或 -1，都觸發自動發話並帶上精簡資訊
     if ((action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid') && isAdmin && clientSupportsLiffSendMessage) {
       const g = games[gameId];
-      let actionTitle = '名單變動通知';
-      if (action === 'register') actionTitle = `✅ [報名] ${name} 已加入`;
-      if (action === 'cancel') actionTitle = `❌ [取消] ${name} 已退出`;
-      if (action === 'reorder') actionTitle = `🔄 [更新] 管理員調整了順序`;
-      if (action === 'togglePaid') actionTitle = `💰 [更新] ${name} 繳費狀態變更`;
+      const sec = g.sections && g.sections[0] ? g.sections[0] : null;
+      if (sec) {
+        let msg = '';
+        const count = sec.list.length;
+        const limit = sec.limit;
+        let statusStr = `${count} / ${limit} 人`;
+        if (count >= limit) {
+          statusStr += ' (已滿額！)';
+        } else {
+          statusStr += ` (再 ${limit - count} 位就滿了)`;
+        }
 
-      if (triggerBumpMsg) {
-         // 若原本已有遞補通知，則將其加在標題前面
-         actionTitle = `🎉 【遞補通知】\n${triggerBumpMsg}\n\n` + actionTitle;
+        if (action === 'register') msg += `✅ [報名] ${name} 已加入\n`;
+        else if (action === 'cancel') msg += `❌ [取消] ${name} 已退出\n`;
+        else if (action === 'reorder') msg += `🔄 [更新] 管理員調整了順序\n`;
+        else if (action === 'togglePaid') msg += `💰 [更新] ${name} 繳費狀態變更\n`;
+
+        if (triggerBumpMsg) {
+           msg += `🎉 【遞補通知】\n${triggerBumpMsg}\n`;
+        }
+        
+        msg += `\n🏸 ${g.title}\n📝 目前名額：${statusStr}`;
+
+        if (process.env.LIFF_ID) {
+          const singleTargetGid = (g.targetGids && g.targetGids.length > 0) ? g.targetGids[0] : g.gid;
+          msg += `\n\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
+        }
+        triggerBumpMsg = msg;
       }
-      
-      let msg = generateListMessage(g, actionTitle);
-      if (process.env.LIFF_ID) {
-        const singleTargetGid = (g.targetGids && g.targetGids.length > 0) ? g.targetGids[0] : g.gid;
-        msg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
-      }
-      triggerBumpMsg = msg;
     }
 
     res.json({ 
