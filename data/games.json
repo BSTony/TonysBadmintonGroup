@@ -187,7 +187,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782705377192,
+    "lastActiveTime": 1782706489806,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -237,11 +237,18 @@
           "海棠",
           "莎莎",
           "Winnie",
-          "Emily"
+          "Emily",
+          "紀凡"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/29 12:14",
+        "name": "紀凡",
+        "operator": "紀凡",
+        "action": "+1"
+      },
       {
         "time": "06/29 11:56",
         "name": "Emily",
