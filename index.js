@@ -1883,20 +1883,16 @@ app.post('/api/action', express.json(), async (req, res) => {
     await saveGame(gameId, true);
     await saveCurrentListSnapshot(gameId, false);
     
-    // 讓管理員操作時，不論是 +1 或 -1，都觸發自動發話並帶上精簡資訊
-    if ((action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid') && isAdmin && clientSupportsLiffSendMessage) {
+    // 讓所有使用者操作時，都觸發自動發話並帶上精簡資訊
+    if ((action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid') && clientSupportsLiffSendMessage) {
       const g = games[gameId];
       const sec = g.sections && g.sections[0] ? g.sections[0] : null;
       if (sec) {
         let msg = '';
         const count = sec.list.length;
         const limit = sec.limit;
-        let statusStr = `${count} / ${limit} 人`;
-        if (count >= limit) {
-          statusStr += ' (已滿額！)';
-        } else {
-          statusStr += ` (再 ${limit - count} 位就滿了)`;
-        }
+        
+        msg += `🏸 "${g.title}"   ${count} / ${limit} 人\n`;
 
         if (action === 'register') msg += `✅ [報名] ${name} 已加入\n`;
         else if (action === 'cancel') msg += `❌ [取消] ${name} 已退出\n`;
@@ -1907,8 +1903,6 @@ app.post('/api/action', express.json(), async (req, res) => {
            msg += `🎉 【遞補通知】\n${triggerBumpMsg}\n`;
         }
         
-        msg += `\n🏸 ${g.title}\n📝 目前名額：${statusStr}`;
-        // 精簡化：不再附帶 URL，URL由機器人收到自動推播時回覆
         triggerBumpMsg = msg.trim();
       }
     }
@@ -1972,10 +1966,10 @@ async function handleEvent(event) {
   const text = event.message.text.trim();
   
   // 攔截精簡版的自動更新指令，並由機器人回覆網址
-  const updateMatch = text.match(/^🤖 【名單自動更新】/);
+  const updateMatch = text.match(/^🏸 ".*?"\s+\d+ \/ \d+ 人\n(?:✅|❌|🔄|💰|🎉)/);
   if (updateMatch) {
     if (process.env.LIFF_ID) {
-      const urlMsg = `👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
+      const urlMsg = `趕快來+1\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
       return await client.replyMessage(event.replyToken, { type: 'text', text: urlMsg });
     }
     return null;

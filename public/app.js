@@ -1277,10 +1277,10 @@ async function handleActionWithInput(event, gameId, action) {
       throw new Error(data.error || '操作失敗');
     }
 
-    // 自動推播名單機制：若為管理員且發生遞補，使用 liff.sendMessages 觸發後端免費回覆
-    if (typeof liff !== 'undefined' && liff.isInClient() && data.isAdmin && data.triggerBumpMsg) {
+    // 自動推播名單機制：使用 liff.sendMessages 觸發後端免費回覆
+    if (typeof liff !== 'undefined' && liff.isInClient() && data.triggerBumpMsg) {
       try {
-        await liff.sendMessages([{ type: 'text', text: `🤖 【名單自動更新】\n${data.triggerBumpMsg}` }]);
+        await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg }]);
         console.log('自動發話成功');
       } catch (e) {
         console.error('自動發話失敗:', e);
