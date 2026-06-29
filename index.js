@@ -1029,12 +1029,13 @@ async function checkSchedules() {
           const pushTargets = g.targetGids || [g.gid];
           for (const targetGid of pushTargets) {
             try {
-              await client.pushMessage(targetGid, { type: 'text', text: `⏰ 溫馨提醒：【 ${g.title} 】 即將開始！\n請有報名的群友注意時間喔！` });
+              // 因應要求，暫時關閉會消耗額度的推播功能
+              // await client.pushMessage(targetGid, { type: 'text', text: `⏰ 溫馨提醒：【 ${g.title} 】 即將開始！\n請有報名的群友注意時間喔！` });
             } catch (e) {
               console.error(`Failed to push reminder to ${targetGid}:`, e);
             }
           }
-          logToFile(`[SUCCESS] Reminder sent for ${gameId}`);
+          logToFile(`[SUCCESS] Reminder processed for ${gameId} (Push disabled)`);
         } catch (e) {
           console.error('Failed to send reminder:', e);
           logToFile(`[ERROR] Failed to send reminder: ${e.message}`);
@@ -2630,6 +2631,10 @@ async function sendList(token, gameId, prefix = "") {
 
 // 代理推播：將群組訊息轉送給群組管理員
 async function pushToAdmins(targetGid, messages) {
+  // 因應要求，暫停所有需要消耗推播額度的發話代理功能
+  return;
+  
+  if (!targetGid) return;
   const admins = groupAdmins[targetGid];
   if (!admins || admins.size === 0) {
     console.log(`[Admin Proxy] 群組 ${targetGid} 沒有設定管理員，放棄發送。`);
