@@ -1280,7 +1280,7 @@ async function handleActionWithInput(event, gameId, action) {
     // 自動推播名單機制：若為管理員且發生遞補，使用 liff.sendMessages 觸發後端免費回覆
     if (typeof liff !== 'undefined' && liff.isInClient() && data.isAdmin && data.triggerBumpMsg) {
       try {
-        await liff.sendMessages([{ type: 'text', text: `🤖 【系統觸發：自動推播】\n${data.triggerBumpMsg}` }]);
+        await liff.sendMessages([{ type: 'text', text: `🤖 【名單自動更新】\n${data.triggerBumpMsg}` }]);
         console.log('自動發話成功');
       } catch (e) {
         console.error('自動發話失敗:', e);
@@ -1442,6 +1442,19 @@ window.handlePushList = async function(gameId) {
       statusMsg.innerText = '推播名單中...';
     }
     
+    // 如果可以自動發話，直接代替使用者送出「接龍名單」指令，機器人就會自動回覆完整名單！
+    if (typeof liff !== 'undefined' && liff.isInClient()) {
+      try {
+        await liff.sendMessages([{ type: 'text', text: `接龍名單` }]);
+        alert('✅ 名單推播成功！已自動在聊天室呼叫機器人。');
+        return;
+      } catch (e) {
+        console.error('自動發話失敗:', e);
+        alert('自動發話失敗，可能未授權發言權限');
+      }
+    }
+    
+    // 以下為舊版回退機制（若無法自動發話）
     const res = await fetch('/api/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1451,7 +1464,7 @@ window.handlePushList = async function(gameId) {
         uid: currentUser.userId,
         name: currentUser.displayName,
         action: 'pushList',
-        clientSupportsLiffSendMessage: typeof liff !== 'undefined' && liff.isInClient()
+        clientSupportsLiffSendMessage: false
       })
     });
     
@@ -1461,22 +1474,10 @@ window.handlePushList = async function(gameId) {
       return;
     }
     
-    // 如果後端有回傳 triggerBumpMsg，代表可以使用 liff 自動發話到群組
-    if (typeof liff !== 'undefined' && liff.isInClient() && result.isAdmin && result.triggerBumpMsg) {
-      try {
-        await liff.sendMessages([{ type: 'text', text: `🤖 【系統觸發：自動推播】\n${result.triggerBumpMsg}` }]);
-        alert('✅ 名單推播成功！已自動發送到聊天室。');
-      } catch (e) {
-        console.error('自動發話失敗:', e);
-        alert('自動發話失敗，可能未授權發言權限');
-      }
+    if (result.partialError) {
+      alert('機器人推播部分失敗: ' + result.errors.join(', '));
     } else {
-      // 回退機制：手動推播：直接透過代理傳送給管理員
-      if (result.partialError) {
-        alert('機器人推播部分失敗: ' + result.errors.join(', '));
-      } else {
-        alert('✅ 名單推播指令已送出！請至您的私訊查看。');
-      }
+      alert('✅ 名單推播指令已送出！請至您的私訊查看。');
     }
   } catch(e) {
     alert('網路錯誤');

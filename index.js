@@ -1908,12 +1908,8 @@ app.post('/api/action', express.json(), async (req, res) => {
         }
         
         msg += `\n🏸 ${g.title}\n📝 目前名額：${statusStr}`;
-
-        if (process.env.LIFF_ID) {
-          const singleTargetGid = (g.targetGids && g.targetGids.length > 0) ? g.targetGids[0] : g.gid;
-          msg += `\n\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
-        }
-        triggerBumpMsg = msg;
+        // 精簡化：不再附帶 URL，URL由機器人收到自動推播時回覆
+        triggerBumpMsg = msg.trim();
       }
     }
 
@@ -1975,6 +1971,17 @@ async function handleEvent(event) {
   const uid = event.source.userId;
   const text = event.message.text.trim();
   
+  // 攔截精簡版的自動更新指令，並由機器人回覆網址
+  const updateMatch = text.match(/^🤖 【名單自動更新】/);
+  if (updateMatch) {
+    if (process.env.LIFF_ID) {
+      const urlMsg = `👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
+      return await client.replyMessage(event.replyToken, { type: 'text', text: urlMsg });
+    }
+    return null;
+  }
+  
+  // 保留舊版相容
   const triggerMatch = text.match(/^🤖 【系統觸發：自動推播】\n([\s\S]*)/);
   if (triggerMatch) {
     const replyText = triggerMatch[1].trim();
