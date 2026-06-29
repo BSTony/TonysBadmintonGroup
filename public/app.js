@@ -1284,6 +1284,7 @@ async function handleActionWithInput(event, gameId, action) {
         console.log('自動發話成功');
       } catch (e) {
         console.error('自動發話失敗:', e);
+        alert('自動發話失敗！請確認 LINE Developers 後台是否已勾選 chat_message.write 權限。錯誤訊息: ' + e.message);
       }
     }
     
