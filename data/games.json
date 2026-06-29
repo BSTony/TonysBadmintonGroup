@@ -632,5 +632,38 @@
         "action": "+1"
       }
     ]
+  },
+  "1782717026377352": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
+    ],
+    "gameId": "1782717026377352",
+    "title": "測試測試",
+    "date": "6/30 (二)",
+    "time": "18:00~20:00",
+    "location": "南港運動中心",
+    "fee": "3000",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1782717026377,
+    "lastActiveTime": 1782717026377,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 20,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
