@@ -16,7 +16,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1782401316870,
-    "lastActiveTime": 1782723732216,
+    "lastActiveTime": 1782813417063,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -47,7 +47,6 @@
           "Robert",
           "afrahuang",
           "Ong",
-          "小可愛",
           "Joe",
           "Vicky",
           "Sean"
@@ -55,6 +54,12 @@
       }
     ],
     "history": [
+      {
+        "time": "06/30 17:56",
+        "name": "小可愛",
+        "operator": "林俊佑",
+        "action": "-1"
+      },
       {
         "time": "06/29 17:02",
         "name": "AA",
