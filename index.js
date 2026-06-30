@@ -2007,7 +2007,7 @@ async function handleEvent(event) {
       if (g.date) infoArr.push(g.date);
       if (g.time) infoArr.push(g.time);
       if (g.fee && g.fee !== '未知' && g.fee !== '無' && g.fee !== '0') {
-          let feeStr = g.fee.trim();
+          let feeStr = String(g.fee).trim();
           if (!feeStr.endsWith('元')) feeStr += '元';
           infoArr.push(feeStr);
       }
