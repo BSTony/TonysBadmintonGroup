@@ -2055,9 +2055,9 @@ async function handleEvent(event) {
                 style: 'secondary',
                 height: 'sm',
                 action: {
-                  type: 'message',
+                  type: 'uri',
                   label: '本次名單',
-                  text: `接龍名單 ${g.title}\n\n[系統代發]`
+                  uri: gameUrl
                 }
               }
             ]
