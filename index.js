@@ -2045,18 +2045,8 @@ async function handleEvent(event) {
                 style: 'secondary',
                 height: 'sm',
                 action: {
-                  type: 'uri',
-                  label: '進入本次報名',
-                  uri: gameUrl
-                }
-              },
-              {
-                type: 'button',
-                style: 'secondary',
-                height: 'sm',
-                action: {
                   type: 'message',
-                  label: '顯示本次名單',
+                  label: '本次名單',
                   text: `接龍名單 ${g.title}`
                 }
               }

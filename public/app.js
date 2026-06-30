@@ -676,7 +676,21 @@ function renderDetail(gameId) {
   const isRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
   detailCount.innerText = `${isRegistered ? '(已報名) ' : ''}${section.list.length} / ${section.limit}`;
   
-  detailList.innerHTML = '';
+  const prefName = localStorage.getItem('preferredName') || '';
+  const isExpired = isGameExpired(game);
+  const isFull = section.list.length >= (section.limit + (section.backupLimit || 0));
+
+  let actionRowHtml = `
+    <div class="action-row" style="flex-wrap: wrap; margin-top: 15px; margin-bottom: 10px;">
+      <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
+      <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
+      <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="${escapeHTML(currentUser.displayName)}" value="${escapeHTML(prefName)}" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold;" />
+      <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="程度" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+    </div>
+    <div id="error-msg-${game.gameId}-detail" class="error-msg"></div>
+  `;
+  
+  detailList.innerHTML = actionRowHtml;
   
   if (globalIsAdmin) {
     let pushListBtn = document.getElementById('admin-push-list-btn');
@@ -1191,7 +1205,7 @@ function playMinusOneCancelAnimation(btn) {
 }
 
 // 處理新的輸入框報名與防呆
-async function handleActionWithInput(event, gameId, action) {
+async function handleActionWithInput(event, gameId, action, suffix = '') {
   const btn = event.currentTarget || event.target;
   
   if (action === 'cancel' && btn) {
@@ -1218,9 +1232,9 @@ async function handleActionWithInput(event, gameId, action) {
     });
   }
 
-  const inputEl = document.getElementById(`name-input-${gameId}`);
-  const levelEl = document.getElementById(`level-input-${gameId}`);
-  const errorEl = document.getElementById(`error-msg-${gameId}`);
+  const inputEl = document.getElementById(`name-input-${gameId}${suffix}`);
+  const levelEl = document.getElementById(`level-input-${gameId}${suffix}`);
+  const errorEl = document.getElementById(`error-msg-${gameId}${suffix}`);
   
   let name = currentUser.displayName;
   if (inputEl && inputEl.value.trim()) {
