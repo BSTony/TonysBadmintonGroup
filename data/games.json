@@ -620,7 +620,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782783086773,
+    "lastActiveTime": 1782783104547,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -647,12 +647,17 @@
           "小黑",
           "林立峰",
           "Mia",
-          "Kevin",
-          "Test"
+          "Kevin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 09:31",
+        "name": "Test",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "06/30 09:31",
         "name": "Test",
