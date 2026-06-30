@@ -2364,7 +2364,35 @@ async function handleEvent(event) {
       }
       
       if (groupGames.length === 0) {
-          return client.replyMessage(event.replyToken, { type: 'text', text: keyword ? `找不到包含「${keyword}」的場次喔！` : `目前群組內沒有正在進行的場次。` });
+          let replyMsgs = [];
+          replyMsgs.push({ type: 'text', text: keyword ? `找不到包含「${keyword}」的場次喔！` : `目前群組內沒有正在進行的場次。` });
+          if (process.env.LIFF_ID) {
+              replyMsgs.push({
+                  type: 'flex',
+                  altText: '點我進大廳',
+                  contents: {
+                      type: 'bubble',
+                      size: 'kilo',
+                      body: {
+                          type: 'box',
+                          layout: 'vertical',
+                          contents: [
+                              {
+                                  type: 'button',
+                                  style: 'primary',
+                                  height: 'sm',
+                                  action: {
+                                      type: 'uri',
+                                      label: '進入大廳',
+                                      uri: `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`
+                                  }
+                              }
+                          ]
+                      }
+                  }
+              });
+          }
+          return client.replyMessage(event.replyToken, replyMsgs);
       }
       
       let replyMsgs = [];
@@ -2386,7 +2414,11 @@ async function handleEvent(event) {
               msg += `${i+1}. ${name}${levelStr}${paidStr}\n`;
           }
           
-          if (backupLimit > 0 || list.length > limit) {
+          if (list.length < limit) {
+              msg += `${limit}. \n`;
+          }
+          
+          if (list.length > limit) {
               msg += `\n⌛ 候補名單\n`;
               let backupCount = 0;
               for (let i = limit; i < list.length; i++) {
@@ -2396,21 +2428,45 @@ async function handleEvent(event) {
                   msg += `候補${backupCount+1}. ${name}${levelStr}${paidStr}\n`;
                   backupCount++;
               }
-              for (let i = backupCount; i < backupLimit; i++) {
-                  msg += `候補${i+1}. \n`;
-              }
-          }
-          
-          if (process.env.LIFF_ID) {
-              msg += `\n👉 大廳連結：\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
           }
           
           replyMsgs.push({ type: 'text', text: msg.trim() });
       }
       
-      if (replyMsgs.length > 5) {
-          replyMsgs = replyMsgs.slice(0, 4);
-          replyMsgs.push({ type: 'text', text: `...還有其他場次，請點擊大廳連結查看全部內容！` });
+      if (process.env.LIFF_ID) {
+          if (replyMsgs.length > 4) {
+              replyMsgs = replyMsgs.slice(0, 3);
+              replyMsgs.push({ type: 'text', text: `...還有其他場次，請點擊大廳連結查看全部內容！` });
+          }
+          replyMsgs.push({
+              type: 'flex',
+              altText: '點我進大廳',
+              contents: {
+                  type: 'bubble',
+                  size: 'kilo',
+                  body: {
+                      type: 'box',
+                      layout: 'vertical',
+                      contents: [
+                          {
+                              type: 'button',
+                              style: 'primary',
+                              height: 'sm',
+                              action: {
+                                  type: 'uri',
+                                  label: '進入大廳',
+                                  uri: `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`
+                              }
+                          }
+                      ]
+                  }
+              }
+          });
+      } else {
+          if (replyMsgs.length > 5) {
+              replyMsgs = replyMsgs.slice(0, 4);
+              replyMsgs.push({ type: 'text', text: `...還有其他場次！` });
+          }
       }
       
       if (targetGid !== gid) {
