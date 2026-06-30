@@ -1145,7 +1145,7 @@
     "tag": "10-11點開冷氣",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782797295326,
+    "lastActiveTime": 1782797366441,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1161,12 +1161,17 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay",
-          "CC"
+          "Kay"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 13:29",
+        "name": "CC",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "06/30 13:28",
         "name": "CC",
