@@ -1131,7 +1131,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1782797447785,
+    "lastActiveTime": 1782801705425,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1146,11 +1146,18 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "林煥杰"
+          "林煥杰",
+          "(AK) Seth Hu"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 14:41",
+        "name": "(AK) Seth Hu",
+        "operator": "(AK) Seth Hu",
+        "action": "+1"
+      },
       {
         "time": "06/30 13:30",
         "name": "林煥杰",
