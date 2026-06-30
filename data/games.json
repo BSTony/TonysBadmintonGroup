@@ -620,7 +620,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782783104547,
+    "lastActiveTime": 1782795175779,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -647,11 +647,18 @@
           "小黑",
           "林立峰",
           "Mia",
-          "Kevin"
+          "Kevin",
+          "楊程鈞"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 12:52",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1"
+      },
       {
         "time": "06/30 09:31",
         "name": "Test",
