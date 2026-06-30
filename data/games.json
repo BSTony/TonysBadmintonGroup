@@ -991,7 +991,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782788084044,
-    "lastActiveTime": 1782788707941,
+    "lastActiveTime": 1782788728624,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1005,10 +1005,18 @@
         "limit": 3,
         "backupLimit": 5,
         "label": "",
-        "list": []
+        "list": [
+          "Test2"
+        ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 11:05",
+        "name": "Test2",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "06/30 11:05",
         "name": "Test2",
