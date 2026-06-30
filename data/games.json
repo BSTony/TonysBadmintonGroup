@@ -1363,7 +1363,7 @@
     "fee": "280",
     "note": "",
     "tag": "兩面,冷氣",
-    "active": true,
+    "active": false,
     "startTime": 1782825605534,
     "lastActiveTime": 1782825605534,
     "scheduleTime": null,
