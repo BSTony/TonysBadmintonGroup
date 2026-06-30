@@ -620,7 +620,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782797441598,
+    "lastActiveTime": 1782798012516,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -647,11 +647,18 @@
           "林立峰",
           "Mia",
           "Kevin",
-          "楊程鈞"
+          "楊程鈞",
+          "陳呈"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 13:40",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1"
+      },
       {
         "time": "06/30 13:30",
         "name": "陳俊傑 (Jeremy)",
