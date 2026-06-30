@@ -1305,9 +1305,14 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
     if (typeof liff !== 'undefined' && liff.isInClient() && (data.triggerBumpMsgs || data.triggerBumpMsg)) {
       try {
         if (data.triggerBumpMsgs && data.triggerBumpMsgs.length > 0) {
-          await liff.sendMessages(data.triggerBumpMsgs);
+          const msgs = [...data.triggerBumpMsgs];
+          const lastIndex = msgs.length - 1;
+          if (msgs[lastIndex].type === 'text') {
+             msgs[lastIndex].text += '\n\n[系統代發]';
+          }
+          await liff.sendMessages(msgs);
         } else {
-          await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg }]);
+          await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg + '\n\n[系統代發]' }]);
         }
         console.log('自動發話成功');
       } catch (e) {

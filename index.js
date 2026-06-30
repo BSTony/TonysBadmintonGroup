@@ -1974,12 +1974,12 @@ async function handleEvent(event) {
   const gid = event.source.groupId || event.source.roomId || event.source.userId;
   const uid = event.source.userId;
   const text = event.message.text.trim();
-  
+  const firstLine = text.split('\n')[0].trim();
   // 攔截精簡版的自動更新指令，並由機器人回覆網址與名額
-  if (text.match(/(\+1|-1|🔄順序更新|💰繳費更新)$/)) {
+  if (firstLine.match(/(\+1|-1|🔄順序更新|💰繳費更新)$/)) {
     const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded);
     groupGames.sort((a, b) => (b.title || '').length - (a.title || '').length);
-    const g = groupGames.find(g => g.title && text.startsWith(g.title));
+    const g = groupGames.find(g => g.title && firstLine.startsWith(g.title));
     
     if (g && process.env.LIFF_ID) {
       const sec = g.sections && g.sections[0] ? g.sections[0] : null;
