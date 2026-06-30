@@ -2137,9 +2137,15 @@ async function handleEvent(event) {
     }
   }
 
-  // 只允許管理員下達文字指令
+  // 只允許管理員下達文字指令 (但開放部分查詢指令給一般群友)
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
-  if (!isAdmin) {
+  const isPublicCommand = text.startsWith('接龍名單') || 
+                          text === '接龍狀態' || 
+                          text === '接龍查詢' || 
+                          text === '大廳' || 
+                          text === '接龍大廳';
+
+  if (!isAdmin && !isPublicCommand) {
     return null; // 非管理員，已讀不回
   }
 
