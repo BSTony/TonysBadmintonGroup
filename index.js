@@ -1916,6 +1916,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         triggerBumpMsg = msg.trim();
       }
     }
+    console.log('[API Action] clientSupportsLiffSendMessage:', clientSupportsLiffSendMessage, 'triggerBumpMsg:', triggerBumpMsg);
 
     res.json({ 
       success: true, 
