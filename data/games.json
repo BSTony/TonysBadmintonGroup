@@ -855,7 +855,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782780981698,
-    "lastActiveTime": 1782781376455,
+    "lastActiveTime": 1782782512851,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -871,11 +871,18 @@
         "label": "",
         "list": [
           "AA",
-          "BB"
+          "BB",
+          "HH"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 09:21",
+        "name": "HH",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "06/30 09:02",
         "name": "BB",
