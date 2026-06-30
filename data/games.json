@@ -1189,7 +1189,7 @@
     "tag": "10-11點開冷氣",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782801397992,
+    "lastActiveTime": 1782804425079,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1207,11 +1207,18 @@
           "Tony",
           "Kay",
           "CC",
-          "周哲儁"
+          "周哲儁",
+          "小高"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 15:27",
+        "name": "小高",
+        "operator": "小高",
+        "action": "+1"
+      },
       {
         "time": "06/30 14:36",
         "name": "周哲儁",
