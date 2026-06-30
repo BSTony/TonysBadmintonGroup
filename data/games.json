@@ -1128,5 +1128,39 @@
         "list": []
       }
     ]
+  },
+  "1782796286490821": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "1782796286490821",
+    "title": "週日 港中 打4小",
+    "date": "7/5 (日)",
+    "time": "08:00~12:00",
+    "location": "南港高中",
+    "fee": "320",
+    "note": "",
+    "tag": "10-11點開冷氣",
+    "active": true,
+    "startTime": 1782796286490,
+    "lastActiveTime": 1782796286490,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
