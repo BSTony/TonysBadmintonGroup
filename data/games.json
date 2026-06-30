@@ -16,7 +16,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1782401316870,
-    "lastActiveTime": 1782813417063,
+    "lastActiveTime": 1782813447833,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -49,11 +49,18 @@
           "Ong",
           "Joe",
           "Vicky",
-          "Sean"
+          "Sean",
+          "小可愛(已繳費)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 17:57",
+        "name": "小可愛(已繳費)",
+        "operator": "林俊佑",
+        "action": "+1"
+      },
       {
         "time": "06/30 17:56",
         "name": "小可愛",
