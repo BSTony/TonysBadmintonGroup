@@ -975,5 +975,38 @@
         "action": "+1"
       }
     ]
+  },
+  "1782788084044125": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
+    ],
+    "gameId": "1782788084044125",
+    "title": "Test",
+    "date": "7/1 (三)",
+    "time": "18:00~20:00",
+    "location": "南港運動中心",
+    "fee": "200",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1782788084044,
+    "lastActiveTime": 1782788084044,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 3,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
