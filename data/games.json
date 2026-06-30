@@ -616,7 +616,7 @@
     "time": "09:00~12:00",
     "location": "南港高中",
     "fee": "250",
-    "note": "",
+    "note": "開放季打的 210元/次 找Tony登記",
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
@@ -717,7 +717,8 @@
         "name": "謝東霖 Tony",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1782717026377352": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
