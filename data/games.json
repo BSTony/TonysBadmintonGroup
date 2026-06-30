@@ -16,7 +16,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1782401316870,
-    "lastActiveTime": 1782813447833,
+    "lastActiveTime": 1782817741477,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -30,7 +30,8 @@
       "程鈞": true,
       "Perry": true,
       "Robert": true,
-      "afrahuang": true
+      "afrahuang": true,
+      "Ong": true
     },
     "sections": [
       {
