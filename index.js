@@ -1446,7 +1446,9 @@ function generateListMessage(g, customTitle = null) {
   
   g.sections.forEach(sec => {
     msg += `\n【${sec.title}】 (目前 ${sec.list.length} / ${sec.limit} 人)\n`;
-    for (let i = 0; i < sec.list.length; i++) {
+    const limit = sec.limit;
+    const count = Math.min(sec.list.length, limit);
+    for (let i = 0; i < count; i++) {
       const n = sec.list[i];
       const name = n === '__ANON__' ? '***' : n;
       const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
@@ -1454,7 +1456,12 @@ function generateListMessage(g, customTitle = null) {
       msg += `${i+1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
     }
     
-    if (sec.list.length > sec.limit) {
+    // 如果未滿額，顯示最後一個空席位的號碼（依據使用者要求）
+    if (sec.list.length < limit) {
+      msg += `${limit}. \n`;
+    }
+    
+    if (sec.list.length > limit) {
       msg += `\n【候補名單】\n`;
       for (let i = sec.limit; i < sec.list.length; i++) {
         const n = sec.list[i];
