@@ -2950,3 +2950,31 @@ async function sendLobbyLink(token, gid, prefix = "") {
     throw e;
   }
 }
+
+function getLobbyCard(gid) {
+  if (!process.env.LIFF_ID) return null;
+  return {
+    type: 'flex',
+    altText: '點我進大廳',
+    contents: {
+      type: 'bubble',
+      size: 'kilo',
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'button',
+            style: 'primary',
+            height: 'sm',
+            action: {
+              type: 'uri',
+              label: '進入大廳',
+              uri: `https://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`
+            }
+          }
+        ]
+      }
+    }
+  };
+}
