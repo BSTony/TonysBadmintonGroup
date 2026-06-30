@@ -1988,7 +1988,16 @@ async function handleEvent(event) {
       }
       
       const singleTargetGid = (g.targetGids && g.targetGids.length > 0) ? g.targetGids[0] : g.gid;
-      const liffUrl = `https://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
+      const lobbyUrl = `https://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
+      const gameUrl = `${lobbyUrl}&gameId=${g.gameId}`;
+      
+      const infoArr = [];
+      if (g.location) infoArr.push(g.location);
+      if (g.time) infoArr.push(g.time);
+      if (g.fee && g.fee !== '未知' && g.fee !== '無' && g.fee !== '0') infoArr.push(g.fee);
+      const infoLine = infoArr.join(' ');
+      
+      const textContent = `${g.title}${statusStr}`.trim() + (infoLine ? `\n${infoLine}` : '');
       
       const flexMessage = {
         type: 'flex',
@@ -2002,7 +2011,7 @@ async function handleEvent(event) {
             contents: [
               {
                 type: 'text',
-                text: `${g.title}${statusStr}`,
+                text: textContent,
                 weight: 'bold',
                 wrap: true,
                 size: 'md'
@@ -2012,6 +2021,7 @@ async function handleEvent(event) {
           footer: {
             type: 'box',
             layout: 'vertical',
+            spacing: 'sm',
             contents: [
               {
                 type: 'button',
@@ -2019,8 +2029,28 @@ async function handleEvent(event) {
                 height: 'sm',
                 action: {
                   type: 'uri',
-                  label: '點我進大廳',
-                  uri: liffUrl
+                  label: '進入大廳',
+                  uri: lobbyUrl
+                }
+              },
+              {
+                type: 'button',
+                style: 'secondary',
+                height: 'sm',
+                action: {
+                  type: 'uri',
+                  label: '進入本次報名',
+                  uri: gameUrl
+                }
+              },
+              {
+                type: 'button',
+                style: 'secondary',
+                height: 'sm',
+                action: {
+                  type: 'message',
+                  label: '顯示本次名單',
+                  text: `接龍名單 ${g.title}`
                 }
               }
             ]

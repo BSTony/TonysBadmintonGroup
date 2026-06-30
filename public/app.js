@@ -238,7 +238,16 @@ async function loadGamesLobby(silent = false) {
       globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
     }
 
-    renderLobby();
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlGameId = urlParams.get('gameId');
+    // 若為初次載入且網址有指定 gameId，則直接進入該場次，否則留在首頁
+    if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
+      renderDetail(urlGameId);
+    } else if (!currentGameDetailId) {
+      renderLobby();
+    } else {
+      renderDetail(currentGameDetailId);
+    }
   } catch (err) {
     console.error(err);
     appDiv.className = ''; // 確保發生錯誤時也關閉轉圈圈
