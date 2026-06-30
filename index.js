@@ -2000,9 +2000,6 @@ async function handleEvent(event) {
       const gameUrl = `${lobbyUrl}&gameId=${g.gameId}`;
       
       let textContent = `${g.title}${statusStr}`;
-      if (g.location) {
-        textContent += `\n${g.location}`;
-      }
       
       const infoArr = [];
       if (g.date) infoArr.push(g.date);
