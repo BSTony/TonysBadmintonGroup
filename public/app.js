@@ -178,7 +178,7 @@ async function initializeLiff() {
 
     // 3. 確保使用者已登入
     if (!liff.isLoggedIn()) {
-      liff.login();
+      liff.login({ redirectUri: window.location.href });
       return;
     }
 
@@ -207,8 +207,10 @@ async function initializeLiff() {
 
   } catch (err) {
     console.error('LIFF Init Error:', err);
+    appDiv.className = '';
     statusMsg.innerText = err.message || '發生錯誤';
     statusMsg.style.color = '#ff5252';
+    statusMsg.style.display = 'block';
   }
 }
 
@@ -647,21 +649,21 @@ function renderDetail(gameId) {
   const btnCloseGame = document.getElementById('btn-close-game');
   const btnEditGame = document.getElementById('btn-edit-game');
   const btnCopyList = document.getElementById('btn-copy-list');
+  if (btnCopyList) {
+    btnCopyList.classList.remove('hidden');
+    btnCopyList.onclick = () => {
+      const list = game.sections[0]?.list || [];
+      const text = list.map(n => n === '__ANON__' ? '匿名球友' : n).join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        alert('名單已成功複製！\n\n' + text);
+      }).catch(() => {
+        prompt('請複製以下名單：', text);
+      });
+    };
+  }
+
   if (globalIsAdmin) {
     if (btnCloseGame) btnCloseGame.classList.remove('hidden');
-    if (btnCopyList) {
-      btnCopyList.classList.remove('hidden');
-      btnCopyList.onclick = () => {
-        const list = game.sections[0]?.list || [];
-        const text = list.map(n => n === '__ANON__' ? '匿名球友' : n).join('\n');
-        navigator.clipboard.writeText(text).then(() => {
-          alert('名單已成功複製！\n\n' + text);
-        }).catch(() => {
-          // fallback if clipboard API fails
-          prompt('請複製以下名單：', text);
-        });
-      };
-    }
     if (btnEditGame) {
       btnEditGame.classList.remove('hidden');
       btnEditGame.onclick = () => showEditGameForm(gameId);
@@ -669,7 +671,6 @@ function renderDetail(gameId) {
   } else {
     if (btnCloseGame) btnCloseGame.classList.add('hidden');
     if (btnEditGame) btnEditGame.classList.add('hidden');
-    if (btnCopyList) btnCopyList.classList.add('hidden');
   }
   
   const section = game.sections[0] || { list: [], limit: 20 };

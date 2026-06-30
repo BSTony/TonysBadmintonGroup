@@ -2081,8 +2081,15 @@ async function handleEvent(event) {
   }
 
   if (text === '取消管理員') {
-    if (groupAdmins[gid] && groupAdmins[gid].has(uid)) {
-      groupAdmins[gid].delete(uid);
+    let wasAdmin = false;
+    for (const g in groupAdmins) {
+      if (groupAdmins[g].has(uid)) {
+        groupAdmins[g].delete(uid);
+        wasAdmin = true;
+      }
+    }
+    
+    if (wasAdmin) {
       saveAdmins();
       return client.replyMessage(event.replyToken, { type: 'text', text: '✅ 已取消您的管理員權限。' });
     } else {
