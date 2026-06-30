@@ -437,7 +437,7 @@ function renderLobby() {
           </div>
           <div class="info-item">
             <span class="info-icon">💰</span>
-            <span>${escapeHTML(game.fee || '未設定')}</span>
+            <span>${escapeHTML(formatFee(game.fee) || '未設定')}</span>
           </div>
         </div>
         
@@ -722,7 +722,7 @@ function renderDetail(gameId) {
      tagsHtml += '</div>';
      tagsHtml += '<div class="info-row" style="margin-top: 4px;">';
      if (game.location) tagsHtml += `<span class="info-tag">📍 ${escapeHTML(game.location)}</span>`;
-     if (game.fee) tagsHtml += `<span class="info-tag">💰 ${escapeHTML(game.fee)}</span>`;
+     if (game.fee) tagsHtml += `<span class="info-tag">💰 ${escapeHTML(formatFee(game.fee))}</span>`;
      tagsHtml += '</div>';
      tagsHtml += '</div>';
      detailList.innerHTML += tagsHtml;
@@ -914,6 +914,16 @@ if (btnCloseGame) {
       appDiv.className = '';
     }
   });
+}
+
+// 格式化費用，若無「元」則補上
+function formatFee(fee) {
+  if (!fee || fee === '未設定' || fee === '未知' || fee === '無' || fee === '0') return fee || '';
+  let str = fee.toString().trim();
+  if (str && !str.endsWith('元')) {
+    return str + '元';
+  }
+  return str;
 }
 
 // HTML 逃脫函數防 XSS
