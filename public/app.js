@@ -1301,9 +1301,13 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
     }
 
     // 自動推播名單機制：使用 liff.sendMessages 觸發後端免費回覆
-    if (typeof liff !== 'undefined' && liff.isInClient() && data.triggerBumpMsg) {
+    if (typeof liff !== 'undefined' && liff.isInClient() && (data.triggerBumpMsgs || data.triggerBumpMsg)) {
       try {
-        await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg }]);
+        if (data.triggerBumpMsgs && data.triggerBumpMsgs.length > 0) {
+          await liff.sendMessages(data.triggerBumpMsgs);
+        } else {
+          await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg }]);
+        }
         console.log('自動發話成功');
       } catch (e) {
         console.error('自動發話失敗:', e);
