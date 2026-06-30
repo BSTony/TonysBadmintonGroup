@@ -1252,5 +1252,38 @@
         "action": "+1"
       }
     ]
+  },
+  "1782799318626962": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
+    ],
+    "gameId": "1782799318626962",
+    "title": "Teat",
+    "date": "7/1 (三)",
+    "time": "18:00~20:00",
+    "location": "南港高中",
+    "fee": "20000",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1782799318626,
+    "lastActiveTime": 1782799318626,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 5,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
