@@ -354,16 +354,15 @@ function renderLobby() {
     
     noGamesMsg.classList.add('hidden');
     
-    // Sort gamesList so that expired games are at the bottom
-    const sortedGames = [...gamesList].sort((a, b) => {
-      const aExpired = isGameExpired(a);
-      const bExpired = isGameExpired(b);
-      if (aExpired && !bExpired) return 1;
-      if (!aExpired && bExpired) return -1;
-      return 0;
+    const activeGames = [];
+    const endedGames = [];
+    
+    gamesList.forEach(game => {
+      if (isGameExpired(game)) endedGames.push(game);
+      else activeGames.push(game);
     });
     
-    sortedGames.forEach(game => {
+    const renderCard = (game) => {
       const section = game.sections[0] || { list: [], limit: 20 };
       const count = section.list.length;
       const limit = section.limit;
@@ -461,8 +460,34 @@ function renderLobby() {
         </div>
         <div id="error-msg-${game.gameId}" class="error-msg"></div>
       `;
-      gamesContainer.appendChild(card);
-    });
+      return card;
+    };
+    
+    activeGames.forEach(game => gamesContainer.appendChild(renderCard(game)));
+    
+    if (globalIsAdmin && endedGames.length > 0) {
+      const detailsEl = document.createElement('details');
+      detailsEl.style.marginTop = '20px';
+      detailsEl.style.padding = '10px';
+      detailsEl.style.backgroundColor = '#f9f9f9';
+      detailsEl.style.borderRadius = '8px';
+      detailsEl.style.border = '1px solid #ddd';
+      
+      const summaryEl = document.createElement('summary');
+      summaryEl.style.fontWeight = 'bold';
+      summaryEl.style.cursor = 'pointer';
+      summaryEl.style.color = '#666';
+      summaryEl.innerText = `已結束的團 (${endedGames.length})`;
+      
+      const contentEl = document.createElement('div');
+      contentEl.style.marginTop = '15px';
+      
+      endedGames.forEach(game => contentEl.appendChild(renderCard(game)));
+      
+      detailsEl.appendChild(summaryEl);
+      detailsEl.appendChild(contentEl);
+      gamesContainer.appendChild(detailsEl);
+    }
   
   // 更新狀態文字 (原本是轉圈圈，現在因為 appDiv.className='' 所以圈圈消失，我們更新文字)
   const headerP = document.querySelector('.lobby-header p');

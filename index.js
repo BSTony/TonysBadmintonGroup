@@ -1330,6 +1330,7 @@ app.get('/api/game/:gid', async (req, res) => {
 
   let groupGames = Object.values(games).filter(g => {
     if (!g.active) return false;
+    if (g.isManualEnded && !isAdmin) return false;
     if (g.gid === gid) return true;
     if (g.targetGids && g.targetGids.includes(gid)) return true;
     
