@@ -1478,7 +1478,7 @@ window.handlePushList = async function(gameId) {
     // 如果可以自動發話，直接代替使用者送出「接龍名單」指令，機器人就會自動回覆完整名單！
     if (typeof liff !== 'undefined' && liff.isInClient()) {
       try {
-        await liff.sendMessages([{ type: 'text', text: `接龍名單` }]);
+        await liff.sendMessages([{ type: 'text', text: `接龍名單\n\n[系統代發]` }]);
         alert('✅ 名單推播成功！已自動在聊天室呼叫機器人。');
         return;
       } catch (e) {

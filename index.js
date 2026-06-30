@@ -2053,7 +2053,7 @@ async function handleEvent(event) {
                 action: {
                   type: 'message',
                   label: '本次名單',
-                  text: `接龍名單 ${g.title}`
+                  text: `接龍名單 ${g.title}\n\n[系統代發]`
                 }
               }
             ]
@@ -2375,7 +2375,7 @@ async function handleEvent(event) {
 
       let keyword = text.replace(/接龍名單/, '');
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
-      keyword = keyword.trim();
+      keyword = keyword.replace(/\[系統代發\]/g, '').trim();
       
       let groupGames = Object.values(games).filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active && !g.isManualEnded);
       if (keyword) {
