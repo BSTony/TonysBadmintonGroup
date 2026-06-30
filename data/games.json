@@ -1123,7 +1123,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1782796232775,
+    "lastActiveTime": 1782797447785,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1137,7 +1137,17 @@
         "limit": 9,
         "backupLimit": 5,
         "label": "",
-        "list": []
+        "list": [
+          "林煥杰"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "time": "06/30 13:30",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1"
       }
     ]
   },
