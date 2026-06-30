@@ -634,7 +634,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782798012516,
+    "lastActiveTime": 1782825798844,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -662,11 +662,18 @@
           "Mia",
           "Kevin",
           "楊程鈞",
-          "陳呈"
+          "陳呈",
+          "TU"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 21:23",
+        "name": "TU",
+        "operator": "TU",
+        "action": "+1"
+      },
       {
         "time": "06/30 13:40",
         "name": "陳呈",
