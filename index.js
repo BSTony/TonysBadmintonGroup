@@ -1988,9 +1988,9 @@ async function handleEvent(event) {
         const count = sec.list.length;
         const limit = sec.limit;
         if (count >= limit) {
-          statusStr = ` 滿額`;
+          statusStr = `  滿額`;
         } else {
-          statusStr = ` 缺 ${limit - count} 趕快來+1`;
+          statusStr = `  缺${limit - count}`;
         }
       }
       
@@ -1998,13 +1998,19 @@ async function handleEvent(event) {
       const lobbyUrl = `https://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
       const gameUrl = `${lobbyUrl}&gameId=${g.gameId}`;
       
+      let textContent = `${g.title}${statusStr}`;
+      if (g.location) {
+        textContent += `\n${g.location}`;
+      }
+      
       const infoArr = [];
-      if (g.location) infoArr.push(g.location);
+      if (g.date) infoArr.push(g.date);
       if (g.time) infoArr.push(g.time);
       if (g.fee && g.fee !== '未知' && g.fee !== '無' && g.fee !== '0') infoArr.push(g.fee);
-      const infoLine = infoArr.join(' ');
       
-      const textContent = `${g.title}${statusStr}`.trim() + (infoLine ? `\n${infoLine}` : '');
+      if (infoArr.length > 0) {
+        textContent += `\n${infoArr.join(' ')}`;
+      }
       
       const flexMessage = {
         type: 'flex',
