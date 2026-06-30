@@ -1061,5 +1061,38 @@
         "action": "+1"
       }
     ]
+  },
+  "1782796146314398": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
+    ],
+    "gameId": "1782796146314398",
+    "title": "週日 早八 打2小",
+    "date": "7/5 (日)",
+    "time": "08:00~10:00",
+    "location": "南港高中",
+    "fee": "150",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1782796146314,
+    "lastActiveTime": 1782796146314,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 9,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
