@@ -620,7 +620,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782795175779,
+    "lastActiveTime": 1782795377886,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -643,7 +643,6 @@
           "Tony",
           "Kay",
           "小可愛",
-          "©️張CC～©️",
           "小黑",
           "林立峰",
           "Mia",
@@ -653,6 +652,12 @@
       }
     ],
     "history": [
+      {
+        "time": "06/30 12:56",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "-1"
+      },
       {
         "time": "06/30 12:52",
         "name": "楊程鈞",
