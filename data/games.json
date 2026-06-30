@@ -620,7 +620,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782795377886,
+    "lastActiveTime": 1782797406018,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -647,11 +647,18 @@
           "林立峰",
           "Mia",
           "Kevin",
-          "楊程鈞"
+          "楊程鈞",
+          "陳俊傑 (Jeremy)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "06/30 13:30",
+        "name": "陳俊傑 (Jeremy)",
+        "operator": "陳俊傑 (Jeremy)",
+        "action": "+1"
+      },
       {
         "time": "06/30 12:56",
         "name": "©️張CC～©️",
