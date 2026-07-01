@@ -1242,7 +1242,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782916455401,
+    "lastActiveTime": 1782916479504,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1263,12 +1263,17 @@
           "周哲儁",
           "小高",
           "Sammy Su",
-          "林立峰",
-          "Alfred"
+          "林立峰"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/01 22:34",
+        "name": "Alfred",
+        "operator": "Alfred",
+        "action": "-1"
+      },
       {
         "time": "07/01 22:34",
         "name": "Alfred",
