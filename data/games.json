@@ -639,7 +639,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782869850446,
+    "lastActiveTime": 1782915531769,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -663,7 +663,6 @@
           "Kay",
           "小可愛",
           "小黑",
-          "林立峰",
           "Mia",
           "Kevin",
           "楊程鈞",
@@ -675,6 +674,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/01 22:18",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "-1"
+      },
       {
         "time": "07/01 09:37",
         "name": "登登",
