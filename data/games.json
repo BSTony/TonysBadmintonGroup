@@ -1227,9 +1227,9 @@
     "date": "7/5 (日)",
     "time": "08:00~12:00",
     "location": "南港高中",
-    "fee": "320",
+    "fee": "300",
     "note": "",
-    "tag": "10-11點開冷氣",
+    "tag": "",
     "active": true,
     "startTime": 1782796286490,
     "lastActiveTime": 1782804425079,
@@ -1322,7 +1322,8 @@
         "operator": "謝東霖 Tony",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1782799318626962": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
