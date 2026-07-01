@@ -1242,7 +1242,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782901477975,
+    "lastActiveTime": 1782915663320,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1262,11 +1262,18 @@
           "CC",
           "周哲儁",
           "小高",
-          "Sammy Su"
+          "Sammy Su",
+          "林立峰"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/01 22:21",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1"
+      },
       {
         "time": "07/01 18:24",
         "name": "Sammy Su",
