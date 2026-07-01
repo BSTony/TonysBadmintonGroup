@@ -1232,7 +1232,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782804425079,
+    "lastActiveTime": 1782901477975,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1251,11 +1251,18 @@
           "Kay",
           "CC",
           "周哲儁",
-          "小高"
+          "小高",
+          "Sammy Su"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/01 18:24",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "+1"
+      },
       {
         "time": "06/30 15:27",
         "name": "小高",
