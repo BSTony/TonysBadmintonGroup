@@ -1177,7 +1177,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 9,
+        "limit": 7,
         "backupLimit": 5,
         "label": "",
         "list": [
@@ -1213,7 +1213,8 @@
         "operator": "林煥杰",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1782796286490821": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
