@@ -639,7 +639,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782915531769,
+    "lastActiveTime": 1782946329432,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -669,11 +669,18 @@
           "陳呈",
           "TU",
           "豪",
-          "登登"
+          "登登",
+          "Jimmy"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 06:52",
+        "name": "Jimmy",
+        "operator": "Jimmy",
+        "action": "+1"
+      },
       {
         "time": "07/01 22:18",
         "name": "林立峰",
