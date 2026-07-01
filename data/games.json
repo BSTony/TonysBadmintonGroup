@@ -249,7 +249,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782724616333,
+    "lastActiveTime": 1782910784623,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -291,7 +291,6 @@
           "Ong",
           "柚子",
           "花花",
-          "小黑",
           "Tank Lin",
           "John",
           "Howard",
@@ -307,6 +306,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/01 20:59",
+        "name": "小黑",
+        "operator": "陳宜蓁",
+        "action": "-1"
+      },
       {
         "time": "06/29 17:16",
         "name": "Win Shu",
