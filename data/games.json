@@ -249,7 +249,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782978321751,
+    "lastActiveTime": 1782979129271,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -302,11 +302,18 @@
           "Emily",
           "紀凡",
           "小洋",
-          "Win Shu"
+          "Win Shu",
+          "鐘順立"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 15:58",
+        "name": "鐘順立",
+        "operator": "鐘順立",
+        "action": "+1"
+      },
       {
         "time": "07/01 20:59",
         "name": "小黑",
