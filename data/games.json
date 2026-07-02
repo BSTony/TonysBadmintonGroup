@@ -393,7 +393,8 @@
         "name": "Howard",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": true
   },
   "1782403585583866": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
