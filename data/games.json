@@ -1249,13 +1249,15 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782958579574,
+    "lastActiveTime": 1782961445159,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "詹敬智(胞弟)": "7"
+    },
     "paidMap": {},
     "sections": [
       {
@@ -1271,11 +1273,18 @@
           "小高",
           "Sammy Su",
           "林立峰",
-          "Hsin"
+          "Hsin",
+          "詹敬智(胞弟)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 11:04",
+        "name": "詹敬智(胞弟)",
+        "operator": "詹敬智(胞弟)",
+        "action": "+1"
+      },
       {
         "time": "07/02 10:16",
         "name": "Hsin",
