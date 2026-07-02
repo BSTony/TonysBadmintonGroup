@@ -1336,7 +1336,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       throw new Error(data.error || '操作失敗');
     }
 
-    // 自動推播名單機制：優先使用 liff.sendMessages，失敗時由後端備援推播
+    // 自動推播名單機制：優先使用 liff.sendMessages
     if (data.triggerBumpMsg) {
       let sendSuccess = false;
       
@@ -1347,25 +1347,13 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
           console.log('自動發話成功');
           sendSuccess = true;
         } catch (e) {
-          console.error('liff.sendMessages 失敗，啟用備援推播:', e);
+          console.error('liff.sendMessages 失敗:', e);
         }
       }
       
-      // 備援：如果 liff.sendMessages 不可用或失敗，呼叫後端直接推播
+      // 如果 liff.sendMessages 不可用或失敗，跳出警告提醒使用者
       if (!sendSuccess) {
-        try {
-          await fetch('/api/fallback-push', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              gameId: gameId,
-              triggerBumpMsg: data.triggerBumpMsg
-            })
-          });
-          console.log('備援推播已觸發');
-        } catch (e) {
-          console.error('備援推播也失敗:', e);
-        }
+        alert('【系統提醒】\n因為您目前使用的裝置或環境無法自動發話，雖然您的報名/取消已成功，但機器人不會在群組推播。\n\n為了讓大家知道最新狀況，請您回到聊天室手動輸入「+1」或「-1」！');
       }
     }
     
