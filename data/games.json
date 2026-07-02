@@ -249,7 +249,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782999148182,
+    "lastActiveTime": 1782999152005,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -275,7 +275,8 @@
       "海棠": true,
       "鐘順立": true,
       "莎莎": true,
-      "Emily": true
+      "Emily": true,
+      "Winnie": true
     },
     "sections": [
       {
