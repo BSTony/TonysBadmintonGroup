@@ -249,7 +249,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1783000647250,
+    "lastActiveTime": 1783000713136,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -278,7 +278,7 @@
       "Emily": true,
       "Winnie": true,
       "Win Shu": true,
-      "John": false,
+      "John": true,
       "紀凡": true
     },
     "sections": [
