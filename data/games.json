@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1782946329432,
+    "lastActiveTime": 1783035270855,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -691,11 +691,18 @@
           "TU",
           "豪",
           "登登",
-          "Jimmy"
+          "Jimmy",
+          "冠銘"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/03 07:34",
+        "name": "冠銘",
+        "operator": "冠銘",
+        "action": "+1"
+      },
       {
         "time": "07/02 06:52",
         "name": "Jimmy",
