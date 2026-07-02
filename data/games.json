@@ -1249,7 +1249,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782916479504,
+    "lastActiveTime": 1782958579574,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1270,11 +1270,18 @@
           "周哲儁",
           "小高",
           "Sammy Su",
-          "林立峰"
+          "林立峰",
+          "Hsin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 10:16",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "+1"
+      },
       {
         "time": "07/01 22:34",
         "name": "Alfred",
