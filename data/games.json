@@ -249,7 +249,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782991092429,
+    "lastActiveTime": 1782993356405,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -271,7 +271,8 @@
       "Wayne": true,
       "Ong": true,
       "陳呈友": true,
-      "小洋": true
+      "小洋": true,
+      "海棠": true
     },
     "sections": [
       {
