@@ -1266,7 +1266,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782963859754,
+    "lastActiveTime": 1783000022600,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1293,11 +1293,18 @@
           "Hsin",
           "詹敬智(胞弟)",
           "King",
-          "Alice"
+          "Alice",
+          "Kevin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 21:47",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1"
+      },
       {
         "time": "07/02 11:44",
         "name": "Alice",
