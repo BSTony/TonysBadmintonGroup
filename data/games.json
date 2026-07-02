@@ -1204,13 +1204,15 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1783000783358,
+    "lastActiveTime": 1783005334689,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "ALAN LIU": "9"
+    },
     "paidMap": {},
     "sections": [
       {
@@ -1223,11 +1225,18 @@
           "(AK) Seth Hu",
           "小金(Chen Pei Hung)",
           "JoeLin",
-          "wayne"
+          "wayne",
+          "ALAN LIU"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 23:15",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1"
+      },
       {
         "time": "07/02 21:59",
         "name": "wayne",
