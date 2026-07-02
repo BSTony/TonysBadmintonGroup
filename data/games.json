@@ -249,7 +249,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1783002371067,
+    "lastActiveTime": 1783002374863,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -281,7 +281,8 @@
       "John": true,
       "紀凡": true,
       "柚子": true,
-      "Howard": true
+      "Howard": true,
+      "花花": true
     },
     "sections": [
       {
