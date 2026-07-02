@@ -1273,7 +1273,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783000030837,
+    "lastActiveTime": 1783000817838,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1302,11 +1302,18 @@
           "King",
           "Alice",
           "Kevin",
-          "Mia"
+          "Mia",
+          "小洋"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 22:00",
+        "name": "小洋",
+        "operator": "Wayne",
+        "action": "+1"
+      },
       {
         "time": "07/02 21:47",
         "name": "Mia",
