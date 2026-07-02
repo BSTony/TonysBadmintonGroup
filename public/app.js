@@ -1338,22 +1338,14 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
 
     // 自動推播名單機制：優先使用 liff.sendMessages
     if (data.triggerBumpMsg) {
-      let sendSuccess = false;
-      
       // 嘗試用 liff.sendMessages（僅在 LINE 手機版內建瀏覽器中才有效）
       if (typeof liff !== 'undefined' && liff.isInClient()) {
         try {
           await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg + '\n\n[系統代發]' }]);
           console.log('自動發話成功');
-          sendSuccess = true;
         } catch (e) {
           console.error('liff.sendMessages 失敗:', e);
         }
-      }
-      
-      // 如果 liff.sendMessages 不可用或失敗，跳出警告提醒使用者
-      if (!sendSuccess) {
-        alert('【系統提醒】\n因為您目前使用的裝置或環境無法自動發話，雖然您的報名/取消已成功，但機器人不會在群組推播。\n\n為了讓大家知道最新狀況，請您回到聊天室手動輸入「+1」或「-1」！');
       }
     }
     
