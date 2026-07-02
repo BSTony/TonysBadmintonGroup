@@ -1200,7 +1200,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1782813189284,
+    "lastActiveTime": 1783000783358,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1218,11 +1218,18 @@
           "林煥杰",
           "(AK) Seth Hu",
           "小金(Chen Pei Hung)",
-          "JoeLin"
+          "JoeLin",
+          "wayne"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 21:59",
+        "name": "wayne",
+        "operator": "Wayne",
+        "action": "+1"
+      },
       {
         "time": "06/30 17:53",
         "name": "JoeLin",
