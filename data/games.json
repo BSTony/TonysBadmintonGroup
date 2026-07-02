@@ -1266,7 +1266,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783000022600,
+    "lastActiveTime": 1783000030837,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1294,11 +1294,18 @@
           "詹敬智(胞弟)",
           "King",
           "Alice",
-          "Kevin"
+          "Kevin",
+          "Mia"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 21:47",
+        "name": "Mia",
+        "operator": "賴鈺臻",
+        "action": "+1"
+      },
       {
         "time": "07/02 21:47",
         "name": "Kevin",
