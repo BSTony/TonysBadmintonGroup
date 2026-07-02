@@ -249,7 +249,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1782402786337,
-    "lastActiveTime": 1782979129271,
+    "lastActiveTime": 1782991092429,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -270,7 +270,8 @@
       "Mina": true,
       "Wayne": true,
       "Ong": true,
-      "陳呈友": true
+      "陳呈友": true,
+      "小洋": true
     },
     "sections": [
       {
