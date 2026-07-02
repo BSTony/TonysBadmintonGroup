@@ -1249,7 +1249,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1782961445159,
+    "lastActiveTime": 1782963852080,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1274,11 +1274,18 @@
           "Sammy Su",
           "林立峰",
           "Hsin",
-          "詹敬智(胞弟)"
+          "詹敬智(胞弟)",
+          "King"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/02 11:44",
+        "name": "King",
+        "operator": "King",
+        "action": "+1"
+      },
       {
         "time": "07/02 11:04",
         "name": "詹敬智(胞弟)",
