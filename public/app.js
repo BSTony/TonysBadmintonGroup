@@ -1336,23 +1336,36 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       throw new Error(data.error || '操作失敗');
     }
 
-    // 自動推播名單機制：使用 liff.sendMessages 觸發後端免費回覆
-    if (typeof liff !== 'undefined' && liff.isInClient() && (data.triggerBumpMsgs || data.triggerBumpMsg)) {
-      try {
-        if (data.triggerBumpMsgs && data.triggerBumpMsgs.length > 0) {
-          const msgs = [...data.triggerBumpMsgs];
-          const lastIndex = msgs.length - 1;
-          if (msgs[lastIndex].type === 'text') {
-             msgs[lastIndex].text += '\n\n[系統代發]';
-          }
-          await liff.sendMessages(msgs);
-        } else {
+    // 自動推播名單機制：優先使用 liff.sendMessages，失敗時由後端備援推播
+    if (data.triggerBumpMsg) {
+      let sendSuccess = false;
+      
+      // 嘗試用 liff.sendMessages（僅在 LINE 手機版內建瀏覽器中才有效）
+      if (typeof liff !== 'undefined' && liff.isInClient()) {
+        try {
           await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg + '\n\n[系統代發]' }]);
+          console.log('自動發話成功');
+          sendSuccess = true;
+        } catch (e) {
+          console.error('liff.sendMessages 失敗，啟用備援推播:', e);
         }
-        console.log('自動發話成功');
-      } catch (e) {
-        console.error('自動發話失敗:', e);
-        alert('自動發話失敗！請確認 LINE Developers 後台是否已勾選 chat_message.write 權限。錯誤訊息: ' + e.message);
+      }
+      
+      // 備援：如果 liff.sendMessages 不可用或失敗，呼叫後端直接推播
+      if (!sendSuccess) {
+        try {
+          await fetch('/api/fallback-push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              gameId: gameId,
+              triggerBumpMsg: data.triggerBumpMsg
+            })
+          });
+          console.log('備援推播已觸發');
+        } catch (e) {
+          console.error('備援推播也失敗:', e);
+        }
       }
     }
     

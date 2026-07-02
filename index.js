@@ -1892,7 +1892,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     await saveCurrentListSnapshot(gameId, false);
     
     // 讓所有使用者操作時，都觸發自動發話並帶上精簡資訊
-    if ((action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid') && clientSupportsLiffSendMessage) {
+    if (action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid') {
       const g = games[gameId];
       const sec = g.sections && g.sections[0] ? g.sections[0] : null;
       if (sec) {
@@ -1927,6 +1927,123 @@ app.post('/api/action', express.json(), async (req, res) => {
     });
   } catch (err) {
     console.error('API Action Error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 備援推播：前端 liff.sendMessages 不可用或失敗時，由後端直接推播大廳卡片到群組
+app.post('/api/fallback-push', express.json(), async (req, res) => {
+  try {
+    const { gameId, triggerBumpMsg } = req.body;
+    if (!gameId || !games[gameId]) {
+      return res.status(400).json({ error: '找不到場次' });
+    }
+    
+    const game = games[gameId];
+    const targetGid = (game.targetGids && game.targetGids.length > 0) ? game.targetGids[0] : game.gid;
+    
+    if (!targetGid || !process.env.LIFF_ID) {
+      return res.status(400).json({ error: '缺少群組 ID 或 LIFF_ID' });
+    }
+    
+    const sec = game.sections && game.sections[0] ? game.sections[0] : null;
+    let statusStr = '';
+    if (sec) {
+      const count = sec.list.length;
+      const limit = sec.limit;
+      if (count >= limit) {
+        statusStr = `  滿額`;
+      } else {
+        statusStr = `  缺${limit - count}`;
+      }
+    }
+    
+    const lobbyUrl = `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
+    const gameUrl = `${lobbyUrl}&gameId=${game.gameId}`;
+    
+    let textContent = `${game.title}${statusStr}`;
+    
+    const infoArr = [];
+    if (game.date) infoArr.push(game.date);
+    if (game.time) infoArr.push(game.time);
+    if (game.fee && game.fee !== '未知' && game.fee !== '無' && game.fee !== '0') {
+      let feeStr = String(game.fee).trim();
+      if (!feeStr.endsWith('元')) feeStr += '元';
+      infoArr.push(feeStr);
+    }
+    
+    if (infoArr.length > 0) {
+      textContent += `\n${infoArr.join(' ')}`;
+    }
+    
+    // 加入觸發訊息 (如遞補通知)
+    if (triggerBumpMsg) {
+      textContent += `\n${triggerBumpMsg}`;
+    }
+    
+    const flexMessage = {
+      type: 'flex',
+      altText: `${game.title}${statusStr} - 點我進大廳`,
+      contents: {
+        type: 'bubble',
+        size: 'kilo',
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: textContent,
+              weight: 'bold',
+              wrap: true,
+              size: 'md'
+            }
+          ]
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          spacing: 'sm',
+          contents: [
+            {
+              type: 'button',
+              style: 'primary',
+              height: 'sm',
+              action: {
+                type: 'uri',
+                label: '進入大廳',
+                uri: lobbyUrl
+              }
+            },
+            {
+              type: 'button',
+              style: 'secondary',
+              height: 'sm',
+              action: {
+                type: 'uri',
+                label: '本次名單',
+                uri: gameUrl
+              }
+            }
+          ]
+        }
+      }
+    };
+    
+    // 推播到所有目標群組
+    const pushTargets = game.targetGids || [game.gid];
+    for (const tGid of pushTargets) {
+      try {
+        await client.pushMessage(tGid, flexMessage);
+        console.log(`[Fallback Push] 已推播大廳卡片到群組: ${tGid}`);
+      } catch (e) {
+        console.error(`[Fallback Push] 推播失敗 for ${tGid}:`, e.message);
+      }
+    }
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[Fallback Push] Error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
