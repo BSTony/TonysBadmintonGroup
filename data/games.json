@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783122785894,
+    "lastActiveTime": 1783122826193,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -702,11 +702,18 @@
           "布萊恩",
           "Andrew",
           "東東",
-          "杰穎"
+          "杰穎",
+          "Wie cheng"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/04 07:53",
+        "name": "Wie cheng",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/04 07:53",
         "name": "杰穎",
