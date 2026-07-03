@@ -1987,6 +1987,7 @@ app.post('/api/action', express.json(), async (req, res) => {
   } catch (err) {
     console.error('API Action Error:', err);
     res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 app.post('/webhook', middleware(config), (req, res) => {
