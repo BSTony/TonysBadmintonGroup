@@ -1227,14 +1227,15 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1783005537279,
+    "lastActiveTime": 1783037943026,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {
-      "ALAN LIU": "9"
+      "ALAN LIU": "9",
+      "兔兔": "約5"
     },
     "paidMap": {},
     "sections": [
@@ -1248,11 +1249,18 @@
           "小金(Chen Pei Hung)",
           "JoeLin",
           "wayne",
-          "ALAN LIU"
+          "ALAN LIU",
+          "兔兔"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/03 08:19",
+        "name": "兔兔",
+        "operator": "兔兔(玉儒)",
+        "action": "+1"
+      },
       {
         "time": "07/02 23:18",
         "name": "ALAN LIU",
