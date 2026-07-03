@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783087356029,
+    "lastActiveTime": 1783089881865,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -698,11 +698,18 @@
           "昆泰",
           "育承",
           "郭老師",
-          "布萊恩"
+          "布萊恩",
+          "Andrew"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/03 22:44",
+        "name": "Andrew",
+        "operator": "Andrew Kuo",
+        "action": "+1"
+      },
       {
         "time": "07/03 22:02",
         "name": "布萊恩",
