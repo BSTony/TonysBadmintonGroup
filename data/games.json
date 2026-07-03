@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783119533755,
+    "lastActiveTime": 1783120119979,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -672,7 +672,8 @@
     },
     "paidMap": {
       "Tony": true,
-      "Kay": true
+      "Kay": true,
+      "陳呈": true
     },
     "sections": [
       {
