@@ -1442,8 +1442,8 @@ app.get('/api/lobby_stats/:gid', (req, res) => {
   const gid = req.params.gid;
   const uid = req.query.uid;
   
-  // 驗證是否為該群組的管理員
-  const isAdmin = uid && groupAdmins[gid] && groupAdmins[gid].has(uid);
+  // 驗證是否為該群組的管理員 (允許任何群組的管理員查看)
+  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   if (!isAdmin) {
     return res.status(403).json({ error: '只有管理員能查看大廳分析數據' });
   }
