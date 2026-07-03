@@ -1354,7 +1354,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783078725451,
+    "lastActiveTime": 1783079090102,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1386,11 +1386,18 @@
           "Mia",
           "小洋",
           "Primo",
-          "Nebula"
+          "Nebula",
+          "陳呈"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/03 19:44",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1"
+      },
       {
         "time": "07/03 19:38",
         "name": "Nebula",
