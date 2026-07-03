@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783085288673,
+    "lastActiveTime": 1783087356029,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -697,11 +697,18 @@
           "Allen",
           "昆泰",
           "育承",
-          "郭老師"
+          "郭老師",
+          "布萊恩"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/03 22:02",
+        "name": "布萊恩",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/03 21:28",
         "name": "郭老師",
