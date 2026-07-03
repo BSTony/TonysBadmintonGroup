@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783120119979,
+    "lastActiveTime": 1783122785894,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -701,11 +701,18 @@
           "郭老師",
           "布萊恩",
           "Andrew",
-          "東東"
+          "東東",
+          "杰穎"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/04 07:53",
+        "name": "杰穎",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/04 06:58",
         "name": "東東",
