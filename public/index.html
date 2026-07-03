@@ -27,6 +27,9 @@
         </div>
       </header>
       
+      <!-- 大廳分析按鈕 (僅管理員可見) -->
+      <button id="btn-lobby-stats" class="btn-secondary hidden" style="width:100%; margin-bottom:15px; font-weight:bold; background-color: #2c3e50; color: white;">📊 大廳使用率分析</button>
+      
       <div id="games-container" class="games-list">
         <!-- JS 將在這裡生成卡片 -->
       </div>
@@ -243,6 +246,31 @@
           <textarea id="eg-note" rows="3" placeholder="其他注意事項..."></textarea>
         </div>
         <button id="btn-submit-edit" class="btn-primary" style="margin-top: 15px;">儲存變更</button>
+      </div>
+    </div>
+    <!-- 大廳使用率分析視圖 (僅管理員) -->
+    <div id="stats-view" class="view hidden">
+      <header class="detail-header" style="display:flex; justify-content:flex-start; align-items:center;">
+        <button id="btn-back-stats" class="btn-icon">⬅ 返回</button>
+        <h2 style="margin-left: 10px; margin-bottom: 0;">大廳使用率分析</h2>
+      </header>
+      
+      <div class="detail-stats" style="margin-top: 15px;">
+        <div class="stat-box" style="flex:1;">
+          <span class="stat-label">總觀看次數</span>
+          <span class="stat-value" id="stats-total-views">0</span>
+        </div>
+        <div class="stat-box" style="flex:1;">
+          <span class="stat-label">不重複觀看人數</span>
+          <span class="stat-value" id="stats-unique-users">0</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 5px; color: #2c3e50;">最近造訪紀錄</h3>
+        <div id="stats-logs-list" style="max-height: 400px; overflow-y: auto; padding-top: 10px;">
+          <!-- JS 產生紀錄 -->
+        </div>
       </div>
     </div>
   </div>

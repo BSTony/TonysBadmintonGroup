@@ -161,6 +161,13 @@ const detailTitle = document.getElementById('detail-title');
 const detailCount = document.getElementById('detail-count');
 const detailList = document.getElementById('detail-list');
 
+const statsView = document.getElementById('stats-view');
+const btnLobbyStats = document.getElementById('btn-lobby-stats');
+const btnBackStats = document.getElementById('btn-back-stats');
+const statsTotalViews = document.getElementById('stats-total-views');
+const statsUniqueUsers = document.getElementById('stats-unique-users');
+const statsLogsList = document.getElementById('stats-logs-list');
+
 // 初始化 LIFF
 async function initializeLiff() {
   try {
@@ -199,6 +206,20 @@ async function initializeLiff() {
       currentGroupId = currentUser.userId;
     } else {
       currentGroupId = currentUser.userId;
+    }
+
+    // 紀錄造訪
+    if (currentGroupId && currentUser) {
+      fetch('/api/lobby_visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gid: currentGroupId,
+          userId: currentUser.userId,
+          displayName: currentUser.displayName,
+          pictureUrl: currentUser.pictureUrl
+        })
+      }).catch(e => console.error('Failed to log visit', e));
     }
 
     // 5. 載入大廳資料
@@ -322,6 +343,12 @@ function renderLobby() {
       btnEditDesc.onclick = handleEditLobbyDesc;
     } else if (btnEditDesc) {
       btnEditDesc.classList.add('hidden');
+    }
+
+    if (globalIsAdmin && btnLobbyStats) {
+      btnLobbyStats.classList.remove('hidden');
+    } else if (btnLobbyStats) {
+      btnLobbyStats.classList.add('hidden');
     }
     
     let pushBtn = document.getElementById('admin-create-game-btn');
@@ -2011,3 +2038,66 @@ document.getElementById('btn-submit-edit').onclick = async () => {
 
 
 document.addEventListener('click', (e) => { if (!e.target.closest('.btn-danger')) { document.querySelectorAll('.btn-danger').forEach(b => { if (b.dataset.dodged === 'true') { b.dataset.dodged = 'false'; b.style.transition = 'transform 1s ease'; b.style.transform = 'translate(0px, 0px)'; } }); } });
+
+// 大廳分析邏輯
+if (btnLobbyStats) {
+  btnLobbyStats.addEventListener('click', async () => {
+    appDiv.className = 'loading';
+    statusMsg.innerText = '讀取分析資料中...';
+    statusMsg.style.display = 'block';
+    
+    try {
+      const res = await fetch(`/api/lobby_stats/${currentGroupId}?uid=${currentUser.userId}`);
+      if (!res.ok) throw new Error('無法取得分析資料');
+      const data = await res.json();
+      
+      statsTotalViews.innerText = data.stats.viewCount || 0;
+      statsUniqueUsers.innerText = data.stats.uniqueViewersCount || 0;
+      
+      statsLogsList.innerHTML = '';
+      if (data.stats.recentVisits && data.stats.recentVisits.length > 0) {
+        data.stats.recentVisits.forEach(log => {
+          const d = new Date(log.time);
+          const timeStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+          
+          const item = document.createElement('div');
+          item.style.display = 'flex';
+          item.style.alignItems = 'center';
+          item.style.padding = '8px 0';
+          item.style.borderBottom = '1px solid #f0f0f0';
+          
+          let imgHtml = '';
+          if (log.pictureUrl) {
+            imgHtml = `<img src="${log.pictureUrl}" style="width:24px; height:24px; border-radius:50%; margin-right:8px;">`;
+          } else {
+            imgHtml = `<div style="width:24px; height:24px; border-radius:50%; background:#ccc; margin-right:8px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff;">👤</div>`;
+          }
+          
+          item.innerHTML = `
+            <div style="color:#888; font-size:12px; margin-right:10px; width:70px;">${timeStr}</div>
+            ${imgHtml}
+            <div style="font-weight:500;">${log.displayName}</div>
+          `;
+          statsLogsList.appendChild(item);
+        });
+      } else {
+        statsLogsList.innerHTML = '<div style="color:#999; text-align:center; padding:20px;">尚無紀錄</div>';
+      }
+      
+      lobbyView.classList.add('hidden');
+      statsView.classList.remove('hidden');
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      appDiv.className = '';
+      statusMsg.style.display = 'none';
+    }
+  });
+}
+
+if (btnBackStats) {
+  btnBackStats.addEventListener('click', () => {
+    statsView.classList.add('hidden');
+    lobbyView.classList.remove('hidden');
+  });
+}

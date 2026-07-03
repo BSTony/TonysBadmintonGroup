@@ -24,6 +24,9 @@ const GROUP_SETTINGS_FILE = path.join(__dirname, 'data/groupSettings.json');
 const ROSTER_TEMPLATES_FILE = path.join(__dirname, 'data/rosterTemplates.json');
 const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
+const LOBBY_VISITS_FILE = path.join(DATA_DIR, 'lobbyVisits.json');
+
+let lobbyVisits = {}; // { gid: { viewCount: 0, uniqueViewers: {}, logs: [] } }
 
 // 讀取既有設定
 let adminsSha = null;
@@ -57,6 +60,11 @@ async function loadData() {
   if (fs.existsSync(ROSTER_TEMPLATES_FILE)) {
     try {
       rosterTemplates = JSON.parse(fs.readFileSync(ROSTER_TEMPLATES_FILE, 'utf8'));
+    } catch(e) {}
+  }
+  if (fs.existsSync(LOBBY_VISITS_FILE)) {
+    try {
+      lobbyVisits = JSON.parse(fs.readFileSync(LOBBY_VISITS_FILE, 'utf8'));
     } catch(e) {}
   }
 
@@ -1397,6 +1405,57 @@ app.get('/api/game/:gid', async (req, res) => {
 });
 
 // 取得特定群組的預設名單範本
+// 大廳點擊紀錄與分析
+app.post('/api/lobby_visit', express.json(), (req, res) => {
+  const { gid, userId, displayName, pictureUrl } = req.body;
+  if (!gid || !userId) return res.json({ success: false });
+
+  if (!lobbyVisits[gid]) {
+    lobbyVisits[gid] = { viewCount: 0, uniqueViewers: {}, logs: [] };
+  }
+  
+  const groupStats = lobbyVisits[gid];
+  groupStats.viewCount++;
+  
+  if (!groupStats.uniqueViewers[userId]) {
+    groupStats.uniqueViewers[userId] = { displayName, firstVisit: Date.now(), count: 0 };
+  }
+  groupStats.uniqueViewers[userId].displayName = displayName; // update latest name
+  groupStats.uniqueViewers[userId].lastVisit = Date.now();
+  groupStats.uniqueViewers[userId].count++;
+
+  // 記錄最近的造訪
+  groupStats.logs.unshift({ time: Date.now(), userId, displayName, pictureUrl });
+  
+  // 保留最近 200 筆即可，避免無限制長大
+  if (groupStats.logs.length > 200) {
+    groupStats.logs = groupStats.logs.slice(0, 200);
+  }
+
+  // 寫入檔案
+  fs.writeFile(LOBBY_VISITS_FILE, JSON.stringify(lobbyVisits, null, 2), () => {});
+  
+  res.json({ success: true });
+});
+
+app.get('/api/lobby_stats/:gid', (req, res) => {
+  const gid = req.params.gid;
+  const uid = req.query.uid;
+  
+  // 驗證是否為該群組的管理員
+  const isAdmin = uid && groupAdmins[gid] && groupAdmins[gid].has(uid);
+  if (!isAdmin) {
+    return res.status(403).json({ error: '只有管理員能查看大廳分析數據' });
+  }
+  
+  const stats = lobbyVisits[gid] || { viewCount: 0, uniqueViewers: {}, logs: [] };
+  res.json({ success: true, stats: {
+    viewCount: stats.viewCount,
+    uniqueViewersCount: Object.keys(stats.uniqueViewers).length,
+    recentVisits: stats.logs
+  }});
+});
+
 app.get('/api/templates/:gid', (req, res) => {
   const gid = req.params.gid;
   const templates = rosterTemplates[gid] || {};
