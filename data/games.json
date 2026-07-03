@@ -1227,7 +1227,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1783037943026,
+    "lastActiveTime": 1783039690790,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1250,11 +1250,18 @@
           "JoeLin",
           "wayne",
           "ALAN LIU",
-          "兔兔"
+          "兔兔",
+          "詩翰"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/03 08:48",
+        "name": "詩翰",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/03 08:19",
         "name": "兔兔",
