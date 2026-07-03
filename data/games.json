@@ -1354,7 +1354,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783000817838,
+    "lastActiveTime": 1783070423385,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1384,11 +1384,18 @@
           "Alice",
           "Kevin",
           "Mia",
-          "小洋"
+          "小洋",
+          "Primo"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/03 17:20",
+        "name": "Primo",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/02 22:00",
         "name": "小洋",
