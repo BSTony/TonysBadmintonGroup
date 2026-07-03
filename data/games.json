@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783082555015,
+    "lastActiveTime": 1783085288673,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -696,11 +696,18 @@
           "冠銘",
           "Allen",
           "昆泰",
-          "育承"
+          "育承",
+          "郭老師"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/03 21:28",
+        "name": "郭老師",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/03 20:42",
         "name": "育承",
