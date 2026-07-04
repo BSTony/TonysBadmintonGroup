@@ -2834,6 +2834,7 @@ async function handleEvent(event) {
                 { type: "text", text: titleText, weight: "bold", size: "sm", color: "#333333", flex: 1, wrap: true },
                 { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "sm", align: "end" }
               ]
+            }
           ]
         });
       });
