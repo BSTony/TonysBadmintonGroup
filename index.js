@@ -2834,18 +2834,19 @@ async function handleEvent(event) {
                 { type: "text", text: titleText, weight: "bold", size: "sm", color: "#333333", flex: 1, wrap: true },
                 { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "sm", align: "end" }
               ]
-            },
-            {
-              type: "box",
-              layout: "horizontal",
-              margin: "sm",
-              contents: [
-                { type: "text", text: "點此查看詳細名單 👆", size: "xs", color: "#888888", flex: 1 },
-                { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, align: "end" }
-              ]
-            }
           ]
         });
+      });
+
+      // 在最下方加入一次性的提示文字
+      flexContents.push({
+        type: "box",
+        layout: "horizontal",
+        margin: "lg",
+        justifyContent: "center",
+        contents: [
+          { type: "text", text: "點選上方場次查看詳細名單 👆", size: "xs", color: "#888888", align: "center" }
+        ]
       });
 
       const flexMessage = {
