@@ -1312,7 +1312,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1783209394704,
+    "lastActiveTime": 1783209396976,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1324,7 +1324,8 @@
     },
     "paidMap": {
       "JoeLin": true,
-      "wayne": true
+      "wayne": true,
+      "ALAN LIU": true
     },
     "sections": [
       {
