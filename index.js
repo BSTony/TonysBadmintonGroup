@@ -34,7 +34,9 @@ let codesSha = null;
 let settingsSha = null;
 let templatesSha = null;
 let gamesSha = null; // GitHub games.json 的 SHA
+let visitsSha = null; // GitHub lobbyVisits.json 的 SHA
 let gamesSaveChain = Promise.resolve(); // 防併發串行保存
+let lobbyVisitClickCount = 0;
 
 async function loadData() {
   // Load from local fallback first
@@ -128,6 +130,15 @@ async function loadData() {
         console.log(`已從 GitHub 載入 ${Object.keys(parsedGames).length} 筆場次資料`);
       }
     } catch(e) { console.error('無法從 GitHub 讀取 games.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 lobbyVisits.json...');
+      const visitsRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/lobbyVisits.json?ref=${GITHUB_BRANCH}`);
+      if (visitsRes.content) {
+        visitsSha = visitsRes.sha;
+        lobbyVisits = JSON.parse(Buffer.from(visitsRes.content, 'base64').toString('utf8'));
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 lobbyVisits.json:', e.message); }
   }
 }
 
@@ -208,6 +219,24 @@ async function saveRosterTemplates() {
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/rosterTemplates.json`, payload);
       if (res.content && res.content.sha) templatesSha = res.content.sha;
     } catch(e) { console.error('備份 rosterTemplates 至 GitHub 失敗:', e.message); }
+  }
+}
+
+async function saveLobbyVisits() {
+  const jsonStr = JSON.stringify(lobbyVisits, null, 2);
+  await fs.promises.writeFile(LOBBY_VISITS_FILE, jsonStr, 'utf8');
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update lobbyVisits',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (visitsSha) payload.sha = visitsSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/lobbyVisits.json`, payload);
+      if (res.content && res.content.sha) visitsSha = res.content.sha;
+    } catch(e) { console.error('備份 lobbyVisits 至 GitHub 失敗:', e.message); }
   }
 }
 
@@ -1434,6 +1463,12 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
 
   // 寫入檔案
   fs.writeFile(LOBBY_VISITS_FILE, JSON.stringify(lobbyVisits, null, 2), () => {});
+  
+  lobbyVisitClickCount++;
+  if (lobbyVisitClickCount >= 100) {
+    lobbyVisitClickCount = 0;
+    saveLobbyVisits().catch(e => console.error(e));
+  }
   
   res.json({ success: true });
 });
