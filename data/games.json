@@ -1439,7 +1439,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783209233413,
+    "lastActiveTime": 1783209345663,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1453,8 +1453,7 @@
     "paidMap": {
       "Tony": true,
       "Kay": true,
-      "小洋": true,
-      "Wayne": true
+      "小洋": true
     },
     "sections": [
       {
@@ -1487,12 +1486,17 @@
           "陳沛君",
           "L",
           "東東",
-          "Jimmy",
-          "Wayne"
+          "Jimmy"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/05 07:55",
+        "name": "Wayne",
+        "operator": "Kay",
+        "action": "-1"
+      },
       {
         "time": "07/05 07:53",
         "name": "Wayne",
