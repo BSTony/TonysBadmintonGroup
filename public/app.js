@@ -2071,7 +2071,7 @@ if (btnLobbyStats) {
             statsView.classList.add('hidden');
             lobbyView.classList.remove('hidden');
             currentGroupId = stat.gid;
-            loadGames(); // Reload games for the selected group
+            loadGamesLobby(); // Reload games for the selected group
           };
           
           header.appendChild(title);
