@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783131680221,
+    "lastActiveTime": 1783136447323,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -700,7 +700,6 @@
           "Tony",
           "Kay",
           "小可愛",
-          "小黑",
           "Mia",
           "Kevin",
           "楊程鈞",
@@ -723,6 +722,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/04 11:40",
+        "name": "小黑",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/04 09:06",
         "name": "Wie cheng",
