@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783126808850,
+    "lastActiveTime": 1783126821259,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -679,7 +679,8 @@
       "布萊恩": true,
       "Jimmy": true,
       "育承": true,
-      "東東": true
+      "東東": true,
+      "冠銘": true
     },
     "sections": [
       {
