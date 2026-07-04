@@ -2279,6 +2279,7 @@ async function handleEvent(event) {
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   const isPublicCommand = text.startsWith('接龍名單') || 
                           text === '接龍狀態' || 
+                          text === '接龍狀況' || 
                           text === '接龍查詢' || 
                           text === '大廳' || 
                           text === '接龍大廳';
@@ -2788,8 +2789,90 @@ async function handleEvent(event) {
       return await sendLobbyLink(event.replyToken, gid, `✏️ 已成功修改場次：${targetGame.title}`);
     }
 
-    if (text === '接龍名單' || text === '接龍狀態' || text === '接龍查詢') {
+    if (text === '接龍名單' || text === '接龍狀態' || text === '接龍查詢' || text === '大廳' || text === '接龍大廳') {
       return await sendLobbyLink(event.replyToken, gid);
+    }
+    
+    if (text === '接龍狀況') {
+      const targetGames = Object.values(games)
+        .filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded && !isGameExpired(g))
+        .sort((a, b) => a.date && b.date ? a.date.localeCompare(b.date) : 0);
+        
+      if (targetGames.length === 0) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '目前沒有進行中的場次喔！' });
+      }
+
+      const liffBaseUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${gid}` : null;
+      if (!liffBaseUrl) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '尚未設定大廳網址 (LIFF_ID)' });
+      }
+
+      const flexContents = [
+        {
+          type: "box",
+          layout: "horizontal",
+          alignItems: "center",
+          contents: [
+            { type: "text", text: "羽球接龍大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
+            {
+              type: "button",
+              style: "primary",
+              color: "#1DB446",
+              height: "sm",
+              action: { type: "uri", label: "開啟大廳", uri: liffBaseUrl },
+              flex: 0
+            }
+          ],
+          paddingBottom: "10px"
+        },
+        { type: "separator", color: "#eeeeee" }
+      ];
+
+      targetGames.forEach((g, index) => {
+        if (index > 10) return; // 避免超過 flex message 上限
+        const sec = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 0 };
+        const count = sec.list.length;
+        const limit = sec.limit || 0;
+        const isFull = limit > 0 && count >= limit;
+        const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
+        const titleText = g.title || g.date || '場次';
+        
+        flexContents.push({
+          type: "box",
+          layout: "horizontal",
+          margin: "md",
+          alignItems: "center",
+          contents: [
+            { type: "text", text: titleText, weight: "bold", size: "sm", flex: 2, wrap: true, color: "#333333" },
+            { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#666666", flex: 1, align: "end", margin: "sm" },
+            {
+              type: "button",
+              style: "secondary",
+              height: "sm",
+              flex: 1,
+              margin: "md",
+              action: { type: "uri", label: "名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` }
+            }
+          ]
+        });
+      });
+
+      const flexMessage = {
+        type: "flex",
+        altText: "目前接龍狀況",
+        contents: {
+          type: "bubble",
+          size: "mega",
+          body: {
+            type: "box",
+            layout: "vertical",
+            paddingAll: "20px",
+            contents: flexContents
+          }
+        }
+      };
+
+      return await client.replyMessage(event.replyToken, flexMessage);
     }
     
     // 如果使用者輸入 +1 / -1，提示他們使用 LIFF
