@@ -1439,7 +1439,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783163066723,
+    "lastActiveTime": 1783168899101,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1473,11 +1473,18 @@
           "Nebula",
           "陳呈",
           "Wang",
-          "Chris Chen"
+          "Chris Chen",
+          "昊平"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/04 20:41",
+        "name": "昊平",
+        "operator": "昊平",
+        "action": "+1"
+      },
       {
         "time": "07/04 19:04",
         "name": "詹敬智(胞弟)",
