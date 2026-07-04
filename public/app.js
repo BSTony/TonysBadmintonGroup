@@ -2043,6 +2043,32 @@ if (btnLobbyStats) {
       statsGroupsContainer.innerHTML = '';
       
       if (data.allStats && data.allStats.length > 0) {
+        let totalViews = 0;
+        let totalUniques = 0;
+        data.allStats.forEach(s => {
+          totalViews += s.viewCount;
+          totalUniques += s.uniqueCount;
+        });
+        
+        const summaryCard = document.createElement('div');
+        summaryCard.className = 'game-card';
+        summaryCard.style.marginBottom = '20px';
+        summaryCard.style.border = '2px solid #FF9800';
+        summaryCard.innerHTML = `
+          <h3 style="margin:0 0 10px 0; color:#FF9800; text-align:center;">🌟 所有群組總結</h3>
+          <div class="detail-stats" style="margin-top:0;">
+            <div class="stat-box" style="flex:1;">
+              <span class="stat-label">總觀看次數</span>
+              <span class="stat-value">${totalViews}</span>
+            </div>
+            <div class="stat-box" style="flex:1;">
+              <span class="stat-label">總不重複觀看 (人次)</span>
+              <span class="stat-value">${totalUniques}</span>
+            </div>
+          </div>
+        `;
+        statsGroupsContainer.appendChild(summaryCard);
+
         data.allStats.forEach(stat => {
           const card = document.createElement('div');
           card.className = 'game-card'; // Reuse game-card style
@@ -2050,9 +2076,6 @@ if (btnLobbyStats) {
           
           // Card Header
           const header = document.createElement('div');
-          header.style.display = 'flex';
-          header.style.justifyContent = 'space-between';
-          header.style.alignItems = 'center';
           header.style.borderBottom = '1px solid #eee';
           header.style.paddingBottom = '10px';
           header.style.marginBottom = '10px';
@@ -2062,20 +2085,7 @@ if (btnLobbyStats) {
           title.style.color = '#2c3e50';
           title.innerText = stat.groupName || stat.gid;
           
-          const manageBtn = document.createElement('button');
-          manageBtn.className = 'btn-primary';
-          manageBtn.style.padding = '4px 8px';
-          manageBtn.style.fontSize = '12px';
-          manageBtn.innerText = '管理此群組';
-          manageBtn.onclick = () => {
-            statsView.classList.add('hidden');
-            lobbyView.classList.remove('hidden');
-            currentGroupId = stat.gid;
-            loadGamesLobby(); // Reload games for the selected group
-          };
-          
           header.appendChild(title);
-          header.appendChild(manageBtn);
           card.appendChild(header);
           
           // Stats Row
