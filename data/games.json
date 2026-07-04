@@ -1439,7 +1439,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783171245565,
+    "lastActiveTime": 1783171246893,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1449,7 +1449,8 @@
       "詹敬智(胞弟)": "7"
     },
     "paidMap": {
-      "Tony": true
+      "Tony": true,
+      "Kay": true
     },
     "sections": [
       {
