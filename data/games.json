@@ -1439,7 +1439,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783079090102,
+    "lastActiveTime": 1783152136678,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1472,11 +1472,18 @@
           "小洋",
           "Primo",
           "Nebula",
-          "陳呈"
+          "陳呈",
+          "Wang"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/04 16:02",
+        "name": "Wang",
+        "operator": "Wang",
+        "action": "+1"
+      },
       {
         "time": "07/03 19:44",
         "name": "陳呈",
