@@ -1938,7 +1938,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783170454066,
+    "lastActiveTime": 1783170455577,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1947,7 +1947,7 @@
     "levelMap": {},
     "paidMap": {
       "Tony": true,
-      "Kay": false
+      "Kay": true
     },
     "sections": [
       {
