@@ -1938,7 +1938,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783170458129,
+    "lastActiveTime": 1783170459787,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1948,7 +1948,7 @@
     "paidMap": {
       "Tony": true,
       "Kay": true,
-      "陳呈": true
+      "陳呈": false
     },
     "sections": [
       {
