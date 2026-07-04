@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783128971532,
+    "lastActiveTime": 1783131151535,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -686,7 +686,8 @@
       "TU": true,
       "登登": true,
       "豪": true,
-      "小可愛": true
+      "小可愛": true,
+      "Andrew": true
     },
     "sections": [
       {
