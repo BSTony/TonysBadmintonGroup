@@ -2845,7 +2845,7 @@ async function handleEvent(event) {
           alignItems: "center",
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
           contents: [
-            { type: "text", text: combinedTitle, size: "sm", color: "#333333", flex: 1, wrap: false, weight: "bold" },
+            { type: "text", text: combinedTitle, size: "sm", color: "#333333", flex: 1, wrap: true, weight: "bold" },
             { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
             { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm" }
           ]
