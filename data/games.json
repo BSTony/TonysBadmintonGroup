@@ -1439,14 +1439,15 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783171246893,
+    "lastActiveTime": 1783171926445,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {
-      "詹敬智(胞弟)": "7"
+      "詹敬智(胞弟)": "7",
+      "陳沛君": "5"
     },
     "paidMap": {
       "Tony": true,
@@ -1479,11 +1480,18 @@
           "Chris Chen",
           "昊平",
           "豪",
-          "小黑"
+          "小黑",
+          "陳沛君"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/04 21:32",
+        "name": "陳沛君",
+        "operator": "陳沛君",
+        "action": "+1"
+      },
       {
         "time": "07/04 21:07",
         "name": "小黑",
