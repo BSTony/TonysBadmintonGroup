@@ -1439,7 +1439,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783176478481,
+    "lastActiveTime": 1783209181935,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1452,7 +1452,8 @@
     },
     "paidMap": {
       "Tony": true,
-      "Kay": true
+      "Kay": true,
+      "小洋": true
     },
     "sections": [
       {
