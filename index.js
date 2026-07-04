@@ -2794,9 +2794,22 @@ async function handleEvent(event) {
     }
     
     if (text === '接龍狀況') {
+      const getGameTime = (g) => {
+        let t = 0;
+        if (g.date) {
+          let dStr = g.date.trim();
+          if (dStr.match(/^\d{1,2}\/\d{1,2}$/)) {
+            dStr = new Date().getFullYear() + '/' + dStr;
+          }
+          const pd = new Date(`${dStr} ${g.time || ''}`.trim());
+          if (!isNaN(pd.getTime())) t = pd.getTime();
+        }
+        return t === 0 ? (g.startTime || 0) : t;
+      };
+
       const targetGames = Object.values(games)
         .filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded)
-        .sort((a, b) => a.date && b.date ? a.date.localeCompare(b.date) : 0);
+        .sort((a, b) => getGameTime(a) - getGameTime(b));
         
       if (targetGames.length === 0) {
         return client.replyMessage(event.replyToken, { type: 'text', text: '目前沒有進行中的場次喔！' });
@@ -2816,8 +2829,15 @@ async function handleEvent(event) {
         const limit = sec.limit || 0;
         const isFull = limit > 0 && count >= limit;
         const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
+        const dateStr = [g.date, g.time].filter(Boolean).join(' ');
         const titleText = g.title || g.date || '場次';
         
+        const titleBoxContents = [];
+        if (dateStr && dateStr !== g.title) {
+          titleBoxContents.push({ type: "text", text: `📅 ${dateStr}`, size: "xs", color: "#1DB446", weight: "bold", margin: "none" });
+        }
+        titleBoxContents.push({ type: "text", text: titleText, weight: "bold", size: "sm", color: "#333333", wrap: true });
+
         flexContents.push({
           type: "box",
           layout: "vertical",
@@ -2831,7 +2851,12 @@ async function handleEvent(event) {
               type: "box",
               layout: "horizontal",
               contents: [
-                { type: "text", text: titleText, weight: "bold", size: "sm", color: "#333333", flex: 1, wrap: true },
+                {
+                  type: "box",
+                  layout: "vertical",
+                  flex: 1,
+                  contents: titleBoxContents
+                },
                 { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "sm", align: "end" }
               ]
             }
