@@ -1511,12 +1511,20 @@ app.get('/api/admin/all_stats', async (req, res) => {
   }
 
   let allStats = [];
+  let totalViews = 0;
+  let globalUniqueViewers = new Set();
+
   for (const g of adminGids) {
     await ensureGroupSettings(g);
     const gName = groupSettings[g]?.groupName || groupSettings[g]?.lobbyTitle || g;
     const stats = lobbyVisits[g] || { viewCount: 0, uniqueViewers: {}, logs: [] };
     
     const uniqueCount = Object.keys(stats.uniqueViewers).length;
+    
+    totalViews += stats.viewCount;
+    for (const uid of Object.keys(stats.uniqueViewers)) {
+      globalUniqueViewers.add(uid);
+    }
     
     // Sort logs by time descending (newest first)
     const sortedLogs = [...stats.logs].sort((a, b) => b.time - a.time);
@@ -1530,7 +1538,12 @@ app.get('/api/admin/all_stats', async (req, res) => {
     });
   }
 
-  res.json({ success: true, allStats });
+  res.json({ 
+    success: true, 
+    allStats, 
+    totalViews, 
+    totalUniqueCount: globalUniqueViewers.size 
+  });
 });
 
 app.get('/api/templates/:gid', (req, res) => {

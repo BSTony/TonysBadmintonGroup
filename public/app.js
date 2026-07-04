@@ -2043,12 +2043,8 @@ if (btnLobbyStats) {
       statsGroupsContainer.innerHTML = '';
       
       if (data.allStats && data.allStats.length > 0) {
-        let totalViews = 0;
-        let totalUniques = 0;
-        data.allStats.forEach(s => {
-          totalViews += s.viewCount;
-          totalUniques += s.uniqueCount;
-        });
+        let totalViews = data.totalViews || 0;
+        let totalUniques = data.totalUniqueCount || 0;
         
         const summaryCard = document.createElement('div');
         summaryCard.className = 'game-card';
@@ -2062,7 +2058,7 @@ if (btnLobbyStats) {
               <span class="stat-value">${totalViews}</span>
             </div>
             <div class="stat-box" style="flex:1;">
-              <span class="stat-label">總不重複觀看 (人次)</span>
+              <span class="stat-label">總不重複觀看 (人數)</span>
               <span class="stat-value">${totalUniques}</span>
             </div>
           </div>
