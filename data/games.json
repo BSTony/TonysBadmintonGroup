@@ -1312,7 +1312,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1783209385301,
+    "lastActiveTime": 1783209394704,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1323,7 +1323,8 @@
       "兔兔": "約5"
     },
     "paidMap": {
-      "JoeLin": true
+      "JoeLin": true,
+      "wayne": true
     },
     "sections": [
       {
