@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783138081853,
+    "lastActiveTime": 1783138089407,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -689,7 +689,8 @@
       "小可愛": true,
       "Andrew": true,
       "昆泰": true,
-      "Mia": true
+      "Mia": true,
+      "Kevin": true
     },
     "sections": [
       {
