@@ -1439,7 +1439,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783172880214,
+    "lastActiveTime": 1783174212962,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1482,11 +1482,18 @@
           "豪",
           "小黑",
           "陳沛君",
-          "L"
+          "L",
+          "東東"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/04 22:10",
+        "name": "東東",
+        "operator": "東東",
+        "action": "+1"
+      },
       {
         "time": "07/04 21:48",
         "name": "L",
