@@ -1938,14 +1938,16 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783152139681,
+    "lastActiveTime": 1783170428109,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {},
-    "paidMap": {},
+    "paidMap": {
+      "Tony": true
+    },
     "sections": [
       {
         "title": "報名名單",
