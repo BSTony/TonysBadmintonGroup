@@ -2202,7 +2202,8 @@ async function handleEvent(event) {
   // 只允許管理員下達文字指令 (但開放部分查詢指令給一般群友)
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   
-  const isPlusMinus = text.match(/^\+[1-9]/) || text.match(/^-[1-9]/) || text.match(/\+[1-9]$/) || text.match(/-[1-9]$/) || text.match(/🔄順序更新$/) || text.match(/💰繳費更新$/);
+  const cleanText = text.replace(/\n\n\[系統代發\]$/, '').trim();
+  const isPlusMinus = cleanText.match(/^\+[1-9]/) || cleanText.match(/^-[1-9]/) || cleanText.match(/\+[1-9]$/) || cleanText.match(/-[1-9]$/) || cleanText.match(/🔄順序更新$/) || cleanText.match(/💰繳費更新$/);
   const isPublicCommand = text.startsWith('接龍名單') || 
                           text === '接龍狀態' || 
                           text === '接龍狀況' || 
@@ -2794,7 +2795,7 @@ async function handleEvent(event) {
       });
 
       // 如果這是由 LIFF 系統發送的操作通知，則在最下方顯示出來
-      if (isPlusMinus && text !== '+1' && text !== '-1') {
+      if (isPlusMinus && cleanText !== '+1' && cleanText !== '-1') {
         flexContents.push({
           type: "box",
           layout: "vertical",
@@ -2804,7 +2805,7 @@ async function handleEvent(event) {
           cornerRadius: "md",
           contents: [
             { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446" },
-            { type: "text", text: text, size: "xs", color: "#333333", wrap: true, margin: "sm" }
+            { type: "text", text: cleanText, size: "xs", color: "#333333", wrap: true, margin: "sm" }
           ]
         });
       }
