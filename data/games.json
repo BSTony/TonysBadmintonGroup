@@ -1312,7 +1312,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796232775,
-    "lastActiveTime": 1783039690790,
+    "lastActiveTime": 1783209385301,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1322,7 +1322,9 @@
       "ALAN LIU": "9",
       "兔兔": "約5"
     },
-    "paidMap": {},
+    "paidMap": {
+      "JoeLin": true
+    },
     "sections": [
       {
         "title": "報名名單",
