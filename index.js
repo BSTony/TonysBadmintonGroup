@@ -1358,9 +1358,10 @@ app.get('/api/game/:gid', async (req, res) => {
           const gName = groupSettings[g]?.groupName || g;
           managedGroups.push({ gid: g, code: c, groupName: gName });
         }
-      } else if (g === gid) {
-        const gName = groupSettings[g]?.groupName || '目前群組';
-        managedGroups.push({ gid: g, code: '目前群組', groupName: gName });
+      } else {
+        await ensureGroupSettings(g);
+        const gName = groupSettings[g]?.groupName || '未命名群組';
+        managedGroups.push({ gid: g, code: g === gid ? '目前群組' : '無代碼', groupName: gName });
       }
     }
   }
