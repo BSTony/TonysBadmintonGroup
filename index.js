@@ -2834,7 +2834,7 @@ async function handleEvent(event) {
         
         let combinedTitle = titleText;
         if (g.date && g.date !== g.title) {
-          combinedTitle = `[${g.date}] ${titleText}`;
+          combinedTitle = `${g.date} ${titleText}`;
         }
 
         flexContents.push({
