@@ -2795,7 +2795,7 @@ async function handleEvent(event) {
     
     if (text === '接龍狀況') {
       const targetGames = Object.values(games)
-        .filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded && !isGameExpired(g))
+        .filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded)
         .sort((a, b) => a.date && b.date ? a.date.localeCompare(b.date) : 0);
         
       if (targetGames.length === 0) {
