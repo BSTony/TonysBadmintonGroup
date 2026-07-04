@@ -1439,7 +1439,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783170421068,
+    "lastActiveTime": 1783171245565,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1448,7 +1448,9 @@
     "levelMap": {
       "詹敬智(胞弟)": "7"
     },
-    "paidMap": {},
+    "paidMap": {
+      "Tony": true
+    },
     "sections": [
       {
         "title": "報名名單",
