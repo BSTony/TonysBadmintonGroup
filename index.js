@@ -2834,28 +2834,39 @@ async function handleEvent(event) {
         const count = sec.list.length;
         const limit = sec.limit || 0;
         const isFull = limit > 0 && count >= limit;
-        const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
+        const statusText = isFull ? '滿團' : (limit > 0 ? `${count} / ${limit}` : `${count}人`);
         const titleText = g.title || g.date || '場次';
         
         flexContents.push({
           type: "box",
-          layout: "horizontal",
+          layout: "vertical",
           margin: "md",
-          alignItems: "center",
+          spacing: "xs",
           contents: [
-            { type: "text", text: titleText, weight: "bold", size: "sm", flex: 2, wrap: true, color: "#333333" },
-            { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#666666", flex: 1, align: "end", margin: "sm" },
+            { type: "text", text: titleText, weight: "bold", size: "md", color: "#333333", wrap: true },
             {
-              type: "button",
-              style: "secondary",
-              height: "sm",
-              flex: 1,
-              margin: "md",
-              action: { type: "uri", label: "名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` }
+              type: "box",
+              layout: "horizontal",
+              alignItems: "center",
+              contents: [
+                { type: "text", text: `報名狀況：${statusText}`, size: "sm", color: isFull ? "#ff4c4c" : "#666666", flex: 1 },
+                {
+                  type: "button",
+                  style: "secondary",
+                  height: "sm",
+                  flex: 0,
+                  action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` }
+                }
+              ]
             }
           ]
         });
+        flexContents.push({ type: "separator", margin: "md", color: "#eeeeee" });
       });
+      // 移除最後一個多餘的分隔線
+      if (flexContents.length > 0 && flexContents[flexContents.length - 1].type === "separator") {
+        flexContents.pop();
+      }
 
       const flexMessage = {
         type: "flex",
