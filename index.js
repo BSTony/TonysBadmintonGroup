@@ -2277,12 +2277,15 @@ async function handleEvent(event) {
 
   // 只允許管理員下達文字指令 (但開放部分查詢指令給一般群友)
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+  
+  const isPlusMinus = text.match(/^\+[1-9]/) || text.match(/^-[1-9]/) || text.match(/\+[1-9]$/) || text.match(/-[1-9]$/);
   const isPublicCommand = text.startsWith('接龍名單') || 
                           text === '接龍狀態' || 
                           text === '接龍狀況' || 
                           text === '接龍查詢' || 
                           text === '大廳' || 
-                          text === '接龍大廳';
+                          text === '接龍大廳' ||
+                          isPlusMinus;
 
   if (!isAdmin && !isPublicCommand) {
     return null; // 非管理員，已讀不回
@@ -2793,7 +2796,7 @@ async function handleEvent(event) {
       return await sendLobbyLink(event.replyToken, gid);
     }
     
-    if (text === '接龍狀況') {
+    if (text === '接龍狀況' || text === '接龍狀態' || isPlusMinus) {
       const getGameTime = (g) => {
         let t = 0;
         if (g.date) {
@@ -2908,10 +2911,7 @@ async function handleEvent(event) {
       return await client.replyMessage(event.replyToken, flexMessage);
     }
     
-    // 如果使用者輸入 +1 / -1，提示他們使用 LIFF
-    if (text.match(/^\+[1-9]/) || text.match(/^-[1-9]/) || text.match(/\+[1-9]$/) || text.match(/-[1-9]$/)) {
-       return await sendLobbyLink(event.replyToken, gid, '⚠️ 現在已經全面升級為「大廳報名模式」囉！\n請點擊下方連結進入大廳報名，以免報錯場次：');
-    }
+    // 舊的 +1 / -1 阻擋已移除，現在會直接回傳接龍狀況
 
   } catch (e) {
     console.error('Logic Error:', e);
