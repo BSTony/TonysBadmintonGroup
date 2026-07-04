@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783127104451,
+    "lastActiveTime": 1783127161978,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -712,12 +712,17 @@
           "Andrew",
           "東東",
           "杰穎",
-          "Wie cheng",
           "Vir"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/04 09:06",
+        "name": "Wie cheng",
+        "operator": "Kay",
+        "action": "-1"
+      },
       {
         "time": "07/04 09:04",
         "name": "Vir",
