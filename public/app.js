@@ -164,9 +164,7 @@ const detailList = document.getElementById('detail-list');
 const statsView = document.getElementById('stats-view');
 const btnLobbyStats = document.getElementById('btn-lobby-stats');
 const btnBackStats = document.getElementById('btn-back-stats');
-const statsTotalViews = document.getElementById('stats-total-views');
-const statsUniqueUsers = document.getElementById('stats-unique-users');
-const statsLogsList = document.getElementById('stats-logs-list');
+const statsGroupsContainer = document.getElementById('stats-groups-container');
 
 // 初始化 LIFF
 async function initializeLiff() {
@@ -2047,41 +2045,130 @@ if (btnLobbyStats) {
     statusMsg.style.display = 'block';
     
     try {
-      const res = await fetch(`/api/lobby_stats/${currentGroupId}?uid=${currentUser.userId}`);
+      const res = await fetch(`/api/admin/all_stats?uid=${currentUser.userId}`);
       if (!res.ok) throw new Error('無法取得分析資料');
       const data = await res.json();
       
-      statsTotalViews.innerText = data.stats.viewCount || 0;
-      statsUniqueUsers.innerText = data.stats.uniqueViewersCount || 0;
+      statsGroupsContainer.innerHTML = '';
       
-      statsLogsList.innerHTML = '';
-      if (data.stats.recentVisits && data.stats.recentVisits.length > 0) {
-        data.stats.recentVisits.forEach(log => {
-          const d = new Date(log.time);
-          const timeStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+      if (data.allStats && data.allStats.length > 0) {
+        data.allStats.forEach(stat => {
+          const card = document.createElement('div');
+          card.className = 'game-card'; // Reuse game-card style
+          card.style.marginBottom = '15px';
           
-          const item = document.createElement('div');
-          item.style.display = 'flex';
-          item.style.alignItems = 'center';
-          item.style.padding = '8px 0';
-          item.style.borderBottom = '1px solid #f0f0f0';
+          // Card Header
+          const header = document.createElement('div');
+          header.style.display = 'flex';
+          header.style.justifyContent = 'space-between';
+          header.style.alignItems = 'center';
+          header.style.borderBottom = '1px solid #eee';
+          header.style.paddingBottom = '10px';
+          header.style.marginBottom = '10px';
           
-          let imgHtml = '';
-          if (log.pictureUrl) {
-            imgHtml = `<img src="${log.pictureUrl}" style="width:24px; height:24px; border-radius:50%; margin-right:8px;">`;
+          const title = document.createElement('h3');
+          title.style.margin = '0';
+          title.style.color = '#2c3e50';
+          title.innerText = stat.groupName || stat.gid;
+          
+          const manageBtn = document.createElement('button');
+          manageBtn.className = 'btn-primary';
+          manageBtn.style.padding = '4px 8px';
+          manageBtn.style.fontSize = '12px';
+          manageBtn.innerText = '管理此群組';
+          manageBtn.onclick = () => {
+            statsView.classList.add('hidden');
+            lobbyView.classList.remove('hidden');
+            currentGroupId = stat.gid;
+            loadGames(); // Reload games for the selected group
+          };
+          
+          header.appendChild(title);
+          header.appendChild(manageBtn);
+          card.appendChild(header);
+          
+          // Stats Row
+          const statsRow = document.createElement('div');
+          statsRow.className = 'detail-stats';
+          statsRow.style.marginTop = '0';
+          statsRow.style.marginBottom = '10px';
+          
+          const viewsBox = document.createElement('div');
+          viewsBox.className = 'stat-box';
+          viewsBox.style.flex = '1';
+          viewsBox.innerHTML = `<span class="stat-label">總觀看次數</span><span class="stat-value">${stat.viewCount}</span>`;
+          
+          const uniqueBox = document.createElement('div');
+          uniqueBox.className = 'stat-box';
+          uniqueBox.style.flex = '1';
+          uniqueBox.innerHTML = `<span class="stat-label">不重複觀看</span><span class="stat-value">${stat.uniqueCount}</span>`;
+          
+          statsRow.appendChild(viewsBox);
+          statsRow.appendChild(uniqueBox);
+          card.appendChild(statsRow);
+          
+          // Toggle Logs Button
+          const toggleLogsBtn = document.createElement('button');
+          toggleLogsBtn.className = 'btn-secondary';
+          toggleLogsBtn.style.width = '100%';
+          toggleLogsBtn.style.fontSize = '12px';
+          toggleLogsBtn.style.padding = '6px';
+          toggleLogsBtn.innerText = '展開訪客紀錄 ▼';
+          
+          // Logs Container
+          const logsContainer = document.createElement('div');
+          logsContainer.style.display = 'none';
+          logsContainer.style.marginTop = '10px';
+          logsContainer.style.maxHeight = '200px';
+          logsContainer.style.overflowY = 'auto';
+          logsContainer.style.borderTop = '1px solid #eee';
+          logsContainer.style.paddingTop = '10px';
+          
+          if (stat.recentVisits && stat.recentVisits.length > 0) {
+            stat.recentVisits.forEach(log => {
+              const d = new Date(log.time);
+              const timeStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+              
+              const item = document.createElement('div');
+              item.style.display = 'flex';
+              item.style.alignItems = 'center';
+              item.style.padding = '6px 0';
+              item.style.borderBottom = '1px solid #f9f9f9';
+              
+              let imgHtml = '';
+              if (log.pictureUrl) {
+                imgHtml = `<img src="${log.pictureUrl}" style="width:20px; height:20px; border-radius:50%; margin-right:8px;">`;
+              } else {
+                imgHtml = `<div style="width:20px; height:20px; border-radius:50%; background:#ccc; margin-right:8px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff;">👤</div>`;
+              }
+              
+              item.innerHTML = `
+                <div style="color:#888; font-size:11px; margin-right:10px; width:65px;">${timeStr}</div>
+                ${imgHtml}
+                <div style="font-weight:500; font-size:13px;">${log.displayName}</div>
+              `;
+              logsContainer.appendChild(item);
+            });
           } else {
-            imgHtml = `<div style="width:24px; height:24px; border-radius:50%; background:#ccc; margin-right:8px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff;">👤</div>`;
+            logsContainer.innerHTML = '<div style="color:#999; text-align:center; padding:10px; font-size:12px;">尚無紀錄</div>';
           }
           
-          item.innerHTML = `
-            <div style="color:#888; font-size:12px; margin-right:10px; width:70px;">${timeStr}</div>
-            ${imgHtml}
-            <div style="font-weight:500;">${log.displayName}</div>
-          `;
-          statsLogsList.appendChild(item);
+          toggleLogsBtn.onclick = () => {
+            if (logsContainer.style.display === 'none') {
+              logsContainer.style.display = 'block';
+              toggleLogsBtn.innerText = '收合訪客紀錄 ▲';
+            } else {
+              logsContainer.style.display = 'none';
+              toggleLogsBtn.innerText = '展開訪客紀錄 ▼';
+            }
+          };
+          
+          card.appendChild(toggleLogsBtn);
+          card.appendChild(logsContainer);
+          statsGroupsContainer.appendChild(card);
         });
       } else {
-        statsLogsList.innerHTML = '<div style="color:#999; text-align:center; padding:20px;">尚無紀錄</div>';
+        statsGroupsContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">目前沒有任何群組的分析資料。</div>';
       }
       
       lobbyView.classList.add('hidden');

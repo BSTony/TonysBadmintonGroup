@@ -18,7 +18,8 @@
         <div class="header-content">
           <div style="display:flex; align-items:center;">
             <h1 id="lobby-title-text" style="margin-bottom:0;">羽球接龍大廳</h1>
-            <button id="btn-edit-title" class="btn-icon hidden" style="margin-left:8px; font-size:16px;">✏️</button>
+            <button id="btn-edit-title" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="編輯大廳標題">✏️</button>
+            <button id="btn-lobby-stats" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="大廳使用率分析">📊</button>
           </div>
           <div style="display:flex; align-items:center;">
             <p id="lobby-desc-text" style="margin-bottom:0;">本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！</p>
@@ -26,9 +27,6 @@
           </div>
         </div>
       </header>
-      
-      <!-- 大廳分析按鈕 (僅管理員可見) -->
-      <button id="btn-lobby-stats" class="btn-secondary hidden" style="width:100%; margin-bottom:15px; font-weight:bold; background-color: #2c3e50; color: white;">📊 大廳使用率分析</button>
       
       <div id="games-container" class="games-list">
         <!-- JS 將在這裡生成卡片 -->
@@ -255,22 +253,8 @@
         <h2 style="margin-left: 10px; margin-bottom: 0;">大廳使用率分析</h2>
       </header>
       
-      <div class="detail-stats" style="margin-top: 15px;">
-        <div class="stat-box" style="flex:1;">
-          <span class="stat-label">總觀看次數</span>
-          <span class="stat-value" id="stats-total-views">0</span>
-        </div>
-        <div class="stat-box" style="flex:1;">
-          <span class="stat-label">不重複觀看人數</span>
-          <span class="stat-value" id="stats-unique-users">0</span>
-        </div>
-      </div>
-
-      <div style="margin-top: 20px;">
-        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 5px; color: #2c3e50;">最近造訪紀錄</h3>
-        <div id="stats-logs-list" style="max-height: 400px; overflow-y: auto; padding-top: 10px;">
-          <!-- JS 產生紀錄 -->
-        </div>
+      <div id="stats-groups-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px;">
+        <!-- JS 動態渲染多群組統計卡片 -->
       </div>
     </div>
   </div>

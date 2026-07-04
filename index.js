@@ -1456,6 +1456,47 @@ app.get('/api/lobby_stats/:gid', (req, res) => {
   }});
 });
 
+app.get('/api/admin/all_stats', async (req, res) => {
+  const uid = req.query.uid;
+  if (!uid) return res.status(403).json({ error: '需要 uid' });
+
+  const superAdmins = process.env.SUPER_ADMIN_USER_ID ? process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim()) : [];
+  const isSuperAdmin = superAdmins.includes(uid);
+  let adminGids = [];
+
+  if (isSuperAdmin) {
+    adminGids = Object.keys(lobbyVisits);
+  } else {
+    adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
+  }
+
+  if (!isSuperAdmin && adminGids.length === 0) {
+    return res.status(403).json({ error: '只有管理員能查看數據' });
+  }
+
+  let allStats = [];
+  for (const g of adminGids) {
+    await ensureGroupSettings(g);
+    const gName = groupSettings[g]?.groupName || groupSettings[g]?.lobbyTitle || g;
+    const stats = lobbyVisits[g] || { viewCount: 0, uniqueViewers: {}, logs: [] };
+    
+    const uniqueCount = Object.keys(stats.uniqueViewers).length;
+    
+    // Sort logs by time descending (newest first)
+    const sortedLogs = [...stats.logs].sort((a, b) => b.time - a.time);
+
+    allStats.push({
+      gid: g,
+      groupName: gName,
+      viewCount: stats.viewCount,
+      uniqueCount: uniqueCount,
+      recentVisits: sortedLogs
+    });
+  }
+
+  res.json({ success: true, allStats });
+});
+
 app.get('/api/templates/:gid', (req, res) => {
   const gid = req.params.gid;
   const templates = rosterTemplates[gid] || {};
