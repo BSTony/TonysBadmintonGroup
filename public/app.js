@@ -349,25 +349,13 @@ function renderLobby() {
       btnLobbyStats.classList.add('hidden');
     }
     
-    let pushBtn = document.getElementById('admin-create-game-btn');
-    if (globalIsAdmin) {
-      if (!pushBtn) {
-        const headerEl = document.querySelector('.lobby-header');
-        if (headerEl) {
-          pushBtn = document.createElement('button');
-          pushBtn.id = 'admin-create-game-btn';
-          pushBtn.className = 'btn btn-primary';
-          pushBtn.style.marginTop = '10px';
-          pushBtn.style.width = '100%';
-          pushBtn.style.backgroundColor = '#FF9800'; // Orange for creating
-          pushBtn.innerText = '➕ 管理者開團';
-          pushBtn.onclick = showCreateGameForm;
-          headerEl.appendChild(pushBtn);
-        }
+    const createContainer = document.getElementById('admin-create-game-container');
+    if (createContainer) {
+      if (globalIsAdmin) {
+        createContainer.classList.remove('hidden');
+      } else {
+        createContainer.classList.add('hidden');
       }
-      if (pushBtn) pushBtn.style.display = 'block';
-    } else if (pushBtn) {
-      pushBtn.style.display = 'none';
     }
     
     gamesContainer.innerHTML = '';
