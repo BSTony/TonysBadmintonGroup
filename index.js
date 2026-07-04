@@ -2833,8 +2833,8 @@ async function handleEvent(event) {
         const titleText = g.title || g.date || '場次';
         
         let combinedTitle = titleText;
-        if (dateStr && dateStr !== g.title) {
-          combinedTitle = `[${dateStr}] ${titleText}`;
+        if (g.date && g.date !== g.title) {
+          combinedTitle = `[${g.date}] ${titleText}`;
         }
 
         flexContents.push({
@@ -2845,9 +2845,9 @@ async function handleEvent(event) {
           alignItems: "center",
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
           contents: [
-            { type: "text", text: combinedTitle, size: "sm", color: "#333333", flex: 1, wrap: true, weight: "bold" },
-            { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
-            { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm" }
+            { type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true },
+            { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
+            { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
           ]
         });
       });
