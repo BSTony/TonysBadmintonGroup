@@ -1973,7 +1973,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783181648861,
+    "lastActiveTime": 1783181857017,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1994,12 +1994,19 @@
         "list": [
           "Tony",
           "Kay",
-          "陳呈"
+          "陳呈",
+          "Test"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/05 00:17",
+        "name": "Test",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/05 00:14",
         "name": "test",
