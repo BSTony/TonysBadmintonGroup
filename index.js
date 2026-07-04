@@ -2834,7 +2834,10 @@ async function handleEvent(event) {
         
         let combinedTitle = titleText;
         if (g.date && g.date !== g.title) {
-          combinedTitle = `${g.date} ${titleText}`;
+          const shortDate = g.date.replace(/\s*[（\(].*?[)）]\s*/g, '').trim();
+          if (shortDate) {
+            combinedTitle = `${shortDate} ${titleText}`;
+          }
         }
 
         flexContents.push({
