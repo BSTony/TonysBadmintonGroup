@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783126598609,
+    "lastActiveTime": 1783126762088,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -676,7 +676,8 @@
       "陳呈": true,
       "郭老師": true,
       "杰穎": true,
-      "布萊恩": true
+      "布萊恩": true,
+      "Jimmy": true
     },
     "sections": [
       {
