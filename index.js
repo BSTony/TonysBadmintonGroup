@@ -2832,34 +2832,24 @@ async function handleEvent(event) {
         const dateStr = [g.date, g.time].filter(Boolean).join(' ');
         const titleText = g.title || g.date || '場次';
         
-        const titleBoxContents = [];
+        let combinedTitle = titleText;
         if (dateStr && dateStr !== g.title) {
-          titleBoxContents.push({ type: "text", text: `📅 ${dateStr}`, size: "xs", color: "#1DB446", weight: "bold", margin: "none" });
+          combinedTitle = `[${dateStr}] ${titleText}`;
         }
-        titleBoxContents.push({ type: "text", text: titleText, weight: "bold", size: "sm", color: "#333333", wrap: true });
 
         flexContents.push({
           type: "box",
           layout: "horizontal",
-          paddingTop: "10px",
-          paddingBottom: "10px",
+          paddingTop: "6px",
+          paddingBottom: "6px",
           alignItems: "center",
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
           contents: [
-            {
-              type: "box",
-              layout: "vertical",
-              flex: 1,
-              contents: titleBoxContents
-            },
+            { type: "text", text: combinedTitle, size: "sm", color: "#333333", flex: 1, wrap: false, weight: "bold" },
             { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
-            { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0 }
+            { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm" }
           ]
         });
-        
-        if (index < targetGames.length - 1 && index < 14) {
-          flexContents.push({ type: "separator", color: "#eeeeee" });
-        }
       });
 
       // 在最下方加入一次性的提示文字
