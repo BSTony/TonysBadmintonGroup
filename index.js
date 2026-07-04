@@ -2112,97 +2112,7 @@ async function handleEvent(event) {
   const uid = event.source.userId;
   const text = event.message.text.trim();
   const firstLine = text.split('\n')[0].trim();
-  // 攔截精簡版的自動更新指令，並由機器人回覆網址與名額
-  if (firstLine.match(/(\+1|-1|🔄順序更新|💰繳費更新)$/)) {
-    const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded);
-    groupGames.sort((a, b) => (b.title || '').length - (a.title || '').length);
-    const g = groupGames.find(g => g.title && firstLine.startsWith(g.title));
-    
-    if (g && process.env.LIFF_ID) {
-      const sec = g.sections && g.sections[0] ? g.sections[0] : null;
-      let statusStr = '';
-      if (sec) {
-        const count = sec.list.length;
-        const limit = sec.limit;
-        if (count >= limit) {
-          statusStr = `  滿額`;
-        } else {
-          statusStr = `  缺${limit - count}`;
-        }
-      }
-      
-      const singleTargetGid = (g.targetGids && g.targetGids.length > 0) ? g.targetGids[0] : g.gid;
-      const lobbyUrl = `https://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
-      const gameUrl = `${lobbyUrl}&gameId=${g.gameId}`;
-      
-      let textContent = `${g.title}${statusStr}`;
-      
-      const infoArr = [];
-      if (g.date) infoArr.push(g.date);
-      if (g.time) infoArr.push(g.time);
-      if (g.fee && g.fee !== '未知' && g.fee !== '無' && g.fee !== '0') {
-          let feeStr = String(g.fee).trim();
-          if (!feeStr.endsWith('元')) feeStr += '元';
-          infoArr.push(feeStr);
-      }
-      
-      if (infoArr.length > 0) {
-        textContent += `\n${infoArr.join(' ')}`;
-      }
-      
-      const flexMessage = {
-        type: 'flex',
-        altText: `${g.title}${statusStr} - 點我進大廳`,
-        contents: {
-          type: 'bubble',
-          size: 'kilo',
-          body: {
-            type: 'box',
-            layout: 'vertical',
-            contents: [
-              {
-                type: 'text',
-                text: textContent,
-                weight: 'bold',
-                wrap: true,
-                size: 'md'
-              }
-            ]
-          },
-          footer: {
-            type: 'box',
-            layout: 'vertical',
-            spacing: 'sm',
-            contents: [
-              {
-                type: 'button',
-                style: 'primary',
-                height: 'sm',
-                action: {
-                  type: 'uri',
-                  label: '進入大廳',
-                  uri: lobbyUrl
-                }
-              },
-              {
-                type: 'button',
-                style: 'secondary',
-                height: 'sm',
-                action: {
-                  type: 'uri',
-                  label: '本次名單',
-                  uri: gameUrl
-                }
-              }
-            ]
-          }
-        }
-      };
-      
-      return await client.replyMessage(event.replyToken, flexMessage);
-    }
-    return null;
-  }
+  // 舊的單一場次卡片攔截已移除，改由下方統整的「接龍狀況」回覆
   
   // 保留舊版相容
   const triggerMatch = text.match(/^🤖 【系統觸發：自動推播】\n([\s\S]*)/);
@@ -2278,7 +2188,7 @@ async function handleEvent(event) {
   // 只允許管理員下達文字指令 (但開放部分查詢指令給一般群友)
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   
-  const isPlusMinus = text.match(/^\+[1-9]/) || text.match(/^-[1-9]/) || text.match(/\+[1-9]$/) || text.match(/-[1-9]$/);
+  const isPlusMinus = text.match(/^\+[1-9]/) || text.match(/^-[1-9]/) || text.match(/\+[1-9]$/) || text.match(/-[1-9]$/) || text.match(/🔄順序更新$/) || text.match(/💰繳費更新$/);
   const isPublicCommand = text.startsWith('接龍名單') || 
                           text === '接龍狀態' || 
                           text === '接龍狀況' || 
@@ -2868,6 +2778,22 @@ async function handleEvent(event) {
           { type: "text", text: "點選上方場次查看詳細名單 👆", size: "xs", color: "#888888", align: "center" }
         ]
       });
+
+      // 如果這是由 LIFF 系統發送的操作通知，則在最下方顯示出來
+      if (isPlusMinus && text !== '+1' && text !== '-1') {
+        flexContents.push({
+          type: "box",
+          layout: "vertical",
+          margin: "md",
+          paddingAll: "10px",
+          backgroundColor: "#e8f5e9",
+          cornerRadius: "md",
+          contents: [
+            { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446" },
+            { type: "text", text: text, size: "xs", color: "#333333", wrap: true, margin: "sm" }
+          ]
+        });
+      }
 
       const flexMessage = {
         type: "flex",
