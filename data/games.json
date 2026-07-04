@@ -1439,7 +1439,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783158416198,
+    "lastActiveTime": 1783163066723,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1464,7 +1464,6 @@
           "Sammy Su",
           "林立峰",
           "Hsin",
-          "詹敬智(胞弟)",
           "King",
           "Alice",
           "Kevin",
@@ -1479,6 +1478,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/04 19:04",
+        "name": "詹敬智(胞弟)",
+        "operator": "詹敬智(胞弟)",
+        "action": "-1"
+      },
       {
         "time": "07/04 17:46",
         "name": "Chris Chen",
