@@ -660,7 +660,7 @@
     "tag": "3面",
     "active": true,
     "startTime": 1782403661731,
-    "lastActiveTime": 1783127410347,
+    "lastActiveTime": 1783127462908,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -683,7 +683,8 @@
       "冠銘": true,
       "Allen": true,
       "Vir": true,
-      "TU": true
+      "TU": true,
+      "登登": true
     },
     "sections": [
       {
