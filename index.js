@@ -2807,104 +2807,83 @@ async function handleEvent(event) {
         return client.replyMessage(event.replyToken, { type: 'text', text: '尚未設定大廳網址 (LIFF_ID)' });
       }
 
-      const bubbles = [];
-
-      // 第一張卡片：大廳入口總結
-      bubbles.push({
-        type: "bubble",
-        size: "micro",
-        header: {
-          type: "box",
-          layout: "vertical",
-          backgroundColor: "#1DB446",
-          paddingAll: "12px",
-          contents: [
-            { type: "text", text: "羽球大廳", weight: "bold", color: "#ffffff", size: "sm", align: "center" }
-          ]
-        },
-        body: {
-          type: "box",
-          layout: "vertical",
-          paddingAll: "20px",
-          contents: [
-            { type: "text", text: `目前共有`, size: "sm", color: "#666666", align: "center" },
-            { type: "text", text: `${targetGames.length}`, weight: "bold", size: "3xl", color: "#1DB446", align: "center", margin: "sm" },
-            { type: "text", text: `個場次`, size: "sm", color: "#666666", align: "center" }
-          ]
-        },
-        footer: {
-          type: "box",
-          layout: "vertical",
-          paddingAll: "10px",
-          contents: [
-            {
-              type: "button",
-              style: "primary",
-              color: "#1DB446",
-              height: "sm",
-              action: { type: "uri", label: "開啟大廳", uri: liffBaseUrl }
-            }
-          ]
-        }
-      });
+      const flexContents = [];
 
       targetGames.forEach((g, index) => {
-        if (index >= 11) return; // LINE Carousel 最大限制為 12 個 Bubble
+        if (index >= 15) return; // 避免過多超出 Flex message 限制
         const sec = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 0 };
         const count = sec.list.length;
         const limit = sec.limit || 0;
         const isFull = limit > 0 && count >= limit;
-        const statusText = isFull ? '滿團' : (limit > 0 ? `${count} / ${limit}` : `${count}人`);
+        const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
         const titleText = g.title || g.date || '場次';
         
-        const headerColor = isFull ? "#ff4c4c" : "#FF9800";
-        
-        const gameBubble = {
-          type: "bubble",
-          size: "micro",
-          header: {
-            type: "box",
-            layout: "vertical",
-            backgroundColor: headerColor,
-            paddingAll: "12px",
-            contents: [
-              { type: "text", text: isFull ? "已滿團" : "報名中", weight: "bold", color: "#ffffff", size: "sm", align: "center" }
-            ]
-          },
-          body: {
-            type: "box",
-            layout: "vertical",
-            paddingAll: "15px",
-            spacing: "sm",
-            contents: [
-              { type: "text", text: titleText, weight: "bold", size: "md", color: "#333333", wrap: true, maxLines: 2 },
-              { type: "text", text: `報名狀況: ${statusText}`, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", weight: "bold" }
-            ]
-          },
-          footer: {
-            type: "box",
-            layout: "vertical",
-            paddingAll: "10px",
-            contents: [
-              {
-                type: "button",
-                style: isFull ? "secondary" : "primary",
-                color: isFull ? undefined : "#FF9800",
-                height: "sm",
-                action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` }
-              }
-            ]
-          }
-        };
-        bubbles.push(gameBubble);
+        flexContents.push({
+          type: "box",
+          layout: "vertical",
+          paddingAll: "12px",
+          backgroundColor: "#f8f9fa",
+          cornerRadius: "8px",
+          margin: "md",
+          action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
+          contents: [
+            {
+              type: "box",
+              layout: "horizontal",
+              contents: [
+                { type: "text", text: titleText, weight: "bold", size: "sm", color: "#333333", flex: 1, wrap: true },
+                { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "sm", align: "end" }
+              ]
+            },
+            {
+              type: "box",
+              layout: "horizontal",
+              margin: "sm",
+              contents: [
+                { type: "text", text: "點此查看詳細名單 👆", size: "xs", color: "#888888", flex: 1 },
+                { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, align: "end" }
+              ]
+            }
+          ]
+        });
       });
 
       const flexMessage = {
         type: "flex",
         altText: "目前接龍狀況",
         contents: {
-          type: "carousel",
-          contents: bubbles
+          type: "bubble",
+          size: "mega",
+          header: {
+            type: "box",
+            layout: "vertical",
+            paddingBottom: "none",
+            contents: [
+              {
+                type: "box",
+                layout: "horizontal",
+                alignItems: "center",
+                contents: [
+                  { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
+                  {
+                    type: "button",
+                    style: "primary",
+                    color: "#1DB446",
+                    height: "sm",
+                    flex: 0,
+                    action: { type: "uri", label: "進入大廳", uri: liffBaseUrl }
+                  }
+                ]
+              },
+              { type: "separator", margin: "md", color: "#eeeeee" }
+            ]
+          },
+          body: {
+            type: "box",
+            layout: "vertical",
+            paddingAll: "16px",
+            contents: flexContents
+          }
         }
       };
 
