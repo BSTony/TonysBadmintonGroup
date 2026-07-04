@@ -2840,28 +2840,26 @@ async function handleEvent(event) {
 
         flexContents.push({
           type: "box",
-          layout: "vertical",
-          paddingAll: "12px",
-          backgroundColor: "#f8f9fa",
-          cornerRadius: "8px",
-          margin: "md",
+          layout: "horizontal",
+          paddingTop: "10px",
+          paddingBottom: "10px",
+          alignItems: "center",
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
           contents: [
             {
               type: "box",
-              layout: "horizontal",
-              contents: [
-                {
-                  type: "box",
-                  layout: "vertical",
-                  flex: 1,
-                  contents: titleBoxContents
-                },
-                { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "sm", align: "end" }
-              ]
-            }
+              layout: "vertical",
+              flex: 1,
+              contents: titleBoxContents
+            },
+            { type: "text", text: statusText, size: "sm", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
+            { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0 }
           ]
         });
+        
+        if (index < targetGames.length - 1 && index < 14) {
+          flexContents.push({ type: "separator", color: "#eeeeee" });
+        }
       });
 
       // 在最下方加入一次性的提示文字
