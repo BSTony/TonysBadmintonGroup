@@ -1439,7 +1439,7 @@
     "tag": "",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783168899101,
+    "lastActiveTime": 1783169456446,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1474,11 +1474,18 @@
           "陳呈",
           "Wang",
           "Chris Chen",
-          "昊平"
+          "昊平",
+          "豪"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/04 20:50",
+        "name": "豪",
+        "operator": "黃政豪",
+        "action": "+1"
+      },
       {
         "time": "07/04 20:41",
         "name": "昊平",
