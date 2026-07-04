@@ -614,7 +614,7 @@ async function handleAction(gameId, action) {
     if (idx !== -1) gamesList[idx] = result.game;
     
     if (currentGameDetailId) {
-      renderDetail(gameId);
+      renderDetail(gameId, true);
     } else {
       renderLobby();
     }
@@ -677,7 +677,7 @@ window.showDetail = function(gameId) {
 };
 
 // 渲染明細畫面
-function renderDetail(gameId) {
+function renderDetail(gameId, preserveScroll = false) {
   const game = gamesList.find(g => g.gameId === gameId);
   if (!game) return;
   
@@ -686,7 +686,10 @@ function renderDetail(gameId) {
   if (statusMsgEl) statusMsgEl.style.display = 'none';
   lobbyView.classList.add('hidden');
   detailView.classList.remove('hidden');
-  window.scrollTo(0, 0);
+  
+  if (!preserveScroll) {
+    window.scrollTo(0, 0);
+  }
   
   const normalize = s => (s||'').replace(/\s+/g, '');
   const autoStr = normalize([game.date, game.time, game.location].filter(Boolean).join(''));
@@ -1024,8 +1027,8 @@ async function silentRefreshGames() {
         globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
         
         // 根據目前所在畫面重新渲染
-        if (currentGameDetailId) {
-          renderDetail(currentGameDetailId);
+        if (currentGameDetailId && !detailView.classList.contains('hidden')) {
+          renderDetail(currentGameDetailId, true);
         } else {
           renderLobby();
         }
@@ -1095,7 +1098,7 @@ window.handleCancelByName = async function(gameId, name) {
     
     const idx = gamesList.findIndex(g => g.gameId === gameId);
     if (idx !== -1) gamesList[idx] = result.game;
-    renderDetail(gameId);
+    renderDetail(gameId, true);
     
   } catch (err) {
     console.error(err);
@@ -1423,7 +1426,7 @@ async function handleTogglePaid(gameId, name) {
     
     const idx = gamesList.findIndex(g => g.gameId === gameId);
     if (idx !== -1) gamesList[idx] = result.game;
-    renderDetail(gameId);
+    renderDetail(gameId, true);
     
   } catch (err) {
     console.error(err);
@@ -1463,7 +1466,7 @@ window.handleReorder = async function(gameId, fromIdx, toIdx) {
     
     const idx = gamesList.findIndex(g => g.gameId === gameId);
     if (idx !== -1) gamesList[idx] = result.game;
-    renderDetail(gameId);
+    renderDetail(gameId, true);
   } catch (err) {
     console.error(err);
     alert('網路錯誤，請稍後再試');
@@ -2023,7 +2026,7 @@ document.getElementById('btn-submit-edit').onclick = async () => {
       editGameView.classList.add('hidden');
       await loadGamesLobby();
       if (currentGameDetailId === gameId) {
-         renderDetail(gameId);
+         renderDetail(gameId, true);
       }
     }
   } catch(e) {
