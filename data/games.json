@@ -1447,7 +1447,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783214262107,
+    "lastActiveTime": 1783219666614,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1467,7 +1467,8 @@
       "L": true,
       "小高": true,
       "陳沛君": true,
-      "Jimmy": true
+      "Jimmy": true,
+      "Nebula": true
     },
     "sections": [
       {
