@@ -2185,7 +2185,7 @@
     "tag": "11-12點開冷氣,4面",
     "active": true,
     "startTime": 1783228097228,
-    "lastActiveTime": 1783233514456,
+    "lastActiveTime": 1783236737583,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2204,11 +2204,18 @@
           "Kevin",
           "Mia",
           "俊吉",
-          "ALAN LIU"
+          "ALAN LIU",
+          "JoeLin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/05 15:32",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1"
+      },
       {
         "time": "07/05 14:38",
         "name": "ALAN LIU",
