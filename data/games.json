@@ -2021,7 +2021,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783230036408,
+    "lastActiveTime": 1783234517925,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2045,12 +2045,19 @@
           "陳呈",
           "Kevin",
           "Mia",
-          "俊吉"
+          "俊吉",
+          "AddieWang"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/05 14:55",
+        "name": "AddieWang",
+        "operator": "AddieWang",
+        "action": "+1"
+      },
       {
         "time": "07/05 13:40",
         "name": "俊吉",
