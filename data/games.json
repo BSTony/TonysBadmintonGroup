@@ -2014,7 +2014,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783228984550,
+    "lastActiveTime": 1783230036408,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2037,12 +2037,19 @@
           "Kay",
           "陳呈",
           "Kevin",
-          "Mia"
+          "Mia",
+          "俊吉"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/05 13:40",
+        "name": "俊吉",
+        "operator": "Jimmy",
+        "action": "+1"
+      },
       {
         "time": "07/05 13:23",
         "name": "Mia",
