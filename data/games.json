@@ -2189,7 +2189,7 @@
     "tag": "11-12點開冷氣,4面",
     "active": true,
     "startTime": 1783228097228,
-    "lastActiveTime": 1783236737583,
+    "lastActiveTime": 1783241102575,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2209,11 +2209,18 @@
           "Mia",
           "俊吉",
           "ALAN LIU",
-          "JoeLin"
+          "JoeLin",
+          "小金(Chen Pei Hung)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/05 16:45",
+        "name": "小金(Chen Pei Hung)",
+        "operator": "小金(Chen Pei Hung)",
+        "action": "+1"
+      },
       {
         "time": "07/05 15:32",
         "name": "JoeLin",
