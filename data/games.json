@@ -2148,7 +2148,7 @@
     "tag": "11-12點開冷氣,4面",
     "active": true,
     "startTime": 1783228097228,
-    "lastActiveTime": 1783228244094,
+    "lastActiveTime": 1783229007249,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2163,11 +2163,18 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "林煥杰"
+          "林煥杰",
+          "Kevin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/05 13:23",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1"
+      },
       {
         "time": "07/05 13:10",
         "name": "林煥杰",
