@@ -2116,5 +2116,40 @@
         ]
       }
     ]
+  },
+  "1783228097228580": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "1783228097228580",
+    "title": "週日 港中 打兩小",
+    "date": "7/12 (日)",
+    "time": "08:00~10:00",
+    "location": "南港高中",
+    "fee": "男150/女100",
+    "note": "",
+    "tag": "11-12點開冷氣,4面",
+    "active": true,
+    "startTime": 1783228097228,
+    "lastActiveTime": 1783228097228,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 9,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
