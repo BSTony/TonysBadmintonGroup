@@ -1447,7 +1447,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783209977820,
+    "lastActiveTime": 1783211086677,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1465,7 +1465,8 @@
       "Primo": true,
       "東東": true,
       "L": true,
-      "小高": true
+      "小高": true,
+      "陳沛君": true
     },
     "sections": [
       {
