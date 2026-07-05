@@ -1445,7 +1445,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783209496179,
+    "lastActiveTime": 1783209657906,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1461,7 +1461,8 @@
       "Kay": true,
       "小洋": true,
       "Primo": true,
-      "東東": true
+      "東東": true,
+      "L": true
     },
     "sections": [
       {
