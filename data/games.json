@@ -1447,7 +1447,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783227322003,
+    "lastActiveTime": 1783227324355,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1476,7 +1476,9 @@
       "Alice": true,
       "Kevin": true,
       "Mia": true,
-      "陳呈": true
+      "陳呈": true,
+      "Wang": true,
+      "Chris Chen": true
     },
     "sections": [
       {
