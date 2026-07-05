@@ -1945,7 +1945,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783006258608,
+    "lastActiveTime": 1783234069093,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1983,12 +1983,19 @@
           "Mina",
           "Wayne",
           "Ong",
-          "Sean"
+          "Sean",
+          "John"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/05 14:47",
+        "name": "John",
+        "operator": "郭岳翰John",
+        "action": "+1"
+      },
       {
         "time": "07/02 23:30",
         "name": "Sean",
