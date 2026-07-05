@@ -2155,7 +2155,7 @@
     "tag": "11-12點開冷氣,4面",
     "active": true,
     "startTime": 1783228097228,
-    "lastActiveTime": 1783229016221,
+    "lastActiveTime": 1783230046732,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2172,11 +2172,18 @@
         "list": [
           "林煥杰",
           "Kevin",
-          "Mia"
+          "Mia",
+          "俊吉"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/05 13:40",
+        "name": "俊吉",
+        "operator": "Jimmy",
+        "action": "+1"
+      },
       {
         "time": "07/05 13:23",
         "name": "Mia",
