@@ -1447,7 +1447,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783227315553,
+    "lastActiveTime": 1783227318551,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1473,7 +1473,8 @@
       "周哲儁": true,
       "林立峰": true,
       "King": true,
-      "Alice": true
+      "Alice": true,
+      "Kevin": true
     },
     "sections": [
       {
