@@ -11,6 +11,7 @@ const LOG_FILE = path.join(__dirname, 'schedule.log');
 // 位置：data/registrations.csv（GitHub）
 // 欄位：gid,sectionIdx,name
 let groupAdmins = {}; // { gid: Set<uid> }
+let superAdmins = new Set(); // Set<uid>
 let groupCodes = {}; // { '1234': 'Cxxxx' }
 let groupSettings = {}; // { gid: { lobbyTitle, groupName } }
 let rosterTemplates = {}; // { gid: { templateName: text } }
@@ -19,6 +20,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 
 const ADMINS_FILE = path.join(__dirname, 'data/groupAdmins.json');
+const SUPER_ADMINS_FILE = path.join(__dirname, 'data/superAdmins.json');
 const GROUP_CODES_FILE = path.join(__dirname, 'data/groupCodes.json');
 const GROUP_SETTINGS_FILE = path.join(__dirname, 'data/groupSettings.json');
 const ROSTER_TEMPLATES_FILE = path.join(__dirname, 'data/rosterTemplates.json');
@@ -30,6 +32,7 @@ let lobbyVisits = {}; // { gid: { viewCount: 0, uniqueViewers: {}, logs: [] } }
 
 // 讀取既有設定
 let adminsSha = null;
+let superAdminsSha = null;
 let codesSha = null;
 let settingsSha = null;
 let templatesSha = null;
@@ -47,6 +50,12 @@ async function loadData() {
       for (const [g, admins] of Object.entries(data)) {
         groupAdmins[g] = new Set(admins);
       }
+    } catch(e) {}
+  }
+  if (fs.existsSync(SUPER_ADMINS_FILE)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(SUPER_ADMINS_FILE, 'utf8'));
+      superAdmins = new Set(data);
     } catch(e) {}
   }
   if (fs.existsSync(GROUP_CODES_FILE)) {
@@ -84,6 +93,16 @@ async function loadData() {
         }
       }
     } catch(e) { console.error('無法從 GitHub 讀取 groupAdmins.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 superAdmins.json...');
+      const saRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/superAdmins.json?ref=${GITHUB_BRANCH}`);
+      if (saRes.content) {
+        superAdminsSha = saRes.sha;
+        const data = JSON.parse(Buffer.from(saRes.content, 'base64').toString('utf8'));
+        superAdmins = new Set(data);
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 superAdmins.json:', e.message); }
 
     try {
       console.log('從 GitHub 讀取 groupCodes.json...');
@@ -162,6 +181,26 @@ async function saveAdmins() {
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupAdmins.json`, payload);
       if (res.content && res.content.sha) adminsSha = res.content.sha;
     } catch(e) { console.error('備份 groupAdmins 至 GitHub 失敗:', e.message); }
+  }
+}
+
+async function saveSuperAdmins() {
+  const data = Array.from(superAdmins);
+  const jsonStr = JSON.stringify(data, null, 2);
+  await fs.promises.writeFile(SUPER_ADMINS_FILE, jsonStr, 'utf8');
+  
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update superAdmins',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (superAdminsSha) payload.sha = superAdminsSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/superAdmins.json`, payload);
+      if (res.content && res.content.sha) superAdminsSha = res.content.sha;
+    } catch(e) { console.error('備份 superAdmins 至 GitHub 失敗:', e.message); }
   }
 }
 
@@ -814,6 +853,22 @@ const uidToNameMap = new Map(); // key: "gid_uid", value: name
 // 追蹤首次使用指令的群組（用於顯示歡迎訊息，而非加入時推播）
 const firstUseGroups = new Set(); // 記錄已經顯示過歡迎訊息的群組
 
+// === 權限輔助函式 ===
+function isSuperAdmin(uid) {
+  if (!uid) return false;
+  let isEnvAdmin = false;
+  if (process.env.SUPER_ADMIN_USER_ID) {
+    const envAdmins = process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim());
+    isEnvAdmin = envAdmins.includes(uid);
+  }
+  return isEnvAdmin || (superAdmins && superAdmins.has(uid));
+}
+
+function isGroupAdmin(uid, gid) {
+  if (isSuperAdmin(uid)) return true;
+  return !!(groupAdmins[gid] && groupAdmins[gid].has(uid));
+}
+
 // PostgreSQL 連線設定（已停用，改用 CSV 檔案儲存）
 // 如果不需要 PostgreSQL，可以移除或註解掉以下程式碼
 // 目前強制使用檔案模式，避免連線錯誤訊息
@@ -1346,10 +1401,19 @@ app.get('/api/game/:gid', async (req, res) => {
   const lobbyTitle = groupSettings[gid]?.lobbyTitle || '羽球接龍大廳';
   const lobbyDesc = groupSettings[gid]?.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
   const uid = req.query.uid;
-  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+  const superAdmin = isSuperAdmin(uid);
+  const isAdmin = superAdmin || isGroupAdmin(uid, gid);
   let managedGroups = [];
   if (isAdmin) {
-    const adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
+    let adminGids = [];
+    if (superAdmin) {
+       // Super admin doesn't strictly need managed groups for simple display, 
+       // but we'll show all groups they are explicitly in groupAdmins for, 
+       // or we could show all. Let's just show what they are explicitly admin of, plus the current gid.
+       adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
+    } else {
+       adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
+    }
     for (const g of adminGids) {
       const codes = Object.keys(groupCodes).filter(k => groupCodes[k] === g);
       if (codes.length > 0) {
@@ -1373,9 +1437,8 @@ app.get('/api/game/:gid', async (req, res) => {
     if (g.targetGids && g.targetGids.includes(gid)) return true;
     
     // 超級管理員模式：如果在個人聊天室中，且是 SUPER_ADMIN，則顯示系統內「所有」活躍場次
-    if (gid === uid && process.env.SUPER_ADMIN_USER_ID) {
-      const superAdmins = process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim());
-      if (superAdmins.includes(uid)) return true;
+    if (gid === uid && superAdmin) {
+      return true;
     }
     
     // 如果管理員是從個人聊天室/直接網址進入 (gid === uid)，顯示所有他管理的群組的場次
@@ -1393,7 +1456,7 @@ app.get('/api/game/:gid', async (req, res) => {
 
 
   if (groupGames.length === 0) {
-      return res.json({ games: [], isAdmin: !!isAdmin, managedGroups, lobbyTitle, lobbyDesc }); // 不報錯，回傳空陣列
+      return res.json({ games: [], isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc }); // 不報錯，回傳空陣列
   }
   
   // 深拷貝以避免污染記憶體中的 games 物件
@@ -1431,7 +1494,7 @@ app.get('/api/game/:gid', async (req, res) => {
   });
   
   // 回傳結果
-  res.json({ games: groupGames, isAdmin: !!isAdmin, managedGroups, lobbyTitle, lobbyDesc });
+  res.json({ games: groupGames, isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc });
 });
 
 // 取得特定群組的預設名單範本
@@ -1478,10 +1541,10 @@ app.get('/api/lobby_stats/:gid', (req, res) => {
   const gid = req.params.gid;
   const uid = req.query.uid;
   
-  // 驗證是否為該群組的管理員 (允許任何群組的管理員查看)
-  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+  // 驗證是否為超級管理員
+  const isAdmin = uid && isSuperAdmin(uid);
   if (!isAdmin) {
-    return res.status(403).json({ error: '只有管理員能查看大廳分析數據' });
+    return res.status(403).json({ error: '只有超級管理員能查看大廳分析數據' });
   }
   
   const stats = lobbyVisits[gid] || { viewCount: 0, uniqueViewers: {}, logs: [] };
@@ -1496,18 +1559,14 @@ app.get('/api/admin/all_stats', async (req, res) => {
   const uid = req.query.uid;
   if (!uid) return res.status(403).json({ error: '需要 uid' });
 
-  const superAdmins = process.env.SUPER_ADMIN_USER_ID ? process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim()) : [];
-  const isSuperAdmin = superAdmins.includes(uid);
+  const isSuperAdminUser = isSuperAdmin(uid);
   let adminGids = [];
 
-  if (isSuperAdmin) {
+  if (isSuperAdminUser) {
     adminGids = Object.keys(lobbyVisits);
   } else {
-    adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
-  }
-
-  if (!isSuperAdmin && adminGids.length === 0) {
-    return res.status(403).json({ error: '只有管理員能查看數據' });
+    // 即使是 groupAdmins 也無法使用此 API，直接阻擋
+    return res.status(403).json({ error: '只有超級管理員能查看全域數據分析' });
   }
 
   let allStats = [];
@@ -1644,8 +1703,9 @@ app.post('/api/action', express.json(), async (req, res) => {
   try {
     const { gid, gameId, uid, name, level, action, count, text, pushToAll, operatorName, clientSupportsLiffSendMessage } = req.body;
     
-    // 全局判斷是否為管理員
-    const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+    const targetGameGid = (gameId && games[gameId]) ? games[gameId].gid : gid;
+    const isSuperAdminUser = isSuperAdmin(uid);
+    const isAdmin = isSuperAdminUser || isGroupAdmin(uid, targetGameGid);
     
     // 儲存要讓前端觸發的訊息
     let triggerBumpMsg = null;
@@ -1732,7 +1792,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       await saveCurrentListSnapshot(newGameId, false);
       
       let pushErrors = [];
-      if (!pPublish) {
+      if (!pPublish && isSuperAdminUser) {
           const gidsToPush = (targetGids && targetGids.length > 0) ? targetGids : [actualGid];
           for (const gId of gidsToPush) {
              try {
@@ -1761,10 +1821,12 @@ app.post('/api/action', express.json(), async (req, res) => {
       await saveGame(gameId, true);
       
       const pushTargets = targetGame.targetGids || [targetGame.gid];
-      for (const tGid of pushTargets) {
-        try {
-          await pushToAdmins(tGid, { type: 'text', text: `🔒 ${targetGame.title || '此場次'} 已由管理員關閉，無法再報名。` });
-        } catch (e) {}
+      if (isSuperAdminUser) {
+        for (const tGid of pushTargets) {
+          try {
+            await pushToAdmins(tGid, { type: 'text', text: `🔒 ${targetGame.title || '此場次'} 已由管理員關閉，無法再報名。` });
+          } catch (e) {}
+        }
       }
       
       return res.json({ success: true });
@@ -1785,7 +1847,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (targetGids && Array.isArray(targetGids) && targetGids.length > 0) {
         const newlyAdded = targetGids.filter(g => !oldTargetGids.includes(g));
         game.targetGids = targetGids;
-        if (newlyAdded.length > 0) {
+        if (newlyAdded.length > 0 && isSuperAdminUser) {
           for (const gId of newlyAdded) {
             try {
               await sendLobbyLink(null, gId, `🚀 新增跨群組開放報名！\n\n🏸 ${title || game.title || '新場次'}`);
@@ -1832,8 +1894,8 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
     
     if (action === 'customPush') {
-      if (!isAdmin) {
-        return res.status(403).json({ error: '只有管理員能發送推播' });
+      if (!isSuperAdminUser) {
+        return res.status(403).json({ error: '只有超級管理員能發送推播' });
       }
       
       let targetGids = [gid];
@@ -1852,7 +1914,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
     
     if (action === 'updateLobbyTitle') {
-      if (!isAdmin) return res.status(403).json({ error: '只有管理員能修改大廳標題' });
+      if (!isSuperAdminUser) return res.status(403).json({ error: '只有超級管理員能修改大廳標題' });
       
       const newTitle = text ? text.trim() : '';
       await ensureGroupSettings(gid);
@@ -1862,7 +1924,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
 
     if (action === 'updateLobbyDesc') {
-      if (!isAdmin) return res.status(403).json({ error: '只有管理員能修改大廳描述' });
+      if (!isSuperAdminUser) return res.status(403).json({ error: '只有超級管理員能修改大廳描述' });
       
       const newDesc = text ? text.trim() : '';
       await ensureGroupSettings(gid);
@@ -1872,8 +1934,8 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
 
     if (action === 'pushList') {
-      if (!isAdmin) {
-        return res.status(403).json({ error: '只有管理員能推播名單' });
+      if (!isSuperAdminUser) {
+        return res.status(403).json({ error: '只有超級管理員能推播名單' });
       }
       if (!gameId || !games[gameId]) {
         return res.status(400).json({ error: '找不到此場次' });
@@ -2136,10 +2198,10 @@ async function handleEvent(event) {
   }
   
   if (text.replace(/\s+/g, '') === '接龍密碼Tony好帥') {
-    if (!groupAdmins[gid]) groupAdmins[gid] = new Set();
-    groupAdmins[gid].add(uid);
-    saveAdmins();
-    return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 權限已開通！您現在是本群組的管理員了。' });
+    if (!superAdmins) superAdmins = new Set();
+    superAdmins.add(uid);
+    saveSuperAdmins();
+    return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 權限已開通！您現在是全系統的超級管理員了。' });
   }
 
   if (text === '取消管理員') {
@@ -2174,11 +2236,56 @@ async function handleEvent(event) {
     });
   }
 
-  if (text === '我的UID' || text === '我的uid') {
+  if (text.toLowerCase() === 'line id check' || text === '我的UID' || text === '我的uid') {
     return client.replyMessage(event.replyToken, {
       type: 'text',
-      text: `你的專屬 UID 是：\n${uid}\n\n(若要開啟全系統超級管理員模式，請將此字串設定到 Render 的 SUPER_ADMIN_USER_ID 環境變數中)`
+      text: `你的專屬 UID 是：\n${uid}\n\n請將此 UID 提供給超級管理員，以便設定群組管理權限。\n(若要開啟全系統超級管理員模式，可將此字串設定到 Render 的 SUPER_ADMIN_USER_ID 環境變數中)`
     });
+  }
+
+  const groupAdminSetMatch = text.match(/^接龍群主設定\s+(U[a-f0-9]+)\s+(\d{4})$/i);
+  if (groupAdminSetMatch) {
+    if (!isSuperAdmin(uid)) {
+      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員能指派群組管理員。' });
+    }
+    const targetUid = groupAdminSetMatch[1];
+    const targetCode = groupAdminSetMatch[2];
+    const targetGid = groupCodes[targetCode];
+    if (!targetGid) {
+      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${targetCode} 的群組` });
+    }
+    if (!groupAdmins[targetGid]) groupAdmins[targetGid] = new Set();
+    groupAdmins[targetGid].add(targetUid);
+    saveAdmins();
+    const gName = groupSettings[targetGid]?.groupName || targetCode;
+    return client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: `✅ 已成功將該使用者設為【${gName}】的群組管理員！`
+    });
+  }
+
+  const groupAdminRemoveMatch = text.match(/^接龍群主撤銷\s+(U[a-f0-9]+)\s+(\d{4})$/i);
+  if (groupAdminRemoveMatch) {
+    if (!isSuperAdmin(uid)) {
+      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員能撤銷群組管理員。' });
+    }
+    const targetUid = groupAdminRemoveMatch[1];
+    const targetCode = groupAdminRemoveMatch[2];
+    const targetGid = groupCodes[targetCode];
+    if (!targetGid) {
+      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${targetCode} 的群組` });
+    }
+    if (groupAdmins[targetGid] && groupAdmins[targetGid].has(targetUid)) {
+      groupAdmins[targetGid].delete(targetUid);
+      saveAdmins();
+      const gName = groupSettings[targetGid]?.groupName || targetCode;
+      return client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: `✅ 已撤銷該使用者在【${gName}】的管理權限。`
+      });
+    } else {
+      return client.replyMessage(event.replyToken, { type: 'text', text: '該使用者本來就不是此群組的管理員。' });
+    }
   }
 
   const urlMatch = text.match(/^(?:網址|群組網址|大廳網址)\s*(\d{4})$/);
@@ -2200,7 +2307,7 @@ async function handleEvent(event) {
   }
 
   // 只允許管理員下達文字指令 (但開放部分查詢指令給一般群友)
-  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+  const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
   
   const cleanText = text.replace(/\n\n\[系統代發\]$/, '').trim();
   const isPlusMinus = cleanText.match(/^\+[1-9]/) || cleanText.match(/^-[1-9]/) || cleanText.match(/\+[1-9]$/) || cleanText.match(/-[1-9]$/) || cleanText.match(/🔄順序更新$/) || cleanText.match(/💰繳費更新$/);

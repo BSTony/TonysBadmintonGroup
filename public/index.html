@@ -130,7 +130,10 @@
             <button id="btn-save-template" class="btn-secondary" style="padding: 0 10px; font-size: 12px; white-space: nowrap;">儲存為新範本</button>
             <button id="btn-delete-template" class="btn-danger" style="padding: 0 10px; font-size: 12px; white-space: nowrap;">刪除</button>
           </div>
-          <textarea id="cg-initial-list" rows="3" placeholder="每行填寫一人，例如：\n王小明(進階)\n陳大媽"></textarea>
+          <div id="cg-initial-list-container" style="display:flex; flex-direction:column; gap:5px; margin-bottom:5px;">
+            <!-- 動態加入的格子 -->
+          </div>
+          <button type="button" id="btn-cg-add-row" class="btn-secondary" style="width:100%; margin-top:5px; padding:8px; font-weight:bold;">➕ 新增一格</button>
         </div>
 
         <div class="form-group">

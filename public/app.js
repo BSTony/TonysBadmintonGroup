@@ -143,6 +143,7 @@ let currentGroupId = null;
 let currentDetailGame = null;
 let gamesList = [];
 let globalIsAdmin = false;
+let globalIsSuperAdmin = false;
 let globalManagedGroups = [];
 let globalLobbyTitle = '羽球接龍大廳';
 let currentGameDetailId = null;
@@ -254,6 +255,7 @@ async function loadGamesLobby(silent = false) {
       gamesList = data.games || [];
       lastGamesJson = JSON.stringify(gamesList);
       globalIsAdmin = !!data.isAdmin;
+      globalIsSuperAdmin = !!data.isSuperAdmin;
       globalManagedGroups = data.managedGroups || [];
       globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
       globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
@@ -327,7 +329,7 @@ function renderLobby() {
     
     document.getElementById('lobby-title-text').innerText = globalLobbyTitle || '羽球接龍大廳';
     const btnEditTitle = document.getElementById('btn-edit-title');
-    if (globalIsAdmin && btnEditTitle) {
+    if (globalIsSuperAdmin && btnEditTitle) {
       btnEditTitle.classList.remove('hidden');
       btnEditTitle.onclick = handleEditLobbyTitle;
     } else if (btnEditTitle) {
@@ -336,14 +338,14 @@ function renderLobby() {
     
     document.getElementById('lobby-desc-text').innerText = globalLobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
     const btnEditDesc = document.getElementById('btn-edit-desc');
-    if (globalIsAdmin && btnEditDesc) {
+    if (globalIsSuperAdmin && btnEditDesc) {
       btnEditDesc.classList.remove('hidden');
       btnEditDesc.onclick = handleEditLobbyDesc;
     } else if (btnEditDesc) {
       btnEditDesc.classList.add('hidden');
     }
 
-    if (globalIsAdmin && btnLobbyStats) {
+    if (globalIsSuperAdmin && btnLobbyStats) {
       btnLobbyStats.classList.remove('hidden');
     } else if (btnLobbyStats) {
       btnLobbyStats.classList.add('hidden');
@@ -734,7 +736,7 @@ function renderDetail(gameId, preserveScroll = false) {
   
   detailList.innerHTML = actionRowHtml;
   
-  if (globalIsAdmin) {
+  if (globalIsSuperAdmin) {
     let pushListBtn = document.getElementById('admin-push-list-btn');
     if (!pushListBtn) {
       pushListBtn = document.createElement('button');
@@ -1642,9 +1644,108 @@ if (document.getElementById('btn-eg-add-group')) {
 // ================= Create Game UI & Templates =================
 const createGameView = document.getElementById('create-game-view');
 const cgTemplateSelect = document.getElementById('cg-template-select');
-const cgInitialList = document.getElementById('cg-initial-list');
 
 let currentGroupTemplates = {};
+
+// === 預設名單動態 UI ===
+function getCgListString() {
+  const rows = document.querySelectorAll('#cg-initial-list-container .cg-list-row');
+  let lines = [];
+  rows.forEach(row => {
+     const n = row.querySelector('.cg-list-name').value.trim();
+     const l = row.querySelector('.cg-list-level').value.trim();
+     const p = row.querySelector('.cg-list-paid').checked;
+     if (!n) return;
+     let line = n;
+     if (l) line += `(${l})`;
+     if (p) line += `(已繳費)`;
+     lines.push(line);
+  });
+  return lines.join('\n');
+}
+
+function parseAndRenderCgList(text) {
+  const container = document.getElementById('cg-initial-list-container');
+  container.innerHTML = '';
+  if (!text) return;
+  const lines = text.split(/[\n、，,]+/).map(n => n.trim()).filter(Boolean);
+  lines.forEach(line => {
+    let isPaid = false;
+    let name = line;
+    if (name.endsWith('$') || name.endsWith('＄') || name.endsWith('(已繳費)') || name.endsWith('（已繳費）')) {
+        isPaid = true;
+        name = name.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+    }
+    let level = '';
+    const match = name.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
+    if (match) {
+        name = match[1].trim();
+        level = (match[2] || match[3]).trim();
+    }
+    addCgListRow(name, level, isPaid);
+  });
+}
+
+function addCgListRow(name = '', level = '', isPaid = false) {
+  const container = document.getElementById('cg-initial-list-container');
+  const row = document.createElement('div');
+  row.className = 'cg-list-row';
+  row.style.display = 'flex';
+  row.style.gap = '5px';
+  row.style.marginBottom = '5px';
+  row.style.alignItems = 'center';
+  
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.className = 'cg-list-name';
+  nameInput.placeholder = '姓名';
+  nameInput.value = name;
+  nameInput.style.flex = '2';
+  nameInput.style.margin = '0';
+  
+  const levelInput = document.createElement('input');
+  levelInput.type = 'text';
+  levelInput.className = 'cg-list-level';
+  levelInput.placeholder = '程度(選填)';
+  levelInput.value = level;
+  levelInput.style.flex = '1';
+  levelInput.style.margin = '0';
+  
+  const paidLabel = document.createElement('label');
+  paidLabel.style.display = 'flex';
+  paidLabel.style.alignItems = 'center';
+  paidLabel.style.gap = '3px';
+  paidLabel.style.marginBottom = '0';
+  paidLabel.style.fontSize = '12px';
+  paidLabel.style.whiteSpace = 'nowrap';
+  
+  const paidCheck = document.createElement('input');
+  paidCheck.type = 'checkbox';
+  paidCheck.className = 'cg-list-paid';
+  paidCheck.checked = isPaid;
+  paidCheck.style.margin = '0';
+  
+  paidLabel.appendChild(paidCheck);
+  paidLabel.appendChild(document.createTextNode('繳費'));
+  
+  const delBtn = document.createElement('button');
+  delBtn.type = 'button';
+  delBtn.className = 'btn-danger btn-cg-remove-row';
+  delBtn.style.padding = '5px 8px';
+  delBtn.style.fontSize = '12px';
+  delBtn.style.margin = '0';
+  delBtn.innerText = '❌';
+  delBtn.onclick = () => row.remove();
+  
+  row.appendChild(nameInput);
+  row.appendChild(levelInput);
+  row.appendChild(paidLabel);
+  row.appendChild(delBtn);
+  
+  container.appendChild(row);
+}
+
+document.getElementById('btn-cg-add-row').onclick = () => addCgListRow();
 
 async function loadTemplates() {
   try {
@@ -1670,7 +1771,7 @@ async function loadTemplates() {
 }
 
 document.getElementById('btn-save-template').onclick = async () => {
-  const text = cgInitialList.value.trim();
+  const text = getCgListString();
   if (!text) return alert('名單不可為空！');
   const name = prompt('請輸入此範本的名稱 (例如：週二固定咖)：');
   if (!name) return;
@@ -1721,7 +1822,7 @@ document.getElementById('btn-delete-template').onclick = async () => {
     const data = await res.json();
     if (res.ok && data.success) {
       await loadTemplates();
-      cgInitialList.value = '';
+      parseAndRenderCgList('');
       alert('刪除成功且已同步至 Git！');
     } else {
       alert(data.error || '刪除失敗');
@@ -1736,11 +1837,11 @@ document.getElementById('btn-delete-template').onclick = async () => {
 cgTemplateSelect.onchange = () => {
   const name = cgTemplateSelect.value;
   if (!name) {
-    cgInitialList.value = '';
+    parseAndRenderCgList('');
     return;
   }
   if (currentGroupTemplates[name]) {
-    cgInitialList.value = currentGroupTemplates[name];
+    parseAndRenderCgList(currentGroupTemplates[name]);
   }
 };
 
@@ -1788,7 +1889,8 @@ function showCreateGameForm() {
   });
   
   loadTemplates();
-  cgInitialList.value = '';
+  parseAndRenderCgList('');
+  addCgListRow(); // Default one empty row
   cgTemplateSelect.value = '';
 }
 
@@ -1839,7 +1941,7 @@ document.getElementById('btn-submit-create').onclick = async () => {
         publish: document.getElementById('cg-publish').value,
         reminder: document.getElementById('cg-reminder').value,
         note: document.getElementById('cg-note').value.trim(),
-        initialListStr: cgInitialList.value.trim()
+        initialListStr: getCgListString()
       })
     });
     
