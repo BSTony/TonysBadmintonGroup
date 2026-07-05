@@ -1447,7 +1447,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783227291605,
+    "lastActiveTime": 1783227310702,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1470,7 +1470,8 @@
       "Jimmy": true,
       "Nebula": true,
       "Hsin": true,
-      "周哲儁": true
+      "周哲儁": true,
+      "林立峰": true
     },
     "sections": [
       {
