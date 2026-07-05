@@ -1447,7 +1447,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1782796286490,
-    "lastActiveTime": 1783211086677,
+    "lastActiveTime": 1783214262107,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1466,7 +1466,8 @@
       "東東": true,
       "L": true,
       "小高": true,
-      "陳沛君": true
+      "陳沛君": true,
+      "Jimmy": true
     },
     "sections": [
       {
