@@ -1508,7 +1508,10 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
   }
   
   const groupStats = lobbyVisits[gid];
-  groupStats.viewCount++;
+  if (!groupStats.uniqueViewers) groupStats.uniqueViewers = {};
+  if (!groupStats.logs) groupStats.logs = [];
+
+  groupStats.viewCount = (groupStats.viewCount || 0) + 1;
   
   if (!groupStats.uniqueViewers[userId]) {
     groupStats.uniqueViewers[userId] = { displayName, firstVisit: Date.now(), count: 0 };
@@ -1525,12 +1528,12 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
     groupStats.logs = groupStats.logs.slice(0, 200);
   }
 
-  // 寫入檔案
-  fs.writeFile(LOBBY_VISITS_FILE, JSON.stringify(lobbyVisits, null, 2), () => {});
-  
   lobbyVisitClickCount++;
-  if (lobbyVisitClickCount >= 100) {
+  if (lobbyVisitClickCount >= 10) {
     lobbyVisitClickCount = 0;
+    saveLobbyVisits().catch(e => console.error(e));
+  } else {
+    // 也確保至少有儲存，但不需要每次都寫檔，改成直接呼叫 saveLobbyVisits 避免 fs.writeFile 同步寫入的問題
     saveLobbyVisits().catch(e => console.error(e));
   }
   
@@ -1549,9 +1552,9 @@ app.get('/api/lobby_stats/:gid', (req, res) => {
   
   const stats = lobbyVisits[gid] || { viewCount: 0, uniqueViewers: {}, logs: [] };
   res.json({ success: true, stats: {
-    viewCount: stats.viewCount,
-    uniqueViewersCount: Object.keys(stats.uniqueViewers).length,
-    recentVisits: stats.logs
+    viewCount: stats.viewCount || 0,
+    uniqueViewersCount: Object.keys(stats.uniqueViewers || {}).length,
+    recentVisits: stats.logs || []
   }});
 });
 
@@ -1578,20 +1581,22 @@ app.get('/api/admin/all_stats', async (req, res) => {
     const gName = groupSettings[g]?.groupName || groupSettings[g]?.lobbyTitle || g;
     const stats = lobbyVisits[g] || { viewCount: 0, uniqueViewers: {}, logs: [] };
     
-    const uniqueCount = Object.keys(stats.uniqueViewers).length;
+    const uniqueViewers = stats.uniqueViewers || {};
+    const uniqueCount = Object.keys(uniqueViewers).length;
     
-    totalViews += stats.viewCount;
-    for (const uid of Object.keys(stats.uniqueViewers)) {
+    totalViews += (stats.viewCount || 0);
+    for (const uid of Object.keys(uniqueViewers)) {
       globalUniqueViewers.add(uid);
     }
     
     // Sort logs by time descending (newest first)
-    const sortedLogs = [...stats.logs].sort((a, b) => b.time - a.time);
+    const logs = stats.logs || [];
+    const sortedLogs = [...logs].sort((a, b) => b.time - a.time);
 
     allStats.push({
       gid: g,
       groupName: gName,
-      viewCount: stats.viewCount,
+      viewCount: stats.viewCount || 0,
       uniqueCount: uniqueCount,
       recentVisits: sortedLogs
     });

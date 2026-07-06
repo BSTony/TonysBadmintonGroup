@@ -2234,18 +2234,44 @@ if (btnLobbyStats) {
               item.style.padding = '6px 0';
               item.style.borderBottom = '1px solid #f9f9f9';
               
-              let imgHtml = '';
-              if (log.pictureUrl) {
-                imgHtml = `<img src="${log.pictureUrl}" style="width:20px; height:20px; border-radius:50%; margin-right:8px;">`;
+              const timeDiv = document.createElement('div');
+              timeDiv.style.color = '#888';
+              timeDiv.style.fontSize = '11px';
+              timeDiv.style.marginRight = '10px';
+              timeDiv.style.width = '65px';
+              timeDiv.innerText = timeStr;
+              item.appendChild(timeDiv);
+
+              if (log.pictureUrl && log.pictureUrl.startsWith('https://')) {
+                const img = document.createElement('img');
+                img.src = log.pictureUrl;
+                img.style.width = '20px';
+                img.style.height = '20px';
+                img.style.borderRadius = '50%';
+                img.style.marginRight = '8px';
+                item.appendChild(img);
               } else {
-                imgHtml = `<div style="width:20px; height:20px; border-radius:50%; background:#ccc; margin-right:8px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff;">👤</div>`;
+                const fallbackImg = document.createElement('div');
+                fallbackImg.style.width = '20px';
+                fallbackImg.style.height = '20px';
+                fallbackImg.style.borderRadius = '50%';
+                fallbackImg.style.background = '#ccc';
+                fallbackImg.style.marginRight = '8px';
+                fallbackImg.style.display = 'flex';
+                fallbackImg.style.alignItems = 'center';
+                fallbackImg.style.justifyContent = 'center';
+                fallbackImg.style.fontSize = '10px';
+                fallbackImg.style.color = '#fff';
+                fallbackImg.innerText = '👤';
+                item.appendChild(fallbackImg);
               }
               
-              item.innerHTML = `
-                <div style="color:#888; font-size:11px; margin-right:10px; width:65px;">${timeStr}</div>
-                ${imgHtml}
-                <div style="font-weight:500; font-size:13px;">${log.displayName}</div>
-              `;
+              const nameDiv = document.createElement('div');
+              nameDiv.style.fontWeight = '500';
+              nameDiv.style.fontSize = '13px';
+              nameDiv.innerText = log.displayName || '未知使用者';
+              item.appendChild(nameDiv);
+              
               logsContainer.appendChild(item);
             });
           } else {
