@@ -157,7 +157,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 122,
+    "viewCount": 123,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -404,9 +404,21 @@
         "firstVisit": 1783334773731,
         "count": 1,
         "lastVisit": 1783334773731
+      },
+      "Ueab389b7ed59afb14651d8449997efec": {
+        "displayName": "黃建榮",
+        "firstVisit": 1783339111867,
+        "count": 1,
+        "lastVisit": 1783339111867
       }
     },
     "logs": [
+      {
+        "time": 1783339111867,
+        "userId": "Ueab389b7ed59afb14651d8449997efec",
+        "displayName": "黃建榮",
+        "pictureUrl": "https://profile.line-scdn.net/ch/v2/p/u16fa8d01bf7059c7802e863bc8537b83/1352457785269"
+      },
       {
         "time": 1783338739355,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
