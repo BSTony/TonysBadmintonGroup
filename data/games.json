@@ -1858,7 +1858,7 @@
     "location": "南港高中",
     "fee": "男150/女100",
     "note": "",
-    "tag": "11-12點開冷氣,4面",
+    "tag": "4面",
     "active": true,
     "startTime": 1783228097228,
     "lastActiveTime": 1783241102575,
@@ -1929,6 +1929,7 @@
         "operator": "林煥杰",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
