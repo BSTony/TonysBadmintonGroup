@@ -157,7 +157,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 97,
+    "viewCount": 98,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -368,9 +368,21 @@
         "firstVisit": 1783327880748,
         "count": 1,
         "lastVisit": 1783327880748
+      },
+      "Ue8024b6514a8c8ed6a992979d92c699d": {
+        "displayName": "黃家弘(Orange)    ⃒⃘⃤ 9¾ ⚯͛",
+        "firstVisit": 1783330348564,
+        "count": 1,
+        "lastVisit": 1783330348564
       }
     },
     "logs": [
+      {
+        "time": 1783330348564,
+        "userId": "Ue8024b6514a8c8ed6a992979d92c699d",
+        "displayName": "黃家弘(Orange)    ⃒⃘⃤ 9¾ ⚯͛",
+        "pictureUrl": "https://profile.line-scdn.net/0hwcmhI65IKExAETcHCVlWcjBBKyZjYHFeO3EwKSJEc396Jz9PanBkLSAWJHt5ID8YaHFjeCUTf3hiUhRGG3IYVwwNCnwfWy9oDA8bXCxPFzsAUhYeHicZUHNDHy4qUTpjOw08Ix5SNiRhcipBHiccUx1YfiEnXidubEZEGkUjRs8vE18ZbXdmL30Xfnn4"
+      },
       {
         "time": 1783328230578,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
