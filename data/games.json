@@ -1725,7 +1725,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783234517925,
+    "lastActiveTime": 1783349428335,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1750,12 +1750,19 @@
           "Kevin",
           "Mia",
           "俊吉",
-          "AddieWang"
+          "AddieWang",
+          "沂 Lexie🐷"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/06 22:50",
+        "name": "沂 Lexie🐷",
+        "operator": "沂 Lexie🐷",
+        "action": "+1"
+      },
       {
         "time": "07/05 14:55",
         "name": "AddieWang",
