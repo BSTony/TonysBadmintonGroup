@@ -1215,7 +1215,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 5,
+    "viewCount": 6,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -1240,9 +1240,21 @@
         "firstVisit": 1783345881855,
         "count": 1,
         "lastVisit": 1783345881855
+      },
+      "U532d12783f207181c2d0f9d9ecc8724a": {
+        "displayName": "林俊佑",
+        "firstVisit": 1783346238347,
+        "count": 1,
+        "lastVisit": 1783346238347
       }
     },
     "logs": [
+      {
+        "time": 1783346238347,
+        "userId": "U532d12783f207181c2d0f9d9ecc8724a",
+        "displayName": "林俊佑",
+        "pictureUrl": "https://profile.line-scdn.net/0hz8wiwhEyJRdaEDQI9I5baCpAJn15YXwFIXZudmcWfyNlJDdGcnc9IjxDKHBkJ2UUc3E_cjsQe3RWA1JxREbZI10geCZnIWdJcH5v9A"
+      },
       {
         "time": 1783345881855,
         "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
