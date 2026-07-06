@@ -1725,7 +1725,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783349675842,
+    "lastActiveTime": 1783350392960,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1753,12 +1753,19 @@
           "AddieWang",
           "沂 Lexie🐷",
           "譚龍",
-          "丁丁"
+          "丁丁",
+          "周則鼎"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/06 23:06",
+        "name": "周則鼎",
+        "operator": "周則鼎",
+        "action": "+1"
+      },
       {
         "time": "07/06 22:54",
         "name": "丁丁",
