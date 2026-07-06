@@ -157,7 +157,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 145,
+    "viewCount": 146,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -420,8 +420,8 @@
       "Uc8b0e0ef7ca58b387136a28642742b7d": {
         "displayName": "沂 Lexie🐷",
         "firstVisit": 1783348438427,
-        "count": 4,
-        "lastVisit": 1783349832382
+        "count": 5,
+        "lastVisit": 1783349891019
       },
       "U09e4f0126678f203e0b139a474c17637": {
         "displayName": "詹敬智(胞弟)",
@@ -431,6 +431,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783349891019,
+        "userId": "Uc8b0e0ef7ca58b387136a28642742b7d",
+        "displayName": "沂 Lexie🐷",
+        "pictureUrl": "https://profile.line-scdn.net/0hTZgpPQ64C3VKCSPkg911CjpZCB9peFJnYz9HEywBVBAnO04qZ2YURihdXREiPE4nM2sURHdbUxZGGnwTVF_3QU05VkR3OEkrYGdBlg"
+      },
       {
         "time": 1783349886778,
         "userId": "U799d4a509b3c76b76c249151f5a3f690",
