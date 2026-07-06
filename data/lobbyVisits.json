@@ -157,7 +157,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 114,
+    "viewCount": 115,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -342,8 +342,8 @@
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
         "displayName": "郭岳翰John",
         "firstVisit": 1783234049549,
-        "count": 2,
-        "lastVisit": 1783321095695
+        "count": 3,
+        "lastVisit": 1783335051979
       },
       "U4f877c526e048afcda3730edce9ba746": {
         "displayName": "楊程鈞",
@@ -407,6 +407,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783335051979,
+        "userId": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+        "displayName": "郭岳翰John",
+        "pictureUrl": "https://profile.line-scdn.net/0hgE71bnyJOGoaSCnunEtGVGoYOwA5OWF4ZClyWylMZFggKis7MicjDn9PMw4kf307Ni10XClANVk4DCdaXXs1a1Q1OSp0PA9LblgqTCs3Zy9DDitCYV4lC3EjYB1BHQlsTC8VdkYsGyZFJis-dnYfWkdUOFh5GXY5QR9UPB96Vul1Sk8_Ny52CSdObl-i"
+      },
       {
         "time": 1783334925023,
         "userId": "U092196c10fe7e15591482c6b7942a147",
