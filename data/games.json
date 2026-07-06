@@ -1621,13 +1621,15 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783334549122,
+    "lastActiveTime": 1783345630743,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "Brian 王暉鈞": "4"
+    },
     "paidMap": {
       "Tony": true,
       "Kay": true,
@@ -1661,12 +1663,19 @@
           "Ong",
           "Sean",
           "John",
-          "陳俊傑 (Jeremy)"
+          "陳俊傑 (Jeremy)",
+          "Brian 王暉鈞"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/06 21:47",
+        "name": "Brian 王暉鈞",
+        "operator": "Brian 王暉鈞",
+        "action": "+1"
+      },
       {
         "time": "07/06 18:42",
         "name": "陳俊傑 (Jeremy)",
