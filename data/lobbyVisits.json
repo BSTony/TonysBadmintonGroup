@@ -307,7 +307,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 198,
+    "viewCount": 199,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -360,8 +360,8 @@
       "U610a1cb7211453949dbb88fa527c90aa": {
         "displayName": "Han-Hsing",
         "firstVisit": 1783210397966,
-        "count": 4,
-        "lastVisit": 1783349769855
+        "count": 5,
+        "lastVisit": 1783417876279
       },
       "U169c089d184f3be52ae8124893db17c1": {
         "displayName": "Rebecca",
@@ -617,6 +617,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783417876279,
+        "userId": "U610a1cb7211453949dbb88fa527c90aa",
+        "displayName": "Han-Hsing",
+        "pictureUrl": "https://profile.line-scdn.net/0hmVwGesgPMnlaPi4z2NtMRypuMRN5T2trdV16TDs8ah5vDiEpI116HWhqO003DXQqJQx5Fjppbkx4UXNEBi8BYix_DE0XVAEpKC99WRdEbFUiVAxtfx4pFw1mLTYveWlkGCABSDtQG0E6bBBVLx8mQhllCzxgVTNxJGleL18MXPo1PEUsd1h8Gmc4ZEzi"
+      },
       {
         "time": 1783417146547,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
