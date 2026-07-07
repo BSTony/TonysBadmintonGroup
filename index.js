@@ -2893,8 +2893,13 @@ async function handleEvent(event) {
           paddingBottom: isTarget ? "10px" : "6px",
           alignItems: "center",
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
-          contents: [
-            { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: isTarget ? "bold" : "regular" },
+          contents: isTarget ? [
+            { type: "icon", url: "https://upload.wikimedia.org/wikipedia/commons/1/14/Animated_PNG_example_bouncing_beach_ball.png", size: "sm" },
+            { type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: "bold", margin: "sm" },
+            { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
+            { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
+          ] : [
+            { type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: "regular" },
             { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
             { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
           ]
