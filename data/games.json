@@ -1331,7 +1331,7 @@
     "tag": "兩面,冷氣",
     "active": true,
     "startTime": 1782825784572,
-    "lastActiveTime": 1783401683891,
+    "lastActiveTime": 1783401719690,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1366,11 +1366,18 @@
           "Joe",
           "小可愛",
           "afrahuang",
-          "Han-Hsing"
+          "Han-Hsing",
+          "test"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/07 13:21",
+        "name": "test",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/07 13:21",
         "name": "test",
