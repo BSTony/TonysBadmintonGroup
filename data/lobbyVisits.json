@@ -1823,7 +1823,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 27,
+    "viewCount": 28,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -1884,9 +1884,21 @@
         "firstVisit": 1783430120533,
         "count": 2,
         "lastVisit": 1783430165400
+      },
+      "Uf077846a21900f6e03afdf8e678bc1ab": {
+        "displayName": "Tank Lin",
+        "firstVisit": 1783431380812,
+        "count": 1,
+        "lastVisit": 1783431380812
       }
     },
     "logs": [
+      {
+        "time": 1783431380812,
+        "userId": "Uf077846a21900f6e03afdf8e678bc1ab",
+        "displayName": "Tank Lin",
+        "pictureUrl": "https://profile.line-scdn.net/0hsLMHfiD_LGNgMTAEASNSXRBhLwlDQHVxGwVhB1UwcVZeBG5gHARmUlM1elAPBjk2RANrV1E1dgNCRiMxLA0RbAhlGyEjSHdHLi0XYylEIj0ndDdICB8cbCNFBw0JXDg9DFNjfxBVOzo1Aip2SCkNRxZpJTgceAVASGZANWUDQuAPM1s2TVdiAF03elbY"
+      },
       {
         "time": 1783430755468,
         "userId": "U360d596a5111c676ab153457ce851c03",
