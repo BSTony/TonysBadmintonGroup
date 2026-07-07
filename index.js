@@ -2899,7 +2899,7 @@ async function handleEvent(event) {
         if (isTarget) {
             boxProps.backgroundColor = "#FFF3CD";
             // 下方是袋鼠動畫的網址，請將這串網址換成您做好的袋鼠 APNG 網址
-            boxProps.contents.push({ type: "icon", url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", size: "md" });
+            boxProps.contents.push({ type: "image", url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", size: "xxs", flex: 0 });
             boxProps.contents.push({ type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: "bold" });
         } else {
             boxProps.contents.push({ type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true });
