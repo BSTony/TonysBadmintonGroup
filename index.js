@@ -2602,7 +2602,7 @@ async function handleEvent(event) {
                   paddingBottom: "2px",
                   contents: [
                       { type: "text", text: formatName(i, name1), size: "xs", color: "#333333", flex: 1, wrap: false },
-                      { type: "text", text: name2 ? formatName(i+1, name2) : "", size: "xs", color: "#333333", flex: 1, wrap: false }
+                      { type: "text", text: name2 ? formatName(i+1, name2) : " ", size: "xs", color: "#333333", flex: 1, wrap: false }
                   ]
               });
           }
@@ -2616,7 +2616,7 @@ async function handleEvent(event) {
                   paddingBottom: "2px",
                   contents: [
                       { type: "text", text: `${list.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
-                      { type: "text", text: "", size: "xs", color: "#333333", flex: 1, wrap: false }
+                      { type: "text", text: " ", size: "xs", color: "#333333", flex: 1, wrap: false }
                   ]
               });
           }
@@ -2686,7 +2686,7 @@ async function handleEvent(event) {
                       paddingBottom: "2px",
                       contents: [
                           { type: "text", text: formatBackup(i, name1, backupCount), size: "xs", color: "#555555", flex: 1, wrap: false },
-                          { type: "text", text: name2 ? formatBackup(i+1, name2, backupCount+1) : "", size: "xs", color: "#555555", flex: 1, wrap: false }
+                          { type: "text", text: name2 ? formatBackup(i+1, name2, backupCount+1) : " ", size: "xs", color: "#555555", flex: 1, wrap: false }
                       ]
                   });
                   backupCount += name2 ? 2 : 1;
