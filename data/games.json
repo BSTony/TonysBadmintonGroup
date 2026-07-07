@@ -1742,7 +1742,7 @@
     "gameId": "1783228037107322",
     "title": "週日 港中 打四小",
     "date": "7/12 (日)",
-    "time": "20:00~12:00",
+    "time": "08:00~12:00",
     "location": "南港高中",
     "fee": "320",
     "note": "",
@@ -1805,7 +1805,8 @@
         "operator": "楊程鈞",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1783228097228580": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
