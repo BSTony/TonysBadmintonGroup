@@ -2880,19 +2880,35 @@ async function handleEvent(event) {
           }
         }
 
-        flexContents.push({
+        const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText.includes(g.title);
+        
+        if (index > 0) {
+          flexContents.push({ type: "separator", color: "#f4f4f4" });
+        }
+        
+        const boxProps = {
           type: "box",
           layout: "horizontal",
-          paddingTop: "6px",
-          paddingBottom: "6px",
+          paddingTop: isTarget ? "10px" : "6px",
+          paddingBottom: isTarget ? "10px" : "6px",
           alignItems: "center",
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
           contents: [
-            { type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true },
+            { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: isTarget ? "bold" : "regular" },
             { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
             { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
           ]
-        });
+        };
+        
+        if (isTarget) {
+            boxProps.backgroundColor = "#FFF3CD";
+            boxProps.cornerRadius = "md";
+            boxProps.paddingStart = "10px";
+            boxProps.paddingEnd = "10px";
+            boxProps.margin = "sm";
+        }
+        
+        flexContents.push(boxProps);
       });
 
       // 在最下方加入一次性的提示文字
