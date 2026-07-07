@@ -2863,13 +2863,12 @@ async function handleEvent(event) {
       const flexContents = [];
 
       targetGames.forEach((g, index) => {
-        if (index >= 15) return; // 避免過多超出 Flex message 限制
+        if (index >= 15) return;
         const sec = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 0 };
         const count = sec.list.length;
         const limit = sec.limit || 0;
         const isFull = limit > 0 && count >= limit;
-        const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
-        const dateStr = [g.date, g.time].filter(Boolean).join(' ');
+        const statusText = isFull ? '滿' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
         const titleText = g.title || g.date || '場次';
         
         let combinedTitle = titleText;
@@ -2881,59 +2880,74 @@ async function handleEvent(event) {
         }
 
         const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText.includes(g.title);
-        
-        if (index > 0) {
-          flexContents.push({ type: "separator", color: "#f4f4f4" });
-        }
-        
-        const boxProps = {
+
+        // 每一列的容器
+        const rowContents = [
+          { type: "text", text: isTarget ? `▸ ${combinedTitle}` : combinedTitle, size: "xs", color: isTarget ? "#1a1a1a" : "#555555", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
+          {
+            type: "box",
+            layout: "horizontal",
+            flex: 0,
+            height: "20px",
+            width: isFull ? "32px" : "42px",
+            cornerRadius: "sm",
+            backgroundColor: isFull ? "#FDECEA" : (isTarget ? "#E8F5E9" : "#F5F5F5"),
+            justifyContent: "center",
+            alignItems: "center",
+            contents: [
+              { type: "text", text: statusText, size: "xxs", color: isFull ? "#D32F2F" : (isTarget ? "#2E7D32" : "#666666"), align: "center", weight: "bold" }
+            ]
+          },
+          { type: "text", text: "›", size: "sm", color: "#CCCCCC", flex: 0, margin: "sm", gravity: "center" }
+        ];
+
+        const rowBox = {
           type: "box",
           layout: "horizontal",
-          paddingTop: isTarget ? "10px" : "6px",
-          paddingBottom: isTarget ? "10px" : "6px",
+          paddingTop: "8px",
+          paddingBottom: "8px",
+          paddingStart: isTarget ? "10px" : "4px",
+          paddingEnd: "4px",
           alignItems: "center",
-          action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
-          contents: [
-            { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: isTarget ? "bold" : "regular" },
-            { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
-            { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
-          ]
+          action: { type: "uri", label: "查看", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
+          contents: rowContents
         };
-        
+
         if (isTarget) {
-            boxProps.backgroundColor = "#FFF3CD";
-            boxProps.cornerRadius = "md";
-            boxProps.paddingStart = "10px";
-            boxProps.paddingEnd = "10px";
-            boxProps.margin = "sm";
+          rowBox.backgroundColor = "#FFFDE7";
+          rowBox.cornerRadius = "md";
+          rowBox.borderWidth = "1px";
+          rowBox.borderColor = "#FFF59D";
         }
-        
-        flexContents.push(boxProps);
+
+        // 分隔線（第一項之後才加）
+        if (index > 0 && !isTarget) {
+          flexContents.push({ type: "separator", color: "#F0F0F0" });
+        }
+        if (index > 0 && isTarget) {
+          flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
+        }
+
+        flexContents.push(rowBox);
+
+        if (isTarget) {
+          flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
+        }
       });
 
-      // 在最下方加入一次性的提示文字
-      flexContents.push({
-        type: "box",
-        layout: "horizontal",
-        margin: "lg",
-        justifyContent: "center",
-        contents: [
-          { type: "text", text: "點選上方場次查看詳細名單 👆", size: "xs", color: "#888888", align: "center" }
-        ]
-      });
-
-      // 如果這是由 LIFF 系統發送的操作通知，則在最下方顯示出來
+      // 如果這是由 LIFF 系統發送的操作通知
       if (isPlusMinus && cleanText !== '+1' && cleanText !== '-1') {
         flexContents.push({
           type: "box",
-          layout: "vertical",
+          layout: "horizontal",
           margin: "md",
-          paddingAll: "10px",
-          backgroundColor: "#e8f5e9",
-          cornerRadius: "md",
+          paddingAll: "8px",
+          backgroundColor: "#F1F8E9",
+          cornerRadius: "sm",
+          alignItems: "center",
           contents: [
-            { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446" },
-            { type: "text", text: cleanText, size: "xs", color: "#333333", wrap: true, margin: "sm" }
+            { type: "text", text: "🔔", size: "xs", flex: 0 },
+            { type: "text", text: cleanText, size: "xxs", color: "#555555", wrap: true, margin: "sm", flex: 1 }
           ]
         });
       }
@@ -2946,32 +2960,37 @@ async function handleEvent(event) {
           size: "mega",
           header: {
             type: "box",
-            layout: "vertical",
-            paddingBottom: "none",
+            layout: "horizontal",
+            backgroundColor: "#2C3E50",
+            paddingAll: "12px",
+            alignItems: "center",
             contents: [
+              { type: "text", text: "🏸", size: "md", flex: 0 },
+              { type: "text", text: "接龍大廳", weight: "bold", size: "sm", color: "#FFFFFF", flex: 1, margin: "sm" },
               {
                 type: "box",
                 layout: "horizontal",
+                flex: 0,
+                height: "28px",
+                width: "64px",
+                cornerRadius: "sm",
+                backgroundColor: "#1ABC9C",
+                justifyContent: "center",
                 alignItems: "center",
+                action: { type: "uri", label: "進入大廳", uri: liffBaseUrl },
                 contents: [
-                  { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
-                  {
-                    type: "button",
-                    style: "primary",
-                    color: "#1DB446",
-                    height: "sm",
-                    flex: 0,
-                    action: { type: "uri", label: "進入大廳", uri: liffBaseUrl }
-                  }
+                  { type: "text", text: "進入大廳", size: "xxs", color: "#FFFFFF", weight: "bold", align: "center" }
                 ]
-              },
-              { type: "separator", margin: "md", color: "#eeeeee" }
+              }
             ]
           },
           body: {
             type: "box",
             layout: "vertical",
-            paddingAll: "16px",
+            paddingTop: "4px",
+            paddingBottom: "8px",
+            paddingStart: "12px",
+            paddingEnd: "12px",
             contents: flexContents
           }
         }
