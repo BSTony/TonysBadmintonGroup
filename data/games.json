@@ -1894,5 +1894,38 @@
       }
     ],
     "isManualEnded": false
+  },
+  "1783402052524265": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
+    ],
+    "gameId": "1783402052524265",
+    "title": "test",
+    "date": "7/8 (三)",
+    "time": "18:00~20:00",
+    "location": "test",
+    "fee": "280",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1783402052524,
+    "lastActiveTime": 1783402052524,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 20,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
