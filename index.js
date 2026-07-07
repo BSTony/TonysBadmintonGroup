@@ -2883,33 +2883,30 @@ async function handleEvent(event) {
         const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText.includes(g.title);
         
         if (index > 0) {
-          flexContents.push({ type: "separator", color: "#f4f4f4" });
+          flexContents.push({ type: "separator" });
         }
         
         const boxProps = {
           type: "box",
           layout: "horizontal",
-          paddingTop: isTarget ? "10px" : "6px",
-          paddingBottom: isTarget ? "10px" : "6px",
+          paddingTop: "6px",
+          paddingBottom: "6px",
           alignItems: "center",
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
-          contents: isTarget ? [
-            // 下方是袋鼠動畫的網址，請將這串網址換成您做好的袋鼠 APNG 網址
-            { type: "icon", url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", size: "md" },
-            { type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: "bold", margin: "sm" },
-            { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
-            { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
-          ] : [
-            { type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: "regular" },
-            { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
-            { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
-          ]
+          contents: []
         };
         
         if (isTarget) {
             boxProps.backgroundColor = "#FFF3CD";
-            boxProps.cornerRadius = "md";
+            // 下方是袋鼠動畫的網址，請將這串網址換成您做好的袋鼠 APNG 網址
+            boxProps.contents.push({ type: "icon", url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", size: "md" });
+            boxProps.contents.push({ type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: "bold" });
+        } else {
+            boxProps.contents.push({ type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true });
         }
+        
+        boxProps.contents.push({ type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" });
+        boxProps.contents.push({ type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" });
         
         flexContents.push(boxProps);
       });
