@@ -2096,7 +2096,7 @@
     "tag": "兩面,冷氣",
     "active": true,
     "startTime": 1783429625227,
-    "lastActiveTime": 1783429625227,
+    "lastActiveTime": 1783430022359,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2127,8 +2127,17 @@
           "小周",
           "海棠",
           "Ong",
-          "偉舫"
+          "偉舫",
+          "Joe"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/07 21:13",
+        "name": "Joe",
+        "operator": "振喬 Joe",
+        "action": "+1"
       }
     ]
   }
