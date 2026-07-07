@@ -1823,7 +1823,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 21,
+    "viewCount": 22,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -1864,8 +1864,8 @@
       "U360d596a5111c676ab153457ce851c03": {
         "displayName": "振喬 Joe",
         "firstVisit": 1783349749956,
-        "count": 1,
-        "lastVisit": 1783349749956
+        "count": 2,
+        "lastVisit": 1783430015780
       },
       "Uec617dedcd37cd4c4e1d6afb526819d1": {
         "displayName": "Chris Chen",
@@ -1881,6 +1881,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783430015780,
+        "userId": "U360d596a5111c676ab153457ce851c03",
+        "displayName": "振喬 Joe",
+        "pictureUrl": "https://profile.line-scdn.net/0hnjib6ALJMUVEGyXBguhPOjRLMi9namhXay53KngbZnwpf3EWbCkuIXgTPSFwKnUUOC9_J3AebHdICEYjWk3NcUMrbHR5KnMbbnV7pg"
+      },
       {
         "time": 1783429660172,
         "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
