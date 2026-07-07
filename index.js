@@ -2883,30 +2883,30 @@ async function handleEvent(event) {
         const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText.includes(g.title);
         
         if (index > 0) {
-          flexContents.push({ type: "separator" });
+          flexContents.push({ type: "separator", color: "#f4f4f4" });
         }
         
         const boxProps = {
           type: "box",
           layout: "horizontal",
-          paddingTop: "6px",
-          paddingBottom: "6px",
+          paddingTop: isTarget ? "10px" : "6px",
+          paddingBottom: isTarget ? "10px" : "6px",
           alignItems: "center",
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
-          contents: []
+          contents: [
+            { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: isTarget ? "bold" : "regular" },
+            { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
+            { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
+          ]
         };
         
         if (isTarget) {
             boxProps.backgroundColor = "#FFF3CD";
-            // 下方是袋鼠動畫的網址，請將這串網址換成您做好的袋鼠 APNG 網址
-            boxProps.contents.push({ type: "image", url: "https://stickershop.line-scdn.net/stickershop/v1/product/28738367/IOS/main_animation@2x.png", size: "sm", flex: 0 });
-            boxProps.contents.push({ type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: "bold" });
-        } else {
-            boxProps.contents.push({ type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true });
+            boxProps.cornerRadius = "md";
+            boxProps.paddingStart = "10px";
+            boxProps.paddingEnd = "10px";
+            boxProps.margin = "sm";
         }
-        
-        boxProps.contents.push({ type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" });
-        boxProps.contents.push({ type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" });
         
         flexContents.push(boxProps);
       });
