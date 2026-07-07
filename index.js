@@ -2895,7 +2895,7 @@ async function handleEvent(event) {
           action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
           contents: isTarget ? [
             // 下方是袋鼠動畫的網址，請將這串網址換成您做好的袋鼠 APNG 網址
-            { type: "icon", url: "https://upload.wikimedia.org/wikipedia/commons/1/14/Animated_PNG_example_bouncing_beach_ball.png", size: "md" },
+            { type: "icon", url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", size: "md" },
             { type: "text", text: combinedTitle, size: "xs", color: "#333333", flex: 1, wrap: true, weight: "bold", margin: "sm" },
             { type: "text", text: statusText, size: "xs", color: isFull ? "#ff4c4c" : "#1DB446", flex: 0, weight: "bold", margin: "md" },
             { type: "text", text: "〉", size: "xs", color: "#cccccc", flex: 0, margin: "sm" }
@@ -2909,9 +2909,6 @@ async function handleEvent(event) {
         if (isTarget) {
             boxProps.backgroundColor = "#FFF3CD";
             boxProps.cornerRadius = "md";
-            boxProps.paddingStart = "10px";
-            boxProps.paddingEnd = "10px";
-            boxProps.margin = "sm";
         }
         
         flexContents.push(boxProps);
