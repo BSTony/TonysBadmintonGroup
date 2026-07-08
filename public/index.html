@@ -23,24 +23,36 @@
       <header class="lobby-header">
         <div class="header-icon">
           <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <path d="M 20 50 L 10 15 L 45 25 Z" fill="#F48FB1"/>
-            <path d="M 80 50 L 90 15 L 55 25 Z" fill="#F48FB1"/>
-            <circle cx="50" cy="55" r="40" fill="#F8BBD0"/>
-            <!-- Blush -->
-            <ellipse cx="25" cy="60" rx="8" ry="5" fill="#F06292" class="pig-blush"/>
-            <ellipse cx="75" cy="60" rx="8" ry="5" fill="#F06292" class="pig-blush"/>
-            <!-- Nose -->
-            <ellipse cx="50" cy="65" rx="16" ry="12" fill="#F06292"/>
-            <ellipse cx="44" cy="65" rx="3" ry="5" fill="#D81B60"/>
-            <ellipse cx="56" cy="65" rx="3" ry="5" fill="#D81B60"/>
-            <!-- Mouth -->
-            <path d="M 42 82 Q 50 90 58 82" fill="none" stroke="#D81B60" stroke-width="3" stroke-linecap="round" class="pig-mouth" />
-            <!-- Eyes -->
-            <circle cx="34" cy="42" r="8" fill="#FFF"/>
-            <circle cx="66" cy="42" r="8" fill="#FFF"/>
-            <!-- Pupils -->
-            <circle cx="34" cy="42" r="4" fill="#000" class="pig-pupil"/>
-            <circle cx="66" cy="42" r="4" fill="#000" class="pig-pupil"/>
+            <!-- Left Ear -->
+            <path d="M 25 40 L 5 10 Q 20 5 40 25 Z" fill="#F9A4B5"/>
+            <!-- Left Inner Ear -->
+            <path d="M 23 34 L 12 16 Q 22 12 34 25 Z" fill="#E95D76"/>
+            
+            <!-- Right Ear -->
+            <path d="M 75 40 L 95 10 Q 80 5 60 25 Z" fill="#F9A4B5"/>
+            <!-- Right Inner Ear -->
+            <path d="M 77 34 L 88 16 Q 78 12 66 25 Z" fill="#E95D76"/>
+
+            <!-- Face Shape -->
+            <path d="M 50 15 C 90 15, 100 45, 95 80 C 85 100, 15 100, 5 80 C 0 45, 10 15, 50 15 Z" fill="#F9A4B5"/>
+
+            <!-- Blush (hidden by default) -->
+            <ellipse cx="15" cy="65" rx="8" ry="5" fill="#E95D76" class="pig-blush"/>
+            <ellipse cx="85" cy="65" rx="8" ry="5" fill="#E95D76" class="pig-blush"/>
+
+            <!-- Snout -->
+            <path d="M 30 55 C 40 50, 60 50, 70 55 C 85 62, 85 85, 70 90 C 60 95, 40 95, 30 90 C 15 85, 15 62, 30 55 Z" fill="#E95D76"/>
+
+            <!-- Nostrils -->
+            <rect x="34" y="65" width="8" height="14" rx="4" fill="#5F2E25"/>
+            <rect x="58" y="65" width="8" height="14" rx="4" fill="#5F2E25"/>
+
+            <!-- Eyes (solid dark, animated as pupils) -->
+            <circle cx="22" cy="50" r="6" fill="#2C3639" class="pig-pupil"/>
+            <circle cx="78" cy="50" r="6" fill="#2C3639" class="pig-pupil"/>
+
+            <!-- Secret Smile Mouth -->
+            <path d="M 42 92 Q 50 97 58 92" fill="none" stroke="#5F2E25" stroke-width="3" stroke-linecap="round" class="pig-mouth" />
           </svg>
         </div>
         <div class="header-content">
