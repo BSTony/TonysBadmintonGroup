@@ -425,7 +425,7 @@ function renderLobby() {
          card.style.opacity = '0.6';
          card.style.filter = 'grayscale(1)';
       }
-      const prefName = localStorage.getItem('preferredName') || '';
+
       
       card.innerHTML = `
         <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer; flex-wrap: wrap;">
@@ -474,7 +474,7 @@ function renderLobby() {
         <div class="action-row" style="flex-wrap: wrap;">
           <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
           <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
-          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="${escapeHTML(currentUser.displayName)}" value="${escapeHTML(prefName)}" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold;" />
+          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
           <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
         </div>
         <div id="error-msg-${game.gameId}" class="error-msg"></div>
@@ -724,7 +724,7 @@ function renderDetail(gameId, preserveScroll = false) {
   const isRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
   detailCount.innerText = `${isRegistered ? '(已報名) ' : ''}${section.list.length} / ${section.limit}`;
   
-  const prefName = localStorage.getItem('preferredName') || '';
+
   const isExpired = isGameExpired(game);
   const isFull = section.list.length >= (section.limit + (section.backupLimit || 0));
 
@@ -732,7 +732,7 @@ function renderDetail(gameId, preserveScroll = false) {
     <div class="action-row" style="flex-wrap: wrap; margin-top: 15px; margin-bottom: 10px;">
       <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
       <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
-      <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="${escapeHTML(currentUser.displayName)}" value="${escapeHTML(prefName)}" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold;" />
+      <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
       <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="程度" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
     </div>
     <div id="error-msg-${game.gameId}-detail" class="error-msg"></div>
@@ -1305,11 +1305,6 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
   let name = currentUser.displayName;
   if (inputEl && inputEl.value.trim()) {
     name = inputEl.value.trim();
-    if (action === 'register') {
-      localStorage.setItem('preferredName', name);
-    }
-  } else if (action === 'register') {
-    localStorage.removeItem('preferredName');
   }
   
   let level = '';
@@ -1386,8 +1381,8 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       }
     }
     
-    // 如果是代報，自動清空輸入框，方便報下一個
-    if (inputEl && inputEl.value.trim()) {
+    // +1/-1 完成後，清空暱稱與程度輸入框
+    if (inputEl) {
       inputEl.value = '';
     }
     if (levelEl) {
@@ -2357,7 +2352,7 @@ if (btnSystemLogs) {
         });
       }
       
-      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
       systemLogsView.classList.remove('hidden');
     } catch(e) {
       alert(e.message);
@@ -2369,7 +2364,7 @@ if (btnSystemLogs) {
 
 if (btnBackLogs) {
   btnBackLogs.addEventListener('click', () => {
-    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
     document.getElementById('lobby-view').classList.remove('hidden');
   });
 }

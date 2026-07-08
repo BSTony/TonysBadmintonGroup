@@ -27,6 +27,7 @@
             <h1 id="lobby-title-text" style="margin-bottom:0;">羽球接龍大廳</h1>
             <button id="btn-edit-title" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="編輯大廳標題">✏️</button>
             <button id="btn-lobby-stats" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="大廳使用率分析">📊</button>
+            <button id="btn-system-logs" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="系統錯誤 LOG">📝</button>
           </div>
           <div style="display:flex; align-items:center;">
             <p id="lobby-desc-text" style="margin-bottom:0;">本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！</p>
@@ -265,6 +266,18 @@
       
       <div id="stats-groups-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px;">
         <!-- JS 動態渲染多群組統計卡片 -->
+      </div>
+    </div>
+
+    <!-- 系統 LOG 視圖 (僅管理員) -->
+    <div id="system-logs-view" class="view hidden">
+      <header class="detail-header" style="display:flex; justify-content:flex-start; align-items:center;">
+        <button id="btn-back-logs" class="btn-icon">⬅ 返回</button>
+        <h2 style="margin-left: 10px; margin-bottom: 0;">系統錯誤 LOG</h2>
+      </header>
+      
+      <div id="system-logs-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px;">
+        <!-- JS 動態渲染系統錯誤 LOG -->
       </div>
     </div>
   </div>

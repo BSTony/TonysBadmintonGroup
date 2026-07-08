@@ -2234,17 +2234,28 @@ async function handleEvent(event) {
     return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 權限已開通！您現在是全系統的超級管理員了。' });
   }
 
-  if (text === '取消管理員') {
-    let wasAdmin = false;
+  if (text === '取消管理員' || text === '取消管理者') {
+    let wasGroupAdmin = false;
+    let wasSuperAdmin = false;
+
+    if (superAdmins && superAdmins.has(uid)) {
+      superAdmins.delete(uid);
+      saveSuperAdmins();
+      wasSuperAdmin = true;
+    }
+
     for (const g in groupAdmins) {
       if (groupAdmins[g].has(uid)) {
         groupAdmins[g].delete(uid);
-        wasAdmin = true;
+        wasGroupAdmin = true;
       }
     }
     
-    if (wasAdmin) {
+    if (wasGroupAdmin) {
       saveAdmins();
+    }
+
+    if (wasGroupAdmin || wasSuperAdmin) {
       return client.replyMessage(event.replyToken, { type: 'text', text: '✅ 已取消您的管理員權限。' });
     } else {
       return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 您本來就不是管理員喔。' });
