@@ -1,6 +1,6 @@
 {
-  "enabled": false,
-  "message": "系統測試",
+  "enabled": true,
+  "message": "恭喜獲得一條握把布 打球時可以找Tony換",
   "quota": 2,
   "winners": []
 }
