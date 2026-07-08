@@ -2131,6 +2131,18 @@ app.post('/api/action', express.json(), async (req, res) => {
         }
         
         triggerBumpMsg = msg.trim();
+        
+        // Fallback for desktop / external browser
+        if (!clientSupportsLiffSendMessage) {
+          const pushTargets = g.targetGids || [g.gid];
+          for (const targetGid of pushTargets) {
+            try {
+              pushToAdmins(targetGid, { type: 'text', text: triggerBumpMsg + '\n\n[系統代發]' });
+            } catch (e) {
+              console.error('Fallback pushToAdmins failed:', e);
+            }
+          }
+        }
       }
     }
     console.log('[API Action] clientSupportsLiffSendMessage:', clientSupportsLiffSendMessage, 'triggerBumpMsg:', triggerBumpMsg);

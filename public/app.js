@@ -1363,7 +1363,10 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
           console.log('自動發話成功');
         } catch (e) {
           console.error('liff.sendMessages 失敗:', e);
+          alert('自動喊話失敗 (可能缺少 chat_message.write 權限): ' + e.message);
         }
+      } else {
+        alert('報名成功！但由於您使用的是電腦版或外部瀏覽器，LINE 系統不允許自動喊話。請返回聊天室查看或手動輸入 +1。');
       }
     }
     
