@@ -2540,7 +2540,7 @@ async function handleEvent(event) {
     }
 
 
-    if (text.startsWith('接龍名單') || isPlusMinus) {
+    if (text.startsWith('接龍名單')) {
       const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
       let targetGid = gid;
       if (groupMatch) {
@@ -2548,16 +2548,13 @@ async function handleEvent(event) {
           if (groupCodes[code]) {
               targetGid = groupCodes[code];
           } else {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組，無法查詢。` });
+              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組。` });
           }
       }
-      
+
       let keyword = text.replace(/接龍名單/, '');
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.replace(/\[系統代發\]/g, '').trim();
-      if (isPlusMinus) {
-        keyword = ''; // 不要用 +1 -1 的文字來過濾場次名稱
-      }
       
       const getGameTime = (g) => {
         let t = 0;
@@ -2786,13 +2783,7 @@ async function handleEvent(event) {
               return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中。` });
           }
       } else {
-          let replyMsgs = [];
-          if (isPlusMinus && cleanText !== '+1' && cleanText !== '-1') {
-            replyMsgs.push({ type: 'text', text: `🔔 最新通知：\n${cleanText}` });
-          }
-          replyMsgs.push(carouselMsg);
-
-          return client.replyMessage(event.replyToken, replyMsgs);
+          return client.replyMessage(event.replyToken, carouselMsg);
       }
     }
     
@@ -2949,7 +2940,7 @@ async function handleEvent(event) {
       return await sendLobbyLink(event.replyToken, gid);
     }
     
-    if (text === '接龍狀況' || text === '接龍狀態') {
+    if (text === '接龍狀況' || text === '接龍狀態' || isPlusMinus) {
       const getGameTime = (g) => {
         let t = 0;
         if (g.date) {
@@ -2995,7 +2986,7 @@ async function handleEvent(event) {
           }
         }
 
-        const isTarget = false; // 大廳模式不再處理 isPlusMinus 高亮
+        const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText.includes(g.title);
 
         // 每一列的容器
         const rowContents = [
@@ -3060,7 +3051,22 @@ async function handleEvent(event) {
         ]
       });
 
-      // 通知區塊已移至接龍名單
+      // 如果這是由 LIFF 系統發送的操作通知
+      if (isPlusMinus && cleanText !== '+1' && cleanText !== '-1') {
+        flexContents.push({
+          type: "box",
+          layout: "horizontal",
+          margin: "md",
+          paddingAll: "10px",
+          backgroundColor: "#e8f5e9",
+          cornerRadius: "md",
+          alignItems: "center",
+          contents: [
+            { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446", flex: 0 },
+            { type: "text", text: cleanText, size: "xs", color: "#333333", wrap: true, margin: "sm", flex: 1 }
+          ]
+        });
+      }
 
       const flexMessage = {
         type: "flex",
