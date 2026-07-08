@@ -498,14 +498,14 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
 }
 
 /* Pig Secret Smile Animation */
-@keyframes secretSmile {
-  0%, 85% { opacity: 0; transform: scale(0.8); transform-origin: center; }
-  88%, 95% { opacity: 1; transform: scale(1); transform-origin: center; }
-  98%, 100% { opacity: 0; transform: scale(0.8); transform-origin: center; }
+@keyframes secretSmileTwitch {
+  0%, 85% { transform: scaleX(1) scaleY(1); }
+  88%, 95% { transform: scaleX(1.15) scaleY(1.05) translateY(-1px); }
+  100% { transform: scaleX(1) scaleY(1); }
 }
 
-.pig-mouth, .pig-blush {
-  animation: secretSmile 10s infinite ease-in-out;
-  opacity: 0;
+.pig-smile {
+  animation: secretSmileTwitch 10s infinite ease-in-out;
+  transform-origin: center;
+  transform-box: fill-box;
 }
-
