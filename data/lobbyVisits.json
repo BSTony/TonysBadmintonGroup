@@ -349,7 +349,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 321,
+    "viewCount": 322,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -372,8 +372,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 92,
-        "lastVisit": 1783514277124
+        "count": 93,
+        "lastVisit": 1783515263472
       },
       "U092196c10fe7e15591482c6b7942a147": {
         "displayName": "Sammy Su",
@@ -725,6 +725,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783515263472,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1783515224142,
         "userId": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
@@ -1914,12 +1920,6 @@
         "userId": "Ueab389b7ed59afb14651d8449997efec",
         "displayName": "黃建榮",
         "pictureUrl": "https://profile.line-scdn.net/ch/v2/p/u16fa8d01bf7059c7802e863bc8537b83/1352457785269"
-      },
-      {
-        "time": 1783338739355,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       }
     ]
   },
