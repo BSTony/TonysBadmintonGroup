@@ -2182,5 +2182,38 @@
         "action": "+1"
       }
     ]
+  },
+  "1783478110621802": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
+    ],
+    "gameId": "1783478110621802",
+    "title": "Tttt",
+    "date": "7/9 (四)",
+    "time": "18:00~20:00",
+    "location": "南港運動中心",
+    "fee": "1000",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1783478110621,
+    "lastActiveTime": 1783478110621,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 20,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
