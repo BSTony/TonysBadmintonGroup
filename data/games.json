@@ -1505,7 +1505,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783393866868,
+    "lastActiveTime": 1783471626740,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1550,12 +1550,19 @@
           "陳俊傑 (Jeremy)",
           "Brian 王暉鈞",
           "Win Shu",
-          "紀凡"
+          "紀凡",
+          "Ku"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/08 08:47",
+        "name": "Ku",
+        "operator": "Wayne",
+        "action": "+1"
+      },
       {
         "time": "07/07 11:11",
         "name": "紀凡",
