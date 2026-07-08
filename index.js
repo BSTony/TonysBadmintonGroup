@@ -2556,6 +2556,19 @@ async function handleEvent(event) {
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.replace(/\[系統代發\]/g, '').trim();
       
+      const getGameTime = (g) => {
+        let t = 0;
+        if (g.date) {
+          let dStr = g.date.trim();
+          if (dStr.match(/^\d{1,2}\/\d{1,2}$/)) {
+            dStr = new Date().getFullYear() + '/' + dStr;
+          }
+          const pd = new Date(`${dStr} ${g.time || ''}`.trim());
+          if (!isNaN(pd.getTime())) t = pd.getTime();
+        }
+        return t === 0 ? (g.startTime || 0) : t;
+      };
+
       let groupGames = Object.values(games)
         .filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active && !g.isManualEnded)
         .sort((a, b) => getGameTime(a) - getGameTime(b));
