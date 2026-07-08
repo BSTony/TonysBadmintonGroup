@@ -1505,7 +1505,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783486445886,
+    "lastActiveTime": 1783514289140,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1549,12 +1549,19 @@
           "Brian 王暉鈞",
           "Win Shu",
           "紀凡",
-          "Ku"
+          "Ku",
+          "少易"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/08 20:38",
+        "name": "少易",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/08 12:54",
         "name": "CC",
