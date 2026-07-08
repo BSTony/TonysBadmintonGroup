@@ -349,7 +349,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 344,
+    "viewCount": 345,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -734,9 +734,21 @@
         "firstVisit": 1783518626247,
         "count": 3,
         "lastVisit": 1783518817563
+      },
+      "Uf077846a21900f6e03afdf8e678bc1ab": {
+        "displayName": "Tank Lin",
+        "firstVisit": 1783519681876,
+        "count": 1,
+        "lastVisit": 1783519681876
       }
     },
     "logs": [
+      {
+        "time": 1783519681876,
+        "userId": "Uf077846a21900f6e03afdf8e678bc1ab",
+        "displayName": "Tank Lin",
+        "pictureUrl": "https://profile.line-scdn.net/0hsLMHfiD_LGNgMTAEASNSXRBhLwlDQHVxGwVhB1UwcVZeBG5gHARmUlM1elAPBjk2RANrV1E1dgNCRiMxLA0RbAhlGyEjSHdHLi0XYylEIj0ndDdICB8cbCNFBw0JXDg9DFNjfxBVOzo1Aip2SCkNRxZpJTgceAVASGZANWUDQuAPM1s2TVdiAF03elbY"
+      },
       {
         "time": 1783519119580,
         "userId": "U49e2484c80056990b759e9039a74e1a6",
@@ -1927,12 +1939,6 @@
         "userId": "Uc8b0e0ef7ca58b387136a28642742b7d",
         "displayName": "沂 Lexie🐷",
         "pictureUrl": "https://profile.line-scdn.net/0hTZgpPQ64C3VKCSPkg911CjpZCB9peFJnYz9HEywBVBAnO04qZ2YURihdXREiPE4nM2sURHdbUxZGGnwTVF_3QU05VkR3OEkrYGdBlg"
-      },
-      {
-        "time": 1783349886778,
-        "userId": "U799d4a509b3c76b76c249151f5a3f690",
-        "displayName": "瑋",
-        "pictureUrl": "https://profile.line-scdn.net/0hR1DfBaAiDR5pHxkS7ClzYRlPDnRKblQMFnAScQkZUyhQLE1LRHsQLQ5IACdWKE8YRCtEfQhIAHllDHp4d0nxKm4vUC9ULk9AQ3FH_Q"
       }
     ]
   },
