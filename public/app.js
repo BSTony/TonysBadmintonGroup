@@ -2405,9 +2405,31 @@ if (btnBackLogs) {
 
 // --- Easter Egg Interaction ---
 let piggyMoveInterval = null;
+let piggyOverlay = null;
+
+function createPiggyOverlay() {
+  if (piggyOverlay) return;
+  piggyOverlay = document.createElement('div');
+  piggyOverlay.style.position = 'fixed';
+  piggyOverlay.style.top = '0';
+  piggyOverlay.style.left = '0';
+  piggyOverlay.style.width = '100vw';
+  piggyOverlay.style.height = '100vh';
+  piggyOverlay.style.zIndex = '9998';
+  piggyOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.15)'; // slight dimming to show focus mode
+  document.body.appendChild(piggyOverlay);
+}
+
+function removePiggyOverlay() {
+  if (piggyOverlay) {
+    piggyOverlay.remove();
+    piggyOverlay = null;
+  }
+}
 
 function movePiggyRandomly() {
-  const duration = Math.max(0.5, piggyBaseSpeed - (piggyClicks * 0.6));
+  // Speed is 20% faster (duration multiplied by 0.8)
+  const duration = Math.max(0.3, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.8);
   piggyIcon.style.transition = `left ${duration}s linear, top ${duration}s linear`;
   
   const maxX = window.innerWidth - 60;
@@ -2434,17 +2456,20 @@ if (piggyIcon) {
     
     if (!piggyRunning) {
       piggyRunning = true;
+      createPiggyOverlay(); // Block other clicks
+      
       piggyIcon.classList.add('piggy-running');
       const rect = piggyIcon.getBoundingClientRect();
       piggyIcon.style.left = rect.left + 'px';
       piggyIcon.style.top = rect.top + 'px';
       
       movePiggyRandomly();
-      piggyMoveInterval = setInterval(movePiggyRandomly, piggyBaseSpeed * 1000);
+      const newIntervalMs = Math.max(300, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.8 * 1000);
+      piggyMoveInterval = setInterval(movePiggyRandomly, newIntervalMs);
     } else {
       clearInterval(piggyMoveInterval);
       movePiggyRandomly();
-      const newIntervalMs = Math.max(500, (piggyBaseSpeed - (piggyClicks * 0.6)) * 1000);
+      const newIntervalMs = Math.max(300, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.8 * 1000);
       piggyMoveInterval = setInterval(movePiggyRandomly, newIntervalMs);
     }
     
@@ -2470,6 +2495,7 @@ if (piggyIcon) {
 }
 
 function resetPiggy() {
+  removePiggyOverlay(); // Remove block when done
   if (piggyMoveInterval) clearInterval(piggyMoveInterval);
   piggyMoveInterval = null;
   piggyRunning = false;
