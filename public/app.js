@@ -783,6 +783,10 @@ function renderDetail(gameId, preserveScroll = false) {
     
     top2.forEach(h => {
        let displayText = '';
+       if (h.action === '錯誤') {
+         historyHtml += `<div style="margin-bottom: 4px; color: #F44336; font-size: 12px;">${escapeHTML(h.time)} <strong>[系統錯誤]</strong> ${escapeHTML(h.errorMsg || '')}</div>`;
+         return;
+       }
        if (h.operator && h.operator !== h.name) {
          displayText = `${escapeHTML(h.operator)} 幫 ${escapeHTML(h.name)}`;
        } else if (h.operator) {
@@ -799,6 +803,10 @@ function renderDetail(gameId, preserveScroll = false) {
            <div style="max-height: 120px; overflow-y: auto; margin-top: 6px; padding-left: 8px; border-left: 2px solid #ddd;">`;
        rest.forEach(h => {
            let displayText = '';
+           if (h.action === '錯誤') {
+             historyHtml += `<div style="margin-bottom: 4px; color: #F44336; font-size: 12px;">${escapeHTML(h.time)} <strong>[系統錯誤]</strong> ${escapeHTML(h.errorMsg || '')}</div>`;
+             return;
+           }
            if (h.operator && h.operator !== h.name) {
              displayText = `${escapeHTML(h.operator)} 幫 ${escapeHTML(h.name)}`;
            } else if (h.operator) {
@@ -1363,10 +1371,14 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
           console.log('自動發話成功');
         } catch (e) {
           console.error('liff.sendMessages 失敗:', e);
-          alert('自動喊話失敗 (可能缺少 chat_message.write 權限): ' + e.message);
+          fetch('/api/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              gid: currentGroupId, gameId: gameId, uid: currentUser.userId, name: name, operatorName: currentUser.displayName, action: 'logError', text: '代發失敗: ' + e.message
+            })
+          }).catch(console.error);
         }
-      } else {
-        alert('報名成功！但由於您使用的是電腦版或外部瀏覽器，LINE 系統不允許自動喊話。請返回聊天室查看或手動輸入 +1。');
       }
     }
     

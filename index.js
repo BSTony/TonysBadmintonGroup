@@ -2098,12 +2098,17 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       const element = list.splice(fromIdx, 1)[0];
       list.splice(toIdx, 0, element);
-      
+    } else if (action === 'logError') {
+      if (!game.history) game.history = [];
+      const now = new Date();
+      const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      game.history.unshift({ time: timeStr, name: '系統', operator: operatorName || name, action: '錯誤', errorMsg: text });
+      if (game.history.length > 200) game.history.pop();
     } else {
       return res.status(400).json({ error: 'Unknown action' });
     }
 
-    touchGame(gameId);
+    if (action !== 'logError') touchGame(gameId);
     await saveGame(gameId, true);
     await saveCurrentListSnapshot(gameId, false);
     
