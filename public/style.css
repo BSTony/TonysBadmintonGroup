@@ -256,6 +256,10 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
   border-color: var(--primary-color);
   background-color: #FFF;
 }
+.name-input::placeholder {
+  color: #bbb;
+  font-weight: normal;
+}
 .error-msg {
   color: var(--danger-color);
   font-size: 12px;
