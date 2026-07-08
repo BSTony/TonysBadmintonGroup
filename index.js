@@ -1731,7 +1731,7 @@ app.get('/api/easter_egg/status', (req, res) => {
 });
 
 app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
-  const { uid } = req.body;
+  const { uid, name } = req.body;
   if (!uid) return res.status(400).json({ success: false, message: 'Missing uid' });
   
   if (!easterEggSettings.enabled) {
@@ -1744,12 +1744,13 @@ app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
   }
 
   // Check if already won
-  if (easterEggSettings.winners.includes(uid)) {
+  const hasWon = easterEggSettings.winners.some(w => w === uid || (w && w.uid === uid));
+  if (hasWon) {
     return res.json({ success: false, message: 'already won' });
   }
 
   // Register winner
-  easterEggSettings.winners.push(uid);
+  easterEggSettings.winners.push({ uid, name: name || 'Unknown' });
   saveEasterEggSettings();
 
   res.json({ success: true, message: easterEggSettings.message });

@@ -185,6 +185,7 @@ const eeEnabledCheckbox = document.getElementById('ee-enabled');
 const eeMessageInput = document.getElementById('ee-message');
 const eeQuotaInput = document.getElementById('ee-quota');
 const eeWinnersCount = document.getElementById('ee-winners-count');
+const eeWinnersList = document.getElementById('ee-winners-list');
 const piggyIcon = document.querySelector('.header-icon');
 const confettiContainer = document.getElementById('confetti-container');
 const easterEggModal = document.getElementById('easter-egg-modal');
@@ -2403,6 +2404,28 @@ if (btnBackLogs) {
 }
 
 // --- Easter Egg Interaction ---
+let piggyMoveInterval = null;
+
+function movePiggyRandomly() {
+  const duration = Math.max(0.5, piggyBaseSpeed - (piggyClicks * 0.6));
+  piggyIcon.style.transition = `left ${duration}s linear, top ${duration}s linear`;
+  
+  const maxX = window.innerWidth - 60;
+  const maxY = window.innerHeight - 60;
+  const nextX = Math.max(0, Math.random() * maxX);
+  const nextY = Math.max(0, Math.random() * maxY);
+  
+  const currentLeft = parseFloat(piggyIcon.style.left) || 0;
+  if (nextX < currentLeft) {
+    piggyIcon.style.setProperty('--face-dir', '1');
+  } else {
+    piggyIcon.style.setProperty('--face-dir', '-1');
+  }
+  
+  piggyIcon.style.left = nextX + 'px';
+  piggyIcon.style.top = nextY + 'px';
+}
+
 if (piggyIcon) {
   piggyIcon.addEventListener('click', async (e) => {
     if (!easterEggEnabled) return;
@@ -2415,6 +2438,14 @@ if (piggyIcon) {
       const rect = piggyIcon.getBoundingClientRect();
       piggyIcon.style.left = rect.left + 'px';
       piggyIcon.style.top = rect.top + 'px';
+      
+      movePiggyRandomly();
+      piggyMoveInterval = setInterval(movePiggyRandomly, piggyBaseSpeed * 1000);
+    } else {
+      clearInterval(piggyMoveInterval);
+      movePiggyRandomly();
+      const newIntervalMs = Math.max(500, (piggyBaseSpeed - (piggyClicks * 0.6)) * 1000);
+      piggyMoveInterval = setInterval(movePiggyRandomly, newIntervalMs);
     }
     
     if (piggyClicks >= 5) {
@@ -2422,7 +2453,7 @@ if (piggyIcon) {
         const res = await fetch('/api/easter_egg/claim', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uid: currentUser.userId })
+          body: JSON.stringify({ uid: currentUser.userId, name: currentUser.displayName })
         });
         const data = await res.json();
         if (data.success) {
@@ -2435,34 +2466,18 @@ if (piggyIcon) {
       resetPiggy();
       return;
     }
-    
-    const duration = Math.max(0.5, piggyBaseSpeed - (piggyClicks * 0.6));
-    piggyIcon.style.transition = `all ${duration}s linear`;
-    
-    const maxX = window.innerWidth - 60;
-    const maxY = window.innerHeight - 60;
-    const nextX = Math.max(0, Math.random() * maxX);
-    const nextY = Math.max(0, Math.random() * maxY);
-    
-    const currentLeft = parseFloat(piggyIcon.style.left) || 0;
-    if (nextX < currentLeft) {
-      piggyIcon.style.transform = 'scaleX(1)';
-    } else {
-      piggyIcon.style.transform = 'scaleX(-1)';
-    }
-    
-    piggyIcon.style.left = nextX + 'px';
-    piggyIcon.style.top = nextY + 'px';
   });
 }
 
 function resetPiggy() {
+  if (piggyMoveInterval) clearInterval(piggyMoveInterval);
+  piggyMoveInterval = null;
   piggyRunning = false;
   piggyClicks = 0;
   piggyIcon.classList.remove('piggy-running');
   piggyIcon.style.left = '';
   piggyIcon.style.top = '';
-  piggyIcon.style.transform = '';
+  piggyIcon.style.setProperty('--face-dir', '1');
   piggyIcon.style.transition = '';
 }
 
@@ -2499,6 +2514,14 @@ if (btnEasterEgg) {
         eeMessageInput.value = data.message;
         eeQuotaInput.value = data.quota;
         eeWinnersCount.innerText = data.winners ? data.winners.length : 0;
+        eeWinnersList.innerHTML = '';
+        if (data.winners && data.winners.length > 0) {
+          data.winners.forEach(w => {
+            const li = document.createElement('li');
+            li.innerText = w.name || 'Unknown';
+            eeWinnersList.appendChild(li);
+          });
+        }
         
         document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
         easterEggSettingsView.classList.remove('hidden');
@@ -2561,6 +2584,7 @@ if (btnClearWinners) {
       });
       if (res.ok) {
         eeWinnersCount.innerText = 0;
+        eeWinnersList.innerHTML = '';
         alert('已清空名單');
       }
     } catch(e) { alert('清空失敗'); }

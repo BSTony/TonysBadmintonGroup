@@ -409,12 +409,21 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
 }
 
 /* --- Easter Egg --- */
+@keyframes pigRun {
+  0% { transform: scaleX(var(--face-dir, 1)) translateY(0) rotate(0deg); }
+  25% { transform: scaleX(var(--face-dir, 1)) translateY(-10px) rotate(-10deg); }
+  50% { transform: scaleX(var(--face-dir, 1)) translateY(0) rotate(0deg); }
+  75% { transform: scaleX(var(--face-dir, 1)) translateY(-10px) rotate(10deg); }
+  100% { transform: scaleX(var(--face-dir, 1)) translateY(0) rotate(0deg); }
+}
+
 .piggy-running {
   position: fixed !important;
   z-index: 9999;
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
+  animation: pigRun 0.4s infinite;
 }
 
 /* Confetti */
