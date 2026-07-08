@@ -349,7 +349,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 248,
+    "viewCount": 249,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -692,9 +692,21 @@
         "firstVisit": 1783490949712,
         "count": 1,
         "lastVisit": 1783490949712
+      },
+      "U360d596a5111c676ab153457ce851c03": {
+        "displayName": "振喬 Joe",
+        "firstVisit": 1783492631536,
+        "count": 1,
+        "lastVisit": 1783492631536
       }
     },
     "logs": [
+      {
+        "time": 1783492631536,
+        "userId": "U360d596a5111c676ab153457ce851c03",
+        "displayName": "振喬 Joe",
+        "pictureUrl": "https://profile.line-scdn.net/0hnjib6ALJMUVEGyXBguhPOjRLMi9namhXay53KngbZnwpf3EWbCkuIXgTPSFwKnUUOC9_J3AebHdICEYjWk3NcUMrbHR5KnMbbnV7pg"
+      },
       {
         "time": 1783491054470,
         "userId": "U169c089d184f3be52ae8124893db17c1",
@@ -1884,12 +1896,6 @@
         "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
         "displayName": "小金(Chen Pei Hung)",
         "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
-      },
-      {
-        "time": 1783228458932,
-        "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
-        "displayName": "Chris Chen",
-        "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
       }
     ]
   },
