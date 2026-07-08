@@ -2449,6 +2449,7 @@ function movePiggyRandomly() {
 }
 
 if (piggyIcon) {
+  piggyIcon.style.cursor = 'pointer'; // Ensure it looks clickable
   piggyIcon.addEventListener('click', async (e) => {
     if (!easterEggEnabled) return;
     
@@ -2457,6 +2458,9 @@ if (piggyIcon) {
     if (!piggyRunning) {
       piggyRunning = true;
       createPiggyOverlay(); // Block other clicks
+      
+      // Move to body to escape stacking context of .view so z-index works
+      document.body.appendChild(piggyIcon);
       
       piggyIcon.classList.add('piggy-running');
       const rect = piggyIcon.getBoundingClientRect();
@@ -2505,6 +2509,12 @@ function resetPiggy() {
   piggyIcon.style.top = '';
   piggyIcon.style.setProperty('--face-dir', '1');
   piggyIcon.style.transition = '';
+  
+  // Move back to header
+  const header = document.querySelector('.lobby-header');
+  if (header) {
+    header.insertBefore(piggyIcon, header.firstChild);
+  }
 }
 
 function triggerConfetti() {
