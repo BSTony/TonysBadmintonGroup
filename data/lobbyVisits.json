@@ -349,7 +349,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 297,
+    "viewCount": 298,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -630,8 +630,8 @@
       "Uda2b484d86f6dcbfd1c31f792fd95ae1": {
         "displayName": "Win Shu",
         "firstVisit": 1783391708973,
-        "count": 3,
-        "lastVisit": 1783503180213
+        "count": 4,
+        "lastVisit": 1783503204004
       },
       "U262bec0c4b86143110a6502613fa47c5": {
         "displayName": "Timmonchen(鐵門/杰君)",
@@ -713,6 +713,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783503204004,
+        "userId": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
+        "displayName": "Win Shu",
+        "pictureUrl": "https://profile.line-scdn.net/0hZ3t2n2e3BRxZSxowfsV7IikbBnZ6OlwOfHhOfz9OXChtKEBKIC9PKm9CXXsxckAfJX1Mf2VPXi97PEAjNlIdFCQyB1Y2ZyFMLlsKPm4dDloPHwZKLEw3MjIvIXlnFRUdcSQ0eGw0KEk3BSwCHGYYJDpKH0gUK0MxcBxpSlx5a582SXJJdC1Lf2RNUynh"
+      },
       {
         "time": 1783503180213,
         "userId": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
@@ -1902,12 +1908,6 @@
         "userId": "U610a1cb7211453949dbb88fa527c90aa",
         "displayName": "Han-Hsing",
         "pictureUrl": "https://profile.line-scdn.net/0hmVwGesgPMnlaPi4z2NtMRypuMRN5T2trdV16TDs8ah5vDiEpI116HWhqO003DXQqJQx5Fjppbkx4UXNEBi8BYix_DE0XVAEpKC99WRdEbFUiVAxtfx4pFw1mLTYveWlkGCABSDtQG0E6bBBVLx8mQhllCzxgVTNxJGleL18MXPo1PEUsd1h8Gmc4ZEzi"
-      },
-      {
-        "time": 1783330348564,
-        "userId": "Ue8024b6514a8c8ed6a992979d92c699d",
-        "displayName": "黃家弘(Orange)    ⃒⃘⃤ 9¾ ⚯͛",
-        "pictureUrl": "https://profile.line-scdn.net/0hwcmhI65IKExAETcHCVlWcjBBKyZjYHFeO3EwKSJEc396Jz9PanBkLSAWJHt5ID8YaHFjeCUTf3hiUhRGG3IYVwwNCnwfWy9oDA8bXCxPFzsAUhYeHicZUHNDHy4qUTpjOw08Ix5SNiRhcipBHiccUx1YfiEnXidubEZEGkUjRs8vE18ZbXdmL30Xfnn4"
       }
     ]
   },
