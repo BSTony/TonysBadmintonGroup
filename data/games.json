@@ -1505,7 +1505,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783514300986,
+    "lastActiveTime": 1783515303342,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1551,12 +1551,19 @@
           "紀凡",
           "Ku",
           "少易",
-          "庭儀"
+          "庭儀",
+          "孟錡"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/08 20:55",
+        "name": "孟錡",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/08 20:38",
         "name": "庭儀",
