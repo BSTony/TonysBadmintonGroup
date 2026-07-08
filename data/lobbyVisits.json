@@ -349,7 +349,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 246,
+    "viewCount": 247,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -686,9 +686,21 @@
         "firstVisit": 1783479169830,
         "count": 1,
         "lastVisit": 1783479169830
+      },
+      "U929413d689b43d7ed7c44c3d6142ea43": {
+        "displayName": "延武",
+        "firstVisit": 1783490949712,
+        "count": 1,
+        "lastVisit": 1783490949712
       }
     },
     "logs": [
+      {
+        "time": 1783490949712,
+        "userId": "U929413d689b43d7ed7c44c3d6142ea43",
+        "displayName": "延武",
+        "pictureUrl": "https://profile.line-scdn.net/0hVlfm97JyCUNLFBY11n53fTtECiloZVBRb3ERI3ocAHMmJUZFb3JHd3YcU3FxIUxGZXZCcnxHXiZpRjMcYCUObil9UiULWjJLHRQTIXZSPxIDZyZWFS4ZJitDIAUVcw1GCQo5WwNKXyQTJhtnPDsiTHx_IjsFZCZ-LkNlFU4mZ8AkFn4WZnJHIHYSX3bz"
+      },
       {
         "time": 1783489724270,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -1875,12 +1887,6 @@
       },
       {
         "time": 1783228440074,
-        "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
-        "displayName": "Chris Chen",
-        "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
-      },
-      {
-        "time": 1783228395579,
         "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
         "displayName": "Chris Chen",
         "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
