@@ -2288,7 +2288,8 @@ async function handleEvent(event) {
         try {
           const name = await getName(gid, adminUid);
           const source = envAdminUids.includes(adminUid) ? ' [環境變數]' : ' [動態]';
-          msg += `  • ${name}${source}\n`;
+          const nameDisplay = name === '球友' ? `球友 (${adminUid.substring(0, 6)}...)` : name;
+          msg += `  • ${nameDisplay}${source}\n`;
         } catch (e) {
           msg += `  • ${adminUid.substring(0, 8)}...${envAdminUids.includes(adminUid) ? ' [環境變數]' : ' [動態]'}\n`;
         }
