@@ -1505,7 +1505,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783523278346,
+    "lastActiveTime": 1783525770118,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1554,12 +1554,19 @@
           "庭儀",
           "孟錡",
           "陳彥至🦁Roger",
-          "佳洵"
+          "佳洵",
+          "Tank Lin"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/08 23:49",
+        "name": "Tank Lin",
+        "operator": "Tank Lin",
+        "action": "+1"
+      },
       {
         "time": "07/08 23:07",
         "name": "佳洵",
