@@ -2,5 +2,11 @@
   "enabled": true,
   "message": "恭喜獲得一條握把布 打球時可以找Tony換",
   "quota": 2,
-  "winners": []
+  "winners": [
+    {
+      "uid": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "name": "謝東霖 Tony",
+      "timeTaken": 17431
+    }
+  ]
 }
