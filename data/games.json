@@ -1063,7 +1063,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783525770118,
+    "lastActiveTime": 1783554869048,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1113,12 +1113,19 @@
           "孟錡",
           "陳彥至🦁Roger",
           "佳洵",
-          "Tank Lin"
+          "Tank Lin",
+          "宣宏"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/09 07:54",
+        "name": "宣宏",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/08 23:49",
         "name": "Tank Lin",
