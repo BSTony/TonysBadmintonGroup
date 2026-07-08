@@ -2428,8 +2428,8 @@ function removePiggyOverlay() {
 }
 
 function movePiggyRandomly() {
-  // Speed is 20% faster (duration multiplied by 0.8)
-  const duration = Math.max(0.3, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.8);
+  // Speed is much faster (duration multiplied by 0.56)
+  const duration = Math.max(0.2, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.56);
   piggyIcon.style.transition = `left ${duration}s linear, top ${duration}s linear`;
   
   const maxX = window.innerWidth - 60;
@@ -2468,12 +2468,12 @@ if (piggyIcon) {
       piggyIcon.style.top = rect.top + 'px';
       
       movePiggyRandomly();
-      const newIntervalMs = Math.max(300, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.8 * 1000);
+      const newIntervalMs = Math.max(200, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.56 * 1000);
       piggyMoveInterval = setInterval(movePiggyRandomly, newIntervalMs);
     } else {
       clearInterval(piggyMoveInterval);
       movePiggyRandomly();
-      const newIntervalMs = Math.max(300, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.8 * 1000);
+      const newIntervalMs = Math.max(200, (piggyBaseSpeed - (piggyClicks * 0.6)) * 0.56 * 1000);
       piggyMoveInterval = setInterval(movePiggyRandomly, newIntervalMs);
     }
     
