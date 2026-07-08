@@ -2406,6 +2406,7 @@ if (btnBackLogs) {
 // --- Easter Egg Interaction ---
 let piggyMoveInterval = null;
 let piggyOverlay = null;
+let piggyStartTime = 0;
 
 function createPiggyOverlay() {
   if (piggyOverlay) return;
@@ -2448,6 +2449,42 @@ function movePiggyRandomly() {
   piggyIcon.style.top = nextY + 'px';
 }
 
+function renderLeaderboard(leaderboardData, quota) {
+  const listEl = document.getElementById('ee-leaderboard-list');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+  
+  leaderboardData.forEach((user, index) => {
+    const rank = index + 1;
+    let rankHtml = `<div class="ee-leaderboard-rank">${rank}</div>`;
+    
+    // Add crown for those within the quota
+    let crownHtml = '';
+    if (rank <= quota) {
+      if (rank === 1) crownHtml = '<span class="ee-crown">🥇</span>';
+      else if (rank === 2) crownHtml = '<span class="ee-crown">🥈</span>';
+      else if (rank === 3) crownHtml = '<span class="ee-crown">🥉</span>';
+      else crownHtml = '<span class="ee-crown">👑</span>';
+    }
+
+    const timeInSeconds = (!user.timeTaken || user.timeTaken === Infinity) 
+      ? '-- s' 
+      : (user.timeTaken / 1000).toFixed(2) + ' s';
+      
+    const isMe = user.uid === currentUser.userId;
+    const nameColor = isMe ? '#E91E63' : '#333';
+    
+    const li = document.createElement('li');
+    li.className = `ee-leaderboard-item rank-${rank}`;
+    li.innerHTML = `
+      ${rankHtml}
+      <div class="ee-leaderboard-name" style="color: ${nameColor};">${crownHtml}${user.name} ${isMe ? '(你)' : ''}</div>
+      <div class="ee-leaderboard-time">${timeInSeconds}</div>
+    `;
+    listEl.appendChild(li);
+  });
+}
+
 if (piggyIcon) {
   piggyIcon.style.cursor = 'pointer'; // Ensure it looks clickable
   piggyIcon.addEventListener('click', async (e) => {
@@ -2457,6 +2494,7 @@ if (piggyIcon) {
     
     if (!piggyRunning) {
       piggyRunning = true;
+      piggyStartTime = Date.now(); // Start timer
       createPiggyOverlay(); // Block other clicks
       
       // Move to body to escape stacking context of .view so z-index works
@@ -2478,17 +2516,25 @@ if (piggyIcon) {
     }
     
     if (piggyClicks >= 5) {
+      const timeTaken = Date.now() - piggyStartTime; // Calculate time taken
       try {
         const res = await fetch('/api/easter_egg/claim', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uid: currentUser.userId, name: currentUser.displayName })
+          body: JSON.stringify({ uid: currentUser.userId, name: currentUser.displayName, timeTaken })
         });
         const data = await res.json();
         if (data.success) {
           triggerConfetti();
-          easterEggMsg.innerText = data.message;
-          easterEggModal.classList.remove('hidden');
+          const easterEggMsg = document.getElementById('easter-egg-msg');
+          if (easterEggMsg) easterEggMsg.innerText = data.message;
+          
+          if (data.leaderboard && data.quota) {
+            renderLeaderboard(data.leaderboard, data.quota);
+          }
+          
+          const easterEggModal = document.getElementById('easter-egg-modal');
+          if (easterEggModal) easterEggModal.classList.remove('hidden');
         }
       } catch(e) { console.error(e); }
       

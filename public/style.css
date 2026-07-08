@@ -448,6 +448,43 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
   100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
 
+/* Easter Egg Leaderboard Styles */
+.ee-leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #ffcc80;
+  font-size: 15px;
+  color: #555;
+}
+.ee-leaderboard-item:last-child {
+  border-bottom: none;
+}
+.ee-leaderboard-rank {
+  font-weight: bold;
+  color: #ff9800;
+  width: 30px;
+}
+.ee-leaderboard-name {
+  flex-grow: 1;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+.ee-leaderboard-time {
+  font-family: monospace;
+  font-size: 14px;
+  color: #e91e63;
+  font-weight: bold;
+}
+.ee-crown {
+  margin-right: 5px;
+  font-size: 18px;
+}
+
+
 /* Pig Pupil Animation */
 @keyframes pupilMove {
   0%, 60% { transform: translateX(0); }

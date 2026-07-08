@@ -1731,29 +1731,52 @@ app.get('/api/easter_egg/status', (req, res) => {
 });
 
 app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
-  const { uid, name } = req.body;
+  const { uid, name, timeTaken } = req.body;
   if (!uid) return res.status(400).json({ success: false, message: 'Missing uid' });
   
   if (!easterEggSettings.enabled) {
     return res.json({ success: false, message: '活動未開啟' });
   }
 
-  // Check if quota is full
-  if (easterEggSettings.winners.length >= easterEggSettings.quota) {
-    return res.json({ success: false, message: 'quota full' }); // Frontend will ignore this message and just run back
+  const newTime = typeof timeTaken === 'number' ? timeTaken : Infinity;
+
+  // Check if user already exists
+  const existingIndex = easterEggSettings.winners.findIndex(w => (w === uid || (w && w.uid === uid)));
+  
+  if (existingIndex !== -1) {
+    const existing = easterEggSettings.winners[existingIndex];
+    const oldTime = (typeof existing === 'object' && typeof existing.timeTaken === 'number') ? existing.timeTaken : Infinity;
+    
+    // Update if faster, or if they had no time before
+    if (newTime < oldTime) {
+      if (typeof existing === 'object') {
+        existing.timeTaken = newTime;
+        if (name) existing.name = name;
+      } else {
+        easterEggSettings.winners[existingIndex] = { uid, name: name || 'Unknown', timeTaken: newTime };
+      }
+      saveEasterEggSettings();
+    }
+  } else {
+    // Register new winner
+    easterEggSettings.winners.push({ uid, name: name || 'Unknown', timeTaken: newTime });
+    saveEasterEggSettings();
   }
 
-  // Check if already won
-  const hasWon = easterEggSettings.winners.some(w => w === uid || (w && w.uid === uid));
-  if (hasWon) {
-    return res.json({ success: false, message: 'already won' });
-  }
+  // Sort winners by timeTaken ascending
+  easterEggSettings.winners.sort((a, b) => {
+    const tA = (typeof a === 'object' && typeof a.timeTaken === 'number') ? a.timeTaken : Infinity;
+    const tB = (typeof b === 'object' && typeof b.timeTaken === 'number') ? b.timeTaken : Infinity;
+    return tA - tB;
+  });
+  saveEasterEggSettings(); // Save sorted state just in case
 
-  // Register winner
-  easterEggSettings.winners.push({ uid, name: name || 'Unknown' });
-  saveEasterEggSettings();
-
-  res.json({ success: true, message: easterEggSettings.message });
+  res.json({ 
+    success: true, 
+    message: easterEggSettings.message, 
+    quota: easterEggSettings.quota,
+    leaderboard: easterEggSettings.winners 
+  });
 });
 
 app.get('/api/admin/easter_egg', (req, res) => {
