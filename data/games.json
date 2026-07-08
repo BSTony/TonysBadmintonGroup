@@ -1760,7 +1760,7 @@
     "tag": "11-12點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783495367544,
+    "lastActiveTime": 1783495563382,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1782,11 +1782,18 @@
           "小高",
           "詹敬智(胞弟)",
           "小宇",
-          "何岡駿"
+          "何岡駿",
+          "陳呈"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/08 15:26",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1"
+      },
       {
         "time": "07/08 15:22",
         "name": "何岡駿",
