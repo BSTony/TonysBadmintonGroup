@@ -2,10 +2,5 @@
   "enabled": true,
   "message": "恭喜獲得一條握把布 打球時可以找Tony換",
   "quota": 2,
-  "winners": [
-    {
-      "uid": "U49e2484c80056990b759e9039a74e1a6",
-      "name": "Kay"
-    }
-  ]
+  "winners": []
 }
