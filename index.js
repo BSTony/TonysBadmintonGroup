@@ -2556,7 +2556,9 @@ async function handleEvent(event) {
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.replace(/\[系統代發\]/g, '').trim();
       
-      let groupGames = Object.values(games).filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active && !g.isManualEnded);
+      let groupGames = Object.values(games)
+        .filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active && !g.isManualEnded)
+        .sort((a, b) => getGameTime(a) - getGameTime(b));
       if (keyword) {
           groupGames = groupGames.filter(g => g.title.includes(keyword));
       }
@@ -2699,7 +2701,8 @@ async function handleEvent(event) {
               });
           }
 
-          const liffUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}&gameId=${g.gameId}` : null;
+          const liffMainUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : null;
+          const liffGameUrl = process.env.LIFF_ID ? `${liffMainUrl}&gameId=${g.gameId}` : null;
 
           const bubble = {
               type: "bubble",
@@ -2720,17 +2723,27 @@ async function handleEvent(event) {
               }
           };
 
-          if (liffUrl) {
+          if (liffMainUrl && liffGameUrl) {
               bubble.footer = {
                   type: "box",
-                  layout: "vertical",
+                  layout: "horizontal",
+                  spacing: "sm",
                   contents: [
                       {
                           type: "button",
                           style: "primary",
                           color: "#1DB446",
                           height: "sm",
-                          action: { type: "uri", label: "進入大廳", uri: liffUrl }
+                          flex: 1,
+                          action: { type: "uri", label: "本次報名", uri: liffGameUrl }
+                      },
+                      {
+                          type: "button",
+                          style: "secondary",
+                          color: "#eeeeee",
+                          height: "sm",
+                          flex: 1,
+                          action: { type: "uri", label: "大廳首頁", uri: liffMainUrl }
                       }
                   ]
               };
