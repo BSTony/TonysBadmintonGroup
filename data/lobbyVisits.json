@@ -1962,7 +1962,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 51,
+    "viewCount": 52,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -1973,8 +1973,8 @@
       "U5640de569b97f16342b7e1875f88599c": {
         "displayName": "Brian 王暉鈞",
         "firstVisit": 1783345607352,
-        "count": 3,
-        "lastVisit": 1783521326913
+        "count": 4,
+        "lastVisit": 1783523257486
       },
       "Uab37cdfbcee7c3c2fe61df8a7b09d3cb": {
         "displayName": "Ong",
@@ -2056,6 +2056,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783523257486,
+        "userId": "U5640de569b97f16342b7e1875f88599c",
+        "displayName": "Brian 王暉鈞",
+        "pictureUrl": "https://profile.line-scdn.net/0h_tKjZP53AFtmEx6elWV-ZRZDAzFFYllJGCIYOlpEVzxTcEdaGnVGNAcSW2NcKkVaGSdGOFoQVjlEWkdQSxsVRz1EATcwfBcKHHUQaBRwK247fTRPOnIMT1JLOTEtYkFXDAwnNBAaJgAIUxd0KAASTgdbFRQNTQFLPERsDWMhbtgJEXcOS3VOOFsVVm7e"
+      },
       {
         "time": 1783521326913,
         "userId": "U5640de569b97f16342b7e1875f88599c",
