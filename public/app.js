@@ -144,6 +144,10 @@ let currentDetailGame = null;
 let gamesList = [];
 let globalIsAdmin = false;
 let globalIsSuperAdmin = false;
+let easterEggEnabled = false;
+let piggyClicks = 0;
+let piggyRunning = false;
+let piggyBaseSpeed = 3;
 let globalManagedGroups = [];
 let globalLobbyTitle = '羽球接龍大廳';
 let currentGameDetailId = null;
@@ -170,6 +174,21 @@ const btnBackLogs = document.getElementById('btn-back-logs');
 const systemLogsContainer = document.getElementById('system-logs-container');
 const btnBackStats = document.getElementById('btn-back-stats');
 const statsGroupsContainer = document.getElementById('stats-groups-container');
+
+// Easter Egg DOM
+const btnEasterEgg = document.getElementById('btn-easter-egg');
+const easterEggSettingsView = document.getElementById('easter-egg-settings-view');
+const btnBackEasterEgg = document.getElementById('btn-back-easter-egg');
+const btnSaveEasterEgg = document.getElementById('btn-save-easter-egg');
+const btnClearWinners = document.getElementById('btn-clear-winners');
+const eeEnabledCheckbox = document.getElementById('ee-enabled');
+const eeMessageInput = document.getElementById('ee-message');
+const eeQuotaInput = document.getElementById('ee-quota');
+const eeWinnersCount = document.getElementById('ee-winners-count');
+const piggyIcon = document.querySelector('.header-icon');
+const confettiContainer = document.getElementById('confetti-container');
+const easterEggModal = document.getElementById('easter-egg-modal');
+const easterEggMsg = document.getElementById('easter-egg-msg');
 
 // 初始化 LIFF
 async function initializeLiff() {
@@ -265,6 +284,14 @@ async function loadGamesLobby(silent = false) {
       globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
     }
 
+    try {
+      const eeRes = await fetch('/api/easter_egg/status');
+      if (eeRes.ok) {
+        const eeData = await eeRes.json();
+        easterEggEnabled = !!eeData.enabled;
+      }
+    } catch(e) {}
+
     const urlParams = new URLSearchParams(window.location.search);
     const urlGameId = urlParams.get('gameId');
     // 若為初次載入且網址有指定 gameId，則直接進入該場次，否則留在首頁
@@ -353,6 +380,12 @@ function renderLobby() {
       btnLobbyStats.classList.remove('hidden');
     } else if (btnLobbyStats) {
       btnLobbyStats.classList.add('hidden');
+    }
+
+    if (globalIsSuperAdmin && btnEasterEgg) {
+      btnEasterEgg.classList.remove('hidden');
+    } else if (btnEasterEgg) {
+      btnEasterEgg.classList.add('hidden');
     }
     
     const createContainer = document.getElementById('admin-create-game-container');
@@ -2366,5 +2399,170 @@ if (btnBackLogs) {
   btnBackLogs.addEventListener('click', () => {
     document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
     document.getElementById('lobby-view').classList.remove('hidden');
+  });
+}
+
+// --- Easter Egg Interaction ---
+if (piggyIcon) {
+  piggyIcon.addEventListener('click', async (e) => {
+    if (!easterEggEnabled) return;
+    
+    piggyClicks++;
+    
+    if (!piggyRunning) {
+      piggyRunning = true;
+      piggyIcon.classList.add('piggy-running');
+      const rect = piggyIcon.getBoundingClientRect();
+      piggyIcon.style.left = rect.left + 'px';
+      piggyIcon.style.top = rect.top + 'px';
+    }
+    
+    if (piggyClicks >= 5) {
+      try {
+        const res = await fetch('/api/easter_egg/claim', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: currentUser.userId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          triggerConfetti();
+          easterEggMsg.innerText = data.message;
+          easterEggModal.classList.remove('hidden');
+        }
+      } catch(e) { console.error(e); }
+      
+      resetPiggy();
+      return;
+    }
+    
+    const duration = Math.max(0.5, piggyBaseSpeed - (piggyClicks * 0.6));
+    piggyIcon.style.transition = `all ${duration}s linear`;
+    
+    const maxX = window.innerWidth - 60;
+    const maxY = window.innerHeight - 60;
+    const nextX = Math.max(0, Math.random() * maxX);
+    const nextY = Math.max(0, Math.random() * maxY);
+    
+    const currentLeft = parseFloat(piggyIcon.style.left) || 0;
+    if (nextX < currentLeft) {
+      piggyIcon.style.transform = 'scaleX(1)';
+    } else {
+      piggyIcon.style.transform = 'scaleX(-1)';
+    }
+    
+    piggyIcon.style.left = nextX + 'px';
+    piggyIcon.style.top = nextY + 'px';
+  });
+}
+
+function resetPiggy() {
+  piggyRunning = false;
+  piggyClicks = 0;
+  piggyIcon.classList.remove('piggy-running');
+  piggyIcon.style.left = '';
+  piggyIcon.style.top = '';
+  piggyIcon.style.transform = '';
+  piggyIcon.style.transition = '';
+}
+
+function triggerConfetti() {
+  confettiContainer.innerHTML = '';
+  confettiContainer.classList.remove('hidden');
+  const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+  for (let i = 0; i < 60; i++) {
+    const conf = document.createElement('div');
+    conf.className = 'confetti';
+    conf.style.left = Math.random() * 100 + 'vw';
+    conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    conf.style.animationDelay = Math.random() * 1.5 + 's';
+    conf.style.animationDuration = Math.random() * 2 + 2 + 's';
+    confettiContainer.appendChild(conf);
+  }
+  setTimeout(() => {
+    confettiContainer.classList.add('hidden');
+    confettiContainer.innerHTML = '';
+  }, 5000);
+}
+
+// --- Admin Easter Egg View ---
+if (btnEasterEgg) {
+  btnEasterEgg.addEventListener('click', async () => {
+    statusMsg.innerText = '載入設定中...';
+    statusMsg.style.display = 'block';
+    appDiv.className = 'loading';
+    try {
+      const res = await fetch(`/api/admin/easter_egg?uid=${currentUser.userId}`);
+      if (res.ok) {
+        const data = await res.json();
+        eeEnabledCheckbox.checked = data.enabled;
+        eeMessageInput.value = data.message;
+        eeQuotaInput.value = data.quota;
+        eeWinnersCount.innerText = data.winners ? data.winners.length : 0;
+        
+        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+        easterEggSettingsView.classList.remove('hidden');
+        appDiv.className = '';
+        statusMsg.style.display = 'none';
+      } else {
+        alert('無權限存取');
+        appDiv.className = '';
+        statusMsg.style.display = 'none';
+      }
+    } catch(e) {
+      alert('無法載入設定');
+      appDiv.className = '';
+      statusMsg.style.display = 'none';
+    }
+  });
+}
+
+if (btnBackEasterEgg) {
+  btnBackEasterEgg.addEventListener('click', () => renderLobby());
+}
+
+if (btnSaveEasterEgg) {
+  btnSaveEasterEgg.addEventListener('click', async () => {
+    btnSaveEasterEgg.disabled = true;
+    try {
+      const res = await fetch('/api/admin/easter_egg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: currentUser.userId,
+          settings: {
+            enabled: eeEnabledCheckbox.checked,
+            message: eeMessageInput.value,
+            quota: parseInt(eeQuotaInput.value, 10) || 3
+          }
+        })
+      });
+      if (res.ok) {
+        alert('儲存成功');
+        easterEggEnabled = eeEnabledCheckbox.checked;
+        renderLobby();
+      }
+    } catch(e) { alert('儲存失敗'); }
+    btnSaveEasterEgg.disabled = false;
+  });
+}
+
+if (btnClearWinners) {
+  btnClearWinners.addEventListener('click', async () => {
+    if (!confirm('確定要清空得獎名單嗎？')) return;
+    try {
+      const res = await fetch('/api/admin/easter_egg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: currentUser.userId,
+          settings: { winners: [] }
+        })
+      });
+      if (res.ok) {
+        eeWinnersCount.innerText = 0;
+        alert('已清空名單');
+      }
+    } catch(e) { alert('清空失敗'); }
   });
 }

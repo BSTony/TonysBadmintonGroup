@@ -27,8 +27,10 @@ const ROSTER_TEMPLATES_FILE = path.join(__dirname, 'data/rosterTemplates.json');
 const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const LOBBY_VISITS_FILE = path.join(DATA_DIR, 'lobbyVisits.json');
+const EASTER_EGG_FILE = path.join(DATA_DIR, 'easterEggSettings.json');
 
 let lobbyVisits = {}; // { gid: { viewCount: 0, uniqueViewers: {}, logs: [] } }
+let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [] };
 
 // 讀取既有設定
 let adminsSha = null;
@@ -38,6 +40,7 @@ let settingsSha = null;
 let templatesSha = null;
 let gamesSha = null; // GitHub games.json 的 SHA
 let visitsSha = null; // GitHub lobbyVisits.json 的 SHA
+let easterEggSha = null; // GitHub easterEggSettings.json 的 SHA
 let gamesSaveChain = Promise.resolve(); // 防併發串行保存
 let lobbyVisitClickCount = 0;
 
@@ -76,6 +79,11 @@ async function loadData() {
   if (fs.existsSync(LOBBY_VISITS_FILE)) {
     try {
       lobbyVisits = JSON.parse(fs.readFileSync(LOBBY_VISITS_FILE, 'utf8'));
+    } catch(e) {}
+  }
+  if (fs.existsSync(EASTER_EGG_FILE)) {
+    try {
+      easterEggSettings = JSON.parse(fs.readFileSync(EASTER_EGG_FILE, 'utf8'));
     } catch(e) {}
   }
 
@@ -158,6 +166,15 @@ async function loadData() {
         lobbyVisits = JSON.parse(Buffer.from(visitsRes.content, 'base64').toString('utf8'));
       }
     } catch(e) { console.error('無法從 GitHub 讀取 lobbyVisits.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 easterEggSettings.json...');
+      const eeRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/easterEggSettings.json?ref=${GITHUB_BRANCH}`);
+      if (eeRes.content) {
+        easterEggSha = eeRes.sha;
+        easterEggSettings = JSON.parse(Buffer.from(eeRes.content, 'base64').toString('utf8'));
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 easterEggSettings.json:', e.message); }
   }
 }
 
@@ -276,6 +293,24 @@ async function saveLobbyVisits() {
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/lobbyVisits.json`, payload);
       if (res.content && res.content.sha) visitsSha = res.content.sha;
     } catch(e) { console.error('備份 lobbyVisits 至 GitHub 失敗:', e.message); }
+  }
+}
+
+async function saveEasterEggSettings() {
+  const jsonStr = JSON.stringify(easterEggSettings, null, 2);
+  await fs.promises.writeFile(EASTER_EGG_FILE, jsonStr, 'utf8');
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update easterEggSettings',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (easterEggSha) payload.sha = easterEggSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/easterEggSettings.json`, payload);
+      if (res.content && res.content.sha) easterEggSha = res.content.sha;
+    } catch(e) { console.error('備份 easterEggSettings 至 GitHub 失敗:', e.message); }
   }
 }
 
@@ -1689,6 +1724,63 @@ function generateListMessage(g, customTitle = null) {
   });
   return msg;
 }
+
+// --- 彩蛋功能 API ---
+app.get('/api/easter_egg/status', (req, res) => {
+  res.json({ enabled: easterEggSettings.enabled });
+});
+
+app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
+  const { uid } = req.body;
+  if (!uid) return res.status(400).json({ success: false, message: 'Missing uid' });
+  
+  if (!easterEggSettings.enabled) {
+    return res.json({ success: false, message: '活動未開啟' });
+  }
+
+  // Check if quota is full
+  if (easterEggSettings.winners.length >= easterEggSettings.quota) {
+    return res.json({ success: false, message: 'quota full' }); // Frontend will ignore this message and just run back
+  }
+
+  // Check if already won
+  if (easterEggSettings.winners.includes(uid)) {
+    return res.json({ success: false, message: 'already won' });
+  }
+
+  // Register winner
+  easterEggSettings.winners.push(uid);
+  saveEasterEggSettings();
+
+  res.json({ success: true, message: easterEggSettings.message });
+});
+
+app.get('/api/admin/easter_egg', (req, res) => {
+  const uid = req.query.uid;
+  if (!uid || !isSuperAdmin(uid)) {
+    return res.status(403).json({ error: 'Permission denied' });
+  }
+  res.json(easterEggSettings);
+});
+
+app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
+  const { uid, settings } = req.body;
+  if (!uid || !isSuperAdmin(uid)) {
+    return res.status(403).json({ error: 'Permission denied' });
+  }
+  
+  if (settings) {
+    if (typeof settings.enabled === 'boolean') easterEggSettings.enabled = settings.enabled;
+    if (typeof settings.message === 'string') easterEggSettings.message = settings.message;
+    if (typeof settings.quota === 'number') easterEggSettings.quota = settings.quota;
+    if (Array.isArray(settings.winners)) easterEggSettings.winners = settings.winners;
+    
+    saveEasterEggSettings();
+  }
+  
+  res.json({ success: true });
+});
+// ------------------
 
 // 處理 LIFF 前端傳來的報名或取消請求
 app.post('/api/action', express.json(), async (req, res) => {
