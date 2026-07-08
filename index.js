@@ -2262,6 +2262,63 @@ async function handleEvent(event) {
     }
   }
 
+  if (text === '查詢管理員' || text === '管理員名單') {
+    if (!isSuperAdmin(uid)) {
+      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員可以查詢管理員名單。' });
+    }
+
+    let msg = '📋 管理員名單\n══════════════\n';
+
+    // 超級管理員 (環境變數)
+    const envAdminUids = process.env.SUPER_ADMIN_USER_ID
+      ? process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim()).filter(Boolean)
+      : [];
+
+    // 超級管理員 (動態新增)
+    const dynamicSuperAdmins = superAdmins ? Array.from(superAdmins) : [];
+
+    // 合併不重複
+    const allSuperAdminUids = [...new Set([...envAdminUids, ...dynamicSuperAdmins])];
+
+    msg += '\n👑 超級管理員:\n';
+    if (allSuperAdminUids.length === 0) {
+      msg += '  (無)\n';
+    } else {
+      for (const adminUid of allSuperAdminUids) {
+        try {
+          const name = await getName(gid, adminUid);
+          const source = envAdminUids.includes(adminUid) ? ' [環境變數]' : ' [動態]';
+          msg += `  • ${name}${source}\n`;
+        } catch (e) {
+          msg += `  • ${adminUid.substring(0, 8)}...${envAdminUids.includes(adminUid) ? ' [環境變數]' : ' [動態]'}\n`;
+        }
+      }
+    }
+
+    // 群組管理員
+    const groupEntries = Object.entries(groupAdmins).filter(([g, admins]) => admins.size > 0);
+    if (groupEntries.length > 0) {
+      msg += '\n👤 群組管理員:\n';
+      for (const [adminGid, admins] of groupEntries) {
+        const code = Object.keys(groupCodes).find(k => groupCodes[k] === adminGid) || '無代碼';
+        msg += `\n  群組 [${code}]:\n`;
+        for (const adminUid of admins) {
+          try {
+            const name = await getName(adminGid, adminUid);
+            const alsoSuper = allSuperAdminUids.includes(adminUid) ? ' 👑' : '';
+            msg += `    • ${name}${alsoSuper}\n`;
+          } catch (e) {
+            msg += `    • ${adminUid.substring(0, 8)}...\n`;
+          }
+        }
+      }
+    } else {
+      msg += '\n👤 群組管理員:\n  (無)\n';
+    }
+
+    return client.replyMessage(event.replyToken, { type: 'text', text: msg.trim() });
+  }
+
   if (text === '群組代碼' || text === '群組碼') {
     let code = Object.keys(groupCodes).find(k => groupCodes[k] === gid);
     if (!code) {
