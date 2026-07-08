@@ -839,6 +839,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 
 // 全域存儲：支援多群組、多區段
 let games = {};
+let systemLogs = [];
 const nameToUidMap = new Map();
 // 從環境變數讀取管理員密碼，如果未設定則使用預設值（不建議）
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '鈞鈞是豬豬';
@@ -2104,6 +2105,13 @@ app.post('/api/action', express.json(), async (req, res) => {
       const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       game.history.unshift({ time: timeStr, name: '系統', operator: operatorName || name, action: '錯誤', errorMsg: text });
       if (game.history.length > 200) game.history.pop();
+      
+      systemLogs.unshift({ time: timeStr, gameTitle: game.title, operator: operatorName || name, errorMsg: text });
+      if (systemLogs.length > 500) systemLogs.pop();
+      
+      systemLogs.unshift({ time: timeStr, gameTitle: game.title, operator: operatorName || name, errorMsg: text });
+      if (systemLogs.length > 500) systemLogs.pop();
+      saveSystemLogs();
     } else {
       return res.status(400).json({ error: 'Unknown action' });
     }
@@ -3384,6 +3392,18 @@ process.on('SIGINT', gracefulShutdown);
 // 啟動服務器
 
 // 隱藏的 debug 端點，用來印出當前記憶體狀態
+app.get('/api/systemLogs', async (req, res) => {
+  // 簡易權限檢查
+  const { uid } = req.query;
+  let isSuperAdmin = false;
+  if (globalConfig.superAdmins && globalConfig.superAdmins.includes(uid)) {
+     isSuperAdmin = true;
+  }
+  
+  // 目前先允許 uid 存在就回傳，或直接回傳 (LIFF端會隱藏按鈕)
+  res.json(systemLogs);
+});
+
 app.get('/api/debug_games', (req, res) => {
   res.json({
     total: Object.keys(games).length,

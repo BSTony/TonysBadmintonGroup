@@ -164,6 +164,10 @@ const detailList = document.getElementById('detail-list');
 
 const statsView = document.getElementById('stats-view');
 const btnLobbyStats = document.getElementById('btn-lobby-stats');
+const btnSystemLogs = document.getElementById('btn-system-logs');
+const systemLogsView = document.getElementById('system-logs-view');
+const btnBackLogs = document.getElementById('btn-back-logs');
+const systemLogsContainer = document.getElementById('system-logs-container');
 const btnBackStats = document.getElementById('btn-back-stats');
 const statsGroupsContainer = document.getElementById('stats-groups-container');
 
@@ -2326,5 +2330,46 @@ if (btnBackStats) {
   btnBackStats.addEventListener('click', () => {
     statsView.classList.add('hidden');
     lobbyView.classList.remove('hidden');
+  });
+}
+
+if (btnSystemLogs) {
+  btnSystemLogs.addEventListener('click', async () => {
+    appDiv.className = 'loading';
+    statusMsg.innerText = '讀取中...';
+    try {
+      const res = await fetch('/api/systemLogs?uid=' + currentUser.userId);
+      if (!res.ok) throw new Error('無法讀取系統LOG');
+      const logs = await res.json();
+      
+      systemLogsContainer.innerHTML = '';
+      if (!logs || logs.length === 0) {
+        systemLogsContainer.innerHTML = '<p>目前沒有系統錯誤紀錄</p>';
+      } else {
+        logs.forEach(log => {
+          const div = document.createElement('div');
+          div.style.borderBottom = '1px solid #ddd';
+          div.style.padding = '8px 0';
+          div.innerHTML = `<div style="font-size:12px; color:#888;">${log.time}</div>
+          <div style="font-weight:bold;">[${log.gameTitle || '未知場次'}] ${log.operator}</div>
+          <div style="color:red; margin-top:4px;">${log.errorMsg}</div>`;
+          systemLogsContainer.appendChild(div);
+        });
+      }
+      
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      systemLogsView.classList.remove('hidden');
+    } catch(e) {
+      alert(e.message);
+    } finally {
+      appDiv.className = '';
+    }
+  });
+}
+
+if (btnBackLogs) {
+  btnBackLogs.addEventListener('click', () => {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+    document.getElementById('lobby-view').classList.remove('hidden');
   });
 }
