@@ -349,7 +349,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 275,
+    "viewCount": 276,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -474,8 +474,8 @@
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
         "firstVisit": 1783229231612,
-        "count": 2,
-        "lastVisit": 1783497620670
+        "count": 3,
+        "lastVisit": 1783497632290
       },
       "U9a1ff0a8477529c49db5bca1e7313bd0": {
         "displayName": "Jimmy",
@@ -707,6 +707,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783497632290,
+        "userId": "U04307fbd1087e54ce656086b653a60fd",
+        "displayName": "黃政豪",
+        "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
+      },
       {
         "time": 1783497620670,
         "userId": "U04307fbd1087e54ce656086b653a60fd",
@@ -1896,12 +1902,6 @@
         "userId": "U078cd31b879fc8b1722138b58d04a7a3",
         "displayName": "冷夜",
         "pictureUrl": "https://profile.line-scdn.net/0hwaHTkE5PKE5lLTnO7qlWMRV9KyRGXHFcSx5iIQB_dSpeHWccQR9kLAV-IX5YGz9PHRxkLVUsci5pPl8oe3vUemIddX9YHGoQT0NirQ"
-      },
-      {
-        "time": 1783233544693,
-        "userId": "U799d4a509b3c76b76c249151f5a3f690",
-        "displayName": "瑋",
-        "pictureUrl": "https://profile.line-scdn.net/0hR1DfBaAiDR5pHxkS7ClzYRlPDnRKblQMFnAScQkZUyhQLE1LRHsQLQ5IACdWKE8YRCtEfQhIAHllDHp4d0nxKm4vUC9ULk9AQ3FH_Q"
       }
     ]
   },
