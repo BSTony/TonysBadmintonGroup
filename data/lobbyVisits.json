@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 348,
+    "viewCount": 349,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -752,9 +752,21 @@
         "firstVisit": 1783519681876,
         "count": 1,
         "lastVisit": 1783519681876
+      },
+      "U3b87de2ad6e01470255c644bb960ed91": {
+        "displayName": "鼎函",
+        "firstVisit": 1783521928969,
+        "count": 1,
+        "lastVisit": 1783521928969
       }
     },
     "logs": [
+      {
+        "time": 1783521928969,
+        "userId": "U3b87de2ad6e01470255c644bb960ed91",
+        "displayName": "鼎函",
+        "pictureUrl": "https://profile.line-scdn.net/0hlug030zbM1pKSST99XlNJToZMDBpOGpIYSx4aX8ZbTkgLXUNMnosO3sZaz10fXUIb39-bnhBa2hGWkQ8VB_Pbk15bmt3eHEEYCd5uQ"
+      },
       {
         "time": 1783520438161,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -1946,12 +1958,6 @@
         "userId": "U487e8a8976a1c65af4311f4b3f842a9c",
         "displayName": "紀凡",
         "pictureUrl": "https://profile.line-scdn.net/0haLjLFUwFPmNHNStqZU5AHDdlPQlkRGdxPlclASE3ZFUtV3A8P1p5Vyc1Y1IqBi5hO1V2BnI1MFBLJkkFWWPCV0AFY1J6BHw9bVt0gA"
-      },
-      {
-        "time": 1783350338522,
-        "userId": "U24c3b63e1d18834db9830f243aedaeae",
-        "displayName": "陳呈",
-        "pictureUrl": "https://profile.line-scdn.net/0hlAgC3G9hM25KOiL3Q7BNETpqMARpS2p8NFh_C3Zoblp-AiM4Y1gsXHw-OF12DCA-Mll5WnppZFhGKUQIVGzPWk0Kbl93C3EwYFR5jQ"
       }
     ]
   },
