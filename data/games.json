@@ -1505,7 +1505,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783518793279,
+    "lastActiveTime": 1783523278346,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1553,12 +1553,19 @@
           "少易",
           "庭儀",
           "孟錡",
-          "陳彥至🦁Roger"
+          "陳彥至🦁Roger",
+          "佳洵"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/08 23:07",
+        "name": "佳洵",
+        "operator": "Brian 王暉鈞",
+        "action": "+1"
+      },
       {
         "time": "07/08 21:53",
         "name": "陳彥至🦁Roger",
