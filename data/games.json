@@ -1505,7 +1505,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783515303342,
+    "lastActiveTime": 1783518793279,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1552,12 +1552,19 @@
           "Ku",
           "少易",
           "庭儀",
-          "孟錡"
+          "孟錡",
+          "陳彥至🦁Roger"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/08 21:53",
+        "name": "陳彥至🦁Roger",
+        "operator": "陳彥至🦁Roger",
+        "action": "+1"
+      },
       {
         "time": "07/08 20:55",
         "name": "孟錡",
