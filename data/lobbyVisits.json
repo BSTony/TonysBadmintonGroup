@@ -349,7 +349,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 252,
+    "viewCount": 253,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -468,8 +468,8 @@
       "Ua698eb94f633310ce3b6cf6f34265adb": {
         "displayName": "煜翔Sean",
         "firstVisit": 1783229120228,
-        "count": 9,
-        "lastVisit": 1783410354006
+        "count": 10,
+        "lastVisit": 1783495444033
       },
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
@@ -701,6 +701,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783495444033,
+        "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
+        "displayName": "煜翔Sean",
+        "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
+      },
       {
         "time": 1783495339622,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -1890,12 +1896,6 @@
         "userId": "Uf2f63c157d1e4f7e5d289d377c568582",
         "displayName": "周則鼎",
         "pictureUrl": "https://profile.line-scdn.net/0htTLF5bbFK3thPzTYajdVRRFvKBFCTnJpTl5kTgM8J0wMDDkpTlg3HAY6Jx5VX24kTV1kGVY6IR9DVQVqJgYSYA94DE41dgR_GyQ-WQ1ZPC48RwxlLC0TQSQ9FBsJfGtVGUUgbgxKLwoeXARTNFwgajA3NEMydh5eFmhHLWQNRfgOPVwuTFllGFw5fU7Z"
-      },
-      {
-        "time": 1783228927276,
-        "userId": "U610a1cb7211453949dbb88fa527c90aa",
-        "displayName": "Han-Hsing",
-        "pictureUrl": "https://profile.line-scdn.net/0hmVwGesgPMnlaPi4z2NtMRypuMRN5T2trdV16TDs8ah5vDiEpI116HWhqO003DXQqJQx5Fjppbkx4UXNEBi8BYix_DE0XVAEpKC99WRdEbFUiVAxtfx4pFw1mLTYveWlkGCABSDtQG0E6bBBVLx8mQhllCzxgVTNxJGleL18MXPo1PEUsd1h8Gmc4ZEzi"
       }
     ]
   },
