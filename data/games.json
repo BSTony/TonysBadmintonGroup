@@ -1063,7 +1063,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783560204966,
+    "lastActiveTime": 1783562635853,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1113,12 +1113,19 @@
           "陳彥至🦁Roger",
           "佳洵",
           "Tank Lin",
-          "宣宏"
+          "宣宏",
+          "雅0"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/09 10:03",
+        "name": "雅0",
+        "operator": "雅0🐱",
+        "action": "+1"
+      },
       {
         "time": "07/09 09:23",
         "name": "Win Shu",
