@@ -292,8 +292,8 @@ function initSocket() {
   
   socket.on('player_moved', (data) => {
     if (partyOthers[data.id]) {
-      partyOthers[data.id].style.left = data.x + 'px';
-      partyOthers[data.id].style.top = data.y + 'px';
+      partyOthers[data.id].style.left = (data.x * window.innerWidth) + 'px';
+      partyOthers[data.id].style.top = (data.y * window.innerHeight) + 'px';
     }
   });
   
@@ -377,8 +377,8 @@ function createOtherPlayer(p) {
     <div class="bh-icon">${p.alive ? (p.icon || '🐷') : '🤕'}</div>
     <div class="bh-player-name">${p.name}</div>
   `;
-  el.style.left = p.x + 'px';
-  el.style.top = p.y + 'px';
+  el.style.left = (p.x * window.innerWidth) + 'px';
+  el.style.top = (p.y * window.innerHeight) + 'px';
   bhEntities.appendChild(el);
   partyOthers[p.id] = el;
 }
@@ -420,7 +420,9 @@ function joinPartyLobby() {
   bhPlayer.style.top = initialY + 'px';
   bhEntities.appendChild(bhPlayer);
   
-  socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: selectedCharacterIcon, x: initialX, y: initialY });
+  const pctX = initialX / window.innerWidth;
+  const pctY = initialY / window.innerHeight;
+  socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: selectedCharacterIcon, x: pctX, y: pctY });
   
   // Request fresh state after a short delay to ensure we have all players
   setTimeout(() => {
@@ -486,7 +488,7 @@ function joinPartyLobby() {
     
     // Only emit position if moved enough to reduce network traffic
     if (Math.abs(newX - lastSentX) > 2 || Math.abs(newY - lastSentY) > 2) {
-      socket.emit('player_move', { x: newX, y: newY });
+      socket.emit('player_move', { x: newX / window.innerWidth, y: newY / window.innerHeight });
       lastSentX = newX;
       lastSentY = newY;
     }
