@@ -227,18 +227,23 @@ function initSocket() {
       partyAdminStatus.innerText = `狀態：${state.status} (人數: ${Object.keys(state.players).length})`;
     }
     
+    const adminPlayBtn = document.getElementById('btn-bh-admin-play');
+    
     if (state.status === 'lobby') {
       if (btnPartyStartLobby) btnPartyStartLobby.classList.add('hidden');
       if (btnPartyPlay) btnPartyPlay.classList.remove('hidden');
       if (partyJoinContainer) partyJoinContainer.classList.remove('hidden');
+      if (adminPlayBtn) adminPlayBtn.classList.remove('hidden');
     } else if (state.status === 'playing') {
       if (btnPartyStartLobby) btnPartyStartLobby.classList.add('hidden');
       if (btnPartyPlay) btnPartyPlay.classList.add('hidden');
       if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+      if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
     } else {
       if (btnPartyStartLobby) btnPartyStartLobby.classList.remove('hidden');
       if (btnPartyPlay) btnPartyPlay.classList.add('hidden');
       if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+      if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
       
       // Force close UI on idle
       if (bhContainer) bhContainer.classList.add('hidden');
@@ -336,12 +341,14 @@ function createOtherPlayer(p) {
   const el = document.createElement('div');
   el.className = 'bh-player';
   el.style.opacity = '0.5'; // Ghost appearance for others
-  el.innerHTML = p.alive ? '🐷' : '🤕';
+  el.innerHTML = p.alive ? (p.icon || '🐷') : '🤕';
   el.style.left = p.x + 'px';
   el.style.top = p.y + 'px';
   bhEntities.appendChild(el);
   partyOthers[p.id] = el;
 }
+
+let selectedCharacterIcon = '🐷';
 
 function joinPartyLobby() {
   initSocket();
@@ -350,11 +357,18 @@ function joinPartyLobby() {
   bhEntities.innerHTML = '';
   partyOthers = {};
   bhBullets = [];
+  bhWalls = [];
+  bhItems = [];
   bhIsPlaying = false; // waiting for party_play
+  
+  if (globalIsSuperAdmin) {
+    const adminControls = document.getElementById('bh-admin-controls');
+    if (adminControls) adminControls.classList.remove('hidden');
+  }
   
   bhPlayer = document.createElement('div');
   bhPlayer.className = 'bh-player';
-  bhPlayer.innerHTML = '🐷';
+  bhPlayer.innerHTML = selectedCharacterIcon;
   
   const livesEl = document.createElement('div');
   livesEl.className = 'bh-lives';
@@ -366,7 +380,7 @@ function joinPartyLobby() {
   bhPlayer.style.top = (window.innerHeight - 100) + 'px';
   bhEntities.appendChild(bhPlayer);
   
-  socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName });
+  socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: selectedCharacterIcon });
   
   let isDragging = false;
   const onPointerDown = (e) => { isDragging = true; updatePlayerPos(e); };
@@ -539,8 +553,43 @@ function bhPartyLoop(timestamp) {
 
 if (btnJoinParty) {
   btnJoinParty.addEventListener('click', () => {
-    joinPartyLobby();
-    partyJoinContainer.classList.add('hidden');
+    const modal = document.getElementById('character-select-modal');
+    const grid = document.getElementById('character-grid');
+    const btnConfirm = document.getElementById('btn-confirm-character');
+    const btnCancel = document.getElementById('btn-cancel-character');
+    
+    if (modal && grid) {
+      grid.innerHTML = '';
+      const chars = ['🐷', '🐶', '🐱', '🐰', '🦊', '🐻', '🐼', '🐯', '🦁', '🐸'];
+      chars.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'char-btn';
+        btn.innerText = c;
+        btn.onclick = () => {
+          document.querySelectorAll('.char-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedCharacterIcon = c;
+          btnConfirm.disabled = false;
+        };
+        grid.appendChild(btn);
+      });
+      
+      btnConfirm.onclick = () => {
+        modal.classList.add('hidden');
+        joinPartyLobby();
+        partyJoinContainer.classList.add('hidden');
+      };
+      
+      btnCancel.onclick = () => {
+        modal.classList.add('hidden');
+      };
+      
+      modal.classList.remove('hidden');
+    } else {
+      // Fallback
+      joinPartyLobby();
+      partyJoinContainer.classList.add('hidden');
+    }
   });
 }
 
@@ -3156,6 +3205,25 @@ if (btnEasterEgg) {
   
   if (btnPartyStop) {
     btnPartyStop.addEventListener('click', async () => {
+      await fetch('/api/admin/party/stop', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+    });
+  }
+  
+  const btnBhAdminPlay = document.getElementById('btn-bh-admin-play');
+  const btnBhAdminStop = document.getElementById('btn-bh-admin-stop');
+  if (btnBhAdminPlay) {
+    btnBhAdminPlay.addEventListener('click', async () => {
+      await fetch('/api/admin/party/play', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+    });
+  }
+  if (btnBhAdminStop) {
+    btnBhAdminStop.addEventListener('click', async () => {
       await fetch('/api/admin/party/stop', {
         method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ uid: currentUser.userId })

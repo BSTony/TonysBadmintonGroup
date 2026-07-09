@@ -603,8 +603,25 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
 /* Pig Secret Smile Animation */
 @keyframes secretSmileTwitch {
   0%, 85% { transform: scaleX(1) scaleY(1); }
+
   88%, 95% { transform: scaleX(1.15) scaleY(1.05) translateY(-1px); }
   100% { transform: scaleX(1) scaleY(1); }
+}
+
+/* Character Selection Styles */
+.char-btn {
+  font-size: 30px;
+  background: #f1f2f6;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 10px 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.char-btn.selected {
+  background: #ffeaa7;
+  border: 2px solid #fdcb6e;
+  transform: scale(1.1);
 }
 
 .pig-smile {

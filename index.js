@@ -1889,8 +1889,8 @@ function checkWinCondition() {
 io.on('connection', (socket) => {
   socket.on('join_party', (data) => {
     if (partyRoom.status === 'idle') return;
-    const { uid, name } = data;
-    partyRoom.players[socket.id] = { uid, name, x: -100, y: -100, alive: true, id: socket.id, lives: 3, invincibleUntil: 0 };
+    const { uid, name, icon } = data;
+    partyRoom.players[socket.id] = { uid, name, icon: icon || '🐷', x: -100, y: -100, alive: true, id: socket.id, lives: 3, invincibleUntil: 0 };
     socket.emit('party_state', partyRoom);
     socket.broadcast.emit('player_joined', partyRoom.players[socket.id]);
   });
