@@ -2019,7 +2019,7 @@ app.post('/api/admin/party/play', express.json(), (req, res) => {
       io.emit('spawn_bullet', {
         id: Math.random().toString(36).substring(2, 9),
         startX, startY, targetX, targetY,
-        speedMultiplier: 1 + (elapsed / 1000) * 0.05
+        speedMultiplier: 0.7 + (elapsed / 1000) * 0.04
       });
       lastSpawn = now;
     }
