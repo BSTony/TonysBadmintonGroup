@@ -1887,6 +1887,9 @@ function checkWinCondition() {
 }
 
 io.on('connection', (socket) => {
+  // Send current party state to newly connected client
+  socket.emit('party_state', partyRoom);
+
   socket.on('join_party', (data) => {
     if (partyRoom.status === 'idle') return;
     const { uid, name, icon, x, y } = data;
