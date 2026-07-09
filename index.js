@@ -1895,6 +1895,10 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('player_joined', partyRoom.players[socket.id]);
   });
 
+  socket.on('request_party_state', () => {
+    socket.emit('party_state', partyRoom);
+  });
+
   socket.on('player_move', (data) => {
     if (partyRoom.players[socket.id] && partyRoom.players[socket.id].alive) {
       partyRoom.players[socket.id].x = data.x;

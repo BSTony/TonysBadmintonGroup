@@ -422,6 +422,11 @@ function joinPartyLobby() {
   
   socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: selectedCharacterIcon, x: initialX, y: initialY });
   
+  // Request fresh state after a short delay to ensure we have all players
+  setTimeout(() => {
+    if (socket) socket.emit('request_party_state');
+  }, 500);
+  
   let isDragging = false;
   const onPointerDown = (e) => { isDragging = true; updatePlayerPos(e); };
   const onPointerMove = (e) => { if (isDragging) updatePlayerPos(e); };
