@@ -9,6 +9,11 @@
       "timeTaken": 2407
     },
     {
+      "uid": "U04307fbd1087e54ce656086b653a60fd",
+      "name": "黃政豪",
+      "timeTaken": 2980
+    },
+    {
       "uid": "Ua158cf62dfd0ee9c8171a29263d9da11",
       "name": "曾Jim凱",
       "timeTaken": 4093
@@ -32,11 +37,6 @@
       "uid": "U9904ed725b1f420b8718791594e3756b",
       "name": "偉舫",
       "timeTaken": 14370
-    },
-    {
-      "uid": "U04307fbd1087e54ce656086b653a60fd",
-      "name": "黃政豪",
-      "timeTaken": 14940
     }
   ]
 }
