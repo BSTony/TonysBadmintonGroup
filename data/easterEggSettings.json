@@ -2,73 +2,7 @@
   "enabled": true,
   "message": "前三名 獲得一條握把布",
   "quota": 3,
-  "winners": [
-    {
-      "uid": "Ua158cf62dfd0ee9c8171a29263d9da11",
-      "name": "曾Jim凱",
-      "timeTaken": 14
-    },
-    {
-      "uid": "U70293580bf944ee91dff2fdea1b5ec16",
-      "name": "雅0🐱",
-      "timeTaken": 1123
-    },
-    {
-      "uid": "Ua698eb94f633310ce3b6cf6f34265adb",
-      "name": "煜翔Sean",
-      "timeTaken": 2407
-    },
-    {
-      "uid": "U04307fbd1087e54ce656086b653a60fd",
-      "name": "黃政豪",
-      "timeTaken": 2608
-    },
-    {
-      "uid": "U4cbba92203148484d06d213547203e35",
-      "name": "小高",
-      "timeTaken": 3404
-    },
-    {
-      "uid": "U49e2484c80056990b759e9039a74e1a6",
-      "name": "Kay",
-      "timeTaken": 4641
-    },
-    {
-      "uid": "U7977ee57751b21a1fb17ddbb180444b3",
-      "name": "賴鈺臻",
-      "timeTaken": 5298
-    },
-    {
-      "uid": "U1302ddcec82bfd0d9b9eba641676ea0a",
-      "name": "King",
-      "timeTaken": 5838
-    },
-    {
-      "uid": "U2ea89b78f1546c61adda03c7dd8704d5",
-      "name": "賴柚子",
-      "timeTaken": 7213
-    },
-    {
-      "uid": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "name": "謝東霖 Tony",
-      "timeTaken": 9312
-    },
-    {
-      "uid": "U9904ed725b1f420b8718791594e3756b",
-      "name": "偉舫",
-      "timeTaken": 14370
-    },
-    {
-      "uid": "Ufa8dba5febf9f719da07f7e507391a21",
-      "name": "海棠",
-      "timeTaken": 17304
-    },
-    {
-      "uid": "Ud9c980235866b4402d34cdfa250b9aed",
-      "name": "周哲儁",
-      "timeTaken": 61578
-    }
-  ],
+  "winners": [],
   "activeGame": "piggy_run",
   "bulletHellLeaderboard": [
     {
