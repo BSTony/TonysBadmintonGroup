@@ -81,6 +81,32 @@ body {
 .header-icon {
   font-size: 40px;
   line-height: 1;
+  display: inline-block;
+}
+
+@keyframes piggyIdle {
+  0%, 70% { transform: translateY(0) rotate(0deg) scale(1, 1); }
+  /* look left */
+  72% { transform: translateY(0) rotate(-15deg) scale(1, 1); }
+  /* look right */
+  75% { transform: translateY(0) rotate(15deg) scale(1, 1); }
+  /* look straight */
+  78% { transform: translateY(0) rotate(0deg) scale(1, 1); }
+  /* jump */
+  82% { transform: translateY(-20px) rotate(0deg) scale(0.9, 1.1); }
+  86% { transform: translateY(0) rotate(0deg) scale(1.1, 0.9); }
+  89% { transform: translateY(0) rotate(0deg) scale(1, 1); }
+  /* snicker */
+  91% { transform: translateY(-3px) scale(1.05, 0.95); }
+  93% { transform: translateY(0) scale(0.95, 1.05); }
+  95% { transform: translateY(-3px) scale(1.05, 0.95); }
+  97% { transform: translateY(0) scale(0.95, 1.05); }
+  100% { transform: translateY(0) rotate(0deg) scale(1, 1); }
+}
+
+.header-icon:not(.piggy-running) {
+  animation: piggyIdle 6s infinite ease-in-out;
+  transform-origin: bottom center;
 }
 .header-content {
   flex: 1;
