@@ -1063,7 +1063,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783568642659,
+    "lastActiveTime": 1783568648864,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1114,13 +1114,18 @@
           "宣宏",
           "雅0",
           "冠宏",
-          "Ong",
-          "黃政豪"
+          "Ong"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/09 11:44",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "-1"
+      },
       {
         "time": "07/09 11:44",
         "name": "黃政豪",
