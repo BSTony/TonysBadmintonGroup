@@ -145,6 +145,7 @@ let gamesList = [];
 let globalIsAdmin = false;
 let globalIsSuperAdmin = false;
 let easterEggEnabled = false;
+let easterEggActiveGame = 'piggy_run';
 let piggyClicks = 0;
 let piggyRunning = false;
 let piggyBaseSpeed = 3;
@@ -190,6 +191,198 @@ const piggyIcon = document.querySelector('.header-icon');
 const confettiContainer = document.getElementById('confetti-container');
 const easterEggModal = document.getElementById('easter-egg-modal');
 const easterEggMsg = document.getElementById('easter-egg-msg');
+const eeActiveGameSelect = document.getElementById('ee-active-game');
+const bhContainer = document.getElementById('bh-container');
+const bhTimer = document.getElementById('bh-timer');
+const bhEntities = document.getElementById('bh-entities');
+const bhGameoverModal = document.getElementById('bh-gameover-modal');
+const bhFinalTime = document.getElementById('bh-final-time');
+const bhLeaderboardList = document.getElementById('bh-leaderboard-list');
+const btnBhRestart = document.getElementById('btn-bh-restart');
+const btnBhClose = document.getElementById('btn-bh-close');
+
+// --- Bullet Hell Game Logic ---
+let bhStartTime = 0;
+let bhPlayer = null;
+let bhBullets = [];
+let bhIsPlaying = false;
+let bhSpawnRate = 1000;
+let bhLastSpawn = 0;
+
+function startBulletHell() {
+  bhContainer.classList.remove('hidden');
+  bhGameoverModal.classList.add('hidden');
+  bhEntities.innerHTML = '';
+  bhBullets = [];
+  bhStartTime = performance.now();
+  bhIsPlaying = true;
+  bhSpawnRate = 1000;
+  
+  bhPlayer = document.createElement('div');
+  bhPlayer.className = 'bh-player';
+  bhPlayer.innerHTML = '🐷';
+  bhPlayer.style.left = (window.innerWidth / 2 - 25) + 'px';
+  bhPlayer.style.top = (window.innerHeight - 100) + 'px';
+  bhEntities.appendChild(bhPlayer);
+  
+  let isDragging = false;
+  
+  const onPointerDown = (e) => {
+    isDragging = true;
+    updatePlayerPos(e);
+  };
+  const onPointerMove = (e) => {
+    if (!isDragging || !bhIsPlaying) return;
+    updatePlayerPos(e);
+  };
+  const onPointerUp = (e) => {
+    isDragging = false;
+  };
+  
+  function updatePlayerPos(e) {
+    const touch = e.touches ? e.touches[0] : e;
+    let newX = touch.clientX - 25;
+    let newY = touch.clientY - 25;
+    newX = Math.max(0, Math.min(window.innerWidth - 50, newX));
+    newY = Math.max(0, Math.min(window.innerHeight - 50, newY));
+    bhPlayer.style.left = newX + 'px';
+    bhPlayer.style.top = newY + 'px';
+  }
+  
+  bhContainer.addEventListener('pointerdown', onPointerDown);
+  bhContainer.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  
+  bhContainer._cleanupEvents = () => {
+    bhContainer.removeEventListener('pointerdown', onPointerDown);
+    bhContainer.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+  };
+
+  requestAnimationFrame(bhGameLoop);
+}
+
+function bhGameLoop(timestamp) {
+  if (!bhIsPlaying) return;
+  
+  const elapsed = timestamp - bhStartTime;
+  bhTimer.innerText = (elapsed / 1000).toFixed(2);
+  
+  bhSpawnRate = Math.max(200, 1000 - (elapsed / 1000) * 20);
+  
+  if (timestamp - bhLastSpawn > bhSpawnRate) {
+    spawnBullet();
+    bhLastSpawn = timestamp;
+  }
+  
+  const pRect = bhPlayer.getBoundingClientRect();
+  const playerHitbox = {
+    left: pRect.left + 10,
+    right: pRect.right - 10,
+    top: pRect.top + 10,
+    bottom: pRect.bottom - 10
+  };
+
+  let speedMultiplier = 1 + (elapsed / 1000) * 0.05;
+
+  for (let i = bhBullets.length - 1; i >= 0; i--) {
+    let b = bhBullets[i];
+    b.y += b.vy * speedMultiplier;
+    b.x += b.vx * speedMultiplier;
+    
+    b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+    
+    if (b.y > window.innerHeight + 50 || b.x < -50 || b.x > window.innerWidth + 50) {
+      b.el.remove();
+      bhBullets.splice(i, 1);
+      continue;
+    }
+    
+    if (
+      b.x + 20 > playerHitbox.left &&
+      b.x + 10 < playerHitbox.right &&
+      b.y + 20 > playerHitbox.top &&
+      b.y + 10 < playerHitbox.bottom
+    ) {
+      endBulletHell(elapsed);
+      return;
+    }
+  }
+  
+  requestAnimationFrame(bhGameLoop);
+}
+
+function spawnBullet() {
+  const el = document.createElement('div');
+  el.className = 'bh-bullet';
+  el.innerHTML = '🏸';
+  
+  const startX = Math.random() * window.innerWidth;
+  const startY = -30;
+  
+  const targetX = Math.random() * window.innerWidth;
+  const targetY = window.innerHeight;
+  
+  const angle = Math.atan2(targetY - startY, targetX - startX);
+  const speed = 3 + Math.random() * 2;
+  
+  const vx = Math.cos(angle) * speed;
+  const vy = Math.sin(angle) * speed;
+  
+  bhEntities.appendChild(el);
+  bhBullets.push({ el, x: startX, y: startY, vx, vy });
+}
+
+async function endBulletHell(elapsedMs) {
+  bhIsPlaying = false;
+  if (bhContainer._cleanupEvents) bhContainer._cleanupEvents();
+  
+  bhPlayer.innerHTML = '🤕';
+  
+  const survivalTime = parseFloat((elapsedMs / 1000).toFixed(2));
+  bhFinalTime.innerText = survivalTime.toFixed(2);
+  
+  bhGameoverModal.classList.remove('hidden');
+  
+  try {
+    const res = await fetch('/api/easter_egg/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid: currentUser.userId, name: currentUser.displayName, survivalTime })
+    });
+    const data = await res.json();
+    if (data.success && data.leaderboard) {
+      renderBhLeaderboard(data.leaderboard);
+      
+      if (data.leaderboard[0] && data.leaderboard[0].uid === currentUser.userId) {
+        bhPlayer.innerHTML = '👑';
+      }
+    }
+  } catch(e) {}
+}
+
+function renderBhLeaderboard(list) {
+  bhLeaderboardList.innerHTML = '';
+  list.forEach((w, index) => {
+    const li = document.createElement('li');
+    li.style.padding = '4px 0';
+    li.style.borderBottom = '1px solid #eee';
+    let rank = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index+1}.`;
+    li.innerHTML = `<strong>${rank}</strong> ${w.name} - <span style="color:#e91e63">${w.survivalTime}</span> 秒`;
+    bhLeaderboardList.appendChild(li);
+  });
+}
+
+if (btnBhRestart) {
+  btnBhRestart.addEventListener('click', startBulletHell);
+}
+if (btnBhClose) {
+  btnBhClose.addEventListener('click', () => {
+    bhContainer.classList.add('hidden');
+    bhEntities.innerHTML = '';
+  });
+}
+
 
 // 初始化 LIFF
 async function initializeLiff() {
@@ -2485,10 +2678,124 @@ function renderLeaderboard(leaderboardData, quota) {
   });
 }
 
+// --- Admin Easter Egg View ---
+if (btnEasterEgg) {
+  btnEasterEgg.addEventListener('click', async () => {
+    statusMsg.innerText = '載入設定中...';
+    statusMsg.style.display = 'block';
+    appDiv.className = 'loading';
+    try {
+      const res = await fetch(`/api/admin/easter_egg?uid=${currentUser.userId}`);
+      if (res.ok) {
+        const data = await res.json();
+        eeEnabledCheckbox.checked = data.enabled;
+        eeMessageInput.value = data.message;
+        eeQuotaInput.value = data.quota;
+        
+        if (data.activeGame) {
+          eeActiveGameSelect.value = data.activeGame;
+        }
+        
+        const isBulletHell = eeActiveGameSelect.value === 'bullet_hell';
+        const listData = isBulletHell ? (data.bulletHellLeaderboard || []) : (data.winners || []);
+        
+        eeWinnersCount.innerText = listData.length;
+        eeWinnersList.innerHTML = '';
+        if (listData.length > 0) {
+          listData.forEach((w, index) => {
+            const li = document.createElement('li');
+            if (isBulletHell) {
+              li.innerHTML = `<strong>${index+1}.</strong> ${w.name} - ${w.survivalTime} 秒`;
+            } else {
+              li.innerText = w.name || 'Unknown';
+            }
+            eeWinnersList.appendChild(li);
+          });
+        }
+        
+        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+        easterEggSettingsView.classList.remove('hidden');
+        appDiv.className = '';
+        statusMsg.style.display = 'none';
+      } else {
+        throw new Error('Load failed');
+      }
+    } catch(e) {
+      alert('無法載入彩蛋設定');
+      statusMsg.style.display = 'none';
+      appDiv.className = '';
+    }
+  });
+
+  eeActiveGameSelect.addEventListener('change', () => {
+     // Optional: If you want to dynamically re-fetch when they change dropdown without saving, 
+     // you can trigger a reload. But simpler to just let them see it next time they open.
+  });
+
+  btnBackEasterEgg.addEventListener('click', () => renderLobby());
+}
+
+if (btnSaveEasterEgg) {
+  btnSaveEasterEgg.addEventListener('click', async () => {
+    btnSaveEasterEgg.disabled = true;
+    try {
+      const res = await fetch('/api/admin/easter_egg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: currentUser.userId,
+          settings: {
+            enabled: eeEnabledCheckbox.checked,
+            message: eeMessageInput.value,
+            quota: parseInt(eeQuotaInput.value, 10) || 3,
+            activeGame: eeActiveGameSelect.value
+          }
+        })
+      });
+      if (res.ok) {
+        alert('儲存成功');
+        easterEggEnabled = eeEnabledCheckbox.checked;
+        easterEggActiveGame = eeActiveGameSelect.value;
+        renderLobby();
+      }
+    } catch(e) { alert('儲存失敗'); }
+    btnSaveEasterEgg.disabled = false;
+  });
+}
+
+if (btnClearWinners) {
+  btnClearWinners.addEventListener('click', async () => {
+    if (!confirm('確定要清除名單？')) return;
+    try {
+      const isBulletHell = eeActiveGameSelect.value === 'bullet_hell';
+      const settingsPayload = isBulletHell ? { bulletHellLeaderboard: [] } : { winners: [] };
+      
+      const res = await fetch('/api/admin/easter_egg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: currentUser.userId,
+          settings: settingsPayload
+        })
+      });
+      if (res.ok) {
+        eeWinnersCount.innerText = 0;
+        eeWinnersList.innerHTML = '';
+        alert('已清除名單');
+      }
+    } catch(e) { alert('清除失敗'); }
+  });
+}
+
 if (piggyIcon) {
   piggyIcon.style.cursor = 'pointer'; // Ensure it looks clickable
   piggyIcon.addEventListener('click', async (e) => {
     if (!easterEggEnabled) return;
+    
+    if (easterEggActiveGame === 'bullet_hell') {
+      startBulletHell();
+      return;
+    }
     
     piggyClicks++;
     

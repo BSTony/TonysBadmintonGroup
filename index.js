@@ -30,7 +30,7 @@ const LOBBY_VISITS_FILE = path.join(DATA_DIR, 'lobbyVisits.json');
 const EASTER_EGG_FILE = path.join(DATA_DIR, 'easterEggSettings.json');
 
 let lobbyVisits = {}; // { gid: { viewCount: 0, uniqueViewers: {}, logs: [] } }
-let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [] };
+let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
 
 // 讀取既有設定
 let adminsSha = null;
@@ -84,6 +84,8 @@ async function loadData() {
   if (fs.existsSync(EASTER_EGG_FILE)) {
     try {
       easterEggSettings = JSON.parse(fs.readFileSync(EASTER_EGG_FILE, 'utf8'));
+      if (!easterEggSettings.activeGame) easterEggSettings.activeGame = 'piggy_run';
+      if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
     } catch(e) {}
   }
 
@@ -173,6 +175,8 @@ async function loadData() {
       if (eeRes.content) {
         easterEggSha = eeRes.sha;
         easterEggSettings = JSON.parse(Buffer.from(eeRes.content, 'base64').toString('utf8'));
+        if (!easterEggSettings.activeGame) easterEggSettings.activeGame = 'piggy_run';
+        if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
       }
     } catch(e) { console.error('無法從 GitHub 讀取 easterEggSettings.json:', e.message); }
   }
@@ -1727,16 +1731,35 @@ function generateListMessage(g, customTitle = null) {
 
 // --- 彩蛋功能 API ---
 app.get('/api/easter_egg/status', (req, res) => {
-  res.json({ enabled: easterEggSettings.enabled });
+  res.json({ enabled: easterEggSettings.enabled, activeGame: easterEggSettings.activeGame || 'piggy_run' });
 });
 
 app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
-  const { uid, name, timeTaken } = req.body;
+  const { uid, name, timeTaken, survivalTime } = req.body;
   if (!uid) return res.status(400).json({ success: false, message: 'Missing uid' });
   
   if (!easterEggSettings.enabled) {
     return res.json({ success: false, message: '活動未開啟' });
   }
+
+  // Handle bullet_hell score (Leaderboard)
+  if (survivalTime !== undefined) {
+    if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
+    const existingIndex = easterEggSettings.bulletHellLeaderboard.findIndex(w => w.uid === uid);
+    if (existingIndex !== -1) {
+      if (survivalTime > easterEggSettings.bulletHellLeaderboard[existingIndex].survivalTime) {
+        easterEggSettings.bulletHellLeaderboard[existingIndex].survivalTime = survivalTime;
+        if (name) easterEggSettings.bulletHellLeaderboard[existingIndex].name = name;
+      }
+    } else {
+      easterEggSettings.bulletHellLeaderboard.push({ uid, name: name || 'Unknown', survivalTime });
+    }
+    easterEggSettings.bulletHellLeaderboard.sort((a, b) => b.survivalTime - a.survivalTime);
+    saveEasterEggSettings();
+    return res.json({ success: true, leaderboard: easterEggSettings.bulletHellLeaderboard });
+  }
+
+  // Handle piggy_run prize claim
 
   const newTime = typeof timeTaken === 'number' ? timeTaken : Infinity;
 
@@ -1798,6 +1821,8 @@ app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
     if (typeof settings.message === 'string') easterEggSettings.message = settings.message;
     if (typeof settings.quota === 'number') easterEggSettings.quota = settings.quota;
     if (Array.isArray(settings.winners)) easterEggSettings.winners = settings.winners;
+    if (typeof settings.activeGame === 'string') easterEggSettings.activeGame = settings.activeGame;
+    if (Array.isArray(settings.bulletHellLeaderboard)) easterEggSettings.bulletHellLeaderboard = settings.bulletHellLeaderboard;
     
     saveEasterEggSettings();
   }
