@@ -1063,7 +1063,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783599484235,
+    "lastActiveTime": 1783601254666,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1085,7 +1085,8 @@
       "孟錡": true,
       "Ku": true,
       "宣宏": true,
-      "Ong": true
+      "Ong": true,
+      "佳洵": true
     },
     "sections": [
       {
