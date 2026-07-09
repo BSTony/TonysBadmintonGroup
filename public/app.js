@@ -2169,7 +2169,7 @@ if (btnRpgAdmin) {
       const res = await fetch('/api/admin/rpg/toggle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: globalUid, action })
+        body: JSON.stringify({ uid: currentUser ? currentUser.userId : '', action })
       });
       const data = await res.json();
       if (data.success) {
