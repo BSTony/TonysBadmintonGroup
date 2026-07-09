@@ -1409,13 +1409,15 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783573066324,
+    "lastActiveTime": 1783590876656,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "東": "5"
+    },
     "paidMap": {},
     "sections": [
       {
@@ -1435,11 +1437,18 @@
           "陳呈",
           "wayne",
           "小洋",
-          "Hsin"
+          "Hsin",
+          "東"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/09 17:54",
+        "name": "東",
+        "operator": "東東",
+        "action": "+1"
+      },
       {
         "time": "07/09 12:57",
         "name": "Hsin",
