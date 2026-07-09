@@ -201,6 +201,215 @@ const bhLeaderboardList = document.getElementById('bh-leaderboard-list');
 const btnBhRestart = document.getElementById('btn-bh-restart');
 const btnBhClose = document.getElementById('btn-bh-close');
 
+// --- Party Mode DOM ---
+const partyAdminPanel = document.getElementById('party-admin-panel');
+const partyWinType = document.getElementById('party-win-type');
+const partyWinValue = document.getElementById('party-win-value');
+const btnPartyStartLobby = document.getElementById('btn-party-start-lobby');
+const btnPartyPlay = document.getElementById('btn-party-play');
+const btnPartyStop = document.getElementById('btn-party-stop');
+const partyAdminStatus = document.getElementById('party-admin-status');
+const partyJoinContainer = document.getElementById('party-join-container');
+const btnJoinParty = document.getElementById('btn-join-party');
+
+let socket = null;
+let partyOthers = {};
+
+function initSocket() {
+  if (socket) return;
+  socket = io();
+  
+  socket.on('party_state', (state) => {
+    if (partyAdminStatus) {
+      partyAdminStatus.innerText = `狀態：${state.status} (人數: ${Object.keys(state.players).length})`;
+    }
+    
+    if (state.status === 'lobby') {
+      if (btnPartyStartLobby) btnPartyStartLobby.classList.add('hidden');
+      if (btnPartyPlay) btnPartyPlay.classList.remove('hidden');
+      if (partyJoinContainer) partyJoinContainer.classList.remove('hidden');
+    } else if (state.status === 'playing') {
+      if (btnPartyStartLobby) btnPartyStartLobby.classList.add('hidden');
+      if (btnPartyPlay) btnPartyPlay.classList.add('hidden');
+      if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+    } else {
+      if (btnPartyStartLobby) btnPartyStartLobby.classList.remove('hidden');
+      if (btnPartyPlay) btnPartyPlay.classList.add('hidden');
+      if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+    }
+  });
+  
+  socket.on('player_joined', (p) => {
+    if (easterEggActiveGame !== 'party_mode') return;
+    createOtherPlayer(p);
+  });
+  
+  socket.on('player_left', (p) => {
+    if (partyOthers[p.id]) {
+      partyOthers[p.id].remove();
+      delete partyOthers[p.id];
+    }
+  });
+  
+  socket.on('player_moved', (data) => {
+    if (partyOthers[data.id]) {
+      partyOthers[data.id].style.left = data.x + 'px';
+      partyOthers[data.id].style.top = data.y + 'px';
+    }
+  });
+  
+  socket.on('player_died', (data) => {
+    if (partyOthers[data.id]) partyOthers[data.id].innerHTML = '🤕';
+    if (data.id === socket.id && bhPlayer) bhPlayer.innerHTML = '🤕';
+  });
+  
+  socket.on('party_play', (data) => {
+    if (easterEggActiveGame === 'party_mode') {
+      bhIsPlaying = true;
+      bhStartTime = data.startTime;
+      if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+      requestAnimationFrame(bhPartyLoop);
+    }
+  });
+  
+  socket.on('spawn_bullet', (b) => {
+    if (easterEggActiveGame === 'party_mode' && bhIsPlaying) {
+      spawnServerBullet(b);
+    }
+  });
+  
+  socket.on('party_ended', (data) => {
+    if (easterEggActiveGame === 'party_mode') {
+      bhIsPlaying = false;
+      bhGameoverModal.classList.remove('hidden');
+      document.getElementById('bh-gameover-title').innerText = '派對結束！';
+      bhFinalTime.innerText = data.elapsed.toFixed(2);
+      renderBhLeaderboard(data.leaderboard);
+      
+      const isWinner = data.winners.some(w => w.uid === currentUser.userId);
+      if (isWinner && bhPlayer) bhPlayer.innerHTML = '👑';
+    }
+  });
+}
+
+function createOtherPlayer(p) {
+  if (partyOthers[p.id] || p.id === (socket ? socket.id : '')) return;
+  const el = document.createElement('div');
+  el.className = 'bh-player';
+  el.style.opacity = '0.5'; // Ghost appearance for others
+  el.innerHTML = p.alive ? '🐷' : '🤕';
+  el.style.left = p.x + 'px';
+  el.style.top = p.y + 'px';
+  bhEntities.appendChild(el);
+  partyOthers[p.id] = el;
+}
+
+function joinPartyLobby() {
+  initSocket();
+  bhContainer.classList.remove('hidden');
+  bhGameoverModal.classList.add('hidden');
+  bhEntities.innerHTML = '';
+  partyOthers = {};
+  bhBullets = [];
+  bhIsPlaying = false; // waiting for party_play
+  
+  bhPlayer = document.createElement('div');
+  bhPlayer.className = 'bh-player';
+  bhPlayer.innerHTML = '🐷';
+  bhPlayer.style.left = (window.innerWidth / 2 - 25) + 'px';
+  bhPlayer.style.top = (window.innerHeight - 100) + 'px';
+  bhEntities.appendChild(bhPlayer);
+  
+  socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName });
+  
+  let isDragging = false;
+  const onPointerDown = (e) => { isDragging = true; updatePlayerPos(e); };
+  const onPointerMove = (e) => { if (isDragging) updatePlayerPos(e); };
+  const onPointerUp = (e) => { isDragging = false; };
+  
+  function updatePlayerPos(e) {
+    const touch = e.touches ? e.touches[0] : e;
+    let newX = touch.clientX - 25;
+    let newY = touch.clientY - 25;
+    newX = Math.max(0, Math.min(window.innerWidth - 50, newX));
+    newY = Math.max(0, Math.min(window.innerHeight - 50, newY));
+    bhPlayer.style.left = newX + 'px';
+    bhPlayer.style.top = newY + 'px';
+    socket.emit('player_move', { x: newX, y: newY });
+  }
+  
+  bhContainer.addEventListener('pointerdown', onPointerDown);
+  bhContainer.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  
+  bhContainer._cleanupEvents = () => {
+    bhContainer.removeEventListener('pointerdown', onPointerDown);
+    bhContainer.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+  };
+}
+
+function spawnServerBullet(b) {
+  const el = document.createElement('div');
+  el.className = 'bh-bullet';
+  el.innerHTML = '🏸';
+  
+  const startX = b.startX * window.innerWidth;
+  const targetX = b.targetX * window.innerWidth;
+  const startY = b.startY;
+  const targetY = window.innerHeight;
+  
+  const angle = Math.atan2(targetY - startY, targetX - startX);
+  const speed = 4; // Constant base speed for sync
+  
+  const vx = Math.cos(angle) * speed;
+  const vy = Math.sin(angle) * speed;
+  
+  bhEntities.appendChild(el);
+  bhBullets.push({ el, x: startX, y: startY, vx, vy, speedMultiplier: b.speedMultiplier });
+}
+
+function bhPartyLoop(timestamp) {
+  if (!bhIsPlaying) return;
+  
+  const elapsed = timestamp - bhStartTime; 
+  bhTimer.innerText = (elapsed / 1000).toFixed(2);
+  
+  const pRect = bhPlayer.getBoundingClientRect();
+  const playerHitbox = { left: pRect.left + 10, right: pRect.right - 10, top: pRect.top + 10, bottom: pRect.bottom - 10 };
+
+  for (let i = bhBullets.length - 1; i >= 0; i--) {
+    let b = bhBullets[i];
+    b.y += b.vy * b.speedMultiplier;
+    b.x += b.vx * b.speedMultiplier;
+    
+    b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+    
+    if (b.y > window.innerHeight + 50 || b.x < -50 || b.x > window.innerWidth + 50) {
+      b.el.remove();
+      bhBullets.splice(i, 1);
+      continue;
+    }
+    
+    if (bhPlayer.innerHTML !== '🤕' &&
+      b.x + 20 > playerHitbox.left && b.x + 10 < playerHitbox.right &&
+      b.y + 20 > playerHitbox.top && b.y + 10 < playerHitbox.bottom
+    ) {
+      socket.emit('player_hit');
+      bhPlayer.innerHTML = '🤕'; 
+    }
+  }
+  requestAnimationFrame(bhPartyLoop);
+}
+
+if (btnJoinParty) {
+  btnJoinParty.addEventListener('click', () => {
+    joinPartyLobby();
+    partyJoinContainer.classList.add('hidden');
+  });
+}
+
+
 // --- Bullet Hell Game Logic ---
 let bhStartTime = 0;
 let bhPlayer = null;
@@ -2727,10 +2936,48 @@ if (btnEasterEgg) {
     }
   });
 
+  // Admin dropdown listener removed duplicate
   eeActiveGameSelect.addEventListener('change', () => {
-     // Optional: If you want to dynamically re-fetch when they change dropdown without saving, 
-     // you can trigger a reload. But simpler to just let them see it next time they open.
+    if (eeActiveGameSelect.value === 'party_mode') {
+      if (partyAdminPanel) partyAdminPanel.classList.remove('hidden');
+      initSocket();
+    } else {
+      if (partyAdminPanel) partyAdminPanel.classList.add('hidden');
+    }
   });
+  
+  if (btnPartyStartLobby) {
+    btnPartyStartLobby.addEventListener('click', async () => {
+      await fetch('/api/admin/party/start', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ 
+          uid: currentUser.userId, 
+          winCondition: { 
+            type: partyWinType.value, 
+            value: parseInt(partyWinValue.value, 10)||15 
+          } 
+        })
+      });
+    });
+  }
+  
+  if (btnPartyPlay) {
+    btnPartyPlay.addEventListener('click', async () => {
+      await fetch('/api/admin/party/play', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+    });
+  }
+  
+  if (btnPartyStop) {
+    btnPartyStop.addEventListener('click', async () => {
+      await fetch('/api/admin/party/stop', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+    });
+  }
 
   btnBackEasterEgg.addEventListener('click', () => renderLobby());
 }
@@ -2794,6 +3041,12 @@ if (piggyIcon) {
     
     if (easterEggActiveGame === 'bullet_hell') {
       startBulletHell();
+      return;
+    }
+    
+    if (easterEggActiveGame === 'party_mode') {
+      joinPartyLobby();
+      if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
       return;
     }
     

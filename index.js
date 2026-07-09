@@ -866,6 +866,9 @@ if (!config.channelAccessToken || !config.channelSecret) {
 
 const client = new Client(config);
 const app = express();
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server, { cors: { origin: '*' } });
 app.use(express.static(path.join(__dirname, 'public'), {
   etag: false,
   lastModified: false,
@@ -1826,10 +1829,169 @@ app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
     
     saveEasterEggSettings();
   }
+res.json({ success: true });
+});
+// ------------------
+
+// --- Multiplayer Party Game Logic ---
+let partyRoom = {
+  status: 'idle', // idle, lobby, playing, ended
+  winCondition: { type: 'time', value: 15 },
+  players: {}, // socket.id -> { uid, name, x, y, alive }
+  startTime: 0
+};
+
+let partyTimeTimeout = null;
+let partyBulletInterval = null;
+
+function endPartyGame(winners) {
+  partyRoom.status = 'ended';
+  if (partyTimeTimeout) clearTimeout(partyTimeTimeout);
+  if (partyBulletInterval) clearInterval(partyBulletInterval);
+  
+  if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
+  
+  const elapsed = parseFloat(((Date.now() - partyRoom.startTime) / 1000).toFixed(2));
+  
+  winners.forEach(w => {
+    const existing = easterEggSettings.bulletHellLeaderboard.find(x => x.uid === w.uid);
+    if (existing) {
+      if (elapsed > existing.survivalTime) {
+        existing.survivalTime = elapsed;
+        existing.name = w.name;
+      }
+    } else {
+      easterEggSettings.bulletHellLeaderboard.push({ uid: w.uid, name: w.name, survivalTime: elapsed });
+    }
+  });
+  
+  easterEggSettings.bulletHellLeaderboard.sort((a, b) => b.survivalTime - a.survivalTime);
+  saveEasterEggSettings();
+  
+  io.emit('party_ended', { winners, leaderboard: easterEggSettings.bulletHellLeaderboard, elapsed });
+}
+
+function checkWinCondition() {
+  if (partyRoom.status !== 'playing') return;
+  const alivePlayers = Object.values(partyRoom.players).filter(p => p.alive);
+  
+  if (partyRoom.winCondition.type === 'last_man_standing') {
+    if (alivePlayers.length <= partyRoom.winCondition.value) {
+      endPartyGame(alivePlayers);
+    }
+  } else if (partyRoom.winCondition.type === 'time') {
+    if (alivePlayers.length === 0) {
+      endPartyGame([]);
+    }
+  }
+}
+
+io.on('connection', (socket) => {
+  socket.on('join_party', (data) => {
+    if (partyRoom.status === 'idle') return;
+    const { uid, name } = data;
+    partyRoom.players[socket.id] = { uid, name, x: -100, y: -100, alive: true, id: socket.id };
+    socket.emit('party_state', partyRoom);
+    socket.broadcast.emit('player_joined', partyRoom.players[socket.id]);
+  });
+
+  socket.on('player_move', (data) => {
+    if (partyRoom.players[socket.id] && partyRoom.players[socket.id].alive) {
+      partyRoom.players[socket.id].x = data.x;
+      partyRoom.players[socket.id].y = data.y;
+      socket.broadcast.emit('player_moved', { id: socket.id, x: data.x, y: data.y });
+    }
+  });
+
+  socket.on('player_hit', () => {
+    if (partyRoom.status === 'playing' && partyRoom.players[socket.id] && partyRoom.players[socket.id].alive) {
+      partyRoom.players[socket.id].alive = false;
+      io.emit('player_died', { id: socket.id });
+      checkWinCondition();
+    }
+  });
+
+  socket.on('disconnect', () => {
+    if (partyRoom.players[socket.id]) {
+      delete partyRoom.players[socket.id];
+      io.emit('player_left', { id: socket.id });
+      if (partyRoom.status === 'playing') checkWinCondition();
+    }
+  });
+});
+
+app.post('/api/admin/party/start', express.json(), (req, res) => {
+  const { uid, winCondition } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  partyRoom.status = 'lobby';
+  partyRoom.winCondition = winCondition || { type: 'time', value: 15 };
+  partyRoom.players = {};
+  io.emit('party_state', partyRoom);
+  res.json({ success: true, partyRoom });
+});
+
+app.post('/api/admin/party/play', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  if (partyRoom.status !== 'lobby' && partyRoom.status !== 'ended') {
+    return res.status(400).json({ error: 'Wrong state' });
+  }
+  
+  partyRoom.status = 'playing';
+  partyRoom.startTime = Date.now();
+  Object.values(partyRoom.players).forEach(p => p.alive = true);
+  
+  io.emit('party_play', { startTime: partyRoom.startTime });
+  
+  if (partyBulletInterval) clearInterval(partyBulletInterval);
+  let spawnRate = 1000;
+  let lastSpawn = Date.now();
+  
+  partyBulletInterval = setInterval(() => {
+    if (partyRoom.status !== 'playing') {
+      clearInterval(partyBulletInterval);
+      return;
+    }
+    const elapsed = Date.now() - partyRoom.startTime;
+    spawnRate = Math.max(200, 1000 - (elapsed / 1000) * 20);
+    
+    if (Date.now() - lastSpawn > spawnRate) {
+      io.emit('spawn_bullet', {
+        id: Math.random().toString(36).substring(2, 9),
+        startX: Math.random(),
+        startY: -30,
+        targetX: Math.random(),
+        speedMultiplier: 1 + (elapsed / 1000) * 0.05
+      });
+      lastSpawn = Date.now();
+    }
+  }, 100);
+  
+  if (partyRoom.winCondition.type === 'time') {
+    partyTimeTimeout = setTimeout(() => {
+      if (partyRoom.status === 'playing') {
+        const alivePlayers = Object.values(partyRoom.players).filter(p => p.alive);
+        endPartyGame(alivePlayers);
+      }
+    }, partyRoom.winCondition.value * 1000);
+  }
   
   res.json({ success: true });
 });
-// ------------------
+
+app.post('/api/admin/party/stop', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  partyRoom.status = 'idle';
+  partyRoom.players = {};
+  if (partyTimeTimeout) clearTimeout(partyTimeTimeout);
+  if (partyBulletInterval) clearInterval(partyBulletInterval);
+  io.emit('party_state', partyRoom);
+  res.json({ success: true });
+});
 
 // 處理 LIFF 前端傳來的報名或取消請求
 app.post('/api/action', express.json(), async (req, res) => {
@@ -3621,7 +3783,7 @@ app.get('/api/debug_games', (req, res) => {
   });
 });
 loadPromise.then(() => {
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`Badminton Bot Running on port ${port}...`);
     
     if (AUTO_WAKE_ENABLED) {

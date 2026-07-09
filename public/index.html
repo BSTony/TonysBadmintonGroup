@@ -291,7 +291,8 @@
           <label>彩蛋模式</label>
           <select id="ee-active-game" style="width:100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
             <option value="piggy_run">滿場跑小豬 (點擊中獎)</option>
-            <option value="bullet_hell">躲避殺球大作戰 (無限生存)</option>
+            <option value="bullet_hell">單機躲避殺球大作戰 (無限生存)</option>
+            <option value="party_mode">派對躲避殺球大作戰 (即時連線)</option>
           </select>
         </div>
         <div class="form-group">
@@ -310,6 +311,25 @@
           </div>
           <ul id="ee-winners-list" style="margin-top: 10px; padding-left: 20px; color: #666; font-size: 14px;"></ul>
         </div>
+        
+        <div id="party-admin-panel" class="form-group hidden" style="border: 2px solid #ff4757; padding: 15px; border-radius: 8px; background: #fff0f1;">
+          <h3 style="margin-top:0; color:#ff4757;">🎮 多人派對控制台</h3>
+          <label>獲勝條件：</label>
+          <select id="party-win-type" style="width:100%; padding: 8px; margin-bottom: 10px; border-radius: 4px;">
+            <option value="time">撐過指定時間</option>
+            <option value="last_man_standing">大逃殺 (最後 N 人)</option>
+          </select>
+          <label>目標數值 (秒數或人數)：</label>
+          <input type="number" id="party-win-value" value="15" style="margin-bottom: 15px;">
+          
+          <div style="display:flex; gap: 10px;">
+            <button id="btn-party-start-lobby" class="btn" style="flex:1; background: #f39c12; color: white;">開啟大廳</button>
+            <button id="btn-party-play" class="btn hidden" style="flex:1; background: #2ecc71; color: white;">正式開始</button>
+            <button id="btn-party-stop" class="btn" style="flex:1; background: #95a5a6; color: white;">關閉派對</button>
+          </div>
+          <p id="party-admin-status" style="margin-top: 10px; font-weight: bold; text-align: center;">狀態：關閉</p>
+        </div>
+        
         <button id="btn-save-easter-egg" class="btn-primary" style="margin-top: 15px;">儲存變更</button>
       </div>
     </div>
@@ -340,6 +360,18 @@
   </div>
 
   <div id="confetti-container" class="hidden"></div>
+
+  <!-- 全域派對大廳提示鈕 -->
+  <div id="party-join-container" class="hidden" style="position:fixed; top:70px; right:20px; z-index:9990;">
+    <button id="btn-join-party" style="background:#ff4757; color:white; border:none; border-radius:20px; padding:10px 20px; font-weight:bold; font-size:16px; box-shadow:0 4px 10px rgba(0,0,0,0.3); cursor:pointer; animation: pulse 1s infinite alternate;">🎮 加入派對！</button>
+  </div>
+  
+  <style>
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+  </style>
   
   <!-- Easter Egg Modal -->
   <div id="easter-egg-modal" class="hidden" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 10000; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
@@ -366,7 +398,8 @@
     </div>
   </div>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="app.js?v=20260702-3"></script>
+  <script src="app.js?v=20260702-4"></script>
 </body>
 </html>
