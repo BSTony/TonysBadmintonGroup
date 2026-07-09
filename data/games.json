@@ -1063,7 +1063,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783562635853,
+    "lastActiveTime": 1783562640247,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1114,12 +1114,19 @@
           "佳洵",
           "Tank Lin",
           "宣宏",
-          "雅0"
+          "雅0",
+          "冠宏"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/09 10:04",
+        "name": "冠宏",
+        "operator": "雅0🐱",
+        "action": "+1"
+      },
       {
         "time": "07/09 10:03",
         "name": "雅0",
