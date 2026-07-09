@@ -3383,7 +3383,26 @@ if (btnClearWinners) {
 if (piggyIcon) {
   piggyIcon.style.cursor = 'pointer'; // Ensure it looks clickable
   piggyIcon.addEventListener('click', async (e) => {
-    if (!easterEggEnabled) return;
+    if (!easterEggEnabled) {
+      if (!piggyRunning) {
+        piggyRunning = true;
+        document.body.appendChild(piggyIcon);
+        piggyIcon.classList.add('piggy-running');
+        const rect = piggyIcon.getBoundingClientRect();
+        piggyIcon.style.left = rect.left + 'px';
+        piggyIcon.style.top = rect.top + 'px';
+        
+        movePiggyRandomly();
+        const newIntervalMs = Math.max(200, piggyBaseSpeed * 0.56 * 1000);
+        piggyMoveInterval = setInterval(movePiggyRandomly, newIntervalMs);
+      } else {
+        clearInterval(piggyMoveInterval);
+        movePiggyRandomly();
+        const newIntervalMs = Math.max(200, piggyBaseSpeed * 0.56 * 1000);
+        piggyMoveInterval = setInterval(movePiggyRandomly, newIntervalMs);
+      }
+      return;
+    }
     
     if (easterEggActiveGame === 'bullet_hell') {
       startBulletHell();
