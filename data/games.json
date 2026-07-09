@@ -1063,7 +1063,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783605867338,
+    "lastActiveTime": 1783605875364,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1094,7 +1094,8 @@
       "Brian 王暉鈞": true,
       "紀凡": true,
       "雅0": true,
-      "冠宏": true
+      "冠宏": true,
+      "Sean": true
     },
     "sections": [
       {
