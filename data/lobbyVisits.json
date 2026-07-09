@@ -1963,7 +1963,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 58,
+    "viewCount": 59,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -2054,9 +2054,21 @@
         "firstVisit": 1783438448137,
         "count": 3,
         "lastVisit": 1783523682766
+      },
+      "U92b94dfcbb67ed1a0e4fc371b67b9aa9": {
+        "displayName": "李奉喜",
+        "firstVisit": 1783556008664,
+        "count": 1,
+        "lastVisit": 1783556008664
       }
     },
     "logs": [
+      {
+        "time": 1783556008664,
+        "userId": "U92b94dfcbb67ed1a0e4fc371b67b9aa9",
+        "displayName": "李奉喜",
+        "pictureUrl": "https://profile.line-scdn.net/0hzaUWl8EZJU54LjtlQ-FbcAh-JiRbX3xcURg4eB4nc3pASjYcUhw5Kk0sK38XSzUZUElsfU96eHdaQSt-Jg04TztsHCATVX5DUkFsYRlKEDcsFxJ5NEgvSxV3Ah4-RzBcEhYjLkkoCB0_XyRvIUgRbDVsJ3k1fD1CMXlJGH0cS80XLFIbVUhrLUUoc3vA"
+      },
       {
         "time": 1783549277044,
         "userId": "Uf339b049e09a02f0796afb22f5de2e7e",
