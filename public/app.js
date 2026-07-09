@@ -427,15 +427,37 @@ function joinPartyLobby() {
     if (socket) socket.emit('request_party_state');
   }, 500);
   
+  // Smooth movement system
+  let targetX = initialX;
+  let targetY = initialY;
+  let currentX = initialX;
+  let currentY = initialY;
+  const MOVE_SPEED = 6; // pixels per frame
   let isDragging = false;
-  const onPointerDown = (e) => { isDragging = true; updatePlayerPos(e); };
-  const onPointerMove = (e) => { if (isDragging) updatePlayerPos(e); };
+  let lastSentX = initialX;
+  let lastSentY = initialY;
+  
+  const onPointerDown = (e) => { isDragging = true; setTarget(e); };
+  const onPointerMove = (e) => { if (isDragging) setTarget(e); };
   const onPointerUp = (e) => { isDragging = false; };
   
-  function updatePlayerPos(e) {
+  function setTarget(e) {
     const touch = e.touches ? e.touches[0] : e;
-    let newX = touch.clientX - 15;
-    let newY = touch.clientY - 15;
+    targetX = Math.max(0, Math.min(window.innerWidth - 30, touch.clientX - 15));
+    targetY = Math.max(0, Math.min(window.innerHeight - 30, touch.clientY - 15));
+  }
+  
+  // Store movement update function on bhContainer so bhPartyLoop can call it
+  bhContainer._updateMovement = function() {
+    const dx = targetX - currentX;
+    const dy = targetY - currentY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    
+    if (dist < 1) return; // Already at target
+    
+    const step = Math.min(MOVE_SPEED, dist);
+    let newX = currentX + (dx / dist) * step;
+    let newY = currentY + (dy / dist) * step;
     newX = Math.max(0, Math.min(window.innerWidth - 30, newX));
     newY = Math.max(0, Math.min(window.innerHeight - 30, newY));
     
@@ -453,23 +475,40 @@ function joinPartyLobby() {
       if (isInvincible) {
         socket.emit('destroy_wall', { wallId: hitWall.id });
       } else {
-        return; // Prevent movement
+        return; // Blocked by wall
       }
     }
     
+    currentX = newX;
+    currentY = newY;
     bhPlayer.style.left = newX + 'px';
     bhPlayer.style.top = newY + 'px';
-    socket.emit('player_move', { x: newX, y: newY });
-  }
+    
+    // Only emit position if moved enough to reduce network traffic
+    if (Math.abs(newX - lastSentX) > 2 || Math.abs(newY - lastSentY) > 2) {
+      socket.emit('player_move', { x: newX, y: newY });
+      lastSentX = newX;
+      lastSentY = newY;
+    }
+  };
   
   bhContainer.addEventListener('pointerdown', onPointerDown);
   bhContainer.addEventListener('pointermove', onPointerMove);
   window.addEventListener('pointerup', onPointerUp);
   
+  // Lobby movement loop (runs before game starts)
+  function lobbyMoveLoop() {
+    if (bhIsPlaying) return; // bhPartyLoop takes over
+    if (bhContainer._updateMovement) bhContainer._updateMovement();
+    requestAnimationFrame(lobbyMoveLoop);
+  }
+  requestAnimationFrame(lobbyMoveLoop);
+  
   bhContainer._cleanupEvents = () => {
     bhContainer.removeEventListener('pointerdown', onPointerDown);
     bhContainer.removeEventListener('pointermove', onPointerMove);
     window.removeEventListener('pointerup', onPointerUp);
+    bhContainer._updateMovement = null;
   };
 }
 
@@ -549,6 +588,9 @@ function updateLives(lives) {
 
 function bhPartyLoop(timestamp) {
   if (!bhIsPlaying) return;
+  
+  // Update smooth player movement
+  if (bhContainer._updateMovement) bhContainer._updateMovement();
   
   const elapsed = timestamp - bhStartTime; 
   bhTimer.innerText = (elapsed / 1000).toFixed(2);
