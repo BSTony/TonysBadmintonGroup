@@ -278,7 +278,7 @@ function initSocket() {
   
   socket.on('party_play', (data) => {
     bhIsPlaying = true;
-    bhStartTime = data.startTime;
+    bhStartTime = performance.now(); // Ignore data.startTime to align with requestAnimationFrame's timestamp
     if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
     requestAnimationFrame(bhPartyLoop);
   });
