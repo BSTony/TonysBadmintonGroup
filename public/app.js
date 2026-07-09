@@ -215,6 +215,15 @@ const partyAdminStatus = document.getElementById('party-admin-status');
 const partyJoinContainer = document.getElementById('party-join-container');
 const btnJoinParty = document.getElementById('btn-join-party');
 
+let currentPartyStatus = 'idle';
+let partyLobbyNames = [];
+
+function updateAdminLobbyStatus() {
+  if (!partyAdminStatus) return;
+  const namesStr = partyLobbyNames.length > 0 ? partyLobbyNames.join(', ') : '無';
+  partyAdminStatus.innerHTML = `狀態: ${currentPartyStatus} (人數: ${partyLobbyNames.length})<br><span style="font-size: 13px; color: #555; font-weight: normal;">已加入: ${namesStr}</span>`;
+}
+
 let socket = null;
 let partyOthers = {};
 
@@ -223,9 +232,9 @@ function initSocket() {
   socket = io();
   
   socket.on('party_state', (state) => {
-    if (partyAdminStatus) {
-      partyAdminStatus.innerText = `狀態：${state.status} (人數: ${Object.keys(state.players).length})`;
-    }
+    currentPartyStatus = state.status;
+    partyLobbyNames = state.players ? Object.values(state.players).map(p => p.name) : [];
+    updateAdminLobbyStatus();
     
     const adminPlayBtn = document.getElementById('btn-bh-admin-play');
     
@@ -265,10 +274,16 @@ function initSocket() {
   });
   
   socket.on('player_joined', (p) => {
+    if (!partyLobbyNames.includes(p.name)) {
+      partyLobbyNames.push(p.name);
+      updateAdminLobbyStatus();
+    }
     createOtherPlayer(p);
   });
   
   socket.on('player_left', (p) => {
+    partyLobbyNames = partyLobbyNames.filter(n => n !== p.name);
+    updateAdminLobbyStatus();
     if (partyOthers[p.id]) {
       partyOthers[p.id].remove();
       delete partyOthers[p.id];
