@@ -272,8 +272,14 @@ function initSocket() {
   });
   
   socket.on('player_died', (data) => {
-    if (partyOthers[data.id]) partyOthers[data.id].innerHTML = '🤕';
-    if (data.id === socket.id && bhPlayer) bhPlayer.innerHTML = '🤕';
+    if (partyOthers[data.id]) {
+      const iconEl = partyOthers[data.id].querySelector('.bh-icon');
+      if (iconEl) iconEl.innerText = '🤕';
+    }
+    if (data.id === socket.id && bhPlayer) {
+      const iconEl = bhPlayer.querySelector('.bh-icon');
+      if (iconEl) iconEl.innerText = '🤕';
+    }
   });
   
   socket.on('party_play', (data) => {
@@ -341,7 +347,10 @@ function createOtherPlayer(p) {
   const el = document.createElement('div');
   el.className = 'bh-player';
   el.style.opacity = '0.5'; // Ghost appearance for others
-  el.innerHTML = p.alive ? (p.icon || '🐷') : '🤕';
+  el.innerHTML = `
+    <div class="bh-icon">${p.alive ? (p.icon || '🐷') : '🤕'}</div>
+    <div class="bh-player-name">${p.name}</div>
+  `;
   el.style.left = p.x + 'px';
   el.style.top = p.y + 'px';
   bhEntities.appendChild(el);
@@ -368,7 +377,10 @@ function joinPartyLobby() {
   
   bhPlayer = document.createElement('div');
   bhPlayer.className = 'bh-player';
-  bhPlayer.innerHTML = selectedCharacterIcon;
+  bhPlayer.innerHTML = `
+    <div class="bh-icon">${selectedCharacterIcon}</div>
+    <div class="bh-player-name">${currentUser.displayName}</div>
+  `;
   
   const livesEl = document.createElement('div');
   livesEl.className = 'bh-lives';
@@ -617,7 +629,10 @@ function startBulletHell() {
   
   bhPlayer = document.createElement('div');
   bhPlayer.className = 'bh-player';
-  bhPlayer.innerHTML = '🐷';
+  bhPlayer.innerHTML = `
+    <div class="bh-icon">🐷</div>
+    <div class="bh-player-name">${currentUser.displayName}</div>
+  `;
   
   const livesEl = document.createElement('div');
   livesEl.className = 'bh-lives';
@@ -758,7 +773,8 @@ async function endBulletHell(elapsedMs) {
   bhIsPlaying = false;
   if (bhContainer._cleanupEvents) bhContainer._cleanupEvents();
   
-  bhPlayer.innerHTML = '🤕';
+  const iconEl = bhPlayer.querySelector('.bh-icon');
+  if (iconEl) iconEl.innerText = '🤕';
   
   const survivalTime = parseFloat((elapsedMs / 1000).toFixed(2));
   bhFinalTime.innerText = survivalTime.toFixed(2);
@@ -776,7 +792,8 @@ async function endBulletHell(elapsedMs) {
       renderBhLeaderboard(data.leaderboard);
       
       if (data.leaderboard[0] && data.leaderboard[0].uid === currentUser.userId) {
-        bhPlayer.innerHTML = '👑';
+        const winIconEl = bhPlayer.querySelector('.bh-icon');
+        if (winIconEl) winIconEl.innerText = '👑';
       }
     }
   } catch(e) {}
