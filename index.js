@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const rpgServer = require('./rpgServer');
 const GAMES_FILE = path.join(__dirname, 'games.json');
 const LOG_FILE = path.join(__dirname, 'schedule.log');
 
@@ -1957,24 +1956,6 @@ io.on('connection', (socket) => {
       if (partyRoom.status === 'playing') checkWinCondition();
     }
   });
-});
-
-rpgServer.setupSocket(io);
-
-app.post('/api/admin/rpg/toggle', express.json(), (req, res) => {
-  const { uid, action } = req.body;
-  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
-  
-  if (action === 'start') {
-    rpgServer.startGame(io);
-  } else {
-    rpgServer.stopGame();
-  }
-  res.json({ success: true, isActive: rpgServer.getActive() });
-});
-
-app.get('/api/rpg/status', (req, res) => {
-  res.json({ isActive: rpgServer.getActive() });
 });
 
 app.post('/api/admin/party/start', express.json(), (req, res) => {

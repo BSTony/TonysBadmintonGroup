@@ -172,8 +172,6 @@ const btnLobbyStats = document.getElementById('btn-lobby-stats');
 const btnSystemLogs = document.getElementById('btn-system-logs');
 const systemLogsView = document.getElementById('system-logs-view');
 const btnPartyAdmin = document.getElementById('btn-party-admin');
-const btnRpgAdmin = document.getElementById('btn-rpg-admin');
-const rpgJoinContainer = document.getElementById('rpg-join-container');
 const partyAdminView = document.getElementById('party-admin-view');
 const btnBackParty = document.getElementById('btn-back-party');
 const btnBackLogs = document.getElementById('btn-back-logs');
@@ -1106,12 +1104,6 @@ function renderLobby() {
       btnPartyAdmin.classList.remove('hidden');
     } else if (btnPartyAdmin) {
       btnPartyAdmin.classList.add('hidden');
-    }
-
-    if (globalIsSuperAdmin && btnRpgAdmin) {
-      btnRpgAdmin.classList.remove('hidden');
-    } else if (btnRpgAdmin) {
-      btnRpgAdmin.classList.add('hidden');
     }
     
     const createContainer = document.getElementById('admin-create-game-container');
@@ -2160,46 +2152,6 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
     }
   }
 }
-
-// RPG Game Logic
-if (btnRpgAdmin) {
-  btnRpgAdmin.addEventListener('click', async () => {
-    const action = confirm('要開啟羽球大亂鬥嗎？\n(確定=開啟, 取消=關閉)') ? 'start' : 'stop';
-    try {
-      const res = await fetch('/api/admin/rpg/toggle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: currentUser ? currentUser.userId : '', action })
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert(data.isActive ? '大亂鬥已開啟！' : '大亂鬥已關閉！');
-        checkRpgStatus();
-      } else {
-        alert('權限不足或發生錯誤');
-      }
-    } catch(e) {
-      console.error(e);
-    }
-  });
-}
-
-async function checkRpgStatus() {
-  try {
-    const res = await fetch('/api/rpg/status');
-    const data = await res.json();
-    if (rpgJoinContainer) {
-      if (data.isActive) {
-        rpgJoinContainer.classList.remove('hidden');
-      } else {
-        rpgJoinContainer.classList.add('hidden');
-      }
-    }
-  } catch(e) { console.error(e); }
-}
-
-setInterval(checkRpgStatus, 5000);
-setTimeout(checkRpgStatus, 1000);
 
 
 async function handleTogglePaid(gameId, name) {
