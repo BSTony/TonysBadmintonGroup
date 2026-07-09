@@ -1890,7 +1890,7 @@ io.on('connection', (socket) => {
   socket.on('join_party', (data) => {
     if (partyRoom.status === 'idle') return;
     const { uid, name } = data;
-    partyRoom.players[socket.id] = { uid, name, x: -100, y: -100, alive: true, id: socket.id };
+    partyRoom.players[socket.id] = { uid, name, x: -100, y: -100, alive: true, id: socket.id, lives: 3, invincibleUntil: 0 };
     socket.emit('party_state', partyRoom);
     socket.broadcast.emit('player_joined', partyRoom.players[socket.id]);
   });
@@ -1904,10 +1904,41 @@ io.on('connection', (socket) => {
   });
 
   socket.on('player_hit', () => {
-    if (partyRoom.status === 'playing' && partyRoom.players[socket.id] && partyRoom.players[socket.id].alive) {
-      partyRoom.players[socket.id].alive = false;
-      io.emit('player_died', { id: socket.id });
-      checkWinCondition();
+    const p = partyRoom.players[socket.id];
+    if (partyRoom.status === 'playing' && p && p.alive) {
+      if (Date.now() < p.invincibleUntil) return; // Invincible!
+      
+      p.lives--;
+      if (p.lives <= 0) {
+        p.alive = false;
+        io.emit('player_died', { id: socket.id });
+        checkWinCondition();
+      } else {
+        p.invincibleUntil = Date.now() + 2000; // 2 seconds i-frames after hit
+        io.emit('player_damaged', { id: socket.id, lives: p.lives });
+      }
+    }
+  });
+  
+  socket.on('player_collect', (data) => {
+    const p = partyRoom.players[socket.id];
+    if (partyRoom.status === 'playing' && p && p.alive) {
+      if (data.type === 'heart') {
+        if (p.lives < 3) p.lives++;
+        io.emit('player_healed', { id: socket.id, lives: p.lives, itemId: data.itemId });
+      } else if (data.type === 'star') {
+        p.invincibleUntil = Date.now() + 5000; // 5 seconds invincibility
+        io.emit('player_invincible', { id: socket.id, itemId: data.itemId });
+      }
+    }
+  });
+
+  socket.on('destroy_wall', (data) => {
+    const p = partyRoom.players[socket.id];
+    if (partyRoom.status === 'playing' && p && p.alive) {
+      if (Date.now() < p.invincibleUntil) {
+        io.emit('wall_destroyed', { wallId: data.wallId });
+      }
     }
   });
 
@@ -1948,16 +1979,21 @@ app.post('/api/admin/party/play', express.json(), (req, res) => {
   if (partyBulletInterval) clearInterval(partyBulletInterval);
   let spawnRate = 1000;
   let lastSpawn = Date.now();
+  let lastWallSpawn = Date.now();
+  let lastHeartSpawn = Date.now();
+  let lastStarSpawn = Date.now();
   
   partyBulletInterval = setInterval(() => {
     if (partyRoom.status !== 'playing') {
       clearInterval(partyBulletInterval);
       return;
     }
-    const elapsed = Date.now() - partyRoom.startTime;
+    const now = Date.now();
+    const elapsed = now - partyRoom.startTime;
     spawnRate = Math.max(200, 1000 - (elapsed / 1000) * 20);
     
-    if (Date.now() - lastSpawn > spawnRate) {
+    // Spawn Bullet
+    if (now - lastSpawn > spawnRate) {
       io.emit('spawn_bullet', {
         id: Math.random().toString(36).substring(2, 9),
         startX: Math.random(),
@@ -1965,7 +2001,47 @@ app.post('/api/admin/party/play', express.json(), (req, res) => {
         targetX: Math.random(),
         speedMultiplier: 1 + (elapsed / 1000) * 0.05
       });
-      lastSpawn = Date.now();
+      lastSpawn = now;
+    }
+    
+    // Spawn Wall (every 10s)
+    if (now - lastWallSpawn > 10000) {
+      io.emit('spawn_wall', {
+        id: Math.random().toString(36).substring(2, 9),
+        x: Math.random() * 0.8 + 0.1, // 10% to 90%
+        y: Math.random() * 0.5 + 0.2, // 20% to 70% height
+        width: Math.random() * 0.2 + 0.1, // 10% to 30% screen width
+        height: Math.random() * 0.05 + 0.02 // thin walls
+      });
+      lastWallSpawn = now;
+    }
+    
+    // Spawn Hearts (every 15s)
+    if (now - lastHeartSpawn > 15000) {
+      const aliveCount = Object.values(partyRoom.players).filter(p => p.alive).length;
+      if (aliveCount > 0) {
+        const heartCount = Math.ceil(aliveCount / 2);
+        for (let i = 0; i < heartCount; i++) {
+          io.emit('spawn_item', {
+            type: 'heart',
+            id: Math.random().toString(36).substring(2, 9),
+            x: Math.random() * 0.8 + 0.1,
+            y: Math.random() * 0.8 + 0.1
+          });
+        }
+      }
+      lastHeartSpawn = now;
+    }
+    
+    // Spawn Star (every 20s)
+    if (now - lastStarSpawn > 20000) {
+      io.emit('spawn_item', {
+        type: 'star',
+        id: Math.random().toString(36).substring(2, 9),
+        x: Math.random() * 0.8 + 0.1,
+        y: Math.random() * 0.8 + 0.1
+      });
+      lastStarSpawn = now;
     }
   }, 100);
   

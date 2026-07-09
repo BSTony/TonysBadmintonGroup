@@ -171,6 +171,9 @@ const statsView = document.getElementById('stats-view');
 const btnLobbyStats = document.getElementById('btn-lobby-stats');
 const btnSystemLogs = document.getElementById('btn-system-logs');
 const systemLogsView = document.getElementById('system-logs-view');
+const btnPartyAdmin = document.getElementById('btn-party-admin');
+const partyAdminView = document.getElementById('party-admin-view');
+const btnBackParty = document.getElementById('btn-back-party');
 const btnBackLogs = document.getElementById('btn-back-logs');
 const systemLogsContainer = document.getElementById('system-logs-container');
 const btnBackStats = document.getElementById('btn-back-stats');
@@ -236,11 +239,16 @@ function initSocket() {
       if (btnPartyStartLobby) btnPartyStartLobby.classList.remove('hidden');
       if (btnPartyPlay) btnPartyPlay.classList.add('hidden');
       if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+      
+      // Force close UI on idle
+      if (bhContainer) bhContainer.classList.add('hidden');
+      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+      if (bhEntities) bhEntities.innerHTML = '';
+      bhIsPlaying = false;
     }
   });
   
   socket.on('player_joined', (p) => {
-    if (easterEggActiveGame !== 'party_mode') return;
     createOtherPlayer(p);
   });
   
@@ -264,31 +272,62 @@ function initSocket() {
   });
   
   socket.on('party_play', (data) => {
-    if (easterEggActiveGame === 'party_mode') {
-      bhIsPlaying = true;
-      bhStartTime = data.startTime;
-      if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
-      requestAnimationFrame(bhPartyLoop);
-    }
+    bhIsPlaying = true;
+    bhStartTime = data.startTime;
+    if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+    requestAnimationFrame(bhPartyLoop);
   });
   
   socket.on('spawn_bullet', (b) => {
-    if (easterEggActiveGame === 'party_mode' && bhIsPlaying) {
-      spawnServerBullet(b);
+    if (bhIsPlaying) spawnServerBullet(b);
+  });
+  
+  socket.on('spawn_wall', (w) => {
+    if (bhIsPlaying) spawnServerWall(w);
+  });
+  
+  socket.on('spawn_item', (item) => {
+    if (bhIsPlaying) spawnServerItem(item);
+  });
+  
+  socket.on('player_damaged', (data) => {
+    if (partyOthers[data.id]) {
+      // visual feedback?
+    }
+    if (data.id === socket.id && bhPlayer) {
+      updateLives(data.lives);
+      bhPlayer.classList.add('bh-invincible'); // reuse rainbow or just blink
+      setTimeout(() => bhPlayer.classList.remove('bh-invincible'), 2000);
     }
   });
   
-  socket.on('party_ended', (data) => {
-    if (easterEggActiveGame === 'party_mode') {
-      bhIsPlaying = false;
-      bhGameoverModal.classList.remove('hidden');
-      document.getElementById('bh-gameover-title').innerText = '派對結束！';
-      bhFinalTime.innerText = data.elapsed.toFixed(2);
-      renderBhLeaderboard(data.leaderboard);
-      
-      const isWinner = data.winners.some(w => w.uid === currentUser.userId);
-      if (isWinner && bhPlayer) bhPlayer.innerHTML = '👑';
+  socket.on('player_healed', (data) => {
+    removeItem(data.itemId);
+    if (data.id === socket.id) updateLives(data.lives);
+  });
+  
+  socket.on('player_invincible', (data) => {
+    removeItem(data.itemId);
+    if (partyOthers[data.id]) partyOthers[data.id].classList.add('bh-invincible');
+    if (data.id === socket.id && bhPlayer) {
+      bhPlayer.classList.add('bh-invincible');
+      setTimeout(() => bhPlayer.classList.remove('bh-invincible'), 5000);
     }
+  });
+  
+  socket.on('wall_destroyed', (data) => {
+    removeWall(data.wallId);
+  });
+  
+  socket.on('party_ended', (data) => {
+    bhIsPlaying = false;
+    bhGameoverModal.classList.remove('hidden');
+    document.getElementById('bh-gameover-title').innerText = '派對結束！';
+    bhFinalTime.innerText = data.elapsed.toFixed(2);
+    renderBhLeaderboard(data.leaderboard);
+    
+    const isWinner = data.winners.some(w => w.uid === currentUser.userId);
+    if (isWinner && bhPlayer) bhPlayer.innerHTML = '👑';
   });
 }
 
@@ -316,6 +355,13 @@ function joinPartyLobby() {
   bhPlayer = document.createElement('div');
   bhPlayer.className = 'bh-player';
   bhPlayer.innerHTML = '🐷';
+  
+  const livesEl = document.createElement('div');
+  livesEl.className = 'bh-lives';
+  livesEl.id = 'bh-lives-display';
+  livesEl.innerText = '❤️❤️❤️';
+  bhPlayer.appendChild(livesEl);
+  
   bhPlayer.style.left = (window.innerWidth / 2 - 25) + 'px';
   bhPlayer.style.top = (window.innerHeight - 100) + 'px';
   bhEntities.appendChild(bhPlayer);
@@ -333,6 +379,25 @@ function joinPartyLobby() {
     let newY = touch.clientY - 25;
     newX = Math.max(0, Math.min(window.innerWidth - 50, newX));
     newY = Math.max(0, Math.min(window.innerHeight - 50, newY));
+    
+    // Wall collision
+    const isInvincible = bhPlayer.classList.contains('bh-invincible');
+    let hitWall = null;
+    for (let w of bhWalls) {
+      if (newX + 50 > w.left && newX < w.right && newY + 50 > w.top && newY < w.bottom) {
+        hitWall = w;
+        break;
+      }
+    }
+    
+    if (hitWall) {
+      if (isInvincible) {
+        socket.emit('destroy_wall', { wallId: hitWall.id });
+      } else {
+        return; // Prevent movement
+      }
+    }
+    
     bhPlayer.style.left = newX + 'px';
     bhPlayer.style.top = newY + 'px';
     socket.emit('player_move', { x: newX, y: newY });
@@ -369,6 +434,60 @@ function spawnServerBullet(b) {
   bhBullets.push({ el, x: startX, y: startY, vx, vy, speedMultiplier: b.speedMultiplier });
 }
 
+function spawnServerWall(w) {
+  const el = document.createElement('div');
+  el.className = 'bh-wall';
+  const width = w.width * window.innerWidth;
+  const height = w.height * window.innerHeight;
+  const x = w.x * window.innerWidth;
+  const y = w.y * window.innerHeight;
+  
+  el.style.width = width + 'px';
+  el.style.height = height + 'px';
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  
+  bhEntities.appendChild(el);
+  bhWalls.push({ id: w.id, el, left: x, right: x + width, top: y, bottom: y + height });
+}
+
+function spawnServerItem(item) {
+  const el = document.createElement('div');
+  el.className = item.type === 'heart' ? 'bh-heart' : 'bh-star';
+  el.innerHTML = item.type === 'heart' ? '❤️' : '⭐';
+  const x = item.x * window.innerWidth;
+  const y = item.y * window.innerHeight;
+  
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  
+  bhEntities.appendChild(el);
+  bhItems.push({ id: item.id, type: item.type, el, x, y });
+}
+
+function removeWall(id) {
+  const idx = bhWalls.findIndex(w => w.id === id);
+  if (idx !== -1) {
+    bhWalls[idx].el.remove();
+    bhWalls.splice(idx, 1);
+  }
+}
+
+function removeItem(id) {
+  const idx = bhItems.findIndex(i => i.id === id);
+  if (idx !== -1) {
+    bhItems[idx].el.remove();
+    bhItems.splice(idx, 1);
+  }
+}
+
+function updateLives(lives) {
+  const display = document.getElementById('bh-lives-display');
+  if (display) {
+    display.innerText = '❤️'.repeat(lives);
+  }
+}
+
 function bhPartyLoop(timestamp) {
   if (!bhIsPlaying) return;
   
@@ -395,8 +514,24 @@ function bhPartyLoop(timestamp) {
       b.x + 20 > playerHitbox.left && b.x + 10 < playerHitbox.right &&
       b.y + 20 > playerHitbox.top && b.y + 10 < playerHitbox.bottom
     ) {
-      socket.emit('player_hit');
-      bhPlayer.innerHTML = '🤕'; 
+      if (!bhPlayer.classList.contains('bh-invincible')) {
+        socket.emit('player_hit');
+        // Player visual updates are handled by server events now
+      }
+    }
+  }
+  
+  // Item collisions
+  for (let i = bhItems.length - 1; i >= 0; i--) {
+    let item = bhItems[i];
+    if (bhPlayer.innerHTML !== '🤕' &&
+      item.x + 20 > playerHitbox.left && item.x + 10 < playerHitbox.right &&
+      item.y + 20 > playerHitbox.top && item.y + 10 < playerHitbox.bottom
+    ) {
+      socket.emit('player_collect', { type: item.type, itemId: item.id });
+      // Predictively remove from view
+      item.el.remove();
+      bhItems.splice(i, 1);
     }
   }
   requestAnimationFrame(bhPartyLoop);
@@ -414,6 +549,8 @@ if (btnJoinParty) {
 let bhStartTime = 0;
 let bhPlayer = null;
 let bhBullets = [];
+let bhWalls = [];
+let bhItems = [];
 let bhIsPlaying = false;
 let bhSpawnRate = 1000;
 let bhLastSpawn = 0;
@@ -423,6 +560,8 @@ function startBulletHell() {
   bhGameoverModal.classList.add('hidden');
   bhEntities.innerHTML = '';
   bhBullets = [];
+  bhWalls = [];
+  bhItems = [];
   bhStartTime = performance.now();
   bhIsPlaying = true;
   bhSpawnRate = 1000;
@@ -430,6 +569,13 @@ function startBulletHell() {
   bhPlayer = document.createElement('div');
   bhPlayer.className = 'bh-player';
   bhPlayer.innerHTML = '🐷';
+  
+  const livesEl = document.createElement('div');
+  livesEl.className = 'bh-lives';
+  livesEl.id = 'bh-lives-display';
+  livesEl.innerText = '❤️❤️❤️';
+  bhPlayer.appendChild(livesEl);
+  
   bhPlayer.style.left = (window.innerWidth / 2 - 25) + 'px';
   bhPlayer.style.top = (window.innerHeight - 100) + 'px';
   bhEntities.appendChild(bhPlayer);
@@ -454,6 +600,23 @@ function startBulletHell() {
     let newY = touch.clientY - 25;
     newX = Math.max(0, Math.min(window.innerWidth - 50, newX));
     newY = Math.max(0, Math.min(window.innerHeight - 50, newY));
+    
+    // Wall collision
+    const isInvincible = bhPlayer.classList.contains('bh-invincible');
+    let hitWall = null;
+    for (let w of bhWalls) {
+      if (newX + 50 > w.left && newX < w.right && newY + 50 > w.top && newY < w.bottom) {
+        hitWall = w;
+        break;
+      }
+    }
+    
+    if (hitWall) {
+      if (!isInvincible) {
+        return; // Prevent movement
+      }
+    }
+    
     bhPlayer.style.left = newX + 'px';
     bhPlayer.style.top = newY + 'px';
   }
@@ -650,6 +813,9 @@ async function initializeLiff() {
     // 5. 載入大廳資料
     document.getElementById('create-game-view').classList.add('hidden');
     await loadGamesLobby();
+    
+    // 6. 初始化派對 Socket (背景連線，以便接收廣播)
+    initSocket();
 
   } catch (err) {
     console.error('LIFF Init Error:', err);
@@ -789,6 +955,12 @@ function renderLobby() {
       btnEasterEgg.classList.remove('hidden');
     } else if (btnEasterEgg) {
       btnEasterEgg.classList.add('hidden');
+    }
+
+    if (globalIsSuperAdmin && btnPartyAdmin) {
+      btnPartyAdmin.classList.remove('hidden');
+    } else if (btnPartyAdmin) {
+      btnPartyAdmin.classList.add('hidden');
     }
     
     const createContainer = document.getElementById('admin-create-game-container');
@@ -2764,6 +2936,26 @@ if (btnBackStats) {
   });
 }
 
+if (btnPartyAdmin) {
+  btnPartyAdmin.addEventListener('click', () => {
+    lobbyView.classList.add('hidden');
+    detailView.classList.add('hidden');
+    if (easterEggSettingsView) easterEggSettingsView.classList.add('hidden');
+    if (statsView) statsView.classList.add('hidden');
+    if (systemLogsView) systemLogsView.classList.add('hidden');
+    
+    partyAdminView.classList.remove('hidden');
+    initSocket();
+  });
+}
+
+if (btnBackParty) {
+  btnBackParty.addEventListener('click', () => {
+    partyAdminView.classList.add('hidden');
+    renderLobby();
+  });
+}
+
 if (btnSystemLogs) {
   btnSystemLogs.addEventListener('click', async () => {
     appDiv.className = 'loading';
@@ -2936,16 +3128,8 @@ if (btnEasterEgg) {
     }
   });
 
-  // Admin dropdown listener removed duplicate
-  eeActiveGameSelect.addEventListener('change', () => {
-    if (eeActiveGameSelect.value === 'party_mode') {
-      if (partyAdminPanel) partyAdminPanel.classList.remove('hidden');
-      initSocket();
-    } else {
-      if (partyAdminPanel) partyAdminPanel.classList.add('hidden');
-    }
-  });
-  
+  // Removed old duplicate dropdown listener
+
   if (btnPartyStartLobby) {
     btnPartyStartLobby.addEventListener('click', async () => {
       await fetch('/api/admin/party/start', {

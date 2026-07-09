@@ -498,6 +498,59 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
   transform-origin: bottom center;
 }
 
+.bh-player.bh-invincible {
+  animation: bh-rainbow 0.5s infinite;
+  filter: drop-shadow(0 0 10px gold);
+}
+@keyframes bh-rainbow {
+  0% { filter: drop-shadow(0 0 15px red); }
+  33% { filter: drop-shadow(0 0 15px lime); }
+  66% { filter: drop-shadow(0 0 15px blue); }
+  100% { filter: drop-shadow(0 0 15px red); }
+}
+
+.bh-lives {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.bh-wall {
+  position: absolute;
+  background-color: #7f8c8d;
+  border: 2px solid #2c3e50;
+  border-radius: 4px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+  background-image: linear-gradient(45deg, #95a5a6 25%, transparent 25%, transparent 75%, #95a5a6 75%, #95a5a6), linear-gradient(45deg, #95a5a6 25%, transparent 25%, transparent 75%, #95a5a6 75%, #95a5a6);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  user-select: none;
+}
+
+.bh-heart, .bh-star {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  font-size: 30px;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+  animation: float 2s infinite ease-in-out;
+}
+.bh-star {
+  filter: drop-shadow(0 0 10px gold);
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
 /* Easter Egg Leaderboard Styles */
 .ee-leaderboard-item {
   display: flex;
