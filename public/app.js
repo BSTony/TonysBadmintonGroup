@@ -251,6 +251,17 @@ function initSocket() {
       if (bhEntities) bhEntities.innerHTML = '';
       bhIsPlaying = false;
     }
+    
+    // Render existing players if we are in the lobby or playing
+    if (state.status === 'lobby' || state.status === 'playing') {
+      if (state.players) {
+        Object.values(state.players).forEach(p => {
+          if (p.id !== socket.id) {
+            createOtherPlayer(p);
+          }
+        });
+      }
+    }
   });
   
   socket.on('player_joined', (p) => {
@@ -388,11 +399,13 @@ function joinPartyLobby() {
   livesEl.innerText = '❤️❤️❤️';
   bhPlayer.appendChild(livesEl);
   
-  bhPlayer.style.left = (window.innerWidth / 2 - 15) + 'px';
-  bhPlayer.style.top = (window.innerHeight - 100) + 'px';
+  const initialX = window.innerWidth / 2 - 15;
+  const initialY = window.innerHeight - 100;
+  bhPlayer.style.left = initialX + 'px';
+  bhPlayer.style.top = initialY + 'px';
   bhEntities.appendChild(bhPlayer);
   
-  socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: selectedCharacterIcon });
+  socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: selectedCharacterIcon, x: initialX, y: initialY });
   
   let isDragging = false;
   const onPointerDown = (e) => { isDragging = true; updatePlayerPos(e); };
