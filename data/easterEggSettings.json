@@ -4,14 +4,14 @@
   "quota": 3,
   "winners": [
     {
-      "uid": "Ua158cf62dfd0ee9c8171a29263d9da11",
-      "name": "曾Jim凱",
-      "timeTaken": 4093
-    },
-    {
       "uid": "Ua698eb94f633310ce3b6cf6f34265adb",
       "name": "煜翔Sean",
       "timeTaken": 2407
+    },
+    {
+      "uid": "Ua158cf62dfd0ee9c8171a29263d9da11",
+      "name": "曾Jim凱",
+      "timeTaken": 4093
     },
     {
       "uid": "U1302ddcec82bfd0d9b9eba641676ea0a",
@@ -32,6 +32,11 @@
       "uid": "U9904ed725b1f420b8718791594e3756b",
       "name": "偉舫",
       "timeTaken": 15348
+    },
+    {
+      "uid": "U04307fbd1087e54ce656086b653a60fd",
+      "name": "黃政豪",
+      "timeTaken": 14940
     }
   ]
 }
