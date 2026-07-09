@@ -2,13 +2,7 @@
   "enabled": true,
   "message": "恭喜過關 靜待下次活動",
   "quota": 3,
-  "winners": [
-    {
-      "uid": "U2ea89b78f1546c61adda03c7dd8704d5",
-      "name": "賴柚子",
-      "timeTaken": 22520
-    }
-  ],
+  "winners": [],
   "activeGame": "piggy_run",
   "bulletHellLeaderboard": [
     {
