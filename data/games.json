@@ -1991,7 +1991,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1783610060159,
+    "lastActiveTime": 1783610105401,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2009,8 +2009,7 @@
       "小周": true,
       "CC": true,
       "Iven": true,
-      "Mina": true,
-      "John": true
+      "Mina": true
     },
     "sections": [
       {
@@ -2029,12 +2028,17 @@
           "小周",
           "CC",
           "Iven",
-          "Mina",
-          "John"
+          "Mina"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/09 23:15",
+        "name": "John",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/09 23:14",
         "name": "John",
