@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 519,
+    "viewCount": 520,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -558,8 +558,8 @@
       "U4cbba92203148484d06d213547203e35": {
         "displayName": "小高",
         "firstVisit": 1783327605722,
-        "count": 2,
-        "lastVisit": 1783567671596
+        "count": 3,
+        "lastVisit": 1783568046011
       },
       "U24c3b63e1d18834db9830f243aedaeae": {
         "displayName": "陳呈",
@@ -791,6 +791,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783568046011,
+        "userId": "U4cbba92203148484d06d213547203e35",
+        "displayName": "小高",
+        "pictureUrl": "https://profile.line-scdn.net/0h4fvda9yNa0lbHX96be8VNitNaCN4bDJbci4nemkYPC5gKi5LcH92LGdOMX9nJXhMcy90KjxOMCtXDhwvRUuXfVwtNnhmLCkXcXMhqg"
+      },
       {
         "time": 1783568037768,
         "userId": "U24c3b63e1d18834db9830f243aedaeae",
@@ -1984,12 +1990,6 @@
         "userId": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
         "displayName": "郭岳翰John",
         "pictureUrl": "https://profile.line-scdn.net/0hgE71bnyJOGoaSCnunEtGVGoYOwA5OWF4ZClyWylMZFggKis7MicjDn9PMw4kf307Ni10XClANVk4DCdaXXs1a1Q1OSp0PA9LblgqTCs3Zy9DDitCYV4lC3EjYB1BHQlsTC8VdkYsGyZFJis-dnYfWkdUOFh5GXY5QR9UPB96Vul1Sk8_Ny52CSdObl-i"
-      },
-      {
-        "time": 1783514751196,
-        "userId": "U199b73c44bcf439b1e57d07cd3d7ebe4",
-        "displayName": "零",
-        "pictureUrl": "https://profile.line-scdn.net/0hjK-TVgz9NWQALSlCOiJLWnB9Ng4jXGx2K0J_AjZ9Y1w0SXBmKR4qCzZ-PlQ-HHQxJEhyBWctbVQieTJldhIjQjBrbQ96YhdBcTs_AENQMFdFcw5QZT0zQTZaaylIfzJBLgoTS2VQOVA4dHpteD54f2VuYhI5aRNOZ3pZMgUfW-dvL0IxLUt7Bz0rY1G4"
       }
     ]
   },
