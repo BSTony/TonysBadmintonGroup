@@ -1409,7 +1409,7 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783569311877,
+    "lastActiveTime": 1783569319078,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1433,11 +1433,18 @@
           "小宇",
           "何岡駿",
           "陳呈",
-          "wayne"
+          "wayne",
+          "小洋"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/09 11:55",
+        "name": "小洋",
+        "operator": "Wayne",
+        "action": "+1"
+      },
       {
         "time": "07/09 11:55",
         "name": "wayne",
