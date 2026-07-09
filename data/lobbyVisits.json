@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 433,
+    "viewCount": 435,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -504,8 +504,8 @@
       "U1302ddcec82bfd0d9b9eba641676ea0a": {
         "displayName": "King",
         "firstVisit": 1783230732630,
-        "count": 13,
-        "lastVisit": 1783565355215
+        "count": 14,
+        "lastVisit": 1783566338942
       },
       "U1b8e0afa7df50e5e3b3a8196f54ad641": {
         "displayName": "千賀",
@@ -762,8 +762,8 @@
       "U70293580bf944ee91dff2fdea1b5ec16": {
         "displayName": "雅0🐱",
         "firstVisit": 1783562549114,
-        "count": 4,
-        "lastVisit": 1783566257041
+        "count": 5,
+        "lastVisit": 1783566323305
       },
       "Ubf312b4cd3bdb90efe9e5e8ec6c86f10": {
         "displayName": "吳冠宏",
@@ -785,6 +785,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1783566338942,
+        "userId": "U1302ddcec82bfd0d9b9eba641676ea0a",
+        "displayName": "King",
+        "pictureUrl": "https://profile.line-scdn.net/0hAGC04Y7yHmhuSQD1SdNgFx4ZHQJNOEd6ECxTCAhAEAsGelE8QSxVCw8aRAtScF09QCsGCVhJQlliWmkOcB_iXGl5Q1lTeFw2RCdUiw"
+      },
+      {
+        "time": 1783566323305,
+        "userId": "U70293580bf944ee91dff2fdea1b5ec16",
+        "displayName": "雅0🐱",
+        "pictureUrl": "https://profile.line-scdn.net/0h8ZNN_70TZ3VjN3nA1E0ZSxNnZB9ARj5nTgEpEQM2PENcVSglT1R_QAYyaUcNAXVwT1ErFVdiMUFBb05bLgIgZQ1eOisXT0QmRiFXFS1kPDwbB2ElCQhQdx5xfxxfZCRFB1JOYRdXR0EuQSQiGCtLFRNjMB0CdyJKDWALI2YFCfYMNRAgTlEpFl4xMUDb"
+      },
       {
         "time": 1783566322759,
         "userId": "Ubf312b4cd3bdb90efe9e5e8ec6c86f10",
@@ -1971,18 +1983,6 @@
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
         "displayName": "謝東霖 Tony",
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1783473660912,
-        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
-        "displayName": "賴柚子",
-        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
-      },
-      {
-        "time": 1783473559568,
-        "userId": "U1302ddcec82bfd0d9b9eba641676ea0a",
-        "displayName": "King",
-        "pictureUrl": "https://profile.line-scdn.net/0hAGC04Y7yHmhuSQD1SdNgFx4ZHQJNOEd6ECxTCAhAEAsGelE8QSxVCw8aRAtScF09QCsGCVhJQlliWmkOcB_iXGl5Q1lTeFw2RCdUiw"
       }
     ]
   },
