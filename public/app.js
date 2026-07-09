@@ -435,8 +435,8 @@ function spawnServerBullet(b) {
   
   const startX = b.startX * window.innerWidth;
   const targetX = b.targetX * window.innerWidth;
-  const startY = b.startY;
-  const targetY = window.innerHeight;
+  const startY = b.startY * window.innerHeight;
+  const targetY = b.targetY * window.innerHeight;
   
   const angle = Math.atan2(targetY - startY, targetX - startX);
   const speed = 4; // Constant base speed for sync
@@ -518,7 +518,7 @@ function bhPartyLoop(timestamp) {
     
     b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
     
-    if (b.y > window.innerHeight + 50 || b.x < -50 || b.x > window.innerWidth + 50) {
+    if (b.y > window.innerHeight + 100 || b.y < -100 || b.x < -100 || b.x > window.innerWidth + 100) {
       b.el.remove();
       bhBullets.splice(i, 1);
       continue;

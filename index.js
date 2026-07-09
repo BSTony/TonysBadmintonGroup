@@ -1994,11 +1994,31 @@ app.post('/api/admin/party/play', express.json(), (req, res) => {
     
     // Spawn Bullet
     if (now - lastSpawn > spawnRate) {
+      let startX, startY, targetX, targetY;
+      
+      if (elapsed > 10000) {
+        const side = Math.floor(Math.random() * 4);
+        if (side === 0) { // top
+          startX = Math.random(); startY = -0.1;
+          targetX = Math.random(); targetY = 1.1;
+        } else if (side === 1) { // right
+          startX = 1.1; startY = Math.random();
+          targetX = -0.1; targetY = Math.random();
+        } else if (side === 2) { // bottom
+          startX = Math.random(); startY = 1.1;
+          targetX = Math.random(); targetY = -0.1;
+        } else { // left
+          startX = -0.1; startY = Math.random();
+          targetX = 1.1; targetY = Math.random();
+        }
+      } else {
+        startX = Math.random(); startY = -0.1;
+        targetX = Math.random(); targetY = 1.1;
+      }
+      
       io.emit('spawn_bullet', {
         id: Math.random().toString(36).substring(2, 9),
-        startX: Math.random(),
-        startY: -30,
-        targetX: Math.random(),
+        startX, startY, targetX, targetY,
         speedMultiplier: 1 + (elapsed / 1000) * 0.05
       });
       lastSpawn = now;
