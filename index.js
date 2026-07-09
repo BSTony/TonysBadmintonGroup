@@ -2001,42 +2001,46 @@ app.post('/api/admin/party/play', express.json(), (req, res) => {
     
     // Spawn Bullet
     if (now - lastSpawn > spawnRate) {
-      let startX, startY, targetX, targetY;
+      const spawnCount = 1 + Math.floor(elapsed / 10000);
       
-      if (elapsed <= 10000) {
-        startX = Math.random(); startY = -0.1;
-        targetX = Math.random(); targetY = 1.1;
-      } else {
-        const side = Math.floor(Math.random() * 4);
-        if (side === 0) { startX = Math.random(); startY = -0.1; }
-        else if (side === 1) { startX = 1.1; startY = Math.random(); }
-        else if (side === 2) { startX = Math.random(); startY = 1.1; }
-        else { startX = -0.1; startY = Math.random(); }
+      for (let i = 0; i < spawnCount; i++) {
+        let startX, startY, targetX, targetY;
         
-        if (elapsed > 60000) {
-          // Targeted attack
-          const alivePlayers = Object.values(partyRoom.players).filter(p => p.alive);
-          if (alivePlayers.length > 0) {
-            const target = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
-            targetX = target.x >= 0 ? target.x : Math.random();
-            targetY = target.y >= 0 ? target.y : Math.random();
-          } else {
-            targetX = Math.random(); targetY = Math.random();
-          }
+        if (elapsed <= 10000) {
+          startX = Math.random(); startY = -0.1;
+          targetX = Math.random(); targetY = 1.1;
         } else {
-          // Random target
-          if (side === 0) { targetX = Math.random(); targetY = 1.1; }
-          else if (side === 1) { targetX = -0.1; targetY = Math.random(); }
-          else if (side === 2) { targetX = Math.random(); targetY = -0.1; }
-          else { targetX = 1.1; targetY = Math.random(); }
+          const side = Math.floor(Math.random() * 4);
+          if (side === 0) { startX = Math.random(); startY = -0.1; }
+          else if (side === 1) { startX = 1.1; startY = Math.random(); }
+          else if (side === 2) { startX = Math.random(); startY = 1.1; }
+          else { startX = -0.1; startY = Math.random(); }
+          
+          if (elapsed > 60000) {
+            // Targeted attack
+            const alivePlayers = Object.values(partyRoom.players).filter(p => p.alive);
+            if (alivePlayers.length > 0) {
+              const target = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
+              targetX = target.x >= 0 ? target.x : Math.random();
+              targetY = target.y >= 0 ? target.y : Math.random();
+            } else {
+              targetX = Math.random(); targetY = Math.random();
+            }
+          } else {
+            // Random target
+            if (side === 0) { targetX = Math.random(); targetY = 1.1; }
+            else if (side === 1) { targetX = -0.1; targetY = Math.random(); }
+            else if (side === 2) { targetX = Math.random(); targetY = -0.1; }
+            else { targetX = 1.1; targetY = Math.random(); }
+          }
         }
+        
+        io.emit('spawn_bullet', {
+          id: Math.random().toString(36).substring(2, 9),
+          startX, startY, targetX, targetY,
+          speedMultiplier: 0.7 + (elapsed / 1000) * 0.04
+        });
       }
-      
-      io.emit('spawn_bullet', {
-        id: Math.random().toString(36).substring(2, 9),
-        startX, startY, targetX, targetY,
-        speedMultiplier: 0.7 + (elapsed / 1000) * 0.04
-      });
       lastSpawn = now;
     }
     
