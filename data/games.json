@@ -1063,7 +1063,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783001989809,
-    "lastActiveTime": 1783562640247,
+    "lastActiveTime": 1783565339849,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1081,8 +1081,7 @@
       "小周": true,
       "Iven": true,
       "Mina": true,
-      "Wayne": true,
-      "Ong": true
+      "Wayne": true
     },
     "sections": [
       {
@@ -1100,7 +1099,6 @@
           "Iven",
           "Mina",
           "Wayne",
-          "Ong",
           "Sean",
           "John",
           "陳俊傑 (Jeremy)",
@@ -1121,6 +1119,12 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/09 10:48",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1"
+      },
       {
         "time": "07/09 10:04",
         "name": "冠宏",
