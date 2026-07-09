@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 464,
+    "viewCount": 465,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -774,8 +774,8 @@
       "U9904ed725b1f420b8718791594e3756b": {
         "displayName": "偉舫",
         "firstVisit": 1783565275973,
-        "count": 3,
-        "lastVisit": 1783566603918
+        "count": 4,
+        "lastVisit": 1783566757143
       },
       "Uef488c50ca6ba6bd1d36dc30086b92b1": {
         "displayName": "Andrew Kuo",
@@ -785,6 +785,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783566757143,
+        "userId": "U9904ed725b1f420b8718791594e3756b",
+        "displayName": "偉舫",
+        "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
+      },
       {
         "time": 1783566742790,
         "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
@@ -1975,12 +1981,6 @@
       },
       {
         "time": 1783496561969,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1783496519412,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
         "displayName": "謝東霖 Tony",
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
