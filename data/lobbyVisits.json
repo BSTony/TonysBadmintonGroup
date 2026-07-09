@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 675,
+    "viewCount": 677,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -828,11 +828,23 @@
       "U80affca455b8fa0bc1c8137250b851e2": {
         "displayName": "蔡佳宏",
         "firstVisit": 1783606241204,
-        "count": 1,
-        "lastVisit": 1783606241204
+        "count": 3,
+        "lastVisit": 1783606303392
       }
     },
     "logs": [
+      {
+        "time": 1783606303392,
+        "userId": "U80affca455b8fa0bc1c8137250b851e2",
+        "displayName": "蔡佳宏",
+        "pictureUrl": "https://profile.line-scdn.net/0h6H0YmW2gaWcdIHa8iiYXWW1wag0-UTB1ZERxVixyMAAiE3xlY0UnCCoiZFMkFH0wM0NzAy4iNgU_THNpMi9DZVVzYwpyTipiR0JUZkpBRyt4S3hxcA9EWmx0VAdnFno4XzJGf2BdS1NoUSxXOE4vZ1omPxN0S05RdXcFMRgSB-RyIh4yMEYnBCAmP1Kl"
+      },
+      {
+        "time": 1783606291348,
+        "userId": "U80affca455b8fa0bc1c8137250b851e2",
+        "displayName": "蔡佳宏",
+        "pictureUrl": "https://profile.line-scdn.net/0h6H0YmW2gaWcdIHa8iiYXWW1wag0-UTB1ZERxVixyMAAiE3xlY0UnCCoiZFMkFH0wM0NzAy4iNgU_THNpMi9DZVVzYwpyTipiR0JUZkpBRyt4S3hxcA9EWmx0VAdnFno4XzJGf2BdS1NoUSxXOE4vZ1omPxN0S05RdXcFMRgSB-RyIh4yMEYnBCAmP1Kl"
+      },
       {
         "time": 1783606290408,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -2019,18 +2031,6 @@
         "userId": "U04307fbd1087e54ce656086b653a60fd",
         "displayName": "黃政豪",
         "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
-      },
-      {
-        "time": 1783567015233,
-        "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
-        "displayName": "Wang",
-        "pictureUrl": "https://profile.line-scdn.net/0hNECa5TMdEWpuGAcCpKBvFR5IEgBNaUh4SnxfDl0RT1MHKFVsRSleCgkZHQpaelc9RX4JClwdS1piC2YMcE7tXmkoTFtTKVM0RHZbiQ"
-      },
-      {
-        "time": 1783566997371,
-        "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
-        "displayName": "Wang",
-        "pictureUrl": "https://profile.line-scdn.net/0hNECa5TMdEWpuGAcCpKBvFR5IEgBNaUh4SnxfDl0RT1MHKFVsRSleCgkZHQpaelc9RX4JClwdS1piC2YMcE7tXmkoTFtTKVM0RHZbiQ"
       }
     ]
   },
