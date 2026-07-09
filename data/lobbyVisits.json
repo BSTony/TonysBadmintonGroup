@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 403,
+    "viewCount": 404,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -764,9 +764,21 @@
         "firstVisit": 1783562549114,
         "count": 2,
         "lastVisit": 1783562735531
+      },
+      "Ubf312b4cd3bdb90efe9e5e8ec6c86f10": {
+        "displayName": "吳冠宏",
+        "firstVisit": 1783563633169,
+        "count": 1,
+        "lastVisit": 1783563633169
       }
     },
     "logs": [
+      {
+        "time": 1783563633169,
+        "userId": "Ubf312b4cd3bdb90efe9e5e8ec6c86f10",
+        "displayName": "吳冠宏",
+        "pictureUrl": "https://profile.line-scdn.net/0hD5tfMQg4GxpZHwTiTSxlJClPGHB6bkIIfCxWfDlPTSw0L1tNcy1Tej9MQCljKAscd3oDdGVLQy17Wh8FDg4odTtPOmINLRgzJQ0DPRAXOFU0VlsMHhxQLitHR2gdfTUUDh46CQJMQnc4bwMZPisoHR9HK286SRo0Jkh3TFwtdZk2HWxPdHlVeWQZTS_h"
+      },
       {
         "time": 1783562735531,
         "userId": "U70293580bf944ee91dff2fdea1b5ec16",
@@ -1959,12 +1971,6 @@
         "userId": "U7691f78ef6e34371e591dc7b0c57ce9a",
         "displayName": "林立峰",
         "pictureUrl": "https://profile.line-scdn.net/0hHv0xUDdSF1kdAQnFQL9pZ21RFDM-cE5LNGBfPH1THGB0ZFRcMTJfaysBTTpyNgVdYmcMbX8FQT0_UkxLUhBfd3FBAWAjWTNcbwkbdlIIOW9XSQZ9UBcjSltRISpGORFOXwc8aCp9OSAnNSxqbBE9RlVTPDMiNyt9UVZ7DxgzedpyA2AMMGdZOiAHQWyl"
-      },
-      {
-        "time": 1783421614574,
-        "userId": "U203b76fe44ff1d74c53c21e5547aea27",
-        "displayName": "登登登登～",
-        "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
       }
     ]
   },
