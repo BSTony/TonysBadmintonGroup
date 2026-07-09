@@ -376,7 +376,7 @@ function joinPartyLobby() {
   livesEl.innerText = '❤️❤️❤️';
   bhPlayer.appendChild(livesEl);
   
-  bhPlayer.style.left = (window.innerWidth / 2 - 25) + 'px';
+  bhPlayer.style.left = (window.innerWidth / 2 - 15) + 'px';
   bhPlayer.style.top = (window.innerHeight - 100) + 'px';
   bhEntities.appendChild(bhPlayer);
   
@@ -389,16 +389,16 @@ function joinPartyLobby() {
   
   function updatePlayerPos(e) {
     const touch = e.touches ? e.touches[0] : e;
-    let newX = touch.clientX - 25;
-    let newY = touch.clientY - 25;
-    newX = Math.max(0, Math.min(window.innerWidth - 50, newX));
-    newY = Math.max(0, Math.min(window.innerHeight - 50, newY));
+    let newX = touch.clientX - 15;
+    let newY = touch.clientY - 15;
+    newX = Math.max(0, Math.min(window.innerWidth - 30, newX));
+    newY = Math.max(0, Math.min(window.innerHeight - 30, newY));
     
     // Wall collision
     const isInvincible = bhPlayer.classList.contains('bh-invincible');
     let hitWall = null;
     for (let w of bhWalls) {
-      if (newX + 50 > w.left && newX < w.right && newY + 50 > w.top && newY < w.bottom) {
+      if (newX + 30 > w.left && newX < w.right && newY + 30 > w.top && newY < w.bottom) {
         hitWall = w;
         break;
       }
@@ -625,7 +625,7 @@ function startBulletHell() {
   livesEl.innerText = '❤️❤️❤️';
   bhPlayer.appendChild(livesEl);
   
-  bhPlayer.style.left = (window.innerWidth / 2 - 25) + 'px';
+  bhPlayer.style.left = (window.innerWidth / 2 - 15) + 'px';
   bhPlayer.style.top = (window.innerHeight - 100) + 'px';
   bhEntities.appendChild(bhPlayer);
   
@@ -645,16 +645,16 @@ function startBulletHell() {
   
   function updatePlayerPos(e) {
     const touch = e.touches ? e.touches[0] : e;
-    let newX = touch.clientX - 25;
-    let newY = touch.clientY - 25;
-    newX = Math.max(0, Math.min(window.innerWidth - 50, newX));
-    newY = Math.max(0, Math.min(window.innerHeight - 50, newY));
+    let newX = touch.clientX - 15;
+    let newY = touch.clientY - 15;
+    newX = Math.max(0, Math.min(window.innerWidth - 30, newX));
+    newY = Math.max(0, Math.min(window.innerHeight - 30, newY));
     
     // Wall collision
     const isInvincible = bhPlayer.classList.contains('bh-invincible');
     let hitWall = null;
     for (let w of bhWalls) {
-      if (newX + 50 > w.left && newX < w.right && newY + 50 > w.top && newY < w.bottom) {
+      if (newX + 30 > w.left && newX < w.right && newY + 30 > w.top && newY < w.bottom) {
         hitWall = w;
         break;
       }
