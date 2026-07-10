@@ -1980,14 +1980,16 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1783685263061,
+    "lastActiveTime": 1783685268272,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {},
-    "paidMap": {},
+    "paidMap": {
+      "Tony": true
+    },
     "sections": [
       {
         "title": "報名名單",
