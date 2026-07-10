@@ -1282,7 +1282,7 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783661222796,
+    "lastActiveTime": 1783661441206,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1316,11 +1316,18 @@
           "King",
           "Alice",
           "陳沛君",
-          "沛君朋友"
+          "沛君朋友",
+          "Can"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/10 13:30",
+        "name": "Can",
+        "operator": "TU",
+        "action": "+1"
+      },
       {
         "time": "07/10 13:27",
         "name": "沛君朋友",
