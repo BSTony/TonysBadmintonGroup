@@ -1282,14 +1282,15 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783685771448,
+    "lastActiveTime": 1783686208123,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {
-      "東": "5"
+      "東": "5",
+      "龍": "5"
     },
     "paidMap": {},
     "sections": [
@@ -1318,11 +1319,18 @@
           "陳沛君",
           "沛君朋友",
           "Can",
-          "Sean"
+          "Sean",
+          "龍"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/10 20:23",
+        "name": "龍",
+        "operator": "譚龍",
+        "action": "+1"
+      },
       {
         "time": "07/10 20:16",
         "name": "Sean",
