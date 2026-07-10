@@ -1980,7 +1980,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1783685268272,
+    "lastActiveTime": 1783685269206,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1988,7 +1988,8 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "Tony": true
+      "Tony": true,
+      "Kay": true
     },
     "sections": [
       {
