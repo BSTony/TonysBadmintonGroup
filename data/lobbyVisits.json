@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 757,
+    "viewCount": 758,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -842,9 +842,21 @@
         "firstVisit": 1783631699397,
         "count": 2,
         "lastVisit": 1783631730410
+      },
+      "Uf3a2215c0fc68cd05d651ac0dddf1f27": {
+        "displayName": "陳沛君",
+        "firstVisit": 1783660394217,
+        "count": 1,
+        "lastVisit": 1783660394217
       }
     },
     "logs": [
+      {
+        "time": 1783660394217,
+        "userId": "Uf3a2215c0fc68cd05d651ac0dddf1f27",
+        "displayName": "陳沛君",
+        "pictureUrl": "https://profile.line-scdn.net/0hndhUf6BQMUtFLBvqkHlPNDV8MiFmXWhZOUN4KXl5PHxwT3caO00qfnIkaykvTCUUax56fnl4Oy9JP0YtW3rNf0IcbHp4HXMVb0J7qA"
+      },
       {
         "time": 1783660300995,
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
@@ -2034,12 +2046,6 @@
       },
       {
         "time": 1783570838708,
-        "userId": "U46d67d783291b6b5a5e3a0207d0ff14a",
-        "displayName": "Mina",
-        "pictureUrl": "https://profile.line-scdn.net/0h5R1uJmCLan0cDHsS_1IUAmxcaRc_fTNvYG51THpePUQmOn0tNGsmHX0EPR8gOHgoMjkkHikLMUwQHx0bAlqWSRs8N0whPSgjNmIgng"
-      },
-      {
-        "time": 1783570801262,
         "userId": "U46d67d783291b6b5a5e3a0207d0ff14a",
         "displayName": "Mina",
         "pictureUrl": "https://profile.line-scdn.net/0h5R1uJmCLan0cDHsS_1IUAmxcaRc_fTNvYG51THpePUQmOn0tNGsmHX0EPR8gOHgoMjkkHikLMUwQHx0bAlqWSRs8N0whPSgjNmIgng"
