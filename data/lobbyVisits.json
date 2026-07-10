@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 756,
+    "viewCount": 757,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -618,8 +618,8 @@
       "U2ea89b78f1546c61adda03c7dd8704d5": {
         "displayName": "賴柚子",
         "firstVisit": 1783341633415,
-        "count": 11,
-        "lastVisit": 1783611136167
+        "count": 12,
+        "lastVisit": 1783660300995
       },
       "Uc8b0e0ef7ca58b387136a28642742b7d": {
         "displayName": "沂 Lexie🐷",
@@ -845,6 +845,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783660300995,
+        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
+        "displayName": "賴柚子",
+        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
+      },
       {
         "time": 1783660127870,
         "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
@@ -2037,12 +2043,6 @@
         "userId": "U46d67d783291b6b5a5e3a0207d0ff14a",
         "displayName": "Mina",
         "pictureUrl": "https://profile.line-scdn.net/0h5R1uJmCLan0cDHsS_1IUAmxcaRc_fTNvYG51THpePUQmOn0tNGsmHX0EPR8gOHgoMjkkHikLMUwQHx0bAlqWSRs8N0whPSgjNmIgng"
-      },
-      {
-        "time": 1783570720539,
-        "userId": "Uc85aca08d5834bad3d829179ce81db1e",
-        "displayName": "L",
-        "pictureUrl": "https://profile.line-scdn.net/0hzJW1aTe_JWV6SDuBfx5bWwoYJg9ZOXx3Vn5qBkgdLAcQemIwAy9tUUtLKVNFfWc1BCdsAUlKeFNYImI3VnAEXwQ1PzMEDTpIDkdqBk89DzEcBjh1VlJsRBweGDYeGCdWKSYUZwsRHRE8CglQImhjVzBPOQ8yeTZpKR9JM396S-YVSlIwVy5rBkdOc1DC"
       }
     ]
   },
