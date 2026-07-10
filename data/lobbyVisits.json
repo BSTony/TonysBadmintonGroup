@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 718,
+    "viewCount": 719,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -402,8 +402,8 @@
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
         "firstVisit": 1783209148916,
-        "count": 55,
-        "lastVisit": 1783642723201
+        "count": 56,
+        "lastVisit": 1783644051301
       },
       "U532d12783f207181c2d0f9d9ecc8724a": {
         "displayName": "林俊佑",
@@ -845,6 +845,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783644051301,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
       {
         "time": 1783643492069,
         "userId": "Uc8b0e0ef7ca58b387136a28642742b7d",
@@ -2037,12 +2043,6 @@
         "userId": "U4cbba92203148484d06d213547203e35",
         "displayName": "小高",
         "pictureUrl": "https://profile.line-scdn.net/0h4fvda9yNa0lbHX96be8VNitNaCN4bDJbci4nemkYPC5gKi5LcH92LGdOMX9nJXhMcy90KjxOMCtXDhwvRUuXfVwtNnhmLCkXcXMhqg"
-      },
-      {
-        "time": 1783568037768,
-        "userId": "U24c3b63e1d18834db9830f243aedaeae",
-        "displayName": "陳呈",
-        "pictureUrl": "https://profile.line-scdn.net/0hlAgC3G9hM25KOiL3Q7BNETpqMARpS2p8NFh_C3Zoblp-AiM4Y1gsXHw-OF12DCA-Mll5WnppZFhGKUQIVGzPWk0Kbl93C3EwYFR5jQ"
       }
     ]
   },
