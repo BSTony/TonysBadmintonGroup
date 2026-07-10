@@ -1118,7 +1118,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783659929189,
+    "lastActiveTime": 1783659943831,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1149,13 +1149,18 @@
           "丁丁",
           "周則鼎",
           "奧斯卡",
-          "L",
-          "Alice"
+          "L"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/10 13:05",
+        "name": "Alice",
+        "operator": "King",
+        "action": "-1"
+      },
       {
         "time": "07/10 13:05",
         "name": "Alice",
