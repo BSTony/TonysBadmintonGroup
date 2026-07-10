@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 843,
+    "viewCount": 844,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -522,8 +522,8 @@
       "U799d4a509b3c76b76c249151f5a3f690": {
         "displayName": "瑋",
         "firstVisit": 1783233544693,
-        "count": 9,
-        "lastVisit": 1783686012559
+        "count": 10,
+        "lastVisit": 1783686860533
       },
       "U078cd31b879fc8b1722138b58d04a7a3": {
         "displayName": "冷夜",
@@ -875,6 +875,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783686860533,
+        "userId": "U799d4a509b3c76b76c249151f5a3f690",
+        "displayName": "瑋",
+        "pictureUrl": "https://profile.line-scdn.net/0hR1DfBaAiDR5pHxkS7ClzYRlPDnRKblQMFnAScQkZUyhQLE1LRHsQLQ5IACdWKE8YRCtEfQhIAHllDHp4d0nxKm4vUC9ULk9AQ3FH_Q"
+      },
       {
         "time": 1783686838175,
         "userId": "U7c381eceb3dee900bbd30b986a0f8357",
@@ -2065,12 +2071,6 @@
       },
       {
         "time": 1783595950911,
-        "userId": "Ue8024b6514a8c8ed6a992979d92c699d",
-        "displayName": "黃家弘(Orange)    ⃒⃘⃤ 9¾ ⚯͛",
-        "pictureUrl": "https://profile.line-scdn.net/0hwcmhI65IKExAETcHCVlWcjBBKyZjYHFeO3EwKSJEc396Jz9PanBkLSAWJHt5ID8YaHFjeCUTf3hiUhRGG3IYVwwNCnwfWy9oDA8bXCxPFzsAUhYeHicZUHNDHy4qUTpjOw08Ix5SNiRhcipBHiccUx1YfiEnXidubEZEGkUjRs8vE18ZbXdmL30Xfnn4"
-      },
-      {
-        "time": 1783595938870,
         "userId": "Ue8024b6514a8c8ed6a992979d92c699d",
         "displayName": "黃家弘(Orange)    ⃒⃘⃤ 9¾ ⚯͛",
         "pictureUrl": "https://profile.line-scdn.net/0hwcmhI65IKExAETcHCVlWcjBBKyZjYHFeO3EwKSJEc396Jz9PanBkLSAWJHt5ID8YaHFjeCUTf3hiUhRGG3IYVwwNCnwfWy9oDA8bXCxPFzsAUhYeHicZUHNDHy4qUTpjOw08Ix5SNiRhcipBHiccUx1YfiEnXidubEZEGkUjRs8vE18ZbXdmL30Xfnn4"
