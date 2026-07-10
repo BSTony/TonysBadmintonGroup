@@ -2,7 +2,13 @@
   "enabled": true,
   "message": "恭喜過關 靜待下次活動",
   "quota": 3,
-  "winners": [],
+  "winners": [
+    {
+      "uid": "U49e2484c80056990b759e9039a74e1a6",
+      "name": "Kay",
+      "timeTaken": 6263
+    }
+  ],
   "activeGame": "piggy_run",
   "bulletHellLeaderboard": [
     {
