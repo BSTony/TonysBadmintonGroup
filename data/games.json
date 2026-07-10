@@ -1282,7 +1282,7 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783686935357,
+    "lastActiveTime": 1783686985689,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1319,7 +1319,6 @@
           "Alice",
           "陳沛君",
           "沛君朋友",
-          "Can",
           "Sean",
           "龍",
           "黃政豪",
@@ -1328,6 +1327,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/10 20:36",
+        "name": "Can",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/10 20:35",
         "name": "小黑",
