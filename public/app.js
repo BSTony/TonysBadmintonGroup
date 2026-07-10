@@ -2514,7 +2514,7 @@ document.getElementById('btn-cg-add-row').onclick = () => addCgListRow();
 
 async function loadTemplates() {
   try {
-    const res = await fetch(`/api/templates/${currentGroupId}?_t=${Date.now()}`);
+    const res = await fetch(`/api/templates/${currentUser.userId}?_t=${Date.now()}`);
     if (res.ok) {
       const data = await res.json();
       currentGroupTemplates = data.templates || {};
@@ -2543,7 +2543,7 @@ document.getElementById('btn-save-template').onclick = async () => {
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/templates/${currentGroupId}`, {
+    const res = await fetch(`/api/templates/${currentUser.userId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -2575,7 +2575,7 @@ document.getElementById('btn-delete-template').onclick = async () => {
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/templates/${currentGroupId}`, {
+    const res = await fetch(`/api/templates/${currentUser.userId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
