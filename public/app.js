@@ -1067,8 +1067,8 @@ document.addEventListener('click', (e) => {
 // 渲染大廳畫面
 function renderLobby() {
     appDiv.className = '';
+    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     lobbyView.classList.remove('hidden');
-    detailView.classList.add('hidden');
     
     document.getElementById('lobby-title-text').innerText = globalLobbyTitle || '羽球接龍大廳';
     const btnEditTitle = document.getElementById('btn-edit-title');
