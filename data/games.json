@@ -1282,7 +1282,7 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783686810017,
+    "lastActiveTime": 1783686935357,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1290,7 +1290,8 @@
     "anonymousCount": 0,
     "levelMap": {
       "東": "5",
-      "龍": "5"
+      "龍": "5",
+      "小黑": "打10-12時"
     },
     "paidMap": {},
     "sections": [
@@ -1321,11 +1322,18 @@
           "Can",
           "Sean",
           "龍",
-          "黃政豪"
+          "黃政豪",
+          "小黑"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/10 20:35",
+        "name": "小黑",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/10 20:33",
         "name": "黃政豪",
