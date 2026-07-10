@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 761,
+    "viewCount": 762,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -846,11 +846,17 @@
       "Uf3a2215c0fc68cd05d651ac0dddf1f27": {
         "displayName": "陳沛君",
         "firstVisit": 1783660394217,
-        "count": 1,
-        "lastVisit": 1783660394217
+        "count": 2,
+        "lastVisit": 1783660481550
       }
     },
     "logs": [
+      {
+        "time": 1783660481550,
+        "userId": "Uf3a2215c0fc68cd05d651ac0dddf1f27",
+        "displayName": "陳沛君",
+        "pictureUrl": "https://profile.line-scdn.net/0hndhUf6BQMUtFLBvqkHlPNDV8MiFmXWhZOUN4KXl5PHxwT3caO00qfnIkaykvTCUUax56fnl4Oy9JP0YtW3rNf0IcbHp4HXMVb0J7qA"
+      },
       {
         "time": 1783660476154,
         "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
@@ -2043,12 +2049,6 @@
         "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
         "displayName": "煜翔Sean",
         "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
-      },
-      {
-        "time": 1783571213242,
-        "userId": "U70293580bf944ee91dff2fdea1b5ec16",
-        "displayName": "雅0🐱",
-        "pictureUrl": "https://profile.line-scdn.net/0h8ZNN_70TZ3VjN3nA1E0ZSxNnZB9ARj5nTgEpEQM2PENcVSglT1R_QAYyaUcNAXVwT1ErFVdiMUFBb05bLgIgZQ1eOisXT0QmRiFXFS1kPDwbB2ElCQhQdx5xfxxfZCRFB1JOYRdXR0EuQSQiGCtLFRNjMB0CdyJKDWALI2YFCfYMNRAgTlEpFl4xMUDb"
       }
     ]
   },
