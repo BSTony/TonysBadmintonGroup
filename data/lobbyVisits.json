@@ -361,7 +361,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 809,
+    "viewCount": 810,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -480,8 +480,8 @@
       "Ua698eb94f633310ce3b6cf6f34265adb": {
         "displayName": "煜翔Sean",
         "firstVisit": 1783229120228,
-        "count": 49,
-        "lastVisit": 1783661736413
+        "count": 50,
+        "lastVisit": 1783677922678
       },
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
@@ -875,6 +875,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783677922678,
+        "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
+        "displayName": "煜翔Sean",
+        "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
+      },
       {
         "time": 1783677311319,
         "userId": "U91fe4416423458a77129f86e1d0c7d7e",
@@ -2067,12 +2073,6 @@
         "userId": "U7224dcf829dda94227f70908b96deeed",
         "displayName": "陳彥至🦁Roger",
         "pictureUrl": "https://profile.line-scdn.net/0hAOv0IEjSHmBbSQEcmVRgXisZHQp4OEdyf3hTBjwdSFVgeFBhIngEB2ccR1BieVkxJysEU2hPFFJ5GF9dK2kTBxw3Ilk5AQJhcUYZQi4bCBZieRBRM1ZVVmotGVguJSJLLisLBw0XNTsPAhpvFVkCYQ9LBhYxEBpDNB5yNl57cOM0S2k1di9QA2ZPSFXj"
-      },
-      {
-        "time": 1783588294265,
-        "userId": "U799d4a509b3c76b76c249151f5a3f690",
-        "displayName": "瑋",
-        "pictureUrl": "https://profile.line-scdn.net/0hR1DfBaAiDR5pHxkS7ClzYRlPDnRKblQMFnAScQkZUyhQLE1LRHsQLQ5IACdWKE8YRCtEfQhIAHllDHp4d0nxKm4vUC9ULk9AQ3FH_Q"
       }
     ]
   },
