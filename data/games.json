@@ -1118,7 +1118,7 @@
     "tag": "3面,3小",
     "active": true,
     "startTime": 1783152139681,
-    "lastActiveTime": 1783611173259,
+    "lastActiveTime": 1783658595588,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1148,12 +1148,19 @@
           "譚龍",
           "丁丁",
           "周則鼎",
-          "奧斯卡"
+          "奧斯卡",
+          "L"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/10 12:43",
+        "name": "L",
+        "operator": "L",
+        "action": "+1"
+      },
       {
         "time": "07/09 23:32",
         "name": "奧斯卡",
