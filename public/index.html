@@ -407,7 +407,6 @@
     <div id="room-admin-panel" class="hidden" style="position: absolute; top: 50px; right: 20px; width: 300px; background: rgba(255, 255, 255, 0.95); border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 10005; display: flex; flex-direction: column; border: 2px solid #3498db; transition: height 0.2s;">
       <div id="room-admin-header" style="background: #3498db; color: white; padding: 10px; border-radius: 8px 8px 0 0; cursor: move; display: flex; justify-content: space-between; align-items: center; font-weight: bold; user-select: none;">
         <span>⚙️ 房間管理設定</span>
-        <button id="btn-minimize-admin-panel" style="background: none; border: none; color: white; cursor: pointer; font-size: 16px;">—</button>
       </div>
       <div id="room-admin-body" style="padding: 15px; display: flex; flex-direction: column; gap: 10px;">
         <!-- 動態顯示 Lottery 或 Survival 設定 -->
@@ -425,7 +424,8 @@
           <hr style="margin: 10px 0; border-top:1px solid #ccc;">
           <label style="font-size: 12px; color: black;">指定抽出數量：</label>
           <input type="number" id="lottery-draw-count" value="1" min="1" max="80" style="margin-bottom: 5px; width:100%; padding:5px; box-sizing: border-box;">
-          <label style="font-size: 12px; color: black;">指定抽籤者：</label>
+          <button id="btn-lottery-admin-play" class="btn" style="width:100%; background: #2ecc71; color: white; margin-bottom: 5px;">▶️ 開始抽籤 (自己抽)</button>
+          <label style="font-size: 12px; color: black;">指派抽籤者：</label>
           <select id="lottery-assignee-select" style="width:100%; padding:5px; margin-bottom:10px; box-sizing: border-box;">
             <option value="">-- 請選擇在線人員 --</option>
           </select>
@@ -529,7 +529,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="lottery.js?v=20260711_6"></script>
-  <script src="app.js?v=20260711_6"></script>
+  <script src="lottery.js?v=20260711_7"></script>
+  <script src="app.js?v=20260711_7"></script>
 </body>
 </html>

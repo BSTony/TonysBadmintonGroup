@@ -3921,3 +3921,22 @@ if (panelResizer && participantsPanel) {
   });
 }
 
+
+// === Lottery Admin Play ===
+const btnLotteryAdminPlay = document.getElementById('btn-lottery-admin-play');
+if (btnLotteryAdminPlay) {
+  btnLotteryAdminPlay.addEventListener('click', async () => {
+    const count = parseInt(lotteryDrawCount.value) || 1;
+    try {
+      const res = await fetch('/api/admin/lottery/assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId, assigneeUid: currentUser.userId, drawCount: count })
+      });
+      const data = await res.json();
+      if (!data.success) alert(data.error);
+      else alert('已開始自動抽籤');
+    } catch(e) { console.error(e); }
+  });
+}
+
