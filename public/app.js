@@ -3861,6 +3861,19 @@ function updateLotteryAdminPoolUI() {
     li.appendChild(delBtn);
     if (typeof lotteryPoolList !== 'undefined' && lotteryPoolList) lotteryPoolList.appendChild(li);
   });
+  syncLotteryPoolToServer();
+}
+
+async function syncLotteryPoolToServer() {
+  if (typeof currentGlobalRoomState !== 'undefined' && currentGlobalRoomState && currentGlobalRoomState.status === 'open' && currentGlobalRoomState.activeGame === 'lottery') {
+    try {
+      await fetch('/api/admin/lottery/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId, pool: lotteryAdminPool })
+      });
+    } catch(e) { console.error(e); }
+  }
 }
 
 if (btnImportLobbyUsers) {
