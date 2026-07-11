@@ -7,6 +7,8 @@ const lotteryInteractionUi = document.getElementById('lottery-interaction-ui');
 const lotteryForceBar = document.getElementById('lottery-force-bar');
 const lotterySpectatorUi = document.getElementById('lottery-spectator-ui');
 const lotteryHintText = document.getElementById('lottery-hint-text');
+const btnJoinLottery = document.getElementById('btn-join-lottery');
+const lotteryPoolDisplayList = document.getElementById('lottery-pool-display-list');
 
 let engine, render, runner;
 let balls = [];
@@ -27,6 +29,15 @@ function initLottery(uid) {
   if (btnCloseLottery) {
     btnCloseLottery.addEventListener('click', () => {
       lotteryViewOverlay.classList.add('hidden');
+    });
+  }
+  
+  if (btnJoinLottery) {
+    btnJoinLottery.addEventListener('click', () => {
+      if (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) {
+        socket.emit('join_lottery', { name: currentUser.displayName });
+        btnJoinLottery.classList.add('hidden');
+      }
     });
   }
 
@@ -91,12 +102,32 @@ function updateForceBar() {
 function updateLotteryUI() {
   if (!currentLotteryState || currentLotteryState.status === 'idle') {
     lotteryViewOverlay.classList.add('hidden');
+    if (engine) {
+      Matter.Render.stop(render);
+      Matter.Runner.stop(runner);
+      Matter.Engine.clear(engine);
+      engine = null;
+    }
     return;
   }
   
   lotteryViewOverlay.classList.remove('hidden');
   
-  if (currentLotteryState.status === 'ready') {
+  const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : '';
+  
+  if (currentLotteryState.status === 'lobby') {
+    lotteryInteractionUi.classList.add('hidden');
+    lotterySpectatorUi.classList.remove('hidden');
+    lotterySpectatorUi.innerText = '等待大家加入抽籤房間...';
+    
+    if (myName && !currentLotteryState.pool.includes(myName)) {
+      btnJoinLottery.classList.remove('hidden');
+    } else {
+      btnJoinLottery.classList.add('hidden');
+      if (myName) lotterySpectatorUi.innerText = '您已加入名單，等待抽籤開始...';
+    }
+  } else if (currentLotteryState.status === 'ready') {
+    btnJoinLottery.classList.add('hidden');
     if (currentLotteryState.assigneeUid === myUid) {
       lotteryInteractionUi.classList.remove('hidden');
       lotterySpectatorUi.classList.add('hidden');
@@ -108,58 +139,103 @@ function updateLotteryUI() {
     } else {
       lotteryInteractionUi.classList.add('hidden');
       lotterySpectatorUi.classList.remove('hidden');
-      lotterySpectatorUi.innerText = '等待管理員指派抽籤者...';
+      lotterySpectatorUi.innerText = '等待管理員指派這回合的抽籤者...';
     }
   } else if (currentLotteryState.status === 'drawing') {
+    btnJoinLottery.classList.add('hidden');
     lotteryInteractionUi.classList.add('hidden');
     lotterySpectatorUi.classList.remove('hidden');
     lotterySpectatorUi.innerText = '🌪️ 抽籤中 🌪️';
   }
 
+  // Update Online Pool List
+  if (lotteryPoolDisplayList) {
+    lotteryPoolDisplayList.innerHTML = '';
+    const undrawnPool = currentLotteryState.pool.filter(n => !currentLotteryState.drawn.includes(n));
+    undrawnPool.forEach(name => {
+      const li = document.createElement('li');
+      li.innerText = name;
+      lotteryPoolDisplayList.appendChild(li);
+    });
+  }
+
   // Update Results
-  lotteryResultList.innerHTML = '';
-  currentLotteryState.drawn.forEach((name, idx) => {
-    const li = document.createElement('li');
-    li.style.padding = '8px';
-    li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
-    li.style.display = 'flex';
-    li.style.justifyContent = 'space-between';
+  if (lotteryResultList) {
+    lotteryResultList.innerHTML = '';
+    currentLotteryState.drawn.forEach((name, idx) => {
+      const li = document.createElement('li');
+      li.style.padding = '8px';
+      li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+      li.style.display = 'flex';
+      li.style.justifyContent = 'space-between';
+      
+      const rankSpan = document.createElement('span');
+      rankSpan.innerText = `#${idx + 1}`;
+      rankSpan.style.color = '#f1c40f';
+      rankSpan.style.fontWeight = 'bold';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.innerText = name;
+      
+      li.appendChild(rankSpan);
+      li.appendChild(nameSpan);
+      lotteryResultList.appendChild(li);
+    });
+  }
+}
+
+function spawnBalls(namesToSpawn, cx, cy, radius) {
+  const { Bodies, World } = Matter;
+  const newBalls = [];
+  namesToSpawn.forEach(name => {
+    const ballRadius = Math.max(15, Math.min(30, 200 / Math.sqrt(currentLotteryState.pool.length || 1)));
     
-    const rankSpan = document.createElement('span');
-    rankSpan.innerText = `#${idx + 1}`;
-    rankSpan.style.color = '#f1c40f';
-    rankSpan.style.fontWeight = 'bold';
+    const spawnAngle = Math.random() * Math.PI * 2;
+    const spawnRadius = Math.random() * (radius - ballRadius * 2);
+    const bx = cx + Math.cos(spawnAngle) * spawnRadius;
+    const by = cy + Math.sin(spawnAngle) * spawnRadius;
     
-    const nameSpan = document.createElement('span');
-    nameSpan.innerText = name;
+    const hue = Math.floor(Math.random() * 360);
     
-    li.appendChild(rankSpan);
-    li.appendChild(nameSpan);
-    lotteryResultList.appendChild(li);
+    const ball = Bodies.circle(bx, by, ballRadius, {
+      restitution: 0.9,
+      frictionAir: 0.01,
+      density: 0.05,
+      render: {
+        fillStyle: `hsl(${hue}, 80%, 60%)`,
+        strokeStyle: '#ffffff',
+        lineWidth: 2
+      },
+      plugin: { name: name }
+    });
+    newBalls.push(ball);
   });
+  balls.push(...newBalls);
+  World.add(engine.world, newBalls);
 }
 
 function setupMatterJS() {
-  if (engine) {
-    Matter.Render.stop(render);
-    Matter.Runner.stop(runner);
-    Matter.Engine.clear(engine);
-    lotteryCanvasContainer.innerHTML = '';
-    // Append the UI divs back because innerHTML clear removes them
-    lotteryCanvasContainer.appendChild(lotteryInteractionUi);
-    lotteryCanvasContainer.appendChild(lotterySpectatorUi);
-  }
-
-  const { Engine, Render, Runner, World, Bodies, Body, Composite, Events } = Matter;
-  
-  engine = Engine.create();
-  engine.gravity.y = 0.5; // Slight gravity
-
   const width = lotteryCanvasContainer.clientWidth;
   const height = lotteryCanvasContainer.clientHeight || window.innerHeight * 0.5;
   const radius = Math.min(width, height) / 2 - 20;
   const cx = width / 2;
   const cy = height / 2;
+
+  const { Engine, Render, Runner, World, Bodies, Body, Composite, Events } = Matter;
+
+  if (engine) {
+    // Engine already running, just add missing balls
+    const existingNames = balls.map(b => b.plugin.name);
+    const undrawnPool = currentLotteryState.pool.filter(n => !currentLotteryState.drawn.includes(n));
+    const toAdd = undrawnPool.filter(n => !existingNames.includes(n));
+    if (toAdd.length > 0) {
+      spawnBalls(toAdd, cx, cy, radius);
+    }
+    return;
+  }
+
+  engine = Engine.create();
+  engine.gravity.y = 0.5;
 
   render = Render.create({
     element: lotteryCanvasContainer,
@@ -172,7 +248,6 @@ function setupMatterJS() {
     }
   });
 
-  // Create Circular Boundary using multiple static rectangles
   const boundaryParts = [];
   const segments = 36;
   const thickness = 40;
@@ -192,7 +267,6 @@ function setupMatterJS() {
     boundaryParts.push(rect);
   }
   
-  // "Tube" for drawing balls (at the top)
   const tubeWidth = 60;
   const tubeHeight = 100;
   const tubeLeft = Bodies.rectangle(cx - tubeWidth/2, cy - radius - tubeHeight/2, 10, tubeHeight, { isStatic: true, render: { fillStyle: 'rgba(255,255,255,0.5)' } });
@@ -200,37 +274,9 @@ function setupMatterJS() {
   
   World.add(engine.world, [...boundaryParts, tubeLeft, tubeRight]);
 
-  // Create Balls
   balls = [];
   const undrawnPool = currentLotteryState.pool.filter(n => !currentLotteryState.drawn.includes(n));
-  
-  undrawnPool.forEach((name, i) => {
-    const ballRadius = Math.max(15, Math.min(30, 200 / Math.sqrt(undrawnPool.length)));
-    
-    // Spread balls around the center
-    const spawnAngle = Math.random() * Math.PI * 2;
-    const spawnRadius = Math.random() * (radius - ballRadius * 2);
-    const bx = cx + Math.cos(spawnAngle) * spawnRadius;
-    const by = cy + Math.sin(spawnAngle) * spawnRadius;
-    
-    // Rainbow colors
-    const hue = Math.floor(Math.random() * 360);
-    
-    const ball = Bodies.circle(bx, by, ballRadius, {
-      restitution: 0.9, // very bouncy
-      frictionAir: 0.01,
-      density: 0.05,
-      render: {
-        fillStyle: `hsl(${hue}, 80%, 60%)`,
-        strokeStyle: '#ffffff',
-        lineWidth: 2
-      },
-      plugin: { name: name } // Custom property
-    });
-    balls.push(ball);
-  });
-  
-  World.add(engine.world, balls);
+  spawnBalls(undrawnPool, cx, cy, radius);
 
   // Custom Rendering for text on balls
   Events.on(render, 'afterRender', function() {
@@ -315,10 +361,14 @@ socket.on('lottery_state', (state) => {
   currentLotteryState = state;
   updateLotteryUI();
   
-  if (state.status === 'ready' && previousStatus !== 'ready') {
-    // Setup physics when becoming ready
+  if ((state.status === 'lobby' || state.status === 'ready') && previousStatus === 'idle') {
     setupMatterJS();
-  } else if (state.status === 'ready' && previousStatus === 'drawing') {
+  } else if (state.status === 'lobby' || state.status === 'ready') {
+    // Dynamically spawn new balls if pool updated
+    setupMatterJS();
+  }
+  
+  if (state.status === 'ready' && previousStatus === 'drawing') {
     // Transition from drawing to ready -> show winner celebration
     const newlyDrawn = state.drawn.slice(previousDrawnCount);
     if (newlyDrawn.length > 0) {
@@ -327,8 +377,14 @@ socket.on('lottery_state', (state) => {
         spread: 70,
         origin: { y: 0.6 }
       });
-      // Re-setup to remove drawn balls
-      setupMatterJS();
+      
+      // Remove drawn balls from physics world
+      const { World, Composite } = Matter;
+      const ballsToRemove = balls.filter(b => newlyDrawn.includes(b.plugin.name));
+      if (ballsToRemove.length > 0 && engine) {
+        World.remove(engine.world, ballsToRemove);
+        balls = balls.filter(b => !newlyDrawn.includes(b.plugin.name));
+      }
     }
   }
 });

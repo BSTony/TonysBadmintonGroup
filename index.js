@@ -1900,6 +1900,16 @@ io.on('connection', (socket) => {
   socket.emit('party_state', partyRoom);
   socket.emit('lottery_state', lotteryRoom);
 
+  socket.on('join_lottery', (data) => {
+    if (lotteryRoom.status === 'lobby') {
+      const { name } = data;
+      if (name && !lotteryRoom.pool.includes(name)) {
+        lotteryRoom.pool.push(name);
+        io.emit('lottery_state', lotteryRoom);
+      }
+    }
+  });
+
   socket.on('lottery_perform_draw', (data) => {
     if (lotteryRoom.status === 'ready' && lotteryRoom.assigneeUid === data.uid) {
       lotteryRoom.status = 'drawing';
@@ -1921,6 +1931,7 @@ io.on('connection', (socket) => {
           }
         });
       }
+      // Stay in 'ready' so admin can assign again for sequential drawing
       lotteryRoom.status = 'ready';
       lotteryRoom.assigneeUid = null;
       io.emit('lottery_state', lotteryRoom);
@@ -2010,11 +2021,23 @@ app.post('/api/admin/lottery/setup', express.json(), (req, res) => {
   const { uid, pool } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
-  lotteryRoom.status = 'ready';
-  lotteryRoom.pool = pool || [];
+  lotteryRoom.status = 'lobby';
+  lotteryRoom.pool = pool || []; // Admin can still pass initial pool
   lotteryRoom.drawn = [];
   lotteryRoom.assigneeUid = null;
   lotteryRoom.drawCount = 1;
+  io.emit('lottery_state', lotteryRoom);
+  res.json({ success: true, lotteryRoom });
+});
+
+app.post('/api/admin/lottery/reset', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  lotteryRoom.status = 'idle';
+  lotteryRoom.pool = [];
+  lotteryRoom.drawn = [];
+  lotteryRoom.assigneeUid = null;
   io.emit('lottery_state', lotteryRoom);
   res.json({ success: true, lotteryRoom });
 });
@@ -2023,8 +2046,9 @@ app.post('/api/admin/lottery/assign', express.json(), (req, res) => {
   const { uid, assigneeUid, drawCount } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
-  if (lotteryRoom.status !== 'ready') return res.status(400).json({ error: 'Lottery not ready' });
+  if (lotteryRoom.status !== 'ready' && lotteryRoom.status !== 'lobby') return res.status(400).json({ error: 'Lottery not ready or lobby' });
   
+  lotteryRoom.status = 'ready';
   lotteryRoom.assigneeUid = assigneeUid;
   lotteryRoom.drawCount = parseInt(drawCount) || 1;
   io.emit('lottery_state', lotteryRoom);

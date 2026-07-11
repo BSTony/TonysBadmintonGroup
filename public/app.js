@@ -936,6 +936,9 @@ async function initializeLiff() {
     // 取得使用者資料
     const profile = await liff.getProfile();
     currentUser = profile;
+    if (typeof initLottery === 'function') {
+      initLottery(currentUser.userId);
+    }
 
     // 4. 取得群組 Context
     const urlParams = new URLSearchParams(window.location.search);
@@ -3591,7 +3594,24 @@ if (btnGenerateLottery) {
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
-      else alert('抽籤機已啟動，請關閉此管理視窗以觀看抽籤機。');
+      else alert('抽獎房間已開啟，所有畫面在線的使用者將看到加入按鈕！');
+    } catch(e) { console.error(e); }
+  });
+}
+
+const btnResetLottery = document.getElementById('btn-reset-lottery');
+if (btnResetLottery) {
+  btnResetLottery.addEventListener('click', async () => {
+    if (!confirm('確定要重置並關閉所有抽籤設定嗎？')) return;
+    try {
+      const res = await fetch('/api/admin/lottery/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      const data = await res.json();
+      if (!data.success) alert(data.error);
+      else alert('已重置！');
     } catch(e) { console.error(e); }
   });
 }
