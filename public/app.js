@@ -285,6 +285,10 @@ function initSocket() {
   if (socket) return;
   socket = io();
   
+  if (typeof bindLotteryAdminSocket === 'function') {
+    bindLotteryAdminSocket(socket);
+  }
+  
   socket.on('global_room_state', (state) => {
     window.globalRoomState = state;
     currentGlobalRoomState = state;
@@ -3772,8 +3776,10 @@ if (btnAssignDraw) {
 }
 
 // Update assignee select options whenever party state changes
-if (socket) {
-  socket.on('party_state', (state) => {
+// Because socket may not be initialized yet when this script runs, we must listen globally
+// or move this into initSocket(). We will just define a global function to be called in initSocket.
+function bindLotteryAdminSocket(s) {
+  s.on('party_state', (state) => {
     if (state.players && lotteryAssigneeSelect) {
       const currentSelected = lotteryAssigneeSelect.value;
       lotteryAssigneeSelect.innerHTML = '<option value="">-- 請選擇在線人員 --</option>';
@@ -3789,17 +3795,46 @@ if (socket) {
   });
 }
 
-function joinPartyLobby() {
-  if (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) {
-    socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: currentUser.pictureUrl });
-    if (btnJoinRoom) btnJoinRoom.classList.add('hidden');
-  }
-}
-
 if (btnJoinRoom) {
   btnJoinRoom.addEventListener('click', () => {
     if (window.globalRoomState && window.globalRoomState.activeGame === 'survival') {
-      joinPartyLobby();
+      const modal = document.getElementById('character-select-modal');
+      const grid = document.getElementById('character-grid');
+      const btnConfirm = document.getElementById('btn-confirm-character');
+      const btnCancel = document.getElementById('btn-cancel-character');
+      
+      if (modal && grid) {
+        grid.innerHTML = '';
+        const chars = ['🐷', '🐶', '🐱', '🐰', '🦊', '🐻', '🐼', '🐯', '🦁', '🐸'];
+        chars.forEach(c => {
+          const btn = document.createElement('button');
+          btn.className = 'char-btn';
+          btn.innerText = c;
+          btn.onclick = () => {
+            document.querySelectorAll('.char-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedCharacterIcon = c;
+            btnConfirm.disabled = false;
+          };
+          grid.appendChild(btn);
+        });
+        
+        btnConfirm.onclick = () => {
+          modal.classList.add('hidden');
+          joinPartyLobby();
+          btnJoinRoom.classList.add('hidden');
+        };
+        
+        btnCancel.onclick = () => {
+          modal.classList.add('hidden');
+        };
+        
+        modal.classList.remove('hidden');
+      } else {
+        // Fallback
+        joinPartyLobby();
+        btnJoinRoom.classList.add('hidden');
+      }
     }
   });
 }
