@@ -215,6 +215,19 @@ const partyAdminStatus = document.getElementById('party-admin-status');
 const partyJoinContainer = document.getElementById('party-join-container');
 const btnJoinParty = document.getElementById('btn-join-party');
 
+// --- Lottery Admin DOM ---
+const btnImportLobbyUsers = document.getElementById('btn-import-lobby-users');
+const lotteryManualName = document.getElementById('lottery-manual-name');
+const btnAddManualName = document.getElementById('btn-add-manual-name');
+const lotteryPoolCount = document.getElementById('lottery-pool-count');
+const lotteryPoolList = document.getElementById('lottery-pool-list');
+const btnGenerateLottery = document.getElementById('btn-generate-lottery');
+const lotteryDrawCount = document.getElementById('lottery-draw-count');
+const lotteryAssigneeSelect = document.getElementById('lottery-assignee-select');
+const btnAssignDraw = document.getElementById('btn-assign-draw');
+
+let lotteryAdminPool = [];
+
 let currentPartyStatus = 'idle';
 let partyLobbyNames = [];
 
@@ -3507,3 +3520,122 @@ function triggerConfetti() {
   }, 5000);
 }
 
+// --- Lottery Admin Logic ---
+function updateLotteryAdminPoolUI() {
+  lotteryPoolCount.innerText = lotteryAdminPool.length;
+  lotteryPoolList.innerHTML = '';
+  lotteryAdminPool.forEach((name, idx) => {
+    const li = document.createElement('li');
+    li.style.display = 'flex';
+    li.style.justifyContent = 'space-between';
+    li.style.borderBottom = '1px solid #eee';
+    li.style.padding = '2px 0';
+    
+    const span = document.createElement('span');
+    span.innerText = `${idx + 1}. ${name}`;
+    
+    const delBtn = document.createElement('button');
+    delBtn.innerText = '❌';
+    delBtn.style.background = 'none';
+    delBtn.style.border = 'none';
+    delBtn.style.cursor = 'pointer';
+    delBtn.onclick = () => {
+      lotteryAdminPool.splice(idx, 1);
+      updateLotteryAdminPoolUI();
+    };
+    
+    li.appendChild(span);
+    li.appendChild(delBtn);
+    lotteryPoolList.appendChild(li);
+  });
+}
+
+if (btnImportLobbyUsers) {
+  btnImportLobbyUsers.addEventListener('click', () => {
+    if (partyLobbyNames && partyLobbyNames.length > 0) {
+      partyLobbyNames.forEach(name => {
+        if (!lotteryAdminPool.includes(name)) lotteryAdminPool.push(name);
+      });
+      updateLotteryAdminPoolUI();
+    } else {
+      alert('大廳內目前沒有人員可以匯入！(請確定有開啟派對大廳)');
+    }
+  });
+}
+
+if (btnAddManualName) {
+  btnAddManualName.addEventListener('click', () => {
+    const val = lotteryManualName.value.trim();
+    if (!val) return;
+    const names = val.split(/[,，]/).map(n => n.trim()).filter(Boolean);
+    names.forEach(n => {
+      if (!lotteryAdminPool.includes(n)) lotteryAdminPool.push(n);
+    });
+    lotteryManualName.value = '';
+    updateLotteryAdminPoolUI();
+  });
+}
+
+if (btnGenerateLottery) {
+  btnGenerateLottery.addEventListener('click', async () => {
+    if (lotteryAdminPool.length === 0) {
+      alert('抽籤名單為空，請先匯入或手動加入名單！');
+      return;
+    }
+    
+    try {
+      const res = await fetch('/api/admin/lottery/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId, pool: lotteryAdminPool })
+      });
+      const data = await res.json();
+      if (!data.success) alert(data.error);
+      else alert('抽籤機已啟動，請關閉此管理視窗以觀看抽籤機。');
+    } catch(e) { console.error(e); }
+  });
+}
+
+if (btnAssignDraw) {
+  btnAssignDraw.addEventListener('click', async () => {
+    const assigneeUid = lotteryAssigneeSelect.value;
+    const count = parseInt(lotteryDrawCount.value) || 1;
+    
+    if (!assigneeUid) {
+      alert('請選擇一位在線人員來抽籤');
+      return;
+    }
+    
+    try {
+      const res = await fetch('/api/admin/lottery/assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId, assigneeUid, drawCount: count })
+      });
+      const data = await res.json();
+      if (!data.success) alert(data.error);
+      else alert('已成功指派！');
+    } catch(e) { console.error(e); }
+  });
+}
+
+// Update assignee select options whenever party state changes
+if (socket) {
+  socket.on('party_state', (state) => {
+    if (state.players && lotteryAssigneeSelect) {
+      const currentSelected = lotteryAssigneeSelect.value;
+      lotteryAssigneeSelect.innerHTML = '<option value="">-- 請選擇在線人員 --</option>';
+      
+      Object.values(state.players).forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.uid;
+        opt.innerText = p.name;
+        lotteryAssigneeSelect.appendChild(opt);
+      });
+      
+      if (Object.keys(state.players).some(id => state.players[id].uid === currentSelected)) {
+        lotteryAssigneeSelect.value = currentSelected;
+      }
+    }
+  });
+}

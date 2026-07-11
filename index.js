@@ -1833,6 +1833,15 @@ res.json({ success: true });
 });
 // ------------------
 
+// --- Lottery Sphere Logic ---
+let lotteryRoom = {
+  status: 'idle', // idle, ready, drawing, ended
+  pool: [], // array of names
+  drawn: [], // array of drawn names in order
+  assigneeUid: null, // uid of the person allowed to draw
+  drawCount: 1 // how many to draw
+};
+
 // --- Multiplayer Party Game Logic ---
 let partyRoom = {
   status: 'idle', // idle, lobby, playing, ended
@@ -1889,6 +1898,34 @@ function checkWinCondition() {
 io.on('connection', (socket) => {
   // Send current party state to newly connected client
   socket.emit('party_state', partyRoom);
+  socket.emit('lottery_state', lotteryRoom);
+
+  socket.on('lottery_perform_draw', (data) => {
+    if (lotteryRoom.status === 'ready' && lotteryRoom.assigneeUid === data.uid) {
+      lotteryRoom.status = 'drawing';
+      io.emit('lottery_draw_started', {
+         force: data.force,
+         dirX: data.dirX,
+         dirY: data.dirY,
+         count: lotteryRoom.drawCount
+      });
+    }
+  });
+
+  socket.on('lottery_result_computed', (data) => {
+    if (lotteryRoom.status === 'drawing' && lotteryRoom.assigneeUid === data.uid) {
+      if (Array.isArray(data.drawnNames)) {
+        data.drawnNames.forEach(n => {
+          if (!lotteryRoom.drawn.includes(n) && lotteryRoom.pool.includes(n)) {
+            lotteryRoom.drawn.push(n);
+          }
+        });
+      }
+      lotteryRoom.status = 'ready';
+      lotteryRoom.assigneeUid = null;
+      io.emit('lottery_state', lotteryRoom);
+    }
+  });
 
   socket.on('join_party', (data) => {
     if (partyRoom.status === 'idle') return;
@@ -1967,6 +2004,40 @@ app.post('/api/admin/party/start', express.json(), (req, res) => {
   partyRoom.players = {};
   io.emit('party_state', partyRoom);
   res.json({ success: true, partyRoom });
+});
+
+app.post('/api/admin/lottery/setup', express.json(), (req, res) => {
+  const { uid, pool } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  lotteryRoom.status = 'ready';
+  lotteryRoom.pool = pool || [];
+  lotteryRoom.drawn = [];
+  lotteryRoom.assigneeUid = null;
+  lotteryRoom.drawCount = 1;
+  io.emit('lottery_state', lotteryRoom);
+  res.json({ success: true, lotteryRoom });
+});
+
+app.post('/api/admin/lottery/assign', express.json(), (req, res) => {
+  const { uid, assigneeUid, drawCount } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  if (lotteryRoom.status !== 'ready') return res.status(400).json({ error: 'Lottery not ready' });
+  
+  lotteryRoom.assigneeUid = assigneeUid;
+  lotteryRoom.drawCount = parseInt(drawCount) || 1;
+  io.emit('lottery_state', lotteryRoom);
+  res.json({ success: true, lotteryRoom });
+});
+
+app.post('/api/admin/lottery/close', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  lotteryRoom.status = 'idle';
+  io.emit('lottery_state', lotteryRoom);
+  res.json({ success: true });
 });
 
 app.post('/api/admin/party/play', express.json(), (req, res) => {

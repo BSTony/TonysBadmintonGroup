@@ -339,6 +339,31 @@
           </div>
           <p id="party-admin-status" style="margin-top: 10px; font-weight: bold; text-align: center;">狀態：關閉</p>
         </div>
+
+        <div id="lottery-admin-panel" class="form-group" style="border: 2px solid #3498db; padding: 15px; border-radius: 8px; background: #ebf5fb; margin-top: 15px;">
+          <h3 style="margin-top:0; color:#3498db;">3D 抽獎機設定</h3>
+          <div style="display:flex; gap: 5px; margin-bottom: 10px;">
+            <button id="btn-import-lobby-users" class="btn-secondary" style="flex:1; font-size:12px;">匯入大廳在線人員</button>
+          </div>
+          <div style="display:flex; gap: 5px; margin-bottom: 10px;">
+            <input type="text" id="lottery-manual-name" placeholder="手動新增名字 (可逗號分隔)" style="flex:1; padding:5px; font-size: 14px;">
+            <button id="btn-add-manual-name" class="btn-primary" style="padding:5px 10px; font-size: 14px;">加入</button>
+          </div>
+          <p style="margin:5px 0; font-size:14px;">目前名單人數: <span id="lottery-pool-count" style="font-weight:bold;">0</span></p>
+          <ul id="lottery-pool-list" style="max-height:100px; overflow-y:auto; background:white; padding:5px; border:1px solid #ddd; font-size:12px; margin-bottom:10px;"></ul>
+          
+          <button id="btn-generate-lottery" class="btn" style="width:100%; background: #9b59b6; color: white; margin-bottom: 15px;">啟動抽獎機畫面</button>
+
+          <hr style="border:0; border-top:1px solid #bdc3c7; margin:15px 0;">
+          <h4 style="margin:0 0 10px 0;">指派抽籤者</h4>
+          <label>指定抽出數量：</label>
+          <input type="number" id="lottery-draw-count" value="1" min="1" max="10" style="margin-bottom: 10px; width:100%; padding:5px;">
+          <label>指定抽籤者：</label>
+          <select id="lottery-assignee-select" style="width:100%; padding:5px; margin-bottom:10px;">
+            <option value="">-- 請選擇在線人員 --</option>
+          </select>
+          <button id="btn-assign-draw" class="btn" style="width:100%; background: #e67e22; color: white;">指派抽籤權限</button>
+        </div>
       </div>
     </div>
 
@@ -425,8 +450,63 @@
     </div>
   </div>
 
+  <!-- Lottery Sphere View -->
+  <div id="lottery-view-overlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; flex-direction: column; overflow: hidden; touch-action: none;">
+    <div style="position: absolute; top: 10px; right: 10px; z-index: 10002;">
+      <button id="btn-close-lottery" class="btn-danger" style="padding: 5px 15px; border-radius: 20px;">關閉</button>
+    </div>
+    
+    <div class="lottery-layout" style="display: flex; width: 100%; height: 100%; flex-direction: column;">
+      <!-- 上半部: 畫布區 -->
+      <div id="lottery-canvas-container" style="flex: 2; position: relative; min-height: 50vh;">
+        <!-- Canvas 將由 matter.js 生成 -->
+        
+        <!-- 操作者獨有的 UI -->
+        <div id="lottery-interaction-ui" class="hidden" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 80%; max-width: 400px; text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px);">
+          <h3 style="color: white; margin: 0 0 10px 0; text-shadow: 1px 1px 2px black;">換你抽籤啦！</h3>
+          <p id="lottery-hint-text" style="color: #f1c40f; margin: 0 0 10px 0; font-size: 14px;">在畫面中滑動來產生風力🌪️</p>
+          <div id="lottery-force-indicator" style="width: 100%; height: 10px; background: #333; border-radius: 5px; overflow: hidden; margin-top: 5px;">
+            <div id="lottery-force-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #2ecc71, #f1c40f, #e74c3c); transition: width 0.05s;"></div>
+          </div>
+        </div>
+        
+        <!-- 觀戰者提示 -->
+        <div id="lottery-spectator-ui" class="hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.5); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 16px; text-align: center; white-space: nowrap;">
+          等待抽籤中...
+        </div>
+      </div>
+      
+      <!-- 下半部: 名單結果區 -->
+      <div id="lottery-result-panel" style="flex: 1; background: rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; padding: 10px;">
+        <h3 style="color: white; margin: 0 0 10px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px;">🏆 抽籤順序 🏆</h3>
+        <ul id="lottery-result-list" style="list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; color: white; font-size: 18px; line-height: 1.8; text-align: center;">
+          <!-- 動態生成結果 -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @media (min-width: 768px) {
+      .lottery-layout {
+        flex-direction: row !important;
+      }
+      #lottery-canvas-container {
+        flex: 1;
+      }
+      #lottery-result-panel {
+        flex: 0 0 300px;
+        border-top: none !important;
+        border-left: 1px solid rgba(255,255,255,0.1);
+      }
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="app.js?v=20260702-4"></script>
+  <script src="lottery.js?v=20260711"></script>
+  <script src="app.js?v=20260711"></script>
 </body>
 </html>
