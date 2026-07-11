@@ -23,6 +23,7 @@ if (btnTrapSpeed) {
     btnTrapSlow.classList.remove('selected');
     btnTrapSlow.style.border = '3px solid transparent';
     btnTrapSlow.style.boxShadow = 'none';
+    alert('已選擇：🟢 加速陷阱！請點擊黑色夜空畫面來放置您的陷阱！');
   });
 }
 if (btnTrapSlow) {
@@ -34,20 +35,24 @@ if (btnTrapSlow) {
     btnTrapSpeed.classList.remove('selected');
     btnTrapSpeed.style.border = '3px solid transparent';
     btnTrapSpeed.style.boxShadow = 'none';
+    alert('已選擇：🔴 減速陷阱！請點擊黑色夜空畫面來放置您的陷阱！');
   });
 }
 
 // Wrapper click for trap placement
 if (pinballCanvasWrapper) {
   pinballCanvasWrapper.addEventListener('click', (e) => {
-    if (pbState.status !== 'lobby') return;
+    if (pbState.status !== 'lobby') {
+      alert('遊戲已經開始，無法放置陷阱！');
+      return;
+    }
     if (!window.currentUser || !window.currentUser.userId) return;
     
     // Check if user is in pool or is super admin
     const myName = window.currentUser.displayName;
     const isGlobalSuperAdmin = window.globalIsSuperAdmin === true;
     if (!pbState.pool.includes(myName) && !isGlobalSuperAdmin) {
-      alert('您必須加入大廳才能佈置陷阱！');
+      alert('您必須先加入大廳名單才能佈置陷阱！');
       return;
     }
 
@@ -66,7 +71,13 @@ if (pinballCanvasWrapper) {
         x: x,
         y: y
       })
-    });
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) alert('放置陷阱失敗：' + data.error);
+      else console.log('[Pinball] Trap placed');
+    })
+    .catch(e => alert('發生錯誤，無法放置陷阱'));
   });
 
   pinballCanvasWrapper.addEventListener('mousemove', (e) => {
