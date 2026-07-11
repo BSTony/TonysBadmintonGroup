@@ -13,6 +13,13 @@
     
     <!-- 大廳視圖 (顯示所有場次) -->
     <div id="lobby-view" class="view hidden">
+      <!-- 派對開啟廣播按鈕 -->
+      <div id="party-active-banner" class="hidden" style="padding: 15px 15px 0 15px;">
+        <button id="btn-enter-party" class="btn btn-primary" style="width: 100%; background-color: #e74c3c; font-weight: bold; border-radius: 12px; font-size: 16px; padding: 12px; animation: pulse 1.5s infinite;">
+          🎉 派對已開啟，點我加入！
+        </button>
+      </div>
+
       <!-- 獨立的管理者開團區塊 -->
       <div id="admin-create-game-container" class="hidden" style="padding: 15px 15px 0 15px;">
         <button class="btn btn-primary" style="width: 100%; background-color: #FF9800; font-weight: bold; border-radius: 12px; font-size: 16px; padding: 12px;" onclick="showCreateGameForm()">

@@ -247,31 +247,50 @@ function updateAdminLobbyStatus() {
 let socket = null;
 let partyOthers = {};
 let currentGlobalRoomState = null;
+let hasEnteredParty = false;
+const partyActiveBanner = document.getElementById('party-active-banner');
+const btnEnterParty = document.getElementById('btn-enter-party');
+
+if (btnEnterParty) {
+  btnEnterParty.addEventListener('click', () => {
+    hasEnteredParty = true;
+    updateUnifiedRoomUI();
+  });
+}
 
 function updateUnifiedRoomUI() {
   if (!currentGlobalRoomState) return;
   if (currentGlobalRoomState.status === 'open') {
-    unifiedRoomOverlay.classList.remove('hidden');
-    if (globalIsSuperAdmin) {
-      btnToggleAdminPanel.classList.remove('hidden');
-      roomAdminPanel.classList.remove('hidden');
-    } else {
-      btnToggleAdminPanel.classList.add('hidden');
-      roomAdminPanel.classList.add('hidden');
-    }
+    if (partyActiveBanner) partyActiveBanner.classList.remove('hidden');
     
-    if (currentGlobalRoomState.activeGame === 'lottery') {
-      lotteryCanvasContainer.classList.remove('hidden');
-      bhContainer.classList.add('hidden');
-      adminLotteryControls.classList.remove('hidden');
-      adminSurvivalControls.classList.add('hidden');
-    } else if (currentGlobalRoomState.activeGame === 'survival') {
-      lotteryCanvasContainer.classList.add('hidden');
-      bhContainer.classList.remove('hidden');
-      adminLotteryControls.classList.add('hidden');
-      adminSurvivalControls.classList.remove('hidden');
+    if (hasEnteredParty || globalIsSuperAdmin) {
+      if (partyActiveBanner) partyActiveBanner.classList.add('hidden');
+      unifiedRoomOverlay.classList.remove('hidden');
+      if (globalIsSuperAdmin) {
+        btnToggleAdminPanel.classList.remove('hidden');
+        roomAdminPanel.classList.remove('hidden');
+      } else {
+        btnToggleAdminPanel.classList.add('hidden');
+        roomAdminPanel.classList.add('hidden');
+      }
+      
+      if (currentGlobalRoomState.activeGame === 'lottery') {
+        lotteryCanvasContainer.classList.remove('hidden');
+        bhContainer.classList.add('hidden');
+        adminLotteryControls.classList.remove('hidden');
+        adminSurvivalControls.classList.add('hidden');
+      } else if (currentGlobalRoomState.activeGame === 'survival') {
+        lotteryCanvasContainer.classList.add('hidden');
+        bhContainer.classList.remove('hidden');
+        adminLotteryControls.classList.add('hidden');
+        adminSurvivalControls.classList.remove('hidden');
+      }
+    } else {
+      unifiedRoomOverlay.classList.add('hidden');
     }
   } else {
+    hasEnteredParty = false;
+    if (partyActiveBanner) partyActiveBanner.classList.add('hidden');
     unifiedRoomOverlay.classList.add('hidden');
     bhContainer.classList.add('hidden');
     lotteryCanvasContainer.classList.add('hidden');
