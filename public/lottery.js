@@ -11,6 +11,8 @@ var lotterySpectatorUi = lotterySpectatorUi || document.getElementById('lottery-
 var lotteryHintText = lotteryHintText || document.getElementById('lottery-hint-text');
 var btnJoinRoom = btnJoinRoom || document.getElementById('btn-join-room');
 var roomPoolDisplayList = roomPoolDisplayList || document.getElementById('room-pool-display-list');
+var lotteryWinnerAnnouncement = lotteryWinnerAnnouncement || document.getElementById('lottery-winner-announcement');
+var lotteryWinnerName = lotteryWinnerName || document.getElementById('lottery-winner-name');
 
 let engine, render, runner;
 let balls = [];
@@ -147,7 +149,7 @@ function updateLotteryUI() {
       lotterySpectatorUi.innerText = '等待管理員指派這回合的抽籤者...';
     }
     const pPanel = document.getElementById('room-participants-panel');
-    if (pPanel) pPanel.classList.add('hidden');
+    if (pPanel) pPanel.classList.remove('hidden');
   } else if (currentLotteryState.status === 'drawing') {
     btnJoinRoom.classList.add('hidden');
     lotteryInteractionUi.classList.add('hidden');
@@ -315,6 +317,21 @@ function setupMatterJS() {
     context.fill();
   });
 
+  // Popcorn effect: constantly agitate balls so they roll around like a real machine
+  Events.on(engine, 'beforeUpdate', function() {
+    if (!isDrawing && (currentLotteryState.status === 'lobby' || currentLotteryState.status === 'ready')) {
+      balls.forEach(ball => {
+        // 5% chance per frame to get a small kick
+        if (Math.random() < 0.05) {
+          Body.applyForce(ball, ball.position, {
+            x: (Math.random() - 0.5) * 0.01 * ball.mass,
+            y: (Math.random() - 1.0) * 0.01 * ball.mass // bias upwards
+          });
+        }
+      });
+    }
+  });
+
   Render.run(render);
   runner = Runner.create();
   Runner.run(runner, engine);
@@ -387,6 +404,20 @@ function bindLotterySocket(s) {
           spread: 70,
           origin: { y: 0.6 }
         });
+        
+        // Show Winner Announcement
+        if (lotteryWinnerAnnouncement && lotteryWinnerName) {
+          lotteryWinnerName.innerText = newlyDrawn.join(', ');
+          lotteryWinnerAnnouncement.classList.remove('hidden');
+          // Hide after 5 seconds
+          setTimeout(() => {
+            lotteryWinnerAnnouncement.classList.add('hidden');
+          }, 5000);
+        }
+        
+        // Switch to Winners tab automatically
+        const tabWinners = document.getElementById('tab-winners');
+        if (tabWinners) tabWinners.click();
         
         // Remove drawn balls from physics world
         const { World, Composite } = Matter;
