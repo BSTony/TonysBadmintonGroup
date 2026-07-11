@@ -400,6 +400,16 @@ function initSocket() {
     if (btnJoinRoom) btnJoinRoom.classList.add('hidden');
     if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
     if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+    if (bhContainer) bhContainer.classList.remove('hidden');
+    
+    // Auto-minimize participant panel to prevent covering the screen
+    const pPanel = document.getElementById('room-participants-panel');
+    const pBtn = document.getElementById('btn-toggle-participants');
+    if (pPanel && typeof isPanelMinimized !== 'undefined') {
+      isPanelMinimized = true;
+      pPanel.style.transform = 'translateX(100%)';
+      if (pBtn) pBtn.innerText = '◀';
+    }
     
     // Clear old entities
     bhBullets.forEach(b => b.el.remove());
@@ -515,6 +525,9 @@ let selectedCharacterIcon = '🐷';
 
 function joinPartyLobby() {
   initSocket();
+  if (typeof btnJoinRoom !== 'undefined' && btnJoinRoom) {
+    btnJoinRoom.classList.add('hidden');
+  }
   bhContainer.classList.remove('hidden');
   bhGameoverModal.classList.add('hidden');
   bhEntities.innerHTML = '';
