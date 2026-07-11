@@ -374,10 +374,10 @@ function bindPinballSocket(s) {
       pinballSpectatorUi.classList.remove('hidden');
       pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
       
-      
       const pPanel = document.getElementById('room-participants-panel');
       if (pPanel) pPanel.classList.add('hidden');
       
+      initPinballEngine();
       updatePinballTraps(state.traps);
       
       if (prevStatus === 'lobby') {
