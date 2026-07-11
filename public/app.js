@@ -3388,6 +3388,8 @@ if (btnEasterEgg) {
             });
           }
           alert('大廳已開啟！');
+          hasEnteredParty = true;
+          updateUnifiedRoomUI();
         }
       } catch(e) { console.error(e); }
     });
