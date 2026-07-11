@@ -98,10 +98,35 @@ function initPinballEngine() {
     Bodies.rectangle(width/2, -50, width, 100, wallOpts) // Top
   ]);
 
-  // Funnel / Plinko obstacles at the top
-  const funnelLeft = Bodies.rectangle(width*0.2, 100, width*0.5, 20, { isStatic: true, angle: Math.PI*0.1, render: { fillStyle: '#34495e' } });
-  const funnelRight = Bodies.rectangle(width*0.8, 100, width*0.5, 20, { isStatic: true, angle: -Math.PI*0.1, render: { fillStyle: '#34495e' } });
+  // Top funnel (Start point)
+  const funnelLeft = Bodies.rectangle(width*0.3, 100, width*0.5, 20, { isStatic: true, angle: Math.PI*0.15, render: { fillStyle: '#34495e' } });
+  const funnelRight = Bodies.rectangle(width*0.7, 100, width*0.5, 20, { isStatic: true, angle: -Math.PI*0.15, render: { fillStyle: '#34495e' } });
   World.add(pbEngine.world, [funnelLeft, funnelRight]);
+
+  // Side Ramps
+  const rampLeft = Bodies.rectangle(0, height*0.4, width*0.4, 20, { isStatic: true, angle: Math.PI*0.2, render: { fillStyle: '#34495e' } });
+  const rampRight = Bodies.rectangle(width, height*0.6, width*0.4, 20, { isStatic: true, angle: -Math.PI*0.2, render: { fillStyle: '#34495e' } });
+  World.add(pbEngine.world, [rampLeft, rampRight]);
+
+  // Plinko Pegs
+  const pegs = [];
+  const rows = 5;
+  const cols = 7;
+  const startY = height * 0.3;
+  const rowSpacing = (height * 0.4) / rows;
+  const colSpacing = width / cols;
+  
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      let offset = (r % 2 === 0) ? colSpacing / 2 : 0;
+      let px = c * colSpacing + offset;
+      let py = startY + r * rowSpacing;
+      if (px > 20 && px < width - 20) {
+        pegs.push(Bodies.circle(px, py, 5, { isStatic: true, render: { fillStyle: '#bdc3c7' }, restitution: 0.8 }));
+      }
+    }
+  }
+  World.add(pbEngine.world, pegs);
 
   // Finish Line Sensor
   const finishLine = Bodies.rectangle(width/2, height - 10, width, 50, { 
@@ -171,6 +196,11 @@ function initPinballEngine() {
       ctx.fillText(t.plugin.ownerName, t.position.x, t.position.y + 20);
     });
     
+    // Draw start line text
+    ctx.fillStyle = '#2c3e50';
+    ctx.font = 'bold 24px Arial';
+    ctx.fillText('🟢 START 🟢', width/2, 50);
+
     // Draw finish line text
     ctx.fillStyle = '#2c3e50';
     ctx.font = 'bold 24px Arial';
@@ -268,6 +298,9 @@ function bindPinballSocket(s) {
         pinballSpectatorUi.innerText = `準備中... (您尚未加入名單)`;
       }
       
+      const pinballPoolCount = document.getElementById('pinball-pool-count');
+      if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
+      
       initPinballEngine();
       updatePinballTraps(state.traps);
       
@@ -285,13 +318,28 @@ function bindPinballSocket(s) {
       pinballSpectatorUi.classList.remove('hidden');
       pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
       
+      
       const pPanel = document.getElementById('room-participants-panel');
       if (pPanel) pPanel.classList.add('hidden');
       
       updatePinballTraps(state.traps);
       
       if (prevStatus === 'lobby') {
-        dropBalls(state.pool);
+        // Do countdown
+        const countdownEl = document.getElementById('pinball-countdown');
+        if (countdownEl) {
+          countdownEl.classList.remove('hidden');
+          countdownEl.innerText = '3';
+          setTimeout(() => countdownEl.innerText = '2', 1000);
+          setTimeout(() => countdownEl.innerText = '1', 2000);
+          setTimeout(() => {
+            countdownEl.innerText = 'GO!';
+            setTimeout(() => countdownEl.classList.add('hidden'), 1000);
+            dropBalls(state.pool);
+          }, 3000);
+        } else {
+          dropBalls(state.pool);
+        }
       }
       
       // Check for winner

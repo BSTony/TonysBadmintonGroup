@@ -4103,6 +4103,25 @@ if (btnPinballAdminSync) {
   });
 }
 
+const btnAddPinballName = document.getElementById('btn-add-pinball-name');
+const inputPinballName = document.getElementById('pinball-manual-name');
+if (btnAddPinballName && inputPinballName) {
+  btnAddPinballName.addEventListener('click', async () => {
+    const name = inputPinballName.value.trim();
+    if (!name) return;
+    try {
+      const res = await fetch('/api/admin/pinball/add-player', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId, name })
+      });
+      const data = await res.json();
+      if (!data.success) alert(data.error);
+      else inputPinballName.value = '';
+    } catch(e) { console.error(e); }
+  });
+}
+
 if (btnPinballAdminStart) {
   btnPinballAdminStart.addEventListener('click', async () => {
     try {

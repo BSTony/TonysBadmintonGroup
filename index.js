@@ -2114,6 +2114,18 @@ app.post('/api/admin/pinball/sync-pool', express.json(), (req, res) => {
   res.json({ success: true, pinballRoom });
 });
 
+app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
+  const { uid, name } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  if (!name || name.trim() === '') return res.status(400).json({ error: 'Name cannot be empty' });
+  
+  if (!pinballRoom.pool.includes(name.trim())) {
+    pinballRoom.pool.push(name.trim());
+    io.emit('pinball_state', pinballRoom);
+  }
+  res.json({ success: true, pinballRoom });
+});
+
 app.post('/api/admin/pinball/start', express.json(), (req, res) => {
   const { uid } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
