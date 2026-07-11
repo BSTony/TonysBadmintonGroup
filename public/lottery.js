@@ -364,48 +364,50 @@ function startDrawAnimation(force, dirX, dirY, count) {
 }
 
 // Socket Listeners
-socket.on('lottery_state', (state) => {
-  const previousStatus = currentLotteryState.status;
-  const previousDrawnCount = currentLotteryState.drawn.length;
-  currentLotteryState = state;
-  updateLotteryUI();
-  
-  if ((state.status === 'lobby' || state.status === 'ready') && previousStatus === 'idle') {
-    setupMatterJS();
-  } else if (state.status === 'lobby' || state.status === 'ready') {
-    // Dynamically spawn new balls if pool updated
-    setupMatterJS();
-  }
-  
-  if (state.status === 'ready' && previousStatus === 'drawing') {
-    // Transition from drawing to ready -> show winner celebration
-    const newlyDrawn = state.drawn.slice(previousDrawnCount);
-    if (newlyDrawn.length > 0) {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      
-      // Remove drawn balls from physics world
-      const { World, Composite } = Matter;
-      const ballsToRemove = balls.filter(b => newlyDrawn.includes(b.plugin.name));
-      if (ballsToRemove.length > 0 && engine) {
-        World.remove(engine.world, ballsToRemove);
-        balls = balls.filter(b => !newlyDrawn.includes(b.plugin.name));
+function bindLotterySocket(s) {
+  s.on('lottery_state', (state) => {
+    const previousStatus = currentLotteryState.status;
+    const previousDrawnCount = currentLotteryState.drawn.length;
+    currentLotteryState = state;
+    updateLotteryUI();
+    
+    if ((state.status === 'lobby' || state.status === 'ready') && previousStatus === 'idle') {
+      setupMatterJS();
+    } else if (state.status === 'lobby' || state.status === 'ready') {
+      // Dynamically spawn new balls if pool updated
+      setupMatterJS();
+    }
+    
+    if (state.status === 'ready' && previousStatus === 'drawing') {
+      // Transition from drawing to ready -> show winner celebration
+      const newlyDrawn = state.drawn.slice(previousDrawnCount);
+      if (newlyDrawn.length > 0) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        
+        // Remove drawn balls from physics world
+        const { World, Composite } = Matter;
+        const ballsToRemove = balls.filter(b => newlyDrawn.includes(b.plugin.name));
+        if (ballsToRemove.length > 0 && engine) {
+          World.remove(engine.world, ballsToRemove);
+          balls = balls.filter(b => !newlyDrawn.includes(b.plugin.name));
+        }
       }
     }
-  }
-});
+  });
 
-socket.on('lottery_draw_started', (data) => {
-  // 自動縮小名單不要影響畫面
-  if (typeof btnToggleParticipants !== 'undefined' && btnToggleParticipants) {
-    if (typeof isPanelMinimized !== 'undefined' && !isPanelMinimized) {
-      btnToggleParticipants.click();
+  s.on('lottery_draw_started', (data) => {
+    // 自動縮小名單不要影響畫面
+    if (typeof btnToggleParticipants !== 'undefined' && btnToggleParticipants) {
+      if (typeof isPanelMinimized !== 'undefined' && !isPanelMinimized) {
+        btnToggleParticipants.click();
+      }
     }
-  }
 
-  // data: { force, dirX, dirY, count }
-  startDrawAnimation(data.force, data.dirX, data.dirY, data.count);
-});
+    // data: { force, dirX, dirY, count }
+    startDrawAnimation(data.force, data.dirX, data.dirY, data.count);
+  });
+}

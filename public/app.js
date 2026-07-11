@@ -319,6 +319,9 @@ function initSocket() {
   if (typeof bindLotteryAdminSocket === 'function') {
     bindLotteryAdminSocket(socket);
   }
+  if (typeof bindLotterySocket === 'function') {
+    bindLotterySocket(socket);
+  }
   
   socket.on('global_room_state', (state) => {
     window.globalRoomState = state;
