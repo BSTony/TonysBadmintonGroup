@@ -68,6 +68,22 @@ if (pinballCanvasWrapper) {
       })
     });
   });
+
+  pinballCanvasWrapper.addEventListener('mousemove', (e) => {
+    if (pbState.status !== 'lobby') return;
+    const myName = (window.currentUser && window.currentUser.displayName) || '';
+    const isGlobalSuperAdmin = window.globalIsSuperAdmin === true;
+    if (!pbState.pool.includes(myName) && !isGlobalSuperAdmin) return;
+    
+    const rect = pinballCanvasWrapper.getBoundingClientRect();
+    window.pbPreviewX = e.clientX - rect.left;
+    window.pbPreviewY = e.clientY - rect.top;
+  });
+
+  pinballCanvasWrapper.addEventListener('mouseleave', () => {
+    window.pbPreviewX = null;
+    window.pbPreviewY = null;
+  });
 }
 
 function initPinballEngine() {
@@ -206,6 +222,35 @@ function initPinballEngine() {
     ctx.fillStyle = '#2c3e50';
     ctx.font = 'bold 24px Arial';
     ctx.fillText('🏁 FINISH LINE 🏁', width/2, height - 10);
+    
+    // Draw preview trap
+    if (window.pbPreviewX != null && window.pbPreviewY != null && pbState.status === 'lobby') {
+      ctx.globalAlpha = 0.5;
+      ctx.translate(window.pbPreviewX, window.pbPreviewY);
+      if (selectedTrapType === 'speed') {
+        ctx.fillStyle = '#2ecc71';
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        // Triangle pointing down
+        ctx.moveTo(0, 15);
+        ctx.lineTo(-15, -15);
+        ctx.lineTo(15, -15);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#e74c3c';
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 15, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.translate(-window.pbPreviewX, -window.pbPreviewY);
+      ctx.globalAlpha = 1.0;
+    }
   });
 
   Render.run(pbRender);
