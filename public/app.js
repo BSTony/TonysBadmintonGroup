@@ -397,6 +397,14 @@ function initSocket() {
     bhIsPlaying = true;
     bhStartTime = performance.now(); // Ignore data.startTime to align with requestAnimationFrame's timestamp
     if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+    
+    // 自動縮小名單不要影響畫面
+    if (typeof btnToggleParticipants !== 'undefined' && btnToggleParticipants) {
+      if (typeof isPanelMinimized !== 'undefined' && !isPanelMinimized) {
+        btnToggleParticipants.click();
+      }
+    }
+    
     requestAnimationFrame(bhPartyLoop);
   });
   
@@ -3863,3 +3871,53 @@ if (btnJoinRoom) {
     }
   });
 }
+
+// === Room Participants Panel Logic ===
+const participantsPanel = document.getElementById('room-participants-panel');
+const btnToggleParticipants = document.getElementById('btn-toggle-participants');
+const panelResizer = document.getElementById('panel-resizer');
+
+let isPanelMinimized = false;
+
+if (btnToggleParticipants && participantsPanel) {
+  btnToggleParticipants.addEventListener('click', () => {
+    isPanelMinimized = !isPanelMinimized;
+    if (isPanelMinimized) {
+      participantsPanel.style.transform = 'translateX(100%)';
+      btnToggleParticipants.innerText = '?';
+    } else {
+      participantsPanel.style.transform = 'translateX(0%)';
+      btnToggleParticipants.innerText = '?';
+    }
+  });
+}
+
+let isResizingPanel = false;
+let startX = 0;
+let startWidth = 0;
+
+if (panelResizer && participantsPanel) {
+  panelResizer.addEventListener('pointerdown', (e) => {
+    if (isPanelMinimized) return;
+    isResizingPanel = true;
+    startX = e.clientX;
+    startWidth = participantsPanel.offsetWidth;
+    participantsPanel.style.transition = 'none';
+    e.preventDefault();
+  });
+  
+  window.addEventListener('pointermove', (e) => {
+    if (!isResizingPanel) return;
+    const dx = startX - e.clientX;
+    const newWidth = Math.max(150, Math.min(window.innerWidth * 0.8, startWidth + dx));
+    participantsPanel.style.width = newWidth + 'px';
+  });
+  
+  window.addEventListener('pointerup', () => {
+    if (isResizingPanel) {
+      isResizingPanel = false;
+      participantsPanel.style.transition = 'transform 0.3s ease';
+    }
+  });
+}
+

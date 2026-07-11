@@ -393,6 +393,13 @@ socket.on('lottery_state', (state) => {
 });
 
 socket.on('lottery_draw_started', (data) => {
+  // 自動縮小名單不要影響畫面
+  if (typeof btnToggleParticipants !== 'undefined' && btnToggleParticipants) {
+    if (typeof isPanelMinimized !== 'undefined' && !isPanelMinimized) {
+      btnToggleParticipants.click();
+    }
+  }
+
   // data: { force, dirX, dirY, count }
   startDrawAnimation(data.force, data.dirX, data.dirY, data.count);
 });

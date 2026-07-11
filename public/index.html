@@ -492,10 +492,20 @@
         <button id="btn-join-room" class="hidden btn-primary" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 30px; font-size: 24px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 100; animation: pulse 1.5s infinite; cursor: pointer;">我要參加！</button>
       </div>
       
-      <!-- 右側：名單結果區 -->
-      <div id="room-participants-panel" style="flex: 1; display: flex; background: rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.1);">
+      <!-- 右側：名單結果區 (改為可收合、自由縮放的浮動視窗) -->
+      <div id="room-participants-panel" style="position: absolute; right: 0; top: 0; height: 100%; width: 250px; min-width: 150px; max-width: 80vw; background: rgba(0,0,0,0.85); border-left: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 10000; transform: translateX(0%); box-shadow: -5px 0 15px rgba(0,0,0,0.5);">
         
-        <div style="flex: 1; display: flex; flex-direction: column; padding: 10px; border-right: 1px solid rgba(255,255,255,0.1);">
+        <!-- 左側拖曳條 -->
+        <div id="panel-resizer" style="position: absolute; top: 0; left: -10px; width: 20px; height: 100%; cursor: ew-resize; z-index: 10001; display: flex; align-items: center; justify-content: center;">
+          <div style="width: 4px; height: 50px; background: rgba(255,255,255,0.6); border-radius: 2px;"></div>
+        </div>
+
+        <!-- 收合按鈕 -->
+        <button id="btn-toggle-participants" style="position: absolute; top: 50%; left: -40px; transform: translateY(-50%); width: 40px; height: 60px; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.2); border-right: none; border-radius: 10px 0 0 10px; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; z-index: 9999; box-shadow: -2px 0 5px rgba(0,0,0,0.3);">
+          ▶
+        </button>
+        
+        <div style="flex: 1; display: flex; flex-direction: column; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
           <h3 style="color: #3498db; margin: 0 0 10px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px;">👥 在線參與者 👥</h3>
           <ul id="room-pool-display-list" style="list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; color: white; font-size: 16px; line-height: 1.6; text-align: center;">
           </ul>
@@ -506,32 +516,20 @@
           <ul id="room-result-list" style="list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; color: white; font-size: 18px; line-height: 1.8; text-align: center;">
           </ul>
         </div>
-
       </div>
+
     </div>
   </div>
 
   <style>
-    @media (min-width: 768px) {
-      .room-layout {
-        flex-direction: row !important;
-      }
-      #game-canvas-area {
-        flex: 1;
-      }
-      #room-participants-panel {
-        flex: 0 0 300px;
-        border-top: none !important;
-        border-left: 1px solid rgba(255,255,255,0.1);
-      }
-    }
+    /* Removed old room-layout responsive rules */
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="lottery.js?v=20260711_5"></script>
-  <script src="app.js?v=20260711_5"></script>
+  <script src="lottery.js?v=20260711_6"></script>
+  <script src="app.js?v=20260711_6"></script>
 </body>
 </html>
