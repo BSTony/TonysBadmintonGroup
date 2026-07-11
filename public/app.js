@@ -1419,7 +1419,7 @@ function renderLobby() {
           <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
           <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
           <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
-          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
         </div>
         <div id="error-msg-${game.gameId}" class="error-msg"></div>
       `;
@@ -1677,7 +1677,7 @@ function renderDetail(gameId, preserveScroll = false) {
       <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
       <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
       <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
-      <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="程度" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+      <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
     </div>
     <div id="error-msg-${game.gameId}-detail" class="error-msg"></div>
   `;
@@ -2325,7 +2325,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       }
     }
     
-    // +1/-1 完成後，清空暱稱與程度輸入框
+    // +1/-1 完成後，清空暱稱與備註輸入框
     if (inputEl) {
       inputEl.value = '';
     }
@@ -2660,14 +2660,16 @@ function addCgListRow(name = '', level = '', isPaid = false) {
   nameInput.value = name;
   nameInput.style.flex = '2';
   nameInput.style.margin = '0';
+  nameInput.style.minWidth = '0';
   
   const levelInput = document.createElement('input');
   levelInput.type = 'text';
   levelInput.className = 'cg-list-level';
-  levelInput.placeholder = '程度(選填)';
+  levelInput.placeholder = '備註(選填)';
   levelInput.value = level;
   levelInput.style.flex = '1';
   levelInput.style.margin = '0';
+  levelInput.style.minWidth = '0';
   
   const paidLabel = document.createElement('label');
   paidLabel.style.display = 'flex';
@@ -2676,12 +2678,15 @@ function addCgListRow(name = '', level = '', isPaid = false) {
   paidLabel.style.marginBottom = '0';
   paidLabel.style.fontSize = '12px';
   paidLabel.style.whiteSpace = 'nowrap';
+  paidLabel.style.cursor = 'pointer';
+  paidLabel.style.padding = '4px';
   
   const paidCheck = document.createElement('input');
   paidCheck.type = 'checkbox';
   paidCheck.className = 'cg-list-paid';
   paidCheck.checked = isPaid;
-  paidCheck.style.margin = '0';
+  paidCheck.style.margin = '0 3px 0 0';
+  paidCheck.style.transform = 'scale(1.3)';
   
   paidLabel.appendChild(paidCheck);
   paidLabel.appendChild(document.createTextNode('繳費'));
