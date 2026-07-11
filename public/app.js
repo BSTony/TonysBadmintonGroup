@@ -860,26 +860,6 @@ let bhSpawnRate = 1000;
 let bhLastSpawn = 0;
 
 function startBulletHell() {
-  if (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') {
-    if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
-    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin && typeof roomAdminPanel !== 'undefined' && roomAdminPanel) {
-      roomAdminPanel.classList.remove('hidden');
-      const body = document.getElementById('room-admin-body');
-      const btnMinimize = document.getElementById('btn-minimize-admin-panel');
-      if (body) body.style.display = 'flex';
-      if (btnMinimize) btnMinimize.innerText = '−';
-    }
-    
-    // Also maximize participant panel again
-    const pPanel = document.getElementById('room-participants-panel');
-    const pBtn = document.getElementById('btn-toggle-participants');
-    if (pPanel && typeof isPanelMinimized !== 'undefined') {
-      isPanelMinimized = false;
-      pPanel.style.transform = 'translateX(0%)';
-      if (pBtn) pBtn.innerText = '▶';
-    }
-    return;
-  }
   bhContainer.classList.remove('hidden');
   bhGameoverModal.classList.add('hidden');
   bhEntities.innerHTML = '';
@@ -1079,7 +1059,27 @@ function renderBhLeaderboard(list) {
 }
 
 if (btnBhRestart) {
-  btnBhRestart.addEventListener('click', startBulletHell);
+  btnBhRestart.addEventListener('click', () => {
+    if (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') {
+      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin && typeof roomAdminPanel !== 'undefined' && roomAdminPanel) {
+        roomAdminPanel.classList.remove('hidden');
+        const body = document.getElementById('room-admin-body');
+        const btnMinimize = document.getElementById('btn-minimize-admin-panel');
+        if (body) body.style.display = 'flex';
+        if (btnMinimize) btnMinimize.innerText = '−';
+      }
+      const pPanel = document.getElementById('room-participants-panel');
+      const pBtn = document.getElementById('btn-toggle-participants');
+      if (pPanel && typeof isPanelMinimized !== 'undefined') {
+        isPanelMinimized = false;
+        pPanel.style.transform = 'translateX(0%)';
+        if (pBtn) pBtn.innerText = '▶';
+      }
+      return;
+    }
+    startBulletHell();
+  });
 }
 if (btnBhClose) {
   btnBhClose.addEventListener('click', () => {
