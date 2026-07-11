@@ -322,8 +322,11 @@ function initSocket() {
     
     if (state.status === 'lobby') {
       if (adminPlayBtn) adminPlayBtn.classList.remove('hidden');
-      if (currentGlobalRoomState && currentGlobalRoomState.activeGame === 'survival') {
+      const hasJoined = state.players && socket && state.players[socket.id];
+      if (currentGlobalRoomState && !hasJoined) {
         btnJoinRoom.classList.remove('hidden');
+      } else {
+        btnJoinRoom.classList.add('hidden');
       }
     } else if (state.status === 'playing') {
       if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
