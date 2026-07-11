@@ -216,7 +216,7 @@ const btnMinimizeAdminPanel = document.getElementById('btn-minimize-admin-panel'
 const adminLotteryControls = document.getElementById('admin-lottery-controls');
 const adminSurvivalControls = document.getElementById('admin-survival-controls');
 const adminPinballControls = document.getElementById('admin-pinball-controls');
-const pinballContainer = document.getElementById('pinball-container');
+var pinballContainer = pinballContainer || document.getElementById('pinball-container');
 
 const partyWinType = document.getElementById('party-win-type');
 const partyWinValue = document.getElementById('party-win-value');
