@@ -167,9 +167,15 @@ function initPinballEngine() {
     Bodies.rectangle(width/2, -400, width, 100, wallOpts) // Top
   ]);
 
-  // Top funnel (Start point)
-  const funnelLeft = Bodies.rectangle(width*0.3, 100, width*0.5, 20, { isStatic: true, angle: Math.PI*0.15, render: { fillStyle: '#34495e' } });
-  const funnelRight = Bodies.rectangle(width*0.7, 100, width*0.5, 20, { isStatic: true, angle: -Math.PI*0.15, render: { fillStyle: '#34495e' } });
+  // Top funnel (Start point) - with guaranteed 80px gap
+  const funnelWidth = width * 0.5;
+  const gap = 80;
+  const cosAngle = Math.cos(Math.PI * 0.15); // ~0.89
+  const funnelLeftX = width/2 - gap/2 - (funnelWidth/2) * cosAngle;
+  const funnelRightX = width/2 + gap/2 + (funnelWidth/2) * cosAngle;
+
+  const funnelLeft = Bodies.rectangle(funnelLeftX, 150, funnelWidth, 20, { isStatic: true, angle: Math.PI*0.15, render: { fillStyle: '#34495e' } });
+  const funnelRight = Bodies.rectangle(funnelRightX, 150, funnelWidth, 20, { isStatic: true, angle: -Math.PI*0.15, render: { fillStyle: '#34495e' } });
   World.add(pbEngine.world, [funnelLeft, funnelRight]);
 
   // Side Ramps
@@ -413,19 +419,32 @@ function bindPinballSocket(s) {
         }
       }
       
-      // Update pool display in admin panel
+      // Update pool display in admin panel AND right side panel
       const pinballPoolCount = document.getElementById('pinball-pool-count');
       if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
+      
       const pinballPoolList = document.getElementById('pinball-pool-list');
-      if (pinballPoolList) {
-        pinballPoolList.innerHTML = '';
-        state.pool.forEach(name => {
+      const roomPoolDisplayList = document.getElementById('room-pool-display-list');
+      
+      if (pinballPoolList) pinballPoolList.innerHTML = '';
+      if (roomPoolDisplayList) roomPoolDisplayList.innerHTML = '';
+      
+      state.pool.forEach(name => {
+        // For admin panel
+        if (pinballPoolList) {
           const span = document.createElement('span');
-          span.style.cssText = 'background: #3498db; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;';
+          span.style.cssText = 'background: #3498db; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin: 2px;';
           span.innerText = name;
           pinballPoolList.appendChild(span);
-        });
-      }
+        }
+        // For right side panel (which user looks at)
+        if (roomPoolDisplayList) {
+          const li = document.createElement('li');
+          li.style.cssText = 'padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px;';
+          li.innerHTML = `<span style="font-size: 20px;">🕹️</span><span style="font-size: 16px;">${name}</span>`;
+          roomPoolDisplayList.appendChild(li);
+        }
+      });
       console.log('[Pinball] Pool names:', state.pool.join(', '));
       
       initPinballEngine();
