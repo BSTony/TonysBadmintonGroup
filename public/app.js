@@ -4081,6 +4081,7 @@ if (btnLotteryAdminPlay) {
       if (!data.success) alert(data.error);
       else alert('已開始自動抽籤');
     } catch(e) { console.error(e); }
+  });
 }
 
 // === Pinball Admin Play ===
