@@ -1,14 +1,13 @@
 const lotteryCanvasContainer = document.getElementById('lottery-canvas-container');
-const lotteryViewOverlay = document.getElementById('lottery-view-overlay');
-const lotteryResultList = document.getElementById('lottery-result-list');
-const btnCloseLottery = document.getElementById('btn-close-lottery');
+const unifiedRoomOverlay = document.getElementById('unified-room-overlay');
+const roomResultList = document.getElementById('room-result-list');
+const btnCloseRoom = document.getElementById('btn-close-room');
 
 const lotteryInteractionUi = document.getElementById('lottery-interaction-ui');
 const lotteryForceBar = document.getElementById('lottery-force-bar');
 const lotterySpectatorUi = document.getElementById('lottery-spectator-ui');
-const lotteryHintText = document.getElementById('lottery-hint-text');
-const btnJoinLottery = document.getElementById('btn-join-lottery');
-const lotteryPoolDisplayList = document.getElementById('lottery-pool-display-list');
+const btnJoinRoom = document.getElementById('btn-join-room');
+const roomPoolDisplayList = document.getElementById('room-pool-display-list');
 
 let engine, render, runner;
 let balls = [];
@@ -26,23 +25,30 @@ let dragCurrentY = 0;
 function initLottery(uid) {
   myUid = uid;
   
-  if (btnCloseLottery) {
-    btnCloseLottery.addEventListener('click', () => {
-      lotteryViewOverlay.classList.add('hidden');
+  if (btnCloseRoom) {
+    btnCloseRoom.addEventListener('click', () => {
+      
     });
   }
   
-  if (btnJoinLottery) {
-    btnJoinLottery.addEventListener('click', () => {
+  if (btnJoinRoom) {
+    btnJoinRoom.addEventListener('click', () => {
       if (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) {
-        socket.emit('join_lottery', { name: currentUser.displayName });
-        btnJoinLottery.classList.add('hidden');
+        // Here we need to know which game to join based on globalRoom state
+        // but since globalRoom state is managed in app.js, we can just emit both or handle it better.
+        // For now, let's just trigger a custom event or check window.globalRoom.
+        if (window.globalRoomState && window.globalRoomState.activeGame === 'survival') {
+          // handled in app.js
+        } else {
+          socket.emit('join_lottery', { name: currentUser.displayName });
+          btnJoinRoom.classList.add('hidden');
+        }
       }
     });
   }
 
   // Pointer events for force/direction
-  lotteryViewOverlay.addEventListener('pointerdown', (e) => {
+  unifiedRoomOverlay.addEventListener('pointerdown', (e) => {
     if (currentLotteryState.status === 'ready' && currentLotteryState.assigneeUid === myUid) {
       isDragging = true;
       dragStartX = e.clientX;
@@ -53,7 +59,7 @@ function initLottery(uid) {
     }
   });
 
-  lotteryViewOverlay.addEventListener('pointermove', (e) => {
+  unifiedRoomOverlay.addEventListener('pointermove', (e) => {
     if (isDragging) {
       dragCurrentX = e.clientX;
       dragCurrentY = e.clientY;
@@ -61,7 +67,7 @@ function initLottery(uid) {
     }
   });
 
-  lotteryViewOverlay.addEventListener('pointerup', (e) => {
+  unifiedRoomOverlay.addEventListener('pointerup', (e) => {
     if (isDragging) {
       isDragging = false;
       const dx = dragStartX - dragCurrentX;
@@ -82,7 +88,7 @@ function initLottery(uid) {
           dirY: dy / dirLen
         });
         lotteryForceBar.style.width = '0%';
-        lotteryHintText.innerText = '🌪️ 發射！';
+        lotteryHintText.innerText = '?���??��?�?;
       } else {
         lotteryForceBar.style.width = '0%';
       }
@@ -118,50 +124,50 @@ function updateLotteryUI() {
   if (currentLotteryState.status === 'lobby') {
     lotteryInteractionUi.classList.add('hidden');
     lotterySpectatorUi.classList.remove('hidden');
-    lotterySpectatorUi.innerText = '等待大家加入抽籤房間...';
+    lotterySpectatorUi.innerText = '等�?大家?�入?�籤?��?...';
     
     if (myName && !currentLotteryState.pool.includes(myName)) {
       btnJoinLottery.classList.remove('hidden');
     } else {
       btnJoinLottery.classList.add('hidden');
-      if (myName) lotterySpectatorUi.innerText = '您已加入名單，等待抽籤開始...';
+      if (myName) lotterySpectatorUi.innerText = '?�已?�入?�單，�?待抽籤�?�?..';
     }
   } else if (currentLotteryState.status === 'ready') {
     btnJoinLottery.classList.add('hidden');
     if (currentLotteryState.assigneeUid === myUid) {
       lotteryInteractionUi.classList.remove('hidden');
       lotterySpectatorUi.classList.add('hidden');
-      lotteryHintText.innerText = `在畫面中滑動來產生風力🌪️ (將抽出 ${currentLotteryState.drawCount} 人)`;
+      lotteryHintText.innerText = `?�畫?�中滑�?來產?�風?��?��? (將抽??${currentLotteryState.drawCount} �?`;
     } else if (currentLotteryState.assigneeUid) {
       lotteryInteractionUi.classList.add('hidden');
       lotterySpectatorUi.classList.remove('hidden');
-      lotterySpectatorUi.innerText = `等待抽籤者操作中... (將抽出 ${currentLotteryState.drawCount} 人)`;
+      lotterySpectatorUi.innerText = `等�??�籤?��?作中... (將抽??${currentLotteryState.drawCount} �?`;
     } else {
       lotteryInteractionUi.classList.add('hidden');
       lotterySpectatorUi.classList.remove('hidden');
-      lotterySpectatorUi.innerText = '等待管理員指派這回合的抽籤者...';
+      lotterySpectatorUi.innerText = '等�?管�??��?派這�??��??�籤??..';
     }
   } else if (currentLotteryState.status === 'drawing') {
     btnJoinLottery.classList.add('hidden');
     lotteryInteractionUi.classList.add('hidden');
     lotterySpectatorUi.classList.remove('hidden');
-    lotterySpectatorUi.innerText = '🌪️ 抽籤中 🌪️';
+    lotterySpectatorUi.innerText = '?���??�籤�??���?;
   }
 
   // Update Online Pool List
-  if (lotteryPoolDisplayList) {
-    lotteryPoolDisplayList.innerHTML = '';
+  if (roomPoolDisplayList) {
+    roomPoolDisplayList.innerHTML = '';
     const undrawnPool = currentLotteryState.pool.filter(n => !currentLotteryState.drawn.includes(n));
     undrawnPool.forEach(name => {
       const li = document.createElement('li');
       li.innerText = name;
-      lotteryPoolDisplayList.appendChild(li);
+      roomPoolDisplayList.appendChild(li);
     });
   }
 
   // Update Results
-  if (lotteryResultList) {
-    lotteryResultList.innerHTML = '';
+  if (roomResultList) {
+    roomResultList.innerHTML = '';
     currentLotteryState.drawn.forEach((name, idx) => {
       const li = document.createElement('li');
       li.style.padding = '8px';
@@ -179,7 +185,7 @@ function updateLotteryUI() {
       
       li.appendChild(rankSpan);
       li.appendChild(nameSpan);
-      lotteryResultList.appendChild(li);
+      roomResultList.appendChild(li);
     });
   }
 }

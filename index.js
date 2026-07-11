@@ -1833,6 +1833,11 @@ res.json({ success: true });
 });
 // ------------------
 
+let globalRoom = {
+  activeGame: null, // 'lottery' or 'survival'
+  status: 'closed'
+};
+
 // --- Lottery Sphere Logic ---
 let lotteryRoom = {
   status: 'idle', // idle, ready, drawing, ended
@@ -1896,7 +1901,8 @@ function checkWinCondition() {
 }
 
 io.on('connection', (socket) => {
-  // Send current party state to newly connected client
+  // Send current states to newly connected client
+  socket.emit('global_room_state', globalRoom);
   socket.emit('party_state', partyRoom);
   socket.emit('lottery_state', lotteryRoom);
 
@@ -2004,6 +2010,51 @@ io.on('connection', (socket) => {
       if (partyRoom.status === 'playing') checkWinCondition();
     }
   });
+});
+
+app.post('/api/admin/room/open', express.json(), (req, res) => {
+  const { uid, gameType } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  globalRoom.status = 'open';
+  globalRoom.activeGame = gameType; // 'lottery' | 'survival'
+  
+  if (gameType === 'lottery') {
+    lotteryRoom.status = 'lobby';
+    lotteryRoom.pool = [];
+    lotteryRoom.drawn = [];
+    lotteryRoom.assigneeUid = null;
+    lotteryRoom.drawCount = 1;
+    
+    partyRoom.status = 'idle';
+  } else if (gameType === 'survival') {
+    partyRoom.status = 'lobby';
+    partyRoom.players = {};
+    
+    lotteryRoom.status = 'idle';
+  }
+  
+  io.emit('global_room_state', globalRoom);
+  io.emit('lottery_state', lotteryRoom);
+  io.emit('party_state', partyRoom);
+  
+  res.json({ success: true, globalRoom });
+});
+
+app.post('/api/admin/room/close', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  globalRoom.status = 'closed';
+  globalRoom.activeGame = null;
+  lotteryRoom.status = 'idle';
+  partyRoom.status = 'idle';
+  
+  io.emit('global_room_state', globalRoom);
+  io.emit('lottery_state', lotteryRoom);
+  io.emit('party_state', partyRoom);
+  
+  res.json({ success: true });
 });
 
 app.post('/api/admin/party/start', express.json(), (req, res) => {

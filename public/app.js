@@ -204,16 +204,20 @@ const bhLeaderboardList = document.getElementById('bh-leaderboard-list');
 const btnBhRestart = document.getElementById('btn-bh-restart');
 const btnBhClose = document.getElementById('btn-bh-close');
 
-// --- Party Mode DOM ---
-const partyAdminPanel = document.getElementById('party-admin-panel');
-const partyWinType = document.getElementById('party-win-type');
-const partyWinValue = document.getElementById('party-win-value');
-const btnPartyStartLobby = document.getElementById('btn-party-start-lobby');
-const btnPartyPlay = document.getElementById('btn-party-play');
-const btnPartyStop = document.getElementById('btn-party-stop');
-const partyAdminStatus = document.getElementById('party-admin-status');
-const partyJoinContainer = document.getElementById('party-join-container');
-const btnJoinParty = document.getElementById('btn-join-party');
+// --- Unified Room Admin DOM ---
+const roomGameType = document.getElementById('room-game-type');
+const btnOpenRoom = document.getElementById('btn-open-room');
+const unifiedRoomOverlay = document.getElementById('unified-room-overlay');
+const btnToggleAdminPanel = document.getElementById('btn-toggle-admin-panel');
+const btnCloseRoom = document.getElementById('btn-close-room');
+const roomAdminPanel = document.getElementById('room-admin-panel');
+const roomAdminHeader = document.getElementById('room-admin-header');
+const btnMinimizeAdminPanel = document.getElementById('btn-minimize-admin-panel');
+const adminLotteryControls = document.getElementById('admin-lottery-controls');
+const adminSurvivalControls = document.getElementById('admin-survival-controls');
+const lotteryCanvasContainer = document.getElementById('lottery-canvas-container');
+const roomPoolDisplayList = document.getElementById('room-pool-display-list');
+const btnJoinRoom = document.getElementById('btn-join-room');
 
 // --- Lottery Admin DOM ---
 const btnImportLobbyUsers = document.getElementById('btn-import-lobby-users');
@@ -221,7 +225,7 @@ const lotteryManualName = document.getElementById('lottery-manual-name');
 const btnAddManualName = document.getElementById('btn-add-manual-name');
 const lotteryPoolCount = document.getElementById('lottery-pool-count');
 const lotteryPoolList = document.getElementById('lottery-pool-list');
-const btnGenerateLottery = document.getElementById('btn-generate-lottery');
+const btnResetLottery = document.getElementById('btn-reset-lottery');
 const lotteryDrawCount = document.getElementById('lottery-draw-count');
 const lotteryAssigneeSelect = document.getElementById('lottery-assignee-select');
 const btnAssignDraw = document.getElementById('btn-assign-draw');
@@ -239,39 +243,81 @@ function updateAdminLobbyStatus() {
 
 let socket = null;
 let partyOthers = {};
+let currentGlobalRoomState = null;
+
+function updateUnifiedRoomUI() {
+  if (!currentGlobalRoomState) return;
+  if (currentGlobalRoomState.status === 'open') {
+    unifiedRoomOverlay.classList.remove('hidden');
+    if (globalIsSuperAdmin) {
+      btnToggleAdminPanel.classList.remove('hidden');
+      roomAdminPanel.classList.remove('hidden');
+    } else {
+      btnToggleAdminPanel.classList.add('hidden');
+      roomAdminPanel.classList.add('hidden');
+    }
+    
+    if (currentGlobalRoomState.activeGame === 'lottery') {
+      lotteryCanvasContainer.classList.remove('hidden');
+      bhContainer.classList.add('hidden');
+      adminLotteryControls.classList.remove('hidden');
+      adminSurvivalControls.classList.add('hidden');
+    } else if (currentGlobalRoomState.activeGame === 'survival') {
+      lotteryCanvasContainer.classList.add('hidden');
+      bhContainer.classList.remove('hidden');
+      adminLotteryControls.classList.add('hidden');
+      adminSurvivalControls.classList.remove('hidden');
+    }
+  } else {
+    unifiedRoomOverlay.classList.add('hidden');
+    bhContainer.classList.add('hidden');
+    lotteryCanvasContainer.classList.add('hidden');
+    if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+    if (bhEntities) bhEntities.innerHTML = '';
+    bhIsPlaying = false;
+  }
+}
 
 function initSocket() {
   if (socket) return;
   socket = io();
   
+  socket.on('global_room_state', (state) => {
+    window.globalRoomState = state;
+    currentGlobalRoomState = state;
+    updateUnifiedRoomUI();
+  });
+  
   socket.on('party_state', (state) => {
     currentPartyStatus = state.status;
     partyLobbyNames = state.players ? Object.values(state.players).map(p => p.name) : [];
-    updateAdminLobbyStatus();
     
     const adminPlayBtn = document.getElementById('btn-bh-admin-play');
     
     if (state.status === 'lobby') {
-      if (btnPartyStartLobby) btnPartyStartLobby.classList.add('hidden');
-      if (btnPartyPlay) btnPartyPlay.classList.remove('hidden');
-      if (partyJoinContainer) partyJoinContainer.classList.remove('hidden');
       if (adminPlayBtn) adminPlayBtn.classList.remove('hidden');
+      if (currentGlobalRoomState && currentGlobalRoomState.activeGame === 'survival') {
+        btnJoinRoom.classList.remove('hidden');
+      }
     } else if (state.status === 'playing') {
-      if (btnPartyStartLobby) btnPartyStartLobby.classList.add('hidden');
-      if (btnPartyPlay) btnPartyPlay.classList.add('hidden');
-      if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
       if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
+      btnJoinRoom.classList.add('hidden');
     } else {
-      if (btnPartyStartLobby) btnPartyStartLobby.classList.remove('hidden');
-      if (btnPartyPlay) btnPartyPlay.classList.add('hidden');
-      if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
       if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
-      
-      // Force close UI on idle
-      if (bhContainer) bhContainer.classList.add('hidden');
-      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
-      if (bhEntities) bhEntities.innerHTML = '';
-      bhIsPlaying = false;
+      btnJoinRoom.classList.add('hidden');
+    }
+    
+    // Update right-side participants list for survival
+    if (currentGlobalRoomState && currentGlobalRoomState.activeGame === 'survival') {
+      roomPoolDisplayList.innerHTML = '';
+      if (state.players) {
+        Object.values(state.players).forEach(p => {
+          const li = document.createElement('li');
+          li.innerText = p.name;
+          if (!p.alive) li.style.textDecoration = 'line-through';
+          roomPoolDisplayList.appendChild(li);
+        });
+      }
     }
     
     // Render existing players if we are in the lobby or playing
@@ -3289,43 +3335,148 @@ if (btnEasterEgg) {
 
   // Removed old duplicate dropdown listener
 
-  if (btnPartyStartLobby) {
-    btnPartyStartLobby.addEventListener('click', async () => {
+  if (btnOpenRoom) {
+    btnOpenRoom.addEventListener('click', async () => {
+      const type = roomGameType.value;
+      
+      // If Lottery, we pre-fill the pool from our local admin pool
+      if (type === 'lottery' && lotteryAdminPool.length > 0) {
+        // We can just open the room first, then hit setup if needed. 
+        // But let's just let the server open it, then we hit setup.
+      }
+      
+      try {
+        const res = await fetch('/api/admin/room/open', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: currentUser.userId, gameType: type })
+        });
+        const data = await res.json();
+        if (!data.success) alert(data.error);
+        else {
+          if (type === 'lottery' && lotteryAdminPool.length > 0) {
+            // Also hit setup to push pool
+            await fetch('/api/admin/lottery/setup', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ uid: currentUser.userId, pool: lotteryAdminPool })
+            });
+          }
+          alert('大廳已開啟！');
+        }
+      } catch(e) { console.error(e); }
+    });
+  }
+  
+  if (btnCloseRoom) {
+    btnCloseRoom.addEventListener('click', async () => {
+      if (!confirm('確定要關閉房間並返回嗎？')) return;
+      if (globalIsSuperAdmin) {
+        try {
+          await fetch('/api/admin/room/close', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uid: currentUser.userId })
+          });
+        } catch(e) { console.error(e); }
+      } else {
+        unifiedRoomOverlay.classList.add('hidden');
+      }
+    });
+  }
+
+  // --- Admin Panel Drag & Drop ---
+  if (roomAdminHeader) {
+    let isDraggingAdmin = false;
+    let adminDragStartX, adminDragStartY;
+    let adminStartLeft, adminStartTop;
+
+    roomAdminHeader.addEventListener('mousedown', (e) => {
+      isDraggingAdmin = true;
+      adminDragStartX = e.clientX;
+      adminDragStartY = e.clientY;
+      const rect = roomAdminPanel.getBoundingClientRect();
+      adminStartLeft = rect.left;
+      adminStartTop = rect.top;
+      roomAdminPanel.style.right = 'auto'; // Switch to left/top positioning
+      roomAdminPanel.style.left = adminStartLeft + 'px';
+      roomAdminPanel.style.top = adminStartTop + 'px';
+      roomAdminPanel.style.bottom = 'auto';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDraggingAdmin) return;
+      const dx = e.clientX - adminDragStartX;
+      const dy = e.clientY - adminDragStartY;
+      roomAdminPanel.style.left = (adminStartLeft + dx) + 'px';
+      roomAdminPanel.style.top = (adminStartTop + dy) + 'px';
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDraggingAdmin = false;
+    });
+    
+    // Touch support for dragging
+    roomAdminHeader.addEventListener('touchstart', (e) => {
+      isDraggingAdmin = true;
+      const touch = e.touches[0];
+      adminDragStartX = touch.clientX;
+      adminDragStartY = touch.clientY;
+      const rect = roomAdminPanel.getBoundingClientRect();
+      adminStartLeft = rect.left;
+      adminStartTop = rect.top;
+      roomAdminPanel.style.right = 'auto';
+      roomAdminPanel.style.left = adminStartLeft + 'px';
+      roomAdminPanel.style.top = adminStartTop + 'px';
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isDraggingAdmin) return;
+      const touch = e.touches[0];
+      const dx = touch.clientX - adminDragStartX;
+      const dy = touch.clientY - adminDragStartY;
+      roomAdminPanel.style.left = (adminStartLeft + dx) + 'px';
+      roomAdminPanel.style.top = (adminStartTop + dy) + 'px';
+    });
+
+    window.addEventListener('touchend', () => {
+      isDraggingAdmin = false;
+    });
+  }
+
+  if (btnToggleAdminPanel) {
+    btnToggleAdminPanel.addEventListener('click', () => {
+      roomAdminPanel.classList.toggle('hidden');
+    });
+  }
+
+  if (btnMinimizeAdminPanel) {
+    btnMinimizeAdminPanel.addEventListener('click', () => {
+      const body = document.getElementById('room-admin-body');
+      if (body.style.display === 'none') {
+        body.style.display = 'flex';
+        btnMinimizeAdminPanel.innerText = '—';
+      } else {
+        body.style.display = 'none';
+        btnMinimizeAdminPanel.innerText = '口';
+      }
+    });
+  }
+
+  const btnBhAdminPlay = document.getElementById('btn-bh-admin-play');
+  const btnBhAdminStop = document.getElementById('btn-bh-admin-stop');
+  if (btnBhAdminPlay) {
+    btnBhAdminPlay.addEventListener('click', async () => {
+      // First update win condition
       await fetch('/api/admin/party/start', {
         method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ 
           uid: currentUser.userId, 
           winCondition: { 
-            type: partyWinType.value, 
-            value: parseInt(partyWinValue.value, 10)||15 
+            type: partyWinType ? partyWinType.value : 'time', 
+            value: partyWinValue ? (parseInt(partyWinValue.value, 10)||15) : 15 
           } 
         })
       });
-    });
-  }
-  
-  if (btnPartyPlay) {
-    btnPartyPlay.addEventListener('click', async () => {
-      await fetch('/api/admin/party/play', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ uid: currentUser.userId })
-      });
-    });
-  }
-  
-  if (btnPartyStop) {
-    btnPartyStop.addEventListener('click', async () => {
-      await fetch('/api/admin/party/stop', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ uid: currentUser.userId })
-      });
-    });
-  }
-  
-  const btnBhAdminPlay = document.getElementById('btn-bh-admin-play');
-  const btnBhAdminStop = document.getElementById('btn-bh-admin-stop');
-  if (btnBhAdminPlay) {
-    btnBhAdminPlay.addEventListener('click', async () => {
+      // Then start play
       await fetch('/api/admin/party/play', {
         method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ uid: currentUser.userId })
@@ -3334,7 +3485,7 @@ if (btnEasterEgg) {
   }
   if (btnBhAdminStop) {
     btnBhAdminStop.addEventListener('click', async () => {
-      await fetch('/api/admin/party/stop', {
+      await fetch('/api/admin/room/close', {
         method: 'POST', headers: {'Content-Type':'application/json'},
         body: JSON.stringify({ uid: currentUser.userId })
       });
@@ -3579,39 +3730,17 @@ if (btnAddManualName) {
   });
 }
 
-if (btnGenerateLottery) {
-  btnGenerateLottery.addEventListener('click', async () => {
-    if (lotteryAdminPool.length === 0) {
-      alert('抽籤名單為空，請先匯入或手動加入名單！');
-      return;
-    }
-    
-    try {
-      const res = await fetch('/api/admin/lottery/setup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: currentUser.userId, pool: lotteryAdminPool })
-      });
-      const data = await res.json();
-      if (!data.success) alert(data.error);
-      else alert('抽獎房間已開啟，所有畫面在線的使用者將看到加入按鈕！');
-    } catch(e) { console.error(e); }
-  });
-}
+// btnGenerateLottery has been removed. Room open logic handles it.
 
-const btnResetLottery = document.getElementById('btn-reset-lottery');
 if (btnResetLottery) {
   btnResetLottery.addEventListener('click', async () => {
-    if (!confirm('確定要重置並關閉所有抽籤設定嗎？')) return;
+    if (!confirm('確定要強制重置並關閉房間嗎？')) return;
     try {
-      const res = await fetch('/api/admin/lottery/reset', {
+      await fetch('/api/admin/room/close', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ uid: currentUser.userId })
       });
-      const data = await res.json();
-      if (!data.success) alert(data.error);
-      else alert('已重置！');
     } catch(e) { console.error(e); }
   });
 }
@@ -3652,10 +3781,22 @@ if (socket) {
         opt.innerText = p.name;
         lotteryAssigneeSelect.appendChild(opt);
       });
-      
-      if (Object.keys(state.players).some(id => state.players[id].uid === currentSelected)) {
-        lotteryAssigneeSelect.value = currentSelected;
-      }
+      lotteryAssigneeSelect.value = currentSelected;
+    }
+  });
+}
+
+function joinPartyLobby() {
+  if (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) {
+    socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: currentUser.pictureUrl });
+    if (btnJoinRoom) btnJoinRoom.classList.add('hidden');
+  }
+}
+
+if (btnJoinRoom) {
+  btnJoinRoom.addEventListener('click', () => {
+    if (window.globalRoomState && window.globalRoomState.activeGame === 'survival') {
+      joinPartyLobby();
     }
   });
 }
