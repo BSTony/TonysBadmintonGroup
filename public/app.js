@@ -328,9 +328,25 @@ function initSocket() {
       } else {
         btnJoinRoom.classList.add('hidden');
       }
+      
+      const waitingText = document.getElementById('bh-waiting-text');
+      if (waitingText) {
+        if (hasJoined) {
+          waitingText.classList.remove('hidden');
+          if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+            waitingText.innerText = '請從右側控制面板開始遊戲';
+          } else {
+            waitingText.innerText = '等待管理者開始遊戲...';
+          }
+        } else {
+          waitingText.classList.add('hidden');
+        }
+      }
     } else if (state.status === 'playing') {
       if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
       btnJoinRoom.classList.add('hidden');
+      const waitingText = document.getElementById('bh-waiting-text');
+      if (waitingText) waitingText.classList.add('hidden');
     } else {
       if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
       btnJoinRoom.classList.add('hidden');
@@ -404,6 +420,9 @@ function initSocket() {
     if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
     if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
     if (bhContainer) bhContainer.classList.remove('hidden');
+    
+    const waitingText = document.getElementById('bh-waiting-text');
+    if (waitingText) waitingText.classList.add('hidden');
     
     // Auto-minimize participant panel to prevent covering the screen
     const pPanel = document.getElementById('room-participants-panel');
@@ -742,10 +761,25 @@ function bhPartyLoop(timestamp) {
   bhTimer.innerText = (elapsed / 1000).toFixed(2);
   
   const pRect = bhPlayer.getBoundingClientRect();
+  const px = pRect.left + pRect.width / 2;
+  const py = pRect.top + pRect.height / 2;
   const playerHitbox = { left: pRect.left + 10, right: pRect.right - 10, top: pRect.top + 10, bottom: pRect.bottom - 10 };
 
   for (let i = bhBullets.length - 1; i >= 0; i--) {
     let b = bhBullets[i];
+    
+    if (elapsed > 10000) {
+      const dx = px - b.x;
+      const dy = py - b.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 0) {
+         const speed = Math.hypot(b.vx, b.vy);
+         const steerRate = 0.02;
+         b.vx = b.vx * (1 - steerRate) + (dx / dist * speed) * steerRate;
+         b.vy = b.vy * (1 - steerRate) + (dy / dist * speed) * steerRate;
+      }
+    }
+    
     b.y += b.vy * b.speedMultiplier;
     b.x += b.vx * b.speedMultiplier;
     
@@ -3469,6 +3503,9 @@ if (btnEasterEgg) {
           alert('大廳已開啟！');
           hasEnteredParty = true;
           updateUnifiedRoomUI();
+          if (type === 'survival' && typeof btnJoinRoom !== 'undefined' && btnJoinRoom) {
+            btnJoinRoom.click();
+          }
         }
       } catch(e) { console.error(e); }
     });
