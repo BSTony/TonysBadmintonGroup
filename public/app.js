@@ -263,7 +263,7 @@ function updateUnifiedRoomUI() {
   if (currentGlobalRoomState.status === 'open') {
     if (partyActiveBanner) partyActiveBanner.classList.remove('hidden');
     
-    if (hasEnteredParty || globalIsSuperAdmin) {
+    if (hasEnteredParty) {
       if (partyActiveBanner) partyActiveBanner.classList.add('hidden');
       unifiedRoomOverlay.classList.remove('hidden');
       if (globalIsSuperAdmin) {
