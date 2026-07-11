@@ -300,6 +300,16 @@ function bindPinballSocket(s) {
       
       const pinballPoolCount = document.getElementById('pinball-pool-count');
       if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
+      const pinballPoolList = document.getElementById('pinball-pool-list');
+      if (pinballPoolList) {
+        pinballPoolList.innerHTML = '';
+        state.pool.forEach(name => {
+          const span = document.createElement('span');
+          span.style.cssText = 'background: #3498db; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;';
+          span.innerText = name;
+          pinballPoolList.appendChild(span);
+        });
+      }
       
       initPinballEngine();
       updatePinballTraps(state.traps);
