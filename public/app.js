@@ -109,7 +109,7 @@ function showFloatingEmoji(e, emoji) {
       const wrapper = createWrapper(el);
       
       // Spawn independent music notes or tears
-      const symbols = isDance ? ['🎵', '🎶', '✨'] : ['💧', '💦', '💧'];
+      const symbols = isDance ? ['�𦄡', '�𦅚', '��'] : ['�佂', '�𣺊', '�佂'];
       for (let i = 0; i < 3; i++) {
         const sym = document.createElement('div');
         sym.innerText = symbols[i];
@@ -137,7 +137,7 @@ function showFloatingEmoji(e, emoji) {
   }
 }
 
-// === 全域狀態 ===
+// === �典����� ===
 let currentUser = null;
 let currentGroupId = null;
 let currentDetailGame = null;
@@ -150,11 +150,11 @@ let piggyClicks = 0;
 let piggyRunning = false;
 let piggyBaseSpeed = 3;
 let globalManagedGroups = [];
-let globalLobbyTitle = '羽球接龍大廳';
+let globalLobbyTitle = '蝢賜��仿�憭批輒';
 let currentGameDetailId = null;
 let lastGamesJson = '';
 
-// DOM 元素
+// DOM ���
 const appDiv = document.getElementById('app');
 const statusMsg = document.getElementById('status-msg');
 const lobbyView = document.getElementById('lobby-view');
@@ -240,8 +240,8 @@ let partyLobbyNames = [];
 
 function updateAdminLobbyStatus() {
   if (!partyAdminStatus) return;
-  const namesStr = partyLobbyNames.length > 0 ? partyLobbyNames.join(', ') : '無';
-  partyAdminStatus.innerHTML = `狀態: ${currentPartyStatus} (人數: ${partyLobbyNames.length})<br><span style="font-size: 13px; color: #555; font-weight: normal;">已加入: ${namesStr}</span>`;
+  const namesStr = partyLobbyNames.length > 0 ? partyLobbyNames.join(', ') : '��';
+  partyAdminStatus.innerHTML = `����: ${currentPartyStatus} (鈭箸彍: ${partyLobbyNames.length})<br><span style="font-size: 13px; color: #555; font-weight: normal;">撌脣���: ${namesStr}</span>`;
 }
 
 let socket = null;
@@ -385,11 +385,11 @@ function initSocket() {
   socket.on('player_died', (data) => {
     if (partyOthers[data.id]) {
       const iconEl = partyOthers[data.id].querySelector('.bh-icon');
-      if (iconEl) iconEl.innerText = '🤕';
+      if (iconEl) iconEl.innerText = '☠️';
     }
     if (data.id === socket.id && bhPlayer) {
       const iconEl = bhPlayer.querySelector('.bh-icon');
-      if (iconEl) iconEl.innerText = '🤕';
+      if (iconEl) iconEl.innerText = '☠️';
     }
   });
   
@@ -397,6 +397,8 @@ function initSocket() {
     bhIsPlaying = true;
     bhStartTime = performance.now(); // Ignore data.startTime to align with requestAnimationFrame's timestamp
     if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
+    if (btnJoinRoom) btnJoinRoom.classList.add('hidden');
+    if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
     
     // 自動縮小名單不要影響畫面
     if (typeof btnToggleParticipants !== 'undefined' && btnToggleParticipants) {
@@ -452,12 +454,12 @@ function initSocket() {
   socket.on('party_ended', (data) => {
     bhIsPlaying = false;
     bhGameoverModal.classList.remove('hidden');
-    document.getElementById('bh-gameover-title').innerText = '派對結束！';
+    document.getElementById('bh-gameover-title').innerText = '瘣曉�蝯鞉�嚗�';
     bhFinalTime.innerText = data.elapsed.toFixed(2);
     renderBhLeaderboard(data.leaderboard);
     
     const isWinner = data.winners.some(w => w.uid === currentUser.userId);
-    if (isWinner && bhPlayer) bhPlayer.innerHTML = '👑';
+    if (isWinner && bhPlayer) bhPlayer.innerHTML = '��';
   });
 }
 
@@ -467,7 +469,7 @@ function createOtherPlayer(p) {
   el.className = 'bh-player';
   el.style.opacity = '0.5'; // Ghost appearance for others
   el.innerHTML = `
-    <div class="bh-icon">${p.alive ? (p.icon || '🐷') : '🤕'}</div>
+    <div class="bh-icon">${p.alive ? (p.icon || '�䊹') : '��'}</div>
     <div class="bh-player-name">${p.name}</div>
   `;
   el.style.left = (p.x * window.innerWidth) + 'px';
@@ -476,7 +478,7 @@ function createOtherPlayer(p) {
   partyOthers[p.id] = el;
 }
 
-let selectedCharacterIcon = '🐷';
+let selectedCharacterIcon = '�䊹';
 
 function joinPartyLobby() {
   initSocket();
@@ -504,7 +506,7 @@ function joinPartyLobby() {
   const livesEl = document.createElement('div');
   livesEl.className = 'bh-lives';
   livesEl.id = 'bh-lives-display';
-  livesEl.innerText = '❤️❤️❤️';
+  livesEl.innerText = '�歹��歹��歹�';
   bhPlayer.appendChild(livesEl);
   
   const initialX = window.innerWidth / 2 - 15;
@@ -610,7 +612,7 @@ function joinPartyLobby() {
 function spawnServerBullet(b) {
   const el = document.createElement('div');
   el.className = 'bh-bullet';
-  el.innerHTML = '🏸';
+  el.innerHTML = '�虬';
   
   const startX = b.startX * window.innerWidth;
   const targetX = b.targetX * window.innerWidth;
@@ -647,7 +649,7 @@ function spawnServerWall(w) {
 function spawnServerItem(item) {
   const el = document.createElement('div');
   el.className = item.type === 'heart' ? 'bh-heart' : 'bh-star';
-  el.innerHTML = item.type === 'heart' ? '❤️' : '⭐';
+  el.innerHTML = item.type === 'heart' ? '�歹�' : '潃�';
   const x = item.x * window.innerWidth;
   const y = item.y * window.innerHeight;
   
@@ -677,7 +679,7 @@ function removeItem(id) {
 function updateLives(lives) {
   const display = document.getElementById('bh-lives-display');
   if (display) {
-    display.innerText = '❤️'.repeat(lives);
+    display.innerText = '�歹�'.repeat(lives);
   }
 }
 
@@ -706,7 +708,7 @@ function bhPartyLoop(timestamp) {
       continue;
     }
     
-    if (bhPlayer.innerHTML !== '🤕' &&
+    if (bhPlayer.innerHTML !== '��' &&
       b.x + 20 > playerHitbox.left && b.x + 10 < playerHitbox.right &&
       b.y + 20 > playerHitbox.top && b.y + 10 < playerHitbox.bottom
     ) {
@@ -720,7 +722,7 @@ function bhPartyLoop(timestamp) {
   // Item collisions
   for (let i = bhItems.length - 1; i >= 0; i--) {
     let item = bhItems[i];
-    if (bhPlayer.innerHTML !== '🤕' &&
+    if (bhPlayer.innerHTML !== '��' &&
       item.x + 20 > playerHitbox.left && item.x + 10 < playerHitbox.right &&
       item.y + 20 > playerHitbox.top && item.y + 10 < playerHitbox.bottom
     ) {
@@ -742,7 +744,7 @@ if (btnJoinParty) {
     
     if (modal && grid) {
       grid.innerHTML = '';
-      const chars = ['🐷', '🐶', '🐱', '🐰', '🦊', '🐻', '🐼', '🐯', '🦁', '🐸'];
+      const chars = ['�䊹', '�濶', '�躼', '�鑛', '��', '�𣸮', '�䧟', '�鍳', '��', '�𢙺'];
       chars.forEach(c => {
         const btn = document.createElement('button');
         btn.className = 'char-btn';
@@ -800,14 +802,14 @@ function startBulletHell() {
   bhPlayer = document.createElement('div');
   bhPlayer.className = 'bh-player';
   bhPlayer.innerHTML = `
-    <div class="bh-icon">🐷</div>
+    <div class="bh-icon">�䊹</div>
     <div class="bh-player-name">${currentUser.displayName}</div>
   `;
   
   const livesEl = document.createElement('div');
   livesEl.className = 'bh-lives';
   livesEl.id = 'bh-lives-display';
-  livesEl.innerText = '❤️❤️❤️';
+  livesEl.innerText = '�歹��歹��歹�';
   bhPlayer.appendChild(livesEl);
   
   bhPlayer.style.left = (window.innerWidth / 2 - 15) + 'px';
@@ -921,7 +923,7 @@ function bhGameLoop(timestamp) {
 function spawnBullet() {
   const el = document.createElement('div');
   el.className = 'bh-bullet';
-  el.innerHTML = '🏸';
+  el.innerHTML = '�虬';
   
   const startX = Math.random() * window.innerWidth;
   const startY = -30;
@@ -944,7 +946,7 @@ async function endBulletHell(elapsedMs) {
   if (bhContainer._cleanupEvents) bhContainer._cleanupEvents();
   
   const iconEl = bhPlayer.querySelector('.bh-icon');
-  if (iconEl) iconEl.innerText = '🤕';
+  if (iconEl) iconEl.innerText = '��';
   
   const survivalTime = parseFloat((elapsedMs / 1000).toFixed(2));
   bhFinalTime.innerText = survivalTime.toFixed(2);
@@ -975,8 +977,8 @@ function renderBhLeaderboard(list) {
     const li = document.createElement('li');
     li.style.padding = '4px 0';
     li.style.borderBottom = '1px solid #eee';
-    let rank = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index+1}.`;
-    li.innerHTML = `<strong>${rank}</strong> ${w.name} - <span style="color:#e91e63">${w.survivalTime}</span> 秒`;
+    let rank = index === 0 ? '��' : index === 1 ? '��' : index === 2 ? '��' : `${index+1}.`;
+    li.innerHTML = `<strong>${rank}</strong> ${w.name} - <span style="color:#e91e63">${w.survivalTime}</span> 蝘嚒;
     bhLeaderboardList.appendChild(li);
   });
 }
@@ -992,35 +994,35 @@ if (btnBhClose) {
 }
 
 
-// 初始化 LIFF
+// �嘥��� LIFF
 async function initializeLiff() {
   try {
-    // 1. 取得後端系統設定
+    // 1. �硋�敺𣬚垢蝟餌絞閮剖�
     const configRes = await fetch(`/api/config?_t=${Date.now()}`);
-    if (!configRes.ok) throw new Error('無法取得系統設定');
+    if (!configRes.ok) throw new Error('�⊥��硋�蝟餌絞閮剖�');
     const config = await configRes.json();
     
     if (!config.liffId) {
-      throw new Error('系統未設定 LIFF ID');
+      throw new Error('蝟餌絞�芾身摰� LIFF ID');
     }
 
-    // 2. 初始化 LIFF SDK
+    // 2. �嘥��� LIFF SDK
     await liff.init({ liffId: config.liffId });
 
-    // 3. 確保使用者已登入
+    // 3. 蝣箔�雿輻鍂��歇�餃�
     if (!liff.isLoggedIn()) {
       liff.login({ redirectUri: window.location.href });
       return;
     }
 
-    // 取得使用者資料
+    // �硋�雿輻鍂�����
     const profile = await liff.getProfile();
     currentUser = profile;
     if (typeof initLottery === 'function') {
       initLottery(currentUser.userId);
     }
 
-    // 4. 取得群組 Context
+    // 4. �硋�蝢斤� Context
     const urlParams = new URLSearchParams(window.location.search);
     const gidFromUrl = urlParams.get('gid');
     const context = liff.getContext();
@@ -1035,7 +1037,7 @@ async function initializeLiff() {
       currentGroupId = currentUser.userId;
     }
 
-    // 紀錄造訪
+    // 蝝����㰘赤
     if (currentGroupId && currentUser) {
       fetch('/api/lobby_visit', {
         method: 'POST',
@@ -1049,28 +1051,28 @@ async function initializeLiff() {
       }).catch(e => console.error('Failed to log visit', e));
     }
 
-    // 5. 載入大廳資料
+    // 5. 頛匧�憭批輒鞈��
     document.getElementById('create-game-view').classList.add('hidden');
     await loadGamesLobby();
     
-    // 6. 初始化派對 Socket (背景連線，以便接收廣播)
+    // 6. �嘥��𡝗晷撠� Socket (�峕艶���嚗䔶誑靘踵𦻖�嗅誨��)
     initSocket();
 
   } catch (err) {
     console.error('LIFF Init Error:', err);
     appDiv.className = '';
-    statusMsg.innerText = err.message || '發生錯誤';
+    statusMsg.innerText = err.message || '�潛��航炊';
     statusMsg.style.color = '#ff5252';
     statusMsg.style.display = 'block';
   }
 }
 
-// 載入多場次大廳資料
+// 頛匧�憭𡁜聦甈∪之撱唾���
 async function loadGamesLobby(silent = false) {
   try {
     if (!silent) {
       appDiv.className = 'loading';
-      statusMsg.innerText = '載入中...';
+      statusMsg.innerText = '頛匧�銝�...';
       statusMsg.style.display = 'block';
     }
     
@@ -1079,7 +1081,7 @@ async function loadGamesLobby(silent = false) {
       if (res.status === 404) {
         gamesList = [];
       } else {
-        throw new Error('無法取得場次資料');
+        throw new Error('�⊥��硋��湔活鞈��');
       }
     } else {
       const data = await res.json();
@@ -1088,8 +1090,8 @@ async function loadGamesLobby(silent = false) {
       globalIsAdmin = !!data.isAdmin;
       globalIsSuperAdmin = !!data.isSuperAdmin;
       globalManagedGroups = data.managedGroups || [];
-      globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
-      globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+      globalLobbyTitle = data.lobbyTitle || '蝢賜��仿�憭批輒';
+      globalLobbyDesc = data.lobbyDesc || '�祇�梯𠪊�枏�憿齿��琜�頞訫翰�嗡�嚗諹��堒�鞊砌�韏瑕翰璅�𧎚�滚嫃嚗�';
     }
 
     try {
@@ -1102,7 +1104,7 @@ async function loadGamesLobby(silent = false) {
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlGameId = urlParams.get('gameId');
-    // 若為初次載入且網址有指定 gameId，則直接進入該場次，否則留在首頁
+    // �亦��脲活頛匧�銝𠉛雯���㗇�摰� gameId嚗���湔𦻖�脣�閰脣聦甈∴��血��坔銁擐㚚�
     if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
       renderDetail(urlGameId);
     } else if (!currentGameDetailId) {
@@ -1112,13 +1114,13 @@ async function loadGamesLobby(silent = false) {
     }
   } catch (err) {
     console.error(err);
-    appDiv.className = ''; // 確保發生錯誤時也關閉轉圈圈
+    appDiv.className = ''; // 蝣箔��潛��航炊����𣈯�頧匧���
     statusMsg.innerText = err.message;
     statusMsg.style.display = 'block';
   }
 }
 
-// 判斷場次是否已過期 (根據日期與結束時間)
+// �斗𪃾�湔活�臬炏撌脤��� (�寞��交���������)
 function isGameExpired(game) {
   if (game.isManualEnded) return true;
   if (!game.date) return false;
@@ -1160,13 +1162,13 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// 渲染大廳畫面
+// 皜脫�憭批輒�恍𢒰
 function renderLobby() {
     appDiv.className = '';
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     lobbyView.classList.remove('hidden');
     
-    document.getElementById('lobby-title-text').innerText = globalLobbyTitle || '羽球接龍大廳';
+    document.getElementById('lobby-title-text').innerText = globalLobbyTitle || '蝢賜��仿�憭批輒';
     const btnEditTitle = document.getElementById('btn-edit-title');
     if (globalIsSuperAdmin && btnEditTitle) {
       btnEditTitle.classList.remove('hidden');
@@ -1175,7 +1177,7 @@ function renderLobby() {
       btnEditTitle.classList.add('hidden');
     }
     
-    document.getElementById('lobby-desc-text').innerText = globalLobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+    document.getElementById('lobby-desc-text').innerText = globalLobbyDesc || '�祇�梯𠪊�枏�憿齿��琜�頞訫翰�嗡�嚗諹��堒�鞊砌�韏瑕翰璅�𧎚�滚嫃嚗�';
     const btnEditDesc = document.getElementById('btn-edit-desc');
     if (globalIsSuperAdmin && btnEditDesc) {
       btnEditDesc.classList.remove('hidden');
@@ -1246,20 +1248,20 @@ function renderLobby() {
       
       if (isExpired) {
          badgeStyle = 'background-color: #666; color: #FFF;';
-         badgeText = '已結束';
+         badgeText = '撌脩���';
       } else if (isFull) {
          badgeStyle = 'background-color: #E0E0E0; color: #888888;';
-         badgeText = '已額滿';
+         badgeText = '撌脤�皛�';
       } else if (isWaitlist) {
          badgeStyle = 'background-color: #FFF3E0; color: #E65100;';
-         badgeText = '⚠ 候補中';
+         badgeText = '�� �躰�銝�';
       } else {
-         badgeText = '✓ 開放報名';
+         badgeText = '�� �𧢲𦆮�勗�';
       }
       
       let customTagsHtml = '';
       if (game.tag) {
-         const tagArr = game.tag.split(/[,、，]/).map(t => t.trim()).filter(Boolean);
+         const tagArr = game.tag.split(/[,���]/).map(t => t.trim()).filter(Boolean);
          customTagsHtml = tagArr.map(t => `<div class="badge default">${escapeHTML(t)}</div>`).join('');
       }
       
@@ -1280,29 +1282,29 @@ function renderLobby() {
             ${badgeText}
           </div>
           ${customTagsHtml}
-          ${isMeRegistered ? '<div class="badge open" style="background-color: var(--primary-color); color: white;">已報名</div>' : ''}
+          ${isMeRegistered ? '<div class="badge open" style="background-color: var(--primary-color); color: white;">撌脣𥼚��</div>' : ''}
         </div>
         
         <div class="card-title" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
-          ${escapeHTML(game.title || '羽球接龍')}
+          ${escapeHTML(game.title || '蝢賜��仿�')}
         </div>
         
         <div class="info-grid" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
           <div class="info-item">
-            <span class="info-icon">📅</span>
-            <span>${escapeHTML(game.date || '未設定')}</span>
+            <span class="info-icon">��</span>
+            <span>${escapeHTML(game.date || '�芾身摰�')}</span>
           </div>
           <div class="info-item">
-            <span class="info-icon">⏰</span>
-            <span>${escapeHTML(game.time || '未設定')}</span>
+            <span class="info-icon">��</span>
+            <span>${escapeHTML(game.time || '�芾身摰�')}</span>
           </div>
           <div class="info-item">
-            <span class="info-icon">📍</span>
-            <span>${escapeHTML(game.location || '未設定')}</span>
+            <span class="info-icon">��</span>
+            <span>${escapeHTML(game.location || '�芾身摰�')}</span>
           </div>
           <div class="info-item">
-            <span class="info-icon">💰</span>
-            <span>${escapeHTML(formatFee(game.fee) || '未設定')}</span>
+            <span class="info-icon">�兛</span>
+            <span>${escapeHTML(formatFee(game.fee) || '�芾身摰�')}</span>
           </div>
         </div>
         
@@ -1310,8 +1312,8 @@ function renderLobby() {
         
         <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
           <div class="progress-header">
-            <span>名額進度</span>
-            <span class="progress-value" style="color: ${count > limit ? 'var(--danger-color)' : 'var(--text-main)'}">${count} / ${limit} 人</span>
+            <span>�漤��脣漲</span>
+            <span class="progress-value" style="color: ${count > limit ? 'var(--danger-color)' : 'var(--text-main)'}">${count} / ${limit} 鈭�</span>
           </div>
           <div class="progress-bar-bg">
             <div class="progress-bar-fill" style="width: ${progressPercent}%; background-color: ${progressColor};"></div>
@@ -1321,8 +1323,8 @@ function renderLobby() {
         <div class="action-row" style="flex-wrap: wrap;">
           <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
           <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
-          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
-          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="程度" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="隢贝撓�交黸蝔�" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
+          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="蝔见漲" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
         </div>
         <div id="error-msg-${game.gameId}" class="error-msg"></div>
       `;
@@ -1343,7 +1345,7 @@ function renderLobby() {
       summaryEl.style.fontWeight = 'bold';
       summaryEl.style.cursor = 'pointer';
       summaryEl.style.color = '#666';
-      summaryEl.innerText = `已結束的團 (${endedGames.length})`;
+      summaryEl.innerText = `撌脩��毺��� (${endedGames.length})`;
       
       const contentEl = document.createElement('div');
       contentEl.style.marginTop = '15px';
@@ -1355,15 +1357,15 @@ function renderLobby() {
       gamesContainer.appendChild(detailsEl);
     }
   
-  // 更新狀態文字 (原本是轉圈圈，現在因為 appDiv.className='' 所以圈圈消失，我們更新文字)
+  // �湔鰵���𧢲�摮� (��𧋦�航����嚗𣬚𣶹�典��� appDiv.className='' ��隞亙����憭梧��穃�烐凒�唳�摮�)
   const headerP = document.querySelector('.lobby-header p');
-  if (headerP) headerP.innerText = '點選標題進入後，可查看、取消名單';
+  if (headerP) headerP.innerText = '暺鮋�璅䠷��脣�敺䕘��舀䰻�卝���瘨����';
   const statusEl = document.getElementById('status-msg');
   if (statusEl) statusEl.style.display = 'none';
 }
 
 async function handleEditLobbyTitle() {
-  const newTitle = prompt('請輸入新的大廳標題：', globalLobbyTitle || '');
+  const newTitle = prompt('隢贝撓�交鰵��之撱單�憿䕘�', globalLobbyTitle || '');
   if (newTitle === null) return;
   try {
     appDiv.className = 'loading';
@@ -1384,17 +1386,17 @@ async function handleEditLobbyTitle() {
         renderLobby();
       }
     } else {
-      alert('修改失敗');
+      alert('靽格㺿憭望�');
     }
   } catch(e) {
-    alert('網路錯誤');
+    alert('蝬脰楝�航炊');
   } finally {
     appDiv.className = '';
   }
 }
 
 async function handleEditLobbyDesc() {
-  const newDesc = prompt('請輸入新的大廳描述：', globalLobbyDesc || '');
+  const newDesc = prompt('隢贝撓�交鰵��之撱單�餈堆�', globalLobbyDesc || '');
   if (newDesc === null) return;
   try {
     appDiv.className = 'loading';
@@ -1415,20 +1417,20 @@ async function handleEditLobbyDesc() {
         renderLobby();
       }
     } else {
-      alert('修改失敗');
+      alert('靽格㺿憭望�');
     }
   } catch (err) {
-    alert('網路錯誤');
+    alert('蝬脰楝�航炊');
   } finally {
     appDiv.className = '';
   }
 }
 
-// 處理一般報名或取消
+// �閧�銝��砍𥼚�齿��𡝗�
 async function handleAction(gameId, action) {
   try {
     appDiv.className = 'loading';
-    statusMsg.innerText = '處理中...';
+    statusMsg.innerText = '�閧�銝�...';
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -1445,12 +1447,12 @@ async function handleAction(gameId, action) {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '發生錯誤');
+      alert(result.error || '�潛��航炊');
       await loadGamesLobby();
       return;
     }
     
-    // 成功後更新資料庫陣列並重新渲染
+    // �𣂼�敺峕凒�啗��坔澈���銝阡��唳葡��
     const idx = gamesList.findIndex(g => g.gameId === gameId);
     if (idx !== -1) gamesList[idx] = result.game;
     
@@ -1461,24 +1463,24 @@ async function handleAction(gameId, action) {
     }
   } catch (err) {
     console.error(err);
-    alert('網路錯誤，請稍後再試');
+    alert('蝬脰楝�航炊嚗諹�蝔滚��滩岫');
     await loadGamesLobby();
   }
 }
 
-// 處理代報名
+// �閧�隞�𥼚��
 async function handleProxyRegister(gameId) {
   const input = document.getElementById(`proxy-name-${gameId}`);
   if (!input) return;
   const name = input.value.trim();
   if (!name) {
-    alert('請輸入代報名名稱');
+    alert('隢贝撓�乩誨�勗��滨迂');
     return;
   }
   
   try {
     appDiv.className = 'loading';
-    statusMsg.innerText = '代報名處理中...';
+    statusMsg.innerText = '隞�𥼚�滩���葉...';
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -1495,7 +1497,7 @@ async function handleProxyRegister(gameId) {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '發生錯誤');
+      alert(result.error || '�潛��航炊');
       await loadGamesLobby();
       return;
     }
@@ -1507,17 +1509,17 @@ async function handleProxyRegister(gameId) {
     
   } catch (err) {
     console.error(err);
-    alert('網路錯誤，請稍後再試');
+    alert('蝬脰楝�航炊嚗諹�蝔滚��滩岫');
     await loadGamesLobby();
   }
 }
-// 切換至明細畫面
+// ����單�蝝啁𧞄��
 window.showDetail = function(gameId) {
   currentGameDetailId = gameId;
   renderDetail(gameId);
 };
 
-// 渲染明細畫面
+// 皜脫��𡒊敦�恍𢒰
 function renderDetail(gameId, preserveScroll = false) {
   const game = gamesList.find(g => g.gameId === gameId);
   if (!game) return;
@@ -1534,9 +1536,9 @@ function renderDetail(gameId, preserveScroll = false) {
   
   const normalize = s => (s||'').replace(/\s+/g, '');
   const autoStr = normalize([game.date, game.time, game.location].filter(Boolean).join(''));
-  const isAutoTitle = normalize(game.title) === autoStr || game.title === '羽球接龍';
+  const isAutoTitle = normalize(game.title) === autoStr || game.title === '蝢賜��仿�';
   const showTitle = game.title && !isAutoTitle;
-  detailTitle.innerText = showTitle ? game.title : '場次明細';
+  detailTitle.innerText = showTitle ? game.title : '�湔活�𡒊敦';
   if (!showTitle) detailTitle.style.display = 'none';
   else detailTitle.style.display = 'block';
   
@@ -1547,11 +1549,11 @@ function renderDetail(gameId, preserveScroll = false) {
     btnCopyList.classList.remove('hidden');
     btnCopyList.onclick = () => {
       const list = game.sections[0]?.list || [];
-      const text = list.map(n => n === '__ANON__' ? '匿名球友' : n).join('\n');
+      const text = list.map(n => n === '__ANON__' ? '�踹����' : n).join('\n');
       navigator.clipboard.writeText(text).then(() => {
-        alert('名單已成功複製！\n\n' + text);
+        alert('�滚鱓撌脫��蠘�鋆踝�\n\n' + text);
       }).catch(() => {
-        prompt('請複製以下名單：', text);
+        prompt('隢贝�鋆賭誑銝见��殷�', text);
       });
     };
   }
@@ -1569,7 +1571,7 @@ function renderDetail(gameId, preserveScroll = false) {
   
   const section = game.sections[0] || { list: [], limit: 20 };
   const isRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
-  detailCount.innerText = `${isRegistered ? '(已報名) ' : ''}${section.list.length} / ${section.limit}`;
+  detailCount.innerText = `${isRegistered ? '(撌脣𥼚��) ' : ''}${section.list.length} / ${section.limit}`;
   
 
   const isExpired = isGameExpired(game);
@@ -1579,8 +1581,8 @@ function renderDetail(gameId, preserveScroll = false) {
     <div class="action-row" style="flex-wrap: wrap; margin-top: 15px; margin-bottom: 10px;">
       <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
       <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
-      <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
-      <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="程度" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+      <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="隢贝撓�交黸蝔�" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
+      <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="蝔见漲" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
     </div>
     <div id="error-msg-${game.gameId}-detail" class="error-msg"></div>
   `;
@@ -1597,7 +1599,7 @@ function renderDetail(gameId, preserveScroll = false) {
       pushListBtn.style.marginBottom = '15px';
       pushListBtn.style.width = '100%';
       pushListBtn.style.backgroundColor = '#FF9800';
-      pushListBtn.innerText = '📢 推播目前詳細名單';
+      pushListBtn.innerText = '�𤙥 �冽偘�桀�閰喟敦�滚鱓';
       detailView.insertBefore(pushListBtn, detailList);
     }
     pushListBtn.onclick = () => handlePushList(gameId);
@@ -1611,12 +1613,12 @@ function renderDetail(gameId, preserveScroll = false) {
   if (hasTags) {
      let tagsHtml = '<div class="info-tags" style="margin-top: 0;">';
      tagsHtml += '<div class="info-row">';
-     if (game.date) tagsHtml += `<span class="info-tag">📅 ${escapeHTML(game.date)}</span>`;
-     if (game.time) tagsHtml += `<span class="info-tag">⏰ ${escapeHTML(game.time)}</span>`;
+     if (game.date) tagsHtml += `<span class="info-tag">�� ${escapeHTML(game.date)}</span>`;
+     if (game.time) tagsHtml += `<span class="info-tag">�� ${escapeHTML(game.time)}</span>`;
      tagsHtml += '</div>';
      tagsHtml += '<div class="info-row" style="margin-top: 4px;">';
-     if (game.location) tagsHtml += `<span class="info-tag">📍 ${escapeHTML(game.location)}</span>`;
-     if (game.fee) tagsHtml += `<span class="info-tag">💰 ${escapeHTML(formatFee(game.fee))}</span>`;
+     if (game.location) tagsHtml += `<span class="info-tag">�� ${escapeHTML(game.location)}</span>`;
+     if (game.fee) tagsHtml += `<span class="info-tag">�兛 ${escapeHTML(formatFee(game.fee))}</span>`;
      tagsHtml += '</div>';
      tagsHtml += '</div>';
      detailList.innerHTML += tagsHtml;
@@ -1626,7 +1628,7 @@ function renderDetail(gameId, preserveScroll = false) {
   }
   
   let historyHtml = '<div class="history-section" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #fafafa; border-radius: 8px; border-left: 4px solid #90caf9;">';
-  historyHtml += '<h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">歷史紀錄</h4>';
+  historyHtml += '<h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">甇瑕蟮蝝���</h4>';
   historyHtml += '<div style="font-size: 13px; color: #555;">';
   if (game.history && game.history.length > 0) {
     const top2 = game.history.slice(0, 2);
@@ -1634,12 +1636,12 @@ function renderDetail(gameId, preserveScroll = false) {
     
     top2.forEach(h => {
        let displayText = '';
-       if (h.action === '錯誤') {
-         historyHtml += `<div style="margin-bottom: 4px; color: #F44336; font-size: 12px;">${escapeHTML(h.time)} <strong>[系統錯誤]</strong> ${escapeHTML(h.errorMsg || '')}</div>`;
+       if (h.action === '�航炊') {
+         historyHtml += `<div style="margin-bottom: 4px; color: #F44336; font-size: 12px;">${escapeHTML(h.time)} <strong>[蝟餌絞�航炊]</strong> ${escapeHTML(h.errorMsg || '')}</div>`;
          return;
        }
        if (h.operator && h.operator !== h.name) {
-         displayText = `${escapeHTML(h.operator)} 幫 ${escapeHTML(h.name)}`;
+         displayText = `${escapeHTML(h.operator)} 撟� ${escapeHTML(h.name)}`;
        } else if (h.operator) {
          displayText = escapeHTML(h.operator);
        } else {
@@ -1650,16 +1652,16 @@ function renderDetail(gameId, preserveScroll = false) {
     
     if (rest.length > 0) {
        historyHtml += `<details style="margin-top: 8px;">
-           <summary style="cursor: pointer; color: #1976d2; font-weight: bold; outline: none;">顯示更多 (${rest.length})</summary>
+           <summary style="cursor: pointer; color: #1976d2; font-weight: bold; outline: none;">憿舐內�游� (${rest.length})</summary>
            <div style="max-height: 120px; overflow-y: auto; margin-top: 6px; padding-left: 8px; border-left: 2px solid #ddd;">`;
        rest.forEach(h => {
            let displayText = '';
-           if (h.action === '錯誤') {
-             historyHtml += `<div style="margin-bottom: 4px; color: #F44336; font-size: 12px;">${escapeHTML(h.time)} <strong>[系統錯誤]</strong> ${escapeHTML(h.errorMsg || '')}</div>`;
+           if (h.action === '�航炊') {
+             historyHtml += `<div style="margin-bottom: 4px; color: #F44336; font-size: 12px;">${escapeHTML(h.time)} <strong>[蝟餌絞�航炊]</strong> ${escapeHTML(h.errorMsg || '')}</div>`;
              return;
            }
            if (h.operator && h.operator !== h.name) {
-             displayText = `${escapeHTML(h.operator)} 幫 ${escapeHTML(h.name)}`;
+             displayText = `${escapeHTML(h.operator)} 撟� ${escapeHTML(h.name)}`;
            } else if (h.operator) {
              displayText = escapeHTML(h.operator);
            } else {
@@ -1670,16 +1672,16 @@ function renderDetail(gameId, preserveScroll = false) {
        historyHtml += `</div></details>`;
     }
   } else {
-    historyHtml += '<div style="color: #999; font-style: italic;">目前尚無歷史紀錄</div>';
+    historyHtml += '<div style="color: #999; font-style: italic;">�桀�撠𡁶�甇瑕蟮蝝���</div>';
   }
   historyHtml += '</div></div>';
   detailList.innerHTML += historyHtml;
   
-  // 顯示所有區段 (含候補)
+  // 憿舐內���匧�畾� (�怠�躰�)
   game.sections.forEach((sec, sIdx) => {
     const secDiv = document.createElement('div');
     secDiv.className = 'list-section';
-    secDiv.innerHTML = `<h3>${escapeHTML(sec.title)} (限額 ${sec.limit})</h3>`;
+    secDiv.innerHTML = `<h3>${escapeHTML(sec.title)} (�鞾� ${sec.limit})</h3>`;
     
     for (let i = 0; i < sec.limit; i++) {
       if (i < sec.list.length) {
@@ -1694,9 +1696,9 @@ function renderDetail(gameId, preserveScroll = false) {
         let paidHtml = '';
         if (canCancel) {
           if (globalIsAdmin) {
-            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
+            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '�兛 撌脩像鞎�' : '漎� �芰像鞎�'}</button>`;
           } else if (isPaid) {
-            paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
+            paidHtml = `<span class="paid-badge">�兛 撌脩像鞎�</span>`;
           }
         }
         
@@ -1706,8 +1708,8 @@ function renderDetail(gameId, preserveScroll = false) {
           const canMoveDown = i < sec.list.length - 1;
           moveHtml = `
             <div style="display:flex; flex-direction:column; margin-right: 5px; min-width: 20px;">
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1})"` : 'disabled'}>🔼</button>
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1})"` : 'disabled'}>🔽</button>
+              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1})"` : 'disabled'}>�䃈</button>
+              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1})"` : 'disabled'}>�𤪖</button>
             </div>
           `;
         }
@@ -1718,22 +1720,22 @@ function renderDetail(gameId, preserveScroll = false) {
             <div class="list-num">${i + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
-            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
+            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">��</button>` : ''}
           </div>
         `;
       } else {
         secDiv.innerHTML += `
           <div class="list-item" style="opacity: 0.3">
             <div class="list-num">${i + 1}.</div>
-            <div class="list-name">-- 虛位以待 --</div>
+            <div class="list-name">-- �𥕢�隞亙� --</div>
           </div>
         `;
       }
     }
     
-    // 候補名單
+    // �躰��滚鱓
     if (sec.list.length > sec.limit) {
-      secDiv.innerHTML += `<h3 style="margin-top:20px; color:#ff9800">候補名單</h3>`;
+      secDiv.innerHTML += `<h3 style="margin-top:20px; color:#ff9800">�躰��滚鱓</h3>`;
       for (let i = sec.limit; i < sec.list.length; i++) {
         const name = sec.list[i];
         const isMe = game.myRegisteredNames && game.myRegisteredNames.includes(name);
@@ -1746,9 +1748,9 @@ function renderDetail(gameId, preserveScroll = false) {
         let paidHtml = '';
         if (canCancel) {
           if (globalIsAdmin) {
-            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
+            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '�兛 撌脩像鞎�' : '漎� �芰像鞎�'}</button>`;
           } else if (isPaid) {
-            paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
+            paidHtml = `<span class="paid-badge">�兛 撌脩像鞎�</span>`;
           }
         }
         
@@ -1758,8 +1760,8 @@ function renderDetail(gameId, preserveScroll = false) {
           const canMoveDown = i < sec.list.length - 1;
           moveHtml = `
             <div style="display:flex; flex-direction:column; margin-right: 5px; min-width: 20px;">
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1})"` : 'disabled'}>🔼</button>
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1})"` : 'disabled'}>🔽</button>
+              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1})"` : 'disabled'}>�䃈</button>
+              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1})"` : 'disabled'}>�𤪖</button>
             </div>
           `;
         }
@@ -1767,10 +1769,10 @@ function renderDetail(gameId, preserveScroll = false) {
         secDiv.innerHTML += `
           <div class="list-item" style="opacity: 0.8; background-color: #f9f9f9;">
             ${moveHtml}
-            <div class="list-num" style="color: #666; font-size: 12px;">候 ${i - sec.limit + 1}.</div>
+            <div class="list-num" style="color: #666; font-size: 12px;">�� ${i - sec.limit + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}" style="color: #666;">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
-            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
+            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">��</button>` : ''}
           </div>
         `;
       }
@@ -1780,7 +1782,7 @@ function renderDetail(gameId, preserveScroll = false) {
   });
 }
 
-// 返回大廳
+// 餈𥪜�憭批輒
 btnBack.addEventListener('click', () => {
   currentGameDetailId = null;
   renderLobby();
@@ -1790,7 +1792,7 @@ const btnCloseGame = document.getElementById('btn-close-game');
 if (btnCloseGame) {
   btnCloseGame.addEventListener('click', async () => {
     if (!currentGameDetailId) return;
-    if (!confirm('確定要結束/關閉此場次嗎？\n關閉後將無法再報名，並且會從大廳隱藏。')) return;
+    if (!confirm('蝣箏�閬����/�𣈯�甇文聦甈∪�嚗髿n�𣈯�敺���⊥��滚𥼚�㵪�銝虫����憭批輒�梯���')) return;
     
     try {
       appDiv.className = 'loading';
@@ -1806,29 +1808,29 @@ if (btnCloseGame) {
         })
       });
       const result = await res.json();
-      if (!res.ok) alert(result.error || '操作失敗');
-      else alert('場次已關閉！');
+      if (!res.ok) alert(result.error || '�滢�憭望�');
+      else alert('�湔活撌脤��㚁�');
       
       currentGameDetailId = null;
       await loadGamesLobby();
     } catch (e) {
-      alert('網路錯誤');
+      alert('蝬脰楝�航炊');
       appDiv.className = '';
     }
   });
 }
 
-// 格式化費用，若無「元」則補上
+// �澆��𤥁祥�剁��亦�����滚�鋆靝�
 function formatFee(fee) {
-  if (!fee || fee === '未設定' || fee === '未知' || fee === '無' || fee === '0') return fee || '';
+  if (!fee || fee === '�芾身摰�' || fee === '�芰䰻' || fee === '��' || fee === '0') return fee || '';
   let str = fee.toString().trim();
-  if (str && !str.endsWith('元')) {
-    return str + '元';
+  if (str && !str.endsWith('��')) {
+    return str + '��';
   }
   return str;
 }
 
-// HTML 逃脫函數防 XSS
+// HTML ����賣彍�� XSS
 function escapeHTML(str) {
   if (!str) return '';
   return str.replace(/[&<>'"]/g, 
@@ -1842,13 +1844,13 @@ function escapeHTML(str) {
   );
 }
 
-// 靜默重新整理資料 (不顯示 loading)
+// �𣈯��齿鰵�渡�鞈�� (銝漤＊蝷� loading)
 let refreshPending = false;
 
 async function silentRefreshGames() {
   if (!currentGroupId || !currentUser) return;
   
-  // 若使用者正在輸入，暫停更新以免打斷輸入
+  // �乩蝙�刻��迤�刻撓�伐��怠��湔鰵隞亙��𤘪𪃾頛詨�
   const activeTag = document.activeElement ? document.activeElement.tagName : '';
   if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
     if (!refreshPending) {
@@ -1856,7 +1858,7 @@ async function silentRefreshGames() {
       setTimeout(() => {
         refreshPending = false;
         silentRefreshGames();
-      }, 1500); // 1.5 秒後重試
+      }, 1500); // 1.5 蝘鍦��滩岫
     }
     return;
   }
@@ -1872,10 +1874,10 @@ async function silentRefreshGames() {
         gamesList = data.games || [];
         globalIsAdmin = !!data.isAdmin;
         globalManagedGroups = data.managedGroups || [];
-        globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
-        globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+        globalLobbyTitle = data.lobbyTitle || '蝢賜��仿�憭批輒';
+        globalLobbyDesc = data.lobbyDesc || '�祇�梯𠪊�枏�憿齿��琜�頞訫翰�嗡�嚗諹��堒�鞊砌�韏瑕翰璅�𧎚�滚嫃嚗�';
         
-        // 根據目前所在畫面重新渲染
+        // �寞��桀����函𧞄�ａ��唳葡��
         if (currentGameDetailId && !detailView.classList.contains('hidden')) {
           renderDetail(currentGameDetailId, true);
         } else {
@@ -1884,11 +1886,11 @@ async function silentRefreshGames() {
       }
     }
   } catch (err) {
-    // 靜默失敗不提示
+    // �𣈯�憭望�銝齿�蝷�
   }
 }
 
-// --- SSE 主動推播機制 ---
+// --- SSE 銝餃��冽偘璈笔� ---
 let eventSource = null;
 
 function setupSSE() {
@@ -1906,24 +1908,24 @@ function setupSSE() {
   };
   
   eventSource.onerror = () => {
-    // 發生錯誤或斷線時，關閉並在幾秒後嘗試重連
+    // �潛��航炊�𡝗𪃾蝺𡁏�嚗屸��劐蒂�典嗾蝘鍦��𡑒岫�漤��
     eventSource.close();
     eventSource = null;
     setTimeout(setupSSE, 5000);
   };
 }
 
-// 啟動
+// �笔�
 initializeLiff().then(() => {
   setupSSE();
 });
 
-// 透過名稱取消報名
+// �誯��滨迂�𡝗��勗�
 window.handleCancelByName = async function(gameId, name) {
-  if (!confirm(`確定要取消「${name}」的報名嗎？`)) return;
+  if (!confirm(`蝣箏�閬��瘨���${name}�滨��勗��𠬍�`)) return;
   try {
     appDiv.className = 'loading';
-    statusMsg.innerText = '取消中...';
+    statusMsg.innerText = '�𡝗�銝�...';
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -1940,7 +1942,7 @@ window.handleCancelByName = async function(gameId, name) {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '發生錯誤');
+      alert(result.error || '�潛��航炊');
       await loadGamesLobby();
       return;
     }
@@ -1951,12 +1953,12 @@ window.handleCancelByName = async function(gameId, name) {
     
   } catch (err) {
     console.error(err);
-    alert('網路錯誤，請稍後再試');
+    alert('蝬脰楝�航炊嚗諹�蝔滚��滩岫');
     await loadGamesLobby();
   }
 };
 
-// --- Quokka 動畫邏輯 ---
+// --- Quokka �閧𧞄�讛摩 ---
 function getButtonCenter(btn) {
   const rect = btn.getBoundingClientRect();
   return {
@@ -2080,27 +2082,27 @@ function playMinusOneCancelAnimation(btn) {
   
   clearInterval(floatingQuokka._moveInterval);
   
-  // 圖2
+  // ��2
   getTransparentImage('images/quokka_carry_2.png', (src) => {
     floatingQuokka._img.src = src;
   });
   
-  // 回歸原位
+  // �墧飛�煺�
   floatingQuokka.style.transition = 'transform 1s ease-in-out';
   floatingQuokka.style.transform = 'translate(0px, 0px)';
   
   setTimeout(() => {
-    // 按下去的動作
+    // �劐��餌��蓥�
     floatingQuokka.style.transition = 'transform 0.2s';
     floatingQuokka.style.transform = 'translate(0px, 10px)';
     
     setTimeout(() => {
       floatingQuokka.style.transform = 'translate(0px, 0px)';
       
-      // 顯示真正的按鈕
+      // 憿舐內��迤�����
       btn.style.visibility = 'visible';
       
-      // 圖3 揮手哭泣
+      // ��3 �格��剜都
       getTransparentImage('images/quokka_cry.png', (src) => {
         floatingQuokka._img.src = src;
       });
@@ -2117,7 +2119,7 @@ function playMinusOneCancelAnimation(btn) {
   btn._floatingQuokka = null;
 }
 
-// 處理新的輸入框報名與防呆
+// �閧��啁�頛詨�獢�𥼚�滩��脣�
 async function handleActionWithInput(event, gameId, action, suffix = '') {
   const btn = event.currentTarget || event.target;
   
@@ -2169,18 +2171,18 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
   const exists = section.list.includes(name);
   
   if (action === 'register' && exists) {
-    errorEl.innerText = '名稱已重複';
+    errorEl.innerText = '�滨迂撌脤�銴�';
     errorEl.style.display = 'block';
     return;
   }
   
   if (action === 'cancel' && !exists) {
-    errorEl.innerText = '找不到此名稱';
+    errorEl.innerText = '�曆��唳迨�滨迂';
     errorEl.style.display = 'block';
     return;
   }
   
-  // btn already declared at top of function — just use it
+  // btn already declared at top of function �� just use it
   try {
     if (btn) {
       btn.disabled = true;
@@ -2205,30 +2207,30 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
     
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.error || '操作失敗');
+      throw new Error(data.error || '�滢�憭望�');
     }
 
-    // 自動推播名單機制：優先使用 liff.sendMessages
+    // �芸��冽偘�滚鱓璈笔�嚗𡁜���蝙�� liff.sendMessages
     if (data.triggerBumpMsg) {
-      // 嘗試用 liff.sendMessages（僅在 LINE 手機版內建瀏覽器中才有效）
+      // �𡑒岫�� liff.sendMessages嚗���� LINE �𧢲����撱箇�讛汗�其葉�齿����
       if (typeof liff !== 'undefined' && liff.isInClient()) {
         try {
-          await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg + '\n\n[系統代發]' }]);
-          console.log('自動發話成功');
+          await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg + '\n\n[蝟餌絞隞�䔄]' }]);
+          console.log('�芸��潸店�𣂼�');
         } catch (e) {
-          console.error('liff.sendMessages 失敗:', e);
+          console.error('liff.sendMessages 憭望�:', e);
           fetch('/api/action', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              gid: currentGroupId, gameId: gameId, uid: currentUser.userId, name: name, operatorName: currentUser.displayName, action: 'logError', text: '代發失敗: ' + e.message
+              gid: currentGroupId, gameId: gameId, uid: currentUser.userId, name: name, operatorName: currentUser.displayName, action: 'logError', text: '隞�䔄憭望�: ' + e.message
             })
           }).catch(console.error);
         }
       }
     }
     
-    // +1/-1 完成後，清空暱稱與程度輸入框
+    // +1/-1 摰峕�敺䕘�皜�征�梁迂���摨西撓�交�
     if (inputEl) {
       inputEl.value = '';
     }
@@ -2236,7 +2238,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       levelEl.value = '';
     }
     
-    await loadGamesLobby(true); // 使用靜默加載，不轉圈圈，防止滾動條重置
+    await loadGamesLobby(true); // 雿輻鍂�𣈯��㰘�嚗䔶�頧匧�����脫迫皛曉�璇嗪�蝵�
   } catch (err) {
     console.error(err);
     errorEl.innerText = err.message;
@@ -2254,7 +2256,7 @@ async function handleTogglePaid(gameId, name) {
   try {
     appDiv.className = 'loading';
     statusMsg.style.display = 'block';
-    statusMsg.innerText = '更新中...';
+    statusMsg.innerText = '�湔鰵銝�...';
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -2270,7 +2272,7 @@ async function handleTogglePaid(gameId, name) {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '發生錯誤');
+      alert(result.error || '�潛��航炊');
       await loadGamesLobby();
       return;
     }
@@ -2281,7 +2283,7 @@ async function handleTogglePaid(gameId, name) {
     
   } catch (err) {
     console.error(err);
-    alert('網路錯誤，請稍後再試');
+    alert('蝬脰楝�航炊嚗諹�蝔滚��滩岫');
     await loadGamesLobby();
   }
 }
@@ -2292,7 +2294,7 @@ window.handleReorder = async function(gameId, fromIdx, toIdx) {
   try {
     appDiv.className = 'loading';
     statusMsg.style.display = 'block';
-    statusMsg.innerText = '更新順序中...';
+    statusMsg.innerText = '�湔鰵���銝�...';
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -2310,7 +2312,7 @@ window.handleReorder = async function(gameId, fromIdx, toIdx) {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '發生錯誤');
+      alert(result.error || '�潛��航炊');
       await loadGamesLobby();
       return;
     }
@@ -2320,7 +2322,7 @@ window.handleReorder = async function(gameId, fromIdx, toIdx) {
     renderDetail(gameId, true);
   } catch (err) {
     console.error(err);
-    alert('網路錯誤，請稍後再試');
+    alert('蝬脰楝�航炊嚗諹�蝔滚��滩岫');
     await loadGamesLobby();
   } finally {
     appDiv.className = '';
@@ -2330,16 +2332,16 @@ window.handleReorder = async function(gameId, fromIdx, toIdx) {
 };
 
 window.handleCustomPush = async function() {
-  const text = prompt('請輸入要推播的訊息內容：\n(系統會自動在文字下方附上大廳連結)');
+  const text = prompt('隢贝撓�亥��冽偘����臬�摰對�\n(蝟餌絞��䌊�訫銁���銝𧢲䲮���憭批輒���)');
   if (!text) return;
   
-  const pushToAll = confirm('請問是否要「同時推播」到您所管理的所有群組？\n(若選取消，則只推播到當前群組)');
+  const pushToAll = confirm('隢见��臬炏閬������綫�准�滚��冽�蝞∠�����厩黎蝯��\n(�仿��𡝗�嚗���芣綫�剖��嗅�蝢斤�)');
   
   try {
     appDiv.className = 'loading';
     if (statusMsg) {
       statusMsg.style.display = 'block';
-      statusMsg.innerText = '推播發送中...';
+      statusMsg.innerText = '�冽偘�潮��葉...';
     }
     
     const res = await fetch('/api/action', {
@@ -2358,12 +2360,12 @@ window.handleCustomPush = async function() {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '發送失敗');
+      alert(result.error || '�潮��仃��');
     } else {
-      alert(`推播成功！已發送至 ${result.count} 個群組。`);
+      alert(`�冽偘�𣂼�嚗�歇�潮��秐 ${result.count} �讠黎蝯���);
     }
   } catch(e) {
-    alert('網路錯誤');
+    alert('蝬脰楝�航炊');
   } finally {
     appDiv.className = '';
     const statusMsg = document.getElementById('status-msg');
@@ -2372,29 +2374,29 @@ window.handleCustomPush = async function() {
 };
 
 window.handlePushList = async function(gameId) {
-  if (!confirm('確定要在群組內推播「目前詳細名單」嗎？\n(這將會把所有人的名字送到聊天室中)')) return;
+  if (!confirm('蝣箏�閬�銁蝢斤��扳綫�准�𣬚𤌍�滩底蝝啣��柴�滚�嚗髿n(�坔�������劐犖���摮烾����𠰴予摰支葉)')) return;
   
   try {
     appDiv.className = 'loading';
     const statusMsg = document.getElementById('status-msg');
     if (statusMsg) {
       statusMsg.style.display = 'block';
-      statusMsg.innerText = '推播名單中...';
+      statusMsg.innerText = '�冽偘�滚鱓銝�...';
     }
     
-    // 如果可以自動發話，直接代替使用者送出「接龍名單」指令，機器人就會自動回覆完整名單！
+    // 憒���臭誑�芸��潸店嚗𣬚凒�乩誨�蹂蝙�刻����枂�峕𦻖樴滚��柴�齿�隞歹�璈笔膥鈭箏停��䌊�訫�閬���游��殷�
     if (typeof liff !== 'undefined' && liff.isInClient()) {
       try {
-        await liff.sendMessages([{ type: 'text', text: `接龍名單\n\n[系統代發]` }]);
-        alert('✅ 名單推播成功！已自動在聊天室呼叫機器人。');
+        await liff.sendMessages([{ type: 'text', text: `�仿��滚鱓\n\n[蝟餌絞隞�䔄]` }]);
+        alert('�� �滚鱓�冽偘�𣂼�嚗�歇�芸��刻�憭拙恕�澆㙈璈笔膥鈭箝��');
         return;
       } catch (e) {
-        console.error('自動發話失敗:', e);
-        alert('自動發話失敗，可能未授權發言權限');
+        console.error('�芸��潸店憭望�:', e);
+        alert('�芸��潸店憭望�嚗�虾�賣𧊋����潸�甈𢠃�');
       }
     }
     
-    // 以下為舊版回退機制（若無法自動發話）
+    // 隞乩��箄������璈笔�嚗�𥅾�⊥��芸��潸店嚗�
     const res = await fetch('/api/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2410,17 +2412,17 @@ window.handlePushList = async function(gameId) {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '發送失敗');
+      alert(result.error || '�潮��仃��');
       return;
     }
     
     if (result.partialError) {
-      alert('機器人推播部分失敗: ' + result.errors.join(', '));
+      alert('璈笔膥鈭箸綫�剝���仃��: ' + result.errors.join(', '));
     } else {
-      alert('✅ 名單推播指令已送出！請至您的私訊查看。');
+      alert('�� �滚鱓�冽偘��誘撌脤��枂嚗���單����閮𦠜䰻�卝��');
     }
   } catch(e) {
-    alert('網路錯誤');
+    alert('蝬脰楝�航炊');
   } finally {
     appDiv.className = '';
     const statusMsg = document.getElementById('status-msg');
@@ -2445,14 +2447,14 @@ function createTargetGroupCheckbox(container, gid, code, groupName, isChecked) {
   chk.checked = isChecked;
   
   const span = document.createElement('span');
-  span.innerText = code === '目前群組' ? `${groupName} (目前群組)` : `${groupName} (${code})`;
+  span.innerText = code === '�桀�蝢斤�' ? `${groupName} (�桀�蝢斤�)` : `${groupName} (${code})`;
   span.style.flex = '1';
   
   lbl.appendChild(chk);
   lbl.appendChild(span);
   
   const delBtn = document.createElement('span');
-  delBtn.innerText = '❌';
+  delBtn.innerText = '��';
   delBtn.style.cursor = 'pointer';
   delBtn.style.padding = '0 5px';
   delBtn.onclick = (e) => {
@@ -2470,7 +2472,7 @@ function createTargetGroupCheckbox(container, gid, code, groupName, isChecked) {
 async function handleAddGroupCode(inputId, containerId) {
   const inputEl = document.getElementById(inputId);
   const code = inputEl.value.trim();
-  if (!code) return alert('請輸入群組代號');
+  if (!code) return alert('隢贝撓�亦黎蝯�誨��');
   
   appDiv.className = 'loading';
   try {
@@ -2489,11 +2491,11 @@ async function handleAddGroupCode(inputId, containerId) {
         localStorage.setItem('savedTargetGroups', JSON.stringify(saved));
       }
     } else {
-      setTimeout(() => alert(data.error || '找不到該群組'), 10);
+      setTimeout(() => alert(data.error || '�曆��啗府蝢斤�'), 10);
     }
   } catch(e) {
     appDiv.className = '';
-    setTimeout(() => alert('網路錯誤'), 10);
+    setTimeout(() => alert('蝬脰楝�航炊'), 10);
   }
 }
 
@@ -2508,7 +2510,7 @@ const cgTemplateSelect = document.getElementById('cg-template-select');
 
 let currentGroupTemplates = {};
 
-// === 預設名單動態 UI ===
+// === �鞱身�滚鱓�閙� UI ===
 function getCgListString() {
   const rows = document.querySelectorAll('#cg-initial-list-container .cg-list-row');
   let lines = [];
@@ -2519,7 +2521,7 @@ function getCgListString() {
      if (!n) return;
      let line = n;
      if (l) line += `(${l})`;
-     if (p) line += `(已繳費)`;
+     if (p) line += `(撌脩像鞎�)`;
      lines.push(line);
   });
   return lines.join('\n');
@@ -2529,16 +2531,16 @@ function parseAndRenderCgList(text) {
   const container = document.getElementById('cg-initial-list-container');
   container.innerHTML = '';
   if (!text) return;
-  const lines = text.split(/[\n、，,]+/).map(n => n.trim()).filter(Boolean);
+  const lines = text.split(/[\n���,]+/).map(n => n.trim()).filter(Boolean);
   lines.forEach(line => {
     let isPaid = false;
     let name = line;
-    if (name.endsWith('$') || name.endsWith('＄') || name.endsWith('(已繳費)') || name.endsWith('（已繳費）')) {
+    if (name.endsWith('$') || name.endsWith('嚗�') || name.endsWith('(撌脩像鞎�)') || name.endsWith('嚗�歇蝜唾祥嚗�')) {
         isPaid = true;
-        name = name.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+        name = name.replace(/[\$嚗�$/, '').replace(/\(撌脩像鞎蓋)$/, '').replace(/嚗�歇蝜唾祥嚗�$/, '');
     }
     let level = '';
-    const match = name.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
+    const match = name.match(/^(.*?)(?:[\(\[嚗È(.*?)[\)\]嚗处|-(.*?))$/);
     if (match) {
         name = match[1].trim();
         level = (match[2] || match[3]).trim();
@@ -2559,7 +2561,7 @@ function addCgListRow(name = '', level = '', isPaid = false) {
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.className = 'cg-list-name';
-  nameInput.placeholder = '姓名';
+  nameInput.placeholder = '憪枏�';
   nameInput.value = name;
   nameInput.style.flex = '2';
   nameInput.style.margin = '0';
@@ -2567,7 +2569,7 @@ function addCgListRow(name = '', level = '', isPaid = false) {
   const levelInput = document.createElement('input');
   levelInput.type = 'text';
   levelInput.className = 'cg-list-level';
-  levelInput.placeholder = '程度(選填)';
+  levelInput.placeholder = '蝔见漲(�詨‵)';
   levelInput.value = level;
   levelInput.style.flex = '1';
   levelInput.style.margin = '0';
@@ -2587,7 +2589,7 @@ function addCgListRow(name = '', level = '', isPaid = false) {
   paidCheck.style.margin = '0';
   
   paidLabel.appendChild(paidCheck);
-  paidLabel.appendChild(document.createTextNode('繳費'));
+  paidLabel.appendChild(document.createTextNode('蝜唾祥'));
   
   const delBtn = document.createElement('button');
   delBtn.type = 'button';
@@ -2595,7 +2597,7 @@ function addCgListRow(name = '', level = '', isPaid = false) {
   delBtn.style.padding = '5px 8px';
   delBtn.style.fontSize = '12px';
   delBtn.style.margin = '0';
-  delBtn.innerText = '❌';
+  delBtn.innerText = '��';
   delBtn.onclick = () => row.remove();
   
   row.appendChild(nameInput);
@@ -2618,11 +2620,11 @@ async function loadTemplates() {
       currentGroupTemplates = {};
     }
   } catch (e) {
-    console.error('載入範本失敗:', e);
+    console.error('頛匧�蝭�𧋦憭望�:', e);
     currentGroupTemplates = {};
   }
   
-  cgTemplateSelect.innerHTML = '<option value="">-- 選擇群組範本 --</option>';
+  cgTemplateSelect.innerHTML = '<option value="">-- �豢�蝢斤�蝭�𧋦 --</option>';
   for (const name in currentGroupTemplates) {
     const opt = document.createElement('option');
     opt.value = name;
@@ -2633,8 +2635,8 @@ async function loadTemplates() {
 
 document.getElementById('btn-save-template').onclick = async () => {
   const text = getCgListString();
-  if (!text) return alert('名單不可為空！');
-  const name = prompt('請輸入此範本的名稱 (例如：週二固定咖)：');
+  if (!text) return alert('�滚鱓銝滚虾�箇征嚗�');
+  const name = prompt('隢贝撓�交迨蝭�𧋦���蝔� (靘见�嚗𡁻�曹��箏���)嚗�');
   if (!name) return;
   
   appDiv.className = 'loading';
@@ -2653,12 +2655,12 @@ document.getElementById('btn-save-template').onclick = async () => {
     if (res.ok && data.success) {
       await loadTemplates();
       cgTemplateSelect.value = name;
-      alert('儲存成功且已同步至 Git！');
+      alert('�脣��𣂼�銝𥪜歇�峕郊�� Git嚗�');
     } else {
-      alert(data.error || '儲存失敗');
+      alert(data.error || '�脣�憭望�');
     }
   } catch (e) {
-    alert('網路錯誤，無法儲存至伺服器');
+    alert('蝬脰楝�航炊嚗𣬚�瘜訫�摮䁅秐隡箸���');
   } finally {
     appDiv.className = '';
   }
@@ -2666,8 +2668,8 @@ document.getElementById('btn-save-template').onclick = async () => {
 
 document.getElementById('btn-delete-template').onclick = async () => {
   const name = cgTemplateSelect.value;
-  if (!name) return alert('請先選擇一個範本！');
-  if (!confirm(`確定要刪除範本「${name}」嗎？`)) return;
+  if (!name) return alert('隢见��豢�銝��讠��穿�');
+  if (!confirm(`蝣箏�閬�⏛�斤��研��${name}�滚�嚗鬮)) return;
   
   appDiv.className = 'loading';
   try {
@@ -2684,12 +2686,12 @@ document.getElementById('btn-delete-template').onclick = async () => {
     if (res.ok && data.success) {
       await loadTemplates();
       parseAndRenderCgList('');
-      alert('刪除成功且已同步至 Git！');
+      alert('�芷膄�𣂼�銝𥪜歇�峕郊�� Git嚗�');
     } else {
-      alert(data.error || '刪除失敗');
+      alert(data.error || '�芷膄憭望�');
     }
   } catch (e) {
-    alert('網路錯誤，無法刪除');
+    alert('蝬脰楝�航炊嚗𣬚�瘜訫⏛��');
   } finally {
     appDiv.className = '';
   }
@@ -2710,7 +2712,7 @@ function formatLocalGameDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return dateStr;
-  const days = ['日', '一', '二', '三', '四', '五', '六'];
+  const days = ['��', '銝�', '鈭�', '銝�', '��', '鈭�', '��'];
   return `${d.getMonth() + 1}/${d.getDate()} (${days[d.getDay()]})`;
 }
 
@@ -2719,7 +2721,7 @@ function showCreateGameForm() {
   detailView.classList.add('hidden');
   createGameView.classList.remove('hidden');
   
-  // 初始化為明天的日期
+  // �嘥��𣇉��𤾸予��𠯫��
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tzOffset = tomorrow.getTimezoneOffset() * 60000;
@@ -2728,7 +2730,7 @@ function showCreateGameForm() {
   document.getElementById('cg-time-start').value = '18:00';
   document.getElementById('cg-time-end').value = '20:00';
   
-  // 填入目標群組選單
+  // 憛怠��格�蝢斤��詨鱓
   const cgTargetGidsContainer = document.getElementById('cg-target-gids-container');
   cgTargetGidsContainer.innerHTML = '';
   if (globalManagedGroups.length > 0) {
@@ -2736,7 +2738,7 @@ function showCreateGameForm() {
       createTargetGroupCheckbox(cgTargetGidsContainer, g.gid, g.code, g.groupName, g.gid === currentGroupId);
     });
   } else {
-    cgTargetGidsContainer.innerHTML = '<p>無法取得您的管理群組</p>';
+    cgTargetGidsContainer.innerHTML = '<p>�⊥��硋��函�蝞∠�蝢斤�</p>';
   }
   
   const savedCg = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
@@ -2772,14 +2774,14 @@ document.getElementById('btn-submit-create').onclick = async () => {
   const targetGids = Array.from(document.querySelectorAll('#cg-target-gids-container input[name="targetGids"]:checked')).map(el => el.value);
   
   if (!rawDateStr || !timeStr || !locStr || targetGids.length === 0) {
-    alert('「目標群組」、「日期」、「時間」、「地點」為必填欄位！');
+    alert('�𣬚𤌍璅嗵黎蝯��溻���峕𠯫�麄�溻���峕��瓐�溻����𧑐暺𠺶�滨�敹�‵甈��嚗�');
     return;
   }
   
   try {
     appDiv.className = 'loading';
     statusMsg.style.display = 'block';
-    statusMsg.innerText = '場次建立中...';
+    statusMsg.innerText = '�湔活撱箇�銝�...';
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -2808,14 +2810,14 @@ document.getElementById('btn-submit-create').onclick = async () => {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '建立失敗');
+      alert(result.error || '撱箇�憭望�');
     } else {
-      // 開團成功，自動推撥已關閉，請管理者在詳細頁手動按「推播名單」以節省 LINE 額度
-      let alertMsg = '✅ 開團成功！';
+      // �见��𣂼�嚗諹䌊�閙綫�亙歇�𣈯�嚗諹�蝞∠���銁閰喟敦����閙��峕綫�剖��柴�滢誑蝭��� LINE 憿滚漲
+      let alertMsg = '�� �见��𣂼�嚗�';
       if (result.pushErrors && result.pushErrors.length > 0) {
-        alertMsg += '\n\n⚠️ 機器人推播失敗:\n' + result.pushErrors.join('\n');
+        alertMsg += '\n\n�𩤃� 璈笔膥鈭箸綫�剖仃��:\n' + result.pushErrors.join('\n');
       } else {
-        alertMsg += '\n\n💡 如需通知群組，請進入場次詳細頁點「推播名單」。';
+        alertMsg += '\n\n�働 憒���𡁶䰻蝢斤�嚗諹��脣��湔活閰喟敦����峕綫�剖��柴�溻��';
       }
       alert(alertMsg);
       
@@ -2823,7 +2825,7 @@ document.getElementById('btn-submit-create').onclick = async () => {
       await loadGamesLobby();
     }
   } catch(e) {
-    alert('網路錯誤');
+    alert('蝬脰楝�航炊');
   } finally {
     appDiv.className = '';
     statusMsg.style.display = 'none';
@@ -2852,7 +2854,7 @@ function showEditGameForm(gameId) {
       createTargetGroupCheckbox(egTargetGidsContainer, g.gid, g.code, g.groupName, gameTargetGids.includes(g.gid));
     });
   } else {
-    egTargetGidsContainer.innerHTML = '<p>無法取得您的管理群組</p>';
+    egTargetGidsContainer.innerHTML = '<p>�⊥��硋��函�蝞∠�蝢斤�</p>';
   }
   
   const savedEg = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
@@ -2865,10 +2867,10 @@ function showEditGameForm(gameId) {
     }
   });
   
-  // 處理目前沒有在管理群組與儲存名單中，但已存在於 game.targetGids 的群組
+  // �閧��桀�瘝埝��函恣��黎蝯���脣��滚鱓銝哨�雿�歇摮睃銁�� game.targetGids ��黎蝯�
   gameTargetGids.forEach(tgid => {
     if (!globalManagedGroups.some(g => g.gid === tgid) && !savedEg.some(g => g.gid === tgid)) {
-       createTargetGroupCheckbox(egTargetGidsContainer, tgid, '未知', '已選擇群組', true);
+       createTargetGroupCheckbox(egTargetGidsContainer, tgid, '�芰䰻', '撌脤���黎蝯�', true);
     }
   });
   
@@ -2935,14 +2937,14 @@ document.getElementById('btn-submit-edit').onclick = async () => {
   const targetGids = Array.from(document.querySelectorAll('#eg-target-gids-container input[name="targetGids"]:checked')).map(el => el.value);
   
   if (!rawDateStr || !timeStr || !locStr || targetGids.length === 0) {
-    alert('「目標群組」、「日期」、「時間」、「地點」為必填欄位！');
+    alert('�𣬚𤌍璅嗵黎蝯��溻���峕𠯫�麄�溻���峕��瓐�溻����𧑐暺𠺶�滨�敹�‵甈��嚗�');
     return;
   }
   
   try {
     appDiv.className = 'loading';
     statusMsg.style.display = 'block';
-    statusMsg.innerText = '儲存變更中...';
+    statusMsg.innerText = '�脣�霈𦠜凒銝�...';
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -2971,9 +2973,9 @@ document.getElementById('btn-submit-edit').onclick = async () => {
     
     const result = await res.json();
     if (!res.ok) {
-      alert(result.error || '儲存失敗');
+      alert(result.error || '�脣�憭望�');
     } else {
-      alert('儲存成功！');
+      alert('�脣��𣂼�嚗�');
       editGameView.classList.add('hidden');
       await loadGamesLobby();
       if (currentGameDetailId === gameId) {
@@ -2981,7 +2983,7 @@ document.getElementById('btn-submit-edit').onclick = async () => {
       }
     }
   } catch(e) {
-    alert('網路錯誤');
+    alert('蝬脰楝�航炊');
   } finally {
     appDiv.className = '';
     statusMsg.style.display = 'none';
@@ -2991,16 +2993,16 @@ document.getElementById('btn-submit-edit').onclick = async () => {
 
 document.addEventListener('click', (e) => { if (!e.target.closest('.btn-danger')) { document.querySelectorAll('.btn-danger').forEach(b => { if (b.dataset.dodged === 'true') { b.dataset.dodged = 'false'; b.style.transition = 'transform 1s ease'; b.style.transform = 'translate(0px, 0px)'; } }); } });
 
-// 大廳分析邏輯
+// 憭批輒����讛摩
 if (btnLobbyStats) {
   btnLobbyStats.addEventListener('click', async () => {
     appDiv.className = 'loading';
-    statusMsg.innerText = '讀取分析資料中...';
+    statusMsg.innerText = '霈��硋��鞱��嗘葉...';
     statusMsg.style.display = 'block';
     
     try {
       const res = await fetch(`/api/admin/all_stats?uid=${currentUser.userId}`);
-      if (!res.ok) throw new Error('無法取得分析資料');
+      if (!res.ok) throw new Error('�⊥��硋����鞈��');
       const data = await res.json();
       
       statsGroupsContainer.innerHTML = '';
@@ -3014,14 +3016,14 @@ if (btnLobbyStats) {
         summaryCard.style.marginBottom = '20px';
         summaryCard.style.border = '2px solid #FF9800';
         summaryCard.innerHTML = `
-          <h3 style="margin:0 0 10px 0; color:#FF9800; text-align:center;">🌟 所有群組總結</h3>
+          <h3 style="margin:0 0 10px 0; color:#FF9800; text-align:center;">�� ���厩黎蝯�蜇蝯�</h3>
           <div class="detail-stats" style="margin-top:0;">
             <div class="stat-box" style="flex:1;">
-              <span class="stat-label">總觀看次數</span>
+              <span class="stat-label">蝮質��𧢲活��</span>
               <span class="stat-value">${totalViews}</span>
             </div>
             <div class="stat-box" style="flex:1;">
-              <span class="stat-label">總不重複觀看 (人數)</span>
+              <span class="stat-label">蝮賭��滩�閫��� (鈭箸彍)</span>
               <span class="stat-value">${totalUniques}</span>
             </div>
           </div>
@@ -3056,12 +3058,12 @@ if (btnLobbyStats) {
           const viewsBox = document.createElement('div');
           viewsBox.className = 'stat-box';
           viewsBox.style.flex = '1';
-          viewsBox.innerHTML = `<span class="stat-label">總觀看次數</span><span class="stat-value">${stat.viewCount}</span>`;
+          viewsBox.innerHTML = `<span class="stat-label">蝮質��𧢲活��</span><span class="stat-value">${stat.viewCount}</span>`;
           
           const uniqueBox = document.createElement('div');
           uniqueBox.className = 'stat-box';
           uniqueBox.style.flex = '1';
-          uniqueBox.innerHTML = `<span class="stat-label">不重複觀看</span><span class="stat-value">${stat.uniqueCount}</span>`;
+          uniqueBox.innerHTML = `<span class="stat-label">銝漤�銴����</span><span class="stat-value">${stat.uniqueCount}</span>`;
           
           statsRow.appendChild(viewsBox);
           statsRow.appendChild(uniqueBox);
@@ -3073,7 +3075,7 @@ if (btnLobbyStats) {
           toggleLogsBtn.style.width = '100%';
           toggleLogsBtn.style.fontSize = '12px';
           toggleLogsBtn.style.padding = '6px';
-          toggleLogsBtn.innerText = '展開訪客紀錄 ▼';
+          toggleLogsBtn.innerText = '撅閖�閮芸恥蝝��� ��';
           
           // Logs Container
           const logsContainer = document.createElement('div');
@@ -3123,29 +3125,29 @@ if (btnLobbyStats) {
                 fallbackImg.style.justifyContent = 'center';
                 fallbackImg.style.fontSize = '10px';
                 fallbackImg.style.color = '#fff';
-                fallbackImg.innerText = '👤';
+                fallbackImg.innerText = '�𪈠';
                 item.appendChild(fallbackImg);
               }
               
               const nameDiv = document.createElement('div');
               nameDiv.style.fontWeight = '500';
               nameDiv.style.fontSize = '13px';
-              nameDiv.innerText = log.displayName || '未知使用者';
+              nameDiv.innerText = log.displayName || '�芰䰻雿輻鍂��';
               item.appendChild(nameDiv);
               
               logsContainer.appendChild(item);
             });
           } else {
-            logsContainer.innerHTML = '<div style="color:#999; text-align:center; padding:10px; font-size:12px;">尚無紀錄</div>';
+            logsContainer.innerHTML = '<div style="color:#999; text-align:center; padding:10px; font-size:12px;">撠𡁶�蝝���</div>';
           }
           
           toggleLogsBtn.onclick = () => {
             if (logsContainer.style.display === 'none') {
               logsContainer.style.display = 'block';
-              toggleLogsBtn.innerText = '收合訪客紀錄 ▲';
+              toggleLogsBtn.innerText = '�嗅�閮芸恥蝝��� ��';
             } else {
               logsContainer.style.display = 'none';
-              toggleLogsBtn.innerText = '展開訪客紀錄 ▼';
+              toggleLogsBtn.innerText = '撅閖�閮芸恥蝝��� ��';
             }
           };
           
@@ -3154,7 +3156,7 @@ if (btnLobbyStats) {
           statsGroupsContainer.appendChild(card);
         });
       } else {
-        statsGroupsContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">目前沒有任何群組的分析資料。</div>';
+        statsGroupsContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">�桀�瘝埝�隞颱�蝢斤�����鞱��踺��</div>';
       }
       
       lobbyView.classList.add('hidden');
@@ -3198,22 +3200,22 @@ if (btnBackParty) {
 if (btnSystemLogs) {
   btnSystemLogs.addEventListener('click', async () => {
     appDiv.className = 'loading';
-    statusMsg.innerText = '讀取中...';
+    statusMsg.innerText = '霈��碶葉...';
     try {
       const res = await fetch('/api/systemLogs?uid=' + currentUser.userId);
-      if (!res.ok) throw new Error('無法讀取系統LOG');
+      if (!res.ok) throw new Error('�⊥�霈��𣇉頂蝯尉OG');
       const logs = await res.json();
       
       systemLogsContainer.innerHTML = '';
       if (!logs || logs.length === 0) {
-        systemLogsContainer.innerHTML = '<p>目前沒有系統錯誤紀錄</p>';
+        systemLogsContainer.innerHTML = '<p>�桀�瘝埝�蝟餌絞�航炊蝝���</p>';
       } else {
         logs.forEach(log => {
           const div = document.createElement('div');
           div.style.borderBottom = '1px solid #ddd';
           div.style.padding = '8px 0';
           div.innerHTML = `<div style="font-size:12px; color:#888;">${log.time}</div>
-          <div style="font-weight:bold;">[${log.gameTitle || '未知場次'}] ${log.operator}</div>
+          <div style="font-weight:bold;">[${log.gameTitle || '�芰䰻�湔活'}] ${log.operator}</div>
           <div style="color:red; margin-top:4px;">${log.errorMsg}</div>`;
           systemLogsContainer.appendChild(div);
         });
@@ -3294,10 +3296,10 @@ function renderLeaderboard(leaderboardData, quota) {
     // Add crown for those within the quota
     let crownHtml = '';
     if (rank <= quota) {
-      if (rank === 1) crownHtml = '<span class="ee-crown">🥇</span>';
-      else if (rank === 2) crownHtml = '<span class="ee-crown">🥈</span>';
-      else if (rank === 3) crownHtml = '<span class="ee-crown">🥉</span>';
-      else crownHtml = '<span class="ee-crown">👑</span>';
+      if (rank === 1) crownHtml = '<span class="ee-crown">��</span>';
+      else if (rank === 2) crownHtml = '<span class="ee-crown">��</span>';
+      else if (rank === 3) crownHtml = '<span class="ee-crown">��</span>';
+      else crownHtml = '<span class="ee-crown">��</span>';
     }
 
     const timeInSeconds = (!user.timeTaken || user.timeTaken === Infinity) 
@@ -3311,7 +3313,7 @@ function renderLeaderboard(leaderboardData, quota) {
     li.className = `ee-leaderboard-item rank-${rank}`;
     li.innerHTML = `
       ${rankHtml}
-      <div class="ee-leaderboard-name" style="color: ${nameColor};">${crownHtml}${user.name} ${isMe ? '(你)' : ''}</div>
+      <div class="ee-leaderboard-name" style="color: ${nameColor};">${crownHtml}${user.name} ${isMe ? '(雿�)' : ''}</div>
       <div class="ee-leaderboard-time">${timeInSeconds}</div>
     `;
     listEl.appendChild(li);
@@ -3321,7 +3323,7 @@ function renderLeaderboard(leaderboardData, quota) {
 // --- Admin Easter Egg View ---
 if (btnEasterEgg) {
   btnEasterEgg.addEventListener('click', async () => {
-    statusMsg.innerText = '載入設定中...';
+    statusMsg.innerText = '頛匧�閮剖�銝�...';
     statusMsg.style.display = 'block';
     appDiv.className = 'loading';
     try {
@@ -3345,7 +3347,7 @@ if (btnEasterEgg) {
           listData.forEach((w, index) => {
             const li = document.createElement('li');
             if (isBulletHell) {
-              li.innerHTML = `<strong>${index+1}.</strong> ${w.name} - ${w.survivalTime} 秒`;
+              li.innerHTML = `<strong>${index+1}.</strong> ${w.name} - ${w.survivalTime} 蝘嚒;
             } else {
               li.innerText = w.name || 'Unknown';
             }
@@ -3361,7 +3363,7 @@ if (btnEasterEgg) {
         throw new Error('Load failed');
       }
     } catch(e) {
-      alert('無法載入彩蛋設定');
+      alert('�⊥�頛匧�敶抵�閮剖�');
       statusMsg.style.display = 'none';
       appDiv.className = '';
     }
@@ -3395,7 +3397,7 @@ if (btnEasterEgg) {
               body: JSON.stringify({ uid: currentUser.userId, pool: lotteryAdminPool })
             });
           }
-          alert('大廳已開啟！');
+          alert('憭批輒撌脤����');
           hasEnteredParty = true;
           updateUnifiedRoomUI();
         }
@@ -3405,7 +3407,7 @@ if (btnEasterEgg) {
   
   if (btnCloseRoom) {
     btnCloseRoom.addEventListener('click', async () => {
-      if (!confirm('確定要關閉房間並返回嗎？')) return;
+      if (!confirm('蝣箏�閬���㗇��㮖蒂餈𥪜��𠬍�')) return;
       if (globalIsSuperAdmin) {
         try {
           await fetch('/api/admin/room/close', {
@@ -3489,10 +3491,10 @@ if (btnEasterEgg) {
       const body = document.getElementById('room-admin-body');
       if (body.style.display === 'none') {
         body.style.display = 'flex';
-        btnMinimizeAdminPanel.innerText = '—';
+        btnMinimizeAdminPanel.innerText = '��';
       } else {
         body.style.display = 'none';
-        btnMinimizeAdminPanel.innerText = '口';
+        btnMinimizeAdminPanel.innerText = '��';
       }
     });
   }
@@ -3549,19 +3551,19 @@ if (btnSaveEasterEgg) {
         })
       });
       if (res.ok) {
-        alert('儲存成功');
+        alert('�脣��𣂼�');
         easterEggEnabled = eeEnabledCheckbox.checked;
         easterEggActiveGame = eeActiveGameSelect.value;
         renderLobby();
       }
-    } catch(e) { alert('儲存失敗'); }
+    } catch(e) { alert('�脣�憭望�'); }
     btnSaveEasterEgg.disabled = false;
   });
 }
 
 if (btnClearWinners) {
   btnClearWinners.addEventListener('click', async () => {
-    if (!confirm('確定要清除名單？')) return;
+    if (!confirm('蝣箏�閬���文��殷�')) return;
     try {
       const isBulletHell = eeActiveGameSelect.value === 'bullet_hell';
       const settingsPayload = isBulletHell ? { bulletHellLeaderboard: [] } : { winners: [] };
@@ -3577,9 +3579,9 @@ if (btnClearWinners) {
       if (res.ok) {
         eeWinnersCount.innerText = 0;
         eeWinnersList.innerHTML = '';
-        alert('已清除名單');
+        alert('撌脫��文���');
       }
-    } catch(e) { alert('清除失敗'); }
+    } catch(e) { alert('皜�膄憭望�'); }
   });
 }
 
@@ -3725,7 +3727,7 @@ function updateLotteryAdminPoolUI() {
     span.innerText = `${idx + 1}. ${name}`;
     
     const delBtn = document.createElement('button');
-    delBtn.innerText = '❌';
+    delBtn.innerText = '��';
     delBtn.style.background = 'none';
     delBtn.style.border = 'none';
     delBtn.style.cursor = 'pointer';
@@ -3748,7 +3750,7 @@ if (btnImportLobbyUsers) {
       });
       updateLotteryAdminPoolUI();
     } else {
-      alert('大廳內目前沒有人員可以匯入！(請確定有開啟派對大廳)');
+      alert('憭批輒�抒𤌍�齿��劐犖�∪虾隞亙𥲤�伐�(隢讠Ⅱ摰𡁏��见�瘣曉�憭批輒)');
     }
   });
 }
@@ -3757,7 +3759,7 @@ if (btnAddManualName) {
   btnAddManualName.addEventListener('click', () => {
     const val = lotteryManualName.value.trim();
     if (!val) return;
-    const names = val.split(/[,，]/).map(n => n.trim()).filter(Boolean);
+    const names = val.split(/[,嚗䀉/).map(n => n.trim()).filter(Boolean);
     names.forEach(n => {
       if (!lotteryAdminPool.includes(n)) lotteryAdminPool.push(n);
     });
@@ -3770,7 +3772,7 @@ if (btnAddManualName) {
 
 if (btnResetLottery) {
   btnResetLottery.addEventListener('click', async () => {
-    if (!confirm('確定要強制重置並關閉房間嗎？')) return;
+    if (!confirm('蝣箏�閬�撥�園�蝵桐蒂�𣈯��輸��𠬍�')) return;
     try {
       await fetch('/api/admin/room/close', {
         method: 'POST',
@@ -3787,7 +3789,7 @@ if (btnAssignDraw) {
     const count = parseInt(lotteryDrawCount.value) || 1;
     
     if (!assigneeUid) {
-      alert('請選擇一位在線人員來抽籤');
+      alert('隢钅����雿滚銁蝺帋犖�∩��賜惜');
       return;
     }
     
@@ -3799,7 +3801,7 @@ if (btnAssignDraw) {
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
-      else alert('已成功指派！');
+      else alert('撌脫����瘣橘�');
     } catch(e) { console.error(e); }
   });
 }
@@ -3811,7 +3813,7 @@ function bindLotteryAdminSocket(s) {
   s.on('party_state', (state) => {
     if (state.players && lotteryAssigneeSelect) {
       const currentSelected = lotteryAssigneeSelect.value;
-      lotteryAssigneeSelect.innerHTML = '<option value="">-- 請選擇在線人員 --</option>';
+      lotteryAssigneeSelect.innerHTML = '<option value="">-- 隢钅���銁蝺帋犖�� --</option>';
       
       Object.values(state.players).forEach(p => {
         const opt = document.createElement('option');
@@ -3837,7 +3839,7 @@ if (btnJoinRoom) {
         btnJoinRoom.classList.add('hidden');
         
         grid.innerHTML = '';
-        const chars = ['🐷', '🐶', '🐱', '🐰', '🦊', '🐻', '🐼', '🐯', '🦁', '🐸'];
+        const chars = ['�䊹', '�濶', '�躼', '�鑛', '��', '�𣸮', '�䧟', '�鍳', '��', '�𢙺'];
         chars.forEach(c => {
           const btn = document.createElement('button');
           btn.className = 'char-btn';
@@ -3935,7 +3937,7 @@ if (btnLotteryAdminPlay) {
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
-      else alert('�w�}�l�۰ʩ���');
+      else alert('已開始自動抽籤');
     } catch(e) { console.error(e); }
   });
 }
