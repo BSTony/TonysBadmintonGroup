@@ -399,6 +399,28 @@ function initSocket() {
     if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
     if (btnJoinRoom) btnJoinRoom.classList.add('hidden');
     if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
+    if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+    
+    // Clear old entities
+    bhBullets.forEach(b => b.el.remove());
+    bhBullets = [];
+    bhWalls.forEach(w => w.el.remove());
+    bhWalls = [];
+    bhItems.forEach(i => i.el.remove());
+    bhItems = [];
+    
+    // Reset players
+    if (bhPlayer) {
+      const iconEl = bhPlayer.querySelector('.bh-icon');
+      if (iconEl) iconEl.innerText = selectedCharacterIcon;
+      bhPlayer.classList.remove('bh-invincible');
+      updateLives(3);
+    }
+    Object.values(partyOthers).forEach(el => {
+      const iconEl = el.querySelector('.bh-icon');
+      if (iconEl && el._originalIcon) iconEl.innerText = el._originalIcon;
+      el.classList.remove('bh-invincible');
+    });
     
     // 自動縮小名單不要影響畫面
     if (typeof btnToggleParticipants !== 'undefined' && btnToggleParticipants) {
@@ -460,6 +482,16 @@ function initSocket() {
     
     const isWinner = data.winners.some(w => w.uid === currentUser.userId);
     if (isWinner && bhPlayer) bhPlayer.innerHTML = '👑';
+    
+    if (btnBhRestart) {
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+        btnBhRestart.innerText = '回到大廳 / 準備下局';
+        btnBhRestart.disabled = false;
+      } else {
+        btnBhRestart.innerText = '等待管理者開始遊戲...';
+        btnBhRestart.disabled = true;
+      }
+    }
   });
 }
 
@@ -472,6 +504,7 @@ function createOtherPlayer(p) {
     <div class="bh-icon">${p.alive ? (p.icon || '🐷') : '🤕'}</div>
     <div class="bh-player-name">${p.name}</div>
   `;
+  el._originalIcon = p.icon || '🐷';
   el.style.left = (p.x * window.innerWidth) + 'px';
   el.style.top = (p.y * window.innerHeight) + 'px';
   bhEntities.appendChild(el);
@@ -789,6 +822,10 @@ let bhSpawnRate = 1000;
 let bhLastSpawn = 0;
 
 function startBulletHell() {
+  if (typeof partyRoom !== 'undefined' && partyRoom.status !== 'idle') {
+    if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+    return;
+  }
   bhContainer.classList.remove('hidden');
   bhGameoverModal.classList.add('hidden');
   bhEntities.innerHTML = '';
@@ -952,6 +989,10 @@ async function endBulletHell(elapsedMs) {
   bhFinalTime.innerText = survivalTime.toFixed(2);
   
   bhGameoverModal.classList.remove('hidden');
+  if (btnBhRestart) {
+    btnBhRestart.innerText = '再玩一次';
+    btnBhRestart.disabled = false;
+  }
   
   try {
     const res = await fetch('/api/easter_egg/claim', {
@@ -3801,7 +3842,7 @@ if (btnAssignDraw) {
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
-      else alert('已成功指派！');
+      else alert('已開始自動抽籤');
     } catch(e) { console.error(e); }
   });
 }
@@ -3886,10 +3927,10 @@ if (btnToggleParticipants && participantsPanel) {
     isPanelMinimized = !isPanelMinimized;
     if (isPanelMinimized) {
       participantsPanel.style.transform = 'translateX(100%)';
-      btnToggleParticipants.innerText = '?';
+      btnToggleParticipants.innerText = '◀';
     } else {
       participantsPanel.style.transform = 'translateX(0%)';
-      btnToggleParticipants.innerText = '?';
+      btnToggleParticipants.innerText = '▶';
     }
   });
 }
