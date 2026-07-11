@@ -415,50 +415,63 @@ function bindPinballSocket(s) {
     if (!pinballContainer) pinballContainer = document.getElementById('pinball-container');
     if (!pinballCanvasWrapper) pinballCanvasWrapper = document.getElementById('pinball-canvas-wrapper');
     
-    // Manage UI
+    // ==========================================
+    // 1. ALWAYS Update Lists (Lobby & Playing)
+    // ==========================================
+    const pinballPoolCount = document.getElementById('pinball-pool-count');
+    if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
+    
+    const pinballPoolList = document.getElementById('pinball-pool-list');
+    const roomPoolDisplayList = document.getElementById('room-pool-display-list');
+    const roomResultList = document.getElementById('room-result-list');
+    
+    // Preserve scroll positions
+    const oldPoolScroll = roomPoolDisplayList ? roomPoolDisplayList.scrollTop : 0;
+    const oldResultScroll = roomResultList ? roomResultList.scrollTop : 0;
+    
+    if (pinballPoolList) pinballPoolList.innerHTML = '';
+    if (roomPoolDisplayList) roomPoolDisplayList.innerHTML = '';
+    if (roomResultList) roomResultList.innerHTML = '';
+    
+    state.pool.forEach(name => {
+      // For admin panel
+      if (pinballPoolList) {
+        const span = document.createElement('span');
+        span.style.cssText = 'background: #3498db; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin: 2px;';
+        span.innerText = name;
+        pinballPoolList.appendChild(span);
+      }
+      // For right side panel
+      if (roomPoolDisplayList) {
+        const li = document.createElement('li');
+        li.style.cssText = 'padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px;';
+        li.innerHTML = `<span style="font-size: 20px;">🕹️</span><span style="font-size: 16px;">${name}</span>`;
+        roomPoolDisplayList.appendChild(li);
+      }
+    });
+    
+    // For winners panel
+    state.finished.forEach((name, idx) => {
+      if (roomResultList) {
+        const li = document.createElement('li');
+        li.style.cssText = 'padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; color: #f1c40f;';
+        let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '🏅';
+        li.innerHTML = `<span style="font-size: 20px;">${medal}</span><span style="font-size: 16px; font-weight: bold;">${name}</span>`;
+        roomResultList.appendChild(li);
+      }
+    });
+    
+    // Restore scroll positions
+    if (roomPoolDisplayList) roomPoolDisplayList.scrollTop = oldPoolScroll;
+    if (roomResultList) roomResultList.scrollTop = oldResultScroll;
+    
+    console.log('[Pinball] Pool:', state.pool.join(', '), 'Finished:', state.finished.join(', '));
+    
+    // ==========================================
+    // 2. Manage UI based on status
+    // ==========================================
     if (state.status === 'lobby') {
       if (pinballTrapUi) pinballTrapUi.classList.remove('hidden');
-      if (pinballSpectatorUi) pinballSpectatorUi.classList.remove('hidden');
-      const myName = (window.currentUser && window.currentUser.displayName) || '';
-      if (pinballSpectatorUi) {
-        if (state.pool.includes(myName)) {
-          pinballSpectatorUi.innerText = `準備中 (已加入名單：${state.pool.length}人)`;
-        } else if (window.globalIsSuperAdmin) {
-          pinballSpectatorUi.innerText = `準備中 (目前名單：${state.pool.length}人)`;
-        } else {
-          pinballSpectatorUi.innerText = `準備中... (您尚未加入名單)`;
-        }
-      }
-      
-      // Update pool display in admin panel AND right side panel
-      const pinballPoolCount = document.getElementById('pinball-pool-count');
-      if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
-      
-      const pinballPoolList = document.getElementById('pinball-pool-list');
-      const roomPoolDisplayList = document.getElementById('room-pool-display-list');
-      
-      if (pinballPoolList) pinballPoolList.innerHTML = '';
-      if (roomPoolDisplayList) roomPoolDisplayList.innerHTML = '';
-      
-      state.pool.forEach(name => {
-        // For admin panel
-        if (pinballPoolList) {
-          const span = document.createElement('span');
-          span.style.cssText = 'background: #3498db; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin: 2px;';
-          span.innerText = name;
-          pinballPoolList.appendChild(span);
-        }
-        // For right side panel (which user looks at)
-        if (roomPoolDisplayList) {
-          const li = document.createElement('li');
-          li.style.cssText = 'padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px;';
-          li.innerHTML = `<span style="font-size: 20px;">🕹️</span><span style="font-size: 16px;">${name}</span>`;
-          roomPoolDisplayList.appendChild(li);
-        }
-      });
-      console.log('[Pinball] Pool names:', state.pool.join(', '));
-      
-      initPinballEngine();
       updatePinballTraps(state.traps);
       
       // Clear balls if we returned to lobby
@@ -477,8 +490,8 @@ function bindPinballSocket(s) {
         pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
       }
       
-      const pPanel = document.getElementById('room-participants-panel');
-      if (pPanel) pPanel.classList.add('hidden');
+      // We no longer hide the panel here, so users can keep it open
+      // to watch the winners list update in real-time.
       
       initPinballEngine();
       updatePinballTraps(state.traps);

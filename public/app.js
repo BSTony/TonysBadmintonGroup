@@ -319,6 +319,8 @@ function updateUnifiedRoomUI() {
         document.getElementById('room-admin-panel').style.pointerEvents = 'auto';
         const topButtons = document.querySelector('#unified-room-overlay > div:first-child');
         if (topButtons) topButtons.style.pointerEvents = 'auto';
+        const pPanel = document.getElementById('room-participants-panel');
+        if (pPanel) pPanel.style.pointerEvents = 'auto';
       }
     } else {
       unifiedRoomOverlay.classList.add('hidden');
