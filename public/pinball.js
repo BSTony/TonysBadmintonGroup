@@ -533,7 +533,19 @@ function bindPinballSocket(s) {
     if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
     if (pinballStatusOverlay) pinballStatusOverlay.classList.add('hidden');
     
+    // ALWAYS initialize the physics engine if it hasn't been initialized yet
+    // This allows the preview and traps to be drawn during item_selection/placement/lobby
+    if (!pbEngine && state.status !== 'idle') {
+      initPinballEngine();
+    }
+    
     if (state.status === 'lobby') {
+      selectedItemType = null;
+      if (pinballItemSelectedText) {
+        pinballItemSelectedText.classList.add('hidden');
+        pinballItemSelectedText.innerText = '';
+      }
+      
       if (roomAdminPanel) roomAdminPanel.classList.remove('hidden');
       if (roomParticipantsPanel) roomParticipantsPanel.classList.remove('hidden');
       if (pinballSpectatorUi) {
