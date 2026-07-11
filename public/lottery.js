@@ -6,6 +6,7 @@ const btnCloseRoom = document.getElementById('btn-close-room');
 const lotteryInteractionUi = document.getElementById('lottery-interaction-ui');
 const lotteryForceBar = document.getElementById('lottery-force-bar');
 const lotterySpectatorUi = document.getElementById('lottery-spectator-ui');
+const lotteryHintText = document.getElementById('lottery-hint-text');
 const btnJoinRoom = document.getElementById('btn-join-room');
 const roomPoolDisplayList = document.getElementById('room-pool-display-list');
 
@@ -27,18 +28,15 @@ function initLottery(uid) {
   
   if (btnCloseRoom) {
     btnCloseRoom.addEventListener('click', () => {
-      
+      unifiedRoomOverlay.classList.add('hidden');
     });
   }
   
   if (btnJoinRoom) {
     btnJoinRoom.addEventListener('click', () => {
       if (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) {
-        // Here we need to know which game to join based on globalRoom state
-        // but since globalRoom state is managed in app.js, we can just emit both or handle it better.
-        // For now, let's just trigger a custom event or check window.globalRoom.
         if (window.globalRoomState && window.globalRoomState.activeGame === 'survival') {
-          // handled in app.js
+          // Handled in app.js
         } else {
           socket.emit('join_lottery', { name: currentUser.displayName });
           btnJoinRoom.classList.add('hidden');
@@ -88,7 +86,7 @@ function initLottery(uid) {
           dirY: dy / dirLen
         });
         lotteryForceBar.style.width = '0%';
-        lotteryHintText.innerText = '?���??��?�?;
+        lotteryHintText.innerText = '🌪️ 發射！';
       } else {
         lotteryForceBar.style.width = '0%';
       }
@@ -107,7 +105,6 @@ function updateForceBar() {
 
 function updateLotteryUI() {
   if (!currentLotteryState || currentLotteryState.status === 'idle') {
-    lotteryViewOverlay.classList.add('hidden');
     if (engine) {
       Matter.Render.stop(render);
       Matter.Runner.stop(runner);
@@ -117,41 +114,39 @@ function updateLotteryUI() {
     return;
   }
   
-  lotteryViewOverlay.classList.remove('hidden');
-  
   const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : '';
   
   if (currentLotteryState.status === 'lobby') {
     lotteryInteractionUi.classList.add('hidden');
     lotterySpectatorUi.classList.remove('hidden');
-    lotterySpectatorUi.innerText = '等�?大家?�入?�籤?��?...';
+    lotterySpectatorUi.innerText = '等待大家加入抽籤房間...';
     
     if (myName && !currentLotteryState.pool.includes(myName)) {
-      btnJoinLottery.classList.remove('hidden');
+      btnJoinRoom.classList.remove('hidden');
     } else {
-      btnJoinLottery.classList.add('hidden');
-      if (myName) lotterySpectatorUi.innerText = '?�已?�入?�單，�?待抽籤�?�?..';
+      btnJoinRoom.classList.add('hidden');
+      if (myName) lotterySpectatorUi.innerText = '您已加入名單，等待抽籤開始...';
     }
   } else if (currentLotteryState.status === 'ready') {
-    btnJoinLottery.classList.add('hidden');
+    btnJoinRoom.classList.add('hidden');
     if (currentLotteryState.assigneeUid === myUid) {
       lotteryInteractionUi.classList.remove('hidden');
       lotterySpectatorUi.classList.add('hidden');
-      lotteryHintText.innerText = `?�畫?�中滑�?來產?�風?��?��? (將抽??${currentLotteryState.drawCount} �?`;
+      lotteryHintText.innerText = `在畫面中滑動來產生風力🌪️ (將抽出 ${currentLotteryState.drawCount} 人)`;
     } else if (currentLotteryState.assigneeUid) {
       lotteryInteractionUi.classList.add('hidden');
       lotterySpectatorUi.classList.remove('hidden');
-      lotterySpectatorUi.innerText = `等�??�籤?��?作中... (將抽??${currentLotteryState.drawCount} �?`;
+      lotterySpectatorUi.innerText = `等待抽籤者操作中... (將抽出 ${currentLotteryState.drawCount} 人)`;
     } else {
       lotteryInteractionUi.classList.add('hidden');
       lotterySpectatorUi.classList.remove('hidden');
-      lotterySpectatorUi.innerText = '等�?管�??��?派這�??��??�籤??..';
+      lotterySpectatorUi.innerText = '等待管理員指派這回合的抽籤者...';
     }
   } else if (currentLotteryState.status === 'drawing') {
-    btnJoinLottery.classList.add('hidden');
+    btnJoinRoom.classList.add('hidden');
     lotteryInteractionUi.classList.add('hidden');
     lotterySpectatorUi.classList.remove('hidden');
-    lotterySpectatorUi.innerText = '?���??�籤�??���?;
+    lotterySpectatorUi.innerText = '🌪️ 抽籤中 🌪️';
   }
 
   // Update Online Pool List

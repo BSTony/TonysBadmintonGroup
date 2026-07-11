@@ -215,6 +215,9 @@ const roomAdminHeader = document.getElementById('room-admin-header');
 const btnMinimizeAdminPanel = document.getElementById('btn-minimize-admin-panel');
 const adminLotteryControls = document.getElementById('admin-lottery-controls');
 const adminSurvivalControls = document.getElementById('admin-survival-controls');
+
+const partyWinType = document.getElementById('party-win-type');
+const partyWinValue = document.getElementById('party-win-value');
 const lotteryCanvasContainer = document.getElementById('lottery-canvas-container');
 const roomPoolDisplayList = document.getElementById('room-pool-display-list');
 const btnJoinRoom = document.getElementById('btn-join-room');
