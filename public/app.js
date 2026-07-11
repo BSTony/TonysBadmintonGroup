@@ -293,6 +293,9 @@ function updateUnifiedRoomUI() {
     if (partyActiveBanner) partyActiveBanner.classList.add('hidden');
     unifiedRoomOverlay.classList.add('hidden');
     bhContainer.classList.add('hidden');
+    if (typeof bhGameoverModal !== 'undefined' && bhGameoverModal) {
+      bhGameoverModal.classList.add('hidden');
+    }
     lotteryCanvasContainer.classList.add('hidden');
     if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
     if (bhEntities) bhEntities.innerHTML = '';
@@ -1060,7 +1063,8 @@ function renderBhLeaderboard(list) {
 
 if (btnBhRestart) {
   btnBhRestart.addEventListener('click', async () => {
-    if (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') {
+    const isMultiplayerContext = (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') || (typeof hasEnteredParty !== 'undefined' && hasEnteredParty);
+    if (isMultiplayerContext) {
       if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
         btnBhRestart.disabled = true;
         try {
