@@ -207,9 +207,9 @@ const btnBhClose = document.getElementById('btn-bh-close');
 // --- Unified Room Admin DOM ---
 const roomGameType = document.getElementById('room-game-type');
 const btnOpenRoom = document.getElementById('btn-open-room');
-const unifiedRoomOverlay = document.getElementById('unified-room-overlay');
+// unifiedRoomOverlay, btnCloseRoom, btnJoinRoom, lotteryCanvasContainer, roomPoolDisplayList
+// are already declared in lottery.js (loaded first)
 const btnToggleAdminPanel = document.getElementById('btn-toggle-admin-panel');
-const btnCloseRoom = document.getElementById('btn-close-room');
 const roomAdminPanel = document.getElementById('room-admin-panel');
 const roomAdminHeader = document.getElementById('room-admin-header');
 const btnMinimizeAdminPanel = document.getElementById('btn-minimize-admin-panel');
@@ -221,9 +221,6 @@ const partyWinValue = document.getElementById('party-win-value');
 const partyAdminStatus = document.getElementById('party-admin-status');
 const partyJoinContainer = document.getElementById('party-join-container');
 const btnJoinParty = document.getElementById('btn-join-party');
-const lotteryCanvasContainer = document.getElementById('lottery-canvas-container');
-const roomPoolDisplayList = document.getElementById('room-pool-display-list');
-const btnJoinRoom = document.getElementById('btn-join-room');
 
 // --- Lottery Admin DOM ---
 const btnImportLobbyUsers = document.getElementById('btn-import-lobby-users');

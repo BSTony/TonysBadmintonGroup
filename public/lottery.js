@@ -1,14 +1,16 @@
-const lotteryCanvasContainer = document.getElementById('lottery-canvas-container');
-const unifiedRoomOverlay = document.getElementById('unified-room-overlay');
-const roomResultList = document.getElementById('room-result-list');
-const btnCloseRoom = document.getElementById('btn-close-room');
+// lottery.js — DOM references (shared with app.js, use var to avoid redeclaration errors)
+// These are declared here because lottery.js loads before app.js
+var lotteryCanvasContainer = lotteryCanvasContainer || document.getElementById('lottery-canvas-container');
+var unifiedRoomOverlay = unifiedRoomOverlay || document.getElementById('unified-room-overlay');
+var roomResultList = roomResultList || document.getElementById('room-result-list');
+var btnCloseRoom = btnCloseRoom || document.getElementById('btn-close-room');
 
-const lotteryInteractionUi = document.getElementById('lottery-interaction-ui');
-const lotteryForceBar = document.getElementById('lottery-force-bar');
-const lotterySpectatorUi = document.getElementById('lottery-spectator-ui');
-const lotteryHintText = document.getElementById('lottery-hint-text');
-const btnJoinRoom = document.getElementById('btn-join-room');
-const roomPoolDisplayList = document.getElementById('room-pool-display-list');
+var lotteryInteractionUi = lotteryInteractionUi || document.getElementById('lottery-interaction-ui');
+var lotteryForceBar = lotteryForceBar || document.getElementById('lottery-force-bar');
+var lotterySpectatorUi = lotterySpectatorUi || document.getElementById('lottery-spectator-ui');
+var lotteryHintText = lotteryHintText || document.getElementById('lottery-hint-text');
+var btnJoinRoom = btnJoinRoom || document.getElementById('btn-join-room');
+var roomPoolDisplayList = roomPoolDisplayList || document.getElementById('room-pool-display-list');
 
 let engine, render, runner;
 let balls = [];
