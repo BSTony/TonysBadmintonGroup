@@ -87,15 +87,67 @@ if (pinballCanvasWrapper) {
 }
 
 function initPinballEngine() {
-  if (pbEngine) return;
+  // Re-fetch DOM refs in case they weren't ready at script load time
+  if (!pinballContainer) pinballContainer = document.getElementById('pinball-container');
+  if (!pinballCanvasWrapper) pinballCanvasWrapper = document.getElementById('pinball-canvas-wrapper');
+
+  if (!pinballContainer || !pinballCanvasWrapper) {
+    console.warn('[Pinball] Container elements not found in DOM');
+    return;
+  }
+
+  const width = pinballContainer.clientWidth || window.innerWidth;
+  const height = pinballContainer.clientHeight || window.innerHeight;
+
+  // If container is hidden (0x0), don't init yet - it will be called again when visible
+  if (width < 50 || height < 50) {
+    console.warn('[Pinball] Container too small (hidden?), skipping init. w=' + width + ' h=' + height);
+    // If we already built a broken engine, destroy it so we can rebuild
+    if (pbEngine) {
+      console.log('[Pinball] Destroying broken engine to rebuild later');
+      if (pbRunner) Matter.Runner.stop(pbRunner);
+      if (pbRender) Matter.Render.stop(pbRender);
+      Matter.World.clear(pbEngine.world);
+      Matter.Engine.clear(pbEngine);
+      if (pbRender && pbRender.canvas) pbRender.canvas.remove();
+      pbEngine = null;
+      pbRender = null;
+      pbRunner = null;
+      pbBalls = {};
+      pbTraps = {};
+    }
+    return;
+  }
+
+  // If engine already exists with correct dimensions, skip
+  if (pbEngine && pbRender && pbRender.options.width === width && pbRender.options.height === height) {
+    return;
+  }
+
+  // If engine exists but dimensions changed (e.g. was built when hidden), destroy and rebuild
+  if (pbEngine) {
+    console.log('[Pinball] Rebuilding engine with new dimensions: ' + width + 'x' + height);
+    if (pbRunner) Matter.Runner.stop(pbRunner);
+    if (pbRender) Matter.Render.stop(pbRender);
+    Matter.World.clear(pbEngine.world);
+    Matter.Engine.clear(pbEngine);
+    if (pbRender && pbRender.canvas) pbRender.canvas.remove();
+    pbEngine = null;
+    pbRender = null;
+    pbRunner = null;
+    pbBalls = {};
+    pbTraps = {};
+  }
+
+  console.log('[Pinball] Initializing engine with dimensions: ' + width + 'x' + height);
 
   const { Engine, Render, Runner, World, Bodies, Events, Body, Composite } = Matter;
   
   pbEngine = Engine.create();
   pbEngine.gravity.y = 1;
-  
-  const width = pinballContainer.clientWidth || window.innerWidth;
-  const height = pinballContainer.clientHeight || window.innerHeight;
+
+  // Clear any leftover canvas
+  pinballCanvasWrapper.innerHTML = '';
 
   pbRender = Render.create({
     element: pinballCanvasWrapper,
@@ -256,6 +308,7 @@ function initPinballEngine() {
   Render.run(pbRender);
   pbRunner = Runner.create();
   Runner.run(pbRunner, pbEngine);
+  console.log('[Pinball] Engine started successfully');
 }
 
 function updatePinballTraps(trapsData) {
@@ -294,7 +347,11 @@ function updatePinballTraps(trapsData) {
 }
 
 function dropBalls(pool) {
-  if (!pbEngine) return;
+  console.log('[Pinball] dropBalls called with pool:', pool, 'pbEngine:', !!pbEngine);
+  if (!pbEngine) {
+    console.error('[Pinball] ERROR: pbEngine is null, cannot drop balls!');
+    return;
+  }
   const { World, Bodies } = Matter;
   
   // Remove existing balls
@@ -329,21 +386,32 @@ function dropBalls(pool) {
 }
 
 function bindPinballSocket(s) {
+  console.log('[Pinball] bindPinballSocket called');
   s.on('pinball_state', (state) => {
+    console.log('[Pinball] pinball_state received:', JSON.stringify({status: state.status, poolLen: state.pool?.length, trapsLen: state.traps?.length, finishedLen: state.finished?.length}));
     const prevStatus = pbState.status;
     pbState = state;
     
+    // Re-fetch DOM elements (they may not have existed when pinball.js first loaded)
+    if (!pinballTrapUi) pinballTrapUi = document.getElementById('pinball-trap-ui');
+    if (!pinballSpectatorUi) pinballSpectatorUi = document.getElementById('pinball-spectator-ui');
+    if (!pinballContainer) pinballContainer = document.getElementById('pinball-container');
+    if (!pinballCanvasWrapper) pinballCanvasWrapper = document.getElementById('pinball-canvas-wrapper');
+    
     // Manage UI
     if (state.status === 'lobby') {
-      pinballTrapUi.classList.remove('hidden');
-      pinballSpectatorUi.classList.remove('hidden');
+      if (pinballTrapUi) pinballTrapUi.classList.remove('hidden');
+      if (pinballSpectatorUi) pinballSpectatorUi.classList.remove('hidden');
       const myName = (window.currentUser && window.currentUser.displayName) || '';
-      if (state.pool.includes(myName)) {
-        pinballSpectatorUi.innerText = `準備中 (已加入名單：${state.pool.length}人)`;
-      } else {
-        pinballSpectatorUi.innerText = `準備中... (您尚未加入名單)`;
+      if (pinballSpectatorUi) {
+        if (state.pool.includes(myName)) {
+          pinballSpectatorUi.innerText = `準備中 (已加入名單：${state.pool.length}人)`;
+        } else {
+          pinballSpectatorUi.innerText = `準備中... (您尚未加入名單)`;
+        }
       }
       
+      // Update pool display in admin panel
       const pinballPoolCount = document.getElementById('pinball-pool-count');
       if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
       const pinballPoolList = document.getElementById('pinball-pool-list');
@@ -356,12 +424,13 @@ function bindPinballSocket(s) {
           pinballPoolList.appendChild(span);
         });
       }
+      console.log('[Pinball] Pool names:', state.pool.join(', '));
       
       initPinballEngine();
       updatePinballTraps(state.traps);
       
       // Clear balls if we returned to lobby
-      if (prevStatus === 'playing') {
+      if (prevStatus === 'playing' && pbEngine) {
         const { World } = Matter;
         World.remove(pbEngine.world, Object.values(pbBalls));
         pbBalls = {};
@@ -370,9 +439,11 @@ function bindPinballSocket(s) {
       }
       
     } else if (state.status === 'playing') {
-      pinballTrapUi.classList.add('hidden');
-      pinballSpectatorUi.classList.remove('hidden');
-      pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
+      if (pinballTrapUi) pinballTrapUi.classList.add('hidden');
+      if (pinballSpectatorUi) {
+        pinballSpectatorUi.classList.remove('hidden');
+        pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
+      }
       
       const pPanel = document.getElementById('room-participants-panel');
       if (pPanel) pPanel.classList.add('hidden');
@@ -380,7 +451,8 @@ function bindPinballSocket(s) {
       initPinballEngine();
       updatePinballTraps(state.traps);
       
-      if (prevStatus === 'lobby') {
+      if (prevStatus === 'lobby' || prevStatus === 'idle') {
+        console.log('[Pinball] Transition to playing! Pool:', state.pool, 'pbEngine exists:', !!pbEngine);
         // Do countdown
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
@@ -391,9 +463,11 @@ function bindPinballSocket(s) {
           setTimeout(() => {
             countdownEl.innerText = 'GO!';
             setTimeout(() => countdownEl.classList.add('hidden'), 1000);
+            console.log('[Pinball] Dropping balls now for pool:', state.pool);
             dropBalls(state.pool);
           }, 3000);
         } else {
+          console.log('[Pinball] No countdown element, dropping balls immediately');
           dropBalls(state.pool);
         }
       }
@@ -402,7 +476,7 @@ function bindPinballSocket(s) {
       if (state.finished.length > 0) {
         // Someone finished!
         const winner = state.finished[0];
-        pinballSpectatorUi.innerText = `🏆 冠軍：${winner}！`;
+        if (pinballSpectatorUi) pinballSpectatorUi.innerText = `🏆 冠軍：${winner}！`;
         
         // Show big announcement
         var lotteryWinnerAnnouncement = document.getElementById('lottery-winner-announcement');
