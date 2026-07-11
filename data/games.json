@@ -1244,7 +1244,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1783228097228,
-    "lastActiveTime": 1783498891515,
+    "lastActiveTime": 1783792196605,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1267,12 +1267,17 @@
           "JoeLin",
           "小金(Chen Pei Hung)",
           "L",
-          "登登",
-          "(AK) Seth Hu"
+          "登登"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/12 01:49",
+        "name": "(AK) Seth Hu",
+        "operator": "(AK) Seth Hu",
+        "action": "-1"
+      },
       {
         "time": "07/08 16:21",
         "name": "(AK) Seth Hu",
