@@ -860,7 +860,7 @@ let bhSpawnRate = 1000;
 let bhLastSpawn = 0;
 
 function startBulletHell() {
-  if (window.currentGlobalRoomState && window.currentGlobalRoomState.status === 'open') {
+  if (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') {
     if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
     if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin && typeof roomAdminPanel !== 'undefined' && roomAdminPanel) {
       roomAdminPanel.classList.remove('hidden');
