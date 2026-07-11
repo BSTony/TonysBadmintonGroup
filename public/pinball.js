@@ -164,7 +164,7 @@ function initPinballEngine() {
   World.add(pbEngine.world, [
     Bodies.rectangle(0, height/2, 20, height, wallOpts), // Left
     Bodies.rectangle(width, height/2, 20, height, wallOpts), // Right
-    Bodies.rectangle(width/2, -50, width, 100, wallOpts) // Top
+    Bodies.rectangle(width/2, -400, width, 100, wallOpts) // Top
   ]);
 
   // Top funnel (Start point)
@@ -406,6 +406,8 @@ function bindPinballSocket(s) {
       if (pinballSpectatorUi) {
         if (state.pool.includes(myName)) {
           pinballSpectatorUi.innerText = `準備中 (已加入名單：${state.pool.length}人)`;
+        } else if (window.globalIsSuperAdmin) {
+          pinballSpectatorUi.innerText = `準備中 (目前名單：${state.pool.length}人)`;
         } else {
           pinballSpectatorUi.innerText = `準備中... (您尚未加入名單)`;
         }
