@@ -517,10 +517,10 @@ function initSocket() {
     
     if (btnBhRestart) {
       if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
-        btnBhRestart.innerText = '回到大廳 / 準備下局';
+        btnBhRestart.innerText = '關閉房間';
         btnBhRestart.disabled = false;
       } else {
-        btnBhRestart.innerText = '回到大廳 (等待下一局)';
+        btnBhRestart.innerText = '回到大廳';
         btnBhRestart.disabled = false;
       }
     }
@@ -1059,16 +1059,25 @@ function renderBhLeaderboard(list) {
 }
 
 if (btnBhRestart) {
-  btnBhRestart.addEventListener('click', () => {
+  btnBhRestart.addEventListener('click', async () => {
     if (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') {
-      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
-      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin && typeof roomAdminPanel !== 'undefined' && roomAdminPanel) {
-        roomAdminPanel.classList.remove('hidden');
-        const body = document.getElementById('room-admin-body');
-        const btnMinimize = document.getElementById('btn-minimize-admin-panel');
-        if (body) body.style.display = 'flex';
-        if (btnMinimize) btnMinimize.innerText = '−';
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+        btnBhRestart.disabled = true;
+        try {
+          await fetch('/api/admin/room/close', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uid: currentUser.userId })
+          });
+          if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+        } catch(e) {
+          console.error(e);
+          btnBhRestart.disabled = false;
+        }
+        return;
       }
+
+      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
       const pPanel = document.getElementById('room-participants-panel');
       const pBtn = document.getElementById('btn-toggle-participants');
       if (pPanel && typeof isPanelMinimized !== 'undefined') {
