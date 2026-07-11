@@ -4108,17 +4108,35 @@ const btnAddPinballSelf = document.getElementById('btn-add-pinball-self');
 const inputPinballName = document.getElementById('pinball-manual-name');
 
 async function addPinballPlayer(name) {
-  if (!name || !currentUser) return;
+  if (!name) {
+    alert("請輸入名字！");
+    return false;
+  }
+  if (!currentUser) {
+    alert("無法取得您的登入狀態，請確定您已透過 LINE 登入。若是新開的無痕視窗將無法使用此功能！");
+    return false;
+  }
   try {
     const res = await fetch('/api/admin/pinball/add-player', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ uid: currentUser.userId, name })
     });
+    if (!res.ok) {
+      alert("伺服器連線失敗或找不到 API！ HTTP " + res.status);
+      return false;
+    }
     const data = await res.json();
-    if (!data.success) alert(data.error);
+    if (!data.success) {
+      alert("加入失敗：" + data.error);
+      return false;
+    }
     return data.success;
-  } catch(e) { console.error(e); return false; }
+  } catch(e) { 
+    console.error(e); 
+    alert("發生未知錯誤：" + e.message);
+    return false; 
+  }
 }
 
 if (btnAddPinballName && inputPinballName) {
