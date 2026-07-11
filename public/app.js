@@ -276,8 +276,7 @@ function updateUnifiedRoomUI() {
       
       if (currentGlobalRoomState.activeGame === 'lottery') {
         lotteryCanvasContainer.classList.remove('hidden');
-        bhContainer.classList.remove('hidden'); // Do not hide lobby background
-        bhContainer.style.pointerEvents = 'none'; // Fix pointer events overlap
+        bhContainer.classList.add('hidden'); // HIDE bh-container so it doesn't cover lottery
         const bhScore = document.getElementById('bh-score');
         if (bhScore) bhScore.classList.add('hidden');
         const bhWaitText = document.getElementById('bh-waiting-text');
@@ -287,7 +286,7 @@ function updateUnifiedRoomUI() {
       } else if (currentGlobalRoomState.activeGame === 'survival') {
         lotteryCanvasContainer.classList.add('hidden');
         bhContainer.classList.remove('hidden');
-        bhContainer.style.pointerEvents = 'auto'; // Restore pointer events
+        bhContainer.style.pointerEvents = 'auto';
         const bhScore = document.getElementById('bh-score');
         if (bhScore) bhScore.classList.remove('hidden');
         const bhWaitText = document.getElementById('bh-waiting-text');
@@ -3867,7 +3866,7 @@ function updateLotteryAdminPoolUI() {
 async function syncLotteryPoolToServer() {
   if (typeof currentGlobalRoomState !== 'undefined' && currentGlobalRoomState && currentGlobalRoomState.status === 'open' && currentGlobalRoomState.activeGame === 'lottery') {
     try {
-      await fetch('/api/admin/lottery/setup', {
+      await fetch('/api/admin/lottery/update-pool', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ uid: currentUser.userId, pool: lotteryAdminPool })

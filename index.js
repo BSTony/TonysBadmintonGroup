@@ -2079,6 +2079,16 @@ app.post('/api/admin/lottery/setup', express.json(), (req, res) => {
   res.json({ success: true, lotteryRoom });
 });
 
+// Update pool only (no reset of status/drawn)
+app.post('/api/admin/lottery/update-pool', express.json(), (req, res) => {
+  const { uid, pool } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  lotteryRoom.pool = pool || [];
+  io.emit('lottery_state', lotteryRoom);
+  res.json({ success: true, lotteryRoom });
+});
+
 app.post('/api/admin/lottery/reset', express.json(), (req, res) => {
   const { uid } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
