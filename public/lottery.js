@@ -129,6 +129,8 @@ function updateLotteryUI() {
       btnJoinRoom.classList.add('hidden');
       if (myName) lotterySpectatorUi.innerText = '您已加入名單，等待抽籤開始...';
     }
+    const pPanel = document.getElementById('room-participants-panel');
+    if (pPanel) pPanel.classList.remove('hidden');
   } else if (currentLotteryState.status === 'ready') {
     btnJoinRoom.classList.add('hidden');
     if (currentLotteryState.assigneeUid === myUid) {
@@ -144,11 +146,15 @@ function updateLotteryUI() {
       lotterySpectatorUi.classList.remove('hidden');
       lotterySpectatorUi.innerText = '等待管理員指派這回合的抽籤者...';
     }
+    const pPanel = document.getElementById('room-participants-panel');
+    if (pPanel) pPanel.classList.remove('hidden');
   } else if (currentLotteryState.status === 'drawing') {
     btnJoinRoom.classList.add('hidden');
     lotteryInteractionUi.classList.add('hidden');
     lotterySpectatorUi.classList.remove('hidden');
     lotterySpectatorUi.innerText = '🌪️ 抽籤中 🌪️';
+    const pPanel = document.getElementById('room-participants-panel');
+    if (pPanel) pPanel.classList.add('hidden');
   }
 
   // Update Online Pool List

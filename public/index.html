@@ -419,7 +419,6 @@
             <button id="btn-add-manual-name" class="btn-primary" style="padding:5px 10px; font-size: 12px;">加入</button>
           </div>
           <p style="margin:5px 0; font-size:12px; color: black;">目前名單人數: <span id="lottery-pool-count" style="font-weight:bold;">0</span></p>
-          <ul id="lottery-pool-list" style="max-height:80px; overflow-y:auto; background:white; padding:5px; border:1px solid #ddd; font-size:12px; margin-bottom:10px; color: black; list-style:none;"></ul>
           
           <hr style="margin: 10px 0; border-top:1px solid #ccc;">
           <label style="font-size: 12px; color: black;">指定抽出數量：</label>
@@ -494,26 +493,21 @@
       </div>
       
       <!-- 右側：名單結果區 (改為可收合、自由縮放的浮動視窗) -->
-      <div id="room-participants-panel" style="position: absolute; right: 0; top: 0; height: 100%; width: 250px; min-width: 150px; max-width: 80vw; background: rgba(0,0,0,0.85); border-left: 1px solid rgba(255,255,255,0.2); display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 10000; transform: translateX(0%); box-shadow: -5px 0 15px rgba(0,0,0,0.5);">
+      <!-- 中間：名單結果區 (改為置中浮動視窗，帶有頁籤) -->
+      <div id="room-participants-panel" class="hidden" style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 80%; max-width: 400px; height: 60%; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; display: flex; flex-direction: column; z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         
-        <!-- 左側拖曳條 -->
-        <div id="panel-resizer" style="position: absolute; top: 0; left: -10px; width: 20px; height: 100%; cursor: ew-resize; z-index: 10001; display: flex; align-items: center; justify-content: center;">
-          <div style="width: 4px; height: 50px; background: rgba(255,255,255,0.6); border-radius: 2px;"></div>
+        <!-- 頁籤切換按鈕 -->
+        <div style="display: flex; background: rgba(255,255,255,0.1); border-radius: 15px 15px 0 0; overflow: hidden;">
+          <button id="tab-participants" style="flex: 1; padding: 15px; background: rgba(255,255,255,0.2); color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold;">👥 參加者名單</button>
+          <button id="tab-winners" style="flex: 1; padding: 15px; background: transparent; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold;">🏆 中獎名單</button>
         </div>
-
-        <!-- 收合按鈕 -->
-        <button id="btn-toggle-participants" style="position: absolute; top: 50%; left: -40px; transform: translateY(-50%); width: 40px; height: 60px; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.2); border-right: none; border-radius: 10px 0 0 10px; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; z-index: 9999; box-shadow: -2px 0 5px rgba(0,0,0,0.3);">
-          ▶
-        </button>
         
-        <div style="flex: 1; display: flex; flex-direction: column; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-          <h3 style="color: #3498db; margin: 0 0 10px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px;">👥 在線參與者 👥</h3>
-          <ul id="room-pool-display-list" style="list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; color: white; font-size: 16px; line-height: 1.6; text-align: center;">
+        <div id="panel-participants-content" style="flex: 1; display: flex; flex-direction: column; padding: 15px; overflow: hidden;">
+          <ul id="room-pool-display-list" style="list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; color: white; font-size: 18px; line-height: 1.8; text-align: center;">
           </ul>
         </div>
 
-        <div style="flex: 1; display: flex; flex-direction: column; padding: 10px;">
-          <h3 style="color: #f1c40f; margin: 0 0 10px 0; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px;">🏆 成績 / 結果 🏆</h3>
+        <div id="panel-winners-content" class="hidden" style="flex: 1; display: flex; flex-direction: column; padding: 15px; overflow: hidden;">
           <ul id="room-result-list" style="list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; color: white; font-size: 18px; line-height: 1.8; text-align: center;">
           </ul>
         </div>

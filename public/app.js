@@ -277,11 +277,21 @@ function updateUnifiedRoomUI() {
       if (currentGlobalRoomState.activeGame === 'lottery') {
         lotteryCanvasContainer.classList.remove('hidden');
         bhContainer.classList.remove('hidden'); // Do not hide lobby background
+        bhContainer.style.pointerEvents = 'none'; // Fix pointer events overlap
+        const bhScore = document.getElementById('bh-score');
+        if (bhScore) bhScore.classList.add('hidden');
+        const bhWaitText = document.getElementById('bh-waiting-text');
+        if (bhWaitText) bhWaitText.classList.add('hidden');
         adminLotteryControls.classList.remove('hidden');
         adminSurvivalControls.classList.add('hidden');
       } else if (currentGlobalRoomState.activeGame === 'survival') {
         lotteryCanvasContainer.classList.add('hidden');
         bhContainer.classList.remove('hidden');
+        bhContainer.style.pointerEvents = 'auto'; // Restore pointer events
+        const bhScore = document.getElementById('bh-score');
+        if (bhScore) bhScore.classList.remove('hidden');
+        const bhWaitText = document.getElementById('bh-waiting-text');
+        if (bhWaitText && !bhIsPlaying) bhWaitText.classList.remove('hidden');
         adminLotteryControls.classList.add('hidden');
         adminSurvivalControls.classList.remove('hidden');
       }
@@ -3831,7 +3841,8 @@ function triggerConfetti() {
 // --- Lottery Admin Logic ---
 function updateLotteryAdminPoolUI() {
   lotteryPoolCount.innerText = lotteryAdminPool.length;
-  lotteryPoolList.innerHTML = '';
+  // removed unused lotteryPoolList
+  if (typeof lotteryPoolList !== 'undefined' && lotteryPoolList) lotteryPoolList.innerHTML = '';
   lotteryAdminPool.forEach((name, idx) => {
     const li = document.createElement('li');
     li.style.display = 'flex';
@@ -3854,7 +3865,7 @@ function updateLotteryAdminPoolUI() {
     
     li.appendChild(span);
     li.appendChild(delBtn);
-    lotteryPoolList.appendChild(li);
+    if (typeof lotteryPoolList !== 'undefined' && lotteryPoolList) lotteryPoolList.appendChild(li);
   });
 }
 
@@ -3992,50 +4003,23 @@ if (btnJoinRoom) {
 
 // === Room Participants Panel Logic ===
 const participantsPanel = document.getElementById('room-participants-panel');
-const btnToggleParticipants = document.getElementById('btn-toggle-participants');
-const panelResizer = document.getElementById('panel-resizer');
+const tabParticipants = document.getElementById('tab-participants');
+const tabWinners = document.getElementById('tab-winners');
+const panelParticipantsContent = document.getElementById('panel-participants-content');
+const panelWinnersContent = document.getElementById('panel-winners-content');
 
-let isPanelMinimized = false;
-
-if (btnToggleParticipants && participantsPanel) {
-  btnToggleParticipants.addEventListener('click', () => {
-    isPanelMinimized = !isPanelMinimized;
-    if (isPanelMinimized) {
-      participantsPanel.style.transform = 'translateX(100%)';
-      btnToggleParticipants.innerText = '◀';
-    } else {
-      participantsPanel.style.transform = 'translateX(0%)';
-      btnToggleParticipants.innerText = '▶';
-    }
+if (tabParticipants && tabWinners) {
+  tabParticipants.addEventListener('click', () => {
+    tabParticipants.style.background = 'rgba(255,255,255,0.2)';
+    tabWinners.style.background = 'transparent';
+    panelParticipantsContent.classList.remove('hidden');
+    panelWinnersContent.classList.add('hidden');
   });
-}
-
-let isResizingPanel = false;
-let startX = 0;
-let startWidth = 0;
-
-if (panelResizer && participantsPanel) {
-  panelResizer.addEventListener('pointerdown', (e) => {
-    if (isPanelMinimized) return;
-    isResizingPanel = true;
-    startX = e.clientX;
-    startWidth = participantsPanel.offsetWidth;
-    participantsPanel.style.transition = 'none';
-    e.preventDefault();
-  });
-  
-  window.addEventListener('pointermove', (e) => {
-    if (!isResizingPanel) return;
-    const dx = startX - e.clientX;
-    const newWidth = Math.max(150, Math.min(window.innerWidth * 0.8, startWidth + dx));
-    participantsPanel.style.width = newWidth + 'px';
-  });
-  
-  window.addEventListener('pointerup', () => {
-    if (isResizingPanel) {
-      isResizingPanel = false;
-      participantsPanel.style.transition = 'transform 0.3s ease';
-    }
+  tabWinners.addEventListener('click', () => {
+    tabWinners.style.background = 'rgba(255,255,255,0.2)';
+    tabParticipants.style.background = 'transparent';
+    panelWinnersContent.classList.remove('hidden');
+    panelParticipantsContent.classList.add('hidden');
   });
 }
 
