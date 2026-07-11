@@ -3,47 +3,63 @@
 let pbEngine, pbRender, pbRunner;
 let pbBalls = {};
 let pbTraps = {};
-let pbState = { status: 'idle', pool: [], traps: [], finished: [] };
-let selectedTrapType = 'speed';
+let pbState = { status: 'idle', pool: [], traps: [], finished: [], winnerLimit: 3, itemChoices: {} };
+let selectedItemType = null; // Local preview tracking
 
 // DOM Elements
 var pinballContainer = pinballContainer || document.getElementById('pinball-container');
 var pinballCanvasWrapper = pinballCanvasWrapper || document.getElementById('pinball-canvas-wrapper');
-var pinballTrapUi = pinballTrapUi || document.getElementById('pinball-trap-ui');
+var pinballItemSelectionUi = document.getElementById('pinball-item-selection-ui');
+var pinballStatusOverlay = document.getElementById('pinball-status-overlay');
+var pinballStatusText = document.getElementById('pinball-status-text');
+var pinballStatusTimer = document.getElementById('pinball-status-timer');
 var pinballSpectatorUi = pinballSpectatorUi || document.getElementById('pinball-spectator-ui');
-var btnTrapSpeed = document.getElementById('btn-trap-speed');
-var btnTrapSlow = document.getElementById('btn-trap-slow');
 
-if (btnTrapSpeed) {
-  btnTrapSpeed.addEventListener('click', () => {
-    selectedTrapType = 'speed';
-    btnTrapSpeed.classList.add('selected');
-    btnTrapSpeed.style.border = '3px solid white';
-    btnTrapSpeed.style.boxShadow = '0 0 10px #2ecc71';
-    btnTrapSlow.classList.remove('selected');
-    btnTrapSlow.style.border = '3px solid transparent';
-    btnTrapSlow.style.boxShadow = 'none';
-    alert('已選擇：🟢 加速陷阱！請點擊黑色夜空畫面來放置您的陷阱！');
+// Item Selection Buttons
+var btnItemObstacle = document.getElementById('btn-item-obstacle');
+var btnItemBouncer = document.getElementById('btn-item-bouncer');
+var btnItemArrow = document.getElementById('btn-item-arrow');
+var pinballItemSelectedText = document.getElementById('pinball-item-selected-text');
+
+function selectItem(type, btnObj) {
+  if (pbState.status !== 'item_selection') return;
+  if (!window.currentUser || !window.currentUser.userId) return;
+  
+  // Highlight UI
+  [btnItemObstacle, btnItemBouncer, btnItemArrow].forEach(b => {
+    if (b) {
+      b.style.border = '2px solid transparent';
+      b.style.opacity = '0.5';
+    }
   });
-}
-if (btnTrapSlow) {
-  btnTrapSlow.addEventListener('click', () => {
-    selectedTrapType = 'slow';
-    btnTrapSlow.classList.add('selected');
-    btnTrapSlow.style.border = '3px solid white';
-    btnTrapSlow.style.boxShadow = '0 0 10px #e74c3c';
-    btnTrapSpeed.classList.remove('selected');
-    btnTrapSpeed.style.border = '3px solid transparent';
-    btnTrapSpeed.style.boxShadow = 'none';
-    alert('已選擇：🔴 減速陷阱！請點擊黑色夜空畫面來放置您的陷阱！');
-  });
+  if (btnObj) {
+    btnObj.style.border = '2px solid white';
+    btnObj.style.opacity = '1';
+  }
+  if (pinballItemSelectedText) pinballItemSelectedText.classList.remove('hidden');
+  selectedItemType = type;
+
+  // Send to server
+  fetch('/api/pinball/select-item', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      uid: window.currentUser.userId,
+      type: type
+    })
+  }).catch(console.error);
 }
 
-// Wrapper click for trap placement
+if (btnItemObstacle) btnItemObstacle.addEventListener('click', () => selectItem('obstacle', btnItemObstacle));
+if (btnItemBouncer) btnItemBouncer.addEventListener('click', () => selectItem('bouncer', btnItemBouncer));
+if (btnItemArrow) btnItemArrow.addEventListener('click', () => selectItem('arrow', btnItemArrow));
+
+// Wrapper click for item placement
 if (pinballCanvasWrapper) {
   pinballCanvasWrapper.addEventListener('click', (e) => {
-    if (pbState.status !== 'lobby') {
-      alert('遊戲已經開始，無法放置陷阱！');
+    if (pbState.status !== 'item_placement') {
+      if (pbState.status === 'playing') alert('遊戲已經開始，無法放置道具！');
+      else if (pbState.status === 'item_selection') alert('請先在畫面上選擇道具！');
       return;
     }
     if (!window.currentUser || !window.currentUser.userId) return;
@@ -52,7 +68,11 @@ if (pinballCanvasWrapper) {
     const myName = window.currentUser.displayName;
     const isGlobalSuperAdmin = window.globalIsSuperAdmin === true;
     if (!pbState.pool.includes(myName) && !isGlobalSuperAdmin) {
-      alert('您必須先加入大廳名單才能佈置陷阱！');
+      alert('您必須先加入名單才能放置道具！');
+      return;
+    }
+    if (!selectedItemType && !pbState.itemChoices[window.currentUser.userId]) {
+      alert('您剛才沒有選擇道具！');
       return;
     }
 
@@ -61,27 +81,26 @@ if (pinballCanvasWrapper) {
     const y = e.clientY - rect.top;
 
     // Send API
-    fetch('/api/pinball/place-trap', {
+    fetch('/api/pinball/place-item', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         uid: window.currentUser.userId,
         name: myName,
-        trapType: selectedTrapType,
         x: x,
         y: y
       })
     })
     .then(r => r.json())
     .then(data => {
-      if (data.error) alert('放置陷阱失敗：' + data.error);
-      else console.log('[Pinball] Trap placed');
+      if (data.error) alert('放置道具失敗：' + data.error);
+      else console.log('[Pinball] Item placed');
     })
-    .catch(e => alert('發生錯誤，無法放置陷阱'));
+    .catch(e => alert('發生錯誤，無法放置道具'));
   });
 
   pinballCanvasWrapper.addEventListener('mousemove', (e) => {
-    if (pbState.status !== 'lobby') return;
+    if (pbState.status !== 'item_placement') return;
     const myName = (window.currentUser && window.currentUser.displayName) || '';
     const isGlobalSuperAdmin = window.globalIsSuperAdmin === true;
     if (!pbState.pool.includes(myName) && !isGlobalSuperAdmin) return;
@@ -240,10 +259,14 @@ function initPinballEngine() {
       if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
 
       if (ball && trap) {
-        if (trap.plugin.trapType === 'speed') {
-          Body.setVelocity(ball, { x: ball.velocity.x, y: 15 });
-        } else if (trap.plugin.trapType === 'slow') {
-          Body.setVelocity(ball, { x: ball.velocity.x * 0.1, y: ball.velocity.y * 0.1 });
+        if (trap.plugin.trapType === 'arrow') {
+          // Apply force in the direction of the arrow
+          const angle = trap.plugin.angle || 0;
+          const forceMag = 0.015; // strong boost
+          Body.applyForce(ball, ball.position, { 
+            x: Math.cos(angle) * forceMag, 
+            y: Math.sin(angle) * forceMag 
+          });
         }
       }
 
@@ -293,32 +316,45 @@ function initPinballEngine() {
     ctx.fillText('🏁 FINISH LINE 🏁', width/2, height - 10);
     
     // Draw preview trap
-    if (window.pbPreviewX != null && window.pbPreviewY != null && pbState.status === 'lobby') {
-      ctx.globalAlpha = 0.5;
-      ctx.translate(window.pbPreviewX, window.pbPreviewY);
-      if (selectedTrapType === 'speed') {
-        ctx.fillStyle = '#2ecc71';
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        // Triangle pointing down
-        ctx.moveTo(0, 15);
-        ctx.lineTo(-15, -15);
-        ctx.lineTo(15, -15);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-      } else {
-        ctx.fillStyle = '#e74c3c';
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(0, 0, 15, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
+    if (window.pbPreviewX != null && window.pbPreviewY != null && pbState.status === 'item_placement') {
+      const typeToDraw = selectedItemType || (pbState.itemChoices[window.currentUser?.userId]?.type);
+      if (typeToDraw) {
+        ctx.globalAlpha = 0.5;
+        ctx.translate(window.pbPreviewX, window.pbPreviewY);
+        
+        if (typeToDraw === 'obstacle') {
+          ctx.fillStyle = '#e74c3c';
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
+          ctx.fillRect(-20, -10, 40, 20);
+          ctx.strokeRect(-20, -10, 40, 20);
+        } else if (typeToDraw === 'bouncer') {
+          ctx.fillStyle = '#3498db';
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(0, 0, 15, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+        } else if (typeToDraw === 'arrow') {
+          ctx.fillStyle = '#2ecc71';
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
+          const previewAngle = pbState.itemChoices[window.currentUser?.userId]?.angle || -Math.PI/2;
+          ctx.rotate(previewAngle);
+          ctx.beginPath();
+          ctx.moveTo(15, 0);
+          ctx.lineTo(-10, -10);
+          ctx.lineTo(-10, 10);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.rotate(-previewAngle);
+        }
+        
+        ctx.translate(-window.pbPreviewX, -window.pbPreviewY);
+        ctx.globalAlpha = 1.0;
       }
-      ctx.translate(-window.pbPreviewX, -window.pbPreviewY);
-      ctx.globalAlpha = 1.0;
     }
   });
 
@@ -341,20 +377,27 @@ function updatePinballTraps(trapsData) {
 
   trapsData.forEach(t => {
     let body;
-    if (t.type === 'speed') {
-      body = Bodies.polygon(t.x, t.y, 3, 20, { 
+    if (t.type === 'obstacle') {
+      body = Bodies.rectangle(t.x, t.y, 40, 20, { 
         isStatic: true, 
-        angle: Math.PI, // Pointing down
-        render: { fillStyle: '#2ecc71', strokeStyle: '#fff', lineWidth: 2 },
-        plugin: { isTrap: true, trapType: 'speed', ownerName: t.name },
-        restitution: 0.8
+        render: { fillStyle: '#e74c3c', strokeStyle: '#fff', lineWidth: 2 },
+        plugin: { isTrap: true, trapType: 'obstacle', ownerName: t.name },
+        restitution: 0.2
       });
-    } else {
+    } else if (t.type === 'bouncer') {
       body = Bodies.circle(t.x, t.y, 15, { 
         isStatic: true,
-        render: { fillStyle: '#e74c3c', strokeStyle: '#fff', lineWidth: 2 },
-        plugin: { isTrap: true, trapType: 'slow', ownerName: t.name },
-        friction: 1, restitution: 0.1
+        render: { fillStyle: '#3498db', strokeStyle: '#fff', lineWidth: 2 },
+        plugin: { isTrap: true, trapType: 'bouncer', ownerName: t.name },
+        restitution: 1.5 // High bounce
+      });
+    } else if (t.type === 'arrow') {
+      body = Bodies.polygon(t.x, t.y, 3, 20, { 
+        isStatic: true,
+        isSensor: true, // Only detect collision, no physical blocking
+        angle: t.angle || 0,
+        render: { fillStyle: '#2ecc71', strokeStyle: '#fff', lineWidth: 2 },
+        plugin: { isTrap: true, trapType: 'arrow', ownerName: t.name, angle: t.angle || 0 }
       });
     }
     pbTraps[t.uid] = body;
@@ -454,9 +497,19 @@ function bindPinballSocket(s) {
     state.finished.forEach((name, idx) => {
       if (roomResultList) {
         const li = document.createElement('li');
-        li.style.cssText = 'padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; color: #f1c40f;';
-        let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '🏅';
-        li.innerHTML = `<span style="font-size: 20px;">${medal}</span><span style="font-size: 16px; font-weight: bold;">${name}</span>`;
+        const isWinner = idx < (state.winnerLimit || 3);
+        const color = isWinner ? '#f1c40f' : '#ccc';
+        const fontWeight = isWinner ? 'bold' : 'normal';
+        li.style.cssText = `padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; color: ${color};`;
+        
+        let rankStr = '';
+        if (isWinner) {
+          rankStr = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '🏅';
+        } else {
+          rankStr = `<span style="display:inline-block; width:20px; text-align:center; font-size:14px;">${idx + 1}</span>`;
+        }
+        
+        li.innerHTML = `<span style="font-size: 20px;">${rankStr}</span><span style="font-size: 16px; font-weight: ${fontWeight};">${name}</span>`;
         roomResultList.appendChild(li);
       }
     });
@@ -470,8 +523,20 @@ function bindPinballSocket(s) {
     // ==========================================
     // 2. Manage UI based on status
     // ==========================================
+    const roomAdminPanel = document.getElementById('room-admin-panel');
+    const roomParticipantsPanel = document.getElementById('room-participants-panel');
+
+    // Hide selection UI by default
+    if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
+    if (pinballStatusOverlay) pinballStatusOverlay.classList.add('hidden');
+    
     if (state.status === 'lobby') {
-      if (pinballTrapUi) pinballTrapUi.classList.remove('hidden');
+      if (roomAdminPanel) roomAdminPanel.classList.remove('hidden');
+      if (roomParticipantsPanel) roomParticipantsPanel.classList.remove('hidden');
+      if (pinballSpectatorUi) {
+        pinballSpectatorUi.classList.remove('hidden');
+        pinballSpectatorUi.innerText = '等待遊戲開始...';
+      }
       updatePinballTraps(state.traps);
       
       // Clear balls if we returned to lobby
@@ -479,25 +544,61 @@ function bindPinballSocket(s) {
         const { World } = Matter;
         World.remove(pbEngine.world, Object.values(pbBalls));
         pbBalls = {};
-        const pPanel = document.getElementById('room-participants-panel');
-        if (pPanel) pPanel.classList.remove('hidden');
       }
       
+    } else if (state.status === 'item_selection') {
+      if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
+      if (roomParticipantsPanel) roomParticipantsPanel.classList.add('hidden');
+      if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
+      if (pinballItemSelectionUi) pinballItemSelectionUi.classList.remove('hidden');
+      
+      if (pinballStatusOverlay && pinballStatusText && pinballStatusTimer) {
+        pinballStatusOverlay.classList.remove('hidden');
+        pinballStatusText.innerText = '選擇專屬道具！';
+        let timeLeft = 10;
+        pinballStatusTimer.innerText = timeLeft;
+        if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+        window.pinballTimerInterval = setInterval(() => {
+          timeLeft--;
+          if (timeLeft >= 0) pinballStatusTimer.innerText = timeLeft;
+        }, 1000);
+      }
+      
+    } else if (state.status === 'item_placement') {
+      if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
+      if (roomParticipantsPanel) roomParticipantsPanel.classList.add('hidden');
+      if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
+      
+      if (pinballStatusOverlay && pinballStatusText && pinballStatusTimer) {
+        pinballStatusOverlay.classList.remove('hidden');
+        pinballStatusText.innerText = '點擊畫面佈置道具！';
+        let timeLeft = 10;
+        pinballStatusTimer.innerText = timeLeft;
+        if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+        window.pinballTimerInterval = setInterval(() => {
+          timeLeft--;
+          if (timeLeft >= 0) pinballStatusTimer.innerText = timeLeft;
+        }, 1000);
+      }
+      
+      updatePinballTraps(state.traps);
+      
     } else if (state.status === 'playing') {
-      if (pinballTrapUi) pinballTrapUi.classList.add('hidden');
+      if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+      if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
+      // Show participants panel during game to see rankings
+      if (roomParticipantsPanel) roomParticipantsPanel.classList.remove('hidden');
+      
       if (pinballSpectatorUi) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
       }
       
-      // We no longer hide the panel here, so users can keep it open
-      // to watch the winners list update in real-time.
-      
       initPinballEngine();
       updatePinballTraps(state.traps);
       
-      if (prevStatus === 'lobby' || prevStatus === 'idle') {
-        console.log('[Pinball] Transition to playing! Pool:', state.pool, 'pbEngine exists:', !!pbEngine);
+      if (prevStatus === 'item_placement' || prevStatus === 'lobby') {
+        console.log('[Pinball] Transition to playing! Pool:', state.pool);
         // Do countdown
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
@@ -508,11 +609,9 @@ function bindPinballSocket(s) {
           setTimeout(() => {
             countdownEl.innerText = 'GO!';
             setTimeout(() => countdownEl.classList.add('hidden'), 1000);
-            console.log('[Pinball] Dropping balls now for pool:', state.pool);
             dropBalls(state.pool);
           }, 3000);
         } else {
-          console.log('[Pinball] No countdown element, dropping balls immediately');
           dropBalls(state.pool);
         }
       }

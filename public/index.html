@@ -456,6 +456,10 @@
             <button id="btn-add-pinball-name" class="btn-primary" style="padding:5px 10px; font-size: 12px;">加入</button>
             <button id="btn-add-pinball-self" class="btn-secondary" style="padding:5px 10px; font-size: 12px;">加入自己</button>
           </div>
+          <div style="display:flex; gap: 5px; margin-bottom: 5px; align-items: center;">
+            <label style="font-size:12px; color: black; white-space: nowrap;">錄取名額:</label>
+            <input type="number" id="pinball-winner-limit" value="3" min="1" style="flex:1; padding:5px; font-size: 12px; border:1px solid #ccc;">
+          </div>
           <p style="margin:5px 0; font-size:12px; color: black;">目前賽道人數: <span id="pinball-pool-count" style="font-weight:bold;">0</span></p>
           <div id="pinball-pool-list" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 5px;"></div>
           <hr style="margin: 10px 0; border-top:1px solid #ccc;">
@@ -497,14 +501,22 @@
           <div id="pinball-canvas-wrapper" style="width: 100%; height: 100%;"></div>
           <div id="pinball-countdown" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 120px; font-weight: bold; text-shadow: 0 0 20px #f1c40f, 0 0 40px #f1c40f; z-index: 100; pointer-events: none;">3</div>
           
-          <!-- Trap Selection UI -->
-          <div id="pinball-trap-ui" class="hidden" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; text-align: center; background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px; backdrop-filter: blur(5px); z-index: 10; border: 2px solid rgba(255,255,255,0.3);">
-            <h3 style="color: white; margin: 0 0 10px 0; text-shadow: 1px 1px 2px black;">佈置陷阱！點擊畫面放置</h3>
-            <div style="display: flex; justify-content: space-around;">
-              <button id="btn-trap-speed" class="btn selected" style="flex: 1; margin: 0 5px; background: #2ecc71; color: white; font-weight: bold; font-size: 16px; border: 3px solid white; box-shadow: 0 0 10px #2ecc71;">🟢 加速陷阱</button>
-              <button id="btn-trap-slow" class="btn" style="flex: 1; margin: 0 5px; background: #e74c3c; color: white; font-weight: bold; font-size: 16px; border: 3px solid transparent;">🔴 減速陷阱</button>
+          <!-- Pinball Status Overlay (for countdowns) -->
+          <div id="pinball-status-overlay" class="hidden" style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); color: white; font-size: 36px; font-weight: bold; text-shadow: 0 0 10px #f1c40f, 0 0 20px #f1c40f; z-index: 100; pointer-events: none; text-align: center; width: 100%;">
+            <div id="pinball-status-text"></div>
+            <div id="pinball-status-timer" style="font-size: 60px;"></div>
+          </div>
+          
+          <!-- Item Selection UI -->
+          <div id="pinball-item-selection-ui" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; text-align: center; background: rgba(0,0,0,0.85); padding: 20px; border-radius: 15px; z-index: 105; border: 2px solid #f39c12; box-shadow: 0 0 30px rgba(243, 156, 18, 0.5);">
+            <h3 style="color: #f1c40f; margin: 0 0 15px 0;">選擇你的專屬道具！</h3>
+            <p style="color: white; font-size: 14px; margin-bottom: 15px;">請在倒數結束前選擇一個道具，每人限選一次。</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button id="btn-item-obstacle" class="btn" style="background: #e74c3c; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">🧱 實體路障</button>
+              <button id="btn-item-bouncer" class="btn" style="background: #3498db; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">🏓 彈跳裝置</button>
+              <button id="btn-item-arrow" class="btn" style="background: #2ecc71; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">⬆️ 噴發箭頭</button>
             </div>
-            <p style="color: #f1c40f; font-size: 12px; margin: 8px 0 0 0;">每人限放 1 個，再次點擊可更改位置</p>
+            <p id="pinball-item-selected-text" class="hidden" style="color: #2ecc71; font-weight: bold; margin-top: 15px; font-size: 16px;">已選擇，等待放置階段...</p>
           </div>
           
           <div id="pinball-spectator-ui" class="hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 18px; text-align: center; white-space: nowrap; z-index: 10; border: 1px solid rgba(255,255,255,0.3);">
@@ -569,7 +581,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball.js?v=20260711_12"></script>
-  <script src="app.js?v=20260711_38"></script>
+  <script src="pinball.js?v=20260712_01"></script>
+  <script src="app.js?v=20260712_01"></script>
 </body>
 </html>

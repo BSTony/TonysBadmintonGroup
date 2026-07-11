@@ -4173,11 +4173,15 @@ if (btnAddPinballSelf) {
 
 if (btnPinballAdminStart) {
   btnPinballAdminStart.addEventListener('click', async () => {
+    const limitInput = document.getElementById('pinball-winner-limit');
+    let limit = 3;
+    if (limitInput) limit = parseInt(limitInput.value) || 3;
+    
     try {
-      const res = await fetch('/api/admin/pinball/start', {
+      const res = await fetch('/api/admin/pinball/start-sequence', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: currentUser.userId })
+        body: JSON.stringify({ uid: currentUser.userId, winnerLimit: limit })
       });
       const data = await res.json();
       if (!data.success) alert(data.error);

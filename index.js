@@ -1856,10 +1856,12 @@ let partyRoom = {
 };
 
 let pinballRoom = {
-  status: 'idle', // idle, lobby, playing
+  status: 'idle', // idle, lobby, item_selection, item_placement, playing
   pool: [],
-  traps: [], // { uid, name, type: 'speed' | 'slow', x, y }
-  finished: []
+  traps: [], // { uid, name, type, x, y, angle }
+  finished: [],
+  winnerLimit: 3,
+  itemChoices: {} // uid -> { type, angle }
 };
 
 let partyTimeTimeout = null;
@@ -2047,6 +2049,7 @@ app.post('/api/admin/room/open', express.json(), (req, res) => {
     pinballRoom.pool = [];
     pinballRoom.traps = [];
     pinballRoom.finished = [];
+    pinballRoom.itemChoices = {};
     
     lotteryRoom.status = 'idle';
     partyRoom.status = 'idle';
@@ -2088,17 +2091,34 @@ app.post('/api/admin/party/start', express.json(), (req, res) => {
 });
 
 // --- Pinball Endpoints ---
-app.post('/api/pinball/place-trap', express.json(), (req, res) => {
-  const { uid, name, trapType, x, y } = req.body;
+app.post('/api/pinball/select-item', express.json(), (req, res) => {
+  const { uid, type } = req.body;
+  if (pinballRoom.status !== 'item_selection') return res.status(400).json({ error: 'Not in selection phase' });
+  
+  let angle = 0;
+  if (type === 'arrow') {
+    // Random angle between pointing left-up to right-up (-3/4 PI to -1/4 PI)
+    angle = -Math.PI/2 + (Math.random() - 0.5) * Math.PI/2; 
+  }
+  
+  pinballRoom.itemChoices[uid] = { type, angle };
+  res.json({ success: true });
+});
+
+app.post('/api/pinball/place-item', express.json(), (req, res) => {
+  const { uid, name, x, y } = req.body;
   if (globalRoom.status !== 'open' || globalRoom.activeGame !== 'pinball') return res.status(400).json({ error: 'Not in pinball mode' });
-  if (pinballRoom.status !== 'lobby') return res.status(400).json({ error: 'Race already started' });
+  if (pinballRoom.status !== 'item_placement') return res.status(400).json({ error: 'Not in placement phase' });
+  
+  const choice = pinballRoom.itemChoices[uid];
+  if (!choice) return res.status(400).json({ error: 'No item selected' });
   
   // Enforce 1 trap per user
   const existingIndex = pinballRoom.traps.findIndex(t => t.uid === uid);
   if (existingIndex !== -1) {
-    pinballRoom.traps[existingIndex] = { uid, name, type: trapType, x, y };
+    pinballRoom.traps[existingIndex] = { uid, name, type: choice.type, angle: choice.angle, x, y };
   } else {
-    pinballRoom.traps.push({ uid, name, type: trapType, x, y });
+    pinballRoom.traps.push({ uid, name, type: choice.type, angle: choice.angle, x, y });
   }
   
   io.emit('pinball_state', pinballRoom);
@@ -2126,12 +2146,30 @@ app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
   res.json({ success: true, pinballRoom });
 });
 
-app.post('/api/admin/pinball/start', express.json(), (req, res) => {
-  const { uid } = req.body;
+app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
+  const { uid, winnerLimit } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
-  pinballRoom.status = 'playing';
+  pinballRoom.winnerLimit = winnerLimit || 3;
+  pinballRoom.status = 'item_selection';
+  pinballRoom.itemChoices = {};
+  pinballRoom.traps = [];
   io.emit('pinball_state', pinballRoom);
+  
+  // Sequence timers
+  setTimeout(() => {
+    if (pinballRoom.status !== 'item_selection') return; // Cancelled
+    pinballRoom.status = 'item_placement';
+    io.emit('pinball_state', pinballRoom);
+    
+    setTimeout(() => {
+      if (pinballRoom.status !== 'item_placement') return; // Cancelled
+      pinballRoom.status = 'playing';
+      io.emit('pinball_state', pinballRoom);
+    }, 10000);
+    
+  }, 10000);
+  
   res.json({ success: true, pinballRoom });
 });
 
@@ -2148,11 +2186,13 @@ app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
   const { uid } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
-  // Exclude finished players from the pool
-  pinballRoom.pool = pinballRoom.pool.filter(p => !pinballRoom.finished.includes(p));
+  // Exclude up to winnerLimit top players from the pool
+  const topWinners = pinballRoom.finished.slice(0, pinballRoom.winnerLimit);
+  pinballRoom.pool = pinballRoom.pool.filter(p => !topWinners.includes(p));
   pinballRoom.status = 'lobby';
   pinballRoom.traps = [];
   pinballRoom.finished = [];
+  pinballRoom.itemChoices = {};
   
   io.emit('pinball_state', pinballRoom);
   res.json({ success: true });
