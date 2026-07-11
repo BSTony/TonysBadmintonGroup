@@ -218,6 +218,9 @@ const adminSurvivalControls = document.getElementById('admin-survival-controls')
 
 const partyWinType = document.getElementById('party-win-type');
 const partyWinValue = document.getElementById('party-win-value');
+const partyAdminStatus = document.getElementById('party-admin-status');
+const partyJoinContainer = document.getElementById('party-join-container');
+const btnJoinParty = document.getElementById('btn-join-party');
 const lotteryCanvasContainer = document.getElementById('lottery-canvas-container');
 const roomPoolDisplayList = document.getElementById('room-pool-display-list');
 const btnJoinRoom = document.getElementById('btn-join-room');
