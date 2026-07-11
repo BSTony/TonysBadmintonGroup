@@ -768,18 +768,6 @@ function bhPartyLoop(timestamp) {
   for (let i = bhBullets.length - 1; i >= 0; i--) {
     let b = bhBullets[i];
     
-    if (elapsed > 10000) {
-      const dx = px - b.x;
-      const dy = py - b.y;
-      const dist = Math.hypot(dx, dy);
-      if (dist > 0) {
-         const speed = Math.hypot(b.vx, b.vy);
-         const steerRate = 0.02;
-         b.vx = b.vx * (1 - steerRate) + (dx / dist * speed) * steerRate;
-         b.vy = b.vy * (1 - steerRate) + (dy / dist * speed) * steerRate;
-      }
-    }
-    
     b.y += b.vy * b.speedMultiplier;
     b.x += b.vx * b.speedMultiplier;
     
@@ -876,6 +864,10 @@ function startBulletHell() {
     if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
     if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin && typeof roomAdminPanel !== 'undefined' && roomAdminPanel) {
       roomAdminPanel.classList.remove('hidden');
+      const body = document.getElementById('room-admin-body');
+      const btnMinimize = document.getElementById('btn-minimize-admin-panel');
+      if (body) body.style.display = 'flex';
+      if (btnMinimize) btnMinimize.innerText = '−';
     }
     
     // Also maximize participant panel again

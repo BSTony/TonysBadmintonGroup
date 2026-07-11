@@ -2160,7 +2160,7 @@ app.post('/api/admin/party/play', express.json(), (req, res) => {
           else if (side === 2) { startX = Math.random(); startY = 1.1; }
           else { startX = -0.1; startY = Math.random(); }
           
-          if (elapsed > 60000) {
+          if (elapsed > 10000) {
             // Targeted attack
             const alivePlayers = Object.values(partyRoom.players).filter(p => p.alive);
             if (alivePlayers.length > 0) {
