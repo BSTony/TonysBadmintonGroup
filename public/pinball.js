@@ -453,7 +453,10 @@ function bindPinballSocket(s) {
     pbState = state;
     
     // Re-fetch DOM elements (they may not have existed when pinball.js first loaded)
-    if (!pinballTrapUi) pinballTrapUi = document.getElementById('pinball-trap-ui');
+    if (!pinballItemSelectionUi) pinballItemSelectionUi = document.getElementById('pinball-item-selection-ui');
+    if (!pinballStatusOverlay) pinballStatusOverlay = document.getElementById('pinball-status-overlay');
+    if (!pinballStatusText) pinballStatusText = document.getElementById('pinball-status-text');
+    if (!pinballStatusTimer) pinballStatusTimer = document.getElementById('pinball-status-timer');
     if (!pinballSpectatorUi) pinballSpectatorUi = document.getElementById('pinball-spectator-ui');
     if (!pinballContainer) pinballContainer = document.getElementById('pinball-container');
     if (!pinballCanvasWrapper) pinballCanvasWrapper = document.getElementById('pinball-canvas-wrapper');
@@ -641,7 +644,8 @@ function bindPinballSocket(s) {
       }
     } else {
       // idle
-      if (pinballTrapUi) pinballTrapUi.classList.add('hidden');
+      if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
+      if (pinballStatusOverlay) pinballStatusOverlay.classList.add('hidden');
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
     }
   });
