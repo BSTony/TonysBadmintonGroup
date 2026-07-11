@@ -43,9 +43,10 @@ if (pinballCanvasWrapper) {
     if (pbState.status !== 'lobby') return;
     if (!window.currentUser || !window.currentUser.userId) return;
     
-    // Check if user is in pool
+    // Check if user is in pool or is super admin
     const myName = window.currentUser.displayName;
-    if (!pbState.pool.includes(myName)) {
+    const isGlobalSuperAdmin = window.globalIsSuperAdmin === true;
+    if (!pbState.pool.includes(myName) && !isGlobalSuperAdmin) {
       alert('您必須加入大廳才能佈置陷阱！');
       return;
     }
