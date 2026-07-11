@@ -288,6 +288,10 @@ function updateUnifiedRoomUI() {
         if (adminPinballControls) adminPinballControls.classList.add('hidden');
         if (pinballContainer) pinballContainer.classList.add('hidden');
       } else if (currentGlobalRoomState.activeGame === 'survival') {
+        // Restore overlay styles
+        unifiedRoomOverlay.style.background = 'rgba(0,0,0,0.9)';
+        unifiedRoomOverlay.style.pointerEvents = 'auto';
+        
         lotteryCanvasContainer.classList.add('hidden');
         bhContainer.classList.remove('hidden');
         bhContainer.style.pointerEvents = 'auto';
@@ -306,6 +310,15 @@ function updateUnifiedRoomUI() {
         adminLotteryControls.classList.add('hidden');
         adminSurvivalControls.classList.add('hidden');
         if (adminPinballControls) adminPinballControls.classList.remove('hidden');
+        
+        // Disable overlay blocking so users can click on the pinball canvas
+        unifiedRoomOverlay.style.background = 'transparent';
+        unifiedRoomOverlay.style.pointerEvents = 'none';
+        
+        // Ensure child panels remain clickable
+        document.getElementById('room-admin-panel').style.pointerEvents = 'auto';
+        const topButtons = document.querySelector('#unified-room-overlay > div:first-child');
+        if (topButtons) topButtons.style.pointerEvents = 'auto';
       }
     } else {
       unifiedRoomOverlay.classList.add('hidden');
@@ -4160,6 +4173,22 @@ if (btnPinballAdminStart) {
   btnPinballAdminStart.addEventListener('click', async () => {
     try {
       const res = await fetch('/api/admin/pinball/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      const data = await res.json();
+      if (!data.success) alert(data.error);
+    } catch(e) { console.error(e); }
+  });
+}
+
+const btnPinballAdminNext = document.getElementById('btn-pinball-admin-next');
+if (btnPinballAdminNext) {
+  btnPinballAdminNext.addEventListener('click', async () => {
+    if (!confirm('確定要開始下一回合嗎？已經抵達終點的中獎者將被排除，未中獎者會繼續留在名單中！')) return;
+    try {
+      const res = await fetch('/api/admin/pinball/next-round', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ uid: currentUser.userId })

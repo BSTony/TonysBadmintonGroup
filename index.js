@@ -2144,6 +2144,20 @@ app.post('/api/pinball/finish', express.json(), (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  // Exclude finished players from the pool
+  pinballRoom.pool = pinballRoom.pool.filter(p => !pinballRoom.finished.includes(p));
+  pinballRoom.status = 'lobby';
+  pinballRoom.traps = [];
+  pinballRoom.finished = [];
+  
+  io.emit('pinball_state', pinballRoom);
+  res.json({ success: true });
+});
+
 app.post('/api/admin/lottery/setup', express.json(), (req, res) => {
   const { uid, pool } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
