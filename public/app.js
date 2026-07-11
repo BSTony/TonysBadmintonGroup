@@ -276,7 +276,7 @@ function updateUnifiedRoomUI() {
       
       if (currentGlobalRoomState.activeGame === 'lottery') {
         lotteryCanvasContainer.classList.remove('hidden');
-        bhContainer.classList.add('hidden');
+        bhContainer.classList.remove('hidden'); // Do not hide lobby background
         adminLotteryControls.classList.remove('hidden');
         adminSurvivalControls.classList.add('hidden');
       } else if (currentGlobalRoomState.activeGame === 'survival') {
@@ -501,8 +501,8 @@ function initSocket() {
         btnBhRestart.innerText = '回到大廳 / 準備下局';
         btnBhRestart.disabled = false;
       } else {
-        btnBhRestart.innerText = '等待管理者開始遊戲...';
-        btnBhRestart.disabled = true;
+        btnBhRestart.innerText = '回到大廳 (等待下一局)';
+        btnBhRestart.disabled = false;
       }
     }
   });
@@ -838,8 +838,20 @@ let bhSpawnRate = 1000;
 let bhLastSpawn = 0;
 
 function startBulletHell() {
-  if (typeof partyRoom !== 'undefined' && partyRoom.status !== 'idle') {
+  if (window.currentGlobalRoomState && window.currentGlobalRoomState.status === 'open') {
     if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin && typeof roomAdminPanel !== 'undefined' && roomAdminPanel) {
+      roomAdminPanel.classList.remove('hidden');
+    }
+    
+    // Also maximize participant panel again
+    const pPanel = document.getElementById('room-participants-panel');
+    const pBtn = document.getElementById('btn-toggle-participants');
+    if (pPanel && typeof isPanelMinimized !== 'undefined') {
+      isPanelMinimized = false;
+      pPanel.style.transform = 'translateX(0%)';
+      if (pBtn) pBtn.innerText = '▶';
+    }
     return;
   }
   bhContainer.classList.remove('hidden');
@@ -3858,7 +3870,7 @@ if (btnAssignDraw) {
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
-      else alert('已開始自動抽籤');
+      else alert('已開始抽籤！請等待開獎...');
     } catch(e) { console.error(e); }
   });
 }
