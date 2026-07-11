@@ -215,6 +215,8 @@ const roomAdminHeader = document.getElementById('room-admin-header');
 const btnMinimizeAdminPanel = document.getElementById('btn-minimize-admin-panel');
 const adminLotteryControls = document.getElementById('admin-lottery-controls');
 const adminSurvivalControls = document.getElementById('admin-survival-controls');
+const adminPinballControls = document.getElementById('admin-pinball-controls');
+const pinballContainer = document.getElementById('pinball-container');
 
 const partyWinType = document.getElementById('party-win-type');
 const partyWinValue = document.getElementById('party-win-value');
@@ -283,6 +285,8 @@ function updateUnifiedRoomUI() {
         if (bhWaitText) bhWaitText.classList.add('hidden');
         adminLotteryControls.classList.remove('hidden');
         adminSurvivalControls.classList.add('hidden');
+        if (adminPinballControls) adminPinballControls.classList.add('hidden');
+        if (pinballContainer) pinballContainer.classList.add('hidden');
       } else if (currentGlobalRoomState.activeGame === 'survival') {
         lotteryCanvasContainer.classList.add('hidden');
         bhContainer.classList.remove('hidden');
@@ -293,6 +297,15 @@ function updateUnifiedRoomUI() {
         if (bhWaitText && !bhIsPlaying) bhWaitText.classList.remove('hidden');
         adminLotteryControls.classList.add('hidden');
         adminSurvivalControls.classList.remove('hidden');
+        if (adminPinballControls) adminPinballControls.classList.add('hidden');
+        if (pinballContainer) pinballContainer.classList.add('hidden');
+      } else if (currentGlobalRoomState.activeGame === 'pinball') {
+        lotteryCanvasContainer.classList.add('hidden');
+        bhContainer.classList.add('hidden');
+        if (pinballContainer) pinballContainer.classList.remove('hidden');
+        adminLotteryControls.classList.add('hidden');
+        adminSurvivalControls.classList.add('hidden');
+        if (adminPinballControls) adminPinballControls.classList.remove('hidden');
       }
     } else {
       unifiedRoomOverlay.classList.add('hidden');
@@ -306,6 +319,7 @@ function updateUnifiedRoomUI() {
       bhGameoverModal.classList.add('hidden');
     }
     lotteryCanvasContainer.classList.add('hidden');
+    if (pinballContainer) pinballContainer.classList.add('hidden');
     if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
     if (bhEntities) bhEntities.innerHTML = '';
     bhIsPlaying = false;
@@ -321,6 +335,9 @@ function initSocket() {
   }
   if (typeof bindLotterySocket === 'function') {
     bindLotterySocket(socket);
+  }
+  if (typeof bindPinballSocket === 'function') {
+    bindPinballSocket(socket);
   }
   
   socket.on('global_room_state', (state) => {
@@ -4063,6 +4080,50 @@ if (btnLotteryAdminPlay) {
       const data = await res.json();
       if (!data.success) alert(data.error);
       else alert('已開始自動抽籤');
+    } catch(e) { console.error(e); }
+}
+
+// === Pinball Admin Play ===
+const btnPinballAdminSync = document.getElementById('btn-pinball-admin-sync');
+const btnPinballAdminStart = document.getElementById('btn-pinball-admin-start');
+const btnPinballAdminStop = document.getElementById('btn-pinball-admin-stop');
+
+if (btnPinballAdminSync) {
+  btnPinballAdminSync.addEventListener('click', async () => {
+    try {
+      const res = await fetch('/api/admin/pinball/sync-pool', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId, pool: partyLobbyNames })
+      });
+      const data = await res.json();
+      if (!data.success) alert(data.error);
+    } catch(e) { console.error(e); }
+  });
+}
+
+if (btnPinballAdminStart) {
+  btnPinballAdminStart.addEventListener('click', async () => {
+    try {
+      const res = await fetch('/api/admin/pinball/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      const data = await res.json();
+      if (!data.success) alert(data.error);
+    } catch(e) { console.error(e); }
+  });
+}
+
+if (btnPinballAdminStop) {
+  btnPinballAdminStop.addEventListener('click', async () => {
+    try {
+      await fetch('/api/admin/room/close', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
     } catch(e) { console.error(e); }
   });
 }

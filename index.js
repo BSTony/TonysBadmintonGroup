@@ -1855,6 +1855,13 @@ let partyRoom = {
   startTime: 0
 };
 
+let pinballRoom = {
+  status: 'idle', // idle, lobby, playing
+  pool: [],
+  traps: [], // { uid, name, type: 'speed' | 'slow', x, y }
+  finished: []
+};
+
 let partyTimeTimeout = null;
 let partyBulletInterval = null;
 
@@ -1905,6 +1912,7 @@ io.on('connection', (socket) => {
   socket.emit('global_room_state', globalRoom);
   socket.emit('party_state', partyRoom);
   socket.emit('lottery_state', lotteryRoom);
+  socket.emit('pinball_state', pinballRoom);
 
   socket.on('join_lottery', (data) => {
     if (lotteryRoom.status === 'lobby') {
@@ -2017,7 +2025,7 @@ app.post('/api/admin/room/open', express.json(), (req, res) => {
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
   globalRoom.status = 'open';
-  globalRoom.activeGame = gameType; // 'lottery' | 'survival'
+  globalRoom.activeGame = gameType; // 'lottery' | 'survival' | 'pinball'
   
   if (gameType === 'lottery') {
     lotteryRoom.status = 'lobby';
@@ -2027,16 +2035,27 @@ app.post('/api/admin/room/open', express.json(), (req, res) => {
     lotteryRoom.drawCount = 1;
     
     partyRoom.status = 'idle';
+    pinballRoom.status = 'idle';
   } else if (gameType === 'survival') {
     partyRoom.status = 'lobby';
     partyRoom.players = {};
     
     lotteryRoom.status = 'idle';
+    pinballRoom.status = 'idle';
+  } else if (gameType === 'pinball') {
+    pinballRoom.status = 'lobby';
+    pinballRoom.pool = [];
+    pinballRoom.traps = [];
+    pinballRoom.finished = [];
+    
+    lotteryRoom.status = 'idle';
+    partyRoom.status = 'idle';
   }
   
   io.emit('global_room_state', globalRoom);
   io.emit('lottery_state', lotteryRoom);
   io.emit('party_state', partyRoom);
+  io.emit('pinball_state', pinballRoom);
   
   res.json({ success: true, globalRoom });
 });
@@ -2049,10 +2068,12 @@ app.post('/api/admin/room/close', express.json(), (req, res) => {
   globalRoom.activeGame = null;
   lotteryRoom.status = 'idle';
   partyRoom.status = 'idle';
+  pinballRoom.status = 'idle';
   
   io.emit('global_room_state', globalRoom);
   io.emit('lottery_state', lotteryRoom);
   io.emit('party_state', partyRoom);
+  io.emit('pinball_state', pinballRoom);
   
   res.json({ success: true });
 });
@@ -2064,6 +2085,51 @@ app.post('/api/admin/party/start', express.json(), (req, res) => {
   partyRoom.winCondition = winCondition || { type: 'time', value: 15 };
   io.emit('party_state', partyRoom);
   res.json({ success: true, partyRoom });
+});
+
+// --- Pinball Endpoints ---
+app.post('/api/pinball/place-trap', express.json(), (req, res) => {
+  const { uid, name, trapType, x, y } = req.body;
+  if (globalRoom.status !== 'open' || globalRoom.activeGame !== 'pinball') return res.status(400).json({ error: 'Not in pinball mode' });
+  if (pinballRoom.status !== 'lobby') return res.status(400).json({ error: 'Race already started' });
+  
+  // Enforce 1 trap per user
+  const existingIndex = pinballRoom.traps.findIndex(t => t.uid === uid);
+  if (existingIndex !== -1) {
+    pinballRoom.traps[existingIndex] = { uid, name, type: trapType, x, y };
+  } else {
+    pinballRoom.traps.push({ uid, name, type: trapType, x, y });
+  }
+  
+  io.emit('pinball_state', pinballRoom);
+  res.json({ success: true, traps: pinballRoom.traps });
+});
+
+app.post('/api/admin/pinball/sync-pool', express.json(), (req, res) => {
+  const { uid, pool } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  pinballRoom.pool = pool || [];
+  io.emit('pinball_state', pinballRoom);
+  res.json({ success: true, pinballRoom });
+});
+
+app.post('/api/admin/pinball/start', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  pinballRoom.status = 'playing';
+  io.emit('pinball_state', pinballRoom);
+  res.json({ success: true, pinballRoom });
+});
+
+app.post('/api/pinball/finish', express.json(), (req, res) => {
+  const { name } = req.body;
+  if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(name)) {
+    pinballRoom.finished.push(name);
+    io.emit('pinball_state', pinballRoom);
+  }
+  res.json({ success: true });
 });
 
 app.post('/api/admin/lottery/setup', express.json(), (req, res) => {
