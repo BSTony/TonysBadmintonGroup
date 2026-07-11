@@ -2061,9 +2061,7 @@ app.post('/api/admin/party/start', express.json(), (req, res) => {
   const { uid, winCondition } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
-  partyRoom.status = 'lobby';
   partyRoom.winCondition = winCondition || { type: 'time', value: 15 };
-  partyRoom.players = {};
   io.emit('party_state', partyRoom);
   res.json({ success: true, partyRoom });
 });
