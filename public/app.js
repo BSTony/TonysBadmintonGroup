@@ -3804,6 +3804,9 @@ if (btnJoinRoom) {
       const btnCancel = document.getElementById('btn-cancel-character');
       
       if (modal && grid) {
+        // Hide join button while modal is open
+        btnJoinRoom.classList.add('hidden');
+        
         grid.innerHTML = '';
         const chars = ['🐷', '🐶', '🐱', '🐰', '🦊', '🐻', '🐼', '🐯', '🦁', '🐸'];
         chars.forEach(c => {
@@ -3822,11 +3825,12 @@ if (btnJoinRoom) {
         btnConfirm.onclick = () => {
           modal.classList.add('hidden');
           joinPartyLobby();
-          btnJoinRoom.classList.add('hidden');
         };
         
         btnCancel.onclick = () => {
           modal.classList.add('hidden');
+          // Show join button again if cancelled
+          btnJoinRoom.classList.remove('hidden');
         };
         
         modal.classList.remove('hidden');
