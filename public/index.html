@@ -398,6 +398,7 @@
   <!-- 統一遊戲大廳視窗 -->
   <div id="unified-room-overlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9998; display: flex; flex-direction: column; overflow: hidden; touch-action: none;">
     <div style="position: absolute; top: 10px; right: 10px; z-index: 10002; display: flex; gap: 10px;">
+      <button id="btn-show-participants" class="btn-secondary" style="padding: 5px 15px; border-radius: 20px; background: #f39c12; color: white; border: none; cursor: pointer;">📋 名單</button>
       <!-- 對於超級管理員，顯示打開控制台的按鈕 -->
       <button id="btn-toggle-admin-panel" class="hidden btn-primary" style="padding: 5px 15px; border-radius: 20px;">管理設定</button>
       <button id="btn-close-room" class="btn-danger" style="padding: 5px 15px; border-radius: 20px;">離開大廳</button>
@@ -494,12 +495,13 @@
       
       <!-- 右側：名單結果區 (改為可收合、自由縮放的浮動視窗) -->
       <!-- 中間：名單結果區 (改為置中浮動視窗，帶有頁籤) -->
-      <div id="room-participants-panel" class="hidden" style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 80%; max-width: 400px; height: 60%; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; display: flex; flex-direction: column; z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      <div id="room-participants-panel" style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); width: 80%; max-width: 400px; height: 60%; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; display: flex; flex-direction: column; z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         
         <!-- 頁籤切換按鈕 -->
-        <div style="display: flex; background: rgba(255,255,255,0.1); border-radius: 15px 15px 0 0; overflow: hidden;">
-          <button id="tab-participants" style="flex: 1; padding: 15px; background: rgba(255,255,255,0.2); color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold;">👥 參加者名單</button>
-          <button id="tab-winners" style="flex: 1; padding: 15px; background: transparent; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold;">🏆 中獎名單</button>
+        <div style="display: flex; background: rgba(255,255,255,0.1); border-radius: 15px 15px 0 0; overflow: hidden; position: relative;">
+          <button id="tab-participants" style="flex: 1; padding: 15px; background: rgba(255,255,255,0.2); color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold;">👥 參加者</button>
+          <button id="tab-winners" style="flex: 1; padding: 15px; background: transparent; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold; padding-right: 40px;">🏆 中獎</button>
+          <button id="btn-close-participants" style="position: absolute; right: 0; top: 0; height: 100%; padding: 0 15px; background: #e74c3c; color: white; border: none; cursor: pointer; font-size: 16px; font-weight: bold;">✕</button>
         </div>
         
         <div id="panel-participants-content" style="flex: 1; display: flex; flex-direction: column; padding: 15px; overflow: hidden;">

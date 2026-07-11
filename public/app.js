@@ -3928,7 +3928,7 @@ if (btnAssignDraw) {
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
-      else alert('已開始抽籤！請等待開獎...');
+      else alert('已開始自動抽籤');
     } catch(e) { console.error(e); }
   });
 }
@@ -4008,6 +4008,22 @@ const tabWinners = document.getElementById('tab-winners');
 const panelParticipantsContent = document.getElementById('panel-participants-content');
 const panelWinnersContent = document.getElementById('panel-winners-content');
 
+const btnShowParticipants = document.getElementById('btn-show-participants');
+const btnCloseParticipants = document.getElementById('btn-close-participants');
+
+if (btnShowParticipants && participantsPanel) {
+  btnShowParticipants.addEventListener('click', () => {
+    participantsPanel.classList.toggle('hidden');
+  });
+}
+
+if (btnCloseParticipants && participantsPanel) {
+  btnCloseParticipants.addEventListener('click', () => {
+    participantsPanel.classList.add('hidden');
+  });
+}
+
+
 if (tabParticipants && tabWinners) {
   tabParticipants.addEventListener('click', () => {
     tabParticipants.style.background = 'rgba(255,255,255,0.2)';
@@ -4037,7 +4053,7 @@ if (btnLotteryAdminPlay) {
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
-      else alert('�w�}�l�۰ʩ���');
+      else alert('已開始自動抽籤');
     } catch(e) { console.error(e); }
   });
 }

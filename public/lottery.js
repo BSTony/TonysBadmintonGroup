@@ -147,7 +147,7 @@ function updateLotteryUI() {
       lotterySpectatorUi.innerText = '等待管理員指派這回合的抽籤者...';
     }
     const pPanel = document.getElementById('room-participants-panel');
-    if (pPanel) pPanel.classList.remove('hidden');
+    if (pPanel) pPanel.classList.add('hidden');
   } else if (currentLotteryState.status === 'drawing') {
     btnJoinRoom.classList.add('hidden');
     lotteryInteractionUi.classList.add('hidden');
