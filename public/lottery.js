@@ -224,8 +224,8 @@ function spawnBalls(namesToSpawn, cx, cy, radius) {
 }
 
 function setupMatterJS() {
-  const width = lotteryCanvasContainer.clientWidth;
-  const height = lotteryCanvasContainer.clientHeight || window.innerHeight * 0.5;
+  const width = lotteryCanvasContainer.clientWidth || window.innerWidth;
+  const height = lotteryCanvasContainer.clientHeight || window.innerHeight;
   const radius = Math.min(width, height) / 2 - 20;
   const cx = width / 2;
   const cy = height / 2;

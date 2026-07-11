@@ -439,11 +439,8 @@ function initSocket() {
     
     // Auto-minimize participant panel to prevent covering the screen
     const pPanel = document.getElementById('room-participants-panel');
-    const pBtn = document.getElementById('btn-toggle-participants');
-    if (pPanel && typeof isPanelMinimized !== 'undefined') {
-      isPanelMinimized = true;
-      pPanel.style.transform = 'translateX(100%)';
-      if (pBtn) pBtn.innerText = '◀';
+    if (pPanel) {
+      pPanel.classList.add('hidden');
     }
     
     // Clear old entities
@@ -1093,11 +1090,8 @@ if (btnBhRestart) {
 
       if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
       const pPanel = document.getElementById('room-participants-panel');
-      const pBtn = document.getElementById('btn-toggle-participants');
-      if (pPanel && typeof isPanelMinimized !== 'undefined') {
-        isPanelMinimized = false;
-        pPanel.style.transform = 'translateX(0%)';
-        if (pBtn) pBtn.innerText = '▶';
+      if (pPanel) {
+        pPanel.classList.remove('hidden');
       }
       return;
     }
