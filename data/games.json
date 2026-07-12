@@ -1957,7 +1957,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838094050,
-    "lastActiveTime": 1783838094050,
+    "lastActiveTime": 1783838172438,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1965,7 +1965,6 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "Tony": true,
       "Kay": true
     },
     "sections": [
@@ -1975,9 +1974,16 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "Tony",
           "Kay"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/12 14:36",
+        "name": "Tony",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
       }
     ]
   }
