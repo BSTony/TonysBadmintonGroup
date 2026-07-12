@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1057,
+    "viewCount": 1058,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -912,11 +912,17 @@
       "U88ae9c79ca7f2ef9d91e7678fecf4416": {
         "displayName": "腳皮",
         "firstVisit": 1783823707569,
-        "count": 7,
-        "lastVisit": 1783843279758
+        "count": 8,
+        "lastVisit": 1783843312503
       }
     },
     "logs": [
+      {
+        "time": 1783843312503,
+        "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+        "displayName": "腳皮",
+        "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
+      },
       {
         "time": 1783843279758,
         "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
@@ -2108,12 +2114,6 @@
         "userId": "Ud33e6f76c7549fb90abe4440b1735805",
         "displayName": "譚龍",
         "pictureUrl": "https://profile.line-scdn.net/0hlb6Nza2EM00bNywHcbNNc2tnMCc4RmpfNVEse34-bHQhBCMePwIsLidjP34mD3UfY1F8eSowOXs5XBVedTQ6TGt8Dnwub2hERQIkX3FFKzpgAhMfUQgES2pTHRZVAS5iNzQrTHRRaDx5V3xkTwl5clRlai5zBzJgTGBfGx4FXc50NUQYNlF9LiYxZXij"
-      },
-      {
-        "time": 1783687380411,
-        "userId": "Uf3a2215c0fc68cd05d651ac0dddf1f27",
-        "displayName": "陳沛君",
-        "pictureUrl": "https://profile.line-scdn.net/0hndhUf6BQMUtFLBvqkHlPNDV8MiFmXWhZOUN4KXl5PHxwT3caO00qfnIkaykvTCUUax56fnl4Oy9JP0YtW3rNf0IcbHp4HXMVb0J7qA"
       }
     ]
   },
