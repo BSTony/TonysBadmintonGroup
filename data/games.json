@@ -1926,7 +1926,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1783838004736,
-    "lastActiveTime": 1783838004736,
+    "lastActiveTime": 1783841927570,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1940,10 +1940,20 @@
         "limit": 7,
         "backupLimit": 5,
         "label": "",
-        "list": []
+        "list": [
+          "煥杰"
+        ]
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "history": [
+      {
+        "time": "07/12 15:38",
+        "name": "煥杰",
+        "operator": "林煥杰",
+        "action": "+1"
+      }
+    ]
   },
   "1783838094048338": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
