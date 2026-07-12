@@ -1025,7 +1025,7 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783773886640,
+    "lastActiveTime": 1783815122098,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1037,7 +1037,9 @@
       "小黑": "打10-12時",
       "Can": "打10-12時"
     },
-    "paidMap": {},
+    "paidMap": {
+      "Kay": true
+    },
     "sections": [
       {
         "title": "報名名單",
