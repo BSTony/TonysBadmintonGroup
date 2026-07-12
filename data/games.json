@@ -1025,7 +1025,7 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783827899309,
+    "lastActiveTime": 1783827900355,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1057,7 +1057,8 @@
       "King": true,
       "Alice": true,
       "奕翔": true,
-      "小黑": true
+      "小黑": true,
+      "Can": true
     },
     "sections": [
       {
