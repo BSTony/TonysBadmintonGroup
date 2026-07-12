@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1096,
+    "viewCount": 1097,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -534,8 +534,8 @@
       "U203b76fe44ff1d74c53c21e5547aea27": {
         "displayName": "登登登登～",
         "firstVisit": 1783233886945,
-        "count": 27,
-        "lastVisit": 1783853524970
+        "count": 28,
+        "lastVisit": 1783861621492
       },
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
         "displayName": "郭岳翰John",
@@ -917,6 +917,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783861621492,
+        "userId": "U203b76fe44ff1d74c53c21e5547aea27",
+        "displayName": "登登登登～",
+        "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
+      },
       {
         "time": 1783861535234,
         "userId": "U487e8a8976a1c65af4311f4b3f842a9c",
@@ -2110,12 +2116,6 @@
         "userId": "Udcb17bf71291f7de03aecabb183ca598",
         "displayName": "ジェームズ J（宮池）",
         "pictureUrl": "https://profile.line-scdn.net/0hcVV2EHWmPHl7SyAQ9E1CRwsbPxNYOmVrUix1TExIYh1Hf38qUXkmShwYYBxEL3J6UCR6TB1CMEBZHXMqLE84aU0LBhcZASZ1NHcTfgYsAgEnJwR5VHY1YEYUKQ8uDQJWKUtwSg0iZgklDwlwMX4kajk7NAAAPz16MBxQL355UvoUSUssVi1yGkZNakzD"
-      },
-      {
-        "time": 1783741581019,
-        "userId": "Uec6665e7a143520c799f9d89d3755024",
-        "displayName": "昊平",
-        "pictureUrl": "https://profile.line-scdn.net/0hBuHamWh-HVplGAI01BljZBVIHjBGaURIGi4BbFVIFmoIKloPSnZRO1kYFmJQfFhZHisGbFFMFD1HQwlMQS5RVRlfQgRZIRtoKn5SfC5jIhg8dh9IEnYTUiNLMzYrVAhyKAsmRVZIAAEDQTRrGx4BYlARFi4IaylILk9xDGAqc9kKGmoPSH5TOVgeS2_d"
       }
     ]
   },
