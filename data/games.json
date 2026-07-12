@@ -1025,7 +1025,7 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783815141760,
+    "lastActiveTime": 1783815301043,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1039,7 +1039,8 @@
     },
     "paidMap": {
       "Kay": false,
-      "楊程鈞": false
+      "楊程鈞": false,
+      "Pin Peng": true
     },
     "sections": [
       {
