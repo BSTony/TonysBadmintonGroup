@@ -1244,7 +1244,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1783228097228,
-    "lastActiveTime": 1783814640980,
+    "lastActiveTime": 1783814642531,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1253,7 +1253,8 @@
     "levelMap": {},
     "paidMap": {
       "林煥杰": true,
-      "ALAN LIU": true
+      "ALAN LIU": true,
+      "JoeLin": true
     },
     "sections": [
       {
