@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 998,
+    "viewCount": 999,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -900,8 +900,8 @@
       "Ua4c9b87ae0f49f0e264f14642944a52e": {
         "displayName": "Chen H.R.",
         "firstVisit": 1783822652122,
-        "count": 1,
-        "lastVisit": 1783822652122
+        "count": 2,
+        "lastVisit": 1783822950667
       },
       "U3d8fd8b2d2271e0f6f2f4f50e1475c12": {
         "displayName": "Sean柏宏",
@@ -911,6 +911,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783822950667,
+        "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
+        "displayName": "Chen H.R.",
+        "pictureUrl": "https://profile.line-scdn.net/0ht-ExzyukKwJoATSanmJVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
+      },
       {
         "time": 1783822947354,
         "userId": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
@@ -2099,12 +2105,6 @@
       },
       {
         "time": 1783669058623,
-        "userId": "Uc539d52e443ad34bb1c53f1b4f09bae2",
-        "displayName": "❄️查理⛄CHARLIE❄️",
-        "pictureUrl": "https://profile.line-scdn.net/0hh0DZNNnxNx9pIybj0y1JYBlzNHVKUm4NR0coe1QrOy0AG3ZMRRJ5eAsgayZTRHhJQxB9KVgkbn9lMEB5d3XLK24Tai5UEnVBQ019_A"
-      },
-      {
-        "time": 1783669045899,
         "userId": "Uc539d52e443ad34bb1c53f1b4f09bae2",
         "displayName": "❄️查理⛄CHARLIE❄️",
         "pictureUrl": "https://profile.line-scdn.net/0hh0DZNNnxNx9pIybj0y1JYBlzNHVKUm4NR0coe1QrOy0AG3ZMRRJ5eAsgayZTRHhJQxB9KVgkbn9lMEB5d3XLK24Tai5UEnVBQ019_A"
