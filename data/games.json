@@ -1746,7 +1746,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1783823782898,
+    "lastActiveTime": 1783839096147,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1787,13 +1787,18 @@
           "Mina",
           "John",
           "小黑",
-          "楊程鈞",
           "Sean柏宏",
           "鼎函"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/12 14:51",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "-1"
+      },
       {
         "time": "07/12 10:36",
         "name": "鼎函",
