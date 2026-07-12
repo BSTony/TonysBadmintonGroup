@@ -1025,7 +1025,7 @@
     "tag": "10-11點開冷氣,4面",
     "active": true,
     "startTime": 1783228037107,
-    "lastActiveTime": 1783818554666,
+    "lastActiveTime": 1783818885975,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1043,7 +1043,8 @@
       "Pin Peng": true,
       "Tony": true,
       "何岡駿": true,
-      "Chris Chen": true
+      "Chris Chen": true,
+      "wayne": true
     },
     "sections": [
       {
