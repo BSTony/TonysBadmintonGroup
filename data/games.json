@@ -1955,7 +1955,7 @@
     "fee": "320",
     "note": "",
     "tag": "3面,25人",
-    "active": true,
+    "active": false,
     "startTime": 1783838094050,
     "lastActiveTime": 1783838174559,
     "scheduleTime": null,
