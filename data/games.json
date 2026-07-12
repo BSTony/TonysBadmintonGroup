@@ -1712,7 +1712,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1783656880074,
+    "lastActiveTime": 1783815457435,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1752,11 +1752,18 @@
           "Iven",
           "Mina",
           "John",
-          "小黑"
+          "小黑",
+          "楊程鈞"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/12 08:17",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1"
+      },
       {
         "time": "07/10 12:14",
         "name": "小黑",
