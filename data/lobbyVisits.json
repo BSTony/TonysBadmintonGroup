@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1091,
+    "viewCount": 1092,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -708,8 +708,8 @@
       "U433bba23fffec0bbdba4f408822eb6ec": {
         "displayName": "鄭人云",
         "firstVisit": 1783496953760,
-        "count": 1,
-        "lastVisit": 1783496953760
+        "count": 2,
+        "lastVisit": 1783861046425
       },
       "U82cf8acdc2735b2ff6e5a97104a154b7": {
         "displayName": "(AK) Seth Hu",
@@ -917,6 +917,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1783861046425,
+        "userId": "U433bba23fffec0bbdba4f408822eb6ec",
+        "displayName": "鄭人云",
+        "pictureUrl": "https://profile.line-scdn.net/0m038116677251f5f20d758c68646c37e0dd69ac72a59c"
+      },
       {
         "time": 1783860937981,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -2110,12 +2116,6 @@
         "userId": "U07e425412c114771e65bce53eaf032cb",
         "displayName": "奕翔",
         "pictureUrl": "https://profile.line-scdn.net/0hxYP-jfIuJ3Z9VAvfVU1ZCQ0EJBxeJX5kATE_Fx9VehFDZWlyVDVsGUAAeUZFbDUpVzRvEUsHeURxR1AQYwLbQnpkekdAZWUoVzptlQ"
-      },
-      {
-        "time": 1783705401670,
-        "userId": "Uec6665e7a143520c799f9d89d3755024",
-        "displayName": "昊平",
-        "pictureUrl": "https://profile.line-scdn.net/0hBuHamWh-HVplGAI01BljZBVIHjBGaURIGi4BbFVIFmoIKloPSnZRO1kYFmJQfFhZHisGbFFMFD1HQwlMQS5RVRlfQgRZIRtoKn5SfC5jIhg8dh9IEnYTUiNLMzYrVAhyKAsmRVZIAAEDQTRrGx4BYlARFi4IaylILk9xDGAqc9kKGmoPSH5TOVgeS2_d"
       }
     ]
   },
