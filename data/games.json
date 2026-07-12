@@ -2011,7 +2011,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1783838351270,
+    "lastActiveTime": 1783839260183,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2028,8 +2028,17 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "CC"
+          "CC",
+          "楊程鈞"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/12 14:54",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1"
       }
     ]
   }
