@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1001,
+    "viewCount": 1002,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -908,9 +908,21 @@
         "firstVisit": 1783822853623,
         "count": 3,
         "lastVisit": 1783822991807
+      },
+      "U88ae9c79ca7f2ef9d91e7678fecf4416": {
+        "displayName": "腳皮",
+        "firstVisit": 1783823707569,
+        "count": 1,
+        "lastVisit": 1783823707569
       }
     },
     "logs": [
+      {
+        "time": 1783823707569,
+        "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+        "displayName": "腳皮",
+        "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
+      },
       {
         "time": 1783823455424,
         "userId": "U1302ddcec82bfd0d9b9eba641676ea0a",
@@ -2102,12 +2114,6 @@
         "userId": "U8359dca0b543da49dab9a0215b90c137",
         "displayName": "JoeLin",
         "pictureUrl": "https://profile.line-scdn.net/0hWPG6b8r0CH9qTyJyYSZ2ABofCxVJPlFtQHlCSVgdXxoAdh0sQ3oXGAxNUkpRLEh5RH1OSVpHX0dmXH8ZdBn0S21_VU5XfkohQCFCnA"
-      },
-      {
-        "time": 1783669076933,
-        "userId": "Uc539d52e443ad34bb1c53f1b4f09bae2",
-        "displayName": "❄️查理⛄CHARLIE❄️",
-        "pictureUrl": "https://profile.line-scdn.net/0hh0DZNNnxNx9pIybj0y1JYBlzNHVKUm4NR0coe1QrOy0AG3ZMRRJ5eAsgayZTRHhJQxB9KVgkbn9lMEB5d3XLK24Tai5UEnVBQ019_A"
       }
     ]
   },
