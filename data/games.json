@@ -1259,7 +1259,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1783228097228,
-    "lastActiveTime": 1783823790526,
+    "lastActiveTime": 1783824020163,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1290,12 +1290,17 @@
           "JoeLin",
           "小金(Chen Pei Hung)",
           "L",
-          "登登",
-          "鼎函"
+          "登登"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/12 10:40",
+        "name": "鼎函",
+        "operator": "Kay",
+        "action": "-1"
+      },
       {
         "time": "07/12 10:36",
         "name": "鼎函",
