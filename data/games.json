@@ -1809,7 +1809,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1783815483589,
+    "lastActiveTime": 1783818336387,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1831,11 +1831,18 @@
           "Tony",
           "Kay",
           "陳呈",
-          "楊程鈞"
+          "楊程鈞",
+          "Mia"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/12 09:05",
+        "name": "Mia",
+        "operator": "賴鈺臻",
+        "action": "+1"
+      },
       {
         "time": "07/12 08:18",
         "name": "楊程鈞",
