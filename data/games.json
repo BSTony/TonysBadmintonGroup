@@ -1244,7 +1244,7 @@
     "tag": "4面",
     "active": true,
     "startTime": 1783228097228,
-    "lastActiveTime": 1783814642531,
+    "lastActiveTime": 1783814643950,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1254,7 +1254,8 @@
     "paidMap": {
       "林煥杰": true,
       "ALAN LIU": true,
-      "JoeLin": true
+      "JoeLin": true,
+      "小金(Chen Pei Hung)": true
     },
     "sections": [
       {
