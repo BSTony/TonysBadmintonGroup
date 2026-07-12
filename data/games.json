@@ -1860,7 +1860,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1783818340789,
+    "lastActiveTime": 1783844925419,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1884,11 +1884,18 @@
           "陳呈",
           "楊程鈞",
           "Mia",
-          "Kevin"
+          "Kevin",
+          "Can"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/12 16:28",
+        "name": "Can",
+        "operator": "TU",
+        "action": "+1"
+      },
       {
         "time": "07/12 09:05",
         "name": "Kevin",
