@@ -1957,28 +1957,30 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838094050,
-    "lastActiveTime": 1783838172438,
+    "lastActiveTime": 1783838174559,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {},
-    "paidMap": {
-      "Kay": true
-    },
+    "paidMap": {},
     "sections": [
       {
         "title": "報名名單",
         "limit": 25,
         "backupLimit": 5,
         "label": "",
-        "list": [
-          "Kay"
-        ]
+        "list": []
       }
     ],
     "history": [
+      {
+        "time": "07/12 14:36",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/12 14:36",
         "name": "Tony",
