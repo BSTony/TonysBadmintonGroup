@@ -1309,7 +1309,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1783926970244,
+    "lastActiveTime": 1783928212024,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1325,7 +1325,6 @@
       "Jim": true,
       "Ashley": true,
       "小周": true,
-      "CC": true,
       "Iven": true,
       "Mina": true,
       "John": true
@@ -1345,7 +1344,6 @@
           "Jim",
           "Ashley",
           "小周",
-          "CC",
           "Iven",
           "Mina",
           "John",
@@ -1357,6 +1355,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/13 15:36",
+        "name": "CC",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/13 15:16",
         "name": "高得祐",
