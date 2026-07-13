@@ -1864,12 +1864,10 @@ let partyRoom = {
 };
 
 let pinballRoom = {
-  status: 'idle', // idle, lobby, item_selection, item_placement, playing
+  status: 'idle', // idle, lobby, instruction, playing
   pool: [],
-  traps: [], // { uid, name, type, x, y, angle }
   finished: [],
-  winnerLimit: 3,
-  itemChoices: {} // uid -> { type, angle }
+  winnerLimit: 3
 };
 
 let partyTimeTimeout = null;
@@ -2055,9 +2053,7 @@ app.post('/api/admin/room/open', express.json(), (req, res) => {
   } else if (gameType === 'pinball') {
     pinballRoom.status = 'lobby';
     pinballRoom.pool = [];
-    pinballRoom.traps = [];
     pinballRoom.finished = [];
-    pinballRoom.itemChoices = {};
     
     lotteryRoom.status = 'idle';
     partyRoom.status = 'idle';
@@ -2099,39 +2095,7 @@ app.post('/api/admin/party/start', express.json(), (req, res) => {
 });
 
 // --- Pinball Endpoints ---
-app.post('/api/pinball/select-item', express.json(), (req, res) => {
-  const { uid, type } = req.body;
-  if (pinballRoom.status !== 'item_selection' && pinballRoom.status !== 'item_placement') return res.status(400).json({ error: 'Not in selection phase' });
-  
-  let angle = 0;
-  if (type === 'arrow') {
-    // Random angle between pointing left-up to right-up (-3/4 PI to -1/4 PI)
-    angle = -Math.PI/2 + (Math.random() - 0.5) * Math.PI/2; 
-  }
-  
-  pinballRoom.itemChoices[uid] = { type, angle };
-  res.json({ success: true });
-});
-
-app.post('/api/pinball/place-item', express.json(), (req, res) => {
-  const { uid, name, x, y } = req.body;
-  if (globalRoom.status !== 'open' || globalRoom.activeGame !== 'pinball') return res.status(400).json({ error: 'Not in pinball mode' });
-  if (pinballRoom.status !== 'item_placement') return res.status(400).json({ error: 'Not in placement phase' });
-  
-  const choice = pinballRoom.itemChoices[uid];
-  if (!choice) return res.status(400).json({ error: 'No item selected' });
-  
-  // Enforce 1 trap per user
-  const existingIndex = pinballRoom.traps.findIndex(t => t.uid === uid);
-  if (existingIndex !== -1) {
-    pinballRoom.traps[existingIndex] = { uid, name, type: choice.type, angle: choice.angle, x, y };
-  } else {
-    pinballRoom.traps.push({ uid, name, type: choice.type, angle: choice.angle, x, y });
-  }
-  
-  io.emit('pinball_state', pinballRoom);
-  res.json({ success: true, traps: pinballRoom.traps });
-});
+// Item select/place endpoints removed (feature disabled for now)
 
 app.post('/api/admin/pinball/sync-pool', express.json(), (req, res) => {
   const { uid, pool } = req.body;
@@ -2161,24 +2125,15 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   pinballRoom.winnerLimit = winnerLimit || 3;
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
-  pinballRoom.itemChoices = {};
-  pinballRoom.traps = [];
+  pinballRoom.finished = [];
   io.emit('pinball_state', pinballRoom);
   
-  // Sequence timers
+  // instruction(5s) → playing
   setTimeout(() => {
     if (pinballRoom.status !== 'instruction') return; // Cancelled
-    pinballRoom.status = 'item_placement';
-    pinballRoom.statusEndTime = Date.now() + 15000;
+    pinballRoom.status = 'playing';
+    pinballRoom.statusEndTime = null;
     io.emit('pinball_state', pinballRoom);
-    
-    setTimeout(() => {
-      if (pinballRoom.status !== 'item_placement') return; // Cancelled
-      pinballRoom.status = 'playing';
-      pinballRoom.statusEndTime = null;
-      io.emit('pinball_state', pinballRoom);
-    }, 15000);
-    
   }, 5000);
   
   res.json({ success: true, pinballRoom });
@@ -2201,9 +2156,7 @@ app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
   const topWinners = pinballRoom.finished.slice(0, pinballRoom.winnerLimit);
   pinballRoom.pool = pinballRoom.pool.filter(p => !topWinners.includes(p));
   pinballRoom.status = 'lobby';
-  pinballRoom.traps = [];
   pinballRoom.finished = [];
-  pinballRoom.itemChoices = {};
   
   io.emit('pinball_state', pinballRoom);
   res.json({ success: true });
