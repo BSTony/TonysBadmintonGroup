@@ -1341,6 +1341,12 @@ function renderLobby() {
       btnLobbyStats.classList.add('hidden');
     }
 
+    if (globalIsSuperAdmin && btnSystemLogs) {
+      btnSystemLogs.classList.remove('hidden');
+    } else if (btnSystemLogs) {
+      btnSystemLogs.classList.add('hidden');
+    }
+
     if (globalIsSuperAdmin && btnEasterEgg) {
       btnEasterEgg.classList.remove('hidden');
     } else if (btnEasterEgg) {
