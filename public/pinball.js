@@ -22,7 +22,7 @@ var btnItemArrow = document.getElementById('btn-item-arrow');
 var pinballItemSelectedText = document.getElementById('pinball-item-selected-text');
 
 function selectItem(type, btnObj) {
-  if (pbState.status !== 'item_selection') return;
+  if (pbState.status !== 'item_selection' && pbState.status !== 'item_placement') return;
   if (!(typeof currentUser !== 'undefined' ? currentUser : null) || !(typeof currentUser !== 'undefined' ? currentUser : null).userId) return;
   
   // Highlight UI
@@ -48,8 +48,12 @@ function selectItem(type, btnObj) {
       type: type
     })
   }).catch(console.error);
-}
 
+  if (pbState.status === 'item_placement') {
+    if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
+    if (pinballStatusText) pinballStatusText.innerText = '點擊畫面佈置道具！';
+  }
+}
 if (btnItemObstacle) btnItemObstacle.addEventListener('click', () => selectItem('obstacle', btnItemObstacle));
 if (btnItemBouncer) btnItemBouncer.addEventListener('click', () => selectItem('bouncer', btnItemBouncer));
 if (btnItemArrow) btnItemArrow.addEventListener('click', () => selectItem('arrow', btnItemArrow));
@@ -568,39 +572,54 @@ function bindPinballSocket(s) {
         pbBalls = {};
       }
       
-    } else if (state.status === 'item_selection') {
+    } else if (state.status === 'instruction') {
       if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
       if (roomParticipantsPanel) roomParticipantsPanel.classList.add('hidden');
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
-      if (pinballItemSelectionUi) pinballItemSelectionUi.classList.remove('hidden');
+      if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
+      if (pinballStatusOverlay) pinballStatusOverlay.classList.add('hidden');
       
-      if (pinballStatusOverlay && pinballStatusText && pinballStatusTimer) {
-        pinballStatusOverlay.classList.remove('hidden');
-        pinballStatusText.innerText = '選擇專屬道具！';
-        let timeLeft = 10;
-        pinballStatusTimer.innerText = timeLeft;
+      const instrOverlay = document.getElementById('pinball-instruction-overlay');
+      const instrTimer = document.getElementById('pinball-instruction-timer');
+      if (instrOverlay && instrTimer) {
+        instrOverlay.classList.remove('hidden');
+        instrOverlay.style.display = 'flex';
+        
         if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
         window.pinballTimerInterval = setInterval(() => {
-          timeLeft--;
-          if (timeLeft >= 0) pinballStatusTimer.innerText = timeLeft;
-        }, 1000);
+          let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 5;
+          instrTimer.innerText = timeLeft;
+        }, 100);
       }
       
     } else if (state.status === 'item_placement') {
+      const instrOverlay = document.getElementById('pinball-instruction-overlay');
+      if (instrOverlay) {
+        instrOverlay.classList.add('hidden');
+        instrOverlay.style.display = 'none';
+      }
+      
       if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
       if (roomParticipantsPanel) roomParticipantsPanel.classList.add('hidden');
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
       
+      const hasChosen = selectedItemType || pbState.itemChoices[(typeof currentUser !== 'undefined' ? currentUser : null)?.userId];
+      
+      if (!hasChosen) {
+        if (pinballItemSelectionUi) pinballItemSelectionUi.classList.remove('hidden');
+      } else {
+        if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
+      }
+      
       if (pinballStatusOverlay && pinballStatusText && pinballStatusTimer) {
         pinballStatusOverlay.classList.remove('hidden');
-        pinballStatusText.innerText = '點擊畫面佈置道具！';
-        let timeLeft = 10;
-        pinballStatusTimer.innerText = timeLeft;
+        pinballStatusText.innerText = hasChosen ? '點擊畫面佈置道具！' : '請先選擇一個道具！';
+        
         if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
         window.pinballTimerInterval = setInterval(() => {
-          timeLeft--;
-          if (timeLeft >= 0) pinballStatusTimer.innerText = timeLeft;
-        }, 1000);
+          let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 15;
+          pinballStatusTimer.innerText = timeLeft;
+        }, 100);
       }
       
       updatePinballTraps(state.traps);

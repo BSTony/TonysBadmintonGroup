@@ -507,6 +507,19 @@
             <div id="pinball-status-timer" style="font-size: 60px;"></div>
           </div>
           
+          <!-- Pinball Instruction Overlay -->
+          <div id="pinball-instruction-overlay" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 120; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white;">
+            <h2 style="color: #f1c40f; font-size: 40px; margin-bottom: 20px;">如何遊玩？</h2>
+            <ul style="font-size: 24px; text-align: left; line-height: 2; margin-bottom: 30px; list-style: none; padding: 0;">
+              <li>1. 選擇畫面上方的專屬道具。</li>
+              <li>2. 點擊畫面任意位置放置道具。</li>
+              <li>3. 彈珠落下後，最先抵達終點的獲勝！</li>
+            </ul>
+            <div style="font-size: 30px; font-weight: bold; color: #e74c3c; animation: pulse 1s infinite;">
+              準備開始選擇與放置... <span id="pinball-instruction-timer">5</span>
+            </div>
+          </div>
+          
           <!-- Item Selection UI -->
           <div id="pinball-item-selection-ui" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; text-align: center; background: rgba(0,0,0,0.85); padding: 20px; border-radius: 15px; z-index: 105; border: 2px solid #f39c12; box-shadow: 0 0 30px rgba(243, 156, 18, 0.5);">
             <h3 style="color: #f1c40f; margin: 0 0 15px 0;">選擇你的專屬道具！</h3>
