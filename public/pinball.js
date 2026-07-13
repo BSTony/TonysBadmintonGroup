@@ -401,8 +401,8 @@ function buildTopDownTrack(W) {
   const bodies = [];
   const pathPoints = [];
   
-  const steps = 140;
-  const maxT = Math.PI * 5; // 2.5 full S-curves
+  const steps = 280; // Increased resolution for longer track
+  const maxT = Math.PI * 10; // 5 full S-curves (doubled length)
   const amplitude = Math.min(W * 0.35, 200); // max left/right swing
   const stretch = 160; // Pixels downwards per radian
 
@@ -428,7 +428,7 @@ function buildTopDownTrack(W) {
   }
 
   // Build physical guardrails along the path
-  const wallThickness = 24;
+  const wallThickness = 60; // Thickened to prevent balls flying out
   for (let i = 0; i < pathPoints.length - 1; i++) {
     const p1 = pathPoints[i];
     const p2 = pathPoints[i+1];
@@ -446,7 +446,7 @@ function buildTopDownTrack(W) {
     const rightY = p1.y - ny * TRACK_WIDTH / 2;
     
     const angle = Math.atan2(dy, dx);
-    const segmentLength = len + 10; // Overlap to prevent snagging
+    const segmentLength = len + 25; // More overlap to prevent snagging
 
     // Left Wall
     bodies.push(Bodies.rectangle(leftX, leftY, segmentLength, wallThickness, {
@@ -558,7 +558,7 @@ function dropBalls(pool) {
     const num = (idx % 15) + 1;
 
     const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
-      restitution: 0.8, // Bouncy billiard balls
+      restitution: 0.6, // Lowered bounciness slightly so they don't jump out
       friction: 0.005,
       density: 0.05,
       render: { fillStyle: color }, // Stored for custom renderer
