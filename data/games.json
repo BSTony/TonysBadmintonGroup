@@ -1446,7 +1446,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1783860956364,
+    "lastActiveTime": 1783928220470,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1472,11 +1472,18 @@
           "Mia",
           "Kevin",
           "Can",
-          "Yiping"
+          "Yiping",
+          "CC"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/13 15:37",
+        "name": "CC",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/12 20:55",
         "name": "Yiping",
