@@ -283,6 +283,28 @@ function initPinballEngine() {
     });
   });
   
+  // Anti-stuck mechanic
+  Events.on(pbEngine, 'beforeUpdate', () => {
+    Object.values(pbBalls).forEach(ball => {
+      if (ball.speed < 0.5) {
+        ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
+        if (ball.plugin.stuckFrames > 60) { // Stuck for roughly 1 second
+          const forceMag = 0.02;
+          const angle = Math.random() * Math.PI * 2;
+          // Apply a force that pushes upwards and randomly horizontally to dislodge it
+          Body.applyForce(ball, ball.position, {
+            x: Math.cos(angle) * forceMag,
+            y: -Math.abs(Math.sin(angle) * forceMag) - 0.01 
+          });
+          ball.plugin.stuckFrames = 0;
+        }
+      } else {
+        ball.plugin.stuckFrames = 0;
+      }
+    });
+  });
+  
+  
   // Custom Render for names and trap icons
   Events.on(pbRender, 'afterRender', () => {
     const ctx = pbRender.context;

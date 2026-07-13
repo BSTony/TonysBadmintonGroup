@@ -311,9 +311,9 @@ function updateUnifiedRoomUI() {
         adminSurvivalControls.classList.add('hidden');
         if (adminPinballControls) adminPinballControls.classList.remove('hidden');
         
-        // Disable overlay blocking so users can click on the pinball canvas
-        unifiedRoomOverlay.style.background = 'transparent';
-        unifiedRoomOverlay.style.pointerEvents = 'none';
+        // Keep overlay blocking so users cannot click background UI, but can click pinball canvas
+        unifiedRoomOverlay.style.background = 'rgba(0,0,0,0.9)';
+        unifiedRoomOverlay.style.pointerEvents = 'auto';
         
         // Ensure child panels remain clickable
         document.getElementById('room-admin-panel').style.pointerEvents = 'auto';
@@ -321,6 +321,9 @@ function updateUnifiedRoomUI() {
         if (topButtons) topButtons.style.pointerEvents = 'auto';
         const pPanel = document.getElementById('room-participants-panel');
         if (pPanel) pPanel.style.pointerEvents = 'auto';
+        
+        // Ensure pinball canvas catches clicks
+        if (pinballContainer) pinballContainer.style.pointerEvents = 'auto';
       }
     } else {
       unifiedRoomOverlay.classList.add('hidden');
