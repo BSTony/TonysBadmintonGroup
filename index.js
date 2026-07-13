@@ -1618,6 +1618,10 @@ app.get('/api/admin/all_stats', async (req, res) => {
   let allStats = [];
   let totalViews = 0;
   let globalUniqueViewers = new Set();
+  let todayUniqueViewers = new Set();
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayStartTime = todayStart.getTime();
 
   for (const g of adminGids) {
     await ensureGroupSettings(g);
@@ -1628,8 +1632,11 @@ app.get('/api/admin/all_stats', async (req, res) => {
     const uniqueCount = Object.keys(uniqueViewers).length;
     
     totalViews += (stats.viewCount || 0);
-    for (const uid of Object.keys(uniqueViewers)) {
+    for (const [uid, uData] of Object.entries(uniqueViewers)) {
       globalUniqueViewers.add(uid);
+      if (uData.lastVisit && uData.lastVisit >= todayStartTime) {
+        todayUniqueViewers.add(uid);
+      }
     }
     
     // Sort logs by time descending (newest first)
@@ -1649,7 +1656,8 @@ app.get('/api/admin/all_stats', async (req, res) => {
     success: true, 
     allStats, 
     totalViews, 
-    totalUniqueCount: globalUniqueViewers.size 
+    totalUniqueCount: globalUniqueViewers.size,
+    todayUniqueCount: todayUniqueViewers.size
   });
 });
 
