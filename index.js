@@ -1594,10 +1594,11 @@ app.get('/api/lobby_stats/:gid', (req, res) => {
   }
   
   const stats = lobbyVisits[gid] || { viewCount: 0, uniqueViewers: {}, logs: [] };
+  const sortedLogs = [...(stats.logs || [])].sort((a, b) => b.time - a.time);
   res.json({ success: true, stats: {
     viewCount: stats.viewCount || 0,
     uniqueViewersCount: Object.keys(stats.uniqueViewers || {}).length,
-    recentVisits: stats.logs || []
+    recentVisits: sortedLogs.slice(0, 50)
   }});
 });
 
@@ -1668,7 +1669,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
       viewCount: stats.viewCount || 0,
       uniqueCount: uniqueCount,
       dailyStats: dailyStats,
-      recentVisits: sortedLogs
+      recentVisits: sortedLogs.slice(0, 50)
     });
   }
 
