@@ -2150,7 +2150,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 64,
+    "viewCount": 65,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -2247,9 +2247,21 @@
         "firstVisit": 1783556008664,
         "count": 1,
         "lastVisit": 1783556008664
+      },
+      "U07681bd7cc8c5262b1d67edc7535152b": {
+        "displayName": "Vincent 吳政諺 KPMG",
+        "firstVisit": 1783987135241,
+        "count": 1,
+        "lastVisit": 1783987135241
       }
     },
     "logs": [
+      {
+        "time": 1783987135241,
+        "userId": "U07681bd7cc8c5262b1d67edc7535152b",
+        "displayName": "Vincent 吳政諺 KPMG",
+        "pictureUrl": "https://profile.line-scdn.net/0hZ66HT4ArBRkbMRH7s757ZmthBnM4QFwLP1cfKipiDnkvAERHZFcZfn40CX0kVEMcMARJfy9hCy8XInJ_BWf5LRwBWCgmAEdHMV9P-g"
+      },
       {
         "time": 1783943361986,
         "userId": "U360d596a5111c676ab153457ce851c03",
