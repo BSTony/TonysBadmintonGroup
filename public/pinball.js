@@ -1,10 +1,10 @@
-// pinball.js - Marble Race Engine (S-Curve Track)
-// Redesigned: 8-layer S-curve track with camera following system
+// pinball.js - Top-Down Racing Track (S-Curve)
+// Redesigned: 2.5D top-down view matching real marble race tracks
 
 let pbEngine, pbRender, pbRunner;
 let pbBalls = {};
 let pbState = { status: 'idle', pool: [], finished: [], winnerLimit: 3 };
-let pbWorldHeight = 1800;
+let pbWorldHeight = 3500;
 
 // Camera state
 let cameraTargetIdx = 0;
@@ -21,23 +21,32 @@ var pinballStatusText = document.getElementById('pinball-status-text');
 var pinballStatusTimer = document.getElementById('pinball-status-timer');
 var pinballSpectatorUi = pinballSpectatorUi || document.getElementById('pinball-spectator-ui');
 
-// Track constants
-const TRACK_LAYERS = 8;
-const TRACK_LAYER_SPACING = 190;
-const TRACK_START_Y = 160;
-const TRACK_PAD = 40;
-const TRACK_SLOPE = 0.055;
-const TRACK_RAMP_THICKNESS = 7;
+// Track Constants
+const TRACK_WIDTH = 180;
+const START_Y = 150;
+const MARBLE_RADIUS = 12;
+const GRAVITY_Y = 0.55;
 
-const RAMP_COLORS = [
-  '#e74c3c', '#e67e22', '#f1c40f', '#2ecc71',
-  '#3498db', '#9b59b6', '#e91e63', '#00bcd4'
-];
+// Sine wave path points for custom rendering
+let trackPathPoints = [];
 
-const BALL_COLORS = [
-  '#e74c3c', '#f1c40f', '#3498db', '#2c3e50',
-  '#9b59b6', '#2ecc71', '#e67e22', '#e91e63',
-  '#00bcd4', '#ff5722', '#8bc34a', '#ff9800'
+// Billiard Ball Colors (Pool)
+const POOL_COLORS = [
+  '#f1c40f', // 1: Yellow
+  '#3498db', // 2: Blue
+  '#e74c3c', // 3: Red
+  '#9b59b6', // 4: Purple
+  '#e67e22', // 5: Orange
+  '#2ecc71', // 6: Green
+  '#8e44ad', // 7: Maroon
+  '#2c3e50', // 8: Black
+  '#f39c12', // 9: Yellow stripe
+  '#2980b9', // 10: Blue stripe
+  '#c0392b', // 11: Red stripe
+  '#8e44ad', // 12: Purple stripe
+  '#d35400', // 13: Orange stripe
+  '#27ae60', // 14: Green stripe
+  '#7f8c8d'  // 15: Maroon stripe
 ];
 
 function destroyEngine() {
@@ -52,6 +61,7 @@ function destroyEngine() {
   pbRender = null;
   pbRunner = null;
   pbBalls = {};
+  trackPathPoints = [];
 }
 
 function initPinballEngine() {
@@ -66,26 +76,21 @@ function initPinballEngine() {
   const width = pinballContainer.clientWidth || window.innerWidth;
   const height = pinballContainer.clientHeight || window.innerHeight;
 
-  if (width < 50 || height < 50) {
-    console.warn('[Pinball] Container too small, skipping init');
-    if (pbEngine) destroyEngine();
-    return;
-  }
+  if (width < 50 || height < 50) return;
 
   if (pbEngine && pbRender && pbRender.options.width === width && pbRender.options.height === height) {
     return;
   }
 
   if (pbEngine) destroyEngine();
-
-  console.log('[Pinball] Initializing S-curve track: ' + width + 'x' + height);
+  console.log('[Pinball] Initializing Top-Down track: ' + width + 'x' + height);
 
   const { Engine, Render, Runner, World, Bodies, Events, Body } = Matter;
 
-  pbWorldHeight = TRACK_START_Y + TRACK_LAYERS * TRACK_LAYER_SPACING + 250;
-
   pbEngine = Engine.create();
-  pbEngine.gravity.y = 0.9;
+  // Gravity pulls them down the screen in top-down view (simulating tilt)
+  pbEngine.gravity.y = GRAVITY_Y;
+  pbEngine.gravity.x = 0;
 
   pinballCanvasWrapper.innerHTML = '';
 
@@ -95,36 +100,33 @@ function initPinballEngine() {
     options: {
       width, height,
       wireframes: false,
-      background: '#0f0f23',
+      background: '#3d8236', // Grass green
       hasBounds: true
     }
   });
 
-  // Set initial viewport
   pbRender.bounds.min.x = 0;
   pbRender.bounds.min.y = 0;
   pbRender.bounds.max.x = width;
   pbRender.bounds.max.y = height;
   cameraSmoothed = 0;
 
-  // Build the S-curve track
-  const trackBodies = buildSCurveTrack(width);
-  World.add(pbEngine.world, trackBodies);
+  // Build the top-down track guardrails
+  const { bodies, pathPoints, finalY } = buildTopDownTrack(width);
+  trackPathPoints = pathPoints;
+  pbWorldHeight = finalY + 400;
+  World.add(pbEngine.world, bodies);
 
-  // Finish line sensor at the end of the last layer
-  const lastLayerY = TRACK_START_Y + (TRACK_LAYERS - 1) * TRACK_LAYER_SPACING;
-  const lastGoingRight = (TRACK_LAYERS - 1) % 2 === 0;
-  const finishX = lastGoingRight ? width - TRACK_PAD - 10 : TRACK_PAD + 10;
-  
-  const finishLine = Bodies.rectangle(finishX, lastLayerY + 60, 30, 100, {
+  // Finish line sensor
+  const finishLine = Bodies.rectangle(width / 2, finalY + 80, TRACK_WIDTH + 60, 40, {
     isStatic: true,
     isSensor: true,
-    render: { fillStyle: 'rgba(241, 196, 15, 0.3)' },
+    render: { visible: false },
     plugin: { isFinishLine: true }
   });
   World.add(pbEngine.world, [finishLine]);
 
-  // Collision detection - finish line
+  // Finish line collision
   Events.on(pbEngine, 'collisionStart', (event) => {
     event.pairs.forEach(pair => {
       let ball = null, finish = null;
@@ -145,16 +147,18 @@ function initPinballEngine() {
     });
   });
 
-  // Anti-stuck mechanic
+  // Keep balls moving if they get stuck against flat walls
   Events.on(pbEngine, 'beforeUpdate', () => {
     Object.values(pbBalls).forEach(ball => {
-      if (ball.speed < 0.4) {
+      // Apply constant downward push to simulate steep track
+      Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
+      
+      if (ball.speed < 0.5) {
         ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
-        if (ball.plugin.stuckFrames > 80) {
-          const forceMag = 0.012;
+        if (ball.plugin.stuckFrames > 60) {
           Body.applyForce(ball, ball.position, {
-            x: (Math.random() - 0.5) * forceMag * 2,
-            y: Math.abs(Math.random() * forceMag) + 0.003
+            x: (Math.random() - 0.5) * 0.015,
+            y: 0.01
           });
           ball.plugin.stuckFrames = 0;
         }
@@ -164,21 +168,17 @@ function initPinballEngine() {
     });
   });
 
-  // Camera following logic
+  // Camera tracking
   Events.on(pbRender, 'beforeRender', () => {
     if (pbState.status !== 'playing') return;
 
     const allBalls = Object.values(pbBalls);
     if (allBalls.length === 0) return;
 
-    // Get active balls (not finished)
     let trackBalls = allBalls.filter(b => !pbState.finished.includes(b.plugin.name));
-    if (trackBalls.length === 0) trackBalls = allBalls; // All finished, just show them
+    if (trackBalls.length === 0) trackBalls = allBalls;
 
-    // Sort by Y position (highest Y = furthest along = leading)
     const sorted = [...trackBalls].sort((a, b) => b.position.y - a.position.y);
-
-    // Alternate between 1st and 2nd place
     const now = Date.now();
     if (now - lastCameraSwitch > CAMERA_SWITCH_MS) {
       cameraTargetIdx = (cameraTargetIdx + 1) % Math.min(2, sorted.length);
@@ -187,20 +187,20 @@ function initPinballEngine() {
 
     const target = sorted[Math.min(cameraTargetIdx, sorted.length - 1)];
     const targetY = target.position.y - height * 0.35;
+    
+    // Smooth Lerp
+    cameraSmoothed += (targetY - cameraSmoothed) * 0.06;
 
     // Clamp
     const minY = 0;
-    const maxY = pbWorldHeight - height;
-    const clampedY = Math.max(minY, Math.min(maxY, targetY));
+    const maxY = pbWorldHeight - height + 100;
+    const clampedY = Math.max(minY, Math.min(maxY, cameraSmoothed));
 
-    // Smooth lerp
-    cameraSmoothed += (clampedY - cameraSmoothed) * 0.06;
-
-    pbRender.bounds.min.y = cameraSmoothed;
-    pbRender.bounds.max.y = cameraSmoothed + height;
+    pbRender.bounds.min.y = clampedY;
+    pbRender.bounds.max.y = clampedY + height;
   });
 
-  // Custom rendering (names, labels, decorations)
+  // Custom rendering: Road surface, arrows, billiard balls
   Events.on(pbRender, 'afterRender', () => {
     const ctx = pbRender.context;
     const bMinY = pbRender.bounds.min.y;
@@ -211,315 +211,358 @@ function initPinballEngine() {
     const scaleX = width / bW;
     const scaleY = height / bH;
 
-    // Helper: world coord to screen coord
     function toScreen(wx, wy) {
       return { x: (wx - bMinX) * scaleX, y: (wy - bMinY) * scaleY };
     }
 
-    // Draw layer number labels
-    ctx.font = 'bold 13px Arial';
-    ctx.textAlign = 'left';
-    for (let i = 0; i < TRACK_LAYERS; i++) {
-      const ly = TRACK_START_Y + i * TRACK_LAYER_SPACING;
-      const sp = toScreen(12, ly - 18);
-      if (sp.y > -30 && sp.y < height + 30) {
-        ctx.fillStyle = 'rgba(255,255,255,0.25)';
-        ctx.fillText('L' + (i + 1), sp.x, sp.y);
+    // 1. Draw the road surface underneath
+    if (trackPathPoints.length > 0) {
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'butt';
+      
+      // Road shadow
+      ctx.beginPath();
+      trackPathPoints.forEach((p, i) => {
+        const sp = toScreen(p.x + 8, p.y + 8);
+        if (i === 0) ctx.moveTo(sp.x, sp.y);
+        else ctx.lineTo(sp.x, sp.y);
+      });
+      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+      ctx.lineWidth = (TRACK_WIDTH + 10) * scaleX;
+      ctx.stroke();
+
+      // Main Road
+      ctx.beginPath();
+      trackPathPoints.forEach((p, i) => {
+        const sp = toScreen(p.x, p.y);
+        if (i === 0) ctx.moveTo(sp.x, sp.y);
+        else ctx.lineTo(sp.x, sp.y);
+      });
+      ctx.strokeStyle = '#9e9e9e'; // Grey asphalt
+      ctx.lineWidth = TRACK_WIDTH * scaleX;
+      ctx.stroke();
+
+      // Outer track lines (white borders)
+      ctx.beginPath();
+      trackPathPoints.forEach((p, i) => {
+        const sp = toScreen(p.x, p.y);
+        if (i === 0) ctx.moveTo(sp.x, sp.y);
+        else ctx.lineTo(sp.x, sp.y);
+      });
+      ctx.strokeStyle = '#ecf0f1';
+      ctx.lineWidth = (TRACK_WIDTH - 6) * scaleX;
+      ctx.stroke();
+      
+      // Inner track fill (darker grey)
+      ctx.beginPath();
+      trackPathPoints.forEach((p, i) => {
+        const sp = toScreen(p.x, p.y);
+        if (i === 0) ctx.moveTo(sp.x, sp.y);
+        else ctx.lineTo(sp.x, sp.y);
+      });
+      ctx.strokeStyle = '#7f8c8d';
+      ctx.lineWidth = (TRACK_WIDTH - 14) * scaleX;
+      ctx.stroke();
+
+      // Center dashed line
+      ctx.beginPath();
+      trackPathPoints.forEach((p, i) => {
+        const sp = toScreen(p.x, p.y);
+        if (i === 0) ctx.moveTo(sp.x, sp.y);
+        else ctx.lineTo(sp.x, sp.y);
+      });
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 4 * scaleX;
+      ctx.setLineDash([20 * scaleY, 20 * scaleY]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Draw arrows on the track
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = 'bold 30px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      for(let i = 10; i < trackPathPoints.length; i += 20) {
+        const p = trackPathPoints[i];
+        const pNext = trackPathPoints[i+1];
+        if(!pNext) continue;
+        const sp = toScreen(p.x, p.y);
+        if (sp.y > -50 && sp.y < height + 50) {
+          const angle = Math.atan2(pNext.y - p.y, pNext.x - p.x);
+          ctx.save();
+          ctx.translate(sp.x, sp.y);
+          ctx.rotate(angle);
+          ctx.fillText('»', 0, -20);
+          ctx.fillText('»', 0, 20);
+          ctx.restore();
+        }
       }
     }
 
-    // Draw ramp edge stripes (racing stripes)
-    for (let i = 0; i < TRACK_LAYERS; i++) {
-      const y = TRACK_START_Y + i * TRACK_LAYER_SPACING;
-      const lr = i % 2 === 0;
-      const rampW = width - TRACK_PAD * 2 - 30;
-      const leftX = TRACK_PAD + 15;
-      const rightX = width - TRACK_PAD - 15;
-      
-      // Draw thin racing stripes along ramp edges
-      const yOffset = lr ? TRACK_SLOPE * rampW / 2 : -TRACK_SLOPE * rampW / 2;
-      const sp1 = toScreen(leftX, y - yOffset);
-      const sp2 = toScreen(rightX, y + yOffset);
-      
-      if (sp1.y > -50 && sp1.y < height + 50) {
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([8, 6]);
-        ctx.beginPath();
-        ctx.moveTo(sp1.x, sp1.y - 3 * scaleY);
-        ctx.lineTo(sp2.x, sp2.y - 3 * scaleY);
-        ctx.stroke();
-        ctx.setLineDash([]);
+    // 2. Start Line Checkerboard
+    const startSp = toScreen(width / 2, START_Y - 10);
+    if (startSp.y > -100 && startSp.y < height + 100) {
+      drawCheckerboard(ctx, startSp.x, startSp.y, TRACK_WIDTH * scaleX, 20 * scaleY);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 24px Arial';
+      ctx.shadowColor = '#000';
+      ctx.shadowBlur = 4;
+      ctx.fillText('🏁 START', startSp.x, startSp.y - 30);
+      ctx.shadowBlur = 0;
+    }
+
+    // 3. Finish Line Checkerboard
+    if (trackPathPoints.length > 0) {
+      const finalY = trackPathPoints[trackPathPoints.length - 1].y;
+      const finishSp = toScreen(width / 2, finalY + 40);
+      if (finishSp.y > -100 && finishSp.y < height + 100) {
+        drawCheckerboard(ctx, finishSp.x, finishSp.y, TRACK_WIDTH * scaleX, 30 * scaleY);
+        ctx.fillStyle = '#f1c40f';
+        ctx.font = 'bold 28px Arial';
+        ctx.shadowColor = '#000';
+        ctx.shadowBlur = 4;
+        ctx.fillText('🏆 FINISH', finishSp.x, finishSp.y + 40);
+        ctx.shadowBlur = 0;
       }
     }
 
-    // Draw START label
-    const startSp = toScreen(width / 2, TRACK_START_Y - 60);
-    if (startSp.y > -50 && startSp.y < height + 50) {
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#2ecc71';
-      ctx.font = 'bold 26px Arial';
-      ctx.shadowColor = '#2ecc71';
-      ctx.shadowBlur = 15;
-      ctx.fillText('🏁 START', startSp.x, startSp.y);
-      ctx.shadowBlur = 0;
-    }
-
-    // Draw FINISH label
-    const lastLayerY = TRACK_START_Y + (TRACK_LAYERS - 1) * TRACK_LAYER_SPACING;
-    const finishSp = toScreen(width / 2, lastLayerY + 70);
-    if (finishSp.y > -50 && finishSp.y < height + 50) {
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#f1c40f';
-      ctx.font = 'bold 26px Arial';
-      ctx.shadowColor = '#f1c40f';
-      ctx.shadowBlur = 15;
-      ctx.fillText('🏆 FINISH', finishSp.x, finishSp.y);
-      ctx.shadowBlur = 0;
-    }
-
-    // Draw ball names with outline
-    ctx.font = 'bold 10px Arial';
+    // 4. Custom Billiard Balls
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     Object.values(pbBalls).forEach(b => {
       const sp = toScreen(b.position.x, b.position.y);
       if (sp.y < -30 || sp.y > height + 30) return;
 
+      const r = b.circleRadius * scaleX;
+      
+      // Ball shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.beginPath();
+      ctx.arc(sp.x + 3, sp.y + 3, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Main ball body
+      ctx.fillStyle = b.render.fillStyle;
+      ctx.beginPath();
+      ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Stripe logic (if it's a striped ball color 9-15)
+      const colorIdx = POOL_COLORS.indexOf(b.render.fillStyle);
+      if (colorIdx >= 8) { // Striped ball
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = b.render.fillStyle;
+        ctx.beginPath();
+        // Draw a thick horizontal band
+        ctx.rect(sp.x - r, sp.y - r/2, r * 2, r);
+        ctx.fill();
+      }
+
+      // White inner circle
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(sp.x, sp.y, r * 0.55, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Number in center (using index)
+      ctx.fillStyle = '#000';
+      ctx.font = `bold ${r*0.7}px Arial`;
+      ctx.fillText(b.plugin.num, sp.x, sp.y + 1);
+
+      // Name tag above ball
       let name = b.plugin.name;
       if (name.length > 5) name = name.substring(0, 4) + '..';
+      const nameY = sp.y - r - 8;
       
-      // Draw name above the ball
-      const nameY = sp.y - 18 * scaleY;
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 3;
+      ctx.font = 'bold 11px Arial';
       ctx.strokeText(name, sp.x, nameY);
       ctx.fillStyle = '#fff';
       ctx.fillText(name, sp.x, nameY);
     });
-
-    // Draw camera target indicator (small arrow)
-    if (pbState.status === 'playing') {
-      const activeBalls = Object.values(pbBalls).filter(b => !pbState.finished.includes(b.plugin.name));
-      if (activeBalls.length > 0) {
-        const sorted = [...activeBalls].sort((a, b) => b.position.y - a.position.y);
-        const currentTarget = sorted[Math.min(cameraTargetIdx, sorted.length - 1)];
-        if (currentTarget) {
-          const sp = toScreen(currentTarget.position.x, currentTarget.position.y);
-          ctx.fillStyle = 'rgba(241, 196, 15, 0.6)';
-          ctx.beginPath();
-          ctx.moveTo(sp.x, sp.y - 26 * scaleY);
-          ctx.lineTo(sp.x - 6, sp.y - 34 * scaleY);
-          ctx.lineTo(sp.x + 6, sp.y - 34 * scaleY);
-          ctx.closePath();
-          ctx.fill();
-        }
-      }
-    }
-
-    // Draw position indicator (top-right HUD)
-    if (pbState.status === 'playing' && Object.values(pbBalls).length > 0) {
-      const allBalls = Object.values(pbBalls);
-      const sortedAll = [...allBalls].sort((a, b) => b.position.y - a.position.y);
-      
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      const hudX = width - 110;
-      const hudY = 10;
-      const hudH = Math.min(sortedAll.length * 22 + 30, 200);
-      ctx.fillRect(hudX, hudY, 105, hudH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(hudX, hudY, 105, hudH);
-      
-      ctx.fillStyle = '#f1c40f';
-      ctx.font = 'bold 11px Arial';
-      ctx.textAlign = 'left';
-      ctx.fillText('🏁 排名', hudX + 8, hudY + 16);
-      
-      ctx.font = '10px Arial';
-      const maxShow = Math.min(sortedAll.length, 7);
-      for (let i = 0; i < maxShow; i++) {
-        const b = sortedAll[i];
-        const isFinished = pbState.finished.includes(b.plugin.name);
-        const rankY = hudY + 32 + i * 20;
-        
-        // Rank medal
-        const medals = ['🥇', '🥈', '🥉'];
-        const rank = i < 3 ? medals[i] : (i + 1) + '.';
-        
-        ctx.fillStyle = isFinished ? '#f1c40f' : '#fff';
-        ctx.font = isFinished ? 'bold 10px Arial' : '10px Arial';
-        
-        let displayName = b.plugin.name;
-        if (displayName.length > 6) displayName = displayName.substring(0, 5) + '..';
-        ctx.fillText(rank + ' ' + displayName, hudX + 8, rankY);
-      }
-    }
+    
+    // Draw HUD
+    drawRankingHUD(ctx, width, height);
   });
 
   Render.run(pbRender);
   pbRunner = Runner.create();
   Runner.run(pbRunner, pbEngine);
-  console.log('[Pinball] S-curve track engine started');
+  console.log('[Pinball] Top-down track engine started');
 }
 
-function buildSCurveTrack(W) {
+function buildTopDownTrack(W) {
   const { Bodies } = Matter;
   const bodies = [];
+  const pathPoints = [];
+  
+  const steps = 140;
+  const maxT = Math.PI * 5; // 2.5 full S-curves
+  const amplitude = Math.min(W * 0.35, 200); // max left/right swing
+  const stretch = 160; // Pixels downwards per radian
 
-  const mkOpts = (color, rest) => ({
-    isStatic: true,
-    friction: 0.015,
-    restitution: rest || 0.35,
-    render: { fillStyle: color }
-  });
-
-  const rampW = W - TRACK_PAD * 2 - 30;
-
-  for (let i = 0; i < TRACK_LAYERS; i++) {
-    const y = TRACK_START_Y + i * TRACK_LAYER_SPACING;
-    const lr = i % 2 === 0; // layer goes left-to-right
-    const color = RAMP_COLORS[i];
-    const darkColor = darkenColor(color, 0.6);
-
-    // ====== 1. Main ramp surface ======
-    bodies.push(Bodies.rectangle(W / 2, y, rampW, TRACK_RAMP_THICKNESS, {
-      ...mkOpts(color),
-      angle: lr ? TRACK_SLOPE : -TRACK_SLOPE
-    }));
-
-    // ====== 2. Thin top rail (prevents balls bouncing over) ======
-    bodies.push(Bodies.rectangle(W / 2, y - 22, rampW + 10, 3, {
-      ...mkOpts('rgba(255,255,255,0.08)'),
-      angle: lr ? TRACK_SLOPE : -TRACK_SLOPE,
-      restitution: 0.6
-    }));
-
-    // ====== 3. Entry-side guardrail (high end wall) ======
-    if (i > 0) {
-      const entryX = lr ? TRACK_PAD + 5 : W - TRACK_PAD - 5;
-      bodies.push(Bodies.rectangle(entryX, y - 12, 8, 35, {
-        ...mkOpts('#555', 0.5)
-      }));
-    }
-
-    // ====== 4. Turn connector to next layer ======
-    if (i < TRACK_LAYERS - 1) {
-      const nextY = TRACK_START_Y + (i + 1) * TRACK_LAYER_SPACING;
-      const exitX = lr ? W - TRACK_PAD : TRACK_PAD;
-      const dir = lr ? 1 : -1; // direction: 1 = right side, -1 = left side
-      const midY = (y + nextY) / 2;
-      const turnHeight = nextY - y;
-
-      // Outer wall of the turn (prevents ball from escaping)
-      bodies.push(Bodies.rectangle(exitX + dir * 22, midY, 8, turnHeight + 25, {
-        ...mkOpts('#3d3d5c', 0.5)
-      }));
-
-      // Inner curved guide - using multiple segments forming a smooth curve
-      // The curve connects the bottom of current ramp to the top of next ramp
-      const curveSegs = 10;
-      const curveR = turnHeight * 0.42;
-      
-      for (let s = 0; s < curveSegs; s++) {
-        const t1 = s / curveSegs;
-        const t2 = (s + 1) / curveSegs;
-        const a1 = -Math.PI / 2 + Math.PI * t1;
-        const a2 = -Math.PI / 2 + Math.PI * t2;
-        const midA = (a1 + a2) / 2;
-
-        // Curve center is at (exitX, midY)
-        const squish = 0.25; // Horizontal squish factor (makes curve tighter)
-        const sx = exitX + dir * curveR * squish * Math.cos(midA);
-        const sy = midY + curveR * Math.sin(midA);
-
-        const segLen = curveR * Math.PI / curveSegs + 2;
-
-        bodies.push(Bodies.rectangle(sx, sy, segLen, TRACK_RAMP_THICKNESS - 1, {
-          ...mkOpts(darkColor, 0.4),
-          angle: midA + Math.PI / 2
-        }));
-      }
-
-      // Small catch ramp at the bottom of the turn (extra safety)
-      bodies.push(Bodies.rectangle(exitX - dir * 5, nextY - 15, 35, 5, {
-        ...mkOpts('#555', 0.3),
-        angle: lr ? -0.35 : 0.35
-      }));
-    }
+  let currentY = START_Y;
+  
+  // Straight entry at the start
+  for(let y = START_Y - 200; y < START_Y; y += 20) {
+    pathPoints.push({ x: W/2, y: y });
   }
 
-  // ====== Side walls (full height) ======
-  bodies.push(Bodies.rectangle(4, pbWorldHeight / 2, 8, pbWorldHeight, {
-    ...mkOpts('#2d2d4e', 0.5)
-  }));
-  bodies.push(Bodies.rectangle(W - 4, pbWorldHeight / 2, 8, pbWorldHeight, {
-    ...mkOpts('#2d2d4e', 0.5)
-  }));
+  // Generate sine wave path
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * maxT;
+    const x = W / 2 + amplitude * Math.sin(t);
+    const y = START_Y + t * stretch;
+    pathPoints.push({ x, y });
+    currentY = y;
+  }
+  
+  // Straight exit at the bottom
+  for(let y = currentY; y < currentY + 300; y += 20) {
+    pathPoints.push({ x: W/2, y: y });
+  }
 
-  // ====== Top wall ======
-  bodies.push(Bodies.rectangle(W / 2, -50, W, 100, {
-    ...mkOpts('#2d2d4e')
-  }));
+  // Build physical guardrails along the path
+  const wallThickness = 24;
+  for (let i = 0; i < pathPoints.length - 1; i++) {
+    const p1 = pathPoints[i];
+    const p2 = pathPoints[i+1];
+    
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    
+    const nx = -dy / len;
+    const ny = dx / len;
+    
+    const leftX = p1.x + nx * TRACK_WIDTH / 2;
+    const leftY = p1.y + ny * TRACK_WIDTH / 2;
+    const rightX = p1.x - nx * TRACK_WIDTH / 2;
+    const rightY = p1.y - ny * TRACK_WIDTH / 2;
+    
+    const angle = Math.atan2(dy, dx);
+    const segmentLength = len + 10; // Overlap to prevent snagging
 
-  // ====== Bottom catch-all ======
-  bodies.push(Bodies.rectangle(W / 2, pbWorldHeight + 50, W, 100, {
-    ...mkOpts('#2d2d4e')
-  }));
+    // Left Wall
+    bodies.push(Bodies.rectangle(leftX, leftY, segmentLength, wallThickness, {
+      isStatic: true,
+      friction: 0,
+      restitution: 0.6, // Bouncy guardrails
+      angle: angle,
+      render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 2 } // Metallic rails
+    }));
 
-  return bodies;
+    // Right Wall
+    bodies.push(Bodies.rectangle(rightX, rightY, segmentLength, wallThickness, {
+      isStatic: true,
+      friction: 0,
+      restitution: 0.6,
+      angle: angle,
+      render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 2 }
+    }));
+  }
+
+  // Top blocking wall
+  bodies.push(Bodies.rectangle(W/2, START_Y - 220, W, 40, { isStatic: true }));
+
+  return { bodies, pathPoints, finalY: pathPoints[pathPoints.length-1].y };
 }
 
-// Helper: darken a hex color
-function darkenColor(hex, factor) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return '#' + Math.round(r * factor).toString(16).padStart(2, '0') +
-               Math.round(g * factor).toString(16).padStart(2, '0') +
-               Math.round(b * factor).toString(16).padStart(2, '0');
+function drawCheckerboard(ctx, x, y, width, height) {
+  const sq = 10;
+  ctx.save();
+  ctx.translate(x - width/2, y - height/2);
+  for (let i = 0; i < width; i += sq) {
+    for (let j = 0; j < height; j += sq) {
+      ctx.fillStyle = ((i/sq + j/sq) % 2 === 0) ? '#fff' : '#000';
+      ctx.fillRect(i, j, sq, sq);
+    }
+  }
+  ctx.restore();
+}
+
+function drawRankingHUD(ctx, width, height) {
+  if (pbState.status !== 'playing' || Object.values(pbBalls).length === 0) return;
+  
+  const allBalls = Object.values(pbBalls);
+  const sortedAll = [...allBalls].sort((a, b) => b.position.y - a.position.y);
+  
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  const hudX = width - 110;
+  const hudY = 10;
+  const hudH = Math.min(sortedAll.length * 22 + 30, 200);
+  ctx.fillRect(hudX, hudY, 105, hudH);
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(hudX, hudY, 105, hudH);
+  
+  ctx.fillStyle = '#f1c40f';
+  ctx.font = 'bold 12px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('🏁 即時排名', hudX + 8, hudY + 16);
+  
+  ctx.font = '11px Arial';
+  const maxShow = Math.min(sortedAll.length, 7);
+  for (let i = 0; i < maxShow; i++) {
+    const b = sortedAll[i];
+    const isFinished = pbState.finished.includes(b.plugin.name);
+    const rankY = hudY + 34 + i * 20;
+    
+    const medals = ['🥇', '🥈', '🥉'];
+    const rank = i < 3 ? medals[i] : (i + 1) + '.';
+    
+    ctx.fillStyle = isFinished ? '#f1c40f' : '#fff';
+    ctx.font = isFinished ? 'bold 11px Arial' : '11px Arial';
+    
+    let displayName = b.plugin.name;
+    if (displayName.length > 5) displayName = displayName.substring(0, 4) + '..';
+    ctx.fillText(rank + ' ' + displayName, hudX + 8, rankY);
+  }
 }
 
 function dropBalls(pool) {
   console.log('[Pinball] dropBalls called with pool:', pool);
-  if (!pbEngine) {
-    console.error('[Pinball] Engine not ready!');
-    return;
-  }
+  if (!pbEngine) return;
+  
   const { World, Bodies } = Matter;
   const width = pbRender.options.width;
 
-  // Remove existing balls
   const currentBalls = Object.values(pbBalls);
-  if (currentBalls.length > 0) {
-    World.remove(pbEngine.world, currentBalls);
-  }
+  if (currentBalls.length > 0) World.remove(pbEngine.world, currentBalls);
   pbBalls = {};
 
-  // Reset camera
-  cameraY = 0;
   cameraSmoothed = 0;
   cameraTargetIdx = 0;
   lastCameraSwitch = Date.now();
   pbRender.bounds.min.y = 0;
   pbRender.bounds.max.y = pbRender.options.height;
 
-  // Balls start above the first ramp (layer 0, left side since layer 0 goes left→right)
-  const startBaseX = TRACK_PAD + 50;
-  const startY = TRACK_START_Y - 40;
-  const spreadX = Math.min(width * 0.4, pool.length * 20);
+  // Start grid
+  const cols = Math.floor(TRACK_WIDTH / (MARBLE_RADIUS * 2.5));
+  const startBaseX = width / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
+  const startY = START_Y - 50;
 
   pool.forEach((name, idx) => {
-    const x = startBaseX + (idx * 22) % spreadX + Math.random() * 10;
-    const y = startY - idx * 8 - Math.random() * 30;
-    const color = BALL_COLORS[idx % BALL_COLORS.length];
+    const row = Math.floor(idx / cols);
+    const col = idx % cols;
+    
+    const x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (Math.random() - 0.5) * 5;
+    const y = startY - row * (MARBLE_RADIUS * 2.5) - Math.random() * 5;
+    
+    const color = POOL_COLORS[idx % POOL_COLORS.length];
+    const num = (idx % 15) + 1;
 
-    const ball = Bodies.circle(x, y, 13, {
-      restitution: 0.5,
-      friction: 0.03,
-      density: 0.04,
-      render: { fillStyle: color, strokeStyle: '#fff', lineWidth: 2 },
-      plugin: { isBall: true, name: name, stuckFrames: 0 }
+    const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
+      restitution: 0.8, // Bouncy billiard balls
+      friction: 0.005,
+      density: 0.05,
+      render: { fillStyle: color }, // Stored for custom renderer
+      plugin: { isBall: true, name: name, num: num, stuckFrames: 0 }
     });
 
     pbBalls[name] = ball;
@@ -528,20 +571,11 @@ function dropBalls(pool) {
   World.add(pbEngine.world, Object.values(pbBalls));
 }
 
-// ==========================================
-// Socket binding & UI state management
-// ==========================================
 function bindPinballSocket(s) {
-  console.log('[Pinball] bindPinballSocket called');
   s.on('pinball_state', (state) => {
-    console.log('[Pinball] pinball_state received:', JSON.stringify({
-      status: state.status, poolLen: state.pool?.length,
-      finishedLen: state.finished?.length
-    }));
     const prevStatus = pbState.status;
     pbState = state;
 
-    // Re-fetch DOM elements
     if (!pinballStatusOverlay) pinballStatusOverlay = document.getElementById('pinball-status-overlay');
     if (!pinballStatusText) pinballStatusText = document.getElementById('pinball-status-text');
     if (!pinballStatusTimer) pinballStatusTimer = document.getElementById('pinball-status-timer');
@@ -549,9 +583,6 @@ function bindPinballSocket(s) {
     if (!pinballContainer) pinballContainer = document.getElementById('pinball-container');
     if (!pinballCanvasWrapper) pinballCanvasWrapper = document.getElementById('pinball-canvas-wrapper');
 
-    // ==========================================
-    // 1. Update pool/results lists
-    // ==========================================
     const pinballPoolCount = document.getElementById('pinball-pool-count');
     if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
 
@@ -576,7 +607,7 @@ function bindPinballSocket(s) {
       if (roomPoolDisplayList) {
         const li = document.createElement('li');
         li.style.cssText = 'padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px;';
-        li.innerHTML = `<span style="font-size: 20px;">🕹️</span><span style="font-size: 16px;">${name}</span>`;
+        li.innerHTML = `<span style="font-size: 20px;">🎱</span><span style="font-size: 16px;">${name}</span>`;
         roomPoolDisplayList.appendChild(li);
       }
     });
@@ -598,18 +629,13 @@ function bindPinballSocket(s) {
     if (roomPoolDisplayList) roomPoolDisplayList.scrollTop = oldPoolScroll;
     if (roomResultList) roomResultList.scrollTop = oldResultScroll;
 
-    // ==========================================
-    // 2. Manage UI based on status
-    // ==========================================
     const roomAdminPanel = document.getElementById('room-admin-panel');
     const roomParticipantsPanel = document.getElementById('room-participants-panel');
     const pinballItemSelectionUi = document.getElementById('pinball-item-selection-ui');
 
-    // Hide item selection UI (removed feature)
     if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
     if (pinballStatusOverlay) pinballStatusOverlay.classList.add('hidden');
 
-    // Initialize engine when needed
     if (!pbEngine && state.status !== 'idle') {
       initPinballEngine();
     }
@@ -621,13 +647,10 @@ function bindPinballSocket(s) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '等待遊戲開始...';
       }
-
-      // Clear balls if returned to lobby
       if (prevStatus === 'playing' && pbEngine) {
         Matter.World.remove(pbEngine.world, Object.values(pbBalls));
         pbBalls = {};
       }
-
     } else if (state.status === 'instruction') {
       if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
       if (roomParticipantsPanel) roomParticipantsPanel.classList.add('hidden');
@@ -649,7 +672,6 @@ function bindPinballSocket(s) {
     } else if (state.status === 'playing') {
       if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
 
-      // Hide instruction overlay
       const instrOverlay = document.getElementById('pinball-instruction-overlay');
       if (instrOverlay) {
         instrOverlay.classList.add('hidden');
@@ -666,8 +688,7 @@ function bindPinballSocket(s) {
 
       initPinballEngine();
 
-      if (prevStatus === 'instruction' || prevStatus === 'lobby' || prevStatus === 'item_placement') {
-        console.log('[Pinball] Transition to playing! Pool:', state.pool);
+      if (prevStatus === 'instruction' || prevStatus === 'lobby') {
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
           countdownEl.classList.remove('hidden');
@@ -684,7 +705,6 @@ function bindPinballSocket(s) {
         }
       }
 
-      // Check for winner
       if (state.finished.length > 0) {
         const winner = state.finished[0];
         if (pinballSpectatorUi) pinballSpectatorUi.innerText = '🏆 冠軍：' + winner + '！';
@@ -707,7 +727,6 @@ function bindPinballSocket(s) {
         }
       }
     } else {
-      // idle
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
     }
   });
