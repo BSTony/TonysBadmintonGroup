@@ -1297,7 +1297,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1783839096147,
+    "lastActiveTime": 1783926809509,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1339,11 +1339,18 @@
           "John",
           "小黑",
           "Sean柏宏",
-          "鼎函"
+          "鼎函",
+          "小高"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/13 15:13",
+        "name": "小高",
+        "operator": "小高",
+        "action": "+1"
+      },
       {
         "time": "07/12 14:51",
         "name": "楊程鈞",
