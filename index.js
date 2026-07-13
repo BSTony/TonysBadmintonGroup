@@ -4052,6 +4052,8 @@ async function sendList(token, gameId, prefix = "") {
 
 // 代理推播：將群組訊息轉送給群組管理員 (作為備用推播)
 async function pushToAdmins(targetGid, messages) {
+  // 因應要求，暫停所有需要消耗推播額度的發話代理功能
+  return;
   
   if (!targetGid) return;
   const admins = groupAdmins[targetGid];
