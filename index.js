@@ -2159,24 +2159,27 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
   pinballRoom.winnerLimit = winnerLimit || 3;
-  pinballRoom.status = 'item_selection';
+  pinballRoom.status = 'instruction';
+  pinballRoom.statusEndTime = Date.now() + 5000;
   pinballRoom.itemChoices = {};
   pinballRoom.traps = [];
   io.emit('pinball_state', pinballRoom);
   
   // Sequence timers
   setTimeout(() => {
-    if (pinballRoom.status !== 'item_selection') return; // Cancelled
+    if (pinballRoom.status !== 'instruction') return; // Cancelled
     pinballRoom.status = 'item_placement';
+    pinballRoom.statusEndTime = Date.now() + 15000;
     io.emit('pinball_state', pinballRoom);
     
     setTimeout(() => {
       if (pinballRoom.status !== 'item_placement') return; // Cancelled
       pinballRoom.status = 'playing';
+      pinballRoom.statusEndTime = null;
       io.emit('pinball_state', pinballRoom);
-    }, 10000);
+    }, 15000);
     
-  }, 10000);
+  }, 5000);
   
   res.json({ success: true, pinballRoom });
 });
