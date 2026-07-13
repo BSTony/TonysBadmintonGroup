@@ -23,7 +23,7 @@ var pinballItemSelectedText = document.getElementById('pinball-item-selected-tex
 
 function selectItem(type, btnObj) {
   if (pbState.status !== 'item_selection') return;
-  if (!window.currentUser || !window.currentUser.userId) return;
+  if (!(typeof currentUser !== 'undefined' ? currentUser : null) || !(typeof currentUser !== 'undefined' ? currentUser : null).userId) return;
   
   // Highlight UI
   [btnItemObstacle, btnItemBouncer, btnItemArrow].forEach(b => {
@@ -44,7 +44,7 @@ function selectItem(type, btnObj) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      uid: window.currentUser.userId,
+      uid: (typeof currentUser !== 'undefined' ? currentUser : null).userId,
       type: type
     })
   }).catch(console.error);
@@ -62,16 +62,16 @@ if (pinballCanvasWrapper) {
       else if (pbState.status === 'item_selection') alert('請先在畫面上選擇道具！');
       return;
     }
-    if (!window.currentUser || !window.currentUser.userId) return;
+    if (!(typeof currentUser !== 'undefined' ? currentUser : null) || !(typeof currentUser !== 'undefined' ? currentUser : null).userId) return;
     
     // Check if user is in pool or is super admin
-    const myName = window.currentUser.displayName;
-    const isGlobalSuperAdmin = window.globalIsSuperAdmin === true;
+    const myName = (typeof currentUser !== 'undefined' ? currentUser : null).displayName;
+    const isGlobalSuperAdmin = (typeof globalIsSuperAdmin !== 'undefined' ? globalIsSuperAdmin : false) === true;
     if (!pbState.pool.includes(myName) && !isGlobalSuperAdmin) {
       alert('您必須先加入名單才能放置道具！');
       return;
     }
-    if (!selectedItemType && !pbState.itemChoices[window.currentUser.userId]) {
+    if (!selectedItemType && !pbState.itemChoices[(typeof currentUser !== 'undefined' ? currentUser : null).userId]) {
       alert('您剛才沒有選擇道具！');
       return;
     }
@@ -85,7 +85,7 @@ if (pinballCanvasWrapper) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: window.currentUser.userId,
+        uid: (typeof currentUser !== 'undefined' ? currentUser : null).userId,
         name: myName,
         x: x,
         y: y
@@ -101,8 +101,8 @@ if (pinballCanvasWrapper) {
 
   pinballCanvasWrapper.addEventListener('mousemove', (e) => {
     if (pbState.status !== 'item_placement') return;
-    const myName = (window.currentUser && window.currentUser.displayName) || '';
-    const isGlobalSuperAdmin = window.globalIsSuperAdmin === true;
+    const myName = ((typeof currentUser !== 'undefined' ? currentUser : null) && (typeof currentUser !== 'undefined' ? currentUser : null).displayName) || '';
+    const isGlobalSuperAdmin = (typeof globalIsSuperAdmin !== 'undefined' ? globalIsSuperAdmin : false) === true;
     if (!pbState.pool.includes(myName) && !isGlobalSuperAdmin) return;
     
     const rect = pinballCanvasWrapper.getBoundingClientRect();
@@ -317,7 +317,7 @@ function initPinballEngine() {
     
     // Draw preview trap
     if (window.pbPreviewX != null && window.pbPreviewY != null && pbState.status === 'item_placement') {
-      const typeToDraw = selectedItemType || (pbState.itemChoices[window.currentUser?.userId]?.type);
+      const typeToDraw = selectedItemType || (pbState.itemChoices[(typeof currentUser !== 'undefined' ? currentUser : null)?.userId]?.type);
       if (typeToDraw) {
         ctx.globalAlpha = 0.5;
         ctx.translate(window.pbPreviewX, window.pbPreviewY);
@@ -340,7 +340,7 @@ function initPinballEngine() {
           ctx.fillStyle = '#2ecc71';
           ctx.strokeStyle = '#fff';
           ctx.lineWidth = 2;
-          const previewAngle = pbState.itemChoices[window.currentUser?.userId]?.angle || -Math.PI/2;
+          const previewAngle = pbState.itemChoices[(typeof currentUser !== 'undefined' ? currentUser : null)?.userId]?.angle || -Math.PI/2;
           ctx.rotate(previewAngle);
           ctx.beginPath();
           ctx.moveTo(15, 0);
