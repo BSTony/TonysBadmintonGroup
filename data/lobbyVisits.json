@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1158,
+    "viewCount": 1159,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -936,11 +936,17 @@
       "U026fb9725aef08c69ba3f4cafdb6b791": {
         "displayName": "高得祐",
         "firstVisit": 1783926915481,
-        "count": 2,
-        "lastVisit": 1783926948654
+        "count": 3,
+        "lastVisit": 1783930392940
       }
     },
     "logs": [
+      {
+        "time": 1783930392940,
+        "userId": "U026fb9725aef08c69ba3f4cafdb6b791",
+        "displayName": "高得祐",
+        "pictureUrl": "https://profile.line-scdn.net/0h6osQjWIiaUBeKHnSvA0XPy54aip9WTBScxl2J2MhPiNqTysVIBl2IGMuZSNgHn4UJ0ggJ2x7NHFSOx4mQH6VdFkYNHFjGSsedEYjow"
+      },
       {
         "time": 1783929753683,
         "userId": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
@@ -2134,12 +2140,6 @@
         "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
         "displayName": "Chris Chen",
         "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
-      },
-      {
-        "time": 1783811597602,
-        "userId": "U4b697f748229b4804aa652c06b3fd285",
-        "displayName": "Tommy Lu",
-        "pictureUrl": "https://profile.line-scdn.net/0h_M2qOlhAAGIfCBKCyCt-HW9YAwg8eVlwZmofVCwIWQIjOkAzO2hLACsJXwcrbU81MGZGUSMPDFYTG3cEAV78Vhg4XVMiOUI8NWZKgQ"
       }
     ]
   },
