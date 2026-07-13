@@ -2,23 +2,7 @@
   "enabled": false,
   "message": "恭喜過關 靜待下次活動",
   "quota": 3,
-  "winners": [
-    {
-      "uid": "U49e2484c80056990b759e9039a74e1a6",
-      "name": "Kay",
-      "timeTaken": 5581
-    },
-    {
-      "uid": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "name": "謝東霖 Tony",
-      "timeTaken": 16241
-    },
-    {
-      "uid": "U04307fbd1087e54ce656086b653a60fd",
-      "name": "黃政豪",
-      "timeTaken": 48160
-    }
-  ],
+  "winners": [],
   "activeGame": "piggy_run",
   "bulletHellLeaderboard": [
     {
