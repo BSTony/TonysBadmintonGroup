@@ -3229,6 +3229,42 @@ if (btnLobbyStats) {
           statsRow.appendChild(uniqueBox);
           card.appendChild(statsRow);
           
+          // Daily Stats Table
+          if (stat.dailyStats && stat.dailyStats.length > 0) {
+            const dailyTitle = document.createElement('h4');
+            dailyTitle.style.margin = '10px 0 5px 0';
+            dailyTitle.style.fontSize = '14px';
+            dailyTitle.style.color = '#34495e';
+            dailyTitle.innerText = '📅 每日來客狀況';
+            card.appendChild(dailyTitle);
+
+            const table = document.createElement('table');
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+            table.style.marginBottom = '15px';
+            table.style.fontSize = '12px';
+            
+            table.innerHTML = `
+              <thead>
+                <tr style="background: rgba(0,0,0,0.05); text-align: left;">
+                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">日期</th>
+                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">總觀看</th>
+                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">不重複人數</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${stat.dailyStats.map(d => `
+                  <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 5px;">${d.date}</td>
+                    <td style="padding: 5px;">${d.viewCount}</td>
+                    <td style="padding: 5px;">${d.uniqueCount}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            `;
+            card.appendChild(table);
+          }
+          
           // Toggle Logs Button
           const toggleLogsBtn = document.createElement('button');
           toggleLogsBtn.className = 'btn-secondary';

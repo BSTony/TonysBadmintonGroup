@@ -1643,11 +1643,31 @@ app.get('/api/admin/all_stats', async (req, res) => {
     const logs = stats.logs || [];
     const sortedLogs = [...logs].sort((a, b) => b.time - a.time);
 
+    // Compute Daily Stats (Last 7 days or so, based on logs)
+    const dailyMap = {};
+    for (const log of logs) {
+      // Create local date string (YYYY/MM/DD)
+      const d = new Date(log.time);
+      const dateStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+      if (!dailyMap[dateStr]) {
+        dailyMap[dateStr] = { date: dateStr, uniqueUsers: new Set(), viewCount: 0 };
+      }
+      dailyMap[dateStr].viewCount++;
+      dailyMap[dateStr].uniqueUsers.add(log.userId);
+    }
+    
+    const dailyStats = Object.values(dailyMap).map(d => ({
+      date: d.date,
+      viewCount: d.viewCount,
+      uniqueCount: d.uniqueUsers.size
+    })).sort((a, b) => b.date.localeCompare(a.date));
+
     allStats.push({
       gid: g,
       groupName: gName,
       viewCount: stats.viewCount || 0,
       uniqueCount: uniqueCount,
+      dailyStats: dailyStats,
       recentVisits: sortedLogs
     });
   }
