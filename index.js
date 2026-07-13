@@ -2093,7 +2093,7 @@ app.post('/api/admin/party/start', express.json(), (req, res) => {
 // --- Pinball Endpoints ---
 app.post('/api/pinball/select-item', express.json(), (req, res) => {
   const { uid, type } = req.body;
-  if (pinballRoom.status !== 'item_placement') return res.status(400).json({ error: 'Not in placement phase' });
+  if (pinballRoom.status !== 'item_selection' && pinballRoom.status !== 'item_placement') return res.status(400).json({ error: 'Not in selection phase' });
   
   let angle = 0;
   if (type === 'arrow') {

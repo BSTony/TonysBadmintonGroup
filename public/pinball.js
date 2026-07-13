@@ -197,22 +197,6 @@ function initPinballEngine() {
     Bodies.rectangle(width/2, -400, width, 100, wallOpts) // Top
   ]);
 
-  // Top funnel (Start point) - with guaranteed 80px gap
-  const funnelWidth = width * 0.5;
-  const gap = 80;
-  const cosAngle = Math.cos(Math.PI * 0.15); // ~0.89
-  const funnelLeftX = width/2 - gap/2 - (funnelWidth/2) * cosAngle;
-  const funnelRightX = width/2 + gap/2 + (funnelWidth/2) * cosAngle;
-
-  const funnelLeft = Bodies.rectangle(funnelLeftX, 150, funnelWidth, 20, { isStatic: true, angle: Math.PI*0.15, render: { fillStyle: '#34495e' } });
-  const funnelRight = Bodies.rectangle(funnelRightX, 150, funnelWidth, 20, { isStatic: true, angle: -Math.PI*0.15, render: { fillStyle: '#34495e' } });
-  World.add(pbEngine.world, [funnelLeft, funnelRight]);
-
-  // Side Ramps
-  const rampLeft = Bodies.rectangle(0, height*0.4, width*0.4, 20, { isStatic: true, angle: Math.PI*0.2, render: { fillStyle: '#34495e' } });
-  const rampRight = Bodies.rectangle(width, height*0.6, width*0.4, 20, { isStatic: true, angle: -Math.PI*0.2, render: { fillStyle: '#34495e' } });
-  World.add(pbEngine.world, [rampLeft, rampRight]);
-
   // Plinko Pegs
   const pegs = [];
   const rows = 5;
@@ -227,7 +211,8 @@ function initPinballEngine() {
       let px = c * colSpacing + offset;
       let py = startY + r * rowSpacing;
       if (px > 20 && px < width - 20) {
-        pegs.push(Bodies.circle(px, py, 5, { isStatic: true, render: { fillStyle: '#bdc3c7' }, restitution: 0.8 }));
+        // High restitution for strong bouncy reflection
+        pegs.push(Bodies.circle(px, py, 5, { isStatic: true, render: { fillStyle: '#bdc3c7' }, restitution: 1.1, friction: 0 }));
       }
     }
   }
