@@ -955,14 +955,9 @@ function bindPinballSocket(s) {
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
           countdownEl.classList.remove('hidden');
-          countdownEl.innerText = '3';
-          setTimeout(() => countdownEl.innerText = '2', 1000);
-          setTimeout(() => countdownEl.innerText = '1', 2000);
-          setTimeout(() => {
-            countdownEl.innerText = 'GO!';
-            setTimeout(() => countdownEl.classList.add('hidden'), 1000);
-            startRace();
-          }, 3000);
+          countdownEl.innerText = 'GO!';
+          setTimeout(() => countdownEl.classList.add('hidden'), 1500);
+          startRace();
         } else {
           startRace();
         }
