@@ -134,9 +134,9 @@ function initPinballEngine() {
 
   // Start Gate and Lobby Walls (blocks balls from falling or being dragged off-screen in lobby)
   if (pbState.status !== 'playing') {
-    startGateBody = Bodies.rectangle(width / 2, START_Y - 5, width * 2, 40, {
+    startGateBody = Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
       isStatic: true,
-      render: { fillStyle: 'rgba(255, 0, 0, 0.3)' }, // Semi-transparent red line
+      render: { visible: false }, // Invisible thick physical block
       plugin: { isStartGate: true }
     });
     
@@ -344,15 +344,15 @@ function initPinballEngine() {
       }
     }
 
-    // 2. Start Line Checkerboard
-    const startSp = toScreen(width / 2, START_Y - 10);
-    if (startSp.y > -100 && startSp.y < height + 100) {
-      drawCheckerboard(ctx, startSp.x, startSp.y, TRACK_WIDTH * scaleX, 20 * scaleY);
+    // 2. Start Line Checkerboard (only draw when not playing to simulate barricade)
+    const startSp = toScreen(width / 2, START_Y);
+    if (pbState.status !== 'playing' && startSp.y > -100 && startSp.y < height + 100) {
+      drawCheckerboard(ctx, startSp.x, startSp.y, width, 20 * scaleY);
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 24px Arial';
-      ctx.shadowColor = '#000';
-      ctx.shadowBlur = 4;
-      ctx.fillText('🏁 START', startSp.x, startSp.y - 30);
+      ctx.font = `bold ${24 * scaleY}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('START', startSp.x, startSp.y);
       ctx.shadowBlur = 0;
     }
 
@@ -507,10 +507,29 @@ function buildTopDownTrack(W) {
   const amplitude = Math.min(W * 0.35, 200); // max left/right swing
   const stretch = 160; // Pixels downwards per radian
 
-  let currentY = START_Y;
+  let currentY = START_Y + 150; // Track starts below the funnel
   
-  // Straight entry at the start
-  for(let y = START_Y - 200; y < START_Y; y += 20) {
+  // Create Funnel to guide balls from wide screen into narrow track
+  const funnelHeight = 150;
+  const trackLeftX = W / 2 - TRACK_WIDTH / 2;
+  const trackRightX = W / 2 + TRACK_WIDTH / 2;
+  
+  // Left funnel wall (from x=0, y=START_Y to x=trackLeftX, y=START_Y+funnelHeight)
+  const leftFunnelLength = Math.hypot(trackLeftX - 0, funnelHeight);
+  const leftFunnelAngle = Math.atan2(funnelHeight, trackLeftX - 0);
+  bodies.push(Bodies.rectangle(trackLeftX / 2, START_Y + funnelHeight / 2, leftFunnelLength + 100, 50, {
+    isStatic: true, angle: leftFunnelAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+  }));
+  
+  // Right funnel wall (from x=W, y=START_Y to x=trackRightX, y=START_Y+funnelHeight)
+  const rightFunnelLength = Math.hypot(W - trackRightX, funnelHeight);
+  const rightFunnelAngle = Math.atan2(funnelHeight, trackRightX - W);
+  bodies.push(Bodies.rectangle(W - (W - trackRightX) / 2, START_Y + funnelHeight / 2, rightFunnelLength + 100, 50, {
+    isStatic: true, angle: rightFunnelAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+  }));
+
+  // Start track points slightly below funnel
+  for(let y = START_Y + 150; y < START_Y + 250; y += 20) {
     pathPoints.push({ x: W/2, y: y });
   }
 
@@ -594,9 +613,7 @@ function buildTopDownTrack(W) {
     }));
   }
 
-  // Top blocking wall
-  bodies.push(Bodies.rectangle(W/2, START_Y - 220, W, 40, { isStatic: true }));
-
+  // Top blocking wall removed as it interfered with the open lobby
   return { bodies, pathPoints, finalY: pathPoints[pathPoints.length-1].y };
 }
 
