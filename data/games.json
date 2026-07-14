@@ -1326,7 +1326,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1783997479340,
+    "lastActiveTime": 1783999910465,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1372,11 +1372,18 @@
           "均均",
           "永曄",
           "偉強",
-          "小洋"
+          "小洋",
+          "紀凡"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/14 11:31",
+        "name": "紀凡",
+        "operator": "紀凡",
+        "action": "+1"
+      },
       {
         "time": "07/14 10:51",
         "name": "小洋",
