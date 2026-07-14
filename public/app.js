@@ -3170,6 +3170,8 @@ if (btnLobbyStats) {
       if (data.allStats && data.allStats.length > 0) {
         let totalViews = data.totalViews || 0;
         let totalUniques = data.totalUniqueCount || 0;
+        let totalTodayViews = data.todayViews || 0;
+        let totalTodayUniques = data.todayUniqueCount || 0;
         
         const summaryCard = document.createElement('div');
         summaryCard.className = 'game-card';
@@ -3177,7 +3179,7 @@ if (btnLobbyStats) {
         summaryCard.style.border = '2px solid #FF9800';
         summaryCard.innerHTML = `
           <h3 style="margin:0 0 10px 0; color:#FF9800; text-align:center;">🌟 所有群組總結</h3>
-          <div class="detail-stats" style="margin-top:0;">
+          <div class="detail-stats" style="margin-top:0; border-bottom: 1px solid #ffe0b2; padding-bottom: 10px; margin-bottom: 10px;">
             <div class="stat-box" style="flex:1;">
               <span class="stat-label">總觀看次數</span>
               <span class="stat-value">${totalViews}</span>
@@ -3185,6 +3187,16 @@ if (btnLobbyStats) {
             <div class="stat-box" style="flex:1;">
               <span class="stat-label">總不重複觀看 (人數)</span>
               <span class="stat-value">${totalUniques}</span>
+            </div>
+          </div>
+          <div class="detail-stats" style="margin-top:0;">
+            <div class="stat-box" style="flex:1;">
+              <span class="stat-label">本日觀看次數</span>
+              <span class="stat-value" style="color:#e74c3c;">${totalTodayViews}</span>
+            </div>
+            <div class="stat-box" style="flex:1;">
+              <span class="stat-label">本日不重複觀看</span>
+              <span class="stat-value" style="color:#e74c3c;">${totalTodayUniques}</span>
             </div>
           </div>
         `;

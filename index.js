@@ -1618,6 +1618,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
 
   let allStats = [];
   let totalViews = 0;
+  let totalTodayViews = 0;
   let globalUniqueViewers = new Set();
   let todayUniqueViewers = new Set();
   const todayStart = new Date();
@@ -1647,6 +1648,9 @@ app.get('/api/admin/all_stats', async (req, res) => {
     // Compute Daily Stats (Last 7 days or so, based on logs)
     const dailyMap = {};
     for (const log of logs) {
+      if (log.time >= todayStartTime) {
+        totalTodayViews++;
+      }
       // Create local date string (YYYY/MM/DD)
       const d = new Date(log.time);
       const dateStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
@@ -1678,6 +1682,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
     allStats, 
     totalViews, 
     totalUniqueCount: globalUniqueViewers.size,
+    todayViews: totalTodayViews,
     todayUniqueCount: todayUniqueViewers.size
   });
 });
