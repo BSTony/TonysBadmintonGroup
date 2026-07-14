@@ -640,6 +640,23 @@ function dropBalls(pool) {
 }
 
 function bindPinballSocket(s) {
+  s.on('pinball_shake', () => {
+    if (pbEngine && pbBalls) {
+      Object.values(pbBalls).forEach(ball => {
+        // Apply random bump force to unstick
+        Matter.Body.applyForce(ball, ball.position, {
+          x: (Math.random() - 0.5) * 0.05,
+          y: -0.05 // Upward jump
+        });
+      });
+      // Visual feedback
+      if (pinballCanvasWrapper) {
+        pinballCanvasWrapper.style.transform = `translate(${(Math.random()-0.5)*10}px, ${(Math.random()-0.5)*10}px)`;
+        setTimeout(() => pinballCanvasWrapper.style.transform = 'translate(0, 0)', 50);
+      }
+    }
+  });
+
   s.on('pinball_state', (state) => {
     const prevStatus = pbState.status;
     pbState = state;
@@ -750,6 +767,21 @@ function bindPinballSocket(s) {
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
       if (dynBoard) dynBoard.classList.remove('hidden');
 
+      const btnShake = document.getElementById('btn-pinball-shake');
+      if (btnShake && typeof currentUser !== 'undefined' && currentUser && isSuperAdmin(currentUser.userId)) {
+        btnShake.classList.remove('hidden');
+        if (!btnShake.hasListener) {
+          btnShake.hasListener = true;
+          btnShake.addEventListener('click', () => {
+            fetch('/api/admin/pinball/shake', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ uid: currentUser.userId })
+            });
+          });
+        }
+      }
+
       if (pinballSpectatorUi) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
@@ -821,6 +853,8 @@ function bindPinballSocket(s) {
     } else {
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
       if (dynBoard) dynBoard.classList.add('hidden');
+      const btnShake = document.getElementById('btn-pinball-shake');
+      if (btnShake) btnShake.classList.add('hidden');
     }
   });
 }

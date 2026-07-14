@@ -2197,6 +2197,15 @@ app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
   res.json({ success: true });
 });
 
+// Admin bumps the table to unstick balls
+app.post('/api/admin/pinball/shake', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  io.emit('pinball_shake');
+  res.json({ success: true });
+});
+
 app.post('/api/admin/lottery/setup', express.json(), (req, res) => {
   const { uid, pool } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
