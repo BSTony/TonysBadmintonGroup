@@ -156,10 +156,10 @@ function initPinballEngine() {
       
       if (ball.speed < 0.5) {
         ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
-        if (ball.plugin.stuckFrames > 60) {
+        if (ball.plugin.stuckFrames > 40) {
           Body.applyForce(ball, ball.position, {
-            x: (Math.random() - 0.5) * 0.015,
-            y: 0.01
+            x: (Math.random() - 0.5) * 0.02,
+            y: -0.015 // Jump up and out of corners
           });
           ball.plugin.stuckFrames = 0;
         }
@@ -457,7 +457,9 @@ function buildTopDownTrack(W) {
   }
 
   // Build physical guardrails along the path
-  const wallThickness = 60; // Thickened to prevent balls flying out
+  const wallThickness = 50; 
+  const wallOffset = (TRACK_WIDTH / 2) + (wallThickness / 2) - 2; // Perfectly align inner edge
+  
   for (let i = 0; i < pathPoints.length - 1; i++) {
     const p1 = pathPoints[i];
     const p2 = pathPoints[i+1];
@@ -469,30 +471,34 @@ function buildTopDownTrack(W) {
     const nx = -dy / len;
     const ny = dx / len;
     
-    const leftX = p1.x + nx * TRACK_WIDTH / 2;
-    const leftY = p1.y + ny * TRACK_WIDTH / 2;
-    const rightX = p1.x - nx * TRACK_WIDTH / 2;
-    const rightY = p1.y - ny * TRACK_WIDTH / 2;
+    // Matter.js rectangles are positioned by their CENTER
+    const mx = (p1.x + p2.x) / 2;
+    const my = (p1.y + p2.y) / 2;
+    
+    const leftX = mx + nx * wallOffset;
+    const leftY = my + ny * wallOffset;
+    const rightX = mx - nx * wallOffset;
+    const rightY = my - ny * wallOffset;
     
     const angle = Math.atan2(dy, dx);
-    const segmentLength = len + 25; // More overlap to prevent snagging
+    const segmentLength = len + 12; // Overlap to prevent snagging
 
     // Left Wall
     bodies.push(Bodies.rectangle(leftX, leftY, segmentLength, wallThickness, {
       isStatic: true,
-      friction: 0,
-      restitution: 0.6, // Bouncy guardrails
+      friction: 0.05,
+      restitution: 0.4, // Less bouncy so they don't jump the wall
       angle: angle,
-      render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 2 } // Metallic rails
+      render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
     }));
 
     // Right Wall
     bodies.push(Bodies.rectangle(rightX, rightY, segmentLength, wallThickness, {
       isStatic: true,
-      friction: 0,
-      restitution: 0.6,
+      friction: 0.05,
+      restitution: 0.4,
       angle: angle,
-      render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 2 }
+      render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
     }));
   }
 
