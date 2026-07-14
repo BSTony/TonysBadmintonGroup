@@ -1560,9 +1560,9 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
     groupStats.uniqueViewers[userId] = { displayName, firstVisit: Date.now(), count: 0, lastVisit: 0 };
   }
 
-  // 每小時只記錄一次
+  // 每分鐘只記錄一次
   const now = Date.now();
-  if (now - groupStats.uniqueViewers[userId].lastVisit < 3600000) {
+  if (now - groupStats.uniqueViewers[userId].lastVisit < 60000) {
     return res.json({ success: true, message: 'Throttled' });
   }
 
@@ -1578,15 +1578,6 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
   // 保留最近 200 筆即可，避免無限制長大
   if (groupStats.logs.length > 200) {
     groupStats.logs = groupStats.logs.slice(0, 200);
-  }
-
-  lobbyVisitClickCount++;
-  if (lobbyVisitClickCount >= 10) {
-    lobbyVisitClickCount = 0;
-    saveLobbyVisits().catch(e => console.error(e));
-  } else {
-    // 也確保至少有儲存，但不需要每次都寫檔，改成直接呼叫 saveLobbyVisits 避免 fs.writeFile 同步寫入的問題
-    saveLobbyVisits().catch(e => console.error(e));
   }
   
   res.json({ success: true });
@@ -4241,6 +4232,19 @@ loadPromise.then(() => {
 }).catch(err => {
   console.error('❌ 伺服器啟動初始化失敗:', err);
 });
+
+// 設定大廳紀錄「每小時整點」自動儲存上傳
+function scheduleHourlySaveLobbyVisits() {
+  const now = new Date();
+  const delayToNextHour = 3600000 - (now.getMinutes() * 60000 + now.getSeconds() * 1000 + now.getMilliseconds());
+  setTimeout(() => {
+    saveLobbyVisits().catch(e => console.error(e));
+    setInterval(() => {
+      saveLobbyVisits().catch(e => console.error(e));
+    }, 3600000); // 之後每隔一小時
+  }, delayToNextHour);
+}
+scheduleHourlySaveLobbyVisits();
 async function sendLobbyLink(token, gid, prefix = "") {
   let msg = prefix ? `${prefix}\n` : '';
   
