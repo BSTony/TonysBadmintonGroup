@@ -454,7 +454,10 @@ function initPinballEngine() {
     mouse: mouse,
     constraint: { stiffness: 0.2, render: { visible: false } }
   });
-  World.add(pbEngine.world, pbMouseConstraint);
+  
+  if (pbState.status !== 'playing') {
+    World.add(pbEngine.world, pbMouseConstraint);
+  }
 
   // Filter mouse interactions (only allow dragging own ball in lobby/instruction)
   Events.on(pbMouseConstraint, 'mousedown', (event) => {
@@ -755,10 +758,16 @@ function syncBalls(state) {
 function startRace() {
   if (!pbEngine) return;
   pbEngine.gravity.y = GRAVITY_Y;
+  
   if (startGateBody) {
     Matter.World.remove(pbEngine.world, startGateBody);
     startGateBody = null;
   }
+  
+  if (pbMouseConstraint) {
+    Matter.World.remove(pbEngine.world, pbMouseConstraint);
+  }
+
   cameraSmoothed = 0;
   cameraTargetIdx = 0;
   lastCameraSwitch = Date.now();
