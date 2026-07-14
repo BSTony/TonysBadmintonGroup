@@ -732,9 +732,20 @@ function bindPinballSocket(s) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '等待遊戲開始...';
       }
-      if (prevStatus === 'playing' && pbEngine) {
-        Matter.World.remove(pbEngine.world, Object.values(pbBalls));
+      // Always destroy engine on returning to lobby so the track regenerates
+      if (pbEngine) {
+        Matter.Render.stop(pbRender);
+        Matter.Runner.stop(pbRunner);
+        Matter.World.clear(pbEngine.world);
+        Matter.Engine.clear(pbEngine);
+        if (pbRender.canvas) pbRender.canvas.remove();
+        pbRender = null;
+        pbRunner = null;
+        pbEngine = null;
         pbBalls = {};
+        
+        // Immediately rebuild with new terrain
+        initPinballEngine();
       }
     } else if (state.status === 'instruction') {
       if (roomAdminPanel) roomAdminPanel.style.display = 'none';
@@ -789,7 +800,7 @@ function bindPinballSocket(s) {
 
       initPinballEngine();
 
-      if (prevStatus === 'instruction' || prevStatus === 'lobby') {
+      if (prevStatus === 'instruction' || prevStatus === 'lobby' || prevStatus === 'idle') {
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
           countdownEl.classList.remove('hidden');
@@ -804,6 +815,9 @@ function bindPinballSocket(s) {
         } else {
           dropBalls(state.pool);
         }
+      } else if (Object.keys(pbBalls).length === 0) {
+        // Fallback for any other weird state where it's playing but no balls exist
+        dropBalls(state.pool);
       }
 
       if (state.finished.length > 0) {
