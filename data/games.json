@@ -1649,7 +1649,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1784033413704,
-    "lastActiveTime": 1784035032863,
+    "lastActiveTime": 1784048319559,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1681,11 +1681,18 @@
           "小周",
           "Sean",
           "Abby",
-          "afrahuang"
+          "afrahuang",
+          "阿發"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/15 00:58",
+        "name": "阿發",
+        "operator": "張建發",
+        "action": "+1"
+      },
       {
         "time": "07/14 21:17",
         "name": "afrahuang",
