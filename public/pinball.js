@@ -161,26 +161,46 @@ function initPinballEngine() {
     });
   });
 
-  // Keep balls moving if they get stuck against flat walls
+  // Physics updates and clamping
   Events.on(pbEngine, 'beforeUpdate', () => {
     updateDynamicLeaderboard();
-    Object.values(pbBalls).forEach(ball => {
-      // Apply constant downward push to simulate steep track
-      Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
-      
-      if (ball.speed < 0.5) {
-        ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
-        if (ball.plugin.stuckFrames > 40) {
-          Body.applyForce(ball, ball.position, {
-            x: (Math.random() - 0.5) * 0.02,
-            y: -0.015 // Jump up and out of corners
-          });
+    
+    if (pbState.status === 'playing') {
+      Object.values(pbBalls).forEach(ball => {
+        // Apply constant downward push to simulate steep track
+        Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
+        
+        if (ball.speed < 0.5) {
+          ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
+          if (ball.plugin.stuckFrames > 40) {
+            Body.applyForce(ball, ball.position, {
+              x: (Math.random() - 0.5) * 0.02,
+              y: -0.015 // Jump up and out of corners
+            });
+            ball.plugin.stuckFrames = 0;
+          }
+        } else {
           ball.plugin.stuckFrames = 0;
         }
-      } else {
-        ball.plugin.stuckFrames = 0;
-      }
-    });
+      });
+    } else {
+      // In lobby/instruction, enforce boundaries so they can't drag balls beyond the gate or off-screen
+      const width = pbRender ? pbRender.options.width : window.innerWidth;
+      Object.values(pbBalls).forEach(ball => {
+        let { x, y } = ball.position;
+        let clamped = false;
+        
+        if (y > START_Y - 20) { y = START_Y - 20; clamped = true; }
+        if (y < 20) { y = 20; clamped = true; }
+        if (x < 20) { x = 20; clamped = true; }
+        if (x > width - 20) { x = width - 20; clamped = true; }
+        
+        if (clamped) {
+          Matter.Body.setPosition(ball, { x, y });
+          Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+        }
+      });
+    }
   });
 
   // Camera tracking
