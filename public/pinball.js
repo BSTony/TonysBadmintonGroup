@@ -5,6 +5,8 @@ let pbEngine, pbRender, pbRunner;
 let pbBalls = {};
 let pbState = { status: 'idle', pool: [], finished: [], winnerLimit: 3 };
 let pbWorldHeight = 3500;
+let startGateBody = null;
+let pbMouseConstraint = null;
 
 // Camera state
 let cameraTargetIdx = 0;
@@ -23,7 +25,7 @@ var pinballSpectatorUi = pinballSpectatorUi || document.getElementById('pinball-
 
 // Track Constants
 const TRACK_WIDTH = 180;
-const START_Y = 150;
+let START_Y = 150;
 const MARBLE_RADIUS = 12;
 const GRAVITY_Y = 0.55;
 
@@ -62,6 +64,8 @@ function destroyEngine() {
   pbRunner = null;
   pbBalls = {};
   trackPathPoints = [];
+  startGateBody = null;
+  pbMouseConstraint = null;
 }
 
 function initPinballEngine() {
@@ -89,8 +93,10 @@ function initPinballEngine() {
 
   pbEngine = Engine.create();
   // Gravity pulls them down the screen in top-down view (simulating tilt)
-  pbEngine.gravity.y = GRAVITY_Y;
+  pbEngine.gravity.y = (pbState.status === 'playing') ? GRAVITY_Y : 0;
   pbEngine.gravity.x = 0;
+
+  START_Y = Math.floor(height / 2); // Half screen wait area
 
   pinballCanvasWrapper.innerHTML = '';
 
@@ -124,7 +130,15 @@ function initPinballEngine() {
     render: { visible: false },
     plugin: { isFinishLine: true }
   });
-  World.add(pbEngine.world, [finishLine]);
+
+  // Start Gate (blocks balls from falling in lobby)
+  startGateBody = Bodies.rectangle(width / 2, START_Y - 5, TRACK_WIDTH + 100, 20, {
+    isStatic: true,
+    render: { fillStyle: 'rgba(255, 0, 0, 0.3)' }, // Semi-transparent red line
+    plugin: { isStartGate: true }
+  });
+
+  World.add(pbEngine.world, [finishLine, startGateBody]);
 
   // Finish line collision
   Events.on(pbEngine, 'collisionStart', (event) => {
@@ -402,6 +416,54 @@ function initPinballEngine() {
   Render.run(pbRender);
   pbRunner = Runner.create();
   Runner.run(pbRunner, pbEngine);
+
+  // Setup Mouse Constraint for dragging
+  const { Mouse, MouseConstraint } = Matter;
+  const mouse = Mouse.create(pbRender.canvas);
+  pbMouseConstraint = MouseConstraint.create(pbEngine, {
+    mouse: mouse,
+    constraint: { stiffness: 0.2, render: { visible: false } }
+  });
+  World.add(pbEngine.world, pbMouseConstraint);
+
+  // Filter mouse interactions (only allow dragging own ball in lobby/instruction)
+  Events.on(pbMouseConstraint, 'mousedown', (event) => {
+    if (pbState.status !== 'lobby' && pbState.status !== 'instruction') {
+      pbMouseConstraint.body = null; // Deny drag if racing
+      return;
+    }
+    const body = pbMouseConstraint.body;
+    if (body) {
+      if (!body.plugin || !body.plugin.isBall) {
+        pbMouseConstraint.body = null; // Only balls are draggable
+        return;
+      }
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (body.plugin.name !== myName) {
+        pbMouseConstraint.body = null; // Deny dragging someone else's ball
+      }
+    }
+  });
+
+  // Sync position on release or drag
+  Events.on(pbMouseConstraint, 'enddrag', (event) => {
+    const body = event.body;
+    if (body && body.plugin && body.plugin.isBall) {
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (body.plugin.name === myName) {
+        if (typeof pinballSocket !== 'undefined') {
+          pinballSocket.emit('pinball_move_ball', {
+            name: myName,
+            x: body.position.x,
+            y: body.position.y
+          });
+        }
+      }
+    }
+  });
+
+  pbRender.mouse = mouse;
+
   console.log('[Pinball] Top-down track engine started');
 }
 
@@ -593,53 +655,82 @@ function updateDynamicLeaderboard() {
   });
 }
 
-function dropBalls(pool) {
-  console.log('[Pinball] dropBalls called with pool:', pool);
+function syncBalls(state) {
   if (!pbEngine) return;
-  
   const { World, Bodies } = Matter;
   const width = pbRender.options.width;
 
-  const currentBalls = Object.values(pbBalls);
-  if (currentBalls.length > 0) World.remove(pbEngine.world, currentBalls);
-  pbBalls = {};
+  const cols = Math.floor(TRACK_WIDTH / (MARBLE_RADIUS * 2.5));
+  const startBaseX = width / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
+  const startY = START_Y - 50;
 
+  const poolSet = new Set(state.pool);
+
+  // Remove balls not in pool anymore
+  Object.keys(pbBalls).forEach(name => {
+    if (!poolSet.has(name)) {
+      World.remove(pbEngine.world, pbBalls[name]);
+      delete pbBalls[name];
+    }
+  });
+
+  // Add new balls
+  state.pool.forEach((name, idx) => {
+    if (!pbBalls[name]) {
+      let x, y;
+      if (state.positions && state.positions[name]) {
+        x = state.positions[name].x;
+        y = state.positions[name].y;
+      } else {
+        const row = Math.floor(idx / cols);
+        const col = idx % cols;
+        x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (Math.random() - 0.5) * 5;
+        y = startY - row * (MARBLE_RADIUS * 2.5) - Math.random() * 5;
+      }
+
+      const color = POOL_COLORS[idx % POOL_COLORS.length];
+      const num = (idx % 15) + 1;
+
+      const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
+        restitution: 0.6,
+        friction: 0.005,
+        density: 0.05,
+        render: { fillStyle: color },
+        plugin: { isBall: true, name: name, num: num, stuckFrames: 0 }
+      });
+
+      pbBalls[name] = ball;
+      World.add(pbEngine.world, ball);
+    }
+  });
+}
+
+function startRace() {
+  if (!pbEngine) return;
+  pbEngine.gravity.y = GRAVITY_Y;
+  if (startGateBody) {
+    Matter.World.remove(pbEngine.world, startGateBody);
+    startGateBody = null;
+  }
   cameraSmoothed = 0;
   cameraTargetIdx = 0;
   lastCameraSwitch = Date.now();
   pbRender.bounds.min.y = 0;
   pbRender.bounds.max.y = pbRender.options.height;
-
-  // Start grid
-  const cols = Math.floor(TRACK_WIDTH / (MARBLE_RADIUS * 2.5));
-  const startBaseX = width / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
-  const startY = START_Y - 50;
-
-  pool.forEach((name, idx) => {
-    const row = Math.floor(idx / cols);
-    const col = idx % cols;
-    
-    const x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (Math.random() - 0.5) * 5;
-    const y = startY - row * (MARBLE_RADIUS * 2.5) - Math.random() * 5;
-    
-    const color = POOL_COLORS[idx % POOL_COLORS.length];
-    const num = (idx % 15) + 1;
-
-    const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
-      restitution: 0.6, // Lowered bounciness slightly so they don't jump out
-      friction: 0.005,
-      density: 0.05,
-      render: { fillStyle: color }, // Stored for custom renderer
-      plugin: { isBall: true, name: name, num: num, stuckFrames: 0 }
-    });
-
-    pbBalls[name] = ball;
-  });
-
-  World.add(pbEngine.world, Object.values(pbBalls));
 }
 
 function bindPinballSocket(s) {
+  s.on('pinball_ball_moved', (data) => {
+    const { name, x, y } = data;
+    if (pbBalls[name]) {
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (name !== myName) {
+        Matter.Body.setPosition(pbBalls[name], { x, y });
+        Matter.Body.setVelocity(pbBalls[name], { x: 0, y: 0 }); // stop sliding
+      }
+    }
+  });
+
   s.on('pinball_shake', () => {
     if (pbEngine && pbBalls) {
       Object.values(pbBalls).forEach(ball => {
@@ -732,8 +823,8 @@ function bindPinballSocket(s) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '等待遊戲開始...';
       }
-      // Always destroy engine on returning to lobby so the track regenerates
-      if (pbEngine) {
+      // Always destroy engine on returning to lobby from playing so the track regenerates
+      if (prevStatus === 'playing' && pbEngine) {
         Matter.Render.stop(pbRender);
         Matter.Runner.stop(pbRunner);
         Matter.World.clear(pbEngine.world);
@@ -747,6 +838,8 @@ function bindPinballSocket(s) {
         // Immediately rebuild with new terrain
         initPinballEngine();
       }
+      
+      syncBalls(state);
     } else if (state.status === 'instruction') {
       if (roomAdminPanel) roomAdminPanel.style.display = 'none';
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
@@ -764,6 +857,8 @@ function bindPinballSocket(s) {
           instrTimer.innerText = timeLeft;
         }, 100);
       }
+
+      syncBalls(state);
 
     } else if (state.status === 'playing') {
       if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
@@ -810,14 +905,14 @@ function bindPinballSocket(s) {
           setTimeout(() => {
             countdownEl.innerText = 'GO!';
             setTimeout(() => countdownEl.classList.add('hidden'), 1000);
-            dropBalls(state.pool);
+            startRace();
           }, 3000);
         } else {
-          dropBalls(state.pool);
+          startRace();
         }
-      } else if (Object.keys(pbBalls).length === 0) {
-        // Fallback for any other weird state where it's playing but no balls exist
-        dropBalls(state.pool);
+      } else if (pbEngine && pbEngine.gravity.y === 0) {
+        // Fallback for weird state where it's playing but race hasn't physically started
+        startRace();
       }
 
       if (state.finished.length > 0) {

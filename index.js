@@ -1896,7 +1896,8 @@ let pinballRoom = {
   pool: [],
   finished: [],
   winnerLimit: 3,
-  scores: {} // Accumulate scores across rounds: { name: score }
+  scores: {}, // Accumulate scores across rounds: { name: score }
+  positions: {} // { name: { x, y } } - Custom starting positions
 };
 
 let partyTimeTimeout = null;
@@ -1950,6 +1951,16 @@ io.on('connection', (socket) => {
   socket.emit('party_state', partyRoom);
   socket.emit('lottery_state', lotteryRoom);
   socket.emit('pinball_state', pinballRoom);
+
+  socket.on('pinball_move_ball', (data) => {
+    const { name, x, y } = data;
+    if (pinballRoom.status === 'lobby' || pinballRoom.status === 'instruction') {
+      if (!pinballRoom.positions) pinballRoom.positions = {};
+      pinballRoom.positions[name] = { x, y };
+      // Broadcast this individual move to others so they can animate it locally
+      socket.broadcast.emit('pinball_ball_moved', { name, x, y });
+    }
+  });
 
   socket.on('join_lottery', (data) => {
     if (lotteryRoom.status === 'lobby') {
