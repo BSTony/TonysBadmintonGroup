@@ -1522,7 +1522,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784009894506,
+    "lastActiveTime": 1784035988569,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1551,11 +1551,18 @@
           "Yiping",
           "CC",
           "Gary",
-          "CHR"
+          "CHR",
+          "Ong"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/14 21:33",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "+1"
+      },
       {
         "time": "07/14 14:18",
         "name": "CHR",
