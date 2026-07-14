@@ -1326,7 +1326,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1783997127643,
+    "lastActiveTime": 1783997140701,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1370,11 +1370,18 @@
           "小高",
           "Ku",
           "均均",
-          "永曄"
+          "永曄",
+          "偉強"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/14 10:45",
+        "name": "偉強",
+        "operator": "永曄",
+        "action": "+1"
+      },
       {
         "time": "07/14 10:45",
         "name": "永曄",
