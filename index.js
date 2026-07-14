@@ -1339,6 +1339,8 @@ async function fetchGroupName(gid) {
     if (res.ok) {
       const data = await res.json();
       return data.groupName;
+    } else if (res.status === 404 || res.status === 400) {
+      return "未知群組 (Bot已退出)";
     }
   } catch (e) {
     console.error('Failed to fetch group name:', e.message);
