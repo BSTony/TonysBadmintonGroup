@@ -1746,7 +1746,7 @@
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
     ],
     "gameId": "1783838351270282",
-    "title": "週日 港中 早八 4小",
+    "title": "週日 港中 4小 10-11開冷氣",
     "date": "7/19 (日)",
     "time": "08:00~12:00",
     "location": "南港高中",
@@ -1784,6 +1784,7 @@
         "operator": "楊程鈞",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
