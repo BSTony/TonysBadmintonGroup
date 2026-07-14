@@ -413,10 +413,30 @@ function buildTopDownTrack(W) {
     pathPoints.push({ x: W/2, y: y });
   }
 
-  // Generate sine wave path
+  // Randomize track shape using sum of sines
+  const phase1 = Math.random() * Math.PI * 2;
+  const phase2 = Math.random() * Math.PI * 2;
+  const phase3 = Math.random() * Math.PI * 2;
+  
+  const freq1 = 1;
+  const freq2 = 1.4 + Math.random() * 0.8; // Faster wiggles
+  const freq3 = 0.4 + Math.random() * 0.3; // Long sweeping drifts
+  
+  // Weights for each sine wave component (sum to ~1.0)
+  const w1 = 0.5 + Math.random() * 0.2;
+  const w2 = 0.15 + Math.random() * 0.15;
+  const w3 = 1.0 - w1 - w2;
+
   for (let i = 0; i <= steps; i++) {
     const t = (i / steps) * maxT;
-    const x = W / 2 + amplitude * Math.sin(t);
+    
+    const xOffset = amplitude * (
+      w1 * Math.sin(t * freq1 + phase1) +
+      w2 * Math.sin(t * freq2 + phase2) +
+      w3 * Math.sin(t * freq3 + phase3)
+    );
+
+    const x = W / 2 + xOffset;
     const y = START_Y + t * stretch;
     pathPoints.push({ x, y });
     currentY = y;
