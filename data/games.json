@@ -1805,7 +1805,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1784033413704,
-    "lastActiveTime": 1784034697984,
+    "lastActiveTime": 1784035032863,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1836,11 +1836,18 @@
           "Ong",
           "小周",
           "Sean",
-          "Abby"
+          "Abby",
+          "afrahuang"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/14 21:17",
+        "name": "afrahuang",
+        "operator": "afrahuang",
+        "action": "+1"
+      },
       {
         "time": "07/14 21:11",
         "name": "偉舫",
