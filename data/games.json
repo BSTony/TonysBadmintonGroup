@@ -1517,7 +1517,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784009394412,
+    "lastActiveTime": 1784009894506,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1545,11 +1545,18 @@
           "Can",
           "Yiping",
           "CC",
-          "Gary"
+          "Gary",
+          "CHR"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/14 14:18",
+        "name": "CHR",
+        "operator": "Chen H.R.",
+        "action": "+1"
+      },
       {
         "time": "07/14 14:09",
         "name": "Gary",
