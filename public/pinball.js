@@ -96,7 +96,7 @@ function initPinballEngine() {
   pbEngine.gravity.y = (pbState.status === 'playing') ? GRAVITY_Y : 0;
   pbEngine.gravity.x = 0;
 
-  START_Y = Math.floor(height / 2); // Half screen wait area
+  START_Y = Math.floor(height * 0.65); // 65% of screen height for operations
 
   pinballCanvasWrapper.innerHTML = '';
 
@@ -130,15 +130,25 @@ function initPinballEngine() {
     render: { visible: false },
     plugin: { isFinishLine: true }
   });
+  World.add(pbEngine.world, [finishLine]);
 
-  // Start Gate (blocks balls from falling in lobby)
-  startGateBody = Bodies.rectangle(width / 2, START_Y - 5, TRACK_WIDTH + 100, 20, {
-    isStatic: true,
-    render: { fillStyle: 'rgba(255, 0, 0, 0.3)' }, // Semi-transparent red line
-    plugin: { isStartGate: true }
-  });
+  // Start Gate and Lobby Walls (blocks balls from falling or being dragged off-screen in lobby)
+  if (pbState.status !== 'playing') {
+    startGateBody = Bodies.rectangle(width / 2, START_Y - 5, width * 2, 40, {
+      isStatic: true,
+      render: { fillStyle: 'rgba(255, 0, 0, 0.3)' }, // Semi-transparent red line
+      plugin: { isStartGate: true }
+    });
+    
+    // Add physical walls for the lobby area so they can't drag balls off screen
+    const lobbyCeiling = Bodies.rectangle(width / 2, -20, width * 2, 40, { isStatic: true, render: { visible: false } });
+    const lobbyLeftWall = Bodies.rectangle(-20, START_Y / 2, 40, START_Y * 2, { isStatic: true, render: { visible: false } });
+    const lobbyRightWall = Bodies.rectangle(width + 20, START_Y / 2, 40, START_Y * 2, { isStatic: true, render: { visible: false } });
 
-  World.add(pbEngine.world, [finishLine, startGateBody]);
+    World.add(pbEngine.world, [startGateBody, lobbyCeiling, lobbyLeftWall, lobbyRightWall]);
+  } else {
+    startGateBody = null;
+  }
 
   // Finish line collision
   Events.on(pbEngine, 'collisionStart', (event) => {
