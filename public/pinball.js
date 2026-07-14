@@ -149,6 +149,7 @@ function initPinballEngine() {
 
   // Keep balls moving if they get stuck against flat walls
   Events.on(pbEngine, 'beforeUpdate', () => {
+    updateDynamicLeaderboard();
     Object.values(pbBalls).forEach(ball => {
       // Apply constant downward push to simulate steep track
       Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
@@ -386,9 +387,17 @@ function initPinballEngine() {
       ctx.fillText(name, sp.x, nameY);
     });
     
-    // Draw HUD
-    drawRankingHUD(ctx, width, height);
+    // Draw HUD - Replaced by DOM-based Dynamic Leaderboard, so we do nothing here.
   });
+
+  // Close popup logic
+  const btnClosePopup = document.getElementById('btn-pinball-close-popup');
+  if (btnClosePopup && !btnClosePopup.hasListener) {
+    btnClosePopup.hasListener = true;
+    btnClosePopup.addEventListener('click', () => {
+      document.getElementById('pinball-score-popup').classList.add('hidden');
+    });
+  }
 
   Render.run(pbRender);
   pbRunner = Runner.create();
@@ -506,43 +515,76 @@ function drawCheckerboard(ctx, x, y, width, height) {
   ctx.restore();
 }
 
-function drawRankingHUD(ctx, width, height) {
+// Removed old drawRankingHUD as we now use DOM-based dynamic leaderboard
+function updateDynamicLeaderboard() {
   if (pbState.status !== 'playing' || Object.values(pbBalls).length === 0) return;
   
+  const dynBoard = document.getElementById('pinball-dynamic-leaderboard');
+  const dynList = document.getElementById('pinball-dynamic-leaderboard-list');
+  if (!dynBoard || !dynList) return;
+
   const allBalls = Object.values(pbBalls);
   const sortedAll = [...allBalls].sort((a, b) => b.position.y - a.position.y);
   
-  ctx.fillStyle = 'rgba(0,0,0,0.7)';
-  const hudX = width - 110;
-  const hudY = 10;
-  const hudH = Math.min(sortedAll.length * 22 + 30, 200);
-  ctx.fillRect(hudX, hudY, 105, hudH);
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(hudX, hudY, 105, hudH);
+  // Find current user's rank
+  let myName = typeof currentUser !== 'undefined' && currentUser ? currentUser.displayName : null;
+  let myRankIdx = -1;
+  if (myName) {
+    myRankIdx = sortedAll.findIndex(b => b.plugin.name === myName);
+  }
+
+  const raceEnded = pbState.finished.length === pbState.pool.length;
+  let showIndices = new Set();
   
-  ctx.fillStyle = '#f1c40f';
-  ctx.font = 'bold 12px Arial';
-  ctx.textAlign = 'left';
-  ctx.fillText('🏁 即時排名', hudX + 8, hudY + 16);
+  if (raceEnded) {
+    // End of race: show top 5
+    for(let i=0; i<Math.min(5, sortedAll.length); i++) showIndices.add(i);
+  } else {
+    // Show top 3
+    for(let i=0; i<Math.min(3, sortedAll.length); i++) showIndices.add(i);
+    // Show me and my neighbors
+    if (myRankIdx !== -1) {
+      if (myRankIdx > 0) showIndices.add(myRankIdx - 1);
+      showIndices.add(myRankIdx);
+      if (myRankIdx < sortedAll.length - 1) showIndices.add(myRankIdx + 1);
+    }
+  }
+
+  const showArray = Array.from(showIndices).sort((a, b) => a - b);
   
-  ctx.font = '11px Arial';
-  const maxShow = Math.min(sortedAll.length, 7);
-  for (let i = 0; i < maxShow; i++) {
-    const b = sortedAll[i];
+  dynList.innerHTML = '';
+  let lastIdx = -1;
+
+  showArray.forEach(idx => {
+    if (lastIdx !== -1 && idx > lastIdx + 1) {
+      // Add ellipsis
+      const liDots = document.createElement('li');
+      liDots.style.textAlign = 'center';
+      liDots.style.color = '#7f8c8d';
+      liDots.innerText = '⋮';
+      dynList.appendChild(liDots);
+    }
+
+    const b = sortedAll[idx];
     const isFinished = pbState.finished.includes(b.plugin.name);
-    const rankY = hudY + 34 + i * 20;
+    const isMe = b.plugin.name === myName;
     
     const medals = ['🥇', '🥈', '🥉'];
-    const rank = i < 3 ? medals[i] : (i + 1) + '.';
+    const rankStr = idx < 3 ? medals[idx] : (idx + 1) + '.';
     
-    ctx.fillStyle = isFinished ? '#f1c40f' : '#fff';
-    ctx.font = isFinished ? 'bold 11px Arial' : '11px Arial';
+    const li = document.createElement('li');
+    li.style.color = isFinished ? '#f1c40f' : (isMe ? '#2ecc71' : '#fff');
+    li.style.fontWeight = (isFinished || isMe) ? 'bold' : 'normal';
+    li.style.display = 'flex';
+    li.style.justifyContent = 'space-between';
     
-    let displayName = b.plugin.name;
-    if (displayName.length > 5) displayName = displayName.substring(0, 4) + '..';
-    ctx.fillText(rank + ' ' + displayName, hudX + 8, rankY);
-  }
+    let dName = b.plugin.name;
+    if (dName.length > 5) dName = dName.substring(0, 4) + '..';
+    
+    li.innerHTML = `<span>${rankStr} ${dName}</span>`;
+    dynList.appendChild(li);
+    lastIdx = idx;
+  });
 }
 
 function dropBalls(pool) {
@@ -651,9 +693,8 @@ function bindPinballSocket(s) {
 
     const roomAdminPanel = document.getElementById('room-admin-panel');
     const roomParticipantsPanel = document.getElementById('room-participants-panel');
-    const pinballItemSelectionUi = document.getElementById('pinball-item-selection-ui');
+    const dynBoard = document.getElementById('pinball-dynamic-leaderboard');
 
-    if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
     if (pinballStatusOverlay) pinballStatusOverlay.classList.add('hidden');
 
     if (!pbEngine && state.status !== 'idle') {
@@ -661,8 +702,9 @@ function bindPinballSocket(s) {
     }
 
     if (state.status === 'lobby') {
-      if (roomAdminPanel) roomAdminPanel.classList.remove('hidden');
-      if (roomParticipantsPanel) roomParticipantsPanel.classList.remove('hidden');
+      if (roomAdminPanel) roomAdminPanel.style.display = '';
+      if (roomParticipantsPanel) roomParticipantsPanel.style.display = '';
+      if (dynBoard) dynBoard.classList.add('hidden');
       if (pinballSpectatorUi) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '等待遊戲開始...';
@@ -672,8 +714,8 @@ function bindPinballSocket(s) {
         pbBalls = {};
       }
     } else if (state.status === 'instruction') {
-      if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
-      if (roomParticipantsPanel) roomParticipantsPanel.classList.add('hidden');
+      if (roomAdminPanel) roomAdminPanel.style.display = 'none';
+      if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
 
       const instrOverlay = document.getElementById('pinball-instruction-overlay');
@@ -698,8 +740,9 @@ function bindPinballSocket(s) {
         instrOverlay.style.display = 'none';
       }
 
-      if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
-      if (roomParticipantsPanel) roomParticipantsPanel.classList.remove('hidden');
+      if (roomAdminPanel) roomAdminPanel.style.display = 'none';
+      if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
+      if (dynBoard) dynBoard.classList.remove('hidden');
 
       if (pinballSpectatorUi) {
         pinballSpectatorUi.classList.remove('hidden');
@@ -746,8 +789,32 @@ function bindPinballSocket(s) {
           confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
         }
       }
+
+      // Check if race is fully ended
+      if (state.finished.length > 0 && state.finished.length === state.pool.length) {
+        const popup = document.getElementById('pinball-score-popup');
+        const scoreList = document.getElementById('pinball-score-list');
+        if (popup && scoreList) {
+          scoreList.innerHTML = '';
+          // Sort by scores descending
+          const scores = state.scores || {};
+          const sortedPlayers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+          
+          sortedPlayers.forEach((p, i) => {
+            const li = document.createElement('li');
+            li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+            li.innerHTML = `<span>${rank} ${p}</span> <span style="color:#f1c40f; font-weight:bold;">${scores[p]} 分</span>`;
+            scoreList.appendChild(li);
+          });
+          popup.classList.remove('hidden');
+        }
+      }
     } else {
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
+      if (dynBoard) dynBoard.classList.add('hidden');
     }
   });
 }

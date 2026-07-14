@@ -520,17 +520,25 @@
             </div>
           </div>
           
-          <!-- Item Selection UI -->
-          <div id="pinball-item-selection-ui" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; text-align: center; background: rgba(0,0,0,0.85); padding: 20px; border-radius: 15px; z-index: 105; border: 2px solid #f39c12; box-shadow: 0 0 30px rgba(243, 156, 18, 0.5);">
-            <h3 style="color: #f1c40f; margin: 0 0 15px 0;">選擇你的專屬道具！</h3>
-            <p style="color: white; font-size: 14px; margin-bottom: 15px;">請在倒數結束前選擇一個道具，每人限選一次。</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <button id="btn-item-obstacle" class="btn" style="background: #e74c3c; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">🧱 實體路障</button>
-              <button id="btn-item-bouncer" class="btn" style="background: #3498db; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">🏓 彈跳裝置</button>
-              <button id="btn-item-arrow" class="btn" style="background: #2ecc71; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">⬆️ 噴發箭頭</button>
-            </div>
-            <p id="pinball-item-selected-text" class="hidden" style="color: #2ecc71; font-weight: bold; margin-top: 15px; font-size: 16px;">已選擇，等待放置階段...</p>
+          <!-- Dynamic Leaderboard (Left Side during race) -->
+          <div id="pinball-dynamic-leaderboard" class="hidden" style="position: absolute; top: 10px; left: 10px; width: 180px; background: rgba(0,0,0,0.6); color: white; padding: 10px; border-radius: 8px; font-family: monospace; z-index: 105; border: 1px solid rgba(255,255,255,0.2);">
+            <div style="font-weight: bold; text-align: center; color: #f1c40f; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px;">即時戰況</div>
+            <ul id="pinball-dynamic-leaderboard-list" style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+              <!-- JS will populate this -->
+            </ul>
           </div>
+          
+          <!-- Final Score Popup (End of Race) -->
+          <div id="pinball-score-popup" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; background: rgba(20, 20, 40, 0.95); padding: 20px; border-radius: 15px; z-index: 130; border: 2px solid #f1c40f; box-shadow: 0 0 30px rgba(241, 196, 15, 0.5); color: white; text-align: center; display: flex; flex-direction: column; max-height: 80vh;">
+            <h2 style="color: #f1c40f; margin-top: 0;">🏆 總積分排行榜 🏆</h2>
+            <div style="overflow-y: auto; flex-grow: 1; margin: 15px 0; background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px;">
+              <ul id="pinball-score-list" style="list-style: none; padding: 0; margin: 0; text-align: left; font-size: 16px; line-height: 2;">
+                <!-- JS will populate this -->
+              </ul>
+            </div>
+            <button id="btn-pinball-close-popup" class="btn-primary" style="padding: 10px; border-radius: 8px;">關閉視窗</button>
+          </div>
+
           
           <div id="pinball-spectator-ui" class="hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 18px; text-align: center; white-space: nowrap; z-index: 10; border: 1px solid rgba(255,255,255,0.3);">
             準備就緒
@@ -594,7 +602,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball.js?v=20260714_randomized"></script>
+  <script src="pinball.js?v=20260714_scoring"></script>
   <script src="app.js?v=20260712_01"></script>
 </body>
 </html>

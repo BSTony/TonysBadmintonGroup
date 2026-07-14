@@ -1888,7 +1888,8 @@ let pinballRoom = {
   status: 'idle', // idle, lobby, instruction, playing
   pool: [],
   finished: [],
-  winnerLimit: 3
+  winnerLimit: 3,
+  scores: {} // Accumulate scores across rounds: { name: score }
 };
 
 let partyTimeTimeout = null;
@@ -2075,6 +2076,7 @@ app.post('/api/admin/room/open', express.json(), (req, res) => {
     pinballRoom.status = 'lobby';
     pinballRoom.pool = [];
     pinballRoom.finished = [];
+    pinballRoom.scores = {};
     
     lotteryRoom.status = 'idle';
     partyRoom.status = 'idle';
@@ -2164,6 +2166,20 @@ app.post('/api/pinball/finish', express.json(), (req, res) => {
   const { name } = req.body;
   if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(name)) {
     pinballRoom.finished.push(name);
+    
+    // Calculate and assign points
+    const rank = pinballRoom.finished.length;
+    let points = 0;
+    if (rank === 1) points = 7;
+    else if (rank === 2) points = 5;
+    else if (rank === 3) points = 3;
+    else if (rank >= 4 && rank <= 10) points = 2;
+    else if (rank >= 11 && rank <= 20) points = 1;
+    
+    if (!pinballRoom.scores) pinballRoom.scores = {};
+    if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
+    pinballRoom.scores[name] += points;
+
     io.emit('pinball_state', pinballRoom);
   }
   res.json({ success: true });
@@ -2173,9 +2189,7 @@ app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
   const { uid } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
-  // Exclude up to winnerLimit top players from the pool
-  const topWinners = pinballRoom.finished.slice(0, pinballRoom.winnerLimit);
-  pinballRoom.pool = pinballRoom.pool.filter(p => !topWinners.includes(p));
+  // Do NOT exclude winners. Keep pool intact for multi-round scoring.
   pinballRoom.status = 'lobby';
   pinballRoom.finished = [];
   
