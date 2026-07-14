@@ -1556,17 +1556,24 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
   if (!groupStats.uniqueViewers) groupStats.uniqueViewers = {};
   if (!groupStats.logs) groupStats.logs = [];
 
+  if (!groupStats.uniqueViewers[userId]) {
+    groupStats.uniqueViewers[userId] = { displayName, firstVisit: Date.now(), count: 0, lastVisit: 0 };
+  }
+
+  // 每小時只記錄一次
+  const now = Date.now();
+  if (now - groupStats.uniqueViewers[userId].lastVisit < 3600000) {
+    return res.json({ success: true, message: 'Throttled' });
+  }
+
   groupStats.viewCount = (groupStats.viewCount || 0) + 1;
   
-  if (!groupStats.uniqueViewers[userId]) {
-    groupStats.uniqueViewers[userId] = { displayName, firstVisit: Date.now(), count: 0 };
-  }
   groupStats.uniqueViewers[userId].displayName = displayName; // update latest name
-  groupStats.uniqueViewers[userId].lastVisit = Date.now();
+  groupStats.uniqueViewers[userId].lastVisit = now;
   groupStats.uniqueViewers[userId].count++;
 
   // 記錄最近的造訪
-  groupStats.logs.unshift({ time: Date.now(), userId, displayName, pictureUrl });
+  groupStats.logs.unshift({ time: now, userId, displayName, pictureUrl });
   
   // 保留最近 200 筆即可，避免無限制長大
   if (groupStats.logs.length > 200) {
