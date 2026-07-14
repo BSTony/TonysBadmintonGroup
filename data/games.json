@@ -1805,7 +1805,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1784033413704,
-    "lastActiveTime": 1784033735817,
+    "lastActiveTime": 1784034697984,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1819,8 +1819,7 @@
       "Perry": true,
       "Robert": true,
       "Ong": true,
-      "小周": true,
-      "偉舫": true
+      "小周": true
     },
     "sections": [
       {
@@ -1836,13 +1835,18 @@
           "Robert",
           "Ong",
           "小周",
-          "偉舫",
           "Sean",
           "Abby"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/14 21:11",
+        "name": "偉舫",
+        "operator": "偉舫",
+        "action": "-1"
+      },
       {
         "time": "07/14 20:55",
         "name": "Abby",
