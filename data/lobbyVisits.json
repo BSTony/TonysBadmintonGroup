@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1300,
+    "viewCount": 1301,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -594,8 +594,8 @@
       "U8359dca0b543da49dab9a0215b90c137": {
         "displayName": "JoeLin",
         "firstVisit": 1783334654212,
-        "count": 7,
-        "lastVisit": 1783868741928
+        "count": 8,
+        "lastVisit": 1784062892259
       },
       "Uab37cdfbcee7c3c2fe61df8a7b09d3cb": {
         "displayName": "Ong",
@@ -977,6 +977,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1784062892259,
+        "userId": "U8359dca0b543da49dab9a0215b90c137",
+        "displayName": "JoeLin",
+        "pictureUrl": "https://profile.line-scdn.net/0hWPG6b8r0CH9qTyJyYSZ2ABofCxVJPlFtQHlCSVgdXxoAdh0sQ3oXGAxNUkpRLEh5RH1OSVpHX0dmXH8ZdBn0S21_VU5XfkohQCFCnA"
+      },
       {
         "time": 1784051162712,
         "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
@@ -2169,12 +2175,6 @@
         "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
         "displayName": "Chen H.R.",
         "pictureUrl": "https://profile.line-scdn.net/0ht-ExzyukKwJoATSanmJVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
-      },
-      {
-        "time": 1783864181517,
-        "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
-        "displayName": "小金(Chen Pei Hung)",
-        "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
       }
     ]
   },
