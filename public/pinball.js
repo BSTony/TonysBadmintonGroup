@@ -510,31 +510,44 @@ function buildTopDownTrack(W) {
   const amplitude = Math.min(W * 0.35, 200); // max left/right swing
   const stretch = 160; // Pixels downwards per radian
 
-  let currentY = START_Y + 150; // Track starts below the funnel
+  let currentY = START_Y + 10; // Track generation starts below the gate
   
   // Create Funnel to guide balls from wide screen into narrow track
-  const funnelHeight = 150;
+  const funnelHeight = 250; // Steep funnel
   const trackLeftX = W / 2 - TRACK_WIDTH / 2;
   const trackRightX = W / 2 + TRACK_WIDTH / 2;
   
-  // Left funnel wall (from x=0, y=START_Y to x=trackLeftX, y=START_Y+funnelHeight)
-  const leftFunnelLength = Math.hypot(trackLeftX - 0, funnelHeight);
-  const leftFunnelAngle = Math.atan2(funnelHeight, trackLeftX - 0);
-  bodies.push(Bodies.rectangle(trackLeftX / 2, START_Y + funnelHeight / 2, leftFunnelLength + 100, 50, {
-    isStatic: true, angle: leftFunnelAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+  // Left funnel wall
+  const lStartX = -100;
+  const lStartY = currentY;
+  const lEndX = trackLeftX;
+  const lEndY = currentY + funnelHeight;
+  const lLen = Math.hypot(lEndX - lStartX, lEndY - lStartY);
+  const lAngle = Math.atan2(lEndY - lStartY, lEndX - lStartX);
+  
+  bodies.push(Bodies.rectangle((lStartX + lEndX)/2, (lStartY + lEndY)/2, lLen, 100, {
+    isStatic: true, angle: lAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
   }));
   
-  // Right funnel wall (from x=W, y=START_Y to x=trackRightX, y=START_Y+funnelHeight)
-  const rightFunnelLength = Math.hypot(W - trackRightX, funnelHeight);
-  const rightFunnelAngle = Math.atan2(funnelHeight, trackRightX - W);
-  bodies.push(Bodies.rectangle(W - (W - trackRightX) / 2, START_Y + funnelHeight / 2, rightFunnelLength + 100, 50, {
-    isStatic: true, angle: rightFunnelAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+  // Right funnel wall
+  const rStartX = trackRightX;
+  const rStartY = currentY + funnelHeight;
+  const rEndX = W + 100;
+  const rEndY = currentY;
+  const rLen = Math.hypot(rEndX - rStartX, rEndY - rStartY);
+  const rAngle = Math.atan2(rEndY - rStartY, rEndX - rStartX);
+  
+  bodies.push(Bodies.rectangle((rStartX + rEndX)/2, (rStartY + rEndY)/2, rLen, 100, {
+    isStatic: true, angle: rAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
   }));
 
-  // Start track points slightly below funnel
-  for(let y = START_Y + 150; y < START_Y + 250; y += 20) {
+  currentY += funnelHeight;
+  
+  // Start track points exactly at funnel exit
+  for(let y = currentY; y < currentY + 100; y += 20) {
     pathPoints.push({ x: W/2, y: y });
   }
+  currentY += 100;
 
   // Randomize track shape using sum of sines
   const phase1 = Math.random() * Math.PI * 2;
@@ -550,6 +563,8 @@ function buildTopDownTrack(W) {
   const w2 = 0.15 + Math.random() * 0.15;
   const w3 = 1.0 - w1 - w2;
 
+  const trackWaveStartY = currentY;
+
   for (let i = 0; i <= steps; i++) {
     const t = (i / steps) * maxT;
     
@@ -560,7 +575,7 @@ function buildTopDownTrack(W) {
     );
 
     const x = W / 2 + xOffset;
-    const y = START_Y + t * stretch;
+    const y = trackWaveStartY + t * stretch;
     pathPoints.push({ x, y });
     currentY = y;
   }
