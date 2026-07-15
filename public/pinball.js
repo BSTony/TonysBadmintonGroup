@@ -542,6 +542,15 @@ function buildTopDownTrack(W) {
 
   currentY += funnelHeight;
   
+  // Add smooth circular bumpers at the funnel-to-track junctions to prevent snagging
+  const bumperRadius = 40;
+  bodies.push(Bodies.circle(trackLeftX - bumperRadius + 15, currentY, bumperRadius, {
+    isStatic: true, friction: 0.05, restitution: 0.2, render: { fillStyle: '#bdc3c7' }
+  }));
+  bodies.push(Bodies.circle(trackRightX + bumperRadius - 15, currentY, bumperRadius, {
+    isStatic: true, friction: 0.05, restitution: 0.2, render: { fillStyle: '#bdc3c7' }
+  }));
+  
   // Start track points exactly at funnel exit
   for(let y = currentY; y < currentY + 100; y += 20) {
     pathPoints.push({ x: W/2, y: y });
@@ -627,6 +636,14 @@ function buildTopDownTrack(W) {
       restitution: 0.4,
       angle: angle,
       render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+    }));
+
+    // Add circular joints to perfectly seal corners and prevent snagging
+    bodies.push(Bodies.circle(p1.x + nx * wallOffset, p1.y + ny * wallOffset, wallThickness / 2, {
+      isStatic: true, friction: 0.05, restitution: 0.4, render: { fillStyle: '#bdc3c7' }
+    }));
+    bodies.push(Bodies.circle(p1.x - nx * wallOffset, p1.y - ny * wallOffset, wallThickness / 2, {
+      isStatic: true, friction: 0.05, restitution: 0.4, render: { fillStyle: '#bdc3c7' }
     }));
   }
 
