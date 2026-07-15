@@ -1153,7 +1153,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784035916059,
+    "lastActiveTime": 1784080742650,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1198,11 +1198,18 @@
           "永曄",
           "偉強",
           "小洋",
-          "紀凡"
+          "紀凡",
+          "王愷璿"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/15 09:59",
+        "name": "王愷璿",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/14 21:31",
         "name": "Ong",
