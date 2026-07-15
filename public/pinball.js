@@ -454,13 +454,13 @@ function initPinballEngine() {
     constraint: { stiffness: 0.2, render: { visible: false } }
   });
   
-  if (pbState.status !== 'playing') {
+  if (pbState.status !== 'playing' || !window.pinballRaceStarted) {
     World.add(pbEngine.world, pbMouseConstraint);
   }
 
   // Filter mouse interactions (only allow dragging own ball in lobby/instruction)
   Events.on(pbMouseConstraint, 'mousedown', (event) => {
-    if (pbState.status !== 'lobby' && pbState.status !== 'instruction') {
+    if (pbState.status === 'playing' && window.pinballRaceStarted) {
       pbMouseConstraint.body = null; // Deny drag if racing
       return;
     }
@@ -524,7 +524,7 @@ function buildTopDownTrack(W) {
   const lLen = Math.hypot(lEndX - lStartX, lEndY - lStartY);
   const lAngle = Math.atan2(lEndY - lStartY, lEndX - lStartX);
   
-  bodies.push(Bodies.rectangle((lStartX + lEndX)/2, (lStartY + lEndY)/2, lLen, 100, {
+  bodies.push(Bodies.rectangle((lStartX + lEndX)/2, (lStartY + lEndY)/2, lLen, 150, {
     isStatic: true, angle: lAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
   }));
   
@@ -536,7 +536,7 @@ function buildTopDownTrack(W) {
   const rLen = Math.hypot(rEndX - rStartX, rEndY - rStartY);
   const rAngle = Math.atan2(rEndY - rStartY, rEndX - rStartX);
   
-  bodies.push(Bodies.rectangle((rStartX + rEndX)/2, (rStartY + rEndY)/2, rLen, 100, {
+  bodies.push(Bodies.rectangle((rStartX + rEndX)/2, (rStartY + rEndY)/2, rLen, 150, {
     isStatic: true, angle: rAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
   }));
 
@@ -594,7 +594,7 @@ function buildTopDownTrack(W) {
   }
 
   // Build physical guardrails along the path
-  const wallThickness = 50; 
+  const wallThickness = 120; // Increased drastically to prevent high-speed tunneling ejections
   const wallOffset = (TRACK_WIDTH / 2) + (wallThickness / 2) - 2; // Perfectly align inner edge
   
   for (let i = 0; i < pathPoints.length - 1; i++) {
