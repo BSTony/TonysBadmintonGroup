@@ -588,9 +588,18 @@ function buildTopDownTrack(W) {
     currentY = y;
   }
   
+  // Smoothly return to center for the exit
+  let lastX = pathPoints[pathPoints.length - 1].x;
+  for (let i = 1; i <= 15; i++) {
+    const nextX = lastX + (W/2 - lastX) * (i / 15);
+    currentY += 20;
+    pathPoints.push({ x: nextX, y: currentY });
+  }
+
   // Straight exit at the bottom
-  for(let y = currentY; y < currentY + 300; y += 20) {
-    pathPoints.push({ x: W/2, y: y });
+  for(let i = 0; i < 15; i++) {
+    currentY += 20;
+    pathPoints.push({ x: W/2, y: currentY });
   }
 
   // Build physical guardrails along the path
@@ -623,27 +632,21 @@ function buildTopDownTrack(W) {
     // Left Wall
     bodies.push(Bodies.rectangle(leftX, leftY, segmentLength, wallThickness, {
       isStatic: true,
-      friction: 0.05,
-      restitution: 0.4, // Less bouncy so they don't jump the wall
+      friction: 0.0,
+      restitution: 0.2, // Less bouncy so they don't jump the wall
       angle: angle,
+      chamfer: { radius: wallThickness / 2 - 2 },
       render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
     }));
 
     // Right Wall
     bodies.push(Bodies.rectangle(rightX, rightY, segmentLength, wallThickness, {
       isStatic: true,
-      friction: 0.05,
-      restitution: 0.4,
+      friction: 0.0,
+      restitution: 0.2,
       angle: angle,
+      chamfer: { radius: wallThickness / 2 - 2 },
       render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
-    }));
-
-    // Add circular joints to perfectly seal corners and prevent snagging
-    bodies.push(Bodies.circle(p1.x + nx * wallOffset, p1.y + ny * wallOffset, wallThickness / 2, {
-      isStatic: true, friction: 0.05, restitution: 0.4, render: { fillStyle: '#bdc3c7' }
-    }));
-    bodies.push(Bodies.circle(p1.x - nx * wallOffset, p1.y - ny * wallOffset, wallThickness / 2, {
-      isStatic: true, friction: 0.05, restitution: 0.4, render: { fillStyle: '#bdc3c7' }
     }));
   }
 
