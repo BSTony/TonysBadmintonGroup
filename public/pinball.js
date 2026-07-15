@@ -606,47 +606,44 @@ function buildTopDownTrack(W) {
   const wallThickness = 120; // Increased drastically to prevent high-speed tunneling ejections
   const wallOffset = (TRACK_WIDTH / 2) + (wallThickness / 2) - 2; // Perfectly align inner edge
   
-  for (let i = 0; i < pathPoints.length - 1; i++) {
+  for (let i = 0; i < pathPoints.length; i++) {
     const p1 = pathPoints[i];
-    const p2 = pathPoints[i+1];
     
-    const dx = p2.x - p1.x;
-    const dy = p2.y - p1.y;
-    const len = Math.sqrt(dx*dx + dy*dy);
+    let nx, ny;
+    if (i < pathPoints.length - 1) {
+      const p2 = pathPoints[i+1];
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const len = Math.sqrt(dx*dx + dy*dy);
+      nx = -dy / len;
+      ny = dx / len;
+    } else {
+      const p0 = pathPoints[i-1];
+      const dx = p1.x - p0.x;
+      const dy = p1.y - p0.y;
+      const len = Math.sqrt(dx*dx + dy*dy);
+      nx = -dy / len;
+      ny = dx / len;
+    }
     
-    const nx = -dy / len;
-    const ny = dx / len;
+    const leftX = p1.x + nx * wallOffset;
+    const leftY = p1.y + ny * wallOffset;
+    const rightX = p1.x - nx * wallOffset;
+    const rightY = p1.y - ny * wallOffset;
     
-    // Matter.js rectangles are positioned by their CENTER
-    const mx = (p1.x + p2.x) / 2;
-    const my = (p1.y + p2.y) / 2;
-    
-    const leftX = mx + nx * wallOffset;
-    const leftY = my + ny * wallOffset;
-    const rightX = mx - nx * wallOffset;
-    const rightY = my - ny * wallOffset;
-    
-    const angle = Math.atan2(dy, dx);
-    const segmentLength = len + 12; // Overlap to prevent snagging
-
-    // Left Wall
-    bodies.push(Bodies.rectangle(leftX, leftY, segmentLength, wallThickness, {
+    // Matter.js track walls built using overlapping circles to avoid ANY sharp edges or broken chamfering
+    bodies.push(Bodies.circle(leftX, leftY, wallThickness / 2, {
       isStatic: true,
       friction: 0.0,
       restitution: 0.2, // Less bouncy so they don't jump the wall
-      angle: angle,
-      chamfer: { radius: wallThickness / 2 - 2 },
-      render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+      render: { fillStyle: '#bdc3c7', strokeStyle: '#bdc3c7', lineWidth: 1 }
     }));
 
-    // Right Wall
-    bodies.push(Bodies.rectangle(rightX, rightY, segmentLength, wallThickness, {
+    bodies.push(Bodies.circle(rightX, rightY, wallThickness / 2, {
       isStatic: true,
       friction: 0.0,
       restitution: 0.2,
-      angle: angle,
-      chamfer: { radius: wallThickness / 2 - 2 },
-      render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+      render: { fillStyle: '#bdc3c7', strokeStyle: '#bdc3c7', lineWidth: 1 }
     }));
   }
 
