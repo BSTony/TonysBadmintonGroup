@@ -1153,7 +1153,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784100232724,
+    "lastActiveTime": 1784100242955,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1200,11 +1200,18 @@
           "小洋",
           "紀凡",
           "王愷璿",
-          "Emily🙈🙉🙊"
+          "Emily🙈🙉🙊",
+          "Winnie"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/15 15:24",
+        "name": "Winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1"
+      },
       {
         "time": "07/15 15:23",
         "name": "Emily🙈🙉🙊",
