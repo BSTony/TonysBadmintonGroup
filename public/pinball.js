@@ -1068,8 +1068,12 @@ function bindPinballSocket(s) {
         }
       }
 
-      // Check if race is fully ended
-      if (state.finished.length > 0 && state.finished.length === state.pool.length) {
+      }
+
+      // Check if race is fully ended (either by all finishing or timeout)
+      if (state.status === 'finished' || (state.finished.length > 0 && state.finished.length === state.pool.length)) {
+        if (roomAdminPanel) roomAdminPanel.style.display = ''; // Show admin panel again!
+        
         const popup = document.getElementById('pinball-score-popup');
         const scoreList = document.getElementById('pinball-score-list');
         if (popup && scoreList) {
@@ -1078,6 +1082,31 @@ function bindPinballSocket(s) {
           const scores = state.scores || {};
           const sortedPlayers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
           
+          sortedPlayers.forEach((p, i) => {
+            const li = document.createElement('li');
+            li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+            li.innerHTML = `<span>${rank} ${p}</span> <span style="color:#f1c40f; font-weight:bold;">${scores[p]} 分</span>`;
+            scoreList.appendChild(li);
+          });
+          popup.classList.remove('hidden');
+        }
+      }
+    } else if (state.status === 'finished') {
+      // If we are late-joining during the finished state
+      if (roomAdminPanel) roomAdminPanel.style.display = '';
+      if (roomParticipantsPanel) roomParticipantsPanel.style.display = '';
+      if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
+      
+      const popup = document.getElementById('pinball-score-popup');
+      if (popup && popup.classList.contains('hidden') && state.finished.length > 0) {
+        const scoreList = document.getElementById('pinball-score-list');
+        if (scoreList) {
+          scoreList.innerHTML = '';
+          const scores = state.scores || {};
+          const sortedPlayers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
           sortedPlayers.forEach((p, i) => {
             const li = document.createElement('li');
             li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';

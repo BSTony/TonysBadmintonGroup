@@ -2196,6 +2196,21 @@ app.post('/api/pinball/finish', express.json(), (req, res) => {
     if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
     pinballRoom.scores[name] += points;
 
+    // If this is the first finisher, start a 10-second countdown to auto-end the race
+    if (pinballRoom.finished.length === 1) {
+      setTimeout(() => {
+        if (pinballRoom.status === 'playing') {
+          pinballRoom.status = 'finished';
+          io.emit('pinball_state', pinballRoom);
+        }
+      }, 10000);
+    }
+
+    // If everyone finished, end immediately
+    if (pinballRoom.finished.length >= pinballRoom.pool.length) {
+      pinballRoom.status = 'finished';
+    }
+
     io.emit('pinball_state', pinballRoom);
   }
   res.json({ success: true });
