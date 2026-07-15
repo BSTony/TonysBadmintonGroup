@@ -351,7 +351,7 @@ function initPinballEngine() {
       ctx.font = `bold ${24 * scaleY}px Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('START', startSp.x, startSp.y);
+      ctx.fillText('START', startSp.x, startSp.y + 25 * scaleY); // Draw below the gate so balls don't cover it
       ctx.shadowBlur = 0;
     }
 
@@ -979,30 +979,20 @@ function bindPinballSocket(s) {
           countdownEl.classList.remove('hidden');
           
           let count = 5;
-          let phase = 'instruction';
-          countdownEl.innerText = '即將開始比賽\n請將彈珠就位！';
-          countdownEl.style.fontSize = '24px';
+          countdownEl.innerText = count.toString();
+          countdownEl.style.fontSize = ''; // Use original CSS size
           
           if (countdownEl.timer) clearInterval(countdownEl.timer);
           countdownEl.timer = setInterval(() => {
-            if (phase === 'instruction') {
-              count--;
-              if (count <= 0) {
-                phase = 'countdown';
-                count = 5;
-                countdownEl.style.fontSize = '';
-              }
-            } else if (phase === 'countdown') {
-              if (count > 0) {
-                countdownEl.innerText = count.toString();
-              } else {
-                clearInterval(countdownEl.timer);
-                countdownEl.timer = null;
-                countdownEl.innerText = 'GO!';
-                setTimeout(() => countdownEl.classList.add('hidden'), 1500);
-                startRace();
-              }
-              count--;
+            count--;
+            if (count > 0) {
+              countdownEl.innerText = count.toString();
+            } else {
+              clearInterval(countdownEl.timer);
+              countdownEl.timer = null;
+              countdownEl.innerText = 'GO!';
+              setTimeout(() => countdownEl.classList.add('hidden'), 1500);
+              startRace();
             }
           }, 1000);
         } else {
