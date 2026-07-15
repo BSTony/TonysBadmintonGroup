@@ -919,6 +919,29 @@ function bindPinballSocket(s) {
       
       syncBalls(state);
     } else if (state.status === 'instruction') {
+      // Destroy engine if we came directly from playing (Next Round)
+      if (prevStatus === 'playing' && pbEngine) {
+        Matter.Render.stop(pbRender);
+        Matter.Runner.stop(pbRunner);
+        Matter.World.clear(pbEngine.world);
+        Matter.Engine.clear(pbEngine);
+        if (pbRender.canvas) pbRender.canvas.remove();
+        pbRender = null;
+        pbRunner = null;
+        pbEngine = null;
+        pbBalls = {};
+        initPinballEngine();
+      }
+
+      const countdownEl = document.getElementById('pinball-countdown');
+      if (countdownEl) {
+        if (countdownEl.timer) {
+          clearInterval(countdownEl.timer);
+          countdownEl.timer = null;
+        }
+        countdownEl.classList.add('hidden');
+      }
+
       if (roomAdminPanel) roomAdminPanel.style.display = 'none';
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
@@ -947,15 +970,7 @@ function bindPinballSocket(s) {
         instrOverlay.style.display = 'none';
       }
 
-      if (roomAdminPanel) {
-        if (state.pool && state.pool.length > 0 && state.finished.length === state.pool.length) {
-          if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
-            roomAdminPanel.style.display = '';
-          }
-        } else {
-          roomAdminPanel.style.display = 'none';
-        }
-      }
+      if (roomAdminPanel) roomAdminPanel.style.display = 'none';
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
       if (dynBoard) dynBoard.classList.remove('hidden');
 
@@ -1016,7 +1031,41 @@ function bindPinballSocket(s) {
 
       if (state.finished.length > 0) {
         const winner = state.finished[0];
-        if (pinballSpectatorUi) pinballSpectatorUi.innerText = '🏆 冠軍：' + winner + '！';
+        if (pinballSpectatorUi) {
+          if (!pinballSpectatorUi.querySelector('#pinball-winner-text')) {
+            pinballSpectatorUi.innerHTML = `<div id="pinball-winner-text">🏆 冠軍：${winner}！</div>`;
+          }
+          
+          if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+            let nextBtn = document.getElementById('btn-pinball-quick-next');
+            if (!nextBtn) {
+              nextBtn = document.createElement('button');
+              nextBtn.id = 'btn-pinball-quick-next';
+              nextBtn.className = 'btn';
+              nextBtn.style.marginTop = '10px';
+              nextBtn.style.padding = '8px 16px';
+              nextBtn.style.background = '#2ecc71';
+              nextBtn.style.color = 'white';
+              nextBtn.style.border = 'none';
+              nextBtn.style.borderRadius = '5px';
+              nextBtn.style.cursor = 'pointer';
+              nextBtn.style.fontSize = '16px';
+              nextBtn.innerText = '下一場 (重新開始)';
+              nextBtn.onclick = async () => {
+                nextBtn.disabled = true;
+                nextBtn.innerText = '處理中...';
+                try {
+                  await fetch('/api/admin/pinball/start-sequence', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uid: currentUser.userId, winnerLimit: state.winnerLimit || 3 })
+                  });
+                } catch(e) { console.error(e); }
+              };
+              pinballSpectatorUi.appendChild(nextBtn);
+            }
+          }
+        }
 
         var lotteryWinnerAnnouncement = document.getElementById('lottery-winner-announcement');
         var lotteryWinnerName = document.getElementById('lottery-winner-name');
