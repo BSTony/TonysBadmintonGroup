@@ -946,18 +946,16 @@ function bindPinballSocket(s) {
           instrOverlay.classList.add('hidden');
           instrOverlay.style.display = 'none';
         }
-        if (countdownEl) {
-          countdownEl.classList.remove('hidden');
-          countdownEl.style.fontSize = '';
-        }
       } else {
         if (instrOverlay && instrTimer) {
           instrOverlay.classList.remove('hidden');
           instrOverlay.style.display = 'flex';
         }
-        if (countdownEl) {
-          countdownEl.classList.add('hidden');
-        }
+      }
+      
+      if (countdownEl) {
+        countdownEl.classList.remove('hidden');
+        countdownEl.style.fontSize = '';
       }
 
       if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
@@ -1030,6 +1028,7 @@ function bindPinballSocket(s) {
       if (prevStatus === 'instruction') {
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
+          countdownEl.classList.remove('hidden');
           countdownEl.innerText = 'GO!';
           setTimeout(() => countdownEl.classList.add('hidden'), 1500);
         }
