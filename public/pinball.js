@@ -580,8 +580,9 @@ function buildTopDownTrack(W) {
   }
   
   // Straight exit at the bottom
+  const lastX = pathPoints[pathPoints.length - 1].x;
   for(let y = currentY; y < currentY + 300; y += 20) {
-    pathPoints.push({ x: W/2, y: y });
+    pathPoints.push({ x: lastX, y: y });
   }
 
   // Build physical guardrails along the path
@@ -627,6 +628,14 @@ function buildTopDownTrack(W) {
       restitution: 0.4,
       angle: angle,
       render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+    }));
+
+    // Add circular joints to perfectly seal corners and prevent snagging
+    bodies.push(Bodies.circle(p2.x + nx * wallOffset, p2.y + ny * wallOffset, wallThickness / 2, {
+      isStatic: true, friction: 0.05, restitution: 0.4, render: { fillStyle: '#bdc3c7' }
+    }));
+    bodies.push(Bodies.circle(p2.x - nx * wallOffset, p2.y - ny * wallOffset, wallThickness / 2, {
+      isStatic: true, friction: 0.05, restitution: 0.4, render: { fillStyle: '#bdc3c7' }
     }));
   }
 
