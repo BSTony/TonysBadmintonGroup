@@ -1652,7 +1652,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1783839260183,
+    "lastActiveTime": 1784119349149,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1670,11 +1670,18 @@
         "label": "",
         "list": [
           "CC",
-          "楊程鈞"
+          "楊程鈞",
+          "戴鏡達"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/15 20:42",
+        "name": "戴鏡達",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/12 14:54",
         "name": "楊程鈞",
