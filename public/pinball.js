@@ -947,7 +947,15 @@ function bindPinballSocket(s) {
         instrOverlay.style.display = 'none';
       }
 
-      if (roomAdminPanel) roomAdminPanel.style.display = 'none';
+      if (roomAdminPanel) {
+        if (state.pool && state.pool.length > 0 && state.finished.length === state.pool.length) {
+          if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+            roomAdminPanel.style.display = '';
+          }
+        } else {
+          roomAdminPanel.style.display = 'none';
+        }
+      }
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
       if (dynBoard) dynBoard.classList.remove('hidden');
 
