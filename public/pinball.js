@@ -732,7 +732,12 @@ function updateDynamicLeaderboard() {
     let dName = b.plugin.name;
     if (dName.length > 5) dName = dName.substring(0, 4) + '..';
     
-    li.innerHTML = `<span>${rankStr} ${dName}</span>`;
+    let scoreText = '';
+    if (pbState.scores && pbState.scores[b.plugin.name] > 0) {
+      scoreText = ` <span style="color:#f1c40f;">(${pbState.scores[b.plugin.name]}分)</span>`;
+    }
+    
+    li.innerHTML = `<span>${rankStr} ${dName}${scoreText}</span>`;
     dynList.appendChild(li);
     lastIdx = idx;
   });
@@ -757,8 +762,10 @@ function syncBalls(state) {
     }
   });
 
-  // Add new balls
+  // Add or update balls
   state.pool.forEach((name, idx) => {
+    const color = (state.colors && state.colors[name]) ? state.colors[name] : POOL_COLORS[idx % POOL_COLORS.length];
+    
     if (!pbBalls[name]) {
       let x, y;
       if (state.positions && state.positions[name]) {
@@ -771,7 +778,6 @@ function syncBalls(state) {
         y = startY - row * (MARBLE_RADIUS * 2.5) - Math.random() * 5;
       }
 
-      const color = POOL_COLORS[idx % POOL_COLORS.length];
       const num = (idx % 15) + 1;
 
       const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
@@ -784,6 +790,9 @@ function syncBalls(state) {
 
       pbBalls[name] = ball;
       World.add(pbEngine.world, ball);
+    } else {
+      // Update color dynamically if user picks a new one in lobby
+      pbBalls[name].render.fillStyle = color;
     }
   });
 }
@@ -912,7 +921,6 @@ function bindPinballSocket(s) {
       if (roomAdminPanel) roomAdminPanel.style.display = '';
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = '';
       if (dynBoard) dynBoard.classList.add('hidden');
-      const countdownEl = document.getElementById('pinball-countdown');
       if (countdownEl) {
         if (countdownEl.timer) {
           clearInterval(countdownEl.timer);
@@ -923,6 +931,36 @@ function bindPinballSocket(s) {
       if (pinballSpectatorUi) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '等待遊戲開始...';
+      }
+      
+      // Color Picker UI logic
+      const colorUi = document.getElementById('pinball-color-picker-ui');
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (colorUi && myName && state.pool.includes(myName)) {
+        colorUi.classList.remove('hidden');
+        
+        // Initialize buttons if not done yet
+        const colorContainer = document.getElementById('pinball-color-options');
+        if (colorContainer && colorContainer.children.length === 0) {
+          const defaultColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6', '#fd79a8', '#00cec9'];
+          defaultColors.forEach(c => {
+            const btn = document.createElement('button');
+            btn.style.cssText = `width: 35px; height: 35px; border-radius: 50%; border: 3px solid #fff; background-color: ${c}; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5);`;
+            btn.onclick = () => {
+              fetch('/api/pinball/set-color', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: myName, color: c })
+              });
+              // Visual feedback
+              Array.from(colorContainer.children).forEach(child => child.style.transform = 'scale(1)');
+              btn.style.transform = 'scale(1.2)';
+            };
+            colorContainer.appendChild(btn);
+          });
+        }
+      } else if (colorUi) {
+        colorUi.classList.add('hidden');
       }
       // Always destroy engine on returning to lobby from playing so the track regenerates
       if (prevStatus === 'playing' && pbEngine) {
@@ -943,6 +981,8 @@ function bindPinballSocket(s) {
       syncBalls(state);
     } else if (state.status === 'instruction') {
       window.pinballRaceStarted = false;
+      const colorUi = document.getElementById('pinball-color-picker-ui');
+      if (colorUi) colorUi.classList.add('hidden');
       if (prevStatus === 'playing' && pbEngine) {
         // Destroy old engine and reset track for next round
         Matter.Render.stop(pbRender);
@@ -978,6 +1018,8 @@ function bindPinballSocket(s) {
       syncBalls(state);
 
     } else if (state.status === 'playing') {
+      const colorUi = document.getElementById('pinball-color-picker-ui');
+      if (colorUi) colorUi.classList.add('hidden');
       if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
 
       const instrOverlay = document.getElementById('pinball-instruction-overlay');
@@ -1068,12 +1110,8 @@ function bindPinballSocket(s) {
         }
       }
 
-      }
-
-      // Check if race is fully ended (either by all finishing or timeout)
-      if (state.status === 'finished' || (state.finished.length > 0 && state.finished.length === state.pool.length)) {
-        if (roomAdminPanel) roomAdminPanel.style.display = ''; // Show admin panel again!
-        
+      // Check if race is fully ended
+      if (state.finished.length > 0 && state.finished.length === state.pool.length) {
         const popup = document.getElementById('pinball-score-popup');
         const scoreList = document.getElementById('pinball-score-list');
         if (popup && scoreList) {
@@ -1082,31 +1120,6 @@ function bindPinballSocket(s) {
           const scores = state.scores || {};
           const sortedPlayers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
           
-          sortedPlayers.forEach((p, i) => {
-            const li = document.createElement('li');
-            li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
-            li.style.display = 'flex';
-            li.style.justifyContent = 'space-between';
-            const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
-            li.innerHTML = `<span>${rank} ${p}</span> <span style="color:#f1c40f; font-weight:bold;">${scores[p]} 分</span>`;
-            scoreList.appendChild(li);
-          });
-          popup.classList.remove('hidden');
-        }
-      }
-    } else if (state.status === 'finished') {
-      // If we are late-joining during the finished state
-      if (roomAdminPanel) roomAdminPanel.style.display = '';
-      if (roomParticipantsPanel) roomParticipantsPanel.style.display = '';
-      if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
-      
-      const popup = document.getElementById('pinball-score-popup');
-      if (popup && popup.classList.contains('hidden') && state.finished.length > 0) {
-        const scoreList = document.getElementById('pinball-score-list');
-        if (scoreList) {
-          scoreList.innerHTML = '';
-          const scores = state.scores || {};
-          const sortedPlayers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
           sortedPlayers.forEach((p, i) => {
             const li = document.createElement('li');
             li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';

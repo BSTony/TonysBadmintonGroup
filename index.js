@@ -2145,6 +2145,15 @@ app.post('/api/admin/pinball/sync-pool', express.json(), (req, res) => {
   res.json({ success: true, pinballRoom });
 });
 
+app.post('/api/pinball/set-color', express.json(), (req, res) => {
+  const { name, color } = req.body;
+  if (!name || !color) return res.status(400).json({ error: 'Missing name or color' });
+  if (!pinballRoom.colors) pinballRoom.colors = {};
+  pinballRoom.colors[name] = color;
+  io.emit('pinball_state', pinballRoom);
+  res.json({ success: true, color });
+});
+
 app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
   const { uid, name } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
@@ -2195,21 +2204,6 @@ app.post('/api/pinball/finish', express.json(), (req, res) => {
     if (!pinballRoom.scores) pinballRoom.scores = {};
     if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
     pinballRoom.scores[name] += points;
-
-    // If this is the first finisher, start a 10-second countdown to auto-end the race
-    if (pinballRoom.finished.length === 1) {
-      setTimeout(() => {
-        if (pinballRoom.status === 'playing') {
-          pinballRoom.status = 'finished';
-          io.emit('pinball_state', pinballRoom);
-        }
-      }, 10000);
-    }
-
-    // If everyone finished, end immediately
-    if (pinballRoom.finished.length >= pinballRoom.pool.length) {
-      pinballRoom.status = 'finished';
-    }
 
     io.emit('pinball_state', pinballRoom);
   }

@@ -4250,7 +4250,7 @@ if (btnPinballAdminStart) {
 const btnPinballAdminNext = document.getElementById('btn-pinball-admin-next');
 if (btnPinballAdminNext) {
   btnPinballAdminNext.addEventListener('click', async () => {
-    if (!confirm('確定要開始下一回合嗎？已經抵達終點的中獎者將被排除，未中獎者會繼續留在名單中！')) return;
+    if (!confirm('確定要開始下一回合嗎？所有玩家將回到起點，且積分會持續累積！')) return;
     try {
       const res = await fetch('/api/admin/pinball/next-round', {
         method: 'POST',
