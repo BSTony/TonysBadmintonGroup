@@ -132,7 +132,7 @@ function initPinballEngine() {
   World.add(pbEngine.world, [finishLine]);
 
   // Start Gate and Lobby Walls (blocks balls from falling or being dragged off-screen in lobby)
-  if (pbState.status !== 'playing') {
+  if (pbState.status !== 'playing' || !window.pinballRaceStarted) {
     startGateBody = Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
       isStatic: true,
       render: { visible: false }, // Invisible thick physical block
@@ -770,6 +770,7 @@ function syncBalls(state) {
 }
 
 function startRace() {
+  window.pinballRaceStarted = true;
   if (!pbEngine) return;
   pbEngine.gravity.y = GRAVITY_Y;
   
@@ -885,7 +886,10 @@ function bindPinballSocket(s) {
       initPinballEngine();
     }
 
+    if (state.status === 'idle') window.pinballRaceStarted = false;
+
     if (state.status === 'lobby') {
+      window.pinballRaceStarted = false;
       if (roomAdminPanel) roomAdminPanel.style.display = '';
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = '';
       if (dynBoard) dynBoard.classList.add('hidden');
@@ -919,6 +923,22 @@ function bindPinballSocket(s) {
       
       syncBalls(state);
     } else if (state.status === 'instruction') {
+      window.pinballRaceStarted = false;
+      if (prevStatus === 'playing' && pbEngine) {
+        // Destroy old engine and reset track for next round
+        Matter.Render.stop(pbRender);
+        Matter.Runner.stop(pbRunner);
+        Matter.World.clear(pbEngine.world);
+        Matter.Engine.clear(pbEngine);
+        if (pbRender.canvas) pbRender.canvas.remove();
+        pbRender = null;
+        pbRunner = null;
+        pbEngine = null;
+        pbBalls = {};
+        
+        initPinballEngine();
+      }
+
       if (roomAdminPanel) roomAdminPanel.style.display = 'none';
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
@@ -972,6 +992,7 @@ function bindPinballSocket(s) {
       }
 
       initPinballEngine();
+      syncBalls(state);
 
       if (prevStatus === 'instruction' || prevStatus === 'lobby' || prevStatus === 'idle') {
         const countdownEl = document.getElementById('pinball-countdown');
