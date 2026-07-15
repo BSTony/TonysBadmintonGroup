@@ -92,8 +92,7 @@ function initPinballEngine() {
   const { Engine, Render, Runner, World, Bodies, Events, Body } = Matter;
 
   pbEngine = Engine.create();
-  // Gravity pulls them down the screen in top-down view (simulating tilt)
-  pbEngine.gravity.y = (pbState.status === 'playing') ? GRAVITY_Y : 0;
+  pbEngine.gravity.y = GRAVITY_Y;
   pbEngine.gravity.x = 0;
 
   START_Y = Math.floor(height * 0.65); // 65% of screen height for operations
@@ -975,8 +974,7 @@ function bindPinballSocket(s) {
           startRace();
         } else {
           startRace();
-        }
-      } else if (pbEngine && pbEngine.gravity.y === 0) {
+      } else if (pbEngine && startGateBody) {
         // Fallback for weird state where it's playing but race hasn't physically started
         startRace();
       }
