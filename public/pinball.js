@@ -135,7 +135,7 @@ function initPinballEngine() {
   if (pbState.status !== 'playing') {
     startGateBody = Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
       isStatic: true,
-      render: { visible: true, fillStyle: '#8B4513' }, // Visible thick physical block
+      render: { visible: false }, // Invisible thick physical block
       plugin: { isStartGate: true }
     });
     
@@ -343,9 +343,9 @@ function initPinballEngine() {
       }
     }
 
-    // 2. Start Line Checkerboard (only draw when not playing to simulate barricade)
+    // 2. Start Line Checkerboard (only draw when start gate exists)
     const startSp = toScreen(width / 2, START_Y);
-    if (pbState.status !== 'playing' && startSp.y > -100 && startSp.y < height + 100) {
+    if (startGateBody && startSp.y > -100 && startSp.y < height + 100) {
       drawCheckerboard(ctx, startSp.x, startSp.y, width, 20 * scaleY);
       ctx.fillStyle = '#fff';
       ctx.font = `bold ${24 * scaleY}px Arial`;
@@ -889,6 +889,14 @@ function bindPinballSocket(s) {
       if (roomAdminPanel) roomAdminPanel.style.display = '';
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = '';
       if (dynBoard) dynBoard.classList.add('hidden');
+      const countdownEl = document.getElementById('pinball-countdown');
+      if (countdownEl) {
+        if (countdownEl.timer) {
+          clearInterval(countdownEl.timer);
+          countdownEl.timer = null;
+        }
+        countdownEl.classList.add('hidden');
+      }
       if (pinballSpectatorUi) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '等待遊戲開始...';
@@ -989,6 +997,7 @@ function bindPinballSocket(s) {
                 countdownEl.innerText = count.toString();
               } else {
                 clearInterval(countdownEl.timer);
+                countdownEl.timer = null;
                 countdownEl.innerText = 'GO!';
                 setTimeout(() => countdownEl.classList.add('hidden'), 1500);
                 startRace();
@@ -1001,7 +1010,10 @@ function bindPinballSocket(s) {
         }
       } else if (pbEngine && startGateBody) {
         // Fallback for weird state where it's playing but race hasn't physically started
-        startRace();
+        const countdownEl = document.getElementById('pinball-countdown');
+        if (!countdownEl || !countdownEl.timer) {
+          startRace();
+        }
       }
 
       if (state.finished.length > 0) {
