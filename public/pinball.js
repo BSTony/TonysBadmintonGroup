@@ -910,17 +910,8 @@ function bindPinballSocket(s) {
         pinballSpectatorUi.classList.remove('hidden');
         pinballSpectatorUi.innerText = '等待遊戲開始...';
       }
-      // Always destroy engine on returning to lobby from playing so the track regenerates
       if (prevStatus === 'playing' && pbEngine) {
-        Matter.Render.stop(pbRender);
-        Matter.Runner.stop(pbRunner);
-        Matter.World.clear(pbEngine.world);
-        Matter.Engine.clear(pbEngine);
-        if (pbRender.canvas) pbRender.canvas.remove();
-        pbRender = null;
-        pbRunner = null;
-        pbEngine = null;
-        pbBalls = {};
+        destroyEngine();
         
         // Immediately rebuild with new terrain
         initPinballEngine();
@@ -1031,15 +1022,7 @@ function bindPinballSocket(s) {
 
       if (isNewRound && pbEngine) {
         // Destroy old engine and reset track for quick-next
-        Matter.Render.stop(pbRender);
-        Matter.Runner.stop(pbRunner);
-        Matter.World.clear(pbEngine.world);
-        Matter.Engine.clear(pbEngine);
-        if (pbRender.canvas) pbRender.canvas.remove();
-        pbRender = null;
-        pbRunner = null;
-        pbEngine = null;
-        pbBalls = {};
+        destroyEngine();
       }
 
       initPinballEngine();

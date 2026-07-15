@@ -2185,6 +2185,7 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
 app.post('/api/admin/pinball/quick-next', express.json(), (req, res) => {
   const { uid, winnerLimit } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  if (pinballRoom.status === 'instruction') return res.json({ success: false, error: 'Already starting' });
   
   pinballRoom.winnerLimit = winnerLimit || 3;
   pinballRoom.status = 'instruction';
