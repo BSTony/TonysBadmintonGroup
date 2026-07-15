@@ -2160,15 +2160,11 @@ app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
 app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   const { uid, winnerLimit } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
-  if (pinballRoom.status === 'instruction') return res.json({ success: false, error: 'Already starting' });
   
   pinballRoom.winnerLimit = winnerLimit || 3;
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
-  pinballRoom.skipInstructionUI = false; // Reset to false to always show instructions on fresh start
   pinballRoom.finished = [];
-  pinballRoom.positions = {};
-  pinballRoom.roundId = Date.now();
   io.emit('pinball_state', pinballRoom);
   
   // instruction(5s) → playing
@@ -2178,31 +2174,6 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
     pinballRoom.statusEndTime = null;
     io.emit('pinball_state', pinballRoom);
   }, 5000);
-  
-  res.json({ success: true, pinballRoom });
-});
-
-app.post('/api/admin/pinball/quick-next', express.json(), (req, res) => {
-  const { uid, winnerLimit } = req.body;
-  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
-  if (pinballRoom.status === 'instruction') return res.json({ success: false, error: 'Already starting' });
-  
-  pinballRoom.winnerLimit = winnerLimit || 3;
-  pinballRoom.status = 'instruction';
-  pinballRoom.statusEndTime = Date.now() + 3000; // Fast 3-second countdown
-  pinballRoom.skipInstructionUI = true; // Skip the instruction overlay
-  pinballRoom.finished = [];
-  pinballRoom.positions = {};
-  pinballRoom.roundId = Date.now();
-  io.emit('pinball_state', pinballRoom);
-  
-  // Wait for 3s countdown then start playing
-  setTimeout(() => {
-    if (pinballRoom.status !== 'instruction') return; // Cancelled
-    pinballRoom.status = 'playing';
-    pinballRoom.statusEndTime = null;
-    io.emit('pinball_state', pinballRoom);
-  }, 3000);
   
   res.json({ success: true, pinballRoom });
 });
