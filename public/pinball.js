@@ -930,15 +930,7 @@ function bindPinballSocket(s) {
     } else if (state.status === 'instruction') {
       // Destroy engine if we came directly from playing (Next Round)
       if ((prevStatus === 'playing' || isNewRound) && pbEngine) {
-        Matter.Render.stop(pbRender);
-        Matter.Runner.stop(pbRunner);
-        Matter.World.clear(pbEngine.world);
-        Matter.Engine.clear(pbEngine);
-        if (pbRender.canvas) pbRender.canvas.remove();
-        pbRender = null;
-        pbRunner = null;
-        pbEngine = null;
-        pbBalls = {};
+        destroyEngine();
         initPinballEngine();
       }
 

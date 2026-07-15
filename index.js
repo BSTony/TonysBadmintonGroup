@@ -2165,6 +2165,7 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   pinballRoom.winnerLimit = winnerLimit || 3;
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
+  pinballRoom.skipInstructionUI = false; // Reset to false to always show instructions on fresh start
   pinballRoom.finished = [];
   pinballRoom.positions = {};
   pinballRoom.roundId = Date.now();
@@ -2186,12 +2187,21 @@ app.post('/api/admin/pinball/quick-next', express.json(), (req, res) => {
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
   pinballRoom.winnerLimit = winnerLimit || 3;
-  pinballRoom.status = 'playing';
-  pinballRoom.statusEndTime = null;
+  pinballRoom.status = 'instruction';
+  pinballRoom.statusEndTime = Date.now() + 3000; // Fast 3-second countdown
+  pinballRoom.skipInstructionUI = true; // Skip the instruction overlay
   pinballRoom.finished = [];
   pinballRoom.positions = {};
   pinballRoom.roundId = Date.now();
   io.emit('pinball_state', pinballRoom);
+  
+  // Wait for 3s countdown then start playing
+  setTimeout(() => {
+    if (pinballRoom.status !== 'instruction') return; // Cancelled
+    pinballRoom.status = 'playing';
+    pinballRoom.statusEndTime = null;
+    io.emit('pinball_state', pinballRoom);
+  }, 3000);
   
   res.json({ success: true, pinballRoom });
 });
