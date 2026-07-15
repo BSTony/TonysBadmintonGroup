@@ -135,7 +135,7 @@ function initPinballEngine() {
   if (pbState.status !== 'playing') {
     startGateBody = Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
       isStatic: true,
-      render: { visible: false }, // Invisible thick physical block
+      render: { visible: true, fillStyle: '#8B4513' }, // Visible thick physical block
       plugin: { isStartGate: true }
     });
     
@@ -969,11 +969,36 @@ function bindPinballSocket(s) {
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
           countdownEl.classList.remove('hidden');
-          countdownEl.innerText = 'GO!';
-          setTimeout(() => countdownEl.classList.add('hidden'), 1500);
-          startRace();
+          
+          let count = 5;
+          let phase = 'instruction';
+          countdownEl.innerText = '即將開始比賽\n請將彈珠就位！';
+          countdownEl.style.fontSize = '24px';
+          
+          if (countdownEl.timer) clearInterval(countdownEl.timer);
+          countdownEl.timer = setInterval(() => {
+            if (phase === 'instruction') {
+              count--;
+              if (count <= 0) {
+                phase = 'countdown';
+                count = 5;
+                countdownEl.style.fontSize = '';
+              }
+            } else if (phase === 'countdown') {
+              if (count > 0) {
+                countdownEl.innerText = count.toString();
+              } else {
+                clearInterval(countdownEl.timer);
+                countdownEl.innerText = 'GO!';
+                setTimeout(() => countdownEl.classList.add('hidden'), 1500);
+                startRace();
+              }
+              count--;
+            }
+          }, 1000);
         } else {
           startRace();
+        }
       } else if (pbEngine && startGateBody) {
         // Fallback for weird state where it's playing but race hasn't physically started
         startRace();
