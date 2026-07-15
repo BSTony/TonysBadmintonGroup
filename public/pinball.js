@@ -948,7 +948,6 @@ function bindPinballSocket(s) {
 
       const instrOverlay = document.getElementById('pinball-instruction-overlay');
       const instrTimer = document.getElementById('pinball-instruction-timer');
-      const countdownEl = document.getElementById('pinball-countdown');
       
       if (state.skipInstructionUI) {
         if (instrOverlay) {
