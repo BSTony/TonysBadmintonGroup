@@ -576,7 +576,17 @@ function buildTopDownTrack(W) {
   for (let i = 0; i <= steps; i++) {
     const t = (i / steps) * maxT;
     
-    const xOffset = amplitude * (
+    // Mathematical envelope to force the sine wave to start and end EXACTLY at 0 offset
+    // This absolutely prevents any horizontal jumps or gaps from forming in the track wall
+    let env = 1.0;
+    const fadeLen = Math.PI * 2; // Fade over 1 full S-curve
+    if (t < fadeLen) {
+      env = (1 - Math.cos((t / fadeLen) * Math.PI)) / 2;
+    } else if (maxT - t < fadeLen) {
+      env = (1 - Math.cos(((maxT - t) / fadeLen) * Math.PI)) / 2;
+    }
+    
+    const xOffset = env * amplitude * (
       w1 * Math.sin(t * freq1 + phase1) +
       w2 * Math.sin(t * freq2 + phase2) +
       w3 * Math.sin(t * freq3 + phase3)
@@ -586,14 +596,6 @@ function buildTopDownTrack(W) {
     const y = trackWaveStartY + t * stretch;
     pathPoints.push({ x, y });
     currentY = y;
-  }
-  
-  // Smoothly return to center for the exit
-  let lastX = pathPoints[pathPoints.length - 1].x;
-  for (let i = 1; i <= 15; i++) {
-    const nextX = lastX + (W/2 - lastX) * (i / 15);
-    currentY += 20;
-    pathPoints.push({ x: nextX, y: currentY });
   }
 
   // Straight exit at the bottom
