@@ -952,7 +952,7 @@ function bindPinballSocket(s) {
       if (dynBoard) dynBoard.classList.remove('hidden');
 
       const btnShake = document.getElementById('btn-pinball-shake');
-      if (btnShake && typeof currentUser !== 'undefined' && currentUser && isSuperAdmin(currentUser.userId)) {
+      if (btnShake && typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
         btnShake.classList.remove('hidden');
         if (!btnShake.hasListener) {
           btnShake.hasListener = true;
