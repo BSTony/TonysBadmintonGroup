@@ -978,10 +978,28 @@ function bindPinballSocket(s) {
       }
 
       if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+      
+      let localRemaining = 5;
+      if (state.statusEndTime) {
+        const diffMs = state.statusEndTime - Date.now();
+        // If client is way out of sync or late join, adjust locally but bound to 0-5
+        if (diffMs > 0 && diffMs <= 6000) {
+          localRemaining = diffMs / 1000;
+        }
+      }
+
       window.pinballTimerInterval = setInterval(() => {
-        let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 5;
+        localRemaining -= 0.1;
+        if (localRemaining < 0) localRemaining = 0;
+        
+        let timeLeft = Math.ceil(localRemaining);
         if (instrTimer) instrTimer.innerText = timeLeft;
         if (countdownEl) countdownEl.innerText = timeLeft;
+        
+        if (localRemaining <= 0) {
+          clearInterval(window.pinballTimerInterval);
+          window.pinballTimerInterval = null;
+        }
       }, 100);
 
       syncBalls(state);
