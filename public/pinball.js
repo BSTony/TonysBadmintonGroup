@@ -179,12 +179,12 @@ function initPinballEngine() {
         // Apply constant downward push to simulate steep track
         Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
         
-        if (ball.speed < 0.5) {
+        if (ball.speed < 1.0) {
           ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
-          if (ball.plugin.stuckFrames > 40) {
+          if (ball.plugin.stuckFrames > 45) {
             Body.applyForce(ball, ball.position, {
-              x: (Math.random() - 0.5) * 0.02,
-              y: -0.015 // Jump up and out of corners
+              x: (Math.random() - 0.5) * 0.04,
+              y: -0.025 // Stronger jump up and out of corners
             });
             ball.plugin.stuckFrames = 0;
           }
@@ -920,7 +920,7 @@ function bindPinballSocket(s) {
       syncBalls(state);
     } else if (state.status === 'instruction') {
       // Destroy engine if we came directly from playing (Next Round)
-      if (prevStatus === 'playing' && pbEngine) {
+      if ((prevStatus === 'playing' || isNewRound) && pbEngine) {
         Matter.Render.stop(pbRender);
         Matter.Runner.stop(pbRunner);
         Matter.World.clear(pbEngine.world);
@@ -948,16 +948,33 @@ function bindPinballSocket(s) {
 
       const instrOverlay = document.getElementById('pinball-instruction-overlay');
       const instrTimer = document.getElementById('pinball-instruction-timer');
-      if (instrOverlay && instrTimer) {
-        instrOverlay.classList.remove('hidden');
-        instrOverlay.style.display = 'flex';
-
-        if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
-        window.pinballTimerInterval = setInterval(() => {
-          let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 5;
-          instrTimer.innerText = timeLeft;
-        }, 100);
+      const countdownEl = document.getElementById('pinball-countdown');
+      
+      if (state.skipInstructionUI) {
+        if (instrOverlay) {
+          instrOverlay.classList.add('hidden');
+          instrOverlay.style.display = 'none';
+        }
+        if (countdownEl) {
+          countdownEl.classList.remove('hidden');
+          countdownEl.style.fontSize = '';
+        }
+      } else {
+        if (instrOverlay && instrTimer) {
+          instrOverlay.classList.remove('hidden');
+          instrOverlay.style.display = 'flex';
+        }
+        if (countdownEl) {
+          countdownEl.classList.add('hidden');
+        }
       }
+
+      if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+      window.pinballTimerInterval = setInterval(() => {
+        let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 5;
+        if (instrTimer) instrTimer.innerText = timeLeft;
+        if (countdownEl) countdownEl.innerText = timeLeft;
+      }, 100);
 
       syncBalls(state);
 
@@ -994,40 +1011,33 @@ function bindPinballSocket(s) {
         pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
       }
 
+      if (isNewRound && pbEngine) {
+        // Destroy old engine and reset track for quick-next
+        Matter.Render.stop(pbRender);
+        Matter.Runner.stop(pbRunner);
+        Matter.World.clear(pbEngine.world);
+        Matter.Engine.clear(pbEngine);
+        if (pbRender.canvas) pbRender.canvas.remove();
+        pbRender = null;
+        pbRunner = null;
+        pbEngine = null;
+        pbBalls = {};
+      }
+
       initPinballEngine();
 
-      if (prevStatus === 'instruction' || prevStatus === 'lobby' || prevStatus === 'idle') {
+      if (prevStatus === 'instruction') {
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
-          countdownEl.classList.remove('hidden');
-          
-          let count = 5;
-          countdownEl.innerText = count.toString();
-          countdownEl.style.fontSize = ''; // Use original CSS size
-          
-          if (countdownEl.timer) clearInterval(countdownEl.timer);
-          countdownEl.timer = setInterval(() => {
-            count--;
-            if (count > 0) {
-              countdownEl.innerText = count.toString();
-            } else {
-              clearInterval(countdownEl.timer);
-              countdownEl.timer = null;
-              countdownEl.innerText = 'GO!';
-              setTimeout(() => countdownEl.classList.add('hidden'), 1500);
-              startRace();
-            }
-          }, 1000);
-        } else {
-          startRace();
+          countdownEl.innerText = 'GO!';
+          setTimeout(() => countdownEl.classList.add('hidden'), 1500);
         }
-      } else if (pbEngine && startGateBody) {
-        // Fallback for weird state where it's playing but race hasn't physically started
+      } else {
         const countdownEl = document.getElementById('pinball-countdown');
-        if (!countdownEl || !countdownEl.timer) {
-          startRace();
-        }
+        if (countdownEl) countdownEl.classList.add('hidden');
       }
+
+      startRace();
 
       if (state.finished.length > 0) {
         const winner = state.finished[0];
@@ -1055,7 +1065,7 @@ function bindPinballSocket(s) {
                 nextBtn.disabled = true;
                 nextBtn.innerText = '處理中...';
                 try {
-                  await fetch('/api/admin/pinball/start-sequence', {
+                  await fetch('/api/admin/pinball/quick-next', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ uid: currentUser.userId, winnerLimit: state.winnerLimit || 3 })

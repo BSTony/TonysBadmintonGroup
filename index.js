@@ -2165,6 +2165,8 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
   pinballRoom.finished = [];
+  pinballRoom.positions = {};
+  pinballRoom.roundId = Date.now();
   io.emit('pinball_state', pinballRoom);
   
   // instruction(5s) → playing
@@ -2174,6 +2176,21 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
     pinballRoom.statusEndTime = null;
     io.emit('pinball_state', pinballRoom);
   }, 5000);
+  
+  res.json({ success: true, pinballRoom });
+});
+
+app.post('/api/admin/pinball/quick-next', express.json(), (req, res) => {
+  const { uid, winnerLimit } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  pinballRoom.winnerLimit = winnerLimit || 3;
+  pinballRoom.status = 'playing';
+  pinballRoom.statusEndTime = null;
+  pinballRoom.finished = [];
+  pinballRoom.positions = {};
+  pinballRoom.roundId = Date.now();
+  io.emit('pinball_state', pinballRoom);
   
   res.json({ success: true, pinballRoom });
 });
