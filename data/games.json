@@ -1400,7 +1400,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784035988569,
+    "lastActiveTime": 1784119946091,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1430,11 +1430,18 @@
           "CC",
           "Gary",
           "CHR",
-          "Ong"
+          "Ong",
+          "小蔡"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/15 20:52",
+        "name": "小蔡",
+        "operator": "蔡佳宏",
+        "action": "+1"
+      },
       {
         "time": "07/14 21:33",
         "name": "Ong",
