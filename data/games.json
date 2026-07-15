@@ -1153,7 +1153,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784119063752,
+    "lastActiveTime": 1784121119761,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1191,7 +1191,6 @@
           "John",
           "小黑",
           "Sean柏宏",
-          "鼎函",
           "小高",
           "Ku",
           "均均",
@@ -1207,6 +1206,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/15 21:11",
+        "name": "鼎函",
+        "operator": "鼎函",
+        "action": "-1"
+      },
       {
         "time": "07/15 20:37",
         "name": "Lee",
