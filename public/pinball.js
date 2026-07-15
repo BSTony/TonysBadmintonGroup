@@ -506,8 +506,8 @@ function buildTopDownTrack(W) {
   
   const steps = 280; // Increased resolution for longer track
   const maxT = Math.PI * 10; // 5 full S-curves (doubled length)
-  const amplitude = Math.min(W * 0.35, 200); // max left/right swing
-  const stretch = 160; // Pixels downwards per radian
+  const amplitude = Math.min(W * 0.25, 130); // Reduced to prevent sharp cusps
+  const stretch = 200; // Increased to elongate curves and increase radius of curvature
 
   let currentY = START_Y + 10; // Track generation starts below the gate
   
@@ -562,9 +562,9 @@ function buildTopDownTrack(W) {
   const phase2 = Math.random() * Math.PI * 2;
   const phase3 = Math.random() * Math.PI * 2;
   
-  const freq1 = 1;
-  const freq2 = 1.4 + Math.random() * 0.8; // Faster wiggles
-  const freq3 = 0.4 + Math.random() * 0.3; // Long sweeping drifts
+  const freq1 = 0.8;
+  const freq2 = 1.1 + Math.random() * 0.3; // max 1.4 (Lowered from 2.2 to prevent cusps)
+  const freq3 = 0.4 + Math.random() * 0.2; // max 0.6
   
   // Weights for each sine wave component (sum to ~1.0)
   const w1 = 0.5 + Math.random() * 0.2;
