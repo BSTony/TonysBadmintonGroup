@@ -4193,10 +4193,7 @@ process.on('SIGINT', gracefulShutdown);
 app.get('/api/systemLogs', async (req, res) => {
   // 簡易權限檢查
   const { uid } = req.query;
-  let isSuperAdmin = false;
-  if (globalConfig.superAdmins && globalConfig.superAdmins.includes(uid)) {
-     isSuperAdmin = true;
-  }
+  const isSuperAdminUser = isSuperAdmin(uid);
   
   // 目前先允許 uid 存在就回傳，或直接回傳 (LIFF端會隱藏按鈕)
   res.json(systemLogs);

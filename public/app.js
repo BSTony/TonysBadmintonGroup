@@ -1314,6 +1314,7 @@ document.addEventListener('click', (e) => {
 // 渲染大廳畫面
 function renderLobby() {
     appDiv.className = '';
+    if (statusMsg) statusMsg.style.display = 'none';
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     lobbyView.classList.remove('hidden');
     
