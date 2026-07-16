@@ -2170,11 +2170,6 @@ app.post('/api/pinball/set-color', express.json(), (req, res) => {
     io.emit('pinball_state', pinballRoom);
     res.json({ success: true, color, style });
   });
-  if (!pinballRoom.colors) pinballRoom.colors = {};
-  pinballRoom.colors[name] = color;
-  io.emit('pinball_state', pinballRoom);
-  res.json({ success: true, color });
-});
 
 app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
   const { uid, name } = req.body;
