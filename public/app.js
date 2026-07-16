@@ -562,13 +562,21 @@ function initSocket() {
     const isWinner = data.winners.some(w => w.uid === currentUser.userId);
     if (isWinner && bhPlayer) bhPlayer.innerHTML = '👑';
     
-    if (btnBhRestart) {
-      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
-        btnBhRestart.innerText = '關閉房間';
-        btnBhRestart.disabled = false;
-      } else {
-        btnBhRestart.innerText = '回到大廳';
-        btnBhRestart.disabled = false;
+    // 超管顯示「再來一場 / 結束比賽」雙按鈕，一般玩家顯示等待文字
+    const bhSuperadminActions = document.getElementById('bh-superadmin-actions');
+    const waitingText = document.getElementById('bh-waiting-admin-text');
+    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+      if (bhSuperadminActions) bhSuperadminActions.classList.remove('hidden');
+      if (waitingText) waitingText.classList.add('hidden');
+      if (btnBhRestart) {
+        btnBhRestart.innerText = '關閉房間(一般視窗)';
+        btnBhRestart.classList.add('hidden'); // We use superadmin actions instead
+      }
+    } else {
+      if (bhSuperadminActions) bhSuperadminActions.classList.add('hidden');
+      if (waitingText) waitingText.classList.remove('hidden');
+      if (btnBhRestart) {
+        btnBhRestart.classList.add('hidden');
       }
     }
   });
@@ -1109,22 +1117,7 @@ if (btnBhRestart) {
   btnBhRestart.addEventListener('click', async () => {
     const isMultiplayerContext = (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') || (typeof hasEnteredParty !== 'undefined' && hasEnteredParty);
     if (isMultiplayerContext) {
-      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
-        btnBhRestart.disabled = true;
-        try {
-          await fetch('/api/admin/room/close', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uid: currentUser.userId })
-          });
-          if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
-        } catch(e) {
-          console.error(e);
-          btnBhRestart.disabled = false;
-        }
-        return;
-      }
-
+      // 多人模式：一般玩家點「回到大廳」只是關閉 modal
       if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
       const pPanel = document.getElementById('room-participants-panel');
       if (pPanel) {
@@ -1135,10 +1128,52 @@ if (btnBhRestart) {
     startBulletHell();
   });
 }
-if (btnBhClose) {
-  btnBhClose.addEventListener('click', () => {
-    bhContainer.classList.add('hidden');
-    bhEntities.innerHTML = '';
+
+// 超管：Survival「再來一場」按鈕
+const btnBhPlayAgain = document.getElementById('btn-bh-play-again');
+if (btnBhPlayAgain) {
+  btnBhPlayAgain.addEventListener('click', async () => {
+    btnBhPlayAgain.disabled = true;
+    try {
+      // 重置大逃殺狀態但保留玩家
+      await fetch('/api/admin/party/next-round', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      // 自動接著開始遊戲
+      await fetch('/api/admin/party/play', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+      const bhSuperadminActions = document.getElementById('bh-superadmin-actions');
+      if (bhSuperadminActions) bhSuperadminActions.classList.add('hidden');
+    } catch(e) {
+      console.error(e);
+    } finally {
+      btnBhPlayAgain.disabled = false;
+    }
+  });
+}
+
+// 超管：Survival「結束比賽」按鈕
+const btnBhEndRoom = document.getElementById('btn-bh-end-room');
+if (btnBhEndRoom) {
+  btnBhEndRoom.addEventListener('click', async () => {
+    btnBhEndRoom.disabled = true;
+    try {
+      await fetch('/api/admin/room/close', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+    } catch(e) {
+      console.error(e);
+      btnBhEndRoom.disabled = false;
+    }
   });
 }
 

@@ -442,6 +442,63 @@ function initPinballEngine() {
     });
   }
 
+  // 超管：Pinball「再來一場」按鈕
+  const btnPinballPlayAgain = document.getElementById('btn-pinball-play-again');
+  if (btnPinballPlayAgain && !btnPinballPlayAgain.hasListener) {
+    btnPinballPlayAgain.hasListener = true;
+    btnPinballPlayAgain.addEventListener('click', async () => {
+      btnPinballPlayAgain.disabled = true;
+      const uid = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.userId : null;
+      if (!uid) return;
+      try {
+        await fetch('/api/admin/pinball/next-round', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid })
+        });
+        
+        // 自動接著開始下一回合
+        const winnerLimit = parseInt(document.getElementById('pinball-winner-limit').value) || 3;
+        await fetch('/api/admin/pinball/start-sequence', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid, winnerLimit })
+        });
+        
+        document.getElementById('pinball-score-popup').classList.add('hidden');
+        // 超管控制寮重新顯示
+        const roomAdminPanel = document.getElementById('room-admin-panel');
+        if (roomAdminPanel) roomAdminPanel.style.display = '';
+      } catch(e) {
+        console.error(e);
+      } finally {
+        btnPinballPlayAgain.disabled = false;
+      }
+    });
+  }
+
+  // 超管：Pinball「結束比賽」按鈕
+  const btnPinballEndSummary = document.getElementById('btn-pinball-end-summary');
+  if (btnPinballEndSummary && !btnPinballEndSummary.hasListener) {
+    btnPinballEndSummary.hasListener = true;
+    btnPinballEndSummary.addEventListener('click', async () => {
+      btnPinballEndSummary.disabled = true;
+      const uid = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.userId : null;
+      if (!uid) return;
+      try {
+        await fetch('/api/admin/room/close', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid })
+        });
+        document.getElementById('pinball-score-popup').classList.add('hidden');
+      } catch(e) {
+        console.error(e);
+        btnPinballEndSummary.disabled = false;
+      }
+    });
+  }
+
   Render.run(pbRender);
   pbRunner = Runner.create();
   Runner.run(pbRunner, pbEngine);
@@ -655,11 +712,17 @@ function buildTopDownTrack(W) {
 
 function drawCheckerboard(ctx, x, y, width, height) {
   const sq = 10;
+  // Round width and height to nearest integer to avoid floating point loop boundary flickering
+  const w = Math.round(width);
+  const h = Math.round(height);
   ctx.save();
-  ctx.translate(x - width/2, y - height/2);
-  for (let i = 0; i < width; i += sq) {
-    for (let j = 0; j < height; j += sq) {
-      ctx.fillStyle = ((i/sq + j/sq) % 2 === 0) ? '#fff' : '#000';
+  ctx.translate(x - w/2, y - h/2);
+  for (let i = 0; i < w; i += sq) {
+    for (let j = 0; j < h; j += sq) {
+      // Use Math.round to ensure exact integer division
+      const col = Math.round(i/sq);
+      const row = Math.round(j/sq);
+      ctx.fillStyle = ((col + row) % 2 === 0) ? '#fff' : '#000';
       ctx.fillRect(i, j, sq, sq);
     }
   }
@@ -910,6 +973,12 @@ function bindPinballSocket(s) {
 
     if (pinballStatusOverlay) pinballStatusOverlay.classList.add('hidden');
 
+    // Ensure score popup is hidden when leaving playing state
+    const scorePopup = document.getElementById('pinball-score-popup');
+    if (scorePopup && state.status !== 'playing') {
+      scorePopup.classList.add('hidden');
+    }
+
     if (!pbEngine && state.status !== 'idle') {
       initPinballEngine();
     }
@@ -1130,6 +1199,24 @@ function bindPinballSocket(s) {
             scoreList.appendChild(li);
           });
           popup.classList.remove('hidden');
+          
+          // 超管顯示「再來一場/結束比賽」按鈕組，一般使用者顯示等待文字
+          const superadminActions = document.getElementById('pinball-superadmin-actions');
+          const waitingText = document.getElementById('pinball-waiting-admin-text');
+          const closeBtn = document.getElementById('btn-pinball-close-popup');
+          
+          if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+            if (superadminActions) {
+              superadminActions.style.display = 'flex';
+              superadminActions.classList.remove('hidden');
+            }
+            if (waitingText) waitingText.classList.add('hidden');
+            if (closeBtn) closeBtn.classList.remove('hidden');
+          } else {
+            if (superadminActions) superadminActions.classList.add('hidden');
+            if (waitingText) waitingText.classList.remove('hidden');
+            if (closeBtn) closeBtn.classList.add('hidden');
+          }
         }
       }
     } else {

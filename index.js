@@ -2428,6 +2428,22 @@ app.post('/api/admin/party/stop', express.json(), (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/admin/party/next-round', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  partyRoom.status = 'lobby';
+  Object.values(partyRoom.players).forEach(p => {
+    p.alive = true;
+    p.ready = false;
+  });
+  
+  if (partyTimeTimeout) clearTimeout(partyTimeTimeout);
+  if (partyBulletInterval) clearInterval(partyBulletInterval);
+  io.emit('party_state', partyRoom);
+  res.json({ success: true });
+});
+
 // 處理 LIFF 前端傳來的報名或取消請求
 app.post('/api/action', express.json(), async (req, res) => {
   const originalJson = res.json;

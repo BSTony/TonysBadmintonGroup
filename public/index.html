@@ -536,7 +536,13 @@
                 <!-- JS will populate this -->
               </ul>
             </div>
-            <button id="btn-pinball-close-popup" class="btn-primary" style="padding: 10px; border-radius: 8px;">關閉視窗</button>
+            <!-- 超管專用：比賽結束後的操作按鈕 -->
+            <div id="pinball-superadmin-actions" class="hidden" style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <button id="btn-pinball-play-again" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; background: linear-gradient(135deg, #2ecc71, #27ae60); font-weight: bold; font-size: 14px;">🔄 再來一場</button>
+              <button id="btn-pinball-end-summary" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; background: linear-gradient(135deg, #e74c3c, #c0392b); font-weight: bold; font-size: 14px;">🏁 結束比賽</button>
+            </div>
+            <p id="pinball-waiting-admin-text" class="hidden" style="color: #ccc; font-size: 14px; margin-bottom: 10px; animation: pulse 2s infinite;">⏳ 等待管理員操作...</p>
+            <button id="btn-pinball-close-popup" class="hidden btn-primary" style="padding: 10px; border-radius: 8px;">關閉視窗</button>
           </div>
 
           <!-- Admin Shake Button -->
@@ -572,7 +578,13 @@
               <h3 style="margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">🏆 排行榜 🏆</h3>
               <ul id="bh-leaderboard-list" style="list-style: none; padding: 0; margin: 0; font-size: 14px; color: #555;"></ul>
             </div>
-            <button id="btn-bh-restart" class="btn-primary" style="width: 100%; margin-bottom: 10px;">再玩一次</button>
+            <!-- 超管專用：Survival 結束後的操作按鈕 -->
+            <div id="bh-superadmin-actions" class="hidden" style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <button id="btn-bh-play-again" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; background: linear-gradient(135deg, #2ecc71, #27ae60); font-weight: bold;">🔄 再來一場</button>
+              <button id="btn-bh-end-room" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; background: linear-gradient(135deg, #e74c3c, #c0392b); font-weight: bold;">🏁 結束比賽</button>
+            </div>
+            <p id="bh-waiting-admin-text" class="hidden" style="color: #777; font-size: 14px; margin-bottom: 10px; animation: pulse 2s infinite;">⏳ 等待管理員操作...</p>
+            <button id="btn-bh-restart" class="hidden btn-primary" style="width: 100%; margin-bottom: 10px;">再玩一次</button>
           </div>
         </div>
 
@@ -614,7 +626,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball.js?v=20260714_spawnfix"></script>
-  <script src="app.js?v=20260714_dailystats"></script>
+  <script src="pinball.js?v=20260716_gameend3"></script>
+  <script src="app.js?v=20260716_gameend3"></script>
 </body>
 </html>
