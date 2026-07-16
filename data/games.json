@@ -767,194 +767,6 @@
     ],
     "isManualEnded": true
   },
-  "1783402052524265": {
-    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-    "targetGids": [
-      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
-    ],
-    "gameId": "1783402052524265",
-    "title": "test",
-    "date": "7/8 (三)",
-    "time": "18:00~20:00",
-    "location": "test",
-    "fee": "280",
-    "note": "",
-    "tag": "",
-    "active": false,
-    "startTime": 1783402052524,
-    "lastActiveTime": 1783473253436,
-    "scheduleTime": null,
-    "reminderTime": null,
-    "scheduleInput": null,
-    "anonymous": [],
-    "anonymousCount": 0,
-    "levelMap": {},
-    "paidMap": {},
-    "sections": [
-      {
-        "title": "報名名單",
-        "limit": 3,
-        "backupLimit": 5,
-        "label": "",
-        "list": [
-          "test"
-        ]
-      }
-    ],
-    "history": [
-      {
-        "time": "07/08 09:14",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 16:43",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 16:39",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 16:38",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 16:37",
-        "name": "test",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:46",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:46",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:43",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:43",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:38",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:38",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:38",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:36",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:35",
-        "name": "test",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:35",
-        "name": "test",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:34",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:34",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:31",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:31",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:30",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:30",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:29",
-        "name": "test",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:29",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/07 13:28",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      },
-      {
-        "time": "07/07 13:27",
-        "name": "test",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      }
-    ],
-    "isManualEnded": false
-  },
   "1783429625227235": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
@@ -1089,53 +901,6 @@
     ],
     "isManualEnded": true
   },
-  "1783478110621802": {
-    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-    "targetGids": [
-      "Cf6e94fdd7c4183eda46be86fccb4bfe0"
-    ],
-    "gameId": "1783478110621802",
-    "title": "Tttt",
-    "date": "7/9 (四)",
-    "time": "18:00~20:00",
-    "location": "南港運動中心",
-    "fee": "1000",
-    "note": "",
-    "tag": "",
-    "active": false,
-    "startTime": 1783478110621,
-    "lastActiveTime": 1783478162815,
-    "scheduleTime": null,
-    "reminderTime": null,
-    "scheduleInput": null,
-    "anonymous": [],
-    "anonymousCount": 0,
-    "levelMap": {},
-    "paidMap": {},
-    "sections": [
-      {
-        "title": "報名名單",
-        "limit": 20,
-        "backupLimit": 5,
-        "label": "",
-        "list": []
-      }
-    ],
-    "history": [
-      {
-        "time": "07/08 10:36",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "-1"
-      },
-      {
-        "time": "07/08 10:35",
-        "name": "Test1",
-        "operator": "謝東霖 Tony",
-        "action": "+1"
-      }
-    ]
-  },
   "1783608472486727": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
@@ -1153,7 +918,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784102351247,
+    "lastActiveTime": 1784170257909,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1190,8 +955,6 @@
           "Mina",
           "John",
           "小黑",
-          "Sean柏宏",
-          "鼎函",
           "小高",
           "Ku",
           "均均",
@@ -1199,14 +962,45 @@
           "偉強",
           "小洋",
           "紀凡",
-          "王愷璿",
           "Emily🙈🙉🙊",
           "Winnie",
-          "CHR"
+          "CHR",
+          "Lee",
+          "林煥杰"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 10:50",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1"
+      },
+      {
+        "time": "07/16 08:35",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "-1"
+      },
+      {
+        "time": "07/15 21:11",
+        "name": "鼎函",
+        "operator": "鼎函",
+        "action": "-1"
+      },
+      {
+        "time": "07/15 20:37",
+        "name": "Lee",
+        "operator": "Wayne",
+        "action": "+1"
+      },
+      {
+        "time": "07/15 17:53",
+        "name": "王愷璿",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/15 15:59",
         "name": "CHR",
@@ -1388,7 +1182,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784035988569,
+    "lastActiveTime": 1784171136132,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1418,11 +1212,39 @@
           "CC",
           "Gary",
           "CHR",
-          "Ong"
+          "Ong",
+          "小蔡",
+          "元睿",
+          "林立峰",
+          "小可愛"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 11:05",
+        "name": "小可愛",
+        "operator": "林俊佑",
+        "action": "+1"
+      },
+      {
+        "time": "07/16 10:57",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1"
+      },
+      {
+        "time": "07/15 21:32",
+        "name": "元睿",
+        "operator": "Gary",
+        "action": "+1"
+      },
+      {
+        "time": "07/15 20:52",
+        "name": "小蔡",
+        "operator": "蔡佳宏",
+        "action": "+1"
+      },
       {
         "time": "07/14 21:33",
         "name": "Ong",
@@ -1640,7 +1462,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1783839260183,
+    "lastActiveTime": 1784119349149,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1658,11 +1480,18 @@
         "label": "",
         "list": [
           "CC",
-          "楊程鈞"
+          "楊程鈞",
+          "戴鏡達"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/15 20:42",
+        "name": "戴鏡達",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/12 14:54",
         "name": "楊程鈞",
