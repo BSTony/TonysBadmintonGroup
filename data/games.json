@@ -918,7 +918,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784200703843,
+    "lastActiveTime": 1784200716349,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -937,7 +937,8 @@
       "Mina": true,
       "John": true,
       "Lee": true,
-      "小洋": true
+      "小洋": true,
+      "偉強": true
     },
     "sections": [
       {
