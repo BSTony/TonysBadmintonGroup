@@ -1662,5 +1662,66 @@
         "action": "+1"
       }
     ]
+  },
+  "1784210595451390": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "1784210595451390",
+    "title": "週四脫水團",
+    "date": "7/23 (四)",
+    "time": "19:20~21:30",
+    "location": "玉成國小",
+    "fee": "230",
+    "note": "",
+    "tag": "4面,25人",
+    "active": true,
+    "startTime": 1784210595452,
+    "lastActiveTime": 1784210595452,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "Tony": true,
+      "Kay": true,
+      "陳呈": true,
+      "小周": true,
+      "CC": true,
+      "Iven": true,
+      "Mina": true,
+      "Wayne": true,
+      "Ong": true,
+      "Ashley": true,
+      "Jim": true,
+      "John": true
+    },
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "陳呈",
+          "小周",
+          "CC",
+          "Iven",
+          "Mina",
+          "Wayne",
+          "Ong",
+          "Ashley",
+          "Jim",
+          "John"
+        ]
+      }
+    ]
   }
 }
