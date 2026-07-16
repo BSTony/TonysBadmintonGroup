@@ -1960,6 +1960,9 @@ io.on('connection', (socket) => {
       socket.broadcast.emit('pinball_ball_moved', { name, x, y });
     }
   });
+  socket.on('pinball_host_sync', (data) => {
+    socket.broadcast.emit('pinball_host_sync', data);
+  });
 
   socket.on('join_lottery', (data) => {
     if (lotteryRoom.status === 'lobby') {

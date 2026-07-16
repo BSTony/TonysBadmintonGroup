@@ -1011,6 +1011,24 @@ function updateDynamicLeaderboard() {
 }
 
 function syncBalls(state) {
+    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+      if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
+      window.pinballSyncInterval = setInterval(() => {
+        if (pbState && pbState.status === 'playing' && pbBalls) {
+          const syncData = {};
+          let hasBalls = false;
+          for (const name in pbBalls) {
+             const b = pbBalls[name];
+             if (b && b.position) {
+               syncData[name] = { x: b.position.x, y: b.position.y, vx: b.velocity.x, vy: b.velocity.y, a: b.angle, av: b.angularVelocity };
+               hasBalls = true;
+             }
+          }
+          if (hasBalls && typeof pinballSocket !== 'undefined') pinballSocket.emit('pinball_host_sync', syncData);
+        }
+      }, 100);
+    }
+
   if (!pbEngine) return;
   const { World, Bodies } = Matter;
   const width = pbRender.options.width;
