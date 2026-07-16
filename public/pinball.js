@@ -1470,20 +1470,7 @@ function bindPinballSocket(s) {
             });
           });
         }
-      }
-
-              if (pinballSpectatorUi) {
-          const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-          const btnJoinPinball = document.getElementById('btn-join-pinball');
-          if (myName) {
-            if (!state.pool.includes(myName)) {
-               pinballSpectatorUi.classList.add('hidden');
-               if (btnJoinPinball) {
-                 btnJoinPinball.classList.remove('hidden');
-                 btnJoinPinball.innerText = '🙋‍♂️ 報名參加';
-                 btnJoinPinball.onclick = () => {
-                   if (window.pinballSocket) { window.pinballSocket.emit('join_pinball', { name: myName }); } else { alert('Socket not found!'); }
-                 };
+      };
                }
             } else {
                pinballSpectatorUi.classList.remove('hidden');
