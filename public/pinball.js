@@ -120,7 +120,93 @@ function initPinballEngine() {
   const { bodies, pathPoints, finalY } = buildTopDownTrack(width);
   trackPathPoints = pathPoints;
   pbWorldHeight = finalY + 400;
+
+  // --- GENERATE RANDOM OBSTACLES ---
+  // Pick 3 random segments along the path to place obstacles (excluding start and end)
+  const obstacleZones = [];
+  const startIdx = Math.floor(pathPoints.length * 0.15);
+  const endIdx = Math.floor(pathPoints.length * 0.85);
+  const zoneSize = Math.floor((endIdx - startIdx) / 3);
+  
+  for (let z = 0; z < 3; z++) {
+    const idx = startIdx + z * zoneSize + Math.floor(Math.random() * (zoneSize * 0.6)) + Math.floor(zoneSize * 0.2);
+    obstacleZones.push(idx);
+  }
+
+  // Shuffle obstacle types [0, 1, 2]
+  const obstacleTypes = [0, 1, 2].sort(() => Math.random() - 0.5);
+
+  for (let i = 0; i < 3; i++) {
+    const pIdx = obstacleZones[i];
+    const p = pathPoints[pIdx];
+    // Calculate track direction and normal at this point
+    let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
+    let pPrev = pathPoints[pIdx - 5] || pathPoints[0];
+    
+    let dx = pNext.x - pPrev.x;
+    let dy = pNext.y - pPrev.y;
+    let len = Math.sqrt(dx*dx + dy*dy);
+    let tx = dx / len;
+    let ty = dy / len;
+    let nx = -ty; // normal vector pointing left
+    let ny = tx;
+
+    const type = obstacleTypes[i];
+    
+    if (type === 0) {
+      // Y-shaped Funnel (bottleneck)
+      // We build two thick rectangles that angle downwards and inwards
+      const gap = 80; // Only allows ~2 balls through
+      const funWidth = (TRACK_WIDTH - gap) / 2 + 20; // width of each funnel wing
+      const funThick = 40;
+      
+      // Left funnel wing
+      const leftCx = p.x + nx * (gap/2 + funWidth/2);
+      const leftCy = p.y + ny * (gap/2 + funWidth/2) - ty * 50; // shift slightly up
+      
+      // Angle it so balls slide towards center (gap)
+      // Normal angle is atan2(ny, nx). Funnel angle should be normal angle +/- some angle
+      const baseAngle = Math.atan2(ty, tx);
+      const leftAngle = baseAngle + Math.PI/6; // slant downwards
+      
+      bodies.push(Bodies.rectangle(leftCx, leftCy, funWidth, funThick, {
+        isStatic: true, angle: leftAngle, render: { fillStyle: '#34495e', strokeStyle: '#2c3e50', lineWidth: 2 }
+      }));
+      
+      // Right funnel wing
+      const rightCx = p.x - nx * (gap/2 + funWidth/2);
+      const rightCy = p.y - ny * (gap/2 + funWidth/2) - ty * 50;
+      const rightAngle = baseAngle - Math.PI/6;
+      
+      bodies.push(Bodies.rectangle(rightCx, rightCy, funWidth, funThick, {
+        isStatic: true, angle: rightAngle, render: { fillStyle: '#34495e', strokeStyle: '#2c3e50', lineWidth: 2 }
+      }));
+      
+    } else if (type === 1) {
+      // Trampoline (Bouncer)
+      // Place a highly elastic circle in the middle or slightly off-center
+      const offsetAmt = (Math.random() - 0.5) * (TRACK_WIDTH * 0.4);
+      const cx = p.x + nx * offsetAmt;
+      const cy = p.y + ny * offsetAmt;
+      
+      bodies.push(Bodies.circle(cx, cy, 45, {
+        isStatic: true, restitution: 1.5, friction: 0.0,
+        render: { fillStyle: '#00ff00', strokeStyle: '#00aa00', lineWidth: 4 }
+      }));
+      
+    } else if (type === 2) {
+      // Splitter Island (Fork / Merge)
+      // A large diamond shape in the absolute center
+      bodies.push(Bodies.rectangle(p.x, p.y, 110, 110, {
+        isStatic: true, angle: Math.PI / 4 + Math.atan2(ty, tx), // align diamond to track direction
+        render: { fillStyle: '#e67e22', strokeStyle: '#d35400', lineWidth: 2 }
+      }));
+    }
+  }
+  // --- END GENERATE RANDOM OBSTACLES ---
+
   World.add(pbEngine.world, bodies);
+
 
   // Finish line sensor
   const finishLine = Bodies.rectangle(width / 2, finalY + 80, TRACK_WIDTH + 60, 40, {
