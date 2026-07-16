@@ -187,7 +187,7 @@ function initPinballEngine() {
       
       const bouncer = Bodies.circle(cx, cy, 45, {
         isStatic: true, restitution: 1.5, friction: 0.0,
-        render: { fillStyle: '#00ff00', strokeStyle: '#00aa00', lineWidth: 4 }
+        render: { fillStyle: '#e74c3c', strokeStyle: '#c0392b', lineWidth: 4 }
       });
       bodies.push(bouncer);
       trackObstacles.push(bouncer);
