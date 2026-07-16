@@ -1109,6 +1109,22 @@ function startRace() {
 
 function bindPinballSocket(s) {
   window.pinballSocket = s;
+    s.on('pinball_host_sync', (data) => {
+      // Ignore if I am the host (super admin)
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) return;
+      if (pbState && pbState.status === 'playing' && pbBalls) {
+        for (const name in data) {
+          if (pbBalls[name]) {
+             const sd = data[name];
+             Matter.Body.setPosition(pbBalls[name], { x: sd.x, y: sd.y });
+             Matter.Body.setVelocity(pbBalls[name], { x: sd.vx, y: sd.vy });
+             Matter.Body.setAngle(pbBalls[name], sd.a);
+             Matter.Body.setAngularVelocity(pbBalls[name], sd.av);
+          }
+        }
+      }
+    });
+
   s.on('pinball_ball_moved', (data) => {
     const { name, x, y } = data;
     if (pbBalls[name]) {
@@ -1130,13 +1146,15 @@ function bindPinballSocket(s) {
 
   s.on('pinball_shake', () => {
     if (pbEngine && pbBalls) {
-      Object.values(pbBalls).forEach(ball => {
-        // Apply random bump force to unstick
-        Matter.Body.applyForce(ball, ball.position, {
-          x: (Math.random() - 0.5) * 0.05,
-          y: -0.05 // Upward jump
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+        Object.values(pbBalls).forEach(ball => {
+          Matter.Body.applyForce(ball, ball.position, {
+            x: (Math.random() - 0.5) * 0.05,
+            y: -0.05
+          });
         });
-      });
+      }
+
       // Visual feedback
       if (pinballCanvasWrapper) {
         pinballCanvasWrapper.style.transform = `translate(${(Math.random()-0.5)*10}px, ${(Math.random()-0.5)*10}px)`;
