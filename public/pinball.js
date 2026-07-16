@@ -1241,19 +1241,31 @@ function bindPinballSocket(s) {
         // Initialize buttons if not done yet
         const colorContainer = document.getElementById('pinball-color-options');
         if (colorContainer && colorContainer.children.length === 0) {
+          let selectedColor = null;
           const defaultColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6', '#fd79a8', '#00cec9'];
           defaultColors.forEach(c => {
             const btn = document.createElement('button');
             btn.style.cssText = `width: 35px; height: 35px; border-radius: 50%; border: 3px solid #fff; background-color: ${c}; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5);`;
             btn.onclick = () => {
-              fetch('/api/pinball/set-color', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: myName, color: c })
-              });
+              selectedColor = c;
               // Visual feedback
               Array.from(colorContainer.children).forEach(child => child.style.transform = 'scale(1)');
               btn.style.transform = 'scale(1.2)';
+
+              const confirmBtn = document.getElementById('btn-pinball-color-confirm');
+              if (confirmBtn) {
+                 confirmBtn.style.display = 'block';
+                 confirmBtn.onclick = () => {
+                   fetch('/api/pinball/set-color', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ name: myName, color: selectedColor })
+                   });
+                   hasSelectedPinballColor = true;
+                   if (colorUi) colorUi.classList.add('hidden');
+                   if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none'; // Enter view mode
+                 };
+              }
             };
             colorContainer.appendChild(btn);
           });

@@ -561,7 +561,7 @@
           <!-- Color Picker UI -->
           <div id="pinball-color-picker-ui" class="hidden" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); border: 2px solid #3498db; padding: 15px; border-radius: 15px; z-index: 120; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.6);">
             <div style="color: white; font-weight: bold; margin-bottom: 10px; font-size: 16px;">挑選你的專屬彈珠顏色</div>
-            <div id="pinball-color-options" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;">
+            <div id="pinball-color-options" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; justify-items: center; margin-bottom: 10px;">
               <!-- JS will inject color buttons -->
             </div>
             <button id="btn-pinball-color-confirm" class="btn-primary" style="margin-top: 15px; width: 100%; display: none; padding: 10px; font-size: 16px; border-radius: 8px; cursor: pointer; border: none; background: #3498db; color: white; font-weight: bold;">確認</button>
@@ -631,7 +631,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball.js?v=20260716_gameend29"></script>
-  <script src="app.js?v=20260716_gameend29"></script>
+  <script src="pinball.js?v=20260716_gameend30"></script>
+  <script src="app.js?v=20260716_gameend30"></script>
 </body>
 </html>
