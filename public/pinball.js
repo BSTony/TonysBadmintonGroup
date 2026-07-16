@@ -1207,10 +1207,23 @@ function bindPinballSocket(s) {
         }
         countdownEl.classList.add('hidden');
       }
-      if (pinballSpectatorUi) {
-        pinballSpectatorUi.classList.remove('hidden');
-        pinballSpectatorUi.innerText = '等待遊戲開始...';
-      }
+              if (pinballSpectatorUi) {
+          const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+          const btnJoinPinball = document.getElementById('btn-join-pinball');
+          if (myName && !state.pool.includes(myName)) {
+             pinballSpectatorUi.classList.add('hidden');
+             if (btnJoinPinball) {
+               btnJoinPinball.classList.remove('hidden');
+               btnJoinPinball.onclick = () => {
+                 if (typeof pinballSocket !== 'undefined') pinballSocket.emit('join_pinball', { name: myName });
+               };
+             }
+          } else {
+             pinballSpectatorUi.classList.remove('hidden');
+             pinballSpectatorUi.innerText = '等待遊戲開始...';
+             if (btnJoinPinball) btnJoinPinball.classList.add('hidden');
+          }
+        }
       
       // Color Picker UI logic
       const colorUi = document.getElementById('pinball-color-picker-ui');
@@ -1331,10 +1344,23 @@ function bindPinballSocket(s) {
         }
       }
 
-      if (pinballSpectatorUi) {
-        pinballSpectatorUi.classList.remove('hidden');
-        pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
-      }
+              if (pinballSpectatorUi) {
+          const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+          const btnJoinPinball = document.getElementById('btn-join-pinball');
+          if (myName && !state.pool.includes(myName)) {
+             pinballSpectatorUi.classList.add('hidden');
+             if (btnJoinPinball) {
+               btnJoinPinball.classList.remove('hidden');
+               btnJoinPinball.onclick = () => {
+                 if (typeof pinballSocket !== 'undefined') pinballSocket.emit('join_pinball', { name: myName });
+               };
+             }
+          } else {
+             pinballSpectatorUi.classList.remove('hidden');
+             pinballSpectatorUi.innerText = '等待遊戲開始...';
+             if (btnJoinPinball) btnJoinPinball.classList.add('hidden');
+          }
+        }
 
       initPinballEngine();
       syncBalls(state);

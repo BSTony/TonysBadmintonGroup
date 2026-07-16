@@ -1971,6 +1971,16 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('join_pinball', (data) => {
+    if (pinballRoom.status === 'lobby') {
+      const { name } = data;
+      if (name && !pinballRoom.pool.includes(name)) {
+        pinballRoom.pool.push(name);
+        io.emit('pinball_state', pinballRoom);
+      }
+    }
+  });
+
   socket.on('lottery_perform_draw', (data) => {
     if (lotteryRoom.status === 'ready' && lotteryRoom.assigneeUid === data.uid) {
       lotteryRoom.status = 'drawing';
