@@ -31,6 +31,8 @@ const GRAVITY_Y = 0.55;
 
 // Sine wave path points for custom rendering
 let trackPathPoints = [];
+  trackObstacles = [];
+let trackObstacles = [];
 
 // Billiard Ball Colors (Pool)
 const POOL_COLORS = [
@@ -64,6 +66,7 @@ function destroyEngine() {
   pbRunner = null;
   pbBalls = {};
   trackPathPoints = [];
+  trackObstacles = [];
   startGateBody = null;
   pbMouseConstraint = null;
 }
@@ -121,6 +124,7 @@ function initPinballEngine() {
   trackPathPoints = pathPoints;
   pbWorldHeight = finalY + 400;
 
+  
   // --- GENERATE RANDOM OBSTACLES ---
   // Pick 3 random segments along the path to place obstacles (excluding start and end)
   const obstacleZones = [];
@@ -133,13 +137,11 @@ function initPinballEngine() {
     obstacleZones.push(idx);
   }
 
-  // Shuffle obstacle types [0, 1, 2]
   const obstacleTypes = [0, 1, 2].sort(() => Math.random() - 0.5);
 
   for (let i = 0; i < 3; i++) {
     const pIdx = obstacleZones[i];
     const p = pathPoints[pIdx];
-    // Calculate track direction and normal at this point
     let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
     let pPrev = pathPoints[pIdx - 5] || pathPoints[0];
     
@@ -148,59 +150,56 @@ function initPinballEngine() {
     let len = Math.sqrt(dx*dx + dy*dy);
     let tx = dx / len;
     let ty = dy / len;
-    let nx = -ty; // normal vector pointing left
+    let nx = -ty;
     let ny = tx;
 
     const type = obstacleTypes[i];
     
     if (type === 0) {
-      // Y-shaped Funnel (bottleneck)
-      // We build two thick rectangles that angle downwards and inwards
-      const gap = 80; // Only allows ~2 balls through
-      const funWidth = (TRACK_WIDTH - gap) / 2 + 20; // width of each funnel wing
+      const gap = 110; 
+      const funWidth = (TRACK_WIDTH - gap) / 2 + 20;
       const funThick = 40;
       
-      // Left funnel wing
       const leftCx = p.x + nx * (gap/2 + funWidth/2);
-      const leftCy = p.y + ny * (gap/2 + funWidth/2) - ty * 50; // shift slightly up
-      
-      // Angle it so balls slide towards center (gap)
-      // Normal angle is atan2(ny, nx). Funnel angle should be normal angle +/- some angle
+      const leftCy = p.y + ny * (gap/2 + funWidth/2) - ty * 50;
       const baseAngle = Math.atan2(ty, tx);
-      const leftAngle = baseAngle + Math.PI/6; // slant downwards
+      const leftAngle = baseAngle + Math.PI/4;
       
-      bodies.push(Bodies.rectangle(leftCx, leftCy, funWidth, funThick, {
-        isStatic: true, angle: leftAngle, render: { fillStyle: '#34495e', strokeStyle: '#2c3e50', lineWidth: 2 }
-      }));
+      const leftBody = Bodies.rectangle(leftCx, leftCy, funWidth, funThick, {
+        isStatic: true, angle: leftAngle, render: { fillStyle: '#34495e', strokeStyle: '#2c3e50', lineWidth: 2 }, friction: 0.0, restitution: 0.5
+      });
+      bodies.push(leftBody);
+      trackObstacles.push(leftBody);
       
-      // Right funnel wing
       const rightCx = p.x - nx * (gap/2 + funWidth/2);
       const rightCy = p.y - ny * (gap/2 + funWidth/2) - ty * 50;
-      const rightAngle = baseAngle - Math.PI/6;
+      const rightAngle = baseAngle - Math.PI/4;
       
-      bodies.push(Bodies.rectangle(rightCx, rightCy, funWidth, funThick, {
-        isStatic: true, angle: rightAngle, render: { fillStyle: '#34495e', strokeStyle: '#2c3e50', lineWidth: 2 }
-      }));
+      const rightBody = Bodies.rectangle(rightCx, rightCy, funWidth, funThick, {
+        isStatic: true, angle: rightAngle, render: { fillStyle: '#34495e', strokeStyle: '#2c3e50', lineWidth: 2 }, friction: 0.0, restitution: 0.5
+      });
+      bodies.push(rightBody);
+      trackObstacles.push(rightBody);
       
     } else if (type === 1) {
-      // Trampoline (Bouncer)
-      // Place a highly elastic circle in the middle or slightly off-center
       const offsetAmt = (Math.random() - 0.5) * (TRACK_WIDTH * 0.4);
       const cx = p.x + nx * offsetAmt;
       const cy = p.y + ny * offsetAmt;
       
-      bodies.push(Bodies.circle(cx, cy, 45, {
+      const bouncer = Bodies.circle(cx, cy, 45, {
         isStatic: true, restitution: 1.5, friction: 0.0,
         render: { fillStyle: '#00ff00', strokeStyle: '#00aa00', lineWidth: 4 }
-      }));
+      });
+      bodies.push(bouncer);
+      trackObstacles.push(bouncer);
       
     } else if (type === 2) {
-      // Splitter Island (Fork / Merge)
-      // A large diamond shape in the absolute center
-      bodies.push(Bodies.rectangle(p.x, p.y, 110, 110, {
-        isStatic: true, angle: Math.PI / 4 + Math.atan2(ty, tx), // align diamond to track direction
+      const island = Bodies.rectangle(p.x, p.y, 110, 110, {
+        isStatic: true, angle: Math.PI / 4 + Math.atan2(ty, tx),
         render: { fillStyle: '#e67e22', strokeStyle: '#d35400', lineWidth: 2 }
-      }));
+      });
+      bodies.push(island);
+      trackObstacles.push(island);
     }
   }
   // --- END GENERATE RANDOM OBSTACLES ---
@@ -441,7 +440,26 @@ function initPinballEngine() {
       ctx.shadowBlur = 0;
     }
 
-    // 3. Finish Line Checkerboard
+    
+      // Draw Obstacles (on top of the road)
+      trackObstacles.forEach(body => {
+        if (!body.vertices || body.vertices.length === 0) return;
+        ctx.beginPath();
+        body.vertices.forEach((v, idx) => {
+          const sp = toScreen(v.x, v.y);
+          if (idx === 0) ctx.moveTo(sp.x, sp.y);
+          else ctx.lineTo(sp.x, sp.y);
+        });
+        ctx.closePath();
+        ctx.fillStyle = body.render.fillStyle;
+        ctx.strokeStyle = body.render.strokeStyle;
+        ctx.lineWidth = (body.render.lineWidth || 2) * scaleX;
+        ctx.fill();
+        if (body.render.strokeStyle) ctx.stroke();
+      });
+
+      // 3. Finish Line Checkerboard
+
     if (trackPathPoints.length > 0) {
       const finalY = trackPathPoints[trackPathPoints.length - 1].y;
       const finishSp = toScreen(width / 2, finalY + 40);
