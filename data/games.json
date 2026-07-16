@@ -1558,7 +1558,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1784033413704,
-    "lastActiveTime": 1784048319559,
+    "lastActiveTime": 1784198257972,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1591,11 +1591,18 @@
           "Sean",
           "Abby",
           "afrahuang",
-          "阿發"
+          "阿發",
+          "Tank"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 18:37",
+        "name": "Tank",
+        "operator": "Tank Lin",
+        "action": "+1"
+      },
       {
         "time": "07/15 00:58",
         "name": "阿發",
