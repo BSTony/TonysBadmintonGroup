@@ -1476,7 +1476,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784119349149,
+    "lastActiveTime": 1784187640008,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1495,11 +1495,18 @@
         "list": [
           "CC",
           "楊程鈞",
-          "戴鏡達"
+          "戴鏡達",
+          "胞弟"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 15:40",
+        "name": "胞弟",
+        "operator": "詹敬智(胞弟)",
+        "action": "+1"
+      },
       {
         "time": "07/15 20:42",
         "name": "戴鏡達",
