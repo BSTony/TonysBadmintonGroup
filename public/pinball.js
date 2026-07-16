@@ -209,8 +209,8 @@ function initPinballEngine() {
         render: { fillStyle: '#f1c40f', strokeStyle: '#bdc3c7', lineWidth: 3 }
       }));
       
-      for(let j=0; j<3; j++) {
-        const angle = j * (Math.PI * 2 / 3);
+      for(let j=0; j<4; j++) {
+        const angle = j * (Math.PI / 2);
         const dist = 45; 
         const bx = cx + Math.cos(angle) * dist;
         const by = cy + Math.sin(angle) * dist;
