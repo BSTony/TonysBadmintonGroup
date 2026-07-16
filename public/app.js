@@ -1182,8 +1182,8 @@ if (btnBhEndRoom) {
 async function initializeLiff() {
   try {
     // 0. 本機測試模式 (Local Test Mode)
-    const urlParams = new URLSearchParams(window.location.search);
-    const testRole = urlParams.get('testRole');
+    const testParams = new URLSearchParams(window.location.search);
+    const testRole = testParams.get('testRole');
     if (testRole) {
       console.log('Running in Local Test Mode:', testRole);
       let mockUid = 'U_TEST_PLAYER_' + Math.random().toString(36).substr(2, 5);
@@ -1202,7 +1202,7 @@ async function initializeLiff() {
         initLottery(currentUser.userId);
       }
       
-      currentGroupId = urlParams.get('gid') || 'TEST_GROUP_1234';
+      currentGroupId = testParams.get('gid') || 'TEST_GROUP_1234';
       const h3 = document.getElementById('group-id-display');
       if (h3) h3.innerText = '群組ID: ' + currentGroupId;
       
