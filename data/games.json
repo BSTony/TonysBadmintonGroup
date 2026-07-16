@@ -918,7 +918,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784203855446,
+    "lastActiveTime": 1784203856862,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -944,7 +944,8 @@
       "均均": true,
       "Ku": true,
       "CHR": true,
-      "Emily🙈🙉🙊": true
+      "Emily🙈🙉🙊": true,
+      "Winnie": true
     },
     "sections": [
       {
