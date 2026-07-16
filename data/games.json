@@ -1208,7 +1208,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784213007666,
+    "lastActiveTime": 1784215401074,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1235,7 +1235,6 @@
           "Kevin",
           "Can",
           "Yiping",
-          "CC",
           "Gary",
           "CHR",
           "Ong",
@@ -1255,6 +1254,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/16 23:23",
+        "name": "CC",
+        "operator": "©️張CC～©️",
+        "action": "-1"
+      },
       {
         "time": "07/16 22:43",
         "name": "黃政豪",
