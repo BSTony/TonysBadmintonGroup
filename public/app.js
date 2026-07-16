@@ -1208,6 +1208,12 @@ async function initializeLiff() {
       
       await loadGamesLobby();
       initSocket();
+      
+      const appDivEl = document.getElementById('app');
+      if (appDivEl) appDivEl.className = '';
+      const statusMsgEl = document.getElementById('status-msg');
+      if (statusMsgEl) statusMsgEl.style.display = 'none';
+      
       return; // Skip LIFF initialization completely
     }
 
