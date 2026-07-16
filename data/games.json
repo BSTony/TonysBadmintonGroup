@@ -918,7 +918,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784162131916,
+    "lastActiveTime": 1784170257909,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -965,11 +965,18 @@
           "Emily🙈🙉🙊",
           "Winnie",
           "CHR",
-          "Lee"
+          "Lee",
+          "林煥杰"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 10:50",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1"
+      },
       {
         "time": "07/16 08:35",
         "name": "Sean柏宏",
