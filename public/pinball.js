@@ -136,7 +136,7 @@ function initPinballEngine() {
     obstacleZones.push(idx);
   }
 
-  const obstacleTypes = [1, 1, 3, 3].sort(() => Math.random() - 0.5);
+  const obstacleTypes = [1, 2, 3, 4].sort(() => Math.random() - 0.5);
 
   for (let i = 0; i < 4; i++) {
     const pIdx = obstacleZones[i];
@@ -193,31 +193,48 @@ function initPinballEngine() {
       trackObstacles.push(bouncer);
       
     } else if (type === 2) {
-      const island = Bodies.rectangle(p.x, p.y, 60, 60, {
-        isStatic: true, angle: Math.PI / 4 + Math.atan2(ty, tx),
-        render: { fillStyle: '#e67e22', strokeStyle: '#d35400', lineWidth: 2 }
-      });
-      bodies.push(island);
-      trackObstacles.push(island);
+        // Traffic Cone (Top-Down view: Concentric circles)
+        const offsetAmt = (Math.random() - 0.5) * (TRACK_WIDTH * 0.3);
+        const cx = p.x + nx * offsetAmt;
+        const cy = p.y + ny * offsetAmt;
+        
+        const base = Bodies.circle(cx, cy, 15, { render: { fillStyle: '#e74c3c', strokeStyle: '#c0392b', lineWidth: 1 } });
+        const mid = Bodies.circle(cx, cy, 10, { render: { fillStyle: '#ffffff', strokeStyle: '#bdc3c7', lineWidth: 1 } });
+        const top = Bodies.circle(cx, cy, 5, { render: { fillStyle: '#e74c3c', strokeStyle: '#c0392b', lineWidth: 1 } });
+        
+        const cone = Matter.Body.create({
+          parts: [base, mid, top],
+          isStatic: true,
+          restitution: 0.2
+        });
+        
+        bodies.push(cone);
+        trackObstacles.push(cone);
     } else if (type === 3) {
-      // Rotary Plate (3-blade fan)
+      // Rotary Pinwheel (4 colored blades)
       const cx = p.x;
       const cy = p.y;
       
       const parts = [];
-      parts.push(Bodies.circle(cx, cy, 22, { 
-        render: { fillStyle: '#f1c40f', strokeStyle: '#bdc3c7', lineWidth: 3 }
+      // Hub
+      parts.push(Bodies.circle(cx, cy, 20, { 
+        render: { fillStyle: '#ffffff', strokeStyle: '#bdc3c7', lineWidth: 2 }
       }));
+      
+      const bladeColors = ['#3498db', '#2ecc71', '#e74c3c', '#f1c40f']; // Blue, Green, Red, Yellow
       
       for(let j=0; j<4; j++) {
         const angle = j * (Math.PI / 2);
         const dist = 45; 
-        const bx = cx + Math.cos(angle) * dist;
-        const by = cy + Math.sin(angle) * dist;
-        const blade = Bodies.rectangle(bx, by, 75, 22, {
+        const offset = 15; // Offset perpendicular to radius to create pinwheel effect
+        
+        const bx = cx + Math.cos(angle) * dist - Math.sin(angle) * offset;
+        const by = cy + Math.sin(angle) * dist + Math.cos(angle) * offset;
+        
+        const blade = Bodies.rectangle(bx, by, 75, 30, {
           angle: angle,
-          render: { fillStyle: '#34495e', strokeStyle: '#bdc3c7', lineWidth: 3 },
-          chamfer: { radius: 8 }
+          render: { fillStyle: bladeColors[j], strokeStyle: 'rgba(0,0,0,0.2)', lineWidth: 2 },
+          chamfer: { radius: 5 }
         });
         parts.push(blade);
       }
@@ -244,6 +261,20 @@ function initPinballEngine() {
       bodies.push(constraint);
       trackObstacles.push(cross);
       trackObstacles.push(constraint);
+    } else if (type === 4) {
+      // Y-shaped fork island (green park)
+      const baseAngle = Math.atan2(ty, tx);
+      const island = Bodies.polygon(p.x, p.y, 4, 70, {
+        isStatic: true,
+        render: { fillStyle: '#2ecc71', strokeStyle: '#bdc3c7', lineWidth: 4 },
+        chamfer: { radius: 15 } // smooth the diamond into a leaf/teardrop
+      });
+      // Scale it to be long along the Y-axis, then rotate to align Y-axis with track forward
+      Matter.Body.scale(island, 0.7, 2.0);
+      Matter.Body.setAngle(island, baseAngle - Math.PI/2);
+      
+      bodies.push(island);
+      trackObstacles.push(island);
     }
   }
   // --- END GENERATE RANDOM OBSTACLES ---
