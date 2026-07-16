@@ -1208,7 +1208,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784212955207,
+    "lastActiveTime": 1784213007666,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1249,11 +1249,18 @@
           "L",
           "Andy",
           "Jet",
-          "小金(Chen Pei Hung)"
+          "小金(Chen Pei Hung)",
+          "黃政豪"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 22:43",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1"
+      },
       {
         "time": "07/16 22:42",
         "name": "小金(Chen Pei Hung)",
