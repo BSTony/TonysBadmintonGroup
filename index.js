@@ -1766,6 +1766,18 @@ function generateListMessage(g, customTitle = null) {
   return msg;
 }
 
+let pinballRoom = {
+  status: 'idle', // idle, lobby, instruction, playing, finished
+  round: 1,
+  pool: [], // active players
+  finished: [], // winners in order
+  scores: {}, // point totals for tournament
+  startTime: null,
+  statusEndTime: null,
+  colors: {},
+  positions: {} // for server authoritative state
+};
+
 // --- 彩蛋功能 API ---
 app.get('/api/easter_egg/status', (req, res) => {
   res.json({ enabled: easterEggSettings.enabled, activeGame: easterEggSettings.activeGame || 'piggy_run' });
@@ -1887,15 +1899,6 @@ let partyRoom = {
   winCondition: { type: 'time', value: 15 },
   players: {}, // socket.id -> { uid, name, x, y, alive }
   startTime: 0
-};
-
-let pinballRoom = {
-  status: 'idle', // idle, lobby, instruction, playing
-  pool: [],
-  finished: [],
-  winnerLimit: 3,
-  scores: {}, // Accumulate scores across rounds: { name: score }
-  positions: {} // { name: { x, y } } - Custom starting positions
 };
 
 let partyTimeTimeout = null;
@@ -2171,16 +2174,26 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
   pinballRoom.winnerLimit = winnerLimit || 3;
+  pinballRoom.finished = [];
+  
+  if (pinballRoom.round > 1) {
+    // 第二場之後跳過說明，直接進入遊戲
+    pinballRoom.status = 'playing';
+    pinballRoom.startTime = Date.now();
+    io.emit('pinball_state', pinballRoom);
+    return res.json({ success: true, pinballRoom });
+  }
+
+  // Round 1: instruction(5s) -> playing
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
-  pinballRoom.finished = [];
   io.emit('pinball_state', pinballRoom);
   
-  // instruction(5s) → playing
   setTimeout(() => {
     if (pinballRoom.status !== 'instruction') return; // Cancelled
     pinballRoom.status = 'playing';
     pinballRoom.statusEndTime = null;
+    pinballRoom.startTime = Date.now();
     io.emit('pinball_state', pinballRoom);
   }, 5000);
   
@@ -2216,6 +2229,7 @@ app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
   
   // Do NOT exclude winners. Keep pool intact for multi-round scoring.
   pinballRoom.status = 'lobby';
+  pinballRoom.round = (pinballRoom.round || 1) + 1; // Increment round
   pinballRoom.finished = [];
   
   io.emit('pinball_state', pinballRoom);

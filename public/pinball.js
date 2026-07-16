@@ -439,6 +439,9 @@ function initPinballEngine() {
     btnClosePopup.hasListener = true;
     btnClosePopup.addEventListener('click', () => {
       document.getElementById('pinball-score-popup').classList.add('hidden');
+      // 超管控制寮重新顯示
+      const roomAdminPanel = document.getElementById('room-admin-panel');
+      if (roomAdminPanel) roomAdminPanel.style.display = '';
     });
   }
 
@@ -455,14 +458,6 @@ function initPinballEngine() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ uid })
-        });
-        
-        // 自動接著開始下一回合
-        const winnerLimit = parseInt(document.getElementById('pinball-winner-limit').value) || 3;
-        await fetch('/api/admin/pinball/start-sequence', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uid, winnerLimit })
         });
         
         document.getElementById('pinball-score-popup').classList.add('hidden');
@@ -911,8 +906,21 @@ function bindPinballSocket(s) {
   });
 
   s.on('pinball_state', (state) => {
-    const prevStatus = pbState.status;
     pbState = state;
+    const prevStatus = pbState.status;
+
+    if (state.status === 'lobby' || state.status === 'instruction') {
+      window.pinballRaceStarted = false;
+      if (pbEngine && !startGateBody) {
+        const width = pbRender.options.width;
+        startGateBody = Matter.Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
+          isStatic: true,
+          render: { visible: false },
+          plugin: { isStartGate: true }
+        });
+        Matter.World.add(pbEngine.world, startGateBody);
+      }
+    }
 
     if (!pinballStatusOverlay) pinballStatusOverlay = document.getElementById('pinball-status-overlay');
     if (!pinballStatusText) pinballStatusText = document.getElementById('pinball-status-text');
@@ -1129,9 +1137,9 @@ function bindPinballSocket(s) {
         if (countdownEl) {
           countdownEl.classList.remove('hidden');
           
-          let count = 5;
+          let count = 3;
           countdownEl.innerText = count.toString();
-          countdownEl.style.fontSize = ''; // Use original CSS size
+          countdownEl.style.fontSize = 'min(400px, 80vw)';
           
           if (countdownEl.timer) clearInterval(countdownEl.timer);
           countdownEl.timer = setInterval(() => {
