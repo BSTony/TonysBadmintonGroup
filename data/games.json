@@ -918,7 +918,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784208186539,
+    "lastActiveTime": 1784208255257,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -947,7 +947,8 @@
       "Emily🙈🙉🙊": true,
       "Winnie": true,
       "Timmon": true,
-      "小黑": true
+      "小黑": true,
+      "紀凡": true
     },
     "sections": [
       {
