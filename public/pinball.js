@@ -185,9 +185,9 @@ function initPinballEngine() {
       const cx = p.x + nx * offsetAmt;
       const cy = p.y + ny * offsetAmt;
       
-      const bouncer = Bodies.circle(cx, cy, 45, {
+      const bouncer = Bodies.circle(cx, cy, 12, {
         isStatic: true, restitution: 1.5, friction: 0.0,
-        render: { fillStyle: '#e74c3c', strokeStyle: '#c0392b', lineWidth: 4 }
+        render: { fillStyle: '#bdc3c7', strokeStyle: '#7f8c8d', lineWidth: 2 }
       });
       bodies.push(bouncer);
       trackObstacles.push(bouncer);
