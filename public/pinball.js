@@ -136,7 +136,7 @@ function initPinballEngine() {
     obstacleZones.push(idx);
   }
 
-  const obstacleTypes = [1, 2, 3, 4].sort(() => Math.random() - 0.5);
+  const obstacleTypes = [1, 3, 4, 4].sort(() => Math.random() - 0.5);
 
   for (let i = 0; i < 4; i++) {
     const pIdx = obstacleZones[i];
