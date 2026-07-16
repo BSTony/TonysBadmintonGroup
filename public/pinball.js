@@ -1142,9 +1142,9 @@ function bindPinballSocket(s) {
         if (countdownEl) {
           countdownEl.classList.remove('hidden');
           
-          let count = 3;
+          let count = 5;
           countdownEl.innerText = count.toString();
-          countdownEl.style.fontSize = 'min(400px, 80vw)';
+          countdownEl.style.fontSize = 'min(240px, 48vw)';
           
           if (countdownEl.timer) clearInterval(countdownEl.timer);
           countdownEl.timer = setInterval(() => {
