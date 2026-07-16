@@ -129,16 +129,16 @@ function initPinballEngine() {
   const obstacleZones = [];
   const startIdx = Math.floor(pathPoints.length * 0.15);
   const endIdx = Math.floor(pathPoints.length * 0.85);
-  const zoneSize = Math.floor((endIdx - startIdx) / 3);
+  const zoneSize = Math.floor((endIdx - startIdx) / 4);
   
-  for (let z = 0; z < 3; z++) {
+  for (let z = 0; z < 4; z++) {
     const idx = startIdx + z * zoneSize + Math.floor(Math.random() * (zoneSize * 0.6)) + Math.floor(zoneSize * 0.2);
     obstacleZones.push(idx);
   }
 
-  const obstacleTypes = [0, 1, 2].sort(() => Math.random() - 0.5);
+  const obstacleTypes = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 4; i++) {
     const pIdx = obstacleZones[i];
     const p = pathPoints[pIdx];
     let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
@@ -199,6 +199,36 @@ function initPinballEngine() {
       });
       bodies.push(island);
       trackObstacles.push(island);
+    } else if (type === 3) {
+      // Rotary Plate (旋轉盤)
+      const plateWidth = 160;
+      const plateThick = 25;
+      
+      const rect1 = Bodies.rectangle(p.x, p.y, plateWidth, plateThick, { render: { fillStyle: '#e67e22', strokeStyle: '#d35400', lineWidth: 2 } });
+      const rect2 = Bodies.rectangle(p.x, p.y, plateThick, plateWidth, { render: { fillStyle: '#e67e22', strokeStyle: '#d35400', lineWidth: 2 } });
+      
+      const cross = Matter.Body.create({
+        parts: [rect1, rect2],
+        frictionAir: 0,
+        friction: 0,
+        restitution: 0.8,
+        density: 0.5,
+        plugin: { isRotary: true }
+      });
+      
+      const constraint = Matter.Constraint.create({
+        pointA: { x: p.x, y: p.y },
+        bodyB: cross,
+        pointB: { x: 0, y: 0 },
+        stiffness: 1,
+        length: 0,
+        render: { visible: true, type: 'pin', strokeStyle: '#fff' }
+      });
+      
+      bodies.push(cross);
+      bodies.push(constraint);
+      trackObstacles.push(cross);
+      trackObstacles.push(constraint);
     }
   }
   // --- END GENERATE RANDOM OBSTACLES ---
@@ -257,6 +287,15 @@ function initPinballEngine() {
   // Physics updates and clamping
   Events.on(pbEngine, 'beforeUpdate', () => {
     updateDynamicLeaderboard();
+    
+    // Rotary plates
+    if (pbEngine && pbEngine.world) {
+      pbEngine.world.bodies.forEach(b => {
+        if (b.plugin && b.plugin.isRotary) {
+          Matter.Body.setAngularVelocity(b, 0.04);
+        }
+      });
+    }
     
     if (pbState.status === 'playing') {
       Object.values(pbBalls).forEach(ball => {
