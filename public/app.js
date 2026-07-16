@@ -1188,7 +1188,7 @@ async function initializeLiff() {
       console.log('Running in Local Test Mode:', testRole);
       let randomSuffix = Math.random().toString(36).substr(2, 5);
       let mockUid = 'U_TEST_PLAYER_' + randomSuffix;
-      let mockName = 'Test Player ' + randomSuffix;
+      let mockName = testParams.get('name') || ('Test Player ' + randomSuffix);
       
       if (testRole === 'superadmin') {
         mockUid = 'U_SUPER_ADMIN_TEST_ID';
