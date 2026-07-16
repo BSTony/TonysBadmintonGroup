@@ -853,15 +853,12 @@ try {
 
 // 從環境變數讀取敏感資訊，避免洩露到 Git
 const config = {
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
-  channelSecret: process.env.LINE_CHANNEL_SECRET || ''
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || 'fake_token',
+  channelSecret: process.env.LINE_CHANNEL_SECRET || 'fake_secret'
 };
 
-// 檢查必要的環境變數
-if (!config.channelAccessToken || !config.channelSecret) {
-  console.error('❌ 錯誤：請設定環境變數 LINE_CHANNEL_ACCESS_TOKEN 和 LINE_CHANNEL_SECRET');
-  console.error('   在 Render 上：Settings > Environment Variables');
-  process.exit(1);
+if (!process.env.LINE_CHANNEL_ACCESS_TOKEN || !process.env.LINE_CHANNEL_SECRET) {
+  console.warn('⚠️ 警告：未設定 LINE 環境變數，本機將以假 Token 啟動（LINE Bot 訊息功能將失效，但網頁可正常測試）');
 }
 
 const client = new Client(config);
