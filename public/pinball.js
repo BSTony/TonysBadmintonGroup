@@ -1016,6 +1016,11 @@ function bindPinballSocket(s) {
       if (colorUi && myName && state.pool.includes(myName)) {
         colorUi.classList.remove('hidden');
         
+        // 避免超管控制面板擋住顏色選擇器
+        if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+          colorUi.style.bottom = '150px';
+        }
+
         // Initialize buttons if not done yet
         const colorContainer = document.getElementById('pinball-color-options');
         if (colorContainer && colorContainer.children.length === 0) {
