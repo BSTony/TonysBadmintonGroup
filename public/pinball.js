@@ -1201,7 +1201,8 @@ function bindPinballSocket(s) {
       if (roomAdminPanel) roomAdminPanel.style.display = '';
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = '';
       if (dynBoard) dynBoard.classList.add('hidden');
-      if (countdownEl) {
+      const countdownEl = document.getElementById('pinball-countdown');
+        if (countdownEl) {
         if (countdownEl.timer) {
           clearInterval(countdownEl.timer);
           countdownEl.timer = null;
@@ -1216,7 +1217,7 @@ function bindPinballSocket(s) {
              if (btnJoinPinball) {
                btnJoinPinball.classList.remove('hidden');
                btnJoinPinball.onclick = () => {
-                 if (typeof pinballSocket !== 'undefined') pinballSocket.emit('join_pinball', { name: myName });
+                 if (window.pinballSocket) { window.pinballSocket.emit('join_pinball', { name: myName }); } else { alert('Socket not found!'); }
                };
              }
           } else {
@@ -1353,7 +1354,7 @@ function bindPinballSocket(s) {
              if (btnJoinPinball) {
                btnJoinPinball.classList.remove('hidden');
                btnJoinPinball.onclick = () => {
-                 if (typeof pinballSocket !== 'undefined') pinballSocket.emit('join_pinball', { name: myName });
+                 if (window.pinballSocket) { window.pinballSocket.emit('join_pinball', { name: myName }); } else { alert('Socket not found!'); }
                };
              }
           } else {

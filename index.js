@@ -1972,11 +1972,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on('join_pinball', (data) => {
+    console.log('[DEBUG] join_pinball event received:', data, 'status:', pinballRoom.status);
     if (pinballRoom.status === 'lobby') {
       const { name } = data;
       if (name && !pinballRoom.pool.includes(name)) {
+        console.log('[DEBUG] joining pinball pool:', name);
         pinballRoom.pool.push(name);
         io.emit('pinball_state', pinballRoom);
+      } else {
+        console.log('[DEBUG] failed to join pool. name:', name, 'already_in_pool:', pinballRoom.pool.includes(name));
       }
     }
   });
