@@ -1207,7 +1207,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784202993935,
+    "lastActiveTime": 1784209608414,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1245,11 +1245,18 @@
           "YuJie1",
           "YuJie2",
           "登",
-          "L"
+          "L",
+          "Andy"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 21:46",
+        "name": "Andy",
+        "operator": "杜威霖 Andy",
+        "action": "+1"
+      },
       {
         "time": "07/16 19:56",
         "name": "L",
