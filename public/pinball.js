@@ -1071,6 +1071,7 @@ function startRace() {
 }
 
 function bindPinballSocket(s) {
+  window.pinballSocket = s;
   s.on('pinball_ball_moved', (data) => {
     const { name, x, y } = data;
     if (pbBalls[name]) {
