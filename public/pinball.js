@@ -906,8 +906,8 @@ function bindPinballSocket(s) {
   });
 
   s.on('pinball_state', (state) => {
-    pbState = state;
     const prevStatus = pbState.status;
+    pbState = state;
 
     if (state.status === 'lobby' || state.status === 'instruction') {
       window.pinballRaceStarted = false;
