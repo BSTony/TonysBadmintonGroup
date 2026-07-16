@@ -1182,7 +1182,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784171136132,
+    "lastActiveTime": 1784177683507,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1216,11 +1216,25 @@
           "小蔡",
           "元睿",
           "林立峰",
-          "小可愛"
+          "小可愛",
+          "YuJie1",
+          "YuJie2"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 12:54",
+        "name": "YuJie2",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
+      {
+        "time": "07/16 12:54",
+        "name": "YuJie1",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/16 11:05",
         "name": "小可愛",
