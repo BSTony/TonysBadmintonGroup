@@ -185,9 +185,9 @@ function initPinballEngine() {
       const cx = p.x + nx * offsetAmt;
       const cy = p.y + ny * offsetAmt;
       
-      const bouncer = Bodies.circle(cx, cy, 12, {
+      const bouncer = Bodies.circle(cx, cy, 14, {
         isStatic: true, restitution: 1.5, friction: 0.0,
-        render: { fillStyle: '#bdc3c7', strokeStyle: '#7f8c8d', lineWidth: 2 }, plugin: { isBumper: true }
+        render: { fillStyle: '#f1c40f', strokeStyle: '#111111', lineWidth: 4 }, plugin: { isBumper: true }
       });
       bodies.push(bouncer);
       trackObstacles.push(bouncer);
@@ -216,7 +216,6 @@ function initPinballEngine() {
       const cy = p.y;
       
       const parts = [];
-      // Hub
       parts.push(Bodies.circle(cx, cy, 20, { 
         render: { fillStyle: '#ffffff', strokeStyle: '#bdc3c7', lineWidth: 2 }
       }));
@@ -226,11 +225,9 @@ function initPinballEngine() {
       for(let j=0; j<4; j++) {
         const angle = j * (Math.PI / 2);
         const dist = 45; 
-        const offset = 15; // Offset perpendicular to radius to create pinwheel effect
-        
+        const offset = 15;
         const bx = cx + Math.cos(angle) * dist - Math.sin(angle) * offset;
         const by = cy + Math.sin(angle) * dist + Math.cos(angle) * offset;
-        
         const blade = Bodies.rectangle(bx, by, 75, 30, {
           angle: angle,
           render: { fillStyle: bladeColors[j], strokeStyle: 'rgba(0,0,0,0.2)', lineWidth: 2 },
@@ -262,16 +259,24 @@ function initPinballEngine() {
       trackObstacles.push(cross);
       trackObstacles.push(constraint);
     } else if (type === 4) {
-      // Y-shaped fork island (green park)
+      // Y-shaped fork island (Teardrop shape)
       const baseAngle = Math.atan2(ty, tx);
-      const island = Bodies.polygon(p.x, p.y, 4, 70, {
+      const teardropVertices = [
+        { x: 0, y: -120 },
+        { x: 30, y: -20 },
+        { x: 45, y: 30 },
+        { x: 25, y: 70 },
+        { x: 0, y: 80 },
+        { x: -25, y: 70 },
+        { x: -45, y: 30 },
+        { x: -30, y: -20 }
+      ];
+      
+      const island = Bodies.fromVertices(p.x, p.y, [teardropVertices], {
         isStatic: true,
-        render: { fillStyle: '#2ecc71', strokeStyle: '#bdc3c7', lineWidth: 4 },
-        chamfer: { radius: 15 } // smooth the diamond into a leaf/teardrop
-      });
-      // Scale it to be long along the Y-axis, then rotate to align Y-axis with track forward
-      Matter.Body.scale(island, 0.7, 2.0);
-      Matter.Body.setAngle(island, baseAngle - Math.PI/2);
+        angle: baseAngle + Math.PI / 2,
+        render: { fillStyle: '#2ecc71', strokeStyle: '#27ae60', lineWidth: 4 }
+      }, true);
       
       bodies.push(island);
       trackObstacles.push(island);
