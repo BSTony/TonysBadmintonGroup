@@ -204,11 +204,20 @@ function initPinballEngine() {
       const plateWidth = 160;
       const plateThick = 25;
       
-      const rect1 = Bodies.rectangle(p.x, p.y, plateWidth, plateThick, { render: { fillStyle: '#e67e22', strokeStyle: '#d35400', lineWidth: 2 } });
-      const rect2 = Bodies.rectangle(p.x, p.y, plateThick, plateWidth, { render: { fillStyle: '#e67e22', strokeStyle: '#d35400', lineWidth: 2 } });
+      const rect1 = Bodies.rectangle(p.x, p.y, plateWidth, plateThick, { 
+        render: { fillStyle: '#34495e', strokeStyle: '#bdc3c7', lineWidth: 3 },
+        chamfer: { radius: 10 }
+      });
+      const rect2 = Bodies.rectangle(p.x, p.y, plateThick, plateWidth, { 
+        render: { fillStyle: '#34495e', strokeStyle: '#bdc3c7', lineWidth: 3 },
+        chamfer: { radius: 10 }
+      });
+      const pivot = Bodies.circle(p.x, p.y, 18, { 
+        render: { fillStyle: '#f1c40f', strokeStyle: '#bdc3c7', lineWidth: 3 }
+      });
       
       const cross = Matter.Body.create({
-        parts: [rect1, rect2],
+        parts: [rect1, rect2, pivot],
         frictionAir: 0,
         friction: 0,
         restitution: 0.8,
