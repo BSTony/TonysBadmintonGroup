@@ -918,7 +918,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784200752617,
+    "lastActiveTime": 1784200889542,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -942,7 +942,8 @@
       "永曄": true,
       "小高": true,
       "均均": true,
-      "Ku": true
+      "Ku": true,
+      "CHR": true
     },
     "sections": [
       {
