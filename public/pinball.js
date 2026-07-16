@@ -1470,23 +1470,7 @@ function bindPinballSocket(s) {
             });
           });
         }
-      };
-               }
-            } else {
-               pinballSpectatorUi.classList.remove('hidden');
-               pinballSpectatorUi.innerText = '等待遊戲開始...';
-               if (btnJoinPinball) {
-                 btnJoinPinball.classList.remove('hidden');
-                 btnJoinPinball.innerText = '🎨 修改顏色';
-                 btnJoinPinball.onclick = () => {
-                   hasSelectedPinballColor = false;
-                   const colorUi = document.getElementById('pinball-color-picker-ui');
-                   if (colorUi) colorUi.classList.remove('hidden');
-                 };
-               }
-            }
-          }
-        }
+      }
 
       initPinballEngine();
       syncBalls(state);
