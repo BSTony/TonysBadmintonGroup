@@ -1199,7 +1199,7 @@ function bindPinballSocket(s) {
     if (state.status === 'lobby') {
       window.pinballRaceStarted = false;
       if (roomAdminPanel) roomAdminPanel.style.display = '';
-      if (roomParticipantsPanel) roomParticipantsPanel.style.display = '';
+      if (roomParticipantsPanel) { if (!hasSelectedPinballColor) { roomParticipantsPanel.style.display = ''; } }
       if (dynBoard) dynBoard.classList.add('hidden');
       const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
@@ -1212,18 +1212,29 @@ function bindPinballSocket(s) {
               if (pinballSpectatorUi) {
           const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
           const btnJoinPinball = document.getElementById('btn-join-pinball');
-          if (myName && !state.pool.includes(myName)) {
-             pinballSpectatorUi.classList.add('hidden');
-             if (btnJoinPinball) {
-               btnJoinPinball.classList.remove('hidden');
-               btnJoinPinball.onclick = () => {
-                 if (window.pinballSocket) { window.pinballSocket.emit('join_pinball', { name: myName }); } else { alert('Socket not found!'); }
-               };
-             }
-          } else {
-             pinballSpectatorUi.classList.remove('hidden');
-             pinballSpectatorUi.innerText = '等待遊戲開始...';
-             if (btnJoinPinball) btnJoinPinball.classList.add('hidden');
+          if (myName) {
+            if (!state.pool.includes(myName)) {
+               pinballSpectatorUi.classList.add('hidden');
+               if (btnJoinPinball) {
+                 btnJoinPinball.classList.remove('hidden');
+                 btnJoinPinball.innerText = '🙋‍♂️ 報名參加';
+                 btnJoinPinball.onclick = () => {
+                   if (window.pinballSocket) { window.pinballSocket.emit('join_pinball', { name: myName }); } else { alert('Socket not found!'); }
+                 };
+               }
+            } else {
+               pinballSpectatorUi.classList.remove('hidden');
+               pinballSpectatorUi.innerText = '等待遊戲開始...';
+               if (btnJoinPinball) {
+                 btnJoinPinball.classList.remove('hidden');
+                 btnJoinPinball.innerText = '🎨 修改顏色';
+                 btnJoinPinball.onclick = () => {
+                   hasSelectedPinballColor = false;
+                   const colorUi = document.getElementById('pinball-color-picker-ui');
+                   if (colorUi) colorUi.classList.remove('hidden');
+                 };
+               }
+            }
           }
         }
       
@@ -1361,18 +1372,29 @@ function bindPinballSocket(s) {
               if (pinballSpectatorUi) {
           const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
           const btnJoinPinball = document.getElementById('btn-join-pinball');
-          if (myName && !state.pool.includes(myName)) {
-             pinballSpectatorUi.classList.add('hidden');
-             if (btnJoinPinball) {
-               btnJoinPinball.classList.remove('hidden');
-               btnJoinPinball.onclick = () => {
-                 if (window.pinballSocket) { window.pinballSocket.emit('join_pinball', { name: myName }); } else { alert('Socket not found!'); }
-               };
-             }
-          } else {
-             pinballSpectatorUi.classList.remove('hidden');
-             pinballSpectatorUi.innerText = '等待遊戲開始...';
-             if (btnJoinPinball) btnJoinPinball.classList.add('hidden');
+          if (myName) {
+            if (!state.pool.includes(myName)) {
+               pinballSpectatorUi.classList.add('hidden');
+               if (btnJoinPinball) {
+                 btnJoinPinball.classList.remove('hidden');
+                 btnJoinPinball.innerText = '🙋‍♂️ 報名參加';
+                 btnJoinPinball.onclick = () => {
+                   if (window.pinballSocket) { window.pinballSocket.emit('join_pinball', { name: myName }); } else { alert('Socket not found!'); }
+                 };
+               }
+            } else {
+               pinballSpectatorUi.classList.remove('hidden');
+               pinballSpectatorUi.innerText = '等待遊戲開始...';
+               if (btnJoinPinball) {
+                 btnJoinPinball.classList.remove('hidden');
+                 btnJoinPinball.innerText = '🎨 修改顏色';
+                 btnJoinPinball.onclick = () => {
+                   hasSelectedPinballColor = false;
+                   const colorUi = document.getElementById('pinball-color-picker-ui');
+                   if (colorUi) colorUi.classList.remove('hidden');
+                 };
+               }
+            }
           }
         }
 
