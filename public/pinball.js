@@ -1242,7 +1242,11 @@ function bindPinballSocket(s) {
       const colorUi = document.getElementById('pinball-color-picker-ui');
       const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
       if (colorUi && myName && state.pool.includes(myName)) {
-        colorUi.classList.remove('hidden');
+        if (!hasSelectedPinballColor) {
+          colorUi.classList.remove('hidden');
+        } else {
+          colorUi.classList.add('hidden');
+        }
         
         // 避免超管控制面板擋住顏色選擇器
         if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
