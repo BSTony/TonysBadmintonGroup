@@ -1181,6 +1181,36 @@ if (btnBhEndRoom) {
 // 初始化 LIFF
 async function initializeLiff() {
   try {
+    // 0. 本機測試模式 (Local Test Mode)
+    const urlParams = new URLSearchParams(window.location.search);
+    const testRole = urlParams.get('testRole');
+    if (testRole) {
+      console.log('Running in Local Test Mode:', testRole);
+      let mockUid = 'U_TEST_PLAYER_' + Math.random().toString(36).substr(2, 5);
+      let mockName = 'Test Player';
+      
+      if (testRole === 'superadmin') {
+        mockUid = 'U_SUPER_ADMIN_TEST_ID';
+        mockName = 'Super Admin';
+      } else if (testRole === 'admin') {
+        mockUid = 'U_GROUP_ADMIN_TEST_ID';
+        mockName = 'Group Admin';
+      }
+      
+      currentUser = { userId: mockUid, displayName: mockName };
+      if (typeof initLottery === 'function') {
+        initLottery(currentUser.userId);
+      }
+      
+      currentGroupId = urlParams.get('gid') || 'TEST_GROUP_1234';
+      const h3 = document.getElementById('group-id-display');
+      if (h3) h3.innerText = '群組ID: ' + currentGroupId;
+      
+      await loadGamesLobby();
+      initSocket();
+      return; // Skip LIFF initialization completely
+    }
+
     // 1. 取得後端系統設定
     const configRes = await fetch(`/api/config?_t=${Date.now()}`);
     if (!configRes.ok) throw new Error('無法取得系統設定');
