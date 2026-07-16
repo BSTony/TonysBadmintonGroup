@@ -1269,7 +1269,7 @@ function bindPinballSocket(s) {
         
         // 避免超管控制面板擋住顏色選擇器
         if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
-          colorUi.style.bottom = '150px';
+          // colorUi.style.bottom = '150px';
         }
 
         // Initialize buttons if not done yet
