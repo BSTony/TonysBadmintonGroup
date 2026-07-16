@@ -305,9 +305,10 @@ function initPinballEngine() {
         if (ball.speed < 0.5) {
           ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
           if (ball.plugin.stuckFrames > 40) {
-            Body.applyForce(ball, ball.position, {
-              x: (Math.random() - 0.5) * 0.02,
-              y: -0.015 // Jump up and out of corners
+            // Set velocity directly for a guaranteed strong escape burst
+            Matter.Body.setVelocity(ball, {
+              x: (Math.random() - 0.5) * 20,
+              y: -15
             });
             ball.plugin.stuckFrames = 0;
           }
