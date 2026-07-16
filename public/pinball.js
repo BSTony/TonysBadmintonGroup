@@ -193,7 +193,7 @@ function initPinballEngine() {
       trackObstacles.push(bouncer);
       
     } else if (type === 2) {
-      const island = Bodies.rectangle(p.x, p.y, 110, 110, {
+      const island = Bodies.rectangle(p.x, p.y, 60, 60, {
         isStatic: true, angle: Math.PI / 4 + Math.atan2(ty, tx),
         render: { fillStyle: '#e67e22', strokeStyle: '#d35400', lineWidth: 2 }
       });
