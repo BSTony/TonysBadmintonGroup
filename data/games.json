@@ -1202,7 +1202,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784190427692,
+    "lastActiveTime": 1784202993935,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1239,11 +1239,18 @@
           "小可愛",
           "YuJie1",
           "YuJie2",
-          "登"
+          "登",
+          "L"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/16 19:56",
+        "name": "L",
+        "operator": "L",
+        "action": "+1"
+      },
       {
         "time": "07/16 16:27",
         "name": "登",
