@@ -136,7 +136,7 @@ function initPinballEngine() {
     obstacleZones.push(idx);
   }
 
-  const obstacleTypes = [3, 3, 3, 3];
+  const obstacleTypes = [1, 1, 3, 3].sort(() => Math.random() - 0.5);
 
   for (let i = 0; i < 4; i++) {
     const pIdx = obstacleZones[i];
@@ -187,7 +187,7 @@ function initPinballEngine() {
       
       const bouncer = Bodies.circle(cx, cy, 12, {
         isStatic: true, restitution: 1.5, friction: 0.0,
-        render: { fillStyle: '#bdc3c7', strokeStyle: '#7f8c8d', lineWidth: 2 }
+        render: { fillStyle: '#bdc3c7', strokeStyle: '#7f8c8d', lineWidth: 2 }, plugin: { isBumper: true }
       });
       bodies.push(bouncer);
       trackObstacles.push(bouncer);
@@ -322,8 +322,8 @@ function initPinballEngine() {
           if (ball.plugin.stuckFrames > 40) {
             // Set velocity directly for a guaranteed strong escape burst
             Matter.Body.setVelocity(ball, {
-              x: (Math.random() - 0.5) * 20,
-              y: -15
+              x: (Math.random() - 0.5) * 10,
+              y: -7.5
             });
             ball.plugin.stuckFrames = 0;
           }
