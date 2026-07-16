@@ -1026,7 +1026,7 @@ function syncBalls(state) {
           }
           if (hasBalls && typeof pinballSocket !== 'undefined') pinballSocket.emit('pinball_host_sync', syncData);
         }
-      }, 100);
+      }, 33);
     }
 
   if (!pbEngine) return;
@@ -1492,7 +1492,7 @@ function bindPinballSocket(s) {
         window.pinballTimerInterval = setInterval(() => {
           let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 5;
           instrTimer.innerText = timeLeft;
-        }, 100);
+        }, 33);
       }
 
       syncBalls(state);
