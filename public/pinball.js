@@ -1194,7 +1194,7 @@ function bindPinballSocket(s) {
       initPinballEngine();
     }
 
-    if (state.status === 'idle') window.pinballRaceStarted = false;
+    if (state.status === 'idle') { window.pinballRaceStarted = false; hasSelectedPinballColor = false; }
 
     if (state.status === 'lobby') {
       window.pinballRaceStarted = false;
