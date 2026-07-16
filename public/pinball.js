@@ -1056,10 +1056,14 @@ function syncBalls(state) {
       });
 
       pbBalls[name] = ball;
+      ball.plugin.style = (state.styles && state.styles[name]) ? state.styles[name] : 'solid';
+      ball.render.visible = false;
       World.add(pbEngine.world, ball);
     } else {
       // Update color dynamically if user picks a new one in lobby
       pbBalls[name].render.fillStyle = color;
+      pbBalls[name].plugin.style = (state.styles && state.styles[name]) ? state.styles[name] : 'solid';
+      pbBalls[name].render.visible = false;
     }
   });
 }
@@ -1272,6 +1276,21 @@ function bindPinballSocket(s) {
         const colorContainer = document.getElementById('pinball-color-options');
         if (colorContainer && colorContainer.children.length === 0) {
           let selectedColor = null;
+          let selectedStyle = 'solid';
+          
+          const styleBtns = document.querySelectorAll('.pinball-style-btn');
+          styleBtns.forEach(btn => {
+            btn.onclick = () => {
+              styleBtns.forEach(b => {
+                b.style.borderColor = 'transparent';
+                b.classList.remove('active');
+              });
+              btn.style.borderColor = '#3498db';
+              btn.classList.add('active');
+              selectedStyle = btn.getAttribute('data-style');
+            };
+          });
+
           const defaultColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6', '#fd79a8', '#00cec9'];
           defaultColors.forEach(c => {
             const btn = document.createElement('button');
@@ -1286,11 +1305,11 @@ function bindPinballSocket(s) {
               if (confirmBtn) {
                  confirmBtn.style.display = 'block';
                  confirmBtn.onclick = () => {
-                   fetch('/api/pinball/set-color', {
-                     method: 'POST',
-                     headers: { 'Content-Type': 'application/json' },
-                     body: JSON.stringify({ name: myName, color: selectedColor })
-                   });
+                     fetch('/api/pinball/set-color', {
+                       method: 'POST',
+                       headers: { 'Content-Type': 'application/json' },
+                       body: JSON.stringify({ name: myName, color: selectedColor, style: selectedStyle })
+                     });
                    hasSelectedPinballColor = true;
                    if (colorUi) colorUi.classList.add('hidden');
                    if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none'; // Enter view mode
