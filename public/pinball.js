@@ -136,7 +136,7 @@ function initPinballEngine() {
     obstacleZones.push(idx);
   }
 
-  const obstacleTypes = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
+  const obstacleTypes = [3, 3, 3, 3];
 
   for (let i = 0; i < 4; i++) {
     const pIdx = obstacleZones[i];
@@ -200,24 +200,30 @@ function initPinballEngine() {
       bodies.push(island);
       trackObstacles.push(island);
     } else if (type === 3) {
-      // Rotary Plate (旋轉盤)
-      const plateWidth = 160;
-      const plateThick = 25;
+      // Rotary Plate (3-blade fan)
+      const cx = p.x;
+      const cy = p.y;
       
-      const rect1 = Bodies.rectangle(p.x, p.y, plateWidth, plateThick, { 
-        render: { fillStyle: '#34495e', strokeStyle: '#bdc3c7', lineWidth: 3 },
-        chamfer: { radius: 10 }
-      });
-      const rect2 = Bodies.rectangle(p.x, p.y, plateThick, plateWidth, { 
-        render: { fillStyle: '#34495e', strokeStyle: '#bdc3c7', lineWidth: 3 },
-        chamfer: { radius: 10 }
-      });
-      const pivot = Bodies.circle(p.x, p.y, 18, { 
+      const parts = [];
+      parts.push(Bodies.circle(cx, cy, 22, { 
         render: { fillStyle: '#f1c40f', strokeStyle: '#bdc3c7', lineWidth: 3 }
-      });
+      }));
+      
+      for(let j=0; j<3; j++) {
+        const angle = j * (Math.PI * 2 / 3);
+        const dist = 45; 
+        const bx = cx + Math.cos(angle) * dist;
+        const by = cy + Math.sin(angle) * dist;
+        const blade = Bodies.rectangle(bx, by, 75, 22, {
+          angle: angle,
+          render: { fillStyle: '#34495e', strokeStyle: '#bdc3c7', lineWidth: 3 },
+          chamfer: { radius: 8 }
+        });
+        parts.push(blade);
+      }
       
       const cross = Matter.Body.create({
-        parts: [rect1, rect2, pivot],
+        parts: parts,
         frictionAir: 0,
         friction: 0,
         restitution: 0.8,
