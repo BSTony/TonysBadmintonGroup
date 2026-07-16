@@ -918,7 +918,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1783608472488,
-    "lastActiveTime": 1784202254824,
+    "lastActiveTime": 1784202268820,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -943,7 +943,7 @@
       "小高": true,
       "均均": true,
       "Ku": true,
-      "CHR": false
+      "CHR": true
     },
     "sections": [
       {
