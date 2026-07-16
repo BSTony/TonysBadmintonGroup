@@ -1453,6 +1453,10 @@ function bindPinballSocket(s) {
       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
       if (dynBoard) dynBoard.classList.remove('hidden');
 
+        if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
+        const btnJoinPinball = document.getElementById('btn-join-pinball');
+        if (btnJoinPinball) btnJoinPinball.classList.add('hidden');
+
       const btnShake = document.getElementById('btn-pinball-shake');
       if (btnShake && typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
         btnShake.classList.remove('hidden');
