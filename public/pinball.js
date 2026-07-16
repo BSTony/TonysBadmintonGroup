@@ -579,26 +579,41 @@ function initPinballEngine() {
       ctx.arc(sp.x + 3, sp.y + 3, r, 0, Math.PI * 2);
       ctx.fill();
 
-      // Main ball body
-      ctx.fillStyle = b.render.fillStyle;
-      ctx.beginPath();
-      ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Stripe logic (if it's a striped ball color 9-15)
-      const colorIdx = POOL_COLORS.indexOf(b.render.fillStyle);
-      if (colorIdx >= 8) { // Striped ball
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2);
-        ctx.fill();
+      // Custom style rendering
+        const style = (b.plugin && b.plugin.style) ? b.plugin.style : 'solid';
         
-        ctx.fillStyle = b.render.fillStyle;
-        ctx.beginPath();
-        // Draw a thick horizontal band
-        ctx.rect(sp.x - r, sp.y - r/2, r * 2, r);
-        ctx.fill();
-      }
+        ctx.save();
+        ctx.translate(sp.x, sp.y);
+        ctx.rotate(b.angle);
+
+        if (style === 'solid') {
+          ctx.fillStyle = b.render.fillStyle;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (style === 'billiard') {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.fillStyle = b.render.fillStyle;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.fillRect(-r, -r*0.5, r * 2, r);
+        } else if (style === 'gradient') {
+          const grad = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.1, 0, 0, r);
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.3, b.render.fillStyle);
+          grad.addColorStop(1, '#000000');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
 
       // White inner circle
       ctx.fillStyle = '#fff';

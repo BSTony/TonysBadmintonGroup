@@ -2161,8 +2161,15 @@ app.post('/api/admin/pinball/sync-pool', express.json(), (req, res) => {
 });
 
 app.post('/api/pinball/set-color', express.json(), (req, res) => {
-  const { name, color } = req.body;
-  if (!name || !color) return res.status(400).json({ error: 'Missing name or color' });
+    const { name, color, style } = req.body;
+    if (!name || !color) return res.status(400).json({ error: 'Missing name or color' });
+    if (!pinballRoom.colors) pinballRoom.colors = {};
+    if (!pinballRoom.styles) pinballRoom.styles = {};
+    pinballRoom.colors[name] = color;
+    if (style) pinballRoom.styles[name] = style;
+    io.emit('pinball_state', pinballRoom);
+    res.json({ success: true, color, style });
+  });
   if (!pinballRoom.colors) pinballRoom.colors = {};
   pinballRoom.colors[name] = color;
   io.emit('pinball_state', pinballRoom);
