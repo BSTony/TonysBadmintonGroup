@@ -326,9 +326,9 @@ function initPinballEngine() {
 
   // Start Gate and Lobby Walls (blocks balls from falling or being dragged off-screen in lobby)
   if (pbState.status !== 'playing' || !window.pinballRaceStarted) {
-    startGateBody = Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
+    startGateBody = Bodies.rectangle(width / 2, START_Y + 195, width * 5, 400, {
       isStatic: true,
-      render: { visible: false }, // Invisible thick physical block
+      render: { visible: true, fillStyle: '#e74c3c' }, // Make visible and red to debug
       plugin: { isStartGate: true }
     });
     
