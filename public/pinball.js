@@ -1407,6 +1407,25 @@ function bindPinballSocket(s) {
                  };
                }
             }
+          } else {
+            // Not logged into LIFF (e.g. testing on desktop browser)
+            pinballSpectatorUi.classList.add('hidden');
+            if (btnJoinPinball) {
+              btnJoinPinball.classList.remove('hidden');
+              btnJoinPinball.innerText = '🙋‍♂️ 訪客報名 (測試)';
+              btnJoinPinball.onclick = () => {
+                const guestName = prompt("您目前未登入，請輸入測試暱稱:");
+                if (guestName && guestName.trim() !== '') {
+                  // Mock the currentUser so subsequent renders treat this browser as this guest user
+                  window.currentUser = { displayName: guestName.trim(), name: guestName.trim(), userId: 'guest_' + Math.floor(Math.random()*1000) };
+                  if (window.pinballSocket) { 
+                    window.pinballSocket.emit('join_pinball', { name: guestName.trim() }); 
+                  } else { 
+                    alert('Socket not found!'); 
+                  }
+                }
+              };
+            }
           }
         }
       
