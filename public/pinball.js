@@ -725,7 +725,12 @@ function initPinballEngine() {
 
   Render.run(pbRender);
   pbRunner = Runner.create();
-  Runner.run(pbRunner, pbEngine);
+  // Only the Host (super admin) runs the physics simulation.
+  // All other clients receive ball positions via pinball_host_sync and only render.
+  const isHost = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin);
+  if (isHost) {
+    Runner.run(pbRunner, pbEngine);
+  }
 
   // Setup Mouse Constraint for dragging
   const { Mouse, MouseConstraint } = Matter;
@@ -1550,16 +1555,18 @@ function bindPinballSocket(s) {
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
           countdownEl.classList.remove('hidden');
-          
-          let count = 5;
-          countdownEl.innerText = count.toString();
-          countdownEl.style.fontSize = 'min(240px, 48vw)';
-          
           if (countdownEl.timer) clearInterval(countdownEl.timer);
-          countdownEl.timer = setInterval(() => {
-            count--;
-            if (count > 0) {
-              countdownEl.innerText = count.toString();
+
+          // ── SERVER-SYNCED COUNTDOWN ───────────────────────────────────────
+          // Use state.statusEndTime so every device shows the same number
+          // regardless of when they received the socket event.
+          const tick = () => {
+            const remaining = state.statusEndTime
+              ? Math.ceil((state.statusEndTime - Date.now()) / 1000)
+              : 0;
+            if (remaining > 0) {
+              countdownEl.innerText = remaining.toString();
+              countdownEl.style.fontSize = 'min(240px, 48vw)';
             } else {
               clearInterval(countdownEl.timer);
               countdownEl.timer = null;
@@ -1567,7 +1574,10 @@ function bindPinballSocket(s) {
               setTimeout(() => countdownEl.classList.add('hidden'), 1500);
               startRace();
             }
-          }, 1000);
+          };
+          tick(); // Run immediately so there's no 1-second blank delay
+          countdownEl.timer = setInterval(tick, 200); // Check 5x/sec for precision
+          // ─────────────────────────────────────────────────────────────────
         } else {
           startRace();
         }
