@@ -768,6 +768,27 @@ function initPinballEngine() {
     }
   });
 
+  // Sync position on drag continuously
+  let lastMoveTime = 0;
+  Events.on(pbMouseConstraint, 'mousemove', (event) => {
+    if (pbMouseConstraint && pbMouseConstraint.body && pbMouseConstraint.body.plugin && pbMouseConstraint.body.plugin.isBall) {
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (pbMouseConstraint.body.plugin.name === myName) {
+        const now = Date.now();
+        if (now - lastMoveTime > 30) {
+          if (typeof pinballSocket !== 'undefined') {
+            pinballSocket.emit('pinball_move_ball', {
+              name: myName,
+              x: pbMouseConstraint.body.position.x,
+              y: pbMouseConstraint.body.position.y
+            });
+          }
+          lastMoveTime = now;
+        }
+      }
+    }
+  });
+
   // Sync position on release or drag
   Events.on(pbMouseConstraint, 'enddrag', (event) => {
     const body = event.body;
@@ -1044,7 +1065,7 @@ function syncBalls(state) {
     if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
       if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
       window.pinballSyncInterval = setInterval(() => {
-        if (pbState && pbState.status === 'playing' && pbBalls) {
+        if (pbState && pbState.status !== 'idle' && pbBalls) {
           const syncData = {};
           let hasBalls = false;
           for (const name in pbBalls) {
@@ -1142,7 +1163,7 @@ function bindPinballSocket(s) {
     s.on('pinball_host_sync', (data) => {
       // Ignore if I am the host (super admin)
       if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) return;
-      if (pbState && pbState.status === 'playing' && pbBalls) {
+      if (pbState && pbState.status !== 'idle' && pbBalls) {
         // Store target positions; the rAF loop will smoothly interpolate
         if (!window._pbSyncTargets) window._pbSyncTargets = {};
         for (const name in data) {
@@ -1154,7 +1175,7 @@ function bindPinballSocket(s) {
         if (!window._pbSyncLoopRunning) {
           window._pbSyncLoopRunning = true;
           const lerpLoop = () => {
-            if (!pbBalls || !pbState || pbState.status !== 'playing') {
+            if (!pbBalls || !pbState || pbState.status === 'idle') {
               window._pbSyncLoopRunning = false;
               window._pbSyncTargets = {};
               return;
@@ -1163,6 +1184,9 @@ function bindPinballSocket(s) {
             for (const name in targets) {
               if (pbBalls[name]) {
                 const ball = pbBalls[name];
+                if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body === ball) {
+                  continue; // Skip LERP while dragging
+                }
                 const sd = targets[name];
                 const dx = sd.x - ball.position.x;
                 const dy = sd.y - ball.position.y;
