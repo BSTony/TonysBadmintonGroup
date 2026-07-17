@@ -2525,7 +2525,15 @@ app.post('/api/action', express.json(), async (req, res) => {
     
     const targetGameGid = (gameId && games[gameId]) ? games[gameId].gid : gid;
     const isSuperAdminUser = isSuperAdmin(uid);
-    const isAdmin = isSuperAdminUser || isGroupAdmin(uid, targetGameGid);
+    let isAdmin = isSuperAdminUser || isGroupAdmin(uid, targetGameGid);
+    
+    // 如果是跨群發布的場次，只要他是當前群組(gid)的管理員，且該場次有發布到當前群組，就給予管理員權限
+    if (!isAdmin && gameId && games[gameId]) {
+      const g = games[gameId];
+      if ((g.targetGids && g.targetGids.includes(gid)) || g.gid === gid) {
+        if (isGroupAdmin(uid, gid)) isAdmin = true;
+      }
+    }
     
     // 儲存要讓前端觸發的訊息
     let triggerBumpMsg = null;
@@ -2637,14 +2645,14 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       const targetGame = games[gameId];
-      targetGame.active = false;
+      targetGame.isManualEnded = true;
       await saveGame(gameId, true);
       
       const pushTargets = targetGame.targetGids || [targetGame.gid];
       if (isSuperAdminUser) {
         for (const tGid of pushTargets) {
           try {
-            await pushToAdmins(tGid, { type: 'text', text: `🔒 ${targetGame.title || '此場次'} 已由管理員關閉，無法再報名。` });
+            await pushToAdmins(tGid, { type: 'text', text: `🔒 ${targetGame.title || '此場次'} 已設定為結束。` });
           } catch (e) {}
         }
       }
@@ -2836,7 +2844,9 @@ app.post('/api/action', express.json(), async (req, res) => {
       });
         } else if (action === 'togglePaid') {
       if (!isAdmin) {
-        return res.status(403).json({ error: '只有管理員能修改繳費狀態' });
+        return res.status(403).json({ 
+          error: `管理員驗證失敗。\nuid: ${uid.substring(0,8)}...\ngid: ${gid}\ntargetGid: ${targetGameGid}\noverride: ${JSON.stringify(superAdminViewOverrides[uid])}` 
+        });
       }
       game.paidMap = game.paidMap || {};
       game.paidMap[name] = !game.paidMap[name];
