@@ -153,21 +153,14 @@ function initPinballEngine() {
 
   
   // --- GENERATE RANDOM OBSTACLES ---
-  // Pick 3 random segments along the path to place obstacles (excluding start and end)
-  const obstacleZones = [];
-  const startIdx = Math.floor(pathPoints.length * 0.15);
-  const endIdx = Math.floor(pathPoints.length * 0.85);
-  const zoneSize = Math.floor((endIdx - startIdx) / 4);
+  // Generate 15 pegs uniformly distributed along the track (alternating 2 and 1 per row)
+  const numRows = 10;
+  const startIdx = Math.floor(pathPoints.length * 0.10);
+  const endIdx = Math.floor(pathPoints.length * 0.90);
+  const zoneSize = (endIdx - startIdx) / numRows;
   
-  for (let z = 0; z < 4; z++) {
-    const idx = startIdx + z * zoneSize + Math.floor(seededRandom() * (zoneSize * 0.6)) + Math.floor(zoneSize * 0.2);
-    obstacleZones.push(idx);
-  }
-
-  const obstacleTypes = [1, 3, 4, 4].sort(() => seededRandom() - 0.5);
-
-  for (let i = 0; i < 4; i++) {
-    const pIdx = obstacleZones[i];
+  for (let r = 0; r < numRows; r++) {
+    const pIdx = Math.floor(startIdx + r * zoneSize + (zoneSize / 2));
     const p = pathPoints[pIdx];
     let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
     let pPrev = pathPoints[pIdx - 5] || pathPoints[0];
@@ -180,137 +173,94 @@ function initPinballEngine() {
     let nx = -ty;
     let ny = tx;
 
-    const type = obstacleTypes[i];
+    let pegsInThisRow = (r % 2 === 0) ? 2 : 1;
+    let isWindmillRow = false;
     
-    if (type === 0) {
-      const gap = 110; 
-      const funWidth = (TRACK_WIDTH - gap) / 2 + 20;
-      const funThick = 40;
+    // Add two windmills along the regular track
+    if (r === 3 || r === 7) {
+      isWindmillRow = true;
+      pegsInThisRow = 1;
+    }
+    
+    for (let i = 0; i < pegsInThisRow; i++) {
+      let offsetAmt = 0;
+      if (!isWindmillRow && pegsInThisRow === 2) {
+        offsetAmt = (i === 0) ? -40 : 40;
+      }
       
-      const leftCx = p.x + nx * (gap/2 + funWidth/2);
-      const leftCy = p.y + ny * (gap/2 + funWidth/2) - ty * 50;
-      const baseAngle = Math.atan2(ty, tx);
-      const leftAngle = baseAngle + Math.PI/4;
-      
-      const leftBody = Bodies.rectangle(leftCx, leftCy, funWidth, funThick, {
-        isStatic: true, angle: leftAngle, render: { fillStyle: '#34495e', strokeStyle: '#2c3e50', lineWidth: 2 }, friction: 0.0, restitution: 0.5
-      });
-      bodies.push(leftBody);
-      trackObstacles.push(leftBody);
-      
-      const rightCx = p.x - nx * (gap/2 + funWidth/2);
-      const rightCy = p.y - ny * (gap/2 + funWidth/2) - ty * 50;
-      const rightAngle = baseAngle - Math.PI/4;
-      
-      const rightBody = Bodies.rectangle(rightCx, rightCy, funWidth, funThick, {
-        isStatic: true, angle: rightAngle, render: { fillStyle: '#34495e', strokeStyle: '#2c3e50', lineWidth: 2 }, friction: 0.0, restitution: 0.5
-      });
-      bodies.push(rightBody);
-      trackObstacles.push(rightBody);
-      
-    } else if (type === 1) {
-      const offsetAmt = (seededRandom() - 0.5) * (TRACK_WIDTH * 0.4);
       const cx = p.x + nx * offsetAmt;
       const cy = p.y + ny * offsetAmt;
       
-      const bouncer = Bodies.circle(cx, cy, 14, {
-        isStatic: true, restitution: 1.5, friction: 0.0,
-        render: { fillStyle: '#f1c40f', strokeStyle: '#111111', lineWidth: 4 }, plugin: { isBumper: true }
-      });
-      bodies.push(bouncer);
-      trackObstacles.push(bouncer);
-      
-    } else if (type === 2) {
-        // Traffic Cone (Top-Down view: Concentric circles)
-        const offsetAmt = (seededRandom() - 0.5) * (TRACK_WIDTH * 0.3);
-        const cx = p.x + nx * offsetAmt;
-        const cy = p.y + ny * offsetAmt;
-        
-        const base = Bodies.circle(cx, cy, 15, { render: { fillStyle: '#e74c3c', strokeStyle: '#c0392b', lineWidth: 1 } });
-        const mid = Bodies.circle(cx, cy, 10, { render: { fillStyle: '#ffffff', strokeStyle: '#bdc3c7', lineWidth: 1 } });
-        const top = Bodies.circle(cx, cy, 5, { render: { fillStyle: '#e74c3c', strokeStyle: '#c0392b', lineWidth: 1 } });
-        
-        const cone = Matter.Body.create({
-          parts: [base, mid, top],
-          isStatic: true,
-          restitution: 0.2
+      if (isWindmillRow) {
+        const windmill = Bodies.rectangle(cx, cy, 128, 20, {
+          isStatic: true, restitution: 1.2, friction: 0.0,
+          render: { fillStyle: '#f1c40f', strokeStyle: '#e67e22', lineWidth: 4 }, 
+          plugin: { isRotary: true, isBumper: true }
         });
-        
-        bodies.push(cone);
-        trackObstacles.push(cone);
-    } else if (type === 3) {
-      // Rotary Pinwheel (4 colored blades)
-      const cx = p.x;
-      const cy = p.y;
-      
-      const parts = [];
-      parts.push(Bodies.circle(cx, cy, 20, { 
-        render: { fillStyle: '#ffffff', strokeStyle: '#bdc3c7', lineWidth: 2 }
-      }));
-      
-      const bladeColors = ['#3498db', '#2ecc71', '#e74c3c', '#f1c40f']; // Blue, Green, Red, Yellow
-      
-      for(let j=0; j<4; j++) {
-        const angle = j * (Math.PI / 2);
-        const dist = 45; 
-        const offset = 15;
-        const bx = cx + Math.cos(angle) * dist - Math.sin(angle) * offset;
-        const by = cy + Math.sin(angle) * dist + Math.cos(angle) * offset;
-        const blade = Bodies.rectangle(bx, by, 75, 30, {
-          angle: angle,
-          render: { fillStyle: bladeColors[j], strokeStyle: 'rgba(0,0,0,0.2)', lineWidth: 2 },
-          chamfer: { radius: 5 }
+        bodies.push(windmill);
+        trackObstacles.push(windmill);
+      } else {
+        const bouncer = Bodies.circle(cx, cy, 14, {
+          isStatic: true, restitution: 1.5, friction: 0.0,
+          render: { fillStyle: '#f1c40f', strokeStyle: '#111111', lineWidth: 4 }, plugin: { isBumper: true }
         });
-        parts.push(blade);
+        bodies.push(bouncer);
+        trackObstacles.push(bouncer);
       }
-      
-      const cross = Matter.Body.create({
-        parts: parts,
-        frictionAir: 0,
-        friction: 0,
-        restitution: 0.8,
-        density: 0.5,
-        plugin: { isRotary: true }
-      });
-      
-      const constraint = Matter.Constraint.create({
-        pointA: { x: p.x, y: p.y },
-        bodyB: cross,
-        pointB: { x: 0, y: 0 },
-        stiffness: 1,
-        length: 0,
-        render: { visible: true, type: 'pin', strokeStyle: '#fff' }
-      });
-      
-      bodies.push(cross);
-      bodies.push(constraint);
-      trackObstacles.push(cross);
-      trackObstacles.push(constraint);
-    } else if (type === 4) {
-      // Y-shaped fork island (Teardrop shape)
-      const baseAngle = Math.atan2(ty, tx);
-      const teardropVertices = [
-        { x: 0, y: -120 },
-        { x: 30, y: -20 },
-        { x: 45, y: 30 },
-        { x: 25, y: 70 },
-        { x: 0, y: 80 },
-        { x: -25, y: 70 },
-        { x: -45, y: 30 },
-        { x: -30, y: -20 }
-      ];
-      
-      const island = Bodies.fromVertices(p.x, p.y, [teardropVertices], {
-        isStatic: true,
-        angle: baseAngle + Math.PI / 2,
-        render: { fillStyle: '#2ecc71', strokeStyle: '#27ae60', lineWidth: 4 }
-      }, true);
-      
-      bodies.push(island);
-      trackObstacles.push(island);
     }
   }
   // --- END GENERATE RANDOM OBSTACLES ---
+
+  // --- GENERATE FINAL PACHINKO GRID ---
+  const startFinalIdx = Math.floor(pathPoints.length * 0.92);
+  const endFinalIdx = Math.floor(pathPoints.length * 0.98);
+  
+  if (endFinalIdx > startFinalIdx) {
+    let rowNum = 0;
+    // Step by 5 to ensure enough vertical distance between rows
+    for (let pIdx = startFinalIdx; pIdx <= endFinalIdx; pIdx += 5) {
+      const p = pathPoints[pIdx];
+      
+      let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
+      let pPrev = pathPoints[pIdx - 5] || pathPoints[0];
+      let dx = pNext.x - pPrev.x;
+      let dy = pNext.y - pPrev.y;
+      let len = Math.sqrt(dx*dx + dy*dy);
+      let tx = dx / len;
+      let ty = dy / len;
+      let nx = -ty;
+      let ny = tx;
+
+      // Funnel pattern: alternate rows to push balls to center
+      // Row 0: outer edges [-44, 44]
+      // Row 1: middle [-28, 28]
+      // Row 2: center [0]
+      // Funnel pattern: alternate rows to push balls to center
+      // Row 0: outer edges [-44, 44]
+      // Row 1: middle [-35, 35]
+      // Row 2: center [0]
+      let offsets = [];
+      
+      const pattern = rowNum % 3;
+      if (pattern === 0) offsets = [-45, 45];
+      else if (pattern === 1) offsets = [-35, 35];
+      else offsets = [0];
+
+      for (let offsetAmt of offsets) {
+        const cx = p.x + nx * offsetAmt;
+        const cy = p.y + ny * offsetAmt;
+        
+        const bouncer = Bodies.circle(cx, cy, 14, {
+          isStatic: true, restitution: 1.5, friction: 0.0,
+          render: { fillStyle: '#e74c3c', strokeStyle: '#111111', lineWidth: 4 }, plugin: { isBumper: true }
+        });
+        bodies.push(bouncer);
+        trackObstacles.push(bouncer);
+      }
+      rowNum++;
+    }
+  }
+  // --- END GENERATE FINAL PACHINKO GRID ---
 
   World.add(pbEngine.world, bodies);
 
@@ -367,11 +317,33 @@ function initPinballEngine() {
   Events.on(pbEngine, 'beforeUpdate', () => {
     updateDynamicLeaderboard();
     
+    // Rubber-banding (catch-up mechanic)
+    if (typeof pbState !== 'undefined' && pbState && pbState.status === 'playing' && pbEngine.gravity.y > 0) {
+      const allBalls = Object.values(pbBalls);
+      if (allBalls.length > 1) {
+        const sortedBalls = [...allBalls].sort((a, b) => b.position.y - a.position.y);
+        sortedBalls.forEach((ball, index) => {
+          let multiplier = 0;
+          if (index === 0) multiplier = 0.0; // 1st place: 100%
+          else if (index === 1) multiplier = 0.1; // 2nd place: 110%
+          else if (index === 2) multiplier = 0.2; // 3rd place: 120%
+          else if (index >= 3 && index <= 9) multiplier = 0.4; // 4th~10th: 140%
+          else if (index >= 10 && index <= 19) multiplier = 0.8; // 11th~20th: 180%
+          else multiplier = 1.0; // others: 200%
+          
+          if (multiplier > 0) {
+            const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
+            Matter.Body.applyForce(ball, ball.position, { x: 0, y: baseForce * multiplier });
+          }
+        });
+      }
+    }
+    
     // Rotary plates
     if (pbEngine && pbEngine.world) {
       pbEngine.world.bodies.forEach(b => {
         if (b.plugin && b.plugin.isRotary) {
-          Matter.Body.setAngularVelocity(b, 0.04);
+          Matter.Body.setAngle(b, b.angle + 0.05);
         }
       });
     }
@@ -381,13 +353,13 @@ function initPinballEngine() {
       if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
         Object.values(pbBalls).forEach(ball => {
           // Apply constant downward push to simulate steep track
-          Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
+          Matter.Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
           
           if (ball.speed < 0.5) {
             ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
             if (ball.plugin.stuckFrames > 40) {
               Matter.Body.setVelocity(ball, {
-                x: (seededRandom() - 0.5) * 10,
+                x: (Math.random() - 0.5) * 10,
                 y: -7.5
               });
               ball.plugin.stuckFrames = 0;
@@ -415,6 +387,7 @@ function initPinballEngine() {
           // Prevent players from overpowering the clamp by holding the mouse: drop the ball!
           if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body === ball) {
             pbMouseConstraint.body = null;
+            if (pbMouseConstraint.constraint) pbMouseConstraint.constraint.bodyB = null;
           }
         }
       });
@@ -607,6 +580,19 @@ function initPinballEngine() {
 
       const r = b.circleRadius * scaleX;
       
+      // Draw glowing aura for player's own ball
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (b.plugin.name === myName) {
+        const pulse = 1.3 + Math.sin(Date.now() / 150) * 0.2; // pulse between 1.1 and 1.5
+        ctx.fillStyle = 'rgba(255, 255, 0, 0.4)';
+        ctx.shadowColor = '#ffff00';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, r * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0; // reset
+      }
+
       // Ball shadow
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.beginPath();
@@ -753,21 +739,51 @@ function initPinballEngine() {
     World.add(pbEngine.world, pbMouseConstraint);
   }
 
+  // Continuously enforce mouse constraints to prevent frame-by-frame dragging glitches
+  // Registered here so it runs AFTER MouseConstraint's internal beforeUpdate
+  Events.on(pbEngine, 'beforeUpdate', () => {
+    if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body) {
+      const body = pbMouseConstraint.body;
+      let shouldDrop = false;
+      if (pbState.status === 'playing') {
+        shouldDrop = true;
+      } else if (body.plugin && body.plugin.isBall) {
+        const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+        const isAdmin = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin);
+        if (!isAdmin && body.plugin.name !== myName) {
+          shouldDrop = true;
+        }
+      } else {
+        shouldDrop = true;
+      }
+      
+      if (shouldDrop) {
+        pbMouseConstraint.body = null;
+        if (pbMouseConstraint.constraint) pbMouseConstraint.constraint.bodyB = null;
+      }
+    }
+  });
+
   // Filter mouse interactions (only allow dragging own ball in lobby/instruction)
   Events.on(pbMouseConstraint, 'mousedown', (event) => {
+    const drop = () => {
+      pbMouseConstraint.body = null;
+      if (pbMouseConstraint.constraint) pbMouseConstraint.constraint.bodyB = null;
+    };
     if (pbState.status === 'playing') {
-      pbMouseConstraint.body = null; // Deny drag if racing or during countdown!
+      drop(); // Deny drag if racing or during countdown!
       return;
     }
     const body = pbMouseConstraint.body;
     if (body) {
       if (!body.plugin || !body.plugin.isBall) {
-        pbMouseConstraint.body = null; // Only balls are draggable
+        drop(); // Only balls are draggable
         return;
       }
       const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-      if (body.plugin.name !== myName) {
-        pbMouseConstraint.body = null; // Deny dragging someone else's ball
+      const isAdmin = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin);
+      if (!isAdmin && body.plugin.name !== myName) {
+        drop(); // Deny dragging someone else's ball
       }
     }
   });
@@ -820,10 +836,16 @@ function buildTopDownTrack(W) {
   const bodies = [];
   const pathPoints = [];
   
-  const steps = 280; // Increased resolution for longer track
-  const maxT = Math.PI * 10; // 5 full S-curves (doubled length)
-  const amplitude = Math.min(W * 0.25, 130); // Reduced to prevent sharp cusps
-  const stretch = 200; // Increased to elongate curves and increase radius of curvature
+  const steps = 600; // Increased resolution for massive track
+  const maxT = Math.PI * 14; // 7 full S-curves
+  
+  // Calculate amplitude to reach exactly near the left/right screen edges
+  const maxSafeAmplitude = (W / 2) - 150 - 20; // 150 is approx wall offset, 20 is padding
+  const amplitude = Math.max(50, maxSafeAmplitude);
+  
+  // Dynamically calculate stretch to guarantee mathematically safe radius of curvature
+  // Radius of curvature R = stretch^2 / amplitude. We need R > 150 to avoid wall self-intersection loops.
+  const stretch = Math.max(180, Math.sqrt(amplitude * 160));
 
   let currentY = START_Y + 10; // Track generation starts below the gate
   
@@ -1304,6 +1326,17 @@ function bindPinballSocket(s) {
     if (!pinballContainer) pinballContainer = document.getElementById('pinball-container');
     if (!pinballCanvasWrapper) pinballCanvasWrapper = document.getElementById('pinball-canvas-wrapper');
 
+    // Color picker close button
+    const btnCloseColorPicker = document.getElementById('btn-close-color-picker');
+    if (btnCloseColorPicker && !btnCloseColorPicker._bound) {
+      btnCloseColorPicker._bound = true;
+      btnCloseColorPicker.addEventListener('click', () => {
+        const colorUi = document.getElementById('pinball-color-picker-ui');
+        if (colorUi) colorUi.classList.add('hidden');
+        hasSelectedPinballColor = true; // Prevent auto-reopening
+      });
+    }
+
     const pinballPoolCount = document.getElementById('pinball-pool-count');
     if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
 
@@ -1371,7 +1404,6 @@ function bindPinballSocket(s) {
     if (state.status === 'lobby') {
       window.pinballRaceStarted = false;
       if (roomAdminPanel) roomAdminPanel.style.display = '';
-      if (roomParticipantsPanel) { if (!hasSelectedPinballColor) { roomParticipantsPanel.style.display = ''; } }
       if (dynBoard) dynBoard.classList.add('hidden');
       const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
@@ -1391,7 +1423,9 @@ function bindPinballSocket(s) {
                  btnJoinPinball.classList.remove('hidden');
                  btnJoinPinball.innerText = '🙋‍♂️ 報名參加';
                  btnJoinPinball.onclick = () => {
-                   if (window.pinballSocket) { window.pinballSocket.emit('join_pinball', { name: myName }); } else { alert('Socket not found!'); }
+                   hasSelectedPinballColor = false;
+                   const colorUi = document.getElementById('pinball-color-picker-ui');
+                   if (colorUi) colorUi.classList.remove('hidden');
                  };
                }
             } else {
@@ -1432,163 +1466,10 @@ function bindPinballSocket(s) {
       // Color Picker UI logic
       const colorUi = document.getElementById('pinball-color-picker-ui');
       const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-      if (colorUi && myName && state.pool.includes(myName)) {
-        if (!hasSelectedPinballColor) {
-          colorUi.classList.remove('hidden');
-        } else {
-          colorUi.classList.add('hidden');
-        }
-        
-        // 避免超管控制面板擋住顏色選擇器
-        if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
-          // colorUi.style.bottom = '150px';
-        }
-
-        // Initialize buttons if not done yet
-        const colorContainer = document.getElementById('pinball-color-options');
-        if (colorContainer && colorContainer.children.length === 0) {
-          let selectedColor = null;
-          let selectedStyle = 'solid';
-          
-          function updatePreview() {
-            const canvas = document.getElementById('pinball-preview-canvas');
-            if (!canvas || !selectedColor) return;
-            canvas.style.display = 'block';
-            const ctx = canvas.getContext('2d');
-            const r = 40;
-            const cx = 50;
-            const cy = 50;
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw Ball
-            ctx.save();
-            ctx.translate(cx, cy);
-            if (selectedStyle === 'solid') {
-              ctx.fillStyle = selectedColor;
-              ctx.beginPath();
-              ctx.arc(0, 0, r, 0, Math.PI * 2);
-              ctx.fill();
-            } else if (selectedStyle === 'billiard') {
-              ctx.fillStyle = '#ffffff';
-              ctx.beginPath();
-              ctx.arc(0, 0, r, 0, Math.PI * 2);
-              ctx.fill();
-              
-              ctx.fillStyle = selectedColor;
-              ctx.beginPath();
-              ctx.arc(0, 0, r, 0, Math.PI * 2);
-              ctx.clip();
-              ctx.fillRect(-r, -r*0.5, r * 2, r);
-            } else if (selectedStyle === 'gradient') {
-              const grad = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.1, 0, 0, r);
-              grad.addColorStop(0, '#ffffff');
-              grad.addColorStop(0.3, selectedColor);
-              grad.addColorStop(1, '#000000');
-              ctx.fillStyle = grad;
-              ctx.beginPath();
-              ctx.arc(0, 0, r, 0, Math.PI * 2);
-              ctx.fill();
-            }
-            ctx.restore();
-            
-            // Draw inner white circle
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Draw number
-            ctx.fillStyle = '#000';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.font = 'bold 24px Arial';
-            // Find player's number if possible, or just draw '?'
-            let num = '?';
-            const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-            if (myName && pbBalls && pbBalls[myName]) num = pbBalls[myName].plugin.num;
-            ctx.fillText(num, cx, cy + 2);
-          }
-          
-          const styleBtns = document.querySelectorAll('.pinball-style-btn');
-          styleBtns.forEach(btn => {
-            btn.onclick = () => {
-              styleBtns.forEach(b => {
-                b.style.borderColor = 'transparent';
-                b.classList.remove('active');
-              });
-              btn.style.borderColor = '#3498db';
-              btn.classList.add('active');
-              selectedStyle = btn.getAttribute('data-style');
-              updatePreview();
-            };
-          });
-
-          const defaultColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6', '#fd79a8', '#00cec9'];
-          
-          // Initial preview setup
-          if (!selectedColor) {
-             const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-             if (myName && pbBalls && pbBalls[myName]) {
-               selectedColor = pbBalls[myName].render.fillStyle;
-               selectedStyle = pbBalls[myName].plugin.style || 'solid';
-             } else {
-               selectedColor = defaultColors[0];
-               selectedStyle = 'solid';
-             }
-             
-             // visually select the style button
-             styleBtns.forEach(b => {
-               if (b.getAttribute('data-style') === selectedStyle) {
-                 b.style.borderColor = '#3498db';
-                 b.classList.add('active');
-               }
-             });
-             
-             updatePreview();
-          }
-          defaultColors.forEach(c => {
-            const btn = document.createElement('button');
-            btn.style.cssText = `width: 35px; height: 35px; border-radius: 50%; border: 3px solid #fff; background-color: ${c}; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5);`;
-            btn.onclick = () => {
-              selectedColor = c;
-                updatePreview();
-                // Visual feedback
-              Array.from(colorContainer.children).forEach(child => child.style.transform = 'scale(1)');
-              btn.style.transform = 'scale(1.2)';
-
-              const confirmBtn = document.getElementById('btn-pinball-color-confirm');
-              if (confirmBtn) {
-                 confirmBtn.style.display = 'block';
-                 confirmBtn.onclick = () => {
-                     fetch('/api/pinball/set-color', {
-                       method: 'POST',
-                       headers: { 'Content-Type': 'application/json' },
-                       body: JSON.stringify({ name: myName, color: selectedColor, style: selectedStyle })
-                     });
-                   hasSelectedPinballColor = true;
-                   if (colorUi) colorUi.classList.add('hidden');
-                   if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none'; // Enter view mode
-                 };
-              }
-            };
-            colorContainer.appendChild(btn);
-          });
-        }
-      } else if (colorUi) {
-        colorUi.classList.add('hidden');
-      }
+      // Color Picker UI logic (auto-popup removed, now purely driven by user clicks)
       // Always destroy engine on returning to lobby from playing so the track regenerates
       if (prevStatus === 'playing' && pbEngine) {
-        Matter.Render.stop(pbRender);
-        Matter.Runner.stop(pbRunner);
-        Matter.World.clear(pbEngine.world);
-        Matter.Engine.clear(pbEngine);
-        if (pbRender.canvas) pbRender.canvas.remove();
-        pbRender = null;
-        pbRunner = null;
-        pbEngine = null;
-        pbBalls = {};
+        destroyEngine();
         
         // Immediately rebuild with new terrain
         initPinballEngine();
@@ -1601,15 +1482,7 @@ function bindPinballSocket(s) {
       if (colorUi) colorUi.classList.add('hidden');
       if (prevStatus === 'playing' && pbEngine) {
         // Destroy old engine and reset track for next round
-        Matter.Render.stop(pbRender);
-        Matter.Runner.stop(pbRunner);
-        Matter.World.clear(pbEngine.world);
-        Matter.Engine.clear(pbEngine);
-        if (pbRender.canvas) pbRender.canvas.remove();
-        pbRender = null;
-        pbRunner = null;
-        pbEngine = null;
-        pbBalls = {};
+        destroyEngine();
         
         initPinballEngine();
       }
@@ -1827,3 +1700,151 @@ function bindPinballSocket(s) {
       alert('✅ 您的設備已自動啟用體感控制！開始比賽後，左右傾斜手機即可控制彈珠！');
     }
   };
+
+window.pinballInitColorPicker = function() {
+  const colorContainer = document.getElementById('pinball-color-options');
+  if (!colorContainer || colorContainer.children.length > 0) return;
+  
+  let selectedColor = null;
+  let selectedStyle = 'solid';
+  const defaultColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6', '#fd79a8', '#00cec9'];
+
+  function updatePreview() {
+    const canvas = document.getElementById('pinball-preview-canvas');
+    if (!canvas || !selectedColor) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    const r = 40;
+    const cx = 50;
+    const cy = 50;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.save();
+    ctx.translate(cx, cy);
+    if (selectedStyle === 'solid') {
+      ctx.fillStyle = selectedColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (selectedStyle === 'billiard') {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = selectedColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.fillRect(-r, -r*0.5, r * 2, r);
+    } else if (selectedStyle === 'gradient') {
+      const grad = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.1, 0, 0, r);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.3, selectedColor);
+      grad.addColorStop(1, '#000000');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 24px Arial';
+    let num = '?';
+    const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+    if (myName && typeof pbBalls !== 'undefined' && pbBalls[myName]) {
+      num = pbBalls[myName].plugin.num;
+    }
+    ctx.fillText(num, cx, cy + 2);
+  }
+  
+  const styleBtns = document.querySelectorAll('.pinball-style-btn');
+  Array.from(styleBtns).forEach(btn => {
+    btn.onclick = () => {
+      Array.from(styleBtns).forEach(b => {
+        b.style.borderColor = 'transparent';
+        b.classList.remove('active');
+      });
+      btn.style.borderColor = '#3498db';
+      btn.classList.add('active');
+      selectedStyle = btn.getAttribute('data-style');
+      updatePreview();
+    };
+  });
+
+  if (!selectedColor) {
+    const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+    if (myName && typeof pbBalls !== 'undefined' && pbBalls[myName]) {
+      selectedColor = pbBalls[myName].render.fillStyle;
+      selectedStyle = pbBalls[myName].plugin.style || 'solid';
+    } else {
+      // RANDOM color and style for new players
+      selectedColor = defaultColors[Math.floor(Math.random() * defaultColors.length)];
+      const styles = ['solid', 'billiard', 'gradient'];
+      selectedStyle = styles[Math.floor(Math.random() * styles.length)];
+    }
+    
+    Array.from(styleBtns).forEach(b => {
+      if (b.getAttribute('data-style') === selectedStyle) {
+        b.style.borderColor = '#3498db';
+        b.classList.add('active');
+      }
+    });
+    
+    updatePreview();
+  }
+
+  // Setup Confirm button once
+  const confirmBtn = document.getElementById('btn-pinball-color-confirm');
+  if (confirmBtn) {
+     confirmBtn.style.display = 'block'; // Make sure it's visible so user can directly confirm
+     confirmBtn.onclick = () => {
+         const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+         if (window.pinballSocket && myName) {
+           window.pinballSocket.emit('join_pinball', { name: myName });
+         }
+         fetch('/api/pinball/set-color', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ name: myName, color: selectedColor, style: selectedStyle })
+         });
+       hasSelectedPinballColor = true;
+       const colorUi = document.getElementById('pinball-color-picker-ui');
+       if (colorUi) colorUi.classList.add('hidden');
+       const roomParticipantsPanel = document.getElementById('room-participants-panel');
+       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
+     };
+  }
+
+  defaultColors.forEach(c => {
+    const btn = document.createElement('button');
+    btn.style.cssText = `width: 35px; height: 35px; border-radius: 50%; border: 3px solid #fff; background-color: ${c}; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5);`;
+    
+    // Highlight the randomly selected color
+    if (c === selectedColor) {
+      btn.style.transform = 'scale(1.2)';
+    }
+
+    btn.onclick = () => {
+      selectedColor = c;
+      updatePreview();
+      Array.from(colorContainer.children).forEach(child => child.style.transform = 'scale(1)');
+      btn.style.transform = 'scale(1.2)';
+    };
+    colorContainer.appendChild(btn);
+  });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.pinballInitColorPicker();
+});
+

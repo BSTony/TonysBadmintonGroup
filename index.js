@@ -894,9 +894,11 @@ const uidToNameMap = new Map(); // key: "gid_uid", value: name
 const firstUseGroups = new Set(); // 記錄已經顯示過歡迎訊息的群組
 
 // === 權限輔助函式 ===
-function isSuperAdmin(uid) {
+let superAdminViewOverrides = {}; // uid -> 'user' | 'admin' | 'superadmin'
+
+function isTrueSuperAdmin(uid) {
   if (!uid) return false;
-  if (uid === 'U_SUPER_ADMIN_TEST_ID') return true;
+  if (uid.startsWith('U_SUPER_ADMIN_TEST_ID')) return true;
   let isEnvAdmin = false;
   if (process.env.SUPER_ADMIN_USER_ID) {
     const envAdmins = process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim());
@@ -905,8 +907,28 @@ function isSuperAdmin(uid) {
   return isEnvAdmin || (superAdmins && superAdmins.has(uid));
 }
 
+function isSuperAdmin(uid) {
+  if (!isTrueSuperAdmin(uid)) return false;
+  if (superAdminViewOverrides[uid]) {
+    return superAdminViewOverrides[uid].mode === 'superadmin';
+  }
+  return true;
+}
+
 function isGroupAdmin(uid, gid) {
-  if (isSuperAdmin(uid)) return true;
+  if (isTrueSuperAdmin(uid)) {
+    const override = superAdminViewOverrides[uid];
+    if (override) {
+      if (override.mode === 'user') return false;
+      if (override.mode === 'admin') {
+        if (override.targetGid) return gid === override.targetGid;
+        return true;
+      }
+      if (override.mode === 'superadmin') return true;
+    }
+    return true; // default
+  }
+  if (uid && uid.startsWith('U_GROUP_ADMIN_TEST_ID')) return true;
   return !!(groupAdmins[gid] && groupAdmins[gid].has(uid));
 }
 
@@ -1456,6 +1478,12 @@ app.get('/api/game/:gid', async (req, res) => {
        adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
     } else {
        adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
+       const override = superAdminViewOverrides[uid];
+       if (override && override.mode === 'admin' && override.targetGid) {
+           if (!adminGids.includes(override.targetGid)) {
+               adminGids.push(override.targetGid);
+           }
+       }
     }
     for (const g of adminGids) {
       const codes = Object.keys(groupCodes).filter(k => groupCodes[k] === g);
@@ -2247,6 +2275,7 @@ app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
   // Do NOT exclude winners. Keep pool intact for multi-round scoring.
   pinballRoom.status = 'lobby';
   pinballRoom.round = (pinballRoom.round || 1) + 1; // Increment round
+  pinballRoom.seed = Math.floor(Math.random() * 1000000); // Generate new track
   pinballRoom.finished = [];
   
   io.emit('pinball_state', pinballRoom);
@@ -3124,6 +3153,34 @@ async function handleEvent(event) {
     return client.replyMessage(event.replyToken, {
       type: 'text',
       text: `你的專屬 UID 是：\n${uid}\n\n請將此 UID 提供給超級管理員，以便設定群組管理權限。\n(若要開啟全系統超級管理員模式，可將此字串設定到 Render 的 SUPER_ADMIN_USER_ID 環境變數中)`
+    });
+  }
+
+  const viewOverrideMatch = text.match(/^超級管理員視角\s+(使用者|管理員|最高權限)(?:\s+(\d{4}))?$/i);
+  if (viewOverrideMatch) {
+    if (!isTrueSuperAdmin(uid)) {
+      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 此指令僅限真正的超級管理員使用。' });
+    }
+    const mode = viewOverrideMatch[1];
+    const code = viewOverrideMatch[2];
+    let modeCode = 'superadmin';
+    if (mode === '使用者') modeCode = 'user';
+    else if (mode === '管理員') modeCode = 'admin';
+    
+    let targetGid = null;
+    let groupNameDisplay = '';
+    if (modeCode === 'admin' && code) {
+      targetGid = groupCodes[code];
+      if (!targetGid) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組` });
+      }
+      groupNameDisplay = ` (限群組: ${groupSettings[targetGid]?.groupName || code})`;
+    }
+    
+    superAdminViewOverrides[uid] = { mode: modeCode, targetGid: targetGid };
+    return client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: `✅ 視角已切換為：${mode}${groupNameDisplay}\n請重新整理網頁查看效果。`
     });
   }
 

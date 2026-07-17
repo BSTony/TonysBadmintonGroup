@@ -1191,11 +1191,11 @@ async function initializeLiff() {
       let mockName = testParams.get('name') || ('Test Player ' + randomSuffix);
       
       if (testRole === 'superadmin') {
-        mockUid = 'U_SUPER_ADMIN_TEST_ID';
-        mockName = 'Super Admin';
+        mockUid = 'U_SUPER_ADMIN_TEST_ID_' + randomSuffix;
+        mockName = testParams.get('name') || 'Super Admin';
       } else if (testRole === 'admin') {
-        mockUid = 'U_GROUP_ADMIN_TEST_ID';
-        mockName = 'Group Admin';
+        mockUid = 'U_GROUP_ADMIN_TEST_ID_' + randomSuffix;
+        mockName = testParams.get('name') || 'Group Admin';
       }
       
       currentUser = { userId: mockUid, displayName: mockName };
@@ -3700,6 +3700,7 @@ if (btnEasterEgg) {
           });
         } catch(e) { console.error(e); }
       } else {
+        hasEnteredParty = false;
         unifiedRoomOverlay.classList.add('hidden');
         socket.emit('leave_room');
         
@@ -3714,6 +3715,11 @@ if (btnEasterEgg) {
         if (countdownEl && countdownEl.timer) {
           clearInterval(countdownEl.timer);
           countdownEl.timer = null;
+        }
+        
+        // Update UI so they can re-enter if they want
+        if (typeof updateUnifiedRoomUI === 'function') {
+          updateUnifiedRoomUI();
         }
       }
     });
@@ -4205,6 +4211,9 @@ if (btnShowParticipants && participantsPanel) {
 if (btnCloseParticipants && participantsPanel) {
   btnCloseParticipants.addEventListener('click', () => {
     participantsPanel.classList.add('hidden');
+    // Also close the color picker if open
+    const colorPickerUi = document.getElementById('pinball-color-picker-ui');
+    if (colorPickerUi) colorPickerUi.classList.add('hidden');
   });
 }
 
