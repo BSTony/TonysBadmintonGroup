@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1444,
+    "viewCount": 1446,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -998,9 +998,27 @@
         "firstVisit": 1784190460494,
         "count": 1,
         "lastVisit": 1784190460494
+      },
+      "Ufc4b20dff9b2270f6e4ea5a3c5eb0d0b": {
+        "displayName": "Pu",
+        "firstVisit": 1784245770303,
+        "count": 2,
+        "lastVisit": 1784245864619
       }
     },
     "logs": [
+      {
+        "time": 1784245864619,
+        "userId": "Ufc4b20dff9b2270f6e4ea5a3c5eb0d0b",
+        "displayName": "Pu",
+        "pictureUrl": "https://profile.line-scdn.net/0hoCEjojh2MGxoEy-g_ZxOUhhDMwZLYml-EHx5WAkUZg8Fc3A_Fnd6WVpEPQhddnEyECZ9Xlgaa1hKRCFDOAY2CBpTCDdJfRl6PAotCghubjU9XR8yP30bWFhOOisscCh6TSp7czZuLBQtVRU_GgAicjt6OSIveh5fPURcOm0hXu8HEUc5RXV-D1UVZlnQ"
+      },
+      {
+        "time": 1784245770303,
+        "userId": "Ufc4b20dff9b2270f6e4ea5a3c5eb0d0b",
+        "displayName": "Pu",
+        "pictureUrl": "https://profile.line-scdn.net/0hoCEjojh2MGxoEy-g_ZxOUhhDMwZLYml-EHx5WAkUZg8Fc3A_Fnd6WVpEPQhddnEyECZ9Xlgaa1hKRCFDOAY2CBpTCDdJfRl6PAotCghubjU9XR8yP30bWFhOOisscCh6TSp7czZuLBQtVRU_GgAicjt6OSIveh5fPURcOm0hXu8HEUc5RXV-D1UVZlnQ"
+      },
       {
         "time": 1784239449172,
         "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
@@ -2184,18 +2202,6 @@
       },
       {
         "time": 1783999930440,
-        "userId": "U487e8a8976a1c65af4311f4b3f842a9c",
-        "displayName": "紀凡",
-        "pictureUrl": "https://profile.line-scdn.net/0haLjLFUwFPmNHNStqZU5AHDdlPQlkRGdxPlclASE3ZFUtV3A8P1p5Vyc1Y1IqBi5hO1V2BnI1MFBLJkkFWWPCV0AFY1J6BHw9bVt0gA"
-      },
-      {
-        "time": 1783999908433,
-        "userId": "U487e8a8976a1c65af4311f4b3f842a9c",
-        "displayName": "紀凡",
-        "pictureUrl": "https://profile.line-scdn.net/0haLjLFUwFPmNHNStqZU5AHDdlPQlkRGdxPlclASE3ZFUtV3A8P1p5Vyc1Y1IqBi5hO1V2BnI1MFBLJkkFWWPCV0AFY1J6BHw9bVt0gA"
-      },
-      {
-        "time": 1783999884094,
         "userId": "U487e8a8976a1c65af4311f4b3f842a9c",
         "displayName": "紀凡",
         "pictureUrl": "https://profile.line-scdn.net/0haLjLFUwFPmNHNStqZU5AHDdlPQlkRGdxPlclASE3ZFUtV3A8P1p5Vyc1Y1IqBi5hO1V2BnI1MFBLJkkFWWPCV0AFY1J6BHw9bVt0gA"
