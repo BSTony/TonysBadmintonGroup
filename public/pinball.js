@@ -43,6 +43,9 @@ const GRAVITY_Y = 0.55;
 let trackPathPoints = [];
 let trackObstacles = [];
 
+// FIXED LOGICAL WORLD WIDTH
+const WORLD_W = 800;
+
 // Billiard Ball Colors (Pool)
 const POOL_COLORS = [
   '#f1c40f', // 1: Yellow
@@ -371,7 +374,6 @@ function initPinballEngine() {
       }
     } else {
       // In lobby/instruction, enforce boundaries so they can't drag balls beyond the gate or off-screen
-      const width = pbRender ? pbRender.options.width : window.innerWidth;
       Object.values(pbBalls).forEach(ball => {
         let { x, y } = ball.position;
         let clamped = false;
@@ -379,7 +381,7 @@ function initPinballEngine() {
         if (y > START_Y - 20) { y = START_Y - 20; clamped = true; }
         if (y < 20) { y = 20; clamped = true; }
         if (x < 20) { x = 20; clamped = true; }
-        if (x > width - 20) { x = width - 20; clamped = true; }
+        if (x > WORLD_W - 20) { x = WORLD_W - 20; clamped = true; }
         
         if (clamped) {
           Matter.Body.setPosition(ball, { x, y });
@@ -434,8 +436,10 @@ function initPinballEngine() {
     const bMinX = pbRender.bounds.min.x;
     const bW = pbRender.bounds.max.x - bMinX;
     const bH = bMaxY - bMinY;
-    const scaleX = width / bW;
-    const scaleY = height / bH;
+    
+    // Scale screen based on actual canvas size vs bounds size
+    const scaleX = screenWidth / bW;
+    const scaleY = screenHeight / bH;
 
     function toScreen(wx, wy) {
       return { x: (wx - bMinX) * scaleX, y: (wy - bMinY) * scaleY };
@@ -526,9 +530,9 @@ function initPinballEngine() {
     }
 
     // 2. Start Line Checkerboard (only draw when start gate exists)
-    const startSp = toScreen(width / 2, START_Y);
+    const startSp = toScreen(WORLD_W / 2, START_Y);
     if (startGateBody && startSp.y > -100 && startSp.y < height + 100) {
-      drawCheckerboard(ctx, startSp.x, startSp.y, width, 20 * scaleY);
+      drawCheckerboard(ctx, startSp.x, startSp.y, WORLD_W, 20 * scaleY);
       ctx.fillStyle = '#fff';
       ctx.font = `bold ${24 * scaleY}px Arial`;
       ctx.textAlign = 'center';
@@ -559,7 +563,7 @@ function initPinballEngine() {
 
     if (trackPathPoints.length > 0) {
       const finalY = trackPathPoints[trackPathPoints.length - 1].y;
-      const finishSp = toScreen(width / 2, finalY + 40);
+      const finishSp = toScreen(WORLD_W / 2, finalY + 40);
       if (finishSp.y > -100 && finishSp.y < height + 100) {
         drawCheckerboard(ctx, finishSp.x, finishSp.y, TRACK_WIDTH * scaleX, 30 * scaleY);
         ctx.fillStyle = '#f1c40f';
@@ -845,7 +849,7 @@ function buildTopDownTrack(W) {
   const maxT = Math.PI * 14; // 7 full S-curves
   
   // Calculate amplitude to reach exactly near the left/right screen edges
-  const maxSafeAmplitude = (W / 2) - 150 - 20; // 150 is approx wall offset, 20 is padding
+  const maxSafeAmplitude = (WORLD_W / 2) - 150 - 20; // 150 is approx wall offset, 20 is padding
   const amplitude = Math.max(50, maxSafeAmplitude);
   
   // Dynamically calculate stretch to guarantee mathematically safe radius of curvature
@@ -856,8 +860,8 @@ function buildTopDownTrack(W) {
   
   // Create Funnel to guide balls from wide screen into narrow track
   const funnelHeight = 250; // Steep funnel
-  const trackLeftX = W / 2 - TRACK_WIDTH / 2;
-  const trackRightX = W / 2 + TRACK_WIDTH / 2;
+  const trackLeftX = WORLD_W / 2 - TRACK_WIDTH / 2;
+  const trackRightX = WORLD_W / 2 + TRACK_WIDTH / 2;
   
   // Left funnel wall
   const lStartX = -100;
@@ -874,7 +878,7 @@ function buildTopDownTrack(W) {
   // Right funnel wall
   const rStartX = trackRightX;
   const rStartY = currentY + funnelHeight;
-  const rEndX = W + 100;
+  const rEndX = WORLD_W + 100;
   const rEndY = currentY;
   const rLen = Math.hypot(rEndX - rStartX, rEndY - rStartY);
   const rAngle = Math.atan2(rEndY - rStartY, rEndX - rStartX);
@@ -896,7 +900,7 @@ function buildTopDownTrack(W) {
   
   // Start track points exactly at funnel exit
   for(let y = currentY; y < currentY + 100; y += 20) {
-    pathPoints.push({ x: W/2, y: y });
+    pathPoints.push({ x: WORLD_W/2, y: y });
   }
   currentY += 100;
 
@@ -935,7 +939,7 @@ function buildTopDownTrack(W) {
       w3 * Math.sin(t * freq3 + phase3)
     );
 
-    const x = W / 2 + xOffset;
+    const x = WORLD_W / 2 + xOffset;
     const y = trackWaveStartY + t * stretch;
     pathPoints.push({ x, y });
     currentY = y;
@@ -944,7 +948,7 @@ function buildTopDownTrack(W) {
   // Straight exit at the bottom
   for(let i = 0; i < 15; i++) {
     currentY += 20;
-    pathPoints.push({ x: W/2, y: currentY });
+    pathPoints.push({ x: WORLD_W/2, y: currentY });
   }
 
   // Build physical guardrails along the path
@@ -1113,10 +1117,9 @@ function syncBalls(state) {
 
   if (!pbEngine) return;
   const { World, Bodies } = Matter;
-  const width = pbRender.options.width;
 
   const cols = Math.floor(TRACK_WIDTH / (MARBLE_RADIUS * 2.5));
-  const startBaseX = width / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
+  const startBaseX = WORLD_W / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
   const startY = START_Y - 50;
 
   const poolSet = new Set(state.pool);
@@ -1314,8 +1317,7 @@ function bindPinballSocket(s) {
     if (state.status === 'lobby' || state.status === 'instruction') {
       window.pinballRaceStarted = false;
       if (pbEngine && !startGateBody) {
-        const width = pbRender.options.width;
-        startGateBody = Matter.Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
+        startGateBody = Matter.Bodies.rectangle(WORLD_W / 2, START_Y + 95, WORLD_W * 2, 200, {
           isStatic: true,
           render: { visible: false },
           plugin: { isStartGate: true }
