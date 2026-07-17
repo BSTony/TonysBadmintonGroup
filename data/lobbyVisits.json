@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1483,
+    "viewCount": 1485,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -822,8 +822,8 @@
       "U80affca455b8fa0bc1c8137250b851e2": {
         "displayName": "蔡佳宏",
         "firstVisit": 1783606241204,
-        "count": 7,
-        "lastVisit": 1784119968663
+        "count": 9,
+        "lastVisit": 1784297696686
       },
       "U7c381eceb3dee900bbd30b986a0f8357": {
         "displayName": "陳宜蓁",
@@ -1013,6 +1013,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1784297696686,
+        "userId": "U80affca455b8fa0bc1c8137250b851e2",
+        "displayName": "蔡佳宏",
+        "pictureUrl": "https://profile.line-scdn.net/0h6H0YmW2gaWcdIHa8iiYXWW1wag0-UTB1ZERxVixyMAAiE3xlY0UnCCoiZFMkFH0wM0NzAy4iNgU_THNpMi9DZVVzYwpyTipiR0JUZkpBRyt4S3hxcA9EWmx0VAdnFno4XzJGf2BdS1NoUSxXOE4vZ1omPxN0S05RdXcFMRgSB-RyIh4yMEYnBCAmP1Kl"
+      },
+      {
+        "time": 1784297552823,
+        "userId": "U80affca455b8fa0bc1c8137250b851e2",
+        "displayName": "蔡佳宏",
+        "pictureUrl": "https://profile.line-scdn.net/0h6H0YmW2gaWcdIHa8iiYXWW1wag0-UTB1ZERxVixyMAAiE3xlY0UnCCoiZFMkFH0wM0NzAy4iNgU_THNpMi9DZVVzYwpyTipiR0JUZkpBRyt4S3hxcA9EWmx0VAdnFno4XzJGf2BdS1NoUSxXOE4vZ1omPxN0S05RdXcFMRgSB-RyIh4yMEYnBCAmP1Kl"
+      },
       {
         "time": 1784296590937,
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
@@ -2195,18 +2207,6 @@
       },
       {
         "time": 1784038566656,
-        "userId": "U7977ee57751b21a1fb17ddbb180444b3",
-        "displayName": "賴鈺臻",
-        "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
-      },
-      {
-        "time": 1784038563461,
-        "userId": "U5c7d770b83605fe37a06f14696a4504d",
-        "displayName": "Micky",
-        "pictureUrl": "https://profile.line-scdn.net/0hf-tHTImVOQJZMSkQ9vFHfSlhOmh6QGAQJlRxYz44NzUwVX0HfFUhbT9iNWdgVCtWdld_N2U5ZWZVIk5kR2fFNl4BZDNkAHtcc19z4Q"
-      },
-      {
-        "time": 1784038459853,
         "userId": "U7977ee57751b21a1fb17ddbb180444b3",
         "displayName": "賴鈺臻",
         "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
