@@ -122,7 +122,7 @@ function initPinballEngine() {
   const { Engine, Render, Runner, World, Bodies, Events, Body } = Matter;
 
   pbEngine = Engine.create();
-  pbEngine.gravity.y = GRAVITY_Y;
+  pbEngine.gravity.y = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) ? GRAVITY_Y : 0;
   pbEngine.gravity.x = 0;
 
   START_Y = Math.floor(height * 0.65); // 65% of screen height for operations
@@ -1117,7 +1117,7 @@ function syncBalls(state) {
 function startRace() {
   window.pinballRaceStarted = true;
   if (!pbEngine) return;
-  pbEngine.gravity.y = GRAVITY_Y;
+  pbEngine.gravity.y = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) ? GRAVITY_Y : 0;
   
   if (startGateBody) {
     Matter.World.remove(pbEngine.world, startGateBody);
