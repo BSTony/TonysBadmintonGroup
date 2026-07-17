@@ -107,29 +107,17 @@ function initPinballEngine() {
     return;
   }
 
-  const screenWidth = pinballContainer.clientWidth || window.innerWidth;
-  const screenHeight = pinballContainer.clientHeight || window.innerHeight;
+  const width = pinballContainer.clientWidth || window.innerWidth;
+  const height = pinballContainer.clientHeight || window.innerHeight;
 
-  // ── FIXED LOGICAL WORLD WIDTH ─────────────────────────────────────────────
-  // We ALWAYS build the physics world at exactly 800 logical pixels wide,
-  // regardless of the screen size. The renderer then stretches/squishes to
-  // fill the actual canvas. This guarantees every device (phone / PC) runs
-  // an IDENTICAL physics simulation, so results are perfectly synced.
-  const WORLD_W = 800;
-  const width  = WORLD_W;          // alias used throughout this function
-  const height = screenHeight;     // height stays screen-native for camera
-  // ─────────────────────────────────────────────────────────────────────────
+  if (width < 50 || height < 50) return;
 
-  if (screenWidth < 50 || screenHeight < 50) return;
-
-  if (pbEngine && pbRender &&
-      pbRender.options.width === screenWidth &&
-      pbRender.options.height === screenHeight) {
+  if (pbEngine && pbRender && pbRender.options.width === width && pbRender.options.height === height) {
     return;
   }
 
   if (pbEngine) destroyEngine();
-  console.log('[Pinball] Initializing Top-Down track: screen=' + screenWidth + 'x' + screenHeight + ' world=800x' + height);
+  console.log('[Pinball] Initializing Top-Down track: ' + width + 'x' + height);
 
   const { Engine, Render, Runner, World, Bodies, Events, Body } = Matter;
 
@@ -137,32 +125,29 @@ function initPinballEngine() {
   pbEngine.gravity.y = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) ? GRAVITY_Y : 0;
   pbEngine.gravity.x = 0;
 
-  START_Y = Math.floor(height * 0.65);
+  START_Y = Math.floor(height * 0.65); // 65% of screen height for operations
 
   pinballCanvasWrapper.innerHTML = '';
 
-  // Render canvas is sized to the SCREEN, but the physics bounds map to the
-  // fixed 800-wide logical world so the image is simply scaled.
   pbRender = Render.create({
     element: pinballCanvasWrapper,
     engine: pbEngine,
     options: {
-      width: screenWidth, height: screenHeight,
+      width, height,
       wireframes: false,
-      background: '#3d8236',
+      background: '#3d8236', // Grass green
       hasBounds: true
     }
   });
 
-  // Map the fixed 800-wide world onto the full screen width
   pbRender.bounds.min.x = 0;
   pbRender.bounds.min.y = 0;
-  pbRender.bounds.max.x = WORLD_W;   // ← always 800, not screenWidth
+  pbRender.bounds.max.x = width;
   pbRender.bounds.max.y = height;
   cameraSmoothed = 0;
 
-  // Build the top-down track using the FIXED 800-wide logical world
-  const { bodies, pathPoints, finalY } = buildTopDownTrack(WORLD_W);
+  // Build the top-down track guardrails
+  const { bodies, pathPoints, finalY } = buildTopDownTrack(width);
   trackPathPoints = pathPoints;
   pbWorldHeight = finalY + 400;
 
