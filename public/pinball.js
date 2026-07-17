@@ -39,6 +39,7 @@ const GRAVITY_Y = 0.55;
 
 // Sine wave path points for custom rendering
 let trackPathPoints = [];
+let trackObstacles = [];
 
 // Billiard Ball Colors (Pool)
 const POOL_COLORS = [

