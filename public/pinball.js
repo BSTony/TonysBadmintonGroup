@@ -1097,6 +1097,7 @@ function syncBalls(state) {
         restitution: 0.6,
         friction: 0.005,
         density: 0.05,
+        collisionFilter: (typeof globalIsSuperAdmin === 'undefined' || !globalIsSuperAdmin) ? { mask: 0 } : undefined,
         render: { fillStyle: color },
         plugin: { isBall: true, name: name, num: num, stuckFrames: 0 }
       });
