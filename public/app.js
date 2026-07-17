@@ -364,14 +364,6 @@ function initSocket() {
     updateUnifiedRoomUI();
   });
   
-  socket.on('require_version', (data) => {
-    const CURRENT_VERSION = '20260718_serversync4';
-    if (data.version !== CURRENT_VERSION) {
-      console.log('Version mismatch, forcing reload...');
-      window.location.href = window.location.href.split('?')[0] + '?v=' + data.version;
-    }
-  });
-
   socket.on('party_state', (state) => {
     currentPartyStatus = state.status;
     partyLobbyNames = state.players ? Object.values(state.players).map(p => p.name) : [];
@@ -3145,6 +3137,7 @@ function showEditGameForm(gameId) {
   const section = game.sections[0] || {};
   document.getElementById('eg-limit').value = section.limit || 20;
   document.getElementById('eg-backup').value = section.backupLimit || 0;
+  document.getElementById('eg-ended').checked = !!game.isManualEnded;
   document.getElementById('eg-note').value = game.note || '';
   
   // Format timestamps to datetime-local
@@ -3206,6 +3199,7 @@ document.getElementById('btn-submit-edit').onclick = async () => {
         backupLimit: document.getElementById('eg-backup').value,
         publish: document.getElementById('eg-publish').value,
         reminder: document.getElementById('eg-reminder').value,
+        isManualEnded: document.getElementById('eg-ended').checked,
         note: document.getElementById('eg-note').value.trim()
       })
     });

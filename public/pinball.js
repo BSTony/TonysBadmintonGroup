@@ -1,20 +1,22 @@
 // pinball.js - Top-Down Racing Track (S-Curve)
 // Redesigned: 2.5D top-down view matching real marble race tracks
 
-const PB_LOGICAL_WIDTH = 800;
-let currentSeed = 12345;
-function setSeed(seed) { currentSeed = seed; }
-function seededRandom() {
-  let t = currentSeed += 0x6D2B79F5;
-  t = Math.imul(t ^ t >>> 15, t | 1);
-  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-  return ((t ^ t >>> 14) >>> 0) / 4294967296;
-}
-
 let pbEngine, pbRender, pbRunner;
 let pbBalls = {};
 let pbState = { status: 'idle', pool: [], finished: [], winnerLimit: 3 };
 let pbWorldHeight = 3500;
+
+  let currentSeed = 12345;
+  function setSeed(seed) { currentSeed = seed; }
+  function seededRandom() {
+    let t = currentSeed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+
+let startGateBody = null;
+let pbMouseConstraint = null;
 
 // Camera state
 let cameraTargetIdx = 0;
@@ -33,7 +35,7 @@ var pinballSpectatorUi = pinballSpectatorUi || document.getElementById('pinball-
 
 // Track Constants
 const TRACK_WIDTH = 180;
-const START_Y = 150;
+let START_Y = 150;
 const MARBLE_RADIUS = 12;
 const GRAVITY_Y = 0.55;
 
@@ -73,6 +75,27 @@ function destroyEngine() {
   pbRunner = null;
   pbBalls = {};
   trackPathPoints = [];
+  trackObstacles = [];
+  startGateBody = null;
+  pbMouseConstraint = null;
+}
+
+function destroyEngine() {
+  if (pbRunner) Matter.Runner.stop(pbRunner);
+  if (pbRender) Matter.Render.stop(pbRender);
+  if (pbEngine) {
+    Matter.World.clear(pbEngine.world);
+    Matter.Engine.clear(pbEngine);
+  }
+  if (pbRender && pbRender.canvas) pbRender.canvas.remove();
+  pbEngine = null;
+  pbRender = null;
+  pbRunner = null;
+  pbBalls = {};
+  trackPathPoints = [];
+  trackObstacles = [];
+  startGateBody = null;
+  pbMouseConstraint = null;
 }
 
 function initPinballEngine() {
@@ -84,26 +107,25 @@ function initPinballEngine() {
     return;
   }
 
-  const width = PB_LOGICAL_WIDTH;
-  const containerW = pinballContainer.clientWidth || window.innerWidth;
-  const containerH = pinballContainer.clientHeight || window.innerHeight;
-  const aspect = containerH / containerW;
-  const height = width * aspect;
+  const width = pinballContainer.clientWidth || window.innerWidth;
+  const height = pinballContainer.clientHeight || window.innerHeight;
 
   if (width < 50 || height < 50) return;
 
-  if (pbEngine && pbRender && Math.abs(pbRender.options.height - height) < 10) {
+  if (pbEngine && pbRender && pbRender.options.width === width && pbRender.options.height === height) {
     return;
   }
 
   if (pbEngine) destroyEngine();
-  console.log('[Pinball] Initializing Top-Down track (Server Sync Mode): ' + width + 'x' + height);
+  console.log('[Pinball] Initializing Top-Down track: ' + width + 'x' + height);
 
   const { Engine, Render, Runner, World, Bodies, Events, Body } = Matter;
 
   pbEngine = Engine.create();
-  pbEngine.gravity.y = 0; // Server handles physics
+  pbEngine.gravity.y = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) ? GRAVITY_Y : 0;
   pbEngine.gravity.x = 0;
+
+  START_Y = Math.floor(height * 0.65); // 65% of screen height for operations
 
   pinballCanvasWrapper.innerHTML = '';
 
@@ -118,9 +140,6 @@ function initPinballEngine() {
     }
   });
 
-  pbRender.canvas.style.width = '100%';
-  pbRender.canvas.style.height = '100%';
-
   pbRender.bounds.min.x = 0;
   pbRender.bounds.min.y = 0;
   pbRender.bounds.max.x = width;
@@ -131,6 +150,8 @@ function initPinballEngine() {
   const { bodies, pathPoints, finalY } = buildTopDownTrack(width);
   trackPathPoints = pathPoints;
   pbWorldHeight = finalY + 400;
+
+  
   // --- GENERATE RANDOM OBSTACLES ---
   // Generate 15 pegs uniformly distributed along the track (alternating 2 and 1 per row)
   const numRows = 10;
@@ -240,15 +261,138 @@ function initPinballEngine() {
     }
   }
   // --- END GENERATE FINAL PACHINKO GRID ---
+
   World.add(pbEngine.world, bodies);
 
-  // Finish line sensor (for rendering)
+
+  // Finish line sensor
   const finishLine = Bodies.rectangle(width / 2, finalY + 80, TRACK_WIDTH + 60, 40, {
     isStatic: true,
     isSensor: true,
-    render: { visible: false }
+    render: { visible: false },
+    plugin: { isFinishLine: true }
   });
   World.add(pbEngine.world, [finishLine]);
+
+  // Start Gate and Lobby Walls (blocks balls from falling or being dragged off-screen in lobby)
+  if (pbState.status !== 'playing' || !window.pinballRaceStarted) {
+    startGateBody = Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
+      isStatic: true,
+      render: { visible: false }, // Invisible thick physical block
+      plugin: { isStartGate: true }
+    });
+    
+    // Add physical walls for the lobby area so they can't drag balls off screen
+    const lobbyCeiling = Bodies.rectangle(width / 2, -20, width * 2, 40, { isStatic: true, render: { visible: false } });
+    const lobbyLeftWall = Bodies.rectangle(-20, START_Y / 2, 40, START_Y * 2, { isStatic: true, render: { visible: false } });
+    const lobbyRightWall = Bodies.rectangle(width + 20, START_Y / 2, 40, START_Y * 2, { isStatic: true, render: { visible: false } });
+
+    World.add(pbEngine.world, [startGateBody, lobbyCeiling, lobbyLeftWall, lobbyRightWall]);
+  } else {
+    startGateBody = null;
+  }
+
+  // Finish line collision
+  Events.on(pbEngine, 'collisionStart', (event) => {
+    event.pairs.forEach(pair => {
+      let ball = null, finish = null;
+      if (pair.bodyA.plugin && pair.bodyA.plugin.isBall) ball = pair.bodyA;
+      if (pair.bodyB.plugin && pair.bodyB.plugin.isBall) ball = pair.bodyB;
+      if (pair.bodyA.plugin && pair.bodyA.plugin.isFinishLine) finish = pair.bodyA;
+      if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
+
+      if (ball && finish) {
+        if (!pbState.finished.includes(ball.plugin.name)) {
+          fetch('/api/pinball/finish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: ball.plugin.name })
+          });
+        }
+      }
+    });
+  });
+
+  // Physics updates and clamping
+  Events.on(pbEngine, 'beforeUpdate', () => {
+    updateDynamicLeaderboard();
+    
+    // Rubber-banding (catch-up mechanic)
+    if (typeof pbState !== 'undefined' && pbState && pbState.status === 'playing' && pbEngine.gravity.y > 0) {
+      const allBalls = Object.values(pbBalls);
+      if (allBalls.length > 1) {
+        const sortedBalls = [...allBalls].sort((a, b) => b.position.y - a.position.y);
+        sortedBalls.forEach((ball, index) => {
+          let multiplier = 0;
+          if (index === 0) multiplier = 0.0; // 1st place: 100%
+          else if (index === 1) multiplier = 0.1; // 2nd place: 110%
+          else if (index === 2) multiplier = 0.2; // 3rd place: 120%
+          else if (index >= 3 && index <= 9) multiplier = 0.4; // 4th~10th: 140%
+          else if (index >= 10 && index <= 19) multiplier = 0.8; // 11th~20th: 180%
+          else multiplier = 1.0; // others: 200%
+          
+          if (multiplier > 0) {
+            const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
+            Matter.Body.applyForce(ball, ball.position, { x: 0, y: baseForce * multiplier });
+          }
+        });
+      }
+    }
+    
+    // Rotary plates
+    if (pbEngine && pbEngine.world) {
+      pbEngine.world.bodies.forEach(b => {
+        if (b.plugin && b.plugin.isRotary) {
+          Matter.Body.setAngle(b, b.angle + 0.05);
+        }
+      });
+    }
+    
+    if (pbState.status === 'playing') {
+      // Only the host (super admin) runs physics forces; clients are pure puppets
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+        Object.values(pbBalls).forEach(ball => {
+          // Apply constant downward push to simulate steep track
+          Matter.Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
+          
+          if (ball.speed < 0.5) {
+            ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
+            if (ball.plugin.stuckFrames > 40) {
+              Matter.Body.setVelocity(ball, {
+                x: (Math.random() - 0.5) * 10,
+                y: -7.5
+              });
+              ball.plugin.stuckFrames = 0;
+            }
+          } else {
+            ball.plugin.stuckFrames = 0;
+          }
+        });
+      }
+    } else {
+      // In lobby/instruction, enforce boundaries so they can't drag balls beyond the gate or off-screen
+      const width = pbRender ? pbRender.options.width : window.innerWidth;
+      Object.values(pbBalls).forEach(ball => {
+        let { x, y } = ball.position;
+        let clamped = false;
+        
+        if (y > START_Y - 20) { y = START_Y - 20; clamped = true; }
+        if (y < 20) { y = 20; clamped = true; }
+        if (x < 20) { x = 20; clamped = true; }
+        if (x > width - 20) { x = width - 20; clamped = true; }
+        
+        if (clamped) {
+          Matter.Body.setPosition(ball, { x, y });
+          Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+          // Prevent players from overpowering the clamp by holding the mouse: drop the ball!
+          if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body === ball) {
+            pbMouseConstraint.body = null;
+            if (pbMouseConstraint.constraint) pbMouseConstraint.constraint.bodyB = null;
+          }
+        }
+      });
+    }
+  });
 
   // Camera tracking
   Events.on(pbRender, 'beforeRender', () => {
@@ -381,19 +525,38 @@ function initPinballEngine() {
       }
     }
 
-    // 2. Start Line Checkerboard
-    const startSp = toScreen(width / 2, START_Y - 10);
-    if (startSp.y > -100 && startSp.y < height + 100) {
-      drawCheckerboard(ctx, startSp.x, startSp.y, TRACK_WIDTH * scaleX, 20 * scaleY);
+    // 2. Start Line Checkerboard (only draw when start gate exists)
+    const startSp = toScreen(width / 2, START_Y);
+    if (startGateBody && startSp.y > -100 && startSp.y < height + 100) {
+      drawCheckerboard(ctx, startSp.x, startSp.y, width, 20 * scaleY);
       ctx.fillStyle = '#fff';
-      ctx.font = 'bold 24px Arial';
-      ctx.shadowColor = '#000';
-      ctx.shadowBlur = 4;
-      ctx.fillText('🏁 START', startSp.x, startSp.y - 30);
+      ctx.font = `bold ${24 * scaleY}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('START', startSp.x, startSp.y + 25 * scaleY); // Draw below the gate so balls don't cover it
       ctx.shadowBlur = 0;
     }
 
-    // 3. Finish Line Checkerboard
+    
+      // Draw Obstacles (on top of the road)
+      trackObstacles.forEach(body => {
+        if (!body.vertices || body.vertices.length === 0) return;
+        ctx.beginPath();
+        body.vertices.forEach((v, idx) => {
+          const sp = toScreen(v.x, v.y);
+          if (idx === 0) ctx.moveTo(sp.x, sp.y);
+          else ctx.lineTo(sp.x, sp.y);
+        });
+        ctx.closePath();
+        ctx.fillStyle = body.render.fillStyle;
+        ctx.strokeStyle = body.render.strokeStyle;
+        ctx.lineWidth = (body.render.lineWidth || 2) * scaleX;
+        ctx.fill();
+        if (body.render.strokeStyle) ctx.stroke();
+      });
+
+      // 3. Finish Line Checkerboard
+
     if (trackPathPoints.length > 0) {
       const finalY = trackPathPoints[trackPathPoints.length - 1].y;
       const finishSp = toScreen(width / 2, finalY + 40);
@@ -417,32 +580,60 @@ function initPinballEngine() {
 
       const r = b.circleRadius * scaleX;
       
+      // Draw glowing aura for player's own ball
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (b.plugin.name === myName) {
+        const pulse = 1.3 + Math.sin(Date.now() / 150) * 0.2; // pulse between 1.1 and 1.5
+        ctx.fillStyle = 'rgba(255, 255, 0, 0.4)';
+        ctx.shadowColor = '#ffff00';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, r * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0; // reset
+      }
+
       // Ball shadow
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.beginPath();
       ctx.arc(sp.x + 3, sp.y + 3, r, 0, Math.PI * 2);
       ctx.fill();
 
-      // Main ball body
-      ctx.fillStyle = b.render.fillStyle;
-      ctx.beginPath();
-      ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Stripe logic (if it's a striped ball color 9-15)
-      const colorIdx = POOL_COLORS.indexOf(b.render.fillStyle);
-      if (colorIdx >= 8) { // Striped ball
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.arc(sp.x, sp.y, r, 0, Math.PI * 2);
-        ctx.fill();
+      // Custom style rendering
+        const style = (b.plugin && b.plugin.style) ? b.plugin.style : 'solid';
         
-        ctx.fillStyle = b.render.fillStyle;
-        ctx.beginPath();
-        // Draw a thick horizontal band
-        ctx.rect(sp.x - r, sp.y - r/2, r * 2, r);
-        ctx.fill();
-      }
+        ctx.save();
+        ctx.translate(sp.x, sp.y);
+        ctx.rotate(b.angle);
+
+        if (style === 'solid') {
+          ctx.fillStyle = b.render.fillStyle;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (style === 'billiard') {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.fillStyle = b.render.fillStyle;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.fillRect(-r, -r*0.5, r * 2, r);
+        } else if (style === 'gradient') {
+          const grad = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.1, 0, 0, r);
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.3, b.render.fillStyle);
+          grad.addColorStop(1, '#000000');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
 
       // White inner circle
       ctx.fillStyle = '#fff';
@@ -468,26 +659,179 @@ function initPinballEngine() {
       ctx.fillText(name, sp.x, nameY);
     });
     
-    // Draw HUD
-    drawRankingHUD(ctx, width, height);
+    // Draw HUD - Replaced by DOM-based Dynamic Leaderboard, so we do nothing here.
   });
 
-  Events.on(pbRender, 'beforeRender', () => {
-    pbEngine.world.bodies.forEach(b => {
-      if (b.plugin && b.plugin.isRotary) {
-        Matter.Body.setAngle(b, b.angle + 0.05);
+  // Close popup logic
+  const btnClosePopup = document.getElementById('btn-pinball-close-popup');
+  if (btnClosePopup && !btnClosePopup.hasListener) {
+    btnClosePopup.hasListener = true;
+    btnClosePopup.addEventListener('click', () => {
+      document.getElementById('pinball-score-popup').classList.add('hidden');
+      // 超管控制寮重新顯示
+      const roomAdminPanel = document.getElementById('room-admin-panel');
+      if (roomAdminPanel) roomAdminPanel.style.display = '';
+    });
+  }
+
+  // 超管：Pinball「再來一場」按鈕
+  const btnPinballPlayAgain = document.getElementById('btn-pinball-play-again');
+  if (btnPinballPlayAgain && !btnPinballPlayAgain.hasListener) {
+    btnPinballPlayAgain.hasListener = true;
+    btnPinballPlayAgain.addEventListener('click', async () => {
+      btnPinballPlayAgain.disabled = true;
+      const uid = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.userId : null;
+      if (!uid) return;
+      try {
+        await fetch('/api/admin/pinball/next-round', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid })
+        });
+        
+        document.getElementById('pinball-score-popup').classList.add('hidden');
+        // 超管控制寮重新顯示
+        const roomAdminPanel = document.getElementById('room-admin-panel');
+        if (roomAdminPanel) roomAdminPanel.style.display = '';
+      } catch(e) {
+        console.error(e);
+      } finally {
+        btnPinballPlayAgain.disabled = false;
       }
     });
-  });
+  }
+
+  // 超管：Pinball「結束比賽」按鈕
+  const btnPinballEndSummary = document.getElementById('btn-pinball-end-summary');
+  if (btnPinballEndSummary && !btnPinballEndSummary.hasListener) {
+    btnPinballEndSummary.hasListener = true;
+    btnPinballEndSummary.addEventListener('click', async () => {
+      btnPinballEndSummary.disabled = true;
+      const uid = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.userId : null;
+      if (!uid) return;
+      try {
+        await fetch('/api/admin/room/close', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid })
+        });
+        document.getElementById('pinball-score-popup').classList.add('hidden');
+      } catch(e) {
+        console.error(e);
+        btnPinballEndSummary.disabled = false;
+      }
+    });
+  }
 
   Render.run(pbRender);
-  // pbRunner is removed because physics is on the server now
-  console.log('[Pinball] Top-down track engine started (Renderer Only)');
+  pbRunner = Runner.create();
+  Runner.run(pbRunner, pbEngine);
+
+  // Setup Mouse Constraint for dragging
+  const { Mouse, MouseConstraint } = Matter;
+  const mouse = Mouse.create(pbRender.canvas);
+  pbMouseConstraint = MouseConstraint.create(pbEngine, {
+    mouse: mouse,
+    constraint: { stiffness: 0.2, render: { visible: false } }
+  });
+  
+  if (pbState.status !== 'playing' || !window.pinballRaceStarted) {
+    World.add(pbEngine.world, pbMouseConstraint);
+  }
+
+  // Continuously enforce mouse constraints to prevent frame-by-frame dragging glitches
+  // Registered here so it runs AFTER MouseConstraint's internal beforeUpdate
+  Events.on(pbEngine, 'beforeUpdate', () => {
+    if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body) {
+      const body = pbMouseConstraint.body;
+      let shouldDrop = false;
+      if (pbState.status === 'playing') {
+        shouldDrop = true;
+      } else if (body.plugin && body.plugin.isBall) {
+        const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+        const isAdmin = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin);
+        if (!isAdmin && body.plugin.name !== myName) {
+          shouldDrop = true;
+        }
+      } else {
+        shouldDrop = true;
+      }
+      
+      if (shouldDrop) {
+        pbMouseConstraint.body = null;
+        if (pbMouseConstraint.constraint) pbMouseConstraint.constraint.bodyB = null;
+      }
+    }
+  });
+
+  // Filter mouse interactions (only allow dragging own ball in lobby/instruction)
+  Events.on(pbMouseConstraint, 'mousedown', (event) => {
+    const drop = () => {
+      pbMouseConstraint.body = null;
+      if (pbMouseConstraint.constraint) pbMouseConstraint.constraint.bodyB = null;
+    };
+    if (pbState.status === 'playing') {
+      drop(); // Deny drag if racing or during countdown!
+      return;
+    }
+    const body = pbMouseConstraint.body;
+    if (body) {
+      if (!body.plugin || !body.plugin.isBall) {
+        drop(); // Only balls are draggable
+        return;
+      }
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      const isAdmin = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin);
+      if (!isAdmin && body.plugin.name !== myName) {
+        drop(); // Deny dragging someone else's ball
+      }
+    }
+  });
+
+  // Sync position on drag continuously
+  let lastMoveTime = 0;
+  Events.on(pbMouseConstraint, 'mousemove', (event) => {
+    if (pbMouseConstraint && pbMouseConstraint.body && pbMouseConstraint.body.plugin && pbMouseConstraint.body.plugin.isBall) {
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (pbMouseConstraint.body.plugin.name === myName) {
+        const now = Date.now();
+        if (now - lastMoveTime > 30) {
+          if (typeof pinballSocket !== 'undefined') {
+            pinballSocket.emit('pinball_move_ball', {
+              name: myName,
+              x: pbMouseConstraint.body.position.x,
+              y: pbMouseConstraint.body.position.y
+            });
+          }
+          lastMoveTime = now;
+        }
+      }
+    }
+  });
+
+  // Sync position on release or drag
+  Events.on(pbMouseConstraint, 'enddrag', (event) => {
+    const body = event.body;
+    if (body && body.plugin && body.plugin.isBall) {
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (body.plugin.name === myName) {
+        if (typeof pinballSocket !== 'undefined') {
+          pinballSocket.emit('pinball_move_ball', {
+            name: myName,
+            x: body.position.x,
+            y: body.position.y
+          });
+        }
+      }
+    }
+  });
+
+  pbRender.mouse = mouse;
+
+  console.log('[Pinball] Top-down track engine started');
 }
 
 function buildTopDownTrack(W) {
-  setSeed(pbState.seed || 12345);
-
   const { Bodies } = Matter;
   const bodies = [];
   const pathPoints = [];
@@ -649,108 +993,331 @@ function buildTopDownTrack(W) {
 
 function drawCheckerboard(ctx, x, y, width, height) {
   const sq = 10;
+  // Round width and height to nearest integer to avoid floating point loop boundary flickering
+  const w = Math.round(width);
+  const h = Math.round(height);
   ctx.save();
-  ctx.translate(x - width/2, y - height/2);
-  for (let i = 0; i < width; i += sq) {
-    for (let j = 0; j < height; j += sq) {
-      ctx.fillStyle = ((i/sq + j/sq) % 2 === 0) ? '#fff' : '#000';
+  ctx.translate(x - w/2, y - h/2);
+  for (let i = 0; i < w; i += sq) {
+    for (let j = 0; j < h; j += sq) {
+      // Use Math.round to ensure exact integer division
+      const col = Math.round(i/sq);
+      const row = Math.round(j/sq);
+      ctx.fillStyle = ((col + row) % 2 === 0) ? '#fff' : '#000';
       ctx.fillRect(i, j, sq, sq);
     }
   }
   ctx.restore();
 }
 
-function drawRankingHUD(ctx, width, height) {
+// Removed old drawRankingHUD as we now use DOM-based dynamic leaderboard
+function updateDynamicLeaderboard() {
   if (pbState.status !== 'playing' || Object.values(pbBalls).length === 0) return;
   
+  const dynBoard = document.getElementById('pinball-dynamic-leaderboard');
+  const dynList = document.getElementById('pinball-dynamic-leaderboard-list');
+  if (!dynBoard || !dynList) return;
+
   const allBalls = Object.values(pbBalls);
   const sortedAll = [...allBalls].sort((a, b) => b.position.y - a.position.y);
   
-  ctx.fillStyle = 'rgba(0,0,0,0.7)';
-  const hudX = width - 110;
-  const hudY = 10;
-  const hudH = Math.min(sortedAll.length * 22 + 30, 200);
-  ctx.fillRect(hudX, hudY, 105, hudH);
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(hudX, hudY, 105, hudH);
+  // Find current user's rank
+  let myName = typeof currentUser !== 'undefined' && currentUser ? currentUser.displayName : null;
+  let myRankIdx = -1;
+  if (myName) {
+    myRankIdx = sortedAll.findIndex(b => b.plugin.name === myName);
+  }
+
+  const raceEnded = pbState.finished.length === pbState.pool.length;
+  let showIndices = new Set();
   
-  ctx.fillStyle = '#f1c40f';
-  ctx.font = 'bold 12px Arial';
-  ctx.textAlign = 'left';
-  ctx.fillText('🏁 即時排名', hudX + 8, hudY + 16);
+  if (raceEnded) {
+    // End of race: show top 5
+    for(let i=0; i<Math.min(5, sortedAll.length); i++) showIndices.add(i);
+  } else {
+    // Show top 3
+    for(let i=0; i<Math.min(3, sortedAll.length); i++) showIndices.add(i);
+    // Show me and my neighbors
+    if (myRankIdx !== -1) {
+      if (myRankIdx > 0) showIndices.add(myRankIdx - 1);
+      showIndices.add(myRankIdx);
+      if (myRankIdx < sortedAll.length - 1) showIndices.add(myRankIdx + 1);
+    }
+  }
+
+  const showArray = Array.from(showIndices).sort((a, b) => a - b);
   
-  ctx.font = '11px Arial';
-  const maxShow = Math.min(sortedAll.length, 7);
-  for (let i = 0; i < maxShow; i++) {
-    const b = sortedAll[i];
+  dynList.innerHTML = '';
+  let lastIdx = -1;
+
+  showArray.forEach(idx => {
+    if (lastIdx !== -1 && idx > lastIdx + 1) {
+      // Add ellipsis
+      const liDots = document.createElement('li');
+      liDots.style.textAlign = 'center';
+      liDots.style.color = '#7f8c8d';
+      liDots.innerText = '⋮';
+      dynList.appendChild(liDots);
+    }
+
+    const b = sortedAll[idx];
     const isFinished = pbState.finished.includes(b.plugin.name);
-    const rankY = hudY + 34 + i * 20;
+    const isMe = b.plugin.name === myName;
     
     const medals = ['🥇', '🥈', '🥉'];
-    const rank = i < 3 ? medals[i] : (i + 1) + '.';
+    const rankStr = idx < 3 ? medals[idx] : (idx + 1) + '.';
     
-    ctx.fillStyle = isFinished ? '#f1c40f' : '#fff';
-    ctx.font = isFinished ? 'bold 11px Arial' : '11px Arial';
+    const li = document.createElement('li');
+    li.style.color = isFinished ? '#f1c40f' : (isMe ? '#2ecc71' : '#fff');
+    li.style.fontWeight = (isFinished || isMe) ? 'bold' : 'normal';
+    li.style.display = 'flex';
+    li.style.justifyContent = 'space-between';
     
-    let displayName = b.plugin.name;
-    if (displayName.length > 5) displayName = displayName.substring(0, 4) + '..';
-    ctx.fillText(rank + ' ' + displayName, hudX + 8, rankY);
-  }
+    let dName = b.plugin.name;
+    if (dName.length > 5) dName = dName.substring(0, 4) + '..';
+    
+    let scoreText = '';
+    if (pbState.scores && pbState.scores[b.plugin.name] > 0) {
+      scoreText = ` <span style="color:#f1c40f;">(${pbState.scores[b.plugin.name]}分)</span>`;
+    }
+    
+    li.innerHTML = `<span>${rankStr} ${dName}${scoreText}</span>`;
+    dynList.appendChild(li);
+    lastIdx = idx;
+  });
 }
 
-function dropBalls(pool) {
-  console.log('[Pinball] dropBalls called with pool:', pool);
-  if (!pbEngine) return;
-  
-  const { World, Bodies } = Matter;
+function syncBalls(state) {
+    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+      if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
+      window.pinballSyncInterval = setInterval(() => {
+        if (pbState && pbState.status !== 'idle' && pbBalls) {
+          const syncData = {};
+          let hasBalls = false;
+          for (const name in pbBalls) {
+             const b = pbBalls[name];
+             if (b && b.position) {
+               syncData[name] = { x: b.position.x, y: b.position.y, vx: b.velocity.x, vy: b.velocity.y, a: b.angle, av: b.angularVelocity };
+               hasBalls = true;
+             }
+          }
+          if (hasBalls && typeof pinballSocket !== 'undefined') pinballSocket.emit('pinball_host_sync', syncData);
+        }
+      }, 20);
+    }
 
-  const currentBalls = Object.values(pbBalls);
-  if (currentBalls.length > 0) World.remove(pbEngine.world, currentBalls);
-  pbBalls = {};
+  if (!pbEngine) return;
+  const { World, Bodies } = Matter;
+  const width = pbRender.options.width;
+
+  const cols = Math.floor(TRACK_WIDTH / (MARBLE_RADIUS * 2.5));
+  const startBaseX = width / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
+  const startY = START_Y - 50;
+
+  const poolSet = new Set(state.pool);
+
+  // Remove balls not in pool anymore
+  Object.keys(pbBalls).forEach(name => {
+    if (!poolSet.has(name)) {
+      World.remove(pbEngine.world, pbBalls[name]);
+      delete pbBalls[name];
+    }
+  });
+
+  // Add or update balls
+  state.pool.forEach((name, idx) => {
+    const color = (state.colors && state.colors[name]) ? state.colors[name] : POOL_COLORS[idx % POOL_COLORS.length];
+    
+    if (!pbBalls[name]) {
+      let x, y;
+      if (state.positions && state.positions[name]) {
+        x = state.positions[name].x;
+        y = state.positions[name].y;
+      } else {
+        const row = Math.floor(idx / cols);
+        const col = idx % cols;
+        x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (seededRandom() - 0.5) * 5;
+        y = startY - row * (MARBLE_RADIUS * 2.5) - seededRandom() * 5;
+      }
+
+      const num = (idx % 15) + 1;
+
+      const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
+        restitution: 0.6,
+        friction: 0.005,
+        density: 0.05,
+        render: { fillStyle: color },
+        plugin: { isBall: true, name: name, num: num, stuckFrames: 0 }
+      });
+
+      pbBalls[name] = ball;
+      ball.plugin.style = (state.styles && state.styles[name]) ? state.styles[name] : 'solid';
+      ball.render.visible = false;
+      World.add(pbEngine.world, ball);
+    } else {
+      // Update color dynamically if user picks a new one in lobby
+      pbBalls[name].render.fillStyle = color;
+      pbBalls[name].plugin.style = (state.styles && state.styles[name]) ? state.styles[name] : 'solid';
+      pbBalls[name].render.visible = false;
+    }
+  });
+}
+
+function startRace() {
+  window.pinballRaceStarted = true;
+  if (!pbEngine) return;
+  pbEngine.gravity.y = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) ? GRAVITY_Y : 0;
+  
+  if (startGateBody) {
+    Matter.World.remove(pbEngine.world, startGateBody);
+    startGateBody = null;
+  }
+  
+  if (pbMouseConstraint) {
+    Matter.World.remove(pbEngine.world, pbMouseConstraint);
+  }
 
   cameraSmoothed = 0;
   cameraTargetIdx = 0;
   lastCameraSwitch = Date.now();
   pbRender.bounds.min.y = 0;
   pbRender.bounds.max.y = pbRender.options.height;
-
-  // We create dummy balls here; they will be moved by server via 'pinball_frame'
-  pool.forEach((name, idx) => {
-    const color = POOL_COLORS[idx % POOL_COLORS.length];
-    const num = (idx % 15) + 1;
-
-    const ball = Bodies.circle(-100, -100, MARBLE_RADIUS, {
-      isStatic: true,  // Server controls position
-      isSensor: true,
-      render: { fillStyle: color }, 
-      plugin: { isBall: true, name: name, num: num }
-    });
-
-    pbBalls[name] = ball;
-  });
-
-  World.add(pbEngine.world, Object.values(pbBalls));
 }
 
 function bindPinballSocket(s) {
-  s.on('pinball_frame', (frameData) => {
-    if (pbState.status !== 'playing' || !pbBalls) return;
-    pbState.pool.forEach((name, i) => {
-      const b = pbBalls[name];
-      if (b) {
-        const x = frameData[i * 2];
-        const y = frameData[i * 2 + 1];
-        if (x !== -100 && y !== -100) {
-          Matter.Body.setPosition(b, { x, y });
+  window.pinballSocket = s;
+    s.on('pinball_host_sync', (data) => {
+      // Ignore if I am the host (super admin)
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) return;
+      if (pbState && pbState.status !== 'idle' && pbBalls) {
+        // Store target positions; the rAF loop will smoothly interpolate
+        if (!window._pbSyncTargets) window._pbSyncTargets = {};
+        for (const name in data) {
+          if (pbBalls[name]) {
+            window._pbSyncTargets[name] = data[name];
+          }
+        }
+        // Start the interpolation loop if not already running
+        if (!window._pbSyncLoopRunning) {
+          window._pbSyncLoopRunning = true;
+          const lerpLoop = () => {
+            if (!pbBalls || !pbState || pbState.status === 'idle') {
+              window._pbSyncLoopRunning = false;
+              window._pbSyncTargets = {};
+              return;
+            }
+            const targets = window._pbSyncTargets;
+            for (const name in targets) {
+              if (pbBalls[name]) {
+                const ball = pbBalls[name];
+                if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body === ball) {
+                  continue; // Skip LERP while dragging
+                }
+                const sd = targets[name];
+                const dx = sd.x - ball.position.x;
+                const dy = sd.y - ball.position.y;
+                // Teleport if very far away, otherwise smooth lerp
+                if (Math.abs(dx) > 80 || Math.abs(dy) > 80) {
+                  Matter.Body.setPosition(ball, { x: sd.x, y: sd.y });
+                } else {
+                  Matter.Body.setPosition(ball, {
+                    x: ball.position.x + dx * 0.35,
+                    y: ball.position.y + dy * 0.35
+                  });
+                }
+                Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                Matter.Body.setAngle(ball, sd.a);
+                Matter.Body.setAngularVelocity(ball, 0);
+              }
+            }
+            requestAnimationFrame(lerpLoop);
+          };
+          requestAnimationFrame(lerpLoop);
         }
       }
     });
+
+  s.on('pinball_ball_moved', (data) => {
+    const { name, x, y } = data;
+    if (pbBalls[name]) {
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (name !== myName) {
+        Matter.Body.setPosition(pbBalls[name], { x, y });
+        Matter.Body.setVelocity(pbBalls[name], { x: 0, y: 0 }); // stop sliding
+      }
+    }
+  });
+
+  s.on('pinball_apply_force', (data) => {
+    const { name, fx } = data;
+    const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+    if (name !== myName && pbBalls && pbBalls[name]) {
+      Matter.Body.applyForce(pbBalls[name], pbBalls[name].position, { x: fx, y: 0 });
+    }
+  });
+
+  s.on('pinball_shake', () => {
+    if (pbEngine && pbBalls) {
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+        Object.values(pbBalls).forEach(ball => {
+          Matter.Body.applyForce(ball, ball.position, {
+            x: (Math.random() - 0.5) * 0.05,
+            y: -0.05
+          });
+        });
+      }
+
+      // Visual feedback
+      if (pinballCanvasWrapper) {
+        pinballCanvasWrapper.style.transform = `translate(${(Math.random()-0.5)*10}px, ${(Math.random()-0.5)*10}px)`;
+        setTimeout(() => pinballCanvasWrapper.style.transform = 'translate(0, 0)', 50);
+      }
+    }
   });
 
   s.on('pinball_state', (state) => {
     const prevStatus = pbState.status;
     pbState = state;
+      if (state.seed) setSeed(state.seed);
+
+    if (state.status === 'idle') {
+      // Room was closed or reset, completely tear down pinball UI
+      window.pinballRaceStarted = false;
+      if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+      const countdownEl = document.getElementById('pinball-countdown');
+      if (countdownEl && countdownEl.timer) {
+        clearInterval(countdownEl.timer);
+        countdownEl.timer = null;
+      }
+      if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
+      window._pbSyncLoopRunning = false;
+      window._pbSyncTargets = {};
+
+      const instrOverlay = document.getElementById('pinball-instruction-overlay');
+      if (instrOverlay) {
+        instrOverlay.classList.add('hidden');
+        instrOverlay.style.display = 'none';
+      }
+      if (typeof unifiedRoomOverlay !== 'undefined' && unifiedRoomOverlay) {
+        unifiedRoomOverlay.classList.add('hidden');
+      }
+
+      destroyEngine(); // Ensure physics and renderer are fully cleared
+      return; // Stop processing further state
+    }
+
+    if (state.status === 'lobby' || state.status === 'instruction') {
+      window.pinballRaceStarted = false;
+      if (pbEngine && !startGateBody) {
+        const width = pbRender.options.width;
+        startGateBody = Matter.Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
+          isStatic: true,
+          render: { visible: false },
+          plugin: { isStartGate: true }
+        });
+        Matter.World.add(pbEngine.world, startGateBody);
+      }
+    }
 
     if (!pinballStatusOverlay) pinballStatusOverlay = document.getElementById('pinball-status-overlay');
     if (!pinballStatusText) pinballStatusText = document.getElementById('pinball-status-text');
@@ -758,6 +1325,17 @@ function bindPinballSocket(s) {
     if (!pinballSpectatorUi) pinballSpectatorUi = document.getElementById('pinball-spectator-ui');
     if (!pinballContainer) pinballContainer = document.getElementById('pinball-container');
     if (!pinballCanvasWrapper) pinballCanvasWrapper = document.getElementById('pinball-canvas-wrapper');
+
+    // Color picker close button
+    const btnCloseColorPicker = document.getElementById('btn-close-color-picker');
+    if (btnCloseColorPicker && !btnCloseColorPicker._bound) {
+      btnCloseColorPicker._bound = true;
+      btnCloseColorPicker.addEventListener('click', () => {
+        const colorUi = document.getElementById('pinball-color-picker-ui');
+        if (colorUi) colorUi.classList.add('hidden');
+        hasSelectedPinballColor = true; // Prevent auto-reopening
+      });
+    }
 
     const pinballPoolCount = document.getElementById('pinball-pool-count');
     if (pinballPoolCount) pinballPoolCount.innerText = state.pool.length;
@@ -807,29 +1385,110 @@ function bindPinballSocket(s) {
 
     const roomAdminPanel = document.getElementById('room-admin-panel');
     const roomParticipantsPanel = document.getElementById('room-participants-panel');
-    const pinballItemSelectionUi = document.getElementById('pinball-item-selection-ui');
+    const dynBoard = document.getElementById('pinball-dynamic-leaderboard');
 
-    if (pinballItemSelectionUi) pinballItemSelectionUi.classList.add('hidden');
     if (pinballStatusOverlay) pinballStatusOverlay.classList.add('hidden');
+
+    // Ensure score popup is hidden when leaving playing state
+    const scorePopup = document.getElementById('pinball-score-popup');
+    if (scorePopup && state.status !== 'playing') {
+      scorePopup.classList.add('hidden');
+    }
 
     if (!pbEngine && state.status !== 'idle') {
       initPinballEngine();
     }
 
+    if (state.status === 'idle') { window.pinballRaceStarted = false; hasSelectedPinballColor = false; }
+
     if (state.status === 'lobby') {
-      if (roomAdminPanel) roomAdminPanel.classList.remove('hidden');
-      if (roomParticipantsPanel) roomParticipantsPanel.classList.remove('hidden');
-      if (pinballSpectatorUi) {
-        pinballSpectatorUi.classList.remove('hidden');
-        pinballSpectatorUi.innerText = '等待遊戲開始...';
+      window.pinballRaceStarted = false;
+      if (roomAdminPanel) roomAdminPanel.style.display = '';
+      if (dynBoard) dynBoard.classList.add('hidden');
+      const countdownEl = document.getElementById('pinball-countdown');
+        if (countdownEl) {
+        if (countdownEl.timer) {
+          clearInterval(countdownEl.timer);
+          countdownEl.timer = null;
+        }
+        countdownEl.classList.add('hidden');
       }
+              if (pinballSpectatorUi) {
+          const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+          const btnJoinPinball = document.getElementById('btn-join-pinball');
+          if (myName) {
+            if (!state.pool.includes(myName)) {
+               pinballSpectatorUi.classList.add('hidden');
+               if (btnJoinPinball) {
+                 btnJoinPinball.classList.remove('hidden');
+                 btnJoinPinball.innerText = '🙋‍♂️ 報名參加';
+                 btnJoinPinball.onclick = () => {
+                   hasSelectedPinballColor = false;
+                   const colorUi = document.getElementById('pinball-color-picker-ui');
+                   if (colorUi) colorUi.classList.remove('hidden');
+                 };
+               }
+            } else {
+               pinballSpectatorUi.classList.remove('hidden');
+               pinballSpectatorUi.innerText = '等待遊戲開始...';
+               if (btnJoinPinball) {
+                 btnJoinPinball.classList.remove('hidden');
+                 btnJoinPinball.innerText = '🎨 修改顏色';
+                 btnJoinPinball.onclick = () => {
+                   hasSelectedPinballColor = false;
+                   const colorUi = document.getElementById('pinball-color-picker-ui');
+                   if (colorUi) colorUi.classList.remove('hidden');
+                 };
+               }
+            }
+          } else {
+            // Not logged into LIFF (e.g. testing on desktop browser)
+            pinballSpectatorUi.classList.add('hidden');
+            if (btnJoinPinball) {
+              btnJoinPinball.classList.remove('hidden');
+              btnJoinPinball.innerText = '🙋‍♂️ 訪客報名 (測試)';
+              btnJoinPinball.onclick = () => {
+                const guestName = prompt("您目前未登入，請輸入測試暱稱:");
+                if (guestName && guestName.trim() !== '') {
+                  // Mock the currentUser so subsequent renders treat this browser as this guest user
+                  window.currentUser = { displayName: guestName.trim(), name: guestName.trim(), userId: 'guest_' + Math.floor(Math.random()*1000) };
+                  if (window.pinballSocket) { 
+                    window.pinballSocket.emit('join_pinball', { name: guestName.trim() }); 
+                  } else { 
+                    alert('Socket not found!'); 
+                  }
+                }
+              };
+            }
+          }
+        }
+      
+      // Color Picker UI logic
+      const colorUi = document.getElementById('pinball-color-picker-ui');
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      // Color Picker UI logic (auto-popup removed, now purely driven by user clicks)
+      // Always destroy engine on returning to lobby from playing so the track regenerates
       if (prevStatus === 'playing' && pbEngine) {
-        Matter.World.remove(pbEngine.world, Object.values(pbBalls));
-        pbBalls = {};
+        destroyEngine();
+        
+        // Immediately rebuild with new terrain
+        initPinballEngine();
       }
+      
+      syncBalls(state);
     } else if (state.status === 'instruction') {
-      if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
-      if (roomParticipantsPanel) roomParticipantsPanel.classList.add('hidden');
+      window.pinballRaceStarted = false;
+      const colorUi = document.getElementById('pinball-color-picker-ui');
+      if (colorUi) colorUi.classList.add('hidden');
+      if (prevStatus === 'playing' && pbEngine) {
+        // Destroy old engine and reset track for next round
+        destroyEngine();
+        
+        initPinballEngine();
+      }
+
+      if (roomAdminPanel) roomAdminPanel.style.display = 'none';
+      if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
 
       const instrOverlay = document.getElementById('pinball-instruction-overlay');
@@ -839,15 +1498,20 @@ function bindPinballSocket(s) {
         instrOverlay.style.display = 'flex';
 
         if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
-        let timeLeft = 5;
-        instrTimer.innerText = timeLeft;
         window.pinballTimerInterval = setInterval(() => {
-          timeLeft--;
-          if (timeLeft >= 0) instrTimer.innerText = timeLeft;
-        }, 1000);
+          let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 5;
+          instrTimer.innerText = timeLeft;
+        }, 20);
       }
 
+      syncBalls(state);
+
     } else if (state.status === 'playing') {
+      if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint) {
+        pbMouseConstraint.body = null; // Force drop any ball held from the lobby
+      }
+      const colorUi = document.getElementById('pinball-color-picker-ui');
+      if (colorUi) colorUi.classList.add('hidden');
       if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
 
       const instrOverlay = document.getElementById('pinball-instruction-overlay');
@@ -856,30 +1520,62 @@ function bindPinballSocket(s) {
         instrOverlay.style.display = 'none';
       }
 
-      if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
-      if (roomParticipantsPanel) roomParticipantsPanel.classList.remove('hidden');
+      if (roomAdminPanel) roomAdminPanel.style.display = 'none';
+      if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
+      if (dynBoard) dynBoard.classList.remove('hidden');
 
-      if (pinballSpectatorUi) {
-        pinballSpectatorUi.classList.remove('hidden');
-        pinballSpectatorUi.innerText = '🏁 比賽開始 🏁';
+        if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
+        const btnJoinPinball = document.getElementById('btn-join-pinball');
+        if (btnJoinPinball) btnJoinPinball.classList.add('hidden');
+
+      const btnShake = document.getElementById('btn-pinball-shake');
+      if (btnShake && typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+        btnShake.classList.remove('hidden');
+        if (!btnShake.hasListener) {
+          btnShake.hasListener = true;
+          btnShake.addEventListener('click', () => {
+            fetch('/api/admin/pinball/shake', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ uid: currentUser.userId })
+            });
+          });
+        }
       }
 
       initPinballEngine();
+      syncBalls(state);
 
-      if (prevStatus === 'instruction' || prevStatus === 'lobby') {
+      if (prevStatus === 'instruction' || prevStatus === 'lobby' || prevStatus === 'idle') {
         const countdownEl = document.getElementById('pinball-countdown');
         if (countdownEl) {
           countdownEl.classList.remove('hidden');
-          countdownEl.innerText = '3';
-          setTimeout(() => countdownEl.innerText = '2', 1000);
-          setTimeout(() => countdownEl.innerText = '1', 2000);
-          setTimeout(() => {
-            countdownEl.innerText = 'GO!';
-            setTimeout(() => countdownEl.classList.add('hidden'), 1000);
-            dropBalls(state.pool);
-          }, 3000);
+          
+          let count = 5;
+          countdownEl.innerText = count.toString();
+          countdownEl.style.fontSize = 'min(240px, 48vw)';
+          
+          if (countdownEl.timer) clearInterval(countdownEl.timer);
+          countdownEl.timer = setInterval(() => {
+            count--;
+            if (count > 0) {
+              countdownEl.innerText = count.toString();
+            } else {
+              clearInterval(countdownEl.timer);
+              countdownEl.timer = null;
+              countdownEl.innerText = 'GO!';
+              setTimeout(() => countdownEl.classList.add('hidden'), 1500);
+              startRace();
+            }
+          }, 1000);
         } else {
-          dropBalls(state.pool);
+          startRace();
+        }
+      } else if (pbEngine && startGateBody) {
+        // Fallback for weird state where it's playing but race hasn't physically started
+        const countdownEl = document.getElementById('pinball-countdown');
+        if (!countdownEl || !countdownEl.timer) {
+          startRace();
         }
       }
 
@@ -904,8 +1600,251 @@ function bindPinballSocket(s) {
           confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
         }
       }
+
+      // Check if race is fully ended
+      if (state.finished.length > 0 && state.finished.length === state.pool.length) {
+        const popup = document.getElementById('pinball-score-popup');
+        const scoreList = document.getElementById('pinball-score-list');
+        if (popup && scoreList) {
+          scoreList.innerHTML = '';
+          // Sort by scores descending
+          const scores = state.scores || {};
+          const sortedPlayers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+          
+          sortedPlayers.forEach((p, i) => {
+            const li = document.createElement('li');
+            li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+            li.innerHTML = `<span>${rank} ${p}</span> <span style="color:#f1c40f; font-weight:bold;">${scores[p]} 分</span>`;
+            scoreList.appendChild(li);
+          });
+          popup.classList.remove('hidden');
+          
+          // 超管顯示「再來一場/結束比賽」按鈕組，一般使用者顯示等待文字
+          const superadminActions = document.getElementById('pinball-superadmin-actions');
+          const waitingText = document.getElementById('pinball-waiting-admin-text');
+          const closeBtn = document.getElementById('btn-pinball-close-popup');
+          
+          if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+            if (superadminActions) {
+              superadminActions.style.display = 'flex';
+              superadminActions.classList.remove('hidden');
+            }
+            if (waitingText) waitingText.classList.add('hidden');
+            if (closeBtn) closeBtn.classList.remove('hidden');
+          } else {
+            if (superadminActions) superadminActions.classList.add('hidden');
+            if (waitingText) waitingText.classList.remove('hidden');
+            if (closeBtn) closeBtn.classList.add('hidden');
+          }
+        }
+      }
     } else {
       if (pinballSpectatorUi) pinballSpectatorUi.classList.add('hidden');
+      if (dynBoard) dynBoard.classList.add('hidden');
+      const btnShake = document.getElementById('btn-pinball-shake');
+      if (btnShake) btnShake.classList.add('hidden');
     }
   });
 }
+
+
+  // --- G-Sensor (DeviceOrientation) support ---
+  let lastForceEmit = 0;
+  window.addEventListener('deviceorientation', (event) => {
+    if (!window.pinballRaceStarted || pbState.status !== 'playing' || !pbBalls || !pbEngine) return;
+    const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+    const myBall = myName ? pbBalls[myName] : null;
+    
+    if (myBall && event.gamma !== null) {
+      // gamma is left-to-right tilt in degrees (-90 to 90)
+      let tilt = event.gamma;
+      
+      // Ignore very small tilts to avoid jitter
+      if (Math.abs(tilt) < 5) return;
+      
+      if (tilt > 30) tilt = 30;
+      if (tilt < -30) tilt = -30;
+      
+      // Calculate small horizontal force
+      const forceX = (tilt / 30) * 0.0015; 
+      
+      // Apply locally
+      Matter.Body.applyForce(myBall, myBall.position, { x: forceX, y: 0 });
+      
+      // Emit to others (throttled to ~10fps)
+      const now = Date.now();
+      if (now - lastForceEmit > 100) {
+        if (typeof pinballSocket !== 'undefined') {
+          pinballSocket.emit('pinball_apply_force', { name: myName, fx: forceX });
+        }
+        lastForceEmit = now;
+      }
+    }
+  });
+
+  window.requestPinballGyroPermission = function() {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            alert('✅ 體感控制已啟用！開始比賽後，左右傾斜手機即可控制你的專屬彈珠！');
+          } else {
+            alert('❌ 體感控制權限已被拒絕。');
+          }
+        })
+        .catch(console.error);
+    } else {
+      alert('✅ 您的設備已自動啟用體感控制！開始比賽後，左右傾斜手機即可控制彈珠！');
+    }
+  };
+
+window.pinballInitColorPicker = function() {
+  const colorContainer = document.getElementById('pinball-color-options');
+  if (!colorContainer || colorContainer.children.length > 0) return;
+  
+  let selectedColor = null;
+  let selectedStyle = 'solid';
+  const defaultColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#e67e22', '#9b59b6', '#fd79a8', '#00cec9'];
+
+  function updatePreview() {
+    const canvas = document.getElementById('pinball-preview-canvas');
+    if (!canvas || !selectedColor) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    const r = 40;
+    const cx = 50;
+    const cy = 50;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.save();
+    ctx.translate(cx, cy);
+    if (selectedStyle === 'solid') {
+      ctx.fillStyle = selectedColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (selectedStyle === 'billiard') {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = selectedColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.fillRect(-r, -r*0.5, r * 2, r);
+    } else if (selectedStyle === 'gradient') {
+      const grad = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.1, 0, 0, r);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.3, selectedColor);
+      grad.addColorStop(1, '#000000');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 24px Arial';
+    let num = '?';
+    const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+    if (myName && typeof pbBalls !== 'undefined' && pbBalls[myName]) {
+      num = pbBalls[myName].plugin.num;
+    }
+    ctx.fillText(num, cx, cy + 2);
+  }
+  
+  const styleBtns = document.querySelectorAll('.pinball-style-btn');
+  Array.from(styleBtns).forEach(btn => {
+    btn.onclick = () => {
+      Array.from(styleBtns).forEach(b => {
+        b.style.borderColor = 'transparent';
+        b.classList.remove('active');
+      });
+      btn.style.borderColor = '#3498db';
+      btn.classList.add('active');
+      selectedStyle = btn.getAttribute('data-style');
+      updatePreview();
+    };
+  });
+
+  if (!selectedColor) {
+    const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+    if (myName && typeof pbBalls !== 'undefined' && pbBalls[myName]) {
+      selectedColor = pbBalls[myName].render.fillStyle;
+      selectedStyle = pbBalls[myName].plugin.style || 'solid';
+    } else {
+      // RANDOM color and style for new players
+      selectedColor = defaultColors[Math.floor(Math.random() * defaultColors.length)];
+      const styles = ['solid', 'billiard', 'gradient'];
+      selectedStyle = styles[Math.floor(Math.random() * styles.length)];
+    }
+    
+    Array.from(styleBtns).forEach(b => {
+      if (b.getAttribute('data-style') === selectedStyle) {
+        b.style.borderColor = '#3498db';
+        b.classList.add('active');
+      }
+    });
+    
+    updatePreview();
+  }
+
+  // Setup Confirm button once
+  const confirmBtn = document.getElementById('btn-pinball-color-confirm');
+  if (confirmBtn) {
+     confirmBtn.style.display = 'block'; // Make sure it's visible so user can directly confirm
+     confirmBtn.onclick = () => {
+         const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+         if (window.pinballSocket && myName) {
+           window.pinballSocket.emit('join_pinball', { name: myName });
+         }
+         fetch('/api/pinball/set-color', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({ name: myName, color: selectedColor, style: selectedStyle })
+         });
+       hasSelectedPinballColor = true;
+       const colorUi = document.getElementById('pinball-color-picker-ui');
+       if (colorUi) colorUi.classList.add('hidden');
+       const roomParticipantsPanel = document.getElementById('room-participants-panel');
+       if (roomParticipantsPanel) roomParticipantsPanel.style.display = 'none';
+     };
+  }
+
+  defaultColors.forEach(c => {
+    const btn = document.createElement('button');
+    btn.style.cssText = `width: 35px; height: 35px; border-radius: 50%; border: 3px solid #fff; background-color: ${c}; cursor: pointer; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.5);`;
+    
+    // Highlight the randomly selected color
+    if (c === selectedColor) {
+      btn.style.transform = 'scale(1.2)';
+    }
+
+    btn.onclick = () => {
+      selectedColor = c;
+      updatePreview();
+      Array.from(colorContainer.children).forEach(child => child.style.transform = 'scale(1)');
+      btn.style.transform = 'scale(1.2)';
+    };
+    colorContainer.appendChild(btn);
+  });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.pinballInitColorPicker();
+});
+

@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const Matter = require('matter-js');
 const GAMES_FILE = path.join(__dirname, 'games.json');
 const LOG_FILE = path.join(__dirname, 'schedule.log');
 
@@ -854,15 +853,12 @@ try {
 
 // 從環境變數讀取敏感資訊，避免洩露到 Git
 const config = {
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
-  channelSecret: process.env.LINE_CHANNEL_SECRET || ''
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || 'fake_token',
+  channelSecret: process.env.LINE_CHANNEL_SECRET || 'fake_secret'
 };
 
-// 檢查必要的環境變數
-if (!config.channelAccessToken || !config.channelSecret) {
-  console.error('❌ 錯誤：請設定環境變數 LINE_CHANNEL_ACCESS_TOKEN 和 LINE_CHANNEL_SECRET');
-  console.error('   在 Render 上：Settings > Environment Variables');
-  process.exit(1);
+if (!process.env.LINE_CHANNEL_ACCESS_TOKEN || !process.env.LINE_CHANNEL_SECRET) {
+  console.warn('⚠️ 警告：未設定 LINE 環境變數，本機將以假 Token 啟動（LINE Bot 訊息功能將失效，但網頁可正常測試）');
 }
 
 const client = new Client(config);
@@ -898,9 +894,11 @@ const uidToNameMap = new Map(); // key: "gid_uid", value: name
 const firstUseGroups = new Set(); // 記錄已經顯示過歡迎訊息的群組
 
 // === 權限輔助函式 ===
-function isSuperAdmin(uid) {
+let superAdminViewOverrides = {}; // uid -> 'user' | 'admin' | 'superadmin'
+
+function isTrueSuperAdmin(uid) {
   if (!uid) return false;
-  if (uid.startsWith('U_SUPER_ADMIN_TEST_ID_')) return true;
+  if (uid.startsWith('U_SUPER_ADMIN_TEST_ID')) return true;
   let isEnvAdmin = false;
   if (process.env.SUPER_ADMIN_USER_ID) {
     const envAdmins = process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim());
@@ -909,8 +907,28 @@ function isSuperAdmin(uid) {
   return isEnvAdmin || (superAdmins && superAdmins.has(uid));
 }
 
+function isSuperAdmin(uid) {
+  if (!isTrueSuperAdmin(uid)) return false;
+  if (superAdminViewOverrides[uid]) {
+    return superAdminViewOverrides[uid].mode === 'superadmin';
+  }
+  return true;
+}
+
 function isGroupAdmin(uid, gid) {
-  if (isSuperAdmin(uid)) return true;
+  if (isTrueSuperAdmin(uid)) {
+    const override = superAdminViewOverrides[uid];
+    if (override) {
+      if (override.mode === 'user') return false;
+      if (override.mode === 'admin') {
+        if (override.targetGid) return gid === override.targetGid;
+        return true;
+      }
+      if (override.mode === 'superadmin') return true;
+    }
+    return true; // default
+  }
+  if (uid && uid.startsWith('U_GROUP_ADMIN_TEST_ID')) return true;
   return !!(groupAdmins[gid] && groupAdmins[gid].has(uid));
 }
 
@@ -1341,6 +1359,8 @@ async function fetchGroupName(gid) {
     if (res.ok) {
       const data = await res.json();
       return data.groupName;
+    } else if (res.status === 404 || res.status === 400) {
+      return "未知群組 (Bot已退出)";
     }
   } catch (e) {
     console.error('Failed to fetch group name:', e.message);
@@ -1348,26 +1368,14 @@ async function fetchGroupName(gid) {
   return null;
 }
 
-let pendingGroupSettings = {};
 async function ensureGroupSettings(gid) {
   if (!groupSettings[gid]) groupSettings[gid] = {};
   if (!groupSettings[gid].groupName && gid.startsWith('C')) {
-    if (!pendingGroupSettings[gid]) {
-      pendingGroupSettings[gid] = (async () => {
-        try {
-          const name = await fetchGroupName(gid);
-          // 拿到就填，拿不到（可能沒權限或機器人被踢出）則給一個預設值，避免下次一直重試卡住
-          groupSettings[gid].groupName = name || '未知群組';
-          await saveGroupSettings();
-        } catch (e) {
-          console.error('Fetch group name error:', e.message);
-          groupSettings[gid].groupName = '未知群組';
-        } finally {
-          delete pendingGroupSettings[gid];
-        }
-      })();
+    const name = await fetchGroupName(gid);
+    if (name) {
+      groupSettings[gid].groupName = name;
+      await saveGroupSettings();
     }
-    await pendingGroupSettings[gid];
   }
 }
 
@@ -1470,6 +1478,12 @@ app.get('/api/game/:gid', async (req, res) => {
        adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
     } else {
        adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
+       const override = superAdminViewOverrides[uid];
+       if (override && override.mode === 'admin' && override.targetGid) {
+           if (!adminGids.includes(override.targetGid)) {
+               adminGids.push(override.targetGid);
+           }
+       }
     }
     for (const g of adminGids) {
       const codes = Object.keys(groupCodes).filter(k => groupCodes[k] === g);
@@ -1568,30 +1582,28 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
   if (!groupStats.uniqueViewers) groupStats.uniqueViewers = {};
   if (!groupStats.logs) groupStats.logs = [];
 
+  if (!groupStats.uniqueViewers[userId]) {
+    groupStats.uniqueViewers[userId] = { displayName, firstVisit: Date.now(), count: 0, lastVisit: 0 };
+  }
+
+  // 每分鐘只記錄一次
+  const now = Date.now();
+  if (now - groupStats.uniqueViewers[userId].lastVisit < 60000) {
+    return res.json({ success: true, message: 'Throttled' });
+  }
+
   groupStats.viewCount = (groupStats.viewCount || 0) + 1;
   
-  if (!groupStats.uniqueViewers[userId]) {
-    groupStats.uniqueViewers[userId] = { displayName, firstVisit: Date.now(), count: 0 };
-  }
   groupStats.uniqueViewers[userId].displayName = displayName; // update latest name
-  groupStats.uniqueViewers[userId].lastVisit = Date.now();
+  groupStats.uniqueViewers[userId].lastVisit = now;
   groupStats.uniqueViewers[userId].count++;
 
   // 記錄最近的造訪
-  groupStats.logs.unshift({ time: Date.now(), userId, displayName, pictureUrl });
+  groupStats.logs.unshift({ time: now, userId, displayName, pictureUrl });
   
   // 保留最近 200 筆即可，避免無限制長大
   if (groupStats.logs.length > 200) {
     groupStats.logs = groupStats.logs.slice(0, 200);
-  }
-
-  lobbyVisitClickCount++;
-  if (lobbyVisitClickCount >= 10) {
-    lobbyVisitClickCount = 0;
-    saveLobbyVisits().catch(e => console.error(e));
-  } else {
-    // 也確保至少有儲存，但不需要每次都寫檔，改成直接呼叫 saveLobbyVisits 避免 fs.writeFile 同步寫入的問題
-    saveLobbyVisits().catch(e => console.error(e));
   }
   
   res.json({ success: true });
@@ -1632,6 +1644,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
 
   let allStats = [];
   let totalViews = 0;
+  let totalTodayViews = 0;
   let globalUniqueViewers = new Set();
   let todayUniqueViewers = new Set();
   const todayStart = new Date();
@@ -1661,6 +1674,9 @@ app.get('/api/admin/all_stats', async (req, res) => {
     // Compute Daily Stats (Last 7 days or so, based on logs)
     const dailyMap = {};
     for (const log of logs) {
+      if (log.time >= todayStartTime) {
+        totalTodayViews++;
+      }
       // Create local date string (YYYY/MM/DD)
       const d = new Date(log.time);
       const dateStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
@@ -1692,6 +1708,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
     allStats, 
     totalViews, 
     totalUniqueCount: globalUniqueViewers.size,
+    todayViews: totalTodayViews,
     todayUniqueCount: todayUniqueViewers.size
   });
 });
@@ -1774,6 +1791,18 @@ function generateListMessage(g, customTitle = null) {
   });
   return msg;
 }
+
+let pinballRoom = {
+  status: 'idle', // idle, lobby, instruction, playing, finished
+  round: 1,
+  pool: [], // active players
+  finished: [], // winners in order
+  scores: {}, // point totals for tournament
+  startTime: null,
+  statusEndTime: null,
+  colors: {},
+  positions: {} // for server authoritative state
+};
 
 // --- 彩蛋功能 API ---
 app.get('/api/easter_egg/status', (req, res) => {
@@ -1898,425 +1927,6 @@ let partyRoom = {
   startTime: 0
 };
 
-// --- Pinball Server-Side Physics ---
-const TRACK_WIDTH = 180;
-const START_Y = 150;
-const MARBLE_RADIUS = 12;
-const GRAVITY_Y = 0.55;
-const PB_LOGICAL_WIDTH = 800;
-
-function buildServerTopDownTrack(W) {
-  setSeed(pinballRoom.seed || 12345);
-
-  const { Bodies } = Matter;
-  const bodies = [];
-  const pathPoints = [];
-  
-  const steps = 600; // Increased resolution for massive track
-  const maxT = Math.PI * 14; // 7 full S-curves
-  
-  // Calculate amplitude to reach exactly near the left/right screen edges
-  const maxSafeAmplitude = (W / 2) - 150 - 20; // 150 is approx wall offset, 20 is padding
-  const amplitude = Math.max(50, maxSafeAmplitude);
-  
-  // Dynamically calculate stretch to guarantee mathematically safe radius of curvature
-  // Radius of curvature R = stretch^2 / amplitude. We need R > 150 to avoid wall self-intersection loops.
-  const stretch = Math.max(180, Math.sqrt(amplitude * 160));
-
-  let currentY = START_Y + 10; // Track generation starts below the gate
-  
-  // Create Funnel to guide balls from wide screen into narrow track
-  const funnelHeight = 250; // Steep funnel
-  const trackLeftX = W / 2 - TRACK_WIDTH / 2;
-  const trackRightX = W / 2 + TRACK_WIDTH / 2;
-  
-  // Left funnel wall
-  const lStartX = -100;
-  const lStartY = currentY;
-  const lEndX = trackLeftX;
-  const lEndY = currentY + funnelHeight;
-  const lLen = Math.hypot(lEndX - lStartX, lEndY - lStartY);
-  const lAngle = Math.atan2(lEndY - lStartY, lEndX - lStartX);
-  
-  bodies.push(Bodies.rectangle((lStartX + lEndX)/2, (lStartY + lEndY)/2, lLen, 150, {
-    isStatic: true, angle: lAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
-  }));
-  
-  // Right funnel wall
-  const rStartX = trackRightX;
-  const rStartY = currentY + funnelHeight;
-  const rEndX = W + 100;
-  const rEndY = currentY;
-  const rLen = Math.hypot(rEndX - rStartX, rEndY - rStartY);
-  const rAngle = Math.atan2(rEndY - rStartY, rEndX - rStartX);
-  
-  bodies.push(Bodies.rectangle((rStartX + rEndX)/2, (rStartY + rEndY)/2, rLen, 150, {
-    isStatic: true, angle: rAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
-  }));
-
-  currentY += funnelHeight;
-  
-  // Add smooth circular bumpers at the funnel-to-track junctions to prevent snagging
-  const bumperRadius = 40;
-  bodies.push(Bodies.circle(trackLeftX - bumperRadius + 15, currentY, bumperRadius, {
-    isStatic: true, friction: 0.05, restitution: 0.2, render: { fillStyle: '#bdc3c7' }
-  }));
-  bodies.push(Bodies.circle(trackRightX + bumperRadius - 15, currentY, bumperRadius, {
-    isStatic: true, friction: 0.05, restitution: 0.2, render: { fillStyle: '#bdc3c7' }
-  }));
-  
-  // Start track points exactly at funnel exit
-  for(let y = currentY; y < currentY + 100; y += 20) {
-    pathPoints.push({ x: W/2, y: y });
-  }
-  currentY += 100;
-
-  // Randomize track shape using sum of sines
-  const phase1 = seededRandom() * Math.PI * 2;
-  const phase2 = seededRandom() * Math.PI * 2;
-  const phase3 = seededRandom() * Math.PI * 2;
-  
-  const freq1 = 0.8;
-  const freq2 = 1.1 + seededRandom() * 0.3; // max 1.4 (Lowered from 2.2 to prevent cusps)
-  const freq3 = 0.4 + seededRandom() * 0.2; // max 0.6
-  
-  // Weights for each sine wave component (sum to ~1.0)
-  const w1 = 0.5 + seededRandom() * 0.2;
-  const w2 = 0.15 + seededRandom() * 0.15;
-  const w3 = 1.0 - w1 - w2;
-
-  const trackWaveStartY = currentY;
-
-  for (let i = 0; i <= steps; i++) {
-    const t = (i / steps) * maxT;
-    
-    // Mathematical envelope to force the sine wave to start and end EXACTLY at 0 offset
-    // This absolutely prevents any horizontal jumps or gaps from forming in the track wall
-    let env = 1.0;
-    const fadeLen = Math.PI * 2; // Fade over 1 full S-curve
-    if (t < fadeLen) {
-      env = (1 - Math.cos((t / fadeLen) * Math.PI)) / 2;
-    } else if (maxT - t < fadeLen) {
-      env = (1 - Math.cos(((maxT - t) / fadeLen) * Math.PI)) / 2;
-    }
-    
-    const xOffset = env * amplitude * (
-      w1 * Math.sin(t * freq1 + phase1) +
-      w2 * Math.sin(t * freq2 + phase2) +
-      w3 * Math.sin(t * freq3 + phase3)
-    );
-
-    const x = W / 2 + xOffset;
-    const y = trackWaveStartY + t * stretch;
-    pathPoints.push({ x, y });
-    currentY = y;
-  }
-
-  // Straight exit at the bottom
-  for(let i = 0; i < 15; i++) {
-    currentY += 20;
-    pathPoints.push({ x: W/2, y: currentY });
-  }
-
-  // Build physical guardrails along the path
-  const wallThickness = 120; // Increased drastically to prevent high-speed tunneling ejections
-  const wallOffset = (TRACK_WIDTH / 2) + (wallThickness / 2) - 2; // Perfectly align inner edge
-  
-  for (let i = 0; i < pathPoints.length; i++) {
-    const p1 = pathPoints[i];
-    
-    let nx, ny;
-    if (i < pathPoints.length - 1) {
-      const p2 = pathPoints[i+1];
-      const dx = p2.x - p1.x;
-      const dy = p2.y - p1.y;
-      const len = Math.sqrt(dx*dx + dy*dy);
-      nx = -dy / len;
-      ny = dx / len;
-    } else {
-      const p0 = pathPoints[i-1];
-      const dx = p1.x - p0.x;
-      const dy = p1.y - p0.y;
-      const len = Math.sqrt(dx*dx + dy*dy);
-      nx = -dy / len;
-      ny = dx / len;
-    }
-    
-    const leftX = p1.x + nx * wallOffset;
-    const leftY = p1.y + ny * wallOffset;
-    const rightX = p1.x - nx * wallOffset;
-    const rightY = p1.y - ny * wallOffset;
-    
-    // Matter.js track walls built using overlapping circles to avoid ANY sharp edges or broken chamfering
-    bodies.push(Bodies.circle(leftX, leftY, wallThickness / 2, {
-      isStatic: true,
-      friction: 0.0,
-      restitution: 0.2, // Less bouncy so they don't jump the wall
-      render: { fillStyle: '#bdc3c7', strokeStyle: '#bdc3c7', lineWidth: 1 }
-    }));
-
-    bodies.push(Bodies.circle(rightX, rightY, wallThickness / 2, {
-      isStatic: true,
-      friction: 0.0,
-      restitution: 0.2,
-      render: { fillStyle: '#bdc3c7', strokeStyle: '#bdc3c7', lineWidth: 1 }
-    }));
-  }
-
-  // Top blocking wall removed as it interfered with the open lobby
-  return { bodies, pathPoints, finalY: pathPoints[pathPoints.length-1].y };
-}
-
-let currentSeed = 12345;
-  function setSeed(seed) { currentSeed = seed; }
-  function seededRandom() {
-    let t = currentSeed += 0x6D2B79F5;
-    t = Math.imul(t ^ t >>> 15, t | 1);
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  }
-
-let pbServerEngine = null;
-let pbServerInterval = null;
-let pbServerBalls = {};
-
-function startServerPinballPhysics(pool) {
-  stopServerPinballPhysics();
-  const { Engine, World, Bodies, Events, Body } = Matter;
-  pbServerEngine = Engine.create();
-  pbServerEngine.gravity.y = GRAVITY_Y;
-  pbServerEngine.gravity.x = 0;
-
-  const { bodies, pathPoints, finalY } = buildServerTopDownTrack(PB_LOGICAL_WIDTH);
-  // --- GENERATE RANDOM OBSTACLES ---
-  // Generate 15 pegs uniformly distributed along the track (alternating 2 and 1 per row)
-  const numRows = 10;
-  const startIdx = Math.floor(pathPoints.length * 0.10);
-  const endIdx = Math.floor(pathPoints.length * 0.90);
-  const zoneSize = (endIdx - startIdx) / numRows;
-  
-  for (let r = 0; r < numRows; r++) {
-    const pIdx = Math.floor(startIdx + r * zoneSize + (zoneSize / 2));
-    const p = pathPoints[pIdx];
-    let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
-    let pPrev = pathPoints[pIdx - 5] || pathPoints[0];
-    
-    let dx = pNext.x - pPrev.x;
-    let dy = pNext.y - pPrev.y;
-    let len = Math.sqrt(dx*dx + dy*dy);
-    let tx = dx / len;
-    let ty = dy / len;
-    let nx = -ty;
-    let ny = tx;
-
-    let pegsInThisRow = (r % 2 === 0) ? 2 : 1;
-    let isWindmillRow = false;
-    
-    // Add two windmills along the regular track
-    if (r === 3 || r === 7) {
-      isWindmillRow = true;
-      pegsInThisRow = 1;
-    }
-    
-    for (let i = 0; i < pegsInThisRow; i++) {
-      let offsetAmt = 0;
-      if (!isWindmillRow && pegsInThisRow === 2) {
-        offsetAmt = (i === 0) ? -40 : 40;
-      }
-      
-      const cx = p.x + nx * offsetAmt;
-      const cy = p.y + ny * offsetAmt;
-      
-      if (isWindmillRow) {
-        const windmill = Bodies.rectangle(cx, cy, 128, 20, {
-          isStatic: true, restitution: 1.2, friction: 0.0,
-          render: { fillStyle: '#f1c40f', strokeStyle: '#e67e22', lineWidth: 4 }, 
-          plugin: { isRotary: true, isBumper: true }
-        });
-        bodies.push(windmill);
-        //(windmill);
-      } else {
-        const bouncer = Bodies.circle(cx, cy, 14, {
-          isStatic: true, restitution: 1.5, friction: 0.0,
-          render: { fillStyle: '#f1c40f', strokeStyle: '#111111', lineWidth: 4 }, plugin: { isBumper: true }
-        });
-        bodies.push(bouncer);
-        //(bouncer);
-      }
-    }
-  }
-  // --- END GENERATE RANDOM OBSTACLES ---
-
-  // --- GENERATE FINAL PACHINKO GRID ---
-  const startFinalIdx = Math.floor(pathPoints.length * 0.92);
-  const endFinalIdx = Math.floor(pathPoints.length * 0.98);
-  
-  if (endFinalIdx > startFinalIdx) {
-    let rowNum = 0;
-    // Step by 5 to ensure enough vertical distance between rows
-    for (let pIdx = startFinalIdx; pIdx <= endFinalIdx; pIdx += 5) {
-      const p = pathPoints[pIdx];
-      
-      let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
-      let pPrev = pathPoints[pIdx - 5] || pathPoints[0];
-      let dx = pNext.x - pPrev.x;
-      let dy = pNext.y - pPrev.y;
-      let len = Math.sqrt(dx*dx + dy*dy);
-      let tx = dx / len;
-      let ty = dy / len;
-      let nx = -ty;
-      let ny = tx;
-
-      // Funnel pattern: alternate rows to push balls to center
-      // Row 0: outer edges [-44, 44]
-      // Row 1: middle [-28, 28]
-      // Row 2: center [0]
-      // Funnel pattern: alternate rows to push balls to center
-      // Row 0: outer edges [-44, 44]
-      // Row 1: middle [-35, 35]
-      // Row 2: center [0]
-      let offsets = [];
-      
-      const pattern = rowNum % 3;
-      if (pattern === 0) offsets = [-45, 45];
-      else if (pattern === 1) offsets = [-35, 35];
-      else offsets = [0];
-
-      for (let offsetAmt of offsets) {
-        const cx = p.x + nx * offsetAmt;
-        const cy = p.y + ny * offsetAmt;
-        
-        const bouncer = Bodies.circle(cx, cy, 14, {
-          isStatic: true, restitution: 1.5, friction: 0.0,
-          render: { fillStyle: '#e74c3c', strokeStyle: '#111111', lineWidth: 4 }, plugin: { isBumper: true }
-        });
-        bodies.push(bouncer);
-        //(bouncer);
-      }
-      rowNum++;
-    }
-  }
-  // --- END GENERATE FINAL PACHINKO GRID ---
-  World.add(pbServerEngine.world, bodies);
-
-  const finishLine = Bodies.rectangle(PB_LOGICAL_WIDTH / 2, finalY + 80, TRACK_WIDTH + 60, 40, {
-    isStatic: true, isSensor: true, plugin: { isFinishLine: true }
-  });
-  World.add(pbServerEngine.world, [finishLine]);
-
-  Events.on(pbServerEngine, 'collisionStart', (event) => {
-    event.pairs.forEach(pair => {
-      let ball = null, finish = null;
-      if (pair.bodyA.plugin && pair.bodyA.plugin.isBall) ball = pair.bodyA;
-      if (pair.bodyB.plugin && pair.bodyB.plugin.isBall) ball = pair.bodyB;
-      if (pair.bodyA.plugin && pair.bodyA.plugin.isFinishLine) finish = pair.bodyA;
-      if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
-
-      if (ball && finish) {
-        if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(ball.plugin.name)) {
-          const name = ball.plugin.name;
-          pinballRoom.finished.push(name);
-          
-          // Calculate and assign points
-          const rank = pinballRoom.finished.length;
-          let points = 0;
-          if (rank === 1) points = 7;
-          else if (rank === 2) points = 5;
-          else if (rank === 3) points = 3;
-          else if (rank >= 4 && rank <= 10) points = 2;
-          else if (rank >= 11 && rank <= 20) points = 1;
-          
-          if (!pinballRoom.scores) pinballRoom.scores = {};
-          if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
-          pinballRoom.scores[name] += points;
-
-          io.emit('pinball_state', pinballRoom);
-        }
-      }
-    });
-  });
-
-  Events.on(pbServerEngine, 'beforeUpdate', () => {
-        Object.values(pbServerBalls).forEach(ball => {
-      // Windmill rotation for server
-      pbServerEngine.world.bodies.forEach(b => {
-        if (b.plugin && b.plugin.isRotary) {
-          Body.setAngle(b, b.angle + 0.05);
-        }
-      });
-
-      Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
-      
-      // Velocity clamping to prevent tunneling
-      if (ball.velocity.y > 25) Body.setVelocity(ball, { x: ball.velocity.x, y: 25 });
-      if (ball.velocity.x > 25) Body.setVelocity(ball, { x: 25, y: ball.velocity.y });
-      if (ball.velocity.x < -25) Body.setVelocity(ball, { x: -25, y: ball.velocity.y });
-
-      if (ball.speed < 0.5) {
-        ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
-        if (ball.plugin.stuckFrames > 60) {
-          Body.applyForce(ball, ball.position, { x: (Math.random() - 0.5) * 0.015, y: 0.01 });
-          ball.plugin.stuckFrames = 0;
-        }
-      } else {
-        ball.plugin.stuckFrames = 0;
-      }
-    });
-  });
-
-  const cols = Math.floor(TRACK_WIDTH / (MARBLE_RADIUS * 2.5));
-  const startBaseX = PB_LOGICAL_WIDTH / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
-  const startY = START_Y - 50;
-  
-  pbServerBalls = {};
-  pool.forEach((name, idx) => {
-    const row = Math.floor(idx / cols);
-    const col = idx % cols;
-    const x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (Math.random() - 0.5) * 5;
-    const y = startY - row * (MARBLE_RADIUS * 2.5) - Math.random() * 5;
-    
-    const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
-      restitution: 0.6, friction: 0.005, density: 0.05,
-      plugin: { isBall: true, name: name, stuckFrames: 0 }
-    });
-    pbServerBalls[name] = ball;
-  });
-  World.add(pbServerEngine.world, Object.values(pbServerBalls));
-  
-  let tickCount = 0;
-  pbServerInterval = setInterval(() => {
-    if (pinballRoom.status !== 'playing') {
-      stopServerPinballPhysics();
-      return;
-    }
-    // Step engine at 60 FPS for more accurate collision detection
-    Engine.update(pbServerEngine, 1000 / 60);
-    tickCount++;
-    
-    // Broadcast positions at 30 FPS to save bandwidth
-    if (tickCount % 2 === 0) {
-      const frameData = pinballRoom.pool.flatMap(name => {
-        const b = pbServerBalls[name];
-        return b ? [Math.round(b.position.x * 10)/10, Math.round(b.position.y * 10)/10] : [-100, -100];
-      });
-      io.emit('pinball_frame', frameData);
-    }
-  }, 1000 / 60);
-}
-
-function stopServerPinballPhysics() {
-  if (pbServerInterval) { clearInterval(pbServerInterval); pbServerInterval = null; }
-  if (pbServerEngine) { Matter.Engine.clear(pbServerEngine); pbServerEngine = null; }
-  pbServerBalls = {};
-}
-
-let pinballRoom = {
-  status: 'idle', // idle, lobby, instruction, playing
-  pool: [],
-  finished: [],
-  winnerLimit: 3
-};
-
 let partyTimeTimeout = null;
 let partyBulletInterval = null;
 
@@ -2369,12 +1979,39 @@ io.on('connection', (socket) => {
   socket.emit('lottery_state', lotteryRoom);
   socket.emit('pinball_state', pinballRoom);
 
+  socket.on('pinball_move_ball', (data) => {
+    const { name, x, y } = data;
+    if (pinballRoom.status === 'lobby' || pinballRoom.status === 'instruction') {
+      if (!pinballRoom.positions) pinballRoom.positions = {};
+      pinballRoom.positions[name] = { x, y };
+      // Broadcast this individual move to others so they can animate it locally
+      socket.broadcast.emit('pinball_ball_moved', { name, x, y });
+    }
+  });
+  socket.on('pinball_host_sync', (data) => {
+    socket.broadcast.emit('pinball_host_sync', data);
+  });
+
   socket.on('join_lottery', (data) => {
     if (lotteryRoom.status === 'lobby') {
       const { name } = data;
       if (name && !lotteryRoom.pool.includes(name)) {
         lotteryRoom.pool.push(name);
         io.emit('lottery_state', lotteryRoom);
+      }
+    }
+  });
+
+  socket.on('join_pinball', (data) => {
+    console.log('[DEBUG] join_pinball event received:', data, 'status:', pinballRoom.status);
+    if (pinballRoom.status === 'lobby') {
+      const { name } = data;
+      if (name && !pinballRoom.pool.includes(name)) {
+        console.log('[DEBUG] joining pinball pool:', name);
+        pinballRoom.pool.push(name);
+        io.emit('pinball_state', pinballRoom);
+      } else {
+        console.log('[DEBUG] failed to join pool. name:', name, 'already_in_pool:', pinballRoom.pool.includes(name));
       }
     }
   });
@@ -2418,9 +2055,6 @@ io.on('connection', (socket) => {
   socket.on('request_party_state', () => {
     socket.emit('party_state', partyRoom);
   });
-
-  // Future-proof version check
-  socket.emit('require_version', { version: '20260718_serversync4' });
 
   socket.on('player_move', (data) => {
     if (partyRoom.players[socket.id] && partyRoom.players[socket.id].alive) {
@@ -2504,6 +2138,7 @@ app.post('/api/admin/room/open', express.json(), (req, res) => {
     pinballRoom.status = 'lobby';
     pinballRoom.pool = [];
     pinballRoom.finished = [];
+    pinballRoom.scores = {};
     
     lotteryRoom.status = 'idle';
     partyRoom.status = 'idle';
@@ -2526,7 +2161,6 @@ app.post('/api/admin/room/close', express.json(), (req, res) => {
   lotteryRoom.status = 'idle';
   partyRoom.status = 'idle';
   pinballRoom.status = 'idle';
-  stopServerPinballPhysics();
   
   io.emit('global_room_state', globalRoom);
   io.emit('lottery_state', lotteryRoom);
@@ -2548,13 +2182,6 @@ app.post('/api/admin/party/start', express.json(), (req, res) => {
 // --- Pinball Endpoints ---
 // Item select/place endpoints removed (feature disabled for now)
 
-app.get('/api/admin/dev-promote', (req, res) => {
-  if (!superAdmins.includes('dev_super_admin')) {
-    superAdmins.push('dev_super_admin');
-  }
-  res.json({ success: true });
-});
-
 app.post('/api/admin/pinball/sync-pool', express.json(), (req, res) => {
   const { uid, pool } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
@@ -2563,6 +2190,17 @@ app.post('/api/admin/pinball/sync-pool', express.json(), (req, res) => {
   io.emit('pinball_state', pinballRoom);
   res.json({ success: true, pinballRoom });
 });
+
+app.post('/api/pinball/set-color', express.json(), (req, res) => {
+    const { name, color, style } = req.body;
+    if (!name || !color) return res.status(400).json({ error: 'Missing name or color' });
+    if (!pinballRoom.colors) pinballRoom.colors = {};
+    if (!pinballRoom.styles) pinballRoom.styles = {};
+    pinballRoom.colors[name] = color;
+    if (style) pinballRoom.styles[name] = style;
+    io.emit('pinball_state', pinballRoom);
+    res.json({ success: true, color, style });
+  });
 
 app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
   const { uid, name } = req.body;
@@ -2581,42 +2219,75 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
   pinballRoom.winnerLimit = winnerLimit || 3;
+  pinballRoom.finished = [];
+  
+  if (pinballRoom.round > 1) {
+    // 第二場之後跳過說明，直接進入遊戲
+    pinballRoom.status = 'playing';
+    pinballRoom.startTime = Date.now();
+    io.emit('pinball_state', pinballRoom);
+    return res.json({ success: true, pinballRoom });
+  }
+
+  // Round 1: instruction(5s) -> playing
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
-  pinballRoom.finished = [];
   io.emit('pinball_state', pinballRoom);
   
-  // instruction(5s) → playing
   setTimeout(() => {
     if (pinballRoom.status !== 'instruction') return; // Cancelled
     pinballRoom.status = 'playing';
     pinballRoom.statusEndTime = null;
-    
-    // Wait exactly 3000ms to match the frontend "3, 2, 1, GO!" visual countdown
-    setTimeout(() => {
-      if (pinballRoom.status === 'playing') {
-        startServerPinballPhysics(pinballRoom.pool);
-      }
-    }, 3000);
-
+    pinballRoom.startTime = Date.now();
     io.emit('pinball_state', pinballRoom);
   }, 5000);
   
   res.json({ success: true, pinballRoom });
 });
 
+app.post('/api/pinball/finish', express.json(), (req, res) => {
+  const { name } = req.body;
+  if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(name)) {
+    pinballRoom.finished.push(name);
+    
+    // Calculate and assign points
+    const rank = pinballRoom.finished.length;
+    let points = 0;
+    if (rank === 1) points = 7;
+    else if (rank === 2) points = 5;
+    else if (rank === 3) points = 3;
+    else if (rank >= 4 && rank <= 10) points = 2;
+    else if (rank >= 11 && rank <= 20) points = 1;
+    
+    if (!pinballRoom.scores) pinballRoom.scores = {};
+    if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
+    pinballRoom.scores[name] += points;
+
+    io.emit('pinball_state', pinballRoom);
+  }
+  res.json({ success: true });
+});
+
 app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
   const { uid } = req.body;
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
-  // Exclude up to winnerLimit top players from the pool
-  const topWinners = pinballRoom.finished.slice(0, pinballRoom.winnerLimit);
-  pinballRoom.pool = pinballRoom.pool.filter(p => !topWinners.includes(p));
+  // Do NOT exclude winners. Keep pool intact for multi-round scoring.
   pinballRoom.status = 'lobby';
+  pinballRoom.round = (pinballRoom.round || 1) + 1; // Increment round
+  pinballRoom.seed = Math.floor(Math.random() * 1000000); // Generate new track
   pinballRoom.finished = [];
-  stopServerPinballPhysics();
   
   io.emit('pinball_state', pinballRoom);
+  res.json({ success: true });
+});
+
+// Admin bumps the table to unstick balls
+app.post('/api/admin/pinball/shake', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  io.emit('pinball_shake');
   res.json({ success: true });
 });
 
@@ -2811,6 +2482,22 @@ app.post('/api/admin/party/stop', express.json(), (req, res) => {
   
   partyRoom.status = 'idle';
   partyRoom.players = {};
+  if (partyTimeTimeout) clearTimeout(partyTimeTimeout);
+  if (partyBulletInterval) clearInterval(partyBulletInterval);
+  io.emit('party_state', partyRoom);
+  res.json({ success: true });
+});
+
+app.post('/api/admin/party/next-round', express.json(), (req, res) => {
+  const { uid } = req.body;
+  if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
+  
+  partyRoom.status = 'lobby';
+  Object.values(partyRoom.players).forEach(p => {
+    p.alive = true;
+    p.ready = false;
+  });
+  
   if (partyTimeTimeout) clearTimeout(partyTimeTimeout);
   if (partyBulletInterval) clearInterval(partyBulletInterval);
   io.emit('party_state', partyRoom);
@@ -3466,6 +3153,34 @@ async function handleEvent(event) {
     return client.replyMessage(event.replyToken, {
       type: 'text',
       text: `你的專屬 UID 是：\n${uid}\n\n請將此 UID 提供給超級管理員，以便設定群組管理權限。\n(若要開啟全系統超級管理員模式，可將此字串設定到 Render 的 SUPER_ADMIN_USER_ID 環境變數中)`
+    });
+  }
+
+  const viewOverrideMatch = text.match(/^超級管理員視角\s+(使用者|管理員|最高權限)(?:\s+(\d{4}))?$/i);
+  if (viewOverrideMatch) {
+    if (!isTrueSuperAdmin(uid)) {
+      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 此指令僅限真正的超級管理員使用。' });
+    }
+    const mode = viewOverrideMatch[1];
+    const code = viewOverrideMatch[2];
+    let modeCode = 'superadmin';
+    if (mode === '使用者') modeCode = 'user';
+    else if (mode === '管理員') modeCode = 'admin';
+    
+    let targetGid = null;
+    let groupNameDisplay = '';
+    if (modeCode === 'admin' && code) {
+      targetGid = groupCodes[code];
+      if (!targetGid) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組` });
+      }
+      groupNameDisplay = ` (限群組: ${groupSettings[targetGid]?.groupName || code})`;
+    }
+    
+    superAdminViewOverrides[uid] = { mode: modeCode, targetGid: targetGid };
+    return client.replyMessage(event.replyToken, {
+      type: 'text',
+      text: `✅ 視角已切換為：${mode}${groupNameDisplay}\n請重新整理網頁查看效果。`
     });
   }
 
@@ -4591,10 +4306,7 @@ process.on('SIGINT', gracefulShutdown);
 app.get('/api/systemLogs', async (req, res) => {
   // 簡易權限檢查
   const { uid } = req.query;
-  let isSuperAdmin = false;
-  if (globalConfig.superAdmins && globalConfig.superAdmins.includes(uid)) {
-     isSuperAdmin = true;
-  }
+  const isSuperAdminUser = isSuperAdmin(uid);
   
   // 目前先允許 uid 存在就回傳，或直接回傳 (LIFF端會隱藏按鈕)
   res.json(systemLogs);
@@ -4630,6 +4342,19 @@ loadPromise.then(() => {
 }).catch(err => {
   console.error('❌ 伺服器啟動初始化失敗:', err);
 });
+
+// 設定大廳紀錄「每小時整點」自動儲存上傳
+function scheduleHourlySaveLobbyVisits() {
+  const now = new Date();
+  const delayToNextHour = 3600000 - (now.getMinutes() * 60000 + now.getSeconds() * 1000 + now.getMilliseconds());
+  setTimeout(() => {
+    saveLobbyVisits().catch(e => console.error(e));
+    setInterval(() => {
+      saveLobbyVisits().catch(e => console.error(e));
+    }, 3600000); // 之後每隔一小時
+  }, delayToNextHour);
+}
+scheduleHourlySaveLobbyVisits();
 async function sendLobbyLink(token, gid, prefix = "") {
   let msg = prefix ? `${prefix}\n` : '';
   

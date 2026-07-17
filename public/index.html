@@ -267,7 +267,12 @@
             <input type="datetime-local" id="eg-reminder">
           </div>
         </div>
-
+        <div class="form-row">
+          <div class="form-group" style="display:flex; align-items:center;">
+            <input type="checkbox" id="eg-ended" style="width:auto; margin-right:8px; transform:scale(1.2);">
+            <label for="eg-ended" style="margin-bottom:0; cursor:pointer;">設定為已結束 (大廳顯示為灰色並置底)</label>
+          </div>
+        </div>
         <div class="form-group">
           <label>備註 (選填)</label>
           <textarea id="eg-note" rows="3" placeholder="其他注意事項..."></textarea>
@@ -640,7 +645,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball.js?v=20260718_serversync4"></script>
-  <script src="app.js?v=20260718_serversync4"></script>
+  <script src="pinball.js?v=20260717_fix63"></script>
+  <script src="app.js?v=20260717_fix63"></script>
 </body>
 </html>
