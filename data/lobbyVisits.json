@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1496,
+    "viewCount": 1497,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -390,8 +390,8 @@
       "Uec617dedcd37cd4c4e1d6afb526819d1": {
         "displayName": "Chris Chen",
         "firstVisit": 1783208020463,
-        "count": 30,
-        "lastVisit": 1783939491553
+        "count": 31,
+        "lastVisit": 1784325150581
       },
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
@@ -1019,6 +1019,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1784325150581,
+        "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
+        "displayName": "Chris Chen",
+        "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
+      },
       {
         "time": 1784321279136,
         "userId": "U169c089d184f3be52ae8124893db17c1",
@@ -2210,12 +2216,6 @@
         "userId": "U17eaf2f1e1b41288876d992044d9bdf9",
         "displayName": "張建發",
         "pictureUrl": "https://profile.line-scdn.net/0h3mi51NhKbEJETH0nPTYSPTQcbyhnPTVQan92cXZFNSF6KyhDb3h3JHgfMHUqeS0XbXkhcyZOMCBIXxskWhqQdkN8MXN5fS4cbiImoQ"
-      },
-      {
-        "time": 1784046114078,
-        "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
-        "displayName": "小金(Chen Pei Hung)",
-        "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
       }
     ]
   },
