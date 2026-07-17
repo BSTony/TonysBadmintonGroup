@@ -355,7 +355,7 @@
     ]
   },
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1488,
+    "viewCount": 1489,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -420,8 +420,8 @@
       "Uc608f165fc93c9affa9b9d721d6d0efd": {
         "displayName": "YANG 阿傑",
         "firstVisit": 1783211742856,
-        "count": 4,
-        "lastVisit": 1783752136610
+        "count": 5,
+        "lastVisit": 1784307072395
       },
       "Uc85aca08d5834bad3d829179ce81db1e": {
         "displayName": "L",
@@ -1013,6 +1013,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1784307072395,
+        "userId": "Uc608f165fc93c9affa9b9d721d6d0efd",
+        "displayName": "YANG 阿傑",
+        "pictureUrl": "https://profile.line-scdn.net/0hxqkHySt6J15GMTkKU79ZYDZhJDRlQH5MaQQ_OXtkej0rAzcJYlJtMXZhLG4sUWMIYwRpPXM4emdkR2dpMAI9QTMzDhUMZTVJLhcwcyVmGAgJYgdAOVIzcxFTOhwuVQtRKks6SCA5K24tdGB4azRtTihSIzMFdghzLmZLCEMDSd0pM1ALa1dpPXs3cWv-"
+      },
       {
         "time": 1784306591061,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -2204,12 +2210,6 @@
         "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
         "displayName": "小金(Chen Pei Hung)",
         "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
-      },
-      {
-        "time": 1784039422850,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       }
     ]
   },
