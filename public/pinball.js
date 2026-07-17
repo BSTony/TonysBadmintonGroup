@@ -412,6 +412,10 @@ function initPinballEngine() {
         if (clamped) {
           Matter.Body.setPosition(ball, { x, y });
           Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+          // Prevent players from overpowering the clamp by holding the mouse: drop the ball!
+          if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body === ball) {
+            pbMouseConstraint.body = null;
+          }
         }
       });
     }
@@ -751,8 +755,8 @@ function initPinballEngine() {
 
   // Filter mouse interactions (only allow dragging own ball in lobby/instruction)
   Events.on(pbMouseConstraint, 'mousedown', (event) => {
-    if (pbState.status === 'playing' && window.pinballRaceStarted) {
-      pbMouseConstraint.body = null; // Deny drag if racing
+    if (pbState.status === 'playing') {
+      pbMouseConstraint.body = null; // Deny drag if racing or during countdown!
       return;
     }
     const body = pbMouseConstraint.body;
@@ -1585,6 +1589,9 @@ function bindPinballSocket(s) {
       syncBalls(state);
 
     } else if (state.status === 'playing') {
+      if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint) {
+        pbMouseConstraint.body = null; // Force drop any ball held from the lobby
+      }
       const colorUi = document.getElementById('pinball-color-picker-ui');
       if (colorUi) colorUi.classList.add('hidden');
       if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
