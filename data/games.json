@@ -1327,7 +1327,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784275644955,
+    "lastActiveTime": 1784275654181,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1348,11 +1348,18 @@
           "楊程鈞",
           "戴鏡達",
           "胞弟",
-          "King"
+          "King",
+          "Alice"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/17 16:07",
+        "name": "Alice",
+        "operator": "King",
+        "action": "+1"
+      },
       {
         "time": "07/17 16:07",
         "name": "King",
