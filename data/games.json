@@ -1327,7 +1327,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784279260329,
+    "lastActiveTime": 1784279263158,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1335,7 +1335,8 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "CC": false
+      "CC": true,
+      "楊程鈞": true
     },
     "sections": [
       {
