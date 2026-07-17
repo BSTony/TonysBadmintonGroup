@@ -1,6 +1,7 @@
 // pinball.js - Top-Down Racing Track (S-Curve)
 // Redesigned: 2.5D top-down view matching real marble race tracks
 
+const PB_LOGICAL_WIDTH = 800;
 let pbEngine, pbRender, pbRunner;
 let pbBalls = {};
 let pbState = { status: 'idle', pool: [], finished: [], winnerLimit: 3 };
@@ -73,23 +74,25 @@ function initPinballEngine() {
     return;
   }
 
-  const width = pinballContainer.clientWidth || window.innerWidth;
-  const height = pinballContainer.clientHeight || window.innerHeight;
+  const width = PB_LOGICAL_WIDTH;
+  const containerW = pinballContainer.clientWidth || window.innerWidth;
+  const containerH = pinballContainer.clientHeight || window.innerHeight;
+  const aspect = containerH / containerW;
+  const height = width * aspect;
 
   if (width < 50 || height < 50) return;
 
-  if (pbEngine && pbRender && pbRender.options.width === width && pbRender.options.height === height) {
+  if (pbEngine && pbRender && Math.abs(pbRender.options.height - height) < 10) {
     return;
   }
 
   if (pbEngine) destroyEngine();
-  console.log('[Pinball] Initializing Top-Down track: ' + width + 'x' + height);
+  console.log('[Pinball] Initializing Top-Down track (Server Sync Mode): ' + width + 'x' + height);
 
   const { Engine, Render, Runner, World, Bodies, Events, Body } = Matter;
 
   pbEngine = Engine.create();
-  // Gravity pulls them down the screen in top-down view (simulating tilt)
-  pbEngine.gravity.y = GRAVITY_Y;
+  pbEngine.gravity.y = 0; // Server handles physics
   pbEngine.gravity.x = 0;
 
   pinballCanvasWrapper.innerHTML = '';
@@ -105,6 +108,9 @@ function initPinballEngine() {
     }
   });
 
+  pbRender.canvas.style.width = '100%';
+  pbRender.canvas.style.height = '100%';
+
   pbRender.bounds.min.x = 0;
   pbRender.bounds.min.y = 0;
   pbRender.bounds.max.x = width;
@@ -117,56 +123,13 @@ function initPinballEngine() {
   pbWorldHeight = finalY + 400;
   World.add(pbEngine.world, bodies);
 
-  // Finish line sensor
+  // Finish line sensor (for rendering)
   const finishLine = Bodies.rectangle(width / 2, finalY + 80, TRACK_WIDTH + 60, 40, {
     isStatic: true,
     isSensor: true,
-    render: { visible: false },
-    plugin: { isFinishLine: true }
+    render: { visible: false }
   });
   World.add(pbEngine.world, [finishLine]);
-
-  // Finish line collision
-  Events.on(pbEngine, 'collisionStart', (event) => {
-    event.pairs.forEach(pair => {
-      let ball = null, finish = null;
-      if (pair.bodyA.plugin && pair.bodyA.plugin.isBall) ball = pair.bodyA;
-      if (pair.bodyB.plugin && pair.bodyB.plugin.isBall) ball = pair.bodyB;
-      if (pair.bodyA.plugin && pair.bodyA.plugin.isFinishLine) finish = pair.bodyA;
-      if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
-
-      if (ball && finish) {
-        if (!pbState.finished.includes(ball.plugin.name)) {
-          fetch('/api/pinball/finish', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: ball.plugin.name })
-          });
-        }
-      }
-    });
-  });
-
-  // Keep balls moving if they get stuck against flat walls
-  Events.on(pbEngine, 'beforeUpdate', () => {
-    Object.values(pbBalls).forEach(ball => {
-      // Apply constant downward push to simulate steep track
-      Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
-      
-      if (ball.speed < 0.5) {
-        ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
-        if (ball.plugin.stuckFrames > 60) {
-          Body.applyForce(ball, ball.position, {
-            x: (Math.random() - 0.5) * 0.015,
-            y: 0.01
-          });
-          ball.plugin.stuckFrames = 0;
-        }
-      } else {
-        ball.plugin.stuckFrames = 0;
-      }
-    });
-  });
 
   // Camera tracking
   Events.on(pbRender, 'beforeRender', () => {
@@ -391,9 +354,8 @@ function initPinballEngine() {
   });
 
   Render.run(pbRender);
-  pbRunner = Runner.create();
-  Runner.run(pbRunner, pbEngine);
-  console.log('[Pinball] Top-down track engine started');
+  // pbRunner is removed because physics is on the server now
+  console.log('[Pinball] Top-down track engine started (Renderer Only)');
 }
 
 function buildTopDownTrack(W) {
@@ -428,7 +390,7 @@ function buildTopDownTrack(W) {
   }
 
   // Build physical guardrails along the path
-  const wallThickness = 60; // Thickened to prevent balls flying out
+  const wallThickness = 120; // Match server wall thickness
   for (let i = 0; i < pathPoints.length - 1; i++) {
     const p1 = pathPoints[i];
     const p2 = pathPoints[i+1];
@@ -530,7 +492,6 @@ function dropBalls(pool) {
   if (!pbEngine) return;
   
   const { World, Bodies } = Matter;
-  const width = pbRender.options.width;
 
   const currentBalls = Object.values(pbBalls);
   if (currentBalls.length > 0) World.remove(pbEngine.world, currentBalls);
@@ -542,27 +503,16 @@ function dropBalls(pool) {
   pbRender.bounds.min.y = 0;
   pbRender.bounds.max.y = pbRender.options.height;
 
-  // Start grid
-  const cols = Math.floor(TRACK_WIDTH / (MARBLE_RADIUS * 2.5));
-  const startBaseX = width / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
-  const startY = START_Y - 50;
-
+  // We create dummy balls here; they will be moved by server via 'pinball_frame'
   pool.forEach((name, idx) => {
-    const row = Math.floor(idx / cols);
-    const col = idx % cols;
-    
-    const x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (Math.random() - 0.5) * 5;
-    const y = startY - row * (MARBLE_RADIUS * 2.5) - Math.random() * 5;
-    
     const color = POOL_COLORS[idx % POOL_COLORS.length];
     const num = (idx % 15) + 1;
 
-    const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
-      restitution: 0.6, // Lowered bounciness slightly so they don't jump out
-      friction: 0.005,
-      density: 0.05,
-      render: { fillStyle: color }, // Stored for custom renderer
-      plugin: { isBall: true, name: name, num: num, stuckFrames: 0 }
+    const ball = Bodies.circle(-100, -100, MARBLE_RADIUS, {
+      isStatic: true,  // Server controls position
+      isSensor: true,
+      render: { fillStyle: color }, 
+      plugin: { isBall: true, name: name, num: num }
     });
 
     pbBalls[name] = ball;
@@ -572,6 +522,20 @@ function dropBalls(pool) {
 }
 
 function bindPinballSocket(s) {
+  s.on('pinball_frame', (frameData) => {
+    if (pbState.status !== 'playing' || !pbBalls) return;
+    pbState.pool.forEach((name, i) => {
+      const b = pbBalls[name];
+      if (b) {
+        const x = frameData[i * 2];
+        const y = frameData[i * 2 + 1];
+        if (x !== -100 && y !== -100) {
+          Matter.Body.setPosition(b, { x, y });
+        }
+      }
+    });
+  });
+
   s.on('pinball_state', (state) => {
     const prevStatus = pbState.status;
     pbState = state;
@@ -663,10 +627,12 @@ function bindPinballSocket(s) {
         instrOverlay.style.display = 'flex';
 
         if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+        let timeLeft = 5;
+        instrTimer.innerText = timeLeft;
         window.pinballTimerInterval = setInterval(() => {
-          let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 5;
-          instrTimer.innerText = timeLeft;
-        }, 100);
+          timeLeft--;
+          if (timeLeft >= 0) instrTimer.innerText = timeLeft;
+        }, 1000);
       }
 
     } else if (state.status === 'playing') {

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
+const Matter = require('matter-js');
 const GAMES_FILE = path.join(__dirname, 'games.json');
 const LOG_FILE = path.join(__dirname, 'schedule.log');
 
@@ -1346,14 +1347,26 @@ async function fetchGroupName(gid) {
   return null;
 }
 
+let pendingGroupSettings = {};
 async function ensureGroupSettings(gid) {
   if (!groupSettings[gid]) groupSettings[gid] = {};
   if (!groupSettings[gid].groupName && gid.startsWith('C')) {
-    const name = await fetchGroupName(gid);
-    if (name) {
-      groupSettings[gid].groupName = name;
-      await saveGroupSettings();
+    if (!pendingGroupSettings[gid]) {
+      pendingGroupSettings[gid] = (async () => {
+        try {
+          const name = await fetchGroupName(gid);
+          // 拿到就填，拿不到（可能沒權限或機器人被踢出）則給一個預設值，避免下次一直重試卡住
+          groupSettings[gid].groupName = name || '未知群組';
+          await saveGroupSettings();
+        } catch (e) {
+          console.error('Fetch group name error:', e.message);
+          groupSettings[gid].groupName = '未知群組';
+        } finally {
+          delete pendingGroupSettings[gid];
+        }
+      })();
     }
+    await pendingGroupSettings[gid];
   }
 }
 
@@ -1884,6 +1897,163 @@ let partyRoom = {
   startTime: 0
 };
 
+// --- Pinball Server-Side Physics ---
+const TRACK_WIDTH = 180;
+const START_Y = 150;
+const MARBLE_RADIUS = 12;
+const GRAVITY_Y = 0.55;
+const PB_LOGICAL_WIDTH = 800;
+
+function buildServerTopDownTrack(W) {
+  const { Bodies } = Matter;
+  const bodies = [];
+  const pathPoints = [];
+  const steps = 280;
+  const maxT = Math.PI * 10;
+  const amplitude = Math.min(W * 0.35, 200);
+  const stretch = 160;
+  let currentY = START_Y;
+  
+  for(let y = START_Y - 200; y < START_Y; y += 20) {
+    pathPoints.push({ x: W/2, y: y });
+  }
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * maxT;
+    const x = W / 2 + amplitude * Math.sin(t);
+    const y = START_Y + t * stretch;
+    pathPoints.push({ x, y });
+    currentY = y;
+  }
+  for(let y = currentY; y < currentY + 300; y += 20) {
+    pathPoints.push({ x: W/2, y: y });
+  }
+
+  const wallThickness = 120; // Increased to prevent tunneling
+  for (let i = 0; i < pathPoints.length - 1; i++) {
+    const p1 = pathPoints[i];
+    const p2 = pathPoints[i+1];
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const nx = -dy / len;
+    const ny = dx / len;
+    const leftX = p1.x + nx * TRACK_WIDTH / 2;
+    const leftY = p1.y + ny * TRACK_WIDTH / 2;
+    const rightX = p1.x - nx * TRACK_WIDTH / 2;
+    const rightY = p1.y - ny * TRACK_WIDTH / 2;
+    const angle = Math.atan2(dy, dx);
+    const segmentLength = len + 35; // increased overlap
+
+    bodies.push(Bodies.rectangle(leftX, leftY, segmentLength, wallThickness, { isStatic: true, friction: 0.1, restitution: 0.4, angle: angle }));
+    bodies.push(Bodies.rectangle(rightX, rightY, segmentLength, wallThickness, { isStatic: true, friction: 0.1, restitution: 0.4, angle: angle }));
+  }
+  bodies.push(Bodies.rectangle(W/2, START_Y - 220, W, 40, { isStatic: true }));
+  return { bodies, finalY: pathPoints[pathPoints.length-1].y };
+}
+
+let pbServerEngine = null;
+let pbServerInterval = null;
+let pbServerBalls = {};
+
+function startServerPinballPhysics(pool) {
+  stopServerPinballPhysics();
+  const { Engine, World, Bodies, Events, Body } = Matter;
+  pbServerEngine = Engine.create();
+  pbServerEngine.gravity.y = GRAVITY_Y;
+  pbServerEngine.gravity.x = 0;
+
+  const { bodies, finalY } = buildServerTopDownTrack(PB_LOGICAL_WIDTH);
+  World.add(pbServerEngine.world, bodies);
+
+  const finishLine = Bodies.rectangle(PB_LOGICAL_WIDTH / 2, finalY + 80, TRACK_WIDTH + 60, 40, {
+    isStatic: true, isSensor: true, plugin: { isFinishLine: true }
+  });
+  World.add(pbServerEngine.world, [finishLine]);
+
+  Events.on(pbServerEngine, 'collisionStart', (event) => {
+    event.pairs.forEach(pair => {
+      let ball = null, finish = null;
+      if (pair.bodyA.plugin && pair.bodyA.plugin.isBall) ball = pair.bodyA;
+      if (pair.bodyB.plugin && pair.bodyB.plugin.isBall) ball = pair.bodyB;
+      if (pair.bodyA.plugin && pair.bodyA.plugin.isFinishLine) finish = pair.bodyA;
+      if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
+
+      if (ball && finish) {
+        if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(ball.plugin.name)) {
+          pinballRoom.finished.push(ball.plugin.name);
+          io.emit('pinball_state', pinballRoom);
+        }
+      }
+    });
+  });
+
+  Events.on(pbServerEngine, 'beforeUpdate', () => {
+    Object.values(pbServerBalls).forEach(ball => {
+      Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
+      
+      // Velocity clamping to prevent tunneling
+      if (ball.velocity.y > 25) Body.setVelocity(ball, { x: ball.velocity.x, y: 25 });
+      if (ball.velocity.x > 25) Body.setVelocity(ball, { x: 25, y: ball.velocity.y });
+      if (ball.velocity.x < -25) Body.setVelocity(ball, { x: -25, y: ball.velocity.y });
+
+      if (ball.speed < 0.5) {
+        ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
+        if (ball.plugin.stuckFrames > 60) {
+          Body.applyForce(ball, ball.position, { x: (Math.random() - 0.5) * 0.015, y: 0.01 });
+          ball.plugin.stuckFrames = 0;
+        }
+      } else {
+        ball.plugin.stuckFrames = 0;
+      }
+    });
+  });
+
+  const cols = Math.floor(TRACK_WIDTH / (MARBLE_RADIUS * 2.5));
+  const startBaseX = PB_LOGICAL_WIDTH / 2 - (cols * MARBLE_RADIUS * 1.2) + MARBLE_RADIUS;
+  const startY = START_Y - 50;
+  
+  pbServerBalls = {};
+  pool.forEach((name, idx) => {
+    const row = Math.floor(idx / cols);
+    const col = idx % cols;
+    const x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (Math.random() - 0.5) * 5;
+    const y = startY - row * (MARBLE_RADIUS * 2.5) - Math.random() * 5;
+    
+    const ball = Bodies.circle(x, y, MARBLE_RADIUS, {
+      restitution: 0.6, friction: 0.005, density: 0.05,
+      plugin: { isBall: true, name: name, stuckFrames: 0 }
+    });
+    pbServerBalls[name] = ball;
+  });
+  World.add(pbServerEngine.world, Object.values(pbServerBalls));
+  
+  let tickCount = 0;
+  pbServerInterval = setInterval(() => {
+    if (pinballRoom.status !== 'playing') {
+      stopServerPinballPhysics();
+      return;
+    }
+    // Step engine at 60 FPS for more accurate collision detection
+    Engine.update(pbServerEngine, 1000 / 60);
+    tickCount++;
+    
+    // Broadcast positions at 30 FPS to save bandwidth
+    if (tickCount % 2 === 0) {
+      const frameData = pinballRoom.pool.flatMap(name => {
+        const b = pbServerBalls[name];
+        return b ? [Math.round(b.position.x * 10)/10, Math.round(b.position.y * 10)/10] : [-100, -100];
+      });
+      io.emit('pinball_frame', frameData);
+    }
+  }, 1000 / 60);
+}
+
+function stopServerPinballPhysics() {
+  if (pbServerInterval) { clearInterval(pbServerInterval); pbServerInterval = null; }
+  if (pbServerEngine) { Matter.Engine.clear(pbServerEngine); pbServerEngine = null; }
+  pbServerBalls = {};
+}
+
 let pinballRoom = {
   status: 'idle', // idle, lobby, instruction, playing
   pool: [],
@@ -1993,6 +2163,9 @@ io.on('connection', (socket) => {
     socket.emit('party_state', partyRoom);
   });
 
+  // Future-proof version check
+  socket.emit('require_version', { version: '20260718_serversync' });
+
   socket.on('player_move', (data) => {
     if (partyRoom.players[socket.id] && partyRoom.players[socket.id].alive) {
       partyRoom.players[socket.id].x = data.x;
@@ -2097,6 +2270,7 @@ app.post('/api/admin/room/close', express.json(), (req, res) => {
   lotteryRoom.status = 'idle';
   partyRoom.status = 'idle';
   pinballRoom.status = 'idle';
+  stopServerPinballPhysics();
   
   io.emit('global_room_state', globalRoom);
   io.emit('lottery_state', lotteryRoom);
@@ -2154,19 +2328,18 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
     if (pinballRoom.status !== 'instruction') return; // Cancelled
     pinballRoom.status = 'playing';
     pinballRoom.statusEndTime = null;
+    
+    // Wait exactly 3000ms to match the frontend "3, 2, 1, GO!" visual countdown
+    setTimeout(() => {
+      if (pinballRoom.status === 'playing') {
+        startServerPinballPhysics(pinballRoom.pool);
+      }
+    }, 3000);
+
     io.emit('pinball_state', pinballRoom);
   }, 5000);
   
   res.json({ success: true, pinballRoom });
-});
-
-app.post('/api/pinball/finish', express.json(), (req, res) => {
-  const { name } = req.body;
-  if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(name)) {
-    pinballRoom.finished.push(name);
-    io.emit('pinball_state', pinballRoom);
-  }
-  res.json({ success: true });
 });
 
 app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
@@ -2178,6 +2351,7 @@ app.post('/api/admin/pinball/next-round', express.json(), (req, res) => {
   pinballRoom.pool = pinballRoom.pool.filter(p => !topWinners.includes(p));
   pinballRoom.status = 'lobby';
   pinballRoom.finished = [];
+  stopServerPinballPhysics();
   
   io.emit('pinball_state', pinballRoom);
   res.json({ success: true });

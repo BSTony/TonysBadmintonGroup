@@ -364,6 +364,14 @@ function initSocket() {
     updateUnifiedRoomUI();
   });
   
+  socket.on('require_version', (data) => {
+    const CURRENT_VERSION = '20260718_serversync';
+    if (data.version !== CURRENT_VERSION) {
+      console.log('Version mismatch, forcing reload...');
+      window.location.href = window.location.href.split('?')[0] + '?v=' + data.version;
+    }
+  });
+
   socket.on('party_state', (state) => {
     currentPartyStatus = state.status;
     partyLobbyNames = state.players ? Object.values(state.players).map(p => p.name) : [];
