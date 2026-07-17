@@ -986,7 +986,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784215401074,
+    "lastActiveTime": 1784297713965,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1016,7 +1016,6 @@
           "Gary",
           "CHR",
           "Ong",
-          "小蔡",
           "元睿",
           "林立峰",
           "小可愛",
@@ -1032,6 +1031,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/17 22:15",
+        "name": "小蔡",
+        "operator": "蔡佳宏",
+        "action": "-1"
+      },
       {
         "time": "07/16 23:23",
         "name": "CC",
@@ -1327,7 +1332,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784279263158,
+    "lastActiveTime": 1784279264314,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1336,7 +1341,7 @@
     "levelMap": {},
     "paidMap": {
       "CC": true,
-      "楊程鈞": true
+      "楊程鈞": false
     },
     "sections": [
       {
