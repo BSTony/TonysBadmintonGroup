@@ -267,12 +267,7 @@
             <input type="datetime-local" id="eg-reminder">
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group" style="display:flex; align-items:center;">
-            <input type="checkbox" id="eg-ended" style="width:auto; margin-right:8px; transform:scale(1.2);">
-            <label for="eg-ended" style="margin-bottom:0; cursor:pointer;">設定為已結束 (大廳顯示為灰色並置底)</label>
-          </div>
-        </div>
+
         <div class="form-group">
           <label>備註 (選填)</label>
           <textarea id="eg-note" rows="3" placeholder="其他注意事項..."></textarea>
@@ -450,8 +445,7 @@
         
         <!-- Pinball 設定區塊 -->
         <div id="admin-pinball-controls" class="hidden">
-          <button id="btn-pinball-admin-sync" class="btn-secondary" style="width: 100%; font-size:12px; margin-bottom: 5px;">同步大廳在線名單至賽道</button>
-          <div style="display:flex; gap: 5px; margin-bottom: 5px;">
+<div style="display:flex; gap: 5px; margin-bottom: 5px;">
             <input type="text" id="pinball-manual-name" placeholder="手動新增名字" style="flex:1; padding:5px; font-size: 12px; border:1px solid #ccc;">
             <button id="btn-add-pinball-name" class="btn-primary" style="padding:5px 10px; font-size: 12px;">加入</button>
             <button id="btn-add-pinball-self" class="btn-secondary" style="padding:5px 10px; font-size: 12px;">加入自己</button>
@@ -464,7 +458,6 @@
           <div id="pinball-pool-list" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 5px;"></div>
           <hr style="margin: 10px 0; border-top:1px solid #ccc;">
           <button id="btn-pinball-admin-start" class="btn" style="width:100%; background: #2ecc71; color: white; margin-bottom: 5px;">▶️ 釋放彈珠 (開始比賽)</button>
-          <button id="btn-pinball-admin-next" class="btn" style="width:100%; background: #f39c12; color: white; margin-bottom: 5px;">🔄 下一回合 (排除中獎者)</button>
           <button id="btn-pinball-admin-stop" class="btn-danger" style="width:100%; padding: 5px;">強制結束房間</button>
         </div>
       </div>
@@ -499,7 +492,7 @@
         <!-- ================= 彈珠競賽 容器 ================= -->
         <div id="pinball-container" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; background: radial-gradient(circle at top, #1a2a6c, #112 80%);">
           <div id="pinball-canvas-wrapper" style="width: 100%; height: 100%;"></div>
-          <div id="pinball-countdown" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 120px; font-weight: bold; text-shadow: 0 0 20px #f1c40f, 0 0 40px #f1c40f; z-index: 100; pointer-events: none;">3</div>
+          <div id="pinball-countdown" class="hidden" style="position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); color: rgba(255, 255, 255, 0.5); font-size: 120px; font-weight: bold; text-shadow: 0 0 15px rgba(241, 196, 15, 0.5); z-index: 100; pointer-events: none;">5</div>
           
           <!-- Pinball Status Overlay (for countdowns) -->
           <div id="pinball-status-overlay" class="hidden" style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); color: white; font-size: 36px; font-weight: bold; text-shadow: 0 0 10px #f1c40f, 0 0 20px #f1c40f; z-index: 110; pointer-events: none; text-align: center; width: 100%;">
@@ -513,6 +506,7 @@
             <ul style="font-size: 24px; text-align: left; line-height: 2; margin-bottom: 30px; list-style: none; padding: 0;">
               <li>🔴 每位參賽者有一顆專屬彈珠</li>
               <li>🏎️ 彈珠沿著 S 型賽道競速</li>
+              <li>👆 可點選並拖曳自己的彈珠去碰撞別人</li>
               <li>🏆 最先抵達終點的就是冠軍！</li>
             </ul>
             <div style="font-size: 30px; font-weight: bold; color: #e74c3c; animation: pulse 1s infinite;">
@@ -520,20 +514,62 @@
             </div>
           </div>
           
-          <!-- Item Selection UI -->
-          <div id="pinball-item-selection-ui" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; text-align: center; background: rgba(0,0,0,0.85); padding: 20px; border-radius: 15px; z-index: 105; border: 2px solid #f39c12; box-shadow: 0 0 30px rgba(243, 156, 18, 0.5);">
-            <h3 style="color: #f1c40f; margin: 0 0 15px 0;">選擇你的專屬道具！</h3>
-            <p style="color: white; font-size: 14px; margin-bottom: 15px;">請在倒數結束前選擇一個道具，每人限選一次。</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <button id="btn-item-obstacle" class="btn" style="background: #e74c3c; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">🧱 實體路障</button>
-              <button id="btn-item-bouncer" class="btn" style="background: #3498db; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">🏓 彈跳裝置</button>
-              <button id="btn-item-arrow" class="btn" style="background: #2ecc71; color: white; font-weight: bold; font-size: 18px; padding: 10px; border: 2px solid transparent;">⬆️ 噴發箭頭</button>
-            </div>
-            <p id="pinball-item-selected-text" class="hidden" style="color: #2ecc71; font-weight: bold; margin-top: 15px; font-size: 16px;">已選擇，等待放置階段...</p>
+          <!-- Dynamic Leaderboard (Left Side during race) -->
+          <div id="pinball-dynamic-leaderboard" class="hidden" style="position: absolute; top: 10px; left: 10px; width: 180px; background: rgba(0,0,0,0.6); color: white; padding: 10px; border-radius: 8px; font-family: monospace; z-index: 105; border: 1px solid rgba(255,255,255,0.2);">
+            <div style="font-weight: bold; text-align: center; color: #f1c40f; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px;">即時戰況</div>
+            <ul id="pinball-dynamic-leaderboard-list" style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+              <!-- JS will populate this -->
+            </ul>
           </div>
+          
+          <!-- Final Score Popup (End of Race) -->
+          <div id="pinball-score-popup" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 400px; background: rgba(20, 20, 40, 0.95); padding: 20px; border-radius: 15px; z-index: 130; border: 2px solid #f1c40f; box-shadow: 0 0 30px rgba(241, 196, 15, 0.5); color: white; text-align: center; display: flex; flex-direction: column; max-height: 80vh;">
+            <h2 style="color: #f1c40f; margin-top: 0;">🏆 總積分排行榜 🏆</h2>
+            <div style="overflow-y: auto; flex-grow: 1; margin: 15px 0; background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px;">
+              <ul id="pinball-score-list" style="list-style: none; padding: 0; margin: 0; text-align: left; font-size: 16px; line-height: 2;">
+                <!-- JS will populate this -->
+              </ul>
+            </div>
+            <!-- 超管專用：比賽結束後的操作按鈕 -->
+            <div id="pinball-superadmin-actions" class="hidden" style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <button id="btn-pinball-play-again" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; background: linear-gradient(135deg, #2ecc71, #27ae60); font-weight: bold; font-size: 14px;">🔄 再來一場</button>
+              <button id="btn-pinball-end-summary" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; background: linear-gradient(135deg, #e74c3c, #c0392b); font-weight: bold; font-size: 14px;">🏁 結束比賽</button>
+            </div>
+            <p id="pinball-waiting-admin-text" class="hidden" style="color: #ccc; font-size: 14px; margin-bottom: 10px; animation: pulse 2s infinite;">⏳ 等待管理員操作...</p>
+            <button id="btn-pinball-close-popup" class="hidden btn-primary" style="padding: 10px; border-radius: 8px;">關閉視窗</button>
+          </div>
+
+          <!-- Admin Shake Button -->
+          <button id="btn-pinball-shake" class="hidden btn-primary" style="position: absolute; bottom: 20px; right: 20px; padding: 15px; font-size: 18px; border-radius: 50%; width: 60px; height: 60px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 105; cursor: pointer; border: 2px solid #f1c40f; background: #e74c3c;">💥</button>
+
+
           
           <div id="pinball-spectator-ui" class="hidden" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 18px; text-align: center; white-space: nowrap; z-index: 10; border: 1px solid rgba(255,255,255,0.3);">
             準備就緒
+          </div>
+          
+          <!-- Normal user join button -->
+          <button id="btn-join-pinball" class="hidden btn-primary" style="position: absolute; top: 70px; left: 50%; transform: translateX(-50%); padding: 10px 20px; font-size: 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 100; animation: pulse 1.5s infinite; cursor: pointer; background-color: #2ecc71;">🙋‍♂️ 報名參加</button>
+
+          <!-- Color Picker UI -->
+          <div id="pinball-color-picker-ui" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); border: 2px solid #3498db; padding: 15px; border-radius: 15px; z-index: 120; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 5px 20px rgba(0,0,0,0.6);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div style="color: white; font-weight: bold; font-size: 16px; flex: 1;">挑選專屬彈珠樣式與顏色</div>
+              <button id="btn-close-color-picker" style="background: #e74c3c; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 16px; cursor: pointer; line-height: 30px;">✕</button>
+            </div>
+            
+            <div id="pinball-style-options" style="display: flex; justify-content: space-around; margin-bottom: 15px;">
+              <button class="pinball-style-btn active" data-style="solid" style="background: #2c3e50; color: white; border: 2px solid #3498db; border-radius: 20px; padding: 5px 15px; cursor: pointer;">純色</button>
+              <button class="pinball-style-btn" data-style="billiard" style="background: #2c3e50; color: white; border: 2px solid transparent; border-radius: 20px; padding: 5px 15px; cursor: pointer;">撞球</button>
+              <button class="pinball-style-btn" data-style="gradient" style="background: #2c3e50; color: white; border: 2px solid transparent; border-radius: 20px; padding: 5px 15px; cursor: pointer;">漸層</button>
+            </div>
+
+            <canvas id="pinball-preview-canvas" width="100" height="100" style="margin: 0 auto 10px auto; display: none;"></canvas>
+
+            <div id="pinball-color-options" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; justify-items: center; margin-bottom: 10px;">
+              <!-- JS will inject color buttons -->
+            </div>
+            <button id="btn-pinball-color-confirm" class="btn-primary" style="margin-top: 15px; width: 100%; display: none; padding: 10px; font-size: 16px; border-radius: 8px; cursor: pointer; border: none; background: #3498db; color: white; font-weight: bold;">確認</button>
           </div>
         </div>
 
@@ -552,7 +588,13 @@
               <h3 style="margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">🏆 排行榜 🏆</h3>
               <ul id="bh-leaderboard-list" style="list-style: none; padding: 0; margin: 0; font-size: 14px; color: #555;"></ul>
             </div>
-            <button id="btn-bh-restart" class="btn-primary" style="width: 100%; margin-bottom: 10px;">再玩一次</button>
+            <!-- 超管專用：Survival 結束後的操作按鈕 -->
+            <div id="bh-superadmin-actions" class="hidden" style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <button id="btn-bh-play-again" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; background: linear-gradient(135deg, #2ecc71, #27ae60); font-weight: bold;">🔄 再來一場</button>
+              <button id="btn-bh-end-room" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 8px; background: linear-gradient(135deg, #e74c3c, #c0392b); font-weight: bold;">🏁 結束比賽</button>
+            </div>
+            <p id="bh-waiting-admin-text" class="hidden" style="color: #777; font-size: 14px; margin-bottom: 10px; animation: pulse 2s infinite;">⏳ 等待管理員操作...</p>
+            <button id="btn-bh-restart" class="hidden btn-primary" style="width: 100%; margin-bottom: 10px;">再玩一次</button>
           </div>
         </div>
 
@@ -585,6 +627,10 @@
     </div>
   </div>
 
+  <div id="app-version-display" style="text-align: center; color: #999; font-size: 12px; padding: 20px 0; width: 100%; pointer-events: none; margin-top: 20px;">
+    Version: 20260717_fix63
+  </div>
+
   <style>
     /* Removed old room-layout responsive rules */
   </style>
@@ -594,7 +640,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball.js?v=20260718_serversync"></script>
-  <script src="app.js?v=20260712_01"></script>
+  <script src="pinball.js?v=20260718_serversync2"></script>
+  <script src="app.js?v=20260718_serversync2"></script>
 </body>
 </html>

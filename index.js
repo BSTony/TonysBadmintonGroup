@@ -1980,7 +1980,22 @@ function startServerPinballPhysics(pool) {
 
       if (ball && finish) {
         if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(ball.plugin.name)) {
-          pinballRoom.finished.push(ball.plugin.name);
+          const name = ball.plugin.name;
+          pinballRoom.finished.push(name);
+          
+          // Calculate and assign points
+          const rank = pinballRoom.finished.length;
+          let points = 0;
+          if (rank === 1) points = 7;
+          else if (rank === 2) points = 5;
+          else if (rank === 3) points = 3;
+          else if (rank >= 4 && rank <= 10) points = 2;
+          else if (rank >= 11 && rank <= 20) points = 1;
+          
+          if (!pinballRoom.scores) pinballRoom.scores = {};
+          if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
+          pinballRoom.scores[name] += points;
+
           io.emit('pinball_state', pinballRoom);
         }
       }

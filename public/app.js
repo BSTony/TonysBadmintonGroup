@@ -570,13 +570,21 @@ function initSocket() {
     const isWinner = data.winners.some(w => w.uid === currentUser.userId);
     if (isWinner && bhPlayer) bhPlayer.innerHTML = '👑';
     
-    if (btnBhRestart) {
-      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
-        btnBhRestart.innerText = '關閉房間';
-        btnBhRestart.disabled = false;
-      } else {
-        btnBhRestart.innerText = '回到大廳';
-        btnBhRestart.disabled = false;
+    // 超管顯示「再來一場 / 結束比賽」雙按鈕，一般玩家顯示等待文字
+    const bhSuperadminActions = document.getElementById('bh-superadmin-actions');
+    const waitingText = document.getElementById('bh-waiting-admin-text');
+    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+      if (bhSuperadminActions) bhSuperadminActions.classList.remove('hidden');
+      if (waitingText) waitingText.classList.add('hidden');
+      if (btnBhRestart) {
+        btnBhRestart.innerText = '關閉房間(一般視窗)';
+        btnBhRestart.classList.add('hidden'); // We use superadmin actions instead
+      }
+    } else {
+      if (bhSuperadminActions) bhSuperadminActions.classList.add('hidden');
+      if (waitingText) waitingText.classList.remove('hidden');
+      if (btnBhRestart) {
+        btnBhRestart.classList.add('hidden');
       }
     }
   });
@@ -1117,22 +1125,7 @@ if (btnBhRestart) {
   btnBhRestart.addEventListener('click', async () => {
     const isMultiplayerContext = (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') || (typeof hasEnteredParty !== 'undefined' && hasEnteredParty);
     if (isMultiplayerContext) {
-      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
-        btnBhRestart.disabled = true;
-        try {
-          await fetch('/api/admin/room/close', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uid: currentUser.userId })
-          });
-          if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
-        } catch(e) {
-          console.error(e);
-          btnBhRestart.disabled = false;
-        }
-        return;
-      }
-
+      // 多人模式：一般玩家點「回到大廳」只是關閉 modal
       if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
       const pPanel = document.getElementById('room-participants-panel');
       if (pPanel) {
@@ -1143,10 +1136,52 @@ if (btnBhRestart) {
     startBulletHell();
   });
 }
-if (btnBhClose) {
-  btnBhClose.addEventListener('click', () => {
-    bhContainer.classList.add('hidden');
-    bhEntities.innerHTML = '';
+
+// 超管：Survival「再來一場」按鈕
+const btnBhPlayAgain = document.getElementById('btn-bh-play-again');
+if (btnBhPlayAgain) {
+  btnBhPlayAgain.addEventListener('click', async () => {
+    btnBhPlayAgain.disabled = true;
+    try {
+      // 重置大逃殺狀態但保留玩家
+      await fetch('/api/admin/party/next-round', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      // 自動接著開始遊戲
+      await fetch('/api/admin/party/play', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+      const bhSuperadminActions = document.getElementById('bh-superadmin-actions');
+      if (bhSuperadminActions) bhSuperadminActions.classList.add('hidden');
+    } catch(e) {
+      console.error(e);
+    } finally {
+      btnBhPlayAgain.disabled = false;
+    }
+  });
+}
+
+// 超管：Survival「結束比賽」按鈕
+const btnBhEndRoom = document.getElementById('btn-bh-end-room');
+if (btnBhEndRoom) {
+  btnBhEndRoom.addEventListener('click', async () => {
+    btnBhEndRoom.disabled = true;
+    try {
+      await fetch('/api/admin/room/close', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: currentUser.userId })
+      });
+      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
+    } catch(e) {
+      console.error(e);
+      btnBhEndRoom.disabled = false;
+    }
   });
 }
 
@@ -1154,6 +1189,43 @@ if (btnBhClose) {
 // 初始化 LIFF
 async function initializeLiff() {
   try {
+    // 0. 本機測試模式 (Local Test Mode)
+    const testParams = new URLSearchParams(window.location.search);
+    const testRole = testParams.get('testRole');
+    if (testRole) {
+      console.log('Running in Local Test Mode:', testRole);
+      let randomSuffix = Math.random().toString(36).substr(2, 5);
+      let mockUid = 'U_TEST_PLAYER_' + randomSuffix;
+      let mockName = testParams.get('name') || ('Test Player ' + randomSuffix);
+      
+      if (testRole === 'superadmin') {
+        mockUid = 'U_SUPER_ADMIN_TEST_ID_' + randomSuffix;
+        mockName = testParams.get('name') || 'Super Admin';
+      } else if (testRole === 'admin') {
+        mockUid = 'U_GROUP_ADMIN_TEST_ID_' + randomSuffix;
+        mockName = testParams.get('name') || 'Group Admin';
+      }
+      
+      currentUser = { userId: mockUid, displayName: mockName };
+      if (typeof initLottery === 'function') {
+        initLottery(currentUser.userId);
+      }
+      
+      currentGroupId = testParams.get('gid') || 'TEST_GROUP_1234';
+      const h3 = document.getElementById('group-id-display');
+      if (h3) h3.innerText = '群組ID: ' + currentGroupId;
+      
+      await loadGamesLobby();
+      initSocket();
+      
+      const appDivEl = document.getElementById('app');
+      if (appDivEl) appDivEl.className = '';
+      const statusMsgEl = document.getElementById('status-msg');
+      if (statusMsgEl) statusMsgEl.style.display = 'none';
+      
+      return; // Skip LIFF initialization completely
+    }
+
     // 1. 取得後端系統設定
     const configRes = await fetch(`/api/config?_t=${Date.now()}`);
     if (!configRes.ok) throw new Error('無法取得系統設定');
@@ -1322,6 +1394,7 @@ document.addEventListener('click', (e) => {
 // 渲染大廳畫面
 function renderLobby() {
     appDiv.className = '';
+    if (statusMsg) statusMsg.style.display = 'none';
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     lobbyView.classList.remove('hidden');
     
@@ -3072,7 +3145,6 @@ function showEditGameForm(gameId) {
   const section = game.sections[0] || {};
   document.getElementById('eg-limit').value = section.limit || 20;
   document.getElementById('eg-backup').value = section.backupLimit || 0;
-  document.getElementById('eg-ended').checked = !!game.isManualEnded;
   document.getElementById('eg-note').value = game.note || '';
   
   // Format timestamps to datetime-local
@@ -3134,7 +3206,6 @@ document.getElementById('btn-submit-edit').onclick = async () => {
         backupLimit: document.getElementById('eg-backup').value,
         publish: document.getElementById('eg-publish').value,
         reminder: document.getElementById('eg-reminder').value,
-        isManualEnded: document.getElementById('eg-ended').checked,
         note: document.getElementById('eg-note').value.trim()
       })
     });
@@ -3178,6 +3249,8 @@ if (btnLobbyStats) {
       if (data.allStats && data.allStats.length > 0) {
         let totalViews = data.totalViews || 0;
         let totalUniques = data.totalUniqueCount || 0;
+        let totalTodayViews = data.todayViews || 0;
+        let totalTodayUniques = data.todayUniqueCount || 0;
         
         const summaryCard = document.createElement('div');
         summaryCard.className = 'game-card';
@@ -3185,7 +3258,7 @@ if (btnLobbyStats) {
         summaryCard.style.border = '2px solid #FF9800';
         summaryCard.innerHTML = `
           <h3 style="margin:0 0 10px 0; color:#FF9800; text-align:center;">🌟 所有群組總結</h3>
-          <div class="detail-stats" style="margin-top:0;">
+          <div class="detail-stats" style="margin-top:0; border-bottom: 1px solid #ffe0b2; padding-bottom: 10px; margin-bottom: 10px;">
             <div class="stat-box" style="flex:1;">
               <span class="stat-label">總觀看次數</span>
               <span class="stat-value">${totalViews}</span>
@@ -3193,6 +3266,16 @@ if (btnLobbyStats) {
             <div class="stat-box" style="flex:1;">
               <span class="stat-label">總不重複觀看 (人數)</span>
               <span class="stat-value">${totalUniques}</span>
+            </div>
+          </div>
+          <div class="detail-stats" style="margin-top:0;">
+            <div class="stat-box" style="flex:1;">
+              <span class="stat-label">本日觀看次數</span>
+              <span class="stat-value" style="color:#e74c3c;">${totalTodayViews}</span>
+            </div>
+            <div class="stat-box" style="flex:1;">
+              <span class="stat-label">本日不重複觀看</span>
+              <span class="stat-value" style="color:#e74c3c;">${totalTodayUniques}</span>
             </div>
           </div>
         `;
@@ -3623,7 +3706,27 @@ if (btnEasterEgg) {
           });
         } catch(e) { console.error(e); }
       } else {
+        hasEnteredParty = false;
         unifiedRoomOverlay.classList.add('hidden');
+        socket.emit('leave_room');
+        
+        // Clean up pinball engines and timers locally since we won't receive the 'idle' state from server
+        if (typeof destroyEngine === 'function') destroyEngine();
+        if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+        if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
+        window.pinballRaceStarted = false;
+        window._pbSyncLoopRunning = false;
+        window._pbSyncTargets = {};
+        const countdownEl = document.getElementById('pinball-countdown');
+        if (countdownEl && countdownEl.timer) {
+          clearInterval(countdownEl.timer);
+          countdownEl.timer = null;
+        }
+        
+        // Update UI so they can re-enter if they want
+        if (typeof updateUnifiedRoomUI === 'function') {
+          updateUnifiedRoomUI();
+        }
       }
     });
   }
@@ -4114,6 +4217,9 @@ if (btnShowParticipants && participantsPanel) {
 if (btnCloseParticipants && participantsPanel) {
   btnCloseParticipants.addEventListener('click', () => {
     participantsPanel.classList.add('hidden');
+    // Also close the color picker if open
+    const colorPickerUi = document.getElementById('pinball-color-picker-ui');
+    if (colorPickerUi) colorPickerUi.classList.add('hidden');
   });
 }
 
@@ -4245,7 +4351,7 @@ if (btnPinballAdminStart) {
 const btnPinballAdminNext = document.getElementById('btn-pinball-admin-next');
 if (btnPinballAdminNext) {
   btnPinballAdminNext.addEventListener('click', async () => {
-    if (!confirm('確定要開始下一回合嗎？已經抵達終點的中獎者將被排除，未中獎者會繼續留在名單中！')) return;
+    if (!confirm('確定要開始下一回合嗎？所有玩家將回到起點，且積分會持續累積！')) return;
     try {
       const res = await fetch('/api/admin/pinball/next-round', {
         method: 'POST',
