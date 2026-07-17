@@ -3701,6 +3701,20 @@ if (btnEasterEgg) {
         } catch(e) { console.error(e); }
       } else {
         unifiedRoomOverlay.classList.add('hidden');
+        socket.emit('leave_room');
+        
+        // Clean up pinball engines and timers locally since we won't receive the 'idle' state from server
+        if (typeof destroyEngine === 'function') destroyEngine();
+        if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+        if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
+        window.pinballRaceStarted = false;
+        window._pbSyncLoopRunning = false;
+        window._pbSyncTargets = {};
+        const countdownEl = document.getElementById('pinball-countdown');
+        if (countdownEl && countdownEl.timer) {
+          clearInterval(countdownEl.timer);
+          countdownEl.timer = null;
+        }
       }
     });
   }

@@ -1258,6 +1258,32 @@ function bindPinballSocket(s) {
     pbState = state;
       if (state.seed) setSeed(state.seed);
 
+    if (state.status === 'idle') {
+      // Room was closed or reset, completely tear down pinball UI
+      window.pinballRaceStarted = false;
+      if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+      const countdownEl = document.getElementById('pinball-countdown');
+      if (countdownEl && countdownEl.timer) {
+        clearInterval(countdownEl.timer);
+        countdownEl.timer = null;
+      }
+      if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
+      window._pbSyncLoopRunning = false;
+      window._pbSyncTargets = {};
+
+      const instrOverlay = document.getElementById('pinball-instruction-overlay');
+      if (instrOverlay) {
+        instrOverlay.classList.add('hidden');
+        instrOverlay.style.display = 'none';
+      }
+      if (typeof unifiedRoomOverlay !== 'undefined' && unifiedRoomOverlay) {
+        unifiedRoomOverlay.classList.add('hidden');
+      }
+
+      destroyEngine(); // Ensure physics and renderer are fully cleared
+      return; // Stop processing further state
+    }
+
     if (state.status === 'lobby' || state.status === 'instruction') {
       window.pinballRaceStarted = false;
       if (pbEngine && !startGateBody) {
