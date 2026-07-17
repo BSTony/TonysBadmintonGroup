@@ -1327,7 +1327,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784187640008,
+    "lastActiveTime": 1784275644955,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1347,11 +1347,18 @@
           "CC",
           "楊程鈞",
           "戴鏡達",
-          "胞弟"
+          "胞弟",
+          "King"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/17 16:07",
+        "name": "King",
+        "operator": "King",
+        "action": "+1"
+      },
       {
         "time": "07/16 15:40",
         "name": "胞弟",
