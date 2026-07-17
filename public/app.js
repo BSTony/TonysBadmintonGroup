@@ -365,7 +365,7 @@ function initSocket() {
   });
   
   socket.on('require_version', (data) => {
-    const CURRENT_VERSION = '20260718_serversync';
+    const CURRENT_VERSION = '20260718_serversync3';
     if (data.version !== CURRENT_VERSION) {
       console.log('Version mismatch, forcing reload...');
       window.location.href = window.location.href.split('?')[0] + '?v=' + data.version;

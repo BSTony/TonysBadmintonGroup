@@ -1905,51 +1905,175 @@ const GRAVITY_Y = 0.55;
 const PB_LOGICAL_WIDTH = 800;
 
 function buildServerTopDownTrack(W) {
+  setSeed(pinballRoom.seed || 12345);
+
   const { Bodies } = Matter;
   const bodies = [];
   const pathPoints = [];
-  const steps = 280;
-  const maxT = Math.PI * 10;
-  const amplitude = Math.min(W * 0.35, 200);
-  const stretch = 160;
-  let currentY = START_Y;
   
-  for(let y = START_Y - 200; y < START_Y; y += 20) {
+  const steps = 600; // Increased resolution for massive track
+  const maxT = Math.PI * 14; // 7 full S-curves
+  
+  // Calculate amplitude to reach exactly near the left/right screen edges
+  const maxSafeAmplitude = (W / 2) - 150 - 20; // 150 is approx wall offset, 20 is padding
+  const amplitude = Math.max(50, maxSafeAmplitude);
+  
+  // Dynamically calculate stretch to guarantee mathematically safe radius of curvature
+  // Radius of curvature R = stretch^2 / amplitude. We need R > 150 to avoid wall self-intersection loops.
+  const stretch = Math.max(180, Math.sqrt(amplitude * 160));
+
+  let currentY = START_Y + 10; // Track generation starts below the gate
+  
+  // Create Funnel to guide balls from wide screen into narrow track
+  const funnelHeight = 250; // Steep funnel
+  const trackLeftX = W / 2 - TRACK_WIDTH / 2;
+  const trackRightX = W / 2 + TRACK_WIDTH / 2;
+  
+  // Left funnel wall
+  const lStartX = -100;
+  const lStartY = currentY;
+  const lEndX = trackLeftX;
+  const lEndY = currentY + funnelHeight;
+  const lLen = Math.hypot(lEndX - lStartX, lEndY - lStartY);
+  const lAngle = Math.atan2(lEndY - lStartY, lEndX - lStartX);
+  
+  bodies.push(Bodies.rectangle((lStartX + lEndX)/2, (lStartY + lEndY)/2, lLen, 150, {
+    isStatic: true, angle: lAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+  }));
+  
+  // Right funnel wall
+  const rStartX = trackRightX;
+  const rStartY = currentY + funnelHeight;
+  const rEndX = W + 100;
+  const rEndY = currentY;
+  const rLen = Math.hypot(rEndX - rStartX, rEndY - rStartY);
+  const rAngle = Math.atan2(rEndY - rStartY, rEndX - rStartX);
+  
+  bodies.push(Bodies.rectangle((rStartX + rEndX)/2, (rStartY + rEndY)/2, rLen, 150, {
+    isStatic: true, angle: rAngle, render: { fillStyle: '#bdc3c7', strokeStyle: '#95a5a6', lineWidth: 1 }
+  }));
+
+  currentY += funnelHeight;
+  
+  // Add smooth circular bumpers at the funnel-to-track junctions to prevent snagging
+  const bumperRadius = 40;
+  bodies.push(Bodies.circle(trackLeftX - bumperRadius + 15, currentY, bumperRadius, {
+    isStatic: true, friction: 0.05, restitution: 0.2, render: { fillStyle: '#bdc3c7' }
+  }));
+  bodies.push(Bodies.circle(trackRightX + bumperRadius - 15, currentY, bumperRadius, {
+    isStatic: true, friction: 0.05, restitution: 0.2, render: { fillStyle: '#bdc3c7' }
+  }));
+  
+  // Start track points exactly at funnel exit
+  for(let y = currentY; y < currentY + 100; y += 20) {
     pathPoints.push({ x: W/2, y: y });
   }
+  currentY += 100;
+
+  // Randomize track shape using sum of sines
+  const phase1 = seededRandom() * Math.PI * 2;
+  const phase2 = seededRandom() * Math.PI * 2;
+  const phase3 = seededRandom() * Math.PI * 2;
+  
+  const freq1 = 0.8;
+  const freq2 = 1.1 + seededRandom() * 0.3; // max 1.4 (Lowered from 2.2 to prevent cusps)
+  const freq3 = 0.4 + seededRandom() * 0.2; // max 0.6
+  
+  // Weights for each sine wave component (sum to ~1.0)
+  const w1 = 0.5 + seededRandom() * 0.2;
+  const w2 = 0.15 + seededRandom() * 0.15;
+  const w3 = 1.0 - w1 - w2;
+
+  const trackWaveStartY = currentY;
+
   for (let i = 0; i <= steps; i++) {
     const t = (i / steps) * maxT;
-    const x = W / 2 + amplitude * Math.sin(t);
-    const y = START_Y + t * stretch;
+    
+    // Mathematical envelope to force the sine wave to start and end EXACTLY at 0 offset
+    // This absolutely prevents any horizontal jumps or gaps from forming in the track wall
+    let env = 1.0;
+    const fadeLen = Math.PI * 2; // Fade over 1 full S-curve
+    if (t < fadeLen) {
+      env = (1 - Math.cos((t / fadeLen) * Math.PI)) / 2;
+    } else if (maxT - t < fadeLen) {
+      env = (1 - Math.cos(((maxT - t) / fadeLen) * Math.PI)) / 2;
+    }
+    
+    const xOffset = env * amplitude * (
+      w1 * Math.sin(t * freq1 + phase1) +
+      w2 * Math.sin(t * freq2 + phase2) +
+      w3 * Math.sin(t * freq3 + phase3)
+    );
+
+    const x = W / 2 + xOffset;
+    const y = trackWaveStartY + t * stretch;
     pathPoints.push({ x, y });
     currentY = y;
   }
-  for(let y = currentY; y < currentY + 300; y += 20) {
-    pathPoints.push({ x: W/2, y: y });
+
+  // Straight exit at the bottom
+  for(let i = 0; i < 15; i++) {
+    currentY += 20;
+    pathPoints.push({ x: W/2, y: currentY });
   }
 
-  const wallThickness = 120; // Increased to prevent tunneling
-  for (let i = 0; i < pathPoints.length - 1; i++) {
+  // Build physical guardrails along the path
+  const wallThickness = 120; // Increased drastically to prevent high-speed tunneling ejections
+  const wallOffset = (TRACK_WIDTH / 2) + (wallThickness / 2) - 2; // Perfectly align inner edge
+  
+  for (let i = 0; i < pathPoints.length; i++) {
     const p1 = pathPoints[i];
-    const p2 = pathPoints[i+1];
-    const dx = p2.x - p1.x;
-    const dy = p2.y - p1.y;
-    const len = Math.sqrt(dx*dx + dy*dy);
-    const nx = -dy / len;
-    const ny = dx / len;
-    const leftX = p1.x + nx * TRACK_WIDTH / 2;
-    const leftY = p1.y + ny * TRACK_WIDTH / 2;
-    const rightX = p1.x - nx * TRACK_WIDTH / 2;
-    const rightY = p1.y - ny * TRACK_WIDTH / 2;
-    const angle = Math.atan2(dy, dx);
-    const segmentLength = len + 35; // increased overlap
+    
+    let nx, ny;
+    if (i < pathPoints.length - 1) {
+      const p2 = pathPoints[i+1];
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const len = Math.sqrt(dx*dx + dy*dy);
+      nx = -dy / len;
+      ny = dx / len;
+    } else {
+      const p0 = pathPoints[i-1];
+      const dx = p1.x - p0.x;
+      const dy = p1.y - p0.y;
+      const len = Math.sqrt(dx*dx + dy*dy);
+      nx = -dy / len;
+      ny = dx / len;
+    }
+    
+    const leftX = p1.x + nx * wallOffset;
+    const leftY = p1.y + ny * wallOffset;
+    const rightX = p1.x - nx * wallOffset;
+    const rightY = p1.y - ny * wallOffset;
+    
+    // Matter.js track walls built using overlapping circles to avoid ANY sharp edges or broken chamfering
+    bodies.push(Bodies.circle(leftX, leftY, wallThickness / 2, {
+      isStatic: true,
+      friction: 0.0,
+      restitution: 0.2, // Less bouncy so they don't jump the wall
+      render: { fillStyle: '#bdc3c7', strokeStyle: '#bdc3c7', lineWidth: 1 }
+    }));
 
-    bodies.push(Bodies.rectangle(leftX, leftY, segmentLength, wallThickness, { isStatic: true, friction: 0.1, restitution: 0.4, angle: angle }));
-    bodies.push(Bodies.rectangle(rightX, rightY, segmentLength, wallThickness, { isStatic: true, friction: 0.1, restitution: 0.4, angle: angle }));
+    bodies.push(Bodies.circle(rightX, rightY, wallThickness / 2, {
+      isStatic: true,
+      friction: 0.0,
+      restitution: 0.2,
+      render: { fillStyle: '#bdc3c7', strokeStyle: '#bdc3c7', lineWidth: 1 }
+    }));
   }
-  bodies.push(Bodies.rectangle(W/2, START_Y - 220, W, 40, { isStatic: true }));
-  return { bodies, finalY: pathPoints[pathPoints.length-1].y };
+
+  // Top blocking wall removed as it interfered with the open lobby
+  return { bodies, pathPoints, finalY: pathPoints[pathPoints.length-1].y };
 }
+
+let currentSeed = 12345;
+  function setSeed(seed) { currentSeed = seed; }
+  function seededRandom() {
+    let t = currentSeed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
 
 let pbServerEngine = null;
 let pbServerInterval = null;
@@ -1962,7 +2086,116 @@ function startServerPinballPhysics(pool) {
   pbServerEngine.gravity.y = GRAVITY_Y;
   pbServerEngine.gravity.x = 0;
 
-  const { bodies, finalY } = buildServerTopDownTrack(PB_LOGICAL_WIDTH);
+  const { bodies, pathPoints, finalY } = buildServerTopDownTrack(PB_LOGICAL_WIDTH);
+  // --- GENERATE RANDOM OBSTACLES ---
+  // Generate 15 pegs uniformly distributed along the track (alternating 2 and 1 per row)
+  const numRows = 10;
+  const startIdx = Math.floor(pathPoints.length * 0.10);
+  const endIdx = Math.floor(pathPoints.length * 0.90);
+  const zoneSize = (endIdx - startIdx) / numRows;
+  
+  for (let r = 0; r < numRows; r++) {
+    const pIdx = Math.floor(startIdx + r * zoneSize + (zoneSize / 2));
+    const p = pathPoints[pIdx];
+    let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
+    let pPrev = pathPoints[pIdx - 5] || pathPoints[0];
+    
+    let dx = pNext.x - pPrev.x;
+    let dy = pNext.y - pPrev.y;
+    let len = Math.sqrt(dx*dx + dy*dy);
+    let tx = dx / len;
+    let ty = dy / len;
+    let nx = -ty;
+    let ny = tx;
+
+    let pegsInThisRow = (r % 2 === 0) ? 2 : 1;
+    let isWindmillRow = false;
+    
+    // Add two windmills along the regular track
+    if (r === 3 || r === 7) {
+      isWindmillRow = true;
+      pegsInThisRow = 1;
+    }
+    
+    for (let i = 0; i < pegsInThisRow; i++) {
+      let offsetAmt = 0;
+      if (!isWindmillRow && pegsInThisRow === 2) {
+        offsetAmt = (i === 0) ? -40 : 40;
+      }
+      
+      const cx = p.x + nx * offsetAmt;
+      const cy = p.y + ny * offsetAmt;
+      
+      if (isWindmillRow) {
+        const windmill = Bodies.rectangle(cx, cy, 128, 20, {
+          isStatic: true, restitution: 1.2, friction: 0.0,
+          render: { fillStyle: '#f1c40f', strokeStyle: '#e67e22', lineWidth: 4 }, 
+          plugin: { isRotary: true, isBumper: true }
+        });
+        bodies.push(windmill);
+        //(windmill);
+      } else {
+        const bouncer = Bodies.circle(cx, cy, 14, {
+          isStatic: true, restitution: 1.5, friction: 0.0,
+          render: { fillStyle: '#f1c40f', strokeStyle: '#111111', lineWidth: 4 }, plugin: { isBumper: true }
+        });
+        bodies.push(bouncer);
+        //(bouncer);
+      }
+    }
+  }
+  // --- END GENERATE RANDOM OBSTACLES ---
+
+  // --- GENERATE FINAL PACHINKO GRID ---
+  const startFinalIdx = Math.floor(pathPoints.length * 0.92);
+  const endFinalIdx = Math.floor(pathPoints.length * 0.98);
+  
+  if (endFinalIdx > startFinalIdx) {
+    let rowNum = 0;
+    // Step by 5 to ensure enough vertical distance between rows
+    for (let pIdx = startFinalIdx; pIdx <= endFinalIdx; pIdx += 5) {
+      const p = pathPoints[pIdx];
+      
+      let pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
+      let pPrev = pathPoints[pIdx - 5] || pathPoints[0];
+      let dx = pNext.x - pPrev.x;
+      let dy = pNext.y - pPrev.y;
+      let len = Math.sqrt(dx*dx + dy*dy);
+      let tx = dx / len;
+      let ty = dy / len;
+      let nx = -ty;
+      let ny = tx;
+
+      // Funnel pattern: alternate rows to push balls to center
+      // Row 0: outer edges [-44, 44]
+      // Row 1: middle [-28, 28]
+      // Row 2: center [0]
+      // Funnel pattern: alternate rows to push balls to center
+      // Row 0: outer edges [-44, 44]
+      // Row 1: middle [-35, 35]
+      // Row 2: center [0]
+      let offsets = [];
+      
+      const pattern = rowNum % 3;
+      if (pattern === 0) offsets = [-45, 45];
+      else if (pattern === 1) offsets = [-35, 35];
+      else offsets = [0];
+
+      for (let offsetAmt of offsets) {
+        const cx = p.x + nx * offsetAmt;
+        const cy = p.y + ny * offsetAmt;
+        
+        const bouncer = Bodies.circle(cx, cy, 14, {
+          isStatic: true, restitution: 1.5, friction: 0.0,
+          render: { fillStyle: '#e74c3c', strokeStyle: '#111111', lineWidth: 4 }, plugin: { isBumper: true }
+        });
+        bodies.push(bouncer);
+        //(bouncer);
+      }
+      rowNum++;
+    }
+  }
+  // --- END GENERATE FINAL PACHINKO GRID ---
   World.add(pbServerEngine.world, bodies);
 
   const finishLine = Bodies.rectangle(PB_LOGICAL_WIDTH / 2, finalY + 80, TRACK_WIDTH + 60, 40, {
@@ -2003,7 +2236,14 @@ function startServerPinballPhysics(pool) {
   });
 
   Events.on(pbServerEngine, 'beforeUpdate', () => {
-    Object.values(pbServerBalls).forEach(ball => {
+        Object.values(pbServerBalls).forEach(ball => {
+      // Windmill rotation for server
+      pbServerEngine.world.bodies.forEach(b => {
+        if (b.plugin && b.plugin.isRotary) {
+          Body.setAngle(b, b.angle + 0.05);
+        }
+      });
+
       Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
       
       // Velocity clamping to prevent tunneling
@@ -2179,7 +2419,7 @@ io.on('connection', (socket) => {
   });
 
   // Future-proof version check
-  socket.emit('require_version', { version: '20260718_serversync' });
+  socket.emit('require_version', { version: '20260718_serversync3' });
 
   socket.on('player_move', (data) => {
     if (partyRoom.players[socket.id] && partyRoom.players[socket.id].alive) {
