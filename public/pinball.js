@@ -5,6 +5,16 @@ let pbEngine, pbRender, pbRunner;
 let pbBalls = {};
 let pbState = { status: 'idle', pool: [], finished: [], winnerLimit: 3 };
 let pbWorldHeight = 3500;
+
+  let currentSeed = 12345;
+  function setSeed(seed) { currentSeed = seed; }
+  function seededRandom() {
+    let t = currentSeed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+
 let startGateBody = null;
 let pbMouseConstraint = null;
 
@@ -51,6 +61,24 @@ const POOL_COLORS = [
   '#27ae60', // 14: Green stripe
   '#7f8c8d'  // 15: Maroon stripe
 ];
+
+function destroyEngine() {
+  if (pbRunner) Matter.Runner.stop(pbRunner);
+  if (pbRender) Matter.Render.stop(pbRender);
+  if (pbEngine) {
+    Matter.World.clear(pbEngine.world);
+    Matter.Engine.clear(pbEngine);
+  }
+  if (pbRender && pbRender.canvas) pbRender.canvas.remove();
+  pbEngine = null;
+  pbRender = null;
+  pbRunner = null;
+  pbBalls = {};
+  trackPathPoints = [];
+  trackObstacles = [];
+  startGateBody = null;
+  pbMouseConstraint = null;
+}
 
 function destroyEngine() {
   if (pbRunner) Matter.Runner.stop(pbRunner);
@@ -132,11 +160,11 @@ function initPinballEngine() {
   const zoneSize = Math.floor((endIdx - startIdx) / 4);
   
   for (let z = 0; z < 4; z++) {
-    const idx = startIdx + z * zoneSize + Math.floor(Math.random() * (zoneSize * 0.6)) + Math.floor(zoneSize * 0.2);
+    const idx = startIdx + z * zoneSize + Math.floor(seededRandom() * (zoneSize * 0.6)) + Math.floor(zoneSize * 0.2);
     obstacleZones.push(idx);
   }
 
-  const obstacleTypes = [1, 3, 4, 4].sort(() => Math.random() - 0.5);
+  const obstacleTypes = [1, 3, 4, 4].sort(() => seededRandom() - 0.5);
 
   for (let i = 0; i < 4; i++) {
     const pIdx = obstacleZones[i];
@@ -181,7 +209,7 @@ function initPinballEngine() {
       trackObstacles.push(rightBody);
       
     } else if (type === 1) {
-      const offsetAmt = (Math.random() - 0.5) * (TRACK_WIDTH * 0.4);
+      const offsetAmt = (seededRandom() - 0.5) * (TRACK_WIDTH * 0.4);
       const cx = p.x + nx * offsetAmt;
       const cy = p.y + ny * offsetAmt;
       
@@ -194,7 +222,7 @@ function initPinballEngine() {
       
     } else if (type === 2) {
         // Traffic Cone (Top-Down view: Concentric circles)
-        const offsetAmt = (Math.random() - 0.5) * (TRACK_WIDTH * 0.3);
+        const offsetAmt = (seededRandom() - 0.5) * (TRACK_WIDTH * 0.3);
         const cx = p.x + nx * offsetAmt;
         const cy = p.y + ny * offsetAmt;
         
@@ -358,7 +386,7 @@ function initPinballEngine() {
           if (ball.plugin.stuckFrames > 40) {
             // Set velocity directly for a guaranteed strong escape burst
             Matter.Body.setVelocity(ball, {
-              x: (Math.random() - 0.5) * 10,
+              x: (seededRandom() - 0.5) * 10,
               y: -7.5
             });
             ball.plugin.stuckFrames = 0;
@@ -819,17 +847,17 @@ function buildTopDownTrack(W) {
   currentY += 100;
 
   // Randomize track shape using sum of sines
-  const phase1 = Math.random() * Math.PI * 2;
-  const phase2 = Math.random() * Math.PI * 2;
-  const phase3 = Math.random() * Math.PI * 2;
+  const phase1 = seededRandom() * Math.PI * 2;
+  const phase2 = seededRandom() * Math.PI * 2;
+  const phase3 = seededRandom() * Math.PI * 2;
   
   const freq1 = 0.8;
-  const freq2 = 1.1 + Math.random() * 0.3; // max 1.4 (Lowered from 2.2 to prevent cusps)
-  const freq3 = 0.4 + Math.random() * 0.2; // max 0.6
+  const freq2 = 1.1 + seededRandom() * 0.3; // max 1.4 (Lowered from 2.2 to prevent cusps)
+  const freq3 = 0.4 + seededRandom() * 0.2; // max 0.6
   
   // Weights for each sine wave component (sum to ~1.0)
-  const w1 = 0.5 + Math.random() * 0.2;
-  const w2 = 0.15 + Math.random() * 0.15;
+  const w1 = 0.5 + seededRandom() * 0.2;
+  const w2 = 0.15 + seededRandom() * 0.15;
   const w3 = 1.0 - w1 - w2;
 
   const trackWaveStartY = currentY;
@@ -1059,8 +1087,8 @@ function syncBalls(state) {
       } else {
         const row = Math.floor(idx / cols);
         const col = idx % cols;
-        x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (Math.random() - 0.5) * 5;
-        y = startY - row * (MARBLE_RADIUS * 2.5) - Math.random() * 5;
+        x = startBaseX + col * (MARBLE_RADIUS * 2.5) + (seededRandom() - 0.5) * 5;
+        y = startY - row * (MARBLE_RADIUS * 2.5) - seededRandom() * 5;
       }
 
       const num = (idx % 15) + 1;
@@ -1166,6 +1194,7 @@ function bindPinballSocket(s) {
   s.on('pinball_state', (state) => {
     const prevStatus = pbState.status;
     pbState = state;
+      if (state.seed) setSeed(state.seed);
 
     if (state.status === 'lobby' || state.status === 'instruction') {
       window.pinballRaceStarted = false;
