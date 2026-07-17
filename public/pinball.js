@@ -326,9 +326,9 @@ function initPinballEngine() {
 
   // Start Gate and Lobby Walls (blocks balls from falling or being dragged off-screen in lobby)
   if (pbState.status !== 'playing' || !window.pinballRaceStarted) {
-    startGateBody = Bodies.rectangle(width / 2, START_Y + 195, width * 5, 400, {
+    startGateBody = Bodies.rectangle(width / 2, START_Y + 95, width * 2, 200, {
       isStatic: true,
-      render: { visible: true, fillStyle: '#e74c3c' }, // Make visible and red to debug
+      render: { visible: false }, // Invisible thick physical block
       plugin: { isStartGate: true }
     });
     
@@ -377,24 +377,26 @@ function initPinballEngine() {
     }
     
     if (pbState.status === 'playing') {
-      Object.values(pbBalls).forEach(ball => {
-        // Apply constant downward push to simulate steep track
-        Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
-        
-        if (ball.speed < 0.5) {
-          ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
-          if (ball.plugin.stuckFrames > 40) {
-            // Set velocity directly for a guaranteed strong escape burst
-            Matter.Body.setVelocity(ball, {
-              x: (seededRandom() - 0.5) * 10,
-              y: -7.5
-            });
+      // Only the host (super admin) runs physics forces; clients are pure puppets
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+        Object.values(pbBalls).forEach(ball => {
+          // Apply constant downward push to simulate steep track
+          Body.applyForce(ball, ball.position, { x: 0, y: 0.0004 });
+          
+          if (ball.speed < 0.5) {
+            ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
+            if (ball.plugin.stuckFrames > 40) {
+              Matter.Body.setVelocity(ball, {
+                x: (seededRandom() - 0.5) * 10,
+                y: -7.5
+              });
+              ball.plugin.stuckFrames = 0;
+            }
+          } else {
             ball.plugin.stuckFrames = 0;
           }
-        } else {
-          ball.plugin.stuckFrames = 0;
-        }
-      });
+        });
+      }
     } else {
       // In lobby/instruction, enforce boundaries so they can't drag balls beyond the gate or off-screen
       const width = pbRender ? pbRender.options.width : window.innerWidth;
@@ -1097,7 +1099,6 @@ function syncBalls(state) {
         restitution: 0.6,
         friction: 0.005,
         density: 0.05,
-        collisionFilter: (typeof globalIsSuperAdmin === 'undefined' || !globalIsSuperAdmin) ? { mask: 0 } : undefined,
         render: { fillStyle: color },
         plugin: { isBall: true, name: name, num: num, stuckFrames: 0 }
       });
@@ -1142,14 +1143,46 @@ function bindPinballSocket(s) {
       // Ignore if I am the host (super admin)
       if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) return;
       if (pbState && pbState.status === 'playing' && pbBalls) {
+        // Store target positions; the rAF loop will smoothly interpolate
+        if (!window._pbSyncTargets) window._pbSyncTargets = {};
         for (const name in data) {
           if (pbBalls[name]) {
-             const sd = data[name];
-             Matter.Body.setPosition(pbBalls[name], { x: sd.x, y: sd.y });
-             Matter.Body.setVelocity(pbBalls[name], { x: sd.vx, y: sd.vy });
-             Matter.Body.setAngle(pbBalls[name], sd.a);
-             Matter.Body.setAngularVelocity(pbBalls[name], sd.av);
+            window._pbSyncTargets[name] = data[name];
           }
+        }
+        // Start the interpolation loop if not already running
+        if (!window._pbSyncLoopRunning) {
+          window._pbSyncLoopRunning = true;
+          const lerpLoop = () => {
+            if (!pbBalls || !pbState || pbState.status !== 'playing') {
+              window._pbSyncLoopRunning = false;
+              window._pbSyncTargets = {};
+              return;
+            }
+            const targets = window._pbSyncTargets;
+            for (const name in targets) {
+              if (pbBalls[name]) {
+                const ball = pbBalls[name];
+                const sd = targets[name];
+                const dx = sd.x - ball.position.x;
+                const dy = sd.y - ball.position.y;
+                // Teleport if very far away, otherwise smooth lerp
+                if (Math.abs(dx) > 80 || Math.abs(dy) > 80) {
+                  Matter.Body.setPosition(ball, { x: sd.x, y: sd.y });
+                } else {
+                  Matter.Body.setPosition(ball, {
+                    x: ball.position.x + dx * 0.35,
+                    y: ball.position.y + dy * 0.35
+                  });
+                }
+                Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+                Matter.Body.setAngle(ball, sd.a);
+                Matter.Body.setAngularVelocity(ball, 0);
+              }
+            }
+            requestAnimationFrame(lerpLoop);
+          };
+          requestAnimationFrame(lerpLoop);
         }
       }
     });
