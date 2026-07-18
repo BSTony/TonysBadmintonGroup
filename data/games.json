@@ -822,7 +822,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784337381406,
+    "lastActiveTime": 1784340827491,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -845,7 +845,8 @@
       "YuJie2": true,
       "Andy": true,
       "CHR": true,
-      "Jet": true
+      "Jet": true,
+      "Can": true
     },
     "sections": [
       {
