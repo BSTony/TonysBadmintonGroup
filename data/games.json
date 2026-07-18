@@ -822,7 +822,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784336173759,
+    "lastActiveTime": 1784336504669,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -838,7 +838,8 @@
       "L": true,
       "小金(Chen Pei Hung)": true,
       "登": true,
-      "黃政豪": true
+      "黃政豪": true,
+      "Yiping": true
     },
     "sections": [
       {
