@@ -822,7 +822,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784336579214,
+    "lastActiveTime": 1784336581803,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -841,7 +841,8 @@
       "黃政豪": true,
       "Yiping": true,
       "Ong": true,
-      "YuJie1": true
+      "YuJie1": true,
+      "YuJie2": true
     },
     "sections": [
       {
