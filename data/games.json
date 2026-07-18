@@ -822,7 +822,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784354768142,
+    "lastActiveTime": 1784354770714,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -849,7 +849,8 @@
       "Can": true,
       "楊程鈞": true,
       "Mia": true,
-      "Kevin": true
+      "Kevin": true,
+      "林立峰": true
     },
     "sections": [
       {
