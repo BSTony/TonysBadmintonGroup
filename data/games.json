@@ -822,7 +822,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784336107567,
+    "lastActiveTime": 1784336123521,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -835,7 +835,8 @@
       "陳呈": true,
       "Gary": true,
       "元睿": true,
-      "L": true
+      "L": true,
+      "小金(Chen Pei Hung)": true
     },
     "sections": [
       {
