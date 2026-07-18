@@ -1044,7 +1044,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1783838004736,
-    "lastActiveTime": 1784038556464,
+    "lastActiveTime": 1784364103779,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1059,7 +1059,6 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "煥杰",
           "(AK) Seth Hu",
           "ALAN LIU",
           "云",
@@ -1072,6 +1071,12 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/18 16:41",
+        "name": "煥杰",
+        "operator": "林煥杰",
+        "action": "-1"
+      },
       {
         "time": "07/14 22:15",
         "name": "Mia",
