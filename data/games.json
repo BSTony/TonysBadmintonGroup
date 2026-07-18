@@ -1504,7 +1504,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784357714222,
+    "lastActiveTime": 1784380105494,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1526,11 +1526,18 @@
           "Tony",
           "Kay",
           "陳呈",
-          "楊程鈞"
+          "楊程鈞",
+          "Jet"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/18 21:08",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1"
+      },
       {
         "time": "07/18 14:55",
         "name": "楊程鈞",
