@@ -1193,7 +1193,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784382282838,
+    "lastActiveTime": 1784382569373,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1223,11 +1223,18 @@
           "Gary",
           "Yetta",
           "陳呈",
-          "腳皮"
+          "腳皮",
+          "Andrew"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/18 21:49",
+        "name": "Andrew",
+        "operator": "Andrew Kuo",
+        "action": "+1"
+      },
       {
         "time": "07/18 21:44",
         "name": "腳皮",
