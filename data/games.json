@@ -1193,7 +1193,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784372882555,
+    "lastActiveTime": 1784382282838,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1222,11 +1222,18 @@
           "煥杰",
           "Gary",
           "Yetta",
-          "陳呈"
+          "陳呈",
+          "腳皮"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/18 21:44",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1"
+      },
       {
         "time": "07/18 19:08",
         "name": "陳呈",
