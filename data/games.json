@@ -1205,7 +1205,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784386907029,
+    "lastActiveTime": 1784394146032,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1239,11 +1239,18 @@
           "Andrew",
           "Jenny",
           "Wang",
-          "John"
+          "John",
+          "政達"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/19 01:02",
+        "name": "政達",
+        "operator": "政達",
+        "action": "+1"
+      },
       {
         "time": "07/18 23:01",
         "name": "John",
