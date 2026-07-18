@@ -1193,7 +1193,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784364074907,
+    "lastActiveTime": 1784368559979,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1215,7 +1215,6 @@
           "楊程鈞",
           "戴鏡達",
           "胞弟",
-          "King",
           "Alice",
           "james Juang",
           "Pu",
@@ -1227,6 +1226,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/18 17:55",
+        "name": "King",
+        "operator": "King",
+        "action": "-1"
+      },
       {
         "time": "07/18 16:41",
         "name": "煥杰",
