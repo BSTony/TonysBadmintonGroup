@@ -822,7 +822,7 @@
     "tag": "3面,3小時",
     "active": true,
     "startTime": 1783685263061,
-    "lastActiveTime": 1784340827491,
+    "lastActiveTime": 1784354766224,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -846,7 +846,8 @@
       "Andy": true,
       "CHR": true,
       "Jet": true,
-      "Can": true
+      "Can": true,
+      "楊程鈞": true
     },
     "sections": [
       {
