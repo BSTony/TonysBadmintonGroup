@@ -1044,7 +1044,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1783838004736,
-    "lastActiveTime": 1784364103779,
+    "lastActiveTime": 1784386185361,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1065,12 +1065,19 @@
           "小金(Chen Pei Hung)",
           "JoeLin",
           "Kevin",
-          "Mia"
+          "Mia",
+          "彥璋"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/18 22:49",
+        "name": "彥璋",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/18 16:41",
         "name": "煥杰",
