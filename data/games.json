@@ -1188,7 +1188,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784357155828,
+    "lastActiveTime": 1784364074907,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1216,11 +1216,18 @@
           "Pu",
           "Gary",
           "周則鼎",
-          "正豐"
+          "正豐",
+          "煥杰"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/18 16:41",
+        "name": "煥杰",
+        "operator": "林煥杰",
+        "action": "+1"
+      },
       {
         "time": "07/18 14:45",
         "name": "正豐",
