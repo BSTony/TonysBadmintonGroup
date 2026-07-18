@@ -1193,7 +1193,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784368569591,
+    "lastActiveTime": 1784369924365,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1217,7 +1217,6 @@
           "胞弟",
           "james Juang",
           "Pu",
-          "Gary",
           "周則鼎",
           "正豐",
           "煥杰"
@@ -1225,6 +1224,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/18 18:18",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1"
+      },
       {
         "time": "07/18 17:56",
         "name": "Alice",
