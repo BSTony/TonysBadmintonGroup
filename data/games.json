@@ -1044,7 +1044,7 @@
     "tag": "4面,32人",
     "active": true,
     "startTime": 1783838004736,
-    "lastActiveTime": 1784392521512,
+    "lastActiveTime": 1784398677474,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1061,7 +1061,6 @@
         "list": [
           "ALAN LIU",
           "云",
-          "小金(Chen Pei Hung)",
           "JoeLin",
           "Kevin",
           "Mia",
@@ -1071,6 +1070,12 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/19 02:17",
+        "name": "小金(Chen Pei Hung)",
+        "operator": "小金(Chen Pei Hung)",
+        "action": "-1"
+      },
       {
         "time": "07/19 00:35",
         "name": "(AK) Seth Hu",
