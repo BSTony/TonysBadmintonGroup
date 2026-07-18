@@ -1188,7 +1188,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784353313850,
+    "lastActiveTime": 1784357148515,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1214,11 +1214,18 @@
           "Alice",
           "james Juang",
           "Pu",
-          "Gary"
+          "Gary",
+          "周則鼎"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/18 14:45",
+        "name": "周則鼎",
+        "operator": "周則鼎",
+        "action": "+1"
+      },
       {
         "time": "07/18 13:41",
         "name": "Gary",
