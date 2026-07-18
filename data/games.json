@@ -1200,7 +1200,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784385463657,
+    "lastActiveTime": 1784386907029,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1233,11 +1233,18 @@
           "腳皮",
           "Andrew",
           "Jenny",
-          "Wang"
+          "Wang",
+          "John"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/18 23:01",
+        "name": "John",
+        "operator": "郭岳翰John",
+        "action": "+1"
+      },
       {
         "time": "07/18 22:37",
         "name": "Wang",
