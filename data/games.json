@@ -1524,7 +1524,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784210595452,
+    "lastActiveTime": 1784468539676,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1563,8 +1563,17 @@
           "Ong",
           "Ashley",
           "Jim",
-          "John"
+          "John",
+          "孟錡"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/19 21:42",
+        "name": "孟錡",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
       }
     ]
   },
