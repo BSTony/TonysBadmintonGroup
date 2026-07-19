@@ -1644,7 +1644,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1784442775167,
+    "lastActiveTime": 1784450204045,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1663,8 +1663,17 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay"
+          "Kay",
+          "楊程鈞"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/19 16:36",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1"
       }
     ]
   },
