@@ -1694,7 +1694,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1784449795016,
+    "lastActiveTime": 1784455082951,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1710,12 +1710,19 @@
         "label": "",
         "list": [
           "林煥杰",
-          "ALAN LIU"
+          "ALAN LIU",
+          "JoeLin"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/19 17:58",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1"
+      },
       {
         "time": "07/19 16:29",
         "name": "ALAN LIU",
