@@ -1170,7 +1170,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784471586827,
+    "lastActiveTime": 1784495982051,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1196,11 +1196,18 @@
           "Jet",
           "江こう 洋々",
           "Taco",
-          "wayne"
+          "wayne",
+          "AddieWang"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/20 05:19",
+        "name": "AddieWang",
+        "operator": "AddieWang",
+        "action": "+1"
+      },
       {
         "time": "07/19 22:33",
         "name": "wayne",
