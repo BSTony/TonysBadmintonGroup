@@ -1220,7 +1220,7 @@
     "tag": "3面,25人",
     "active": true,
     "startTime": 1783838351270,
-    "lastActiveTime": 1784394146032,
+    "lastActiveTime": 1784421427397,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1255,11 +1255,18 @@
           "Jenny",
           "Wang",
           "John",
-          "政達"
+          "政達",
+          "YANG 阿傑"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/19 08:37",
+        "name": "YANG 阿傑",
+        "operator": "YANG 阿傑",
+        "action": "+1"
+      },
       {
         "time": "07/19 01:02",
         "name": "政達",
