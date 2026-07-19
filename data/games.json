@@ -1601,7 +1601,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784471047977,
+    "lastActiveTime": 1784471586827,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1626,11 +1626,18 @@
           "楊程鈞",
           "Jet",
           "江こう 洋々",
-          "Taco"
+          "Taco",
+          "wayne"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/19 22:33",
+        "name": "wayne",
+        "operator": "Wayne",
+        "action": "+1"
+      },
       {
         "time": "07/19 22:24",
         "name": "小洋",
