@@ -1685,7 +1685,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1784444446033,
+    "lastActiveTime": 1784449795016,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1700,12 +1700,19 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "林煥杰"
+          "林煥杰",
+          "ALAN LIU"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/19 16:29",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1"
+      },
       {
         "time": "07/19 15:00",
         "name": "林煥杰",
