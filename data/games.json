@@ -1100,7 +1100,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784468620437,
+    "lastActiveTime": 1784539547079,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1141,11 +1141,18 @@
           "Jim",
           "John",
           "孟錡",
-          "偉舫"
+          "偉舫",
+          "KU"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/20 17:25",
+        "name": "KU",
+        "operator": "古書羽",
+        "action": "+1"
+      },
       {
         "time": "07/19 21:43",
         "name": "偉舫",
