@@ -994,7 +994,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1784033413704,
-    "lastActiveTime": 1784515935736,
+    "lastActiveTime": 1784552009739,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1028,11 +1028,18 @@
           "Abby",
           "afrahuang",
           "阿發",
-          "翊輔"
+          "翊輔",
+          "沂 Lexie🐷"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/20 20:53",
+        "name": "沂 Lexie🐷",
+        "operator": "沂 Lexie🐷",
+        "action": "+1"
+      },
       {
         "time": "07/20 10:52",
         "name": "翊輔",
