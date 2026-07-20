@@ -1112,7 +1112,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784546575947,
+    "lastActiveTime": 1784552180266,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1153,11 +1153,18 @@
           "孟錡",
           "偉舫",
           "KU",
-          "均均"
+          "均均",
+          "Gary"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/20 20:56",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1"
+      },
       {
         "time": "07/20 19:22",
         "name": "CC",
