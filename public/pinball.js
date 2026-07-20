@@ -1699,7 +1699,6 @@ function bindPinballSocket(s) {
           cameraToggle.classList.add('hidden');
         }
       }
-    }
   });
 }
 
