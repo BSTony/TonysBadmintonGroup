@@ -2451,7 +2451,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              gid: currentGroupId, gameId: gameId, uid: currentUser.userId, name: name, operatorName: currentUser.displayName, action: 'logError', text: '代發失敗: ' + e.message
+              gid: currentGroupId, gameId: gameId, uid: currentUser.userId, name: name, operatorName: currentUser.displayName, action: 'fallbackPush', triggerBumpMsg: data.triggerBumpMsg
             })
           }).catch(console.error);
         }

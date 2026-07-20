@@ -2792,7 +2792,7 @@ app.post('/api/action', express.json(), async (req, res) => {
             pushMsg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
           }
           try {
-            await pushToAdmins(targetGid, { type: 'text', text: pushMsg.trim() });
+            await client.pushMessage(targetGid, { type: 'text', text: pushMsg.trim() });
           } catch (e) {
             hasError = true;
             errorMsgs.push(`${targetGid}: ${e.message}`);
@@ -2893,7 +2893,7 @@ app.post('/api/action', express.json(), async (req, res) => {
             const pushTargets = game.targetGids || [game.gid];
             for (const targetGid of pushTargets) {
               try {
-                await pushToAdmins(targetGid, { type: 'text', text: `${game.title}\n${bumpMsg}` });
+                await client.pushMessage(targetGid, { type: 'text', text: `${game.title}\n${bumpMsg}` });
               } catch (e) {
                 console.error(`遞補推播代理失敗 for ${targetGid}:`, e);
               }
@@ -2934,6 +2934,19 @@ app.post('/api/action', express.json(), async (req, res) => {
       systemLogs.unshift({ time: timeStr, gameTitle: game.title, operator: operatorName || name, errorMsg: text });
       if (systemLogs.length > 500) systemLogs.pop();
       saveSystemLogs();
+    } else if (action === 'fallbackPush') {
+      const pushTargets = game.targetGids || [game.gid];
+      const pushMsg = req.body.triggerBumpMsg;
+      if (pushMsg) {
+        for (const targetGid of pushTargets) {
+          try {
+            await client.pushMessage(targetGid, { type: 'text', text: pushMsg + '\n\n[系統代發]' });
+          } catch (e) {
+            console.error('Fallback fallbackPush failed:', e);
+          }
+        }
+      }
+      return res.json({ success: true });
     } else {
       return res.status(400).json({ error: 'Unknown action' });
     }
@@ -2972,9 +2985,9 @@ app.post('/api/action', express.json(), async (req, res) => {
           const pushTargets = g.targetGids || [g.gid];
           for (const targetGid of pushTargets) {
             try {
-              pushToAdmins(targetGid, { type: 'text', text: triggerBumpMsg + '\n\n[系統代發]' });
+              await client.pushMessage(targetGid, { type: 'text', text: triggerBumpMsg + '\n\n[系統代發]' });
             } catch (e) {
-              console.error('Fallback pushToAdmins failed:', e);
+              console.error('Fallback pushMessage failed:', e);
             }
           }
         }
