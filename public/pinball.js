@@ -37,7 +37,7 @@ var pinballSpectatorUi = pinballSpectatorUi || document.getElementById('pinball-
 const TRACK_WIDTH = 180;
 let START_Y = 150;
 const MARBLE_RADIUS = 12;
-const GRAVITY_Y = 0.55;
+const GRAVITY_Y = 0.8;
 
 // Sine wave path points for custom rendering
 let trackPathPoints = [];
@@ -1186,6 +1186,17 @@ function startRace() {
 
 function bindPinballSocket(s) {
   window.pinballSocket = s;
+  s.on('pinball_server_sync', (syncData) => {
+    if (!pbBalls || !pbState || pbState.status === 'idle') return;
+    Object.keys(syncData).forEach(name => {
+      if (pbBalls[name]) {
+        Matter.Body.setPosition(pbBalls[name], syncData[name].p);
+        Matter.Body.setAngle(pbBalls[name], syncData[name].a);
+        Matter.Body.setVelocity(pbBalls[name], syncData[name].v);
+      }
+    });
+  });
+
     s.on('pinball_host_sync', (data) => {
       // Ignore if I am the host (super admin)
       if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) return;
@@ -1646,6 +1657,48 @@ function bindPinballSocket(s) {
       if (dynBoard) dynBoard.classList.add('hidden');
       const btnShake = document.getElementById('btn-pinball-shake');
       if (btnShake) btnShake.classList.add('hidden');
+      }
+      
+      const dpad = document.getElementById('pinball-dpad');
+      const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      if (dpad) {
+        if ((state.status === 'instruction' || (state.status === 'playing' && state.allowControls)) && myName && state.pool.includes(myName)) {
+          dpad.classList.remove('hidden');
+          if (!dpad.hasListener) {
+            dpad.hasListener = true;
+            dpad.querySelectorAll('.btn-dpad').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const dir = e.currentTarget.getAttribute('data-dir');
+                if (window.pinballSocket) {
+                  window.pinballSocket.emit('pinball_push_ball', { name: myName, dir: dir });
+                }
+              });
+            });
+          }
+        } else {
+          dpad.classList.add('hidden');
+        }
+      }
+  
+      const cameraToggle = document.getElementById('pinball-camera-toggle');
+      if (cameraToggle) {
+        if (state.status === 'playing' || state.status === 'instruction') {
+          cameraToggle.classList.remove('hidden');
+          if (!cameraToggle.hasListener) {
+            cameraToggle.hasListener = true;
+            window.pinballCameraMode = 'self'; // default
+            cameraToggle.addEventListener('click', () => {
+              window.pinballCameraMode = (window.pinballCameraMode === 'auto') ? 'self' : 'auto';
+              const txt = document.getElementById('pinball-camera-text');
+              if (txt) {
+                txt.innerText = (window.pinballCameraMode === 'auto') ? '全局' : '自己';
+              }
+            });
+          }
+        } else {
+          cameraToggle.classList.add('hidden');
+        }
+      }
     }
   });
 }

@@ -1,1 +1,353 @@
-{}
+{
+  "1783429625227235": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1783429625227235",
+    "title": "週二冷氣團",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509607,
+    "lastActiveTime": 1784525509607,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 12,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "Robert",
+          "Perry",
+          "小周",
+          "海棠",
+          "Ong",
+          "偉舫",
+          "Vicky",
+          "Sean",
+          "Tank Lin",
+          "afrahuang"
+        ]
+      }
+    ]
+  },
+  "1783608472486727": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1783608472486727",
+    "title": "週四 脫水團",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509619,
+    "lastActiveTime": 1784525509619,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "陳呈",
+          "Wayne",
+          "Jim",
+          "Ashley",
+          "小周",
+          "Iven",
+          "Mina",
+          "John",
+          "小黑",
+          "小高",
+          "Ku",
+          "均均",
+          "永曄",
+          "偉強",
+          "小洋",
+          "紀凡",
+          "Emily🙈🙉🙊",
+          "Winnie",
+          "CHR",
+          "Lee",
+          "Timmon"
+        ]
+      }
+    ]
+  },
+  "1783685263060226": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1783685263060226",
+    "title": "週六 港中 打3小",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509629,
+    "lastActiveTime": 1784525509629,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 23,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "陳呈",
+          "楊程鈞",
+          "Mia",
+          "Kevin",
+          "Can",
+          "Yiping",
+          "Gary",
+          "CHR",
+          "Ong",
+          "元睿",
+          "林立峰",
+          "小可愛",
+          "YuJie1",
+          "YuJie2",
+          "登",
+          "L",
+          "Andy",
+          "Jet",
+          "小金(Chen Pei Hung)",
+          "黃政豪"
+        ]
+      }
+    ]
+  },
+  "1783838004736655": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1783838004736655",
+    "title": "週日 港中 早八 2小",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509639,
+    "lastActiveTime": 1784525509639,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 7,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "ALAN LIU",
+          "云",
+          "JoeLin",
+          "彥璋"
+        ]
+      }
+    ]
+  },
+  "1783838351270282": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1783838351270282",
+    "title": "週日 港中 4小 10-11開冷氣",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509649,
+    "lastActiveTime": 1784525509649,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "CC",
+          "楊程鈞",
+          "戴鏡達",
+          "胞弟",
+          "james Juang",
+          "Pu",
+          "周則鼎",
+          "正豐",
+          "煥杰",
+          "Gary",
+          "Yetta",
+          "陳呈",
+          "腳皮",
+          "Andrew",
+          "Jenny",
+          "Wang",
+          "John",
+          "政達",
+          "YANG 阿傑"
+        ]
+      }
+    ]
+  },
+  "1784033413703270": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1784033413703270",
+    "title": "週二冷氣團",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509660,
+    "lastActiveTime": 1784525509660,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 12,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "海棠",
+          "Perry",
+          "Robert",
+          "Ong",
+          "小周",
+          "Sean",
+          "Abby",
+          "afrahuang",
+          "阿發",
+          "翊輔"
+        ]
+      }
+    ]
+  },
+  "1784210595451390": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1784210595451390",
+    "title": "週四脫水團",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509672,
+    "lastActiveTime": 1784525509672,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "陳呈",
+          "小周",
+          "CC",
+          "Iven",
+          "Mina",
+          "Wayne",
+          "Ong",
+          "Ashley",
+          "Jim",
+          "John",
+          "孟錡",
+          "偉舫"
+        ]
+      }
+    ]
+  },
+  "1784350912801701": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1784350912801701",
+    "title": "週六 港中 打3小",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509681,
+    "lastActiveTime": 1784525509681,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 23,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "陳呈",
+          "楊程鈞",
+          "Jet",
+          "江こう 洋々",
+          "Taco",
+          "wayne",
+          "AddieWang"
+        ]
+      }
+    ]
+  },
+  "1784442775028466": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1784442775028466",
+    "title": "週日 港中 打4小 10-11冷氣",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509691,
+    "lastActiveTime": 1784525509691,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "楊程鈞"
+        ]
+      }
+    ]
+  },
+  "1784442822915986": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "gameId": "1784442822915986",
+    "title": "週日 港中 早8 打2小",
+    "note": "",
+    "active": true,
+    "startTime": 1784525509701,
+    "lastActiveTime": 1784525509701,
+    "scheduleTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 7,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "林煥杰",
+          "ALAN LIU",
+          "JoeLin"
+        ]
+      }
+    ]
+  }
+}

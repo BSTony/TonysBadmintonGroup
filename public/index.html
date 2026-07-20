@@ -459,10 +459,21 @@
             <label style="font-size:12px; color: black; white-space: nowrap;">錄取名額:</label>
             <input type="number" id="pinball-winner-limit" value="3" min="1" style="flex:1; padding:5px; font-size: 12px; border:1px solid #ccc;">
           </div>
+          <div style="display:flex; gap: 5px; margin-bottom: 10px;">
+            <select id="pinball-activity-select" style="flex: 2; padding: 5px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px;">
+              <option value="">-- 載入活動中... --</option>
+            </select>
+            <button id="btn-add-pinball-activity" class="btn-primary" style="flex:1; padding:5px; font-size: 12px;">匯入全團</button>
+            <button id="btn-add-pinball-random" class="btn-secondary" style="flex:1; padding:5px; font-size: 12px;">+10隨機</button>
+          </div>
           <p style="margin:5px 0; font-size:12px; color: black;">目前賽道人數: <span id="pinball-pool-count" style="font-weight:bold;">0</span></p>
           <div id="pinball-pool-list" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; max-height: 80px; overflow-y: auto; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 5px;"></div>
           <hr style="margin: 10px 0; border-top:1px solid #ccc;">
-          <button id="btn-pinball-admin-start" class="btn" style="width:100%; background: #2ecc71; color: white; margin-bottom: 5px;">▶️ 釋放彈珠 (開始比賽)</button>
+          <div style="margin: 5px 0; font-size: 12px; color: black; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" id="pinball-allow-controls" checked>
+              <label for="pinball-allow-controls">比賽開始後允許玩家操作方向</label>
+            </div>
+            <button id="btn-pinball-admin-start" class="btn" style="width:100%; background: #2ecc71; color: white; margin-bottom: 5px;">▶️ 釋放彈珠 (開始比賽)</button>
           <button id="btn-pinball-admin-stop" class="btn-danger" style="width:100%; padding: 5px;">強制結束房間</button>
         </div>
       </div>
@@ -511,7 +522,7 @@
             <ul style="font-size: 24px; text-align: left; line-height: 2; margin-bottom: 30px; list-style: none; padding: 0;">
               <li>🔴 每位參賽者有一顆專屬彈珠</li>
               <li>🏎️ 彈珠沿著 S 型賽道競速</li>
-              <li>👆 可點選並拖曳自己的彈珠去碰撞別人</li>
+              <li>👆 利用右下角的方向鍵推擠別人</li>
               <li>🏆 最先抵達終點的就是冠軍！</li>
             </ul>
             <div style="font-size: 30px; font-weight: bold; color: #e74c3c; animation: pulse 1s infinite;">
@@ -544,8 +555,21 @@
             <button id="btn-pinball-close-popup" class="hidden btn-primary" style="padding: 10px; border-radius: 8px;">關閉視窗</button>
           </div>
 
-          <!-- Admin Shake Button -->
-          <button id="btn-pinball-shake" class="hidden btn-primary" style="position: absolute; bottom: 20px; right: 20px; padding: 15px; font-size: 18px; border-radius: 50%; width: 60px; height: 60px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 105; cursor: pointer; border: 2px solid #f1c40f; background: #e74c3c;">💥</button>
+          <!-- Camera Toggle Button -->
+          <button id="pinball-camera-toggle" class="hidden" style="position: absolute; left: 20px; bottom: 20px; width: 60px; height: 60px; border-radius: 50%; background: rgba(0,0,0,0.6); color: white; border: 2px solid white; font-size: 24px; z-index: 125; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-direction: column; line-height: 1;">
+            👁️<br><span id="pinball-camera-text" style="font-size:12px; font-weight:bold;">自動</span>
+          </button>
+
+          <!-- User D-Pad Buttons -->
+          <div id="pinball-dpad" class="hidden" style="position: absolute; bottom: 20px; right: 20px; z-index: 125;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+              <button class="btn-dpad" data-dir="up" style="width: 50px; height: 50px; font-size: 24px; border-radius: 10px; cursor: pointer; border: 2px solid #f1c40f; background: #e67e22; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">⬆️</button>
+              <div style="display: flex; gap: 50px;">
+                <button class="btn-dpad" data-dir="left" style="width: 50px; height: 50px; font-size: 24px; border-radius: 10px; cursor: pointer; border: 2px solid #f1c40f; background: #e67e22; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">⬅️</button>
+                <button class="btn-dpad" data-dir="right" style="width: 50px; height: 50px; font-size: 24px; border-radius: 10px; cursor: pointer; border: 2px solid #f1c40f; background: #e67e22; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">➡️</button>
+              </div>
+            </div>
+          </div>
 
 
           
@@ -645,7 +669,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball.js?v=20260717_fix63"></script>
-  <script src="app.js?v=20260717_fix63"></script>
+  <script src="pinball.js?v=20260720_fix65"></script>
+  <script src="app.js?v=20260720_fix64"></script>
 </body>
 </html>

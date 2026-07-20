@@ -4274,6 +4274,70 @@ if (btnPinballAdminSync) {
 const btnAddPinballName = document.getElementById('btn-add-pinball-name');
 const btnAddPinballSelf = document.getElementById('btn-add-pinball-self');
 const inputPinballName = document.getElementById('pinball-manual-name');
+const pinballActivitySelect = document.getElementById('pinball-activity-select');
+const btnAddPinballActivity = document.getElementById('btn-add-pinball-activity');
+const btnAddPinballRandom = document.getElementById('btn-add-pinball-random');
+
+let pinballActivitiesLoaded = false;
+if (pinballActivitySelect) {
+  pinballActivitySelect.addEventListener('focus', async () => {
+    if (pinballActivitiesLoaded) return;
+    try {
+      pinballActivitySelect.innerHTML = '<option value="">-- 載入中... --</option>';
+      const res = await fetch('/api/debug_games');
+      const data = await res.json();
+      pinballActivitySelect.innerHTML = '<option value="">-- 選擇活動匯入 --</option>';
+      if (data.games) {
+        Object.values(data.games).forEach(game => {
+          if (game.title) {
+            const opt = document.createElement('option');
+            opt.value = game.gameId;
+            opt.textContent = game.title;
+            let names = [];
+            if (game.sections) {
+              game.sections.forEach(sec => {
+                if (sec.list) names.push(...sec.list);
+              });
+            }
+            opt.dataset.names = JSON.stringify(names);
+            pinballActivitySelect.appendChild(opt);
+          }
+        });
+      }
+      pinballActivitiesLoaded = true;
+    } catch(e) { console.error('Failed to load activities', e); pinballActivitySelect.innerHTML = '<option value="">-- 載入失敗 --</option>'; }
+  });
+}
+
+if (btnAddPinballActivity) {
+  btnAddPinballActivity.addEventListener('click', () => {
+    const selected = pinballActivitySelect.options[pinballActivitySelect.selectedIndex];
+    if (!selected || !selected.value) return alert("請先選擇一個活動！");
+    try {
+      const names = JSON.parse(selected.dataset.names || "[]");
+      if (names.length === 0) return alert("該活動沒有報名名單！");
+      if (window.pinballSocket) {
+        window.pinballSocket.emit('join_pinball_bulk', { names });
+      }
+    } catch(e) { console.error(e); }
+  });
+}
+
+if (btnAddPinballRandom) {
+  btnAddPinballRandom.addEventListener('click', () => {
+    const names = [];
+    const firstNames = ["小", "大", "阿", "老", "酷", "神", "飛", "狂", "快", "慢", "冰", "火"];
+    const lastNames = ["明", "華", "強", "偉", "哥", "姐", "妹", "弟", "寶", "龍", "虎", "豹"];
+    for (let i = 0; i < 10; i++) {
+      const fn = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const ln = lastNames[Math.floor(Math.random() * lastNames.length)];
+      names.push(fn + ln + Math.floor(Math.random() * 100));
+    }
+    if (window.pinballSocket) {
+      window.pinballSocket.emit('join_pinball_bulk', { names });
+    }
+  });
+}
 
 async function addPinballPlayer(name) {
   if (!name) {
@@ -4334,7 +4398,7 @@ if (btnPinballAdminStart) {
       const res = await fetch('/api/admin/pinball/start-sequence', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: currentUser.userId, winnerLimit: limit })
+        body: JSON.stringify({ uid: currentUser.userId, winnerLimit: limit, allowControls: document.getElementById('pinball-allow-controls') ? document.getElementById('pinball-allow-controls').checked : true })
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
