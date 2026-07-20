@@ -994,7 +994,7 @@
     "tag": "2面,冷氣",
     "active": true,
     "startTime": 1784033413704,
-    "lastActiveTime": 1784447380130,
+    "lastActiveTime": 1784515935736,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1027,11 +1027,18 @@
           "Sean",
           "Abby",
           "afrahuang",
-          "阿發"
+          "阿發",
+          "翊輔"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/20 10:52",
+        "name": "翊輔",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/19 15:49",
         "name": "Tank",
