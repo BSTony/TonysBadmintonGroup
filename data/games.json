@@ -1352,7 +1352,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1784455082951,
+    "lastActiveTime": 1784552007773,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1369,12 +1369,19 @@
         "list": [
           "林煥杰",
           "ALAN LIU",
-          "JoeLin"
+          "JoeLin",
+          "沂 Lexie🐷"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/20 20:53",
+        "name": "沂 Lexie🐷",
+        "operator": "沂 Lexie🐷",
+        "action": "+1"
+      },
       {
         "time": "07/19 17:58",
         "name": "JoeLin",
