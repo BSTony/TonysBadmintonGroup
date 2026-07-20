@@ -2525,7 +2525,15 @@ app.post('/api/action', express.json(), async (req, res) => {
     
     const targetGameGid = (gameId && games[gameId]) ? games[gameId].gid : gid;
     const isSuperAdminUser = isSuperAdmin(uid);
-    const isAdmin = isSuperAdminUser || isGroupAdmin(uid, targetGameGid);
+    let isAdmin = isSuperAdminUser;
+    
+    if (!isAdmin) {
+      if (gameId && games[gameId] && games[gameId].targetGids && games[gameId].targetGids.length > 0) {
+        isAdmin = games[gameId].targetGids.some(g => isGroupAdmin(uid, g));
+      } else {
+        isAdmin = isGroupAdmin(uid, targetGameGid);
+      }
+    }
     
     // 儲存要讓前端觸發的訊息
     let triggerBumpMsg = null;
