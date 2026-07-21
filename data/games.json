@@ -1222,7 +1222,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1784627314207,
+    "lastActiveTime": 1784627565018,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1248,11 +1248,18 @@
           "沂 Lexie🐷",
           "奧斯卡",
           "Gary",
-          "周則鼎"
+          "周則鼎",
+          "林立峰"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 17:52",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1"
+      },
       {
         "time": "07/21 17:48",
         "name": "周則鼎",
