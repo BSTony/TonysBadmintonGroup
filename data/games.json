@@ -1301,7 +1301,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1784625279978,
+    "lastActiveTime": 1784626007653,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1319,13 +1319,18 @@
           "林煥杰",
           "ALAN LIU",
           "JoeLin",
-          "沂 Lexie🐷",
-          "Gary"
+          "沂 Lexie🐷"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/21 17:26",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1"
+      },
       {
         "time": "07/21 17:14",
         "name": "Gary",
