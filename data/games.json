@@ -1259,7 +1259,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1784648365710,
+    "lastActiveTime": 1784671221532,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1297,11 +1297,18 @@
           "King",
           "Alice",
           "陳宜蓁",
-          "YANG 阿傑"
+          "YANG 阿傑",
+          "Sean柏宏"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/22 06:00",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "+1"
+      },
       {
         "time": "07/21 23:39",
         "name": "YANG 阿傑",
