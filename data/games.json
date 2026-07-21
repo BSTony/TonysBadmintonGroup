@@ -1094,7 +1094,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784495982051,
+    "lastActiveTime": 1784605736597,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1121,11 +1121,18 @@
           "江こう 洋々",
           "Taco",
           "wayne",
-          "AddieWang"
+          "AddieWang",
+          "Eric yu"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 11:48",
+        "name": "Eric yu",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/20 05:19",
         "name": "AddieWang",
