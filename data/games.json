@@ -978,7 +978,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784606056506,
+    "lastActiveTime": 1784609583884,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1023,11 +1023,18 @@
           "Gary",
           "永曄",
           "偉強",
-          "江こう 洋々"
+          "江こう 洋々",
+          "紀凡"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 12:53",
+        "name": "紀凡",
+        "operator": "紀凡",
+        "action": "+1"
+      },
       {
         "time": "07/21 11:54",
         "name": "江こう 洋々",
