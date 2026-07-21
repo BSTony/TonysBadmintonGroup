@@ -1476,7 +1476,7 @@
     "tag": "DE場",
     "active": true,
     "startTime": 1784637338069,
-    "lastActiveTime": 1784637418538,
+    "lastActiveTime": 1784637609199,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1508,11 +1508,18 @@
           "海棠",
           "偉舫",
           "小周",
-          "Joe"
+          "Joe",
+          "Sean"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 20:40",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "+1"
+      },
       {
         "time": "07/21 20:36",
         "name": "Joe",
