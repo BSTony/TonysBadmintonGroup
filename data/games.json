@@ -1241,7 +1241,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1784637093549,
+    "lastActiveTime": 1784637103585,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1274,11 +1274,18 @@
           "胞弟",
           "小宇",
           "丁丁",
-          "Mia"
+          "Mia",
+          "Kevin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 20:31",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1"
+      },
       {
         "time": "07/21 20:31",
         "name": "Mia",
