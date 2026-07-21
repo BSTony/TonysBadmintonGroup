@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784609583884,
+    "lastActiveTime": 1784641682014,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -999,7 +999,6 @@
       "Iven": true,
       "Mina": true,
       "Wayne": true,
-      "Ong": true,
       "Ashley": true,
       "Jim": true,
       "John": true
@@ -1018,7 +1017,6 @@
           "Iven",
           "Mina",
           "Wayne",
-          "Ong",
           "Ashley",
           "Jim",
           "John",
@@ -1035,6 +1033,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/21 21:48",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1"
+      },
       {
         "time": "07/21 12:53",
         "name": "紀凡",
