@@ -1114,7 +1114,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784638914130,
+    "lastActiveTime": 1784639513094,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1146,11 +1146,18 @@
           "Gary",
           "Mia",
           "Kevin",
-          "Ong"
+          "Ong",
+          "Jimmy"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 21:11",
+        "name": "Jimmy",
+        "operator": "Jimmy",
+        "action": "+1"
+      },
       {
         "time": "07/21 21:01",
         "name": "Ong",
