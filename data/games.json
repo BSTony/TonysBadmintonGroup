@@ -860,7 +860,7 @@
     "tag": "2面,冷氣,DE場地",
     "active": true,
     "startTime": 1784033413704,
-    "lastActiveTime": 1784636250491,
+    "lastActiveTime": 1784636251659,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -875,7 +875,8 @@
       "Robert": true,
       "Ong": true,
       "小周": true,
-      "Abby": true
+      "Abby": true,
+      "afrahuang": true
     },
     "sections": [
       {
