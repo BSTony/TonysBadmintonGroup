@@ -1114,7 +1114,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784637056999,
+    "lastActiveTime": 1784638914130,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1145,11 +1145,18 @@
           "Eric yu",
           "Gary",
           "Mia",
-          "Kevin"
+          "Kevin",
+          "Ong"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 21:01",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "+1"
+      },
       {
         "time": "07/21 20:30",
         "name": "Kevin",
