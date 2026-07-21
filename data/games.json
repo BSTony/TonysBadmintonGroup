@@ -857,7 +857,7 @@
     "location": "南港運動中心",
     "fee": "280",
     "note": "",
-    "tag": "2面,冷氣",
+    "tag": "2面,冷氣,DE場地",
     "active": true,
     "startTime": 1784033413704,
     "lastActiveTime": 1784552057594,
@@ -959,7 +959,8 @@
         "operator": "煜翔Sean",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1784210595451390": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
