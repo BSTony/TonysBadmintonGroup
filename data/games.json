@@ -1109,7 +1109,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784605736597,
+    "lastActiveTime": 1784625263302,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1137,11 +1137,18 @@
           "Taco",
           "wayne",
           "AddieWang",
-          "Eric yu"
+          "Eric yu",
+          "Gary"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 17:14",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1"
+      },
       {
         "time": "07/21 11:48",
         "name": "Eric yu",
