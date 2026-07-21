@@ -978,7 +978,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784552180266,
+    "lastActiveTime": 1784598448421,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1020,11 +1020,18 @@
           "偉舫",
           "KU",
           "均均",
-          "Gary"
+          "Gary",
+          "永曄"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 09:47",
+        "name": "永曄",
+        "operator": "永曄",
+        "action": "+1"
+      },
       {
         "time": "07/20 20:56",
         "name": "Gary",
