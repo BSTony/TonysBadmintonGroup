@@ -1476,7 +1476,7 @@
     "tag": "DE場",
     "active": true,
     "startTime": 1784637338069,
-    "lastActiveTime": 1784637338069,
+    "lastActiveTime": 1784637418538,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1507,8 +1507,17 @@
           "Ong",
           "海棠",
           "偉舫",
-          "小周"
+          "小周",
+          "Joe"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/21 20:36",
+        "name": "Joe",
+        "operator": "振喬 Joe",
+        "action": "+1"
       }
     ]
   }
