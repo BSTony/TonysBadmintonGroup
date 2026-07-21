@@ -1222,7 +1222,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1784627612166,
+    "lastActiveTime": 1784627686883,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1250,11 +1250,18 @@
           "Gary",
           "周則鼎",
           "林立峰",
-          "小可愛"
+          "小可愛",
+          "Jasper"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/21 17:54",
+        "name": "Jasper",
+        "operator": "Jasper",
+        "action": "+1"
+      },
       {
         "time": "07/21 17:53",
         "name": "小可愛",
