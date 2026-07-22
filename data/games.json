@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784703392570,
+    "lastActiveTime": 1784704627024,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1137,7 +1137,9 @@
     ],
     "isManualEnded": false,
     "allowUserNoteEdit": true,
-    "noteMap": {}
+    "noteMap": {
+      "Tony": "青茶正常冰微糖"
+    }
   },
   "1784350912801701": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
