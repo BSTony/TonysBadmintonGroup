@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784730847943,
+    "lastActiveTime": 1784748496045,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1034,11 +1034,18 @@
           "Win Shu",
           "Emily🙈🙉🙊",
           "Winnie",
-          "Sean"
+          "Sean",
+          "張嘉舜"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/23 03:28",
+        "name": "張嘉舜",
+        "operator": "張嘉舜",
+        "action": "+1"
+      },
       {
         "time": "07/22 10:28",
         "name": "Sean",
