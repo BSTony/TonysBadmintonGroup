@@ -1578,7 +1578,7 @@
     "tag": "DE場",
     "active": true,
     "startTime": 1784637338069,
-    "lastActiveTime": 1784645871334,
+    "lastActiveTime": 1784688818637,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1612,11 +1612,18 @@
           "小周",
           "Joe",
           "Sean",
-          "afrahuang"
+          "afrahuang",
+          "張建發"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/22 10:53",
+        "name": "張建發",
+        "operator": "張建發",
+        "action": "+1"
+      },
       {
         "time": "07/21 22:57",
         "name": "afrahuang",
