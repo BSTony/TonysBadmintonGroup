@@ -1653,6 +1653,8 @@
         "operator": "振喬 Joe",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false,
+    "allowUserNoteEdit": false
   }
 }
