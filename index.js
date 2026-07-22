@@ -1770,8 +1770,9 @@ function generateListMessage(g, customTitle = null) {
       const n = sec.list[i];
       const name = n === '__ANON__' ? '***' : n;
       const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+      const noteStr = g.noteMap && g.noteMap[n] ? ` [${g.noteMap[n]}]` : '';
       const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
-      msg += `${i+1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
+      msg += `${i+1}. ${name} ${level}${noteStr}${paidStr}\n`.trim() + '\n';
     }
     
     // 如果未滿額，顯示最後一個空席位的號碼（依據使用者要求）
@@ -1785,8 +1786,9 @@ function generateListMessage(g, customTitle = null) {
         const n = sec.list[i];
         const name = n === '__ANON__' ? '***' : n;
         const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+        const noteStr = g.noteMap && g.noteMap[n] ? ` [${g.noteMap[n]}]` : '';
         const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
-        msg += `候${i - sec.limit + 1}. ${name} ${level}${paidStr}\n`.trim() + '\n';
+        msg += `候${i - sec.limit + 1}. ${name} ${level}${noteStr}${paidStr}\n`.trim() + '\n';
       }
     }
   });
@@ -2715,7 +2717,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         levelMap: initialLevelMap,
         paidMap: initialPaidMap,
         noteMap: {},
-        allowUserNoteEdit: req.body.allowUserNoteEdit === true,
+        allowUserNoteEdit: req.body.allowUserNoteEdit !== false,
         sections: [
           { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList }
         ]
@@ -2962,15 +2964,9 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       game.allowUserNoteEdit = !!req.body.allow;
     } else if (action === 'updateNote' || action === 'setNote') {
-      const allowUserNoteEdit = game.allowUserNoteEdit === true;
-      const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
-      const userRegisteredName = uidToNameMap.get(`${gameId}_${uid}`);
-      const isOwner = (registeredUid && registeredUid === uid) ||
-                      (userRegisteredName && userRegisteredName === name) ||
-                      (name === operatorName) ||
-                      (req.body.name && req.body.name === name);
-      if (!isAdmin && (!allowUserNoteEdit || !isOwner)) {
-        return res.status(403).json({ error: '目前尚未開放參加者修改備註或無權限修改' });
+      const allowUserNoteEdit = game.allowUserNoteEdit !== false;
+      if (!isAdmin && !allowUserNoteEdit) {
+        return res.status(403).json({ error: '目前尚未開放參加者修改備註' });
       }
       game.noteMap = game.noteMap || {};
       const noteStr = typeof req.body.note === 'string' ? req.body.note.trim() : '';
@@ -3538,7 +3534,7 @@ async function handleEvent(event) {
         levelMap: initialLevelMap,
         paidMap: initialPaidMap,
         noteMap: {},
-        allowUserNoteEdit: false,
+        allowUserNoteEdit: true,
         sections: [
           { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
         ]

@@ -2002,7 +2002,7 @@ function renderDetail(gameId, preserveScroll = false) {
 
         const allowUserNoteEdit = game.allowUserNoteEdit !== false;
         const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
-        const canEditNote = effIsAdmin || (allowUserNoteEdit && isMe);
+        const canEditNote = effIsAdmin || allowUserNoteEdit;
         let noteHtml = '';
         if (canCancel) {
           if (canEditNote) {
@@ -2067,7 +2067,7 @@ function renderDetail(gameId, preserveScroll = false) {
         
         const allowUserNoteEdit = game.allowUserNoteEdit !== false;
         const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
-        const canEditNote = effIsAdmin || (allowUserNoteEdit && isMe);
+        const canEditNote = effIsAdmin || allowUserNoteEdit;
         let noteHtml = '';
         if (canCancel) {
           if (canEditNote) {
