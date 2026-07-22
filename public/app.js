@@ -1481,7 +1481,7 @@ function renderLobby() {
       btnEasterEgg.classList.add('hidden');
     }
 
-    if (globalIsSuperAdmin && btnPartyAdmin) {
+    if (effIsSuperAdmin && btnPartyAdmin) {
       btnPartyAdmin.classList.remove('hidden');
     } else if (btnPartyAdmin) {
       btnPartyAdmin.classList.add('hidden');
@@ -1489,7 +1489,7 @@ function renderLobby() {
     
     const createContainer = document.getElementById('admin-create-game-container');
     if (createContainer) {
-      if (globalIsAdmin) {
+      if (effIsSuperAdmin) {
         createContainer.classList.remove('hidden');
       } else {
         createContainer.classList.add('hidden');

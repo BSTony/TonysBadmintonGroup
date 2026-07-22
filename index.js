@@ -2642,8 +2642,8 @@ app.post('/api/action', express.json(), async (req, res) => {
     let triggerBumpMsg = null;
     
     if (action === 'createGame') {
-      if (!isAdmin) {
-        return res.status(403).json({ error: '只有管理員能建立場次' });
+      if (!isSuperAdminUser) {
+        return res.status(403).json({ error: '只有超級管理員能建立場次' });
       }
       
       const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, initialListStr, targetGid, targetGids } = req.body;
