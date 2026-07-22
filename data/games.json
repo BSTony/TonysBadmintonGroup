@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784686105825,
+    "lastActiveTime": 1784686114393,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1031,11 +1031,18 @@
           "紀凡",
           "JS Shi",
           "Win Shu",
-          "Emily🙈🙉🙊"
+          "Emily🙈🙉🙊",
+          "Winnie"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/22 10:08",
+        "name": "Winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1"
+      },
       {
         "time": "07/22 10:08",
         "name": "Emily🙈🙉🙊",
