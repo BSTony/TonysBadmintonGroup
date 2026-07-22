@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784703384789,
+    "lastActiveTime": 1784703390220,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1138,7 +1138,6 @@
     "isManualEnded": false,
     "allowUserNoteEdit": true,
     "noteMap": {
-      "Tony": "TEST",
       "Kay": "TESTTTT1"
     }
   },
