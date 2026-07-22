@@ -1281,7 +1281,9 @@
         "operator": "楊程鈞",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false,
+    "allowUserNoteEdit": false
   },
   "1784442775028466": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
