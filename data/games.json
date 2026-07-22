@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784677721660,
+    "lastActiveTime": 1784679896447,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1029,11 +1029,18 @@
           "偉強",
           "江こう 洋々",
           "紀凡",
-          "JS Shi"
+          "JS Shi",
+          "Win Shu"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/22 08:24",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1"
+      },
       {
         "time": "07/22 07:48",
         "name": "JS Shi",
