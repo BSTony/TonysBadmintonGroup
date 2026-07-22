@@ -332,9 +332,7 @@
         <div class="form-group" style="border: 2px solid #3498db; padding: 15px; border-radius: 8px; background: #ebf5fb;">
           <h3 style="margin-top:0; color:#3498db;">選擇要進行的遊戲</h3>
           <select id="room-game-type" style="width:100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 16px;">
-            <option value="lottery">3D 抽籤機 (尾牙模式)</option>
-            <option value="survival">大逃殺彈幕生存</option>
-            <option value="pinball">🏁 彈珠競賽</option>
+            <option value="pinball" selected>🏁 彈珠競速賽</option>
           </select>
           <button id="btn-open-room" class="btn" style="width:100%; background: #9b59b6; color: white; padding: 12px; font-size: 18px;">開啟遊戲大廳</button>
         </div>
@@ -603,7 +601,7 @@
         </div>
 
         <!-- ================= 大逃殺 容器 ================= -->
-        <div id="bh-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; touch-action: none;">
+        <div id="bh-container" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; touch-action: none;">
           <div id="bh-waiting-text" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px 4px black; z-index: 10; pointer-events: none; white-space: nowrap; font-weight: bold; animation: pulse 2s infinite;">等待管理者開始遊戲...</div>
           <div id="bh-score" style="position: absolute; top: 20px; left: 0; width: 100%; text-align: center; color: white; font-size: 24px; font-weight: bold; pointer-events: none; z-index: 10; text-shadow: 1px 1px 3px black;">
             生存時間: <span id="bh-timer">0.00</span> 秒
@@ -657,7 +655,7 @@
   </div>
 
   <div id="app-version-display" style="text-align: center; color: #999; font-size: 12px; padding: 20px 0; width: 100%; pointer-events: none; margin-top: 20px;">
-    Version: 20260717_fix63
+    Version: 20260722_fix85 (V5.4 100ms Authoritative LERP Sync & Delay Winner Modal)
   </div>
 
   <style>
@@ -669,7 +667,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball.js?v=20260720_fix65"></script>
+  <script src="pinball_v2.js?v=20260721_fix13"></script>
   <script src="app.js?v=20260720_fix64"></script>
 </body>
 </html>

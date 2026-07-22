@@ -1810,7 +1810,19 @@ function handlePinballFinish(name) {
     if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
     pinballRoom.scores[name] += points;
 
+    // Safety Fallback: 60s after 1st place finishes (in case a ball is permanently stuck)
+    if (rank === 1) {
+      if (global.pinballEndTimer) clearTimeout(global.pinballEndTimer);
+      global.pinballEndTimer = setTimeout(() => {
+        if (pinballRoom.status === 'playing') {
+          pinballRoom.status = 'finished';
+          io.emit('pinball_state', pinballRoom);
+        }
+      }, 60000);
+    }
+
     if (pinballRoom.finished.length >= pinballRoom.pool.length) {
+      if (global.pinballEndTimer) clearTimeout(global.pinballEndTimer);
       pinballRoom.status = 'finished';
     }
 
@@ -1818,14 +1830,7 @@ function handlePinballFinish(name) {
   }
 }
 
-setInterval(() => {
-  if ((pinballRoom.status === 'playing' || pinballRoom.status === 'instruction') && io) {
-    const syncData = pinballPhysics.getSyncState();
-    if (Object.keys(syncData).length > 0) {
-      io.emit('pinball_server_sync', syncData);
-    }
-  }
-}, 16);
+// Server sends ZERO position packets during race - pure deterministic local physics with shared seed (0 rubberbanding)
 
 let pinballRoom = {
   status: 'idle', // idle, lobby, instruction, playing, finished
@@ -2019,17 +2024,25 @@ io.on('connection', (socket) => {
       pinballPhysics.pushBall(data.name, data.dir);
     });
     socket.on('pinball_apply_force', (data) => {
-      pinballPhysics.applyForce(data.name, data.fx);
+      pinballPhysics.applyForce(data.name, data.fx, data.fy);
+      socket.broadcast.emit('pinball_apply_force', data);
+    });
+    socket.on('pinball_ball_moved', (data) => {
+      const { name, x, y } = data;
+      if (name && typeof x === 'number' && typeof y === 'number') {
+        if (!pinballRoom.positions) pinballRoom.positions = {};
+        pinballRoom.positions[name] = { x, y };
+        socket.broadcast.emit('pinball_ball_moved', { name, x, y });
+      }
     });
     socket.on('pinball_move_ball', (data) => {
-    const { name, x, y } = data;
-    if (pinballRoom.status === 'lobby' || pinballRoom.status === 'instruction') {
-      if (!pinballRoom.positions) pinballRoom.positions = {};
-      pinballRoom.positions[name] = { x, y };
-      // Broadcast this individual move to others so they can animate it locally
-      socket.broadcast.emit('pinball_ball_moved', { name, x, y });
-    }
-  });
+      const { name, x, y } = data;
+      if (name && typeof x === 'number' && typeof y === 'number') {
+        if (!pinballRoom.positions) pinballRoom.positions = {};
+        pinballRoom.positions[name] = { x, y };
+        socket.broadcast.emit('pinball_ball_moved', { name, x, y });
+      }
+    });
   socket.on('pinball_host_sync', (data) => {
     socket.broadcast.emit('pinball_host_sync', data);
   });
@@ -2267,6 +2280,9 @@ app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
   
   if (!pinballRoom.pool.includes(name.trim())) {
     pinballRoom.pool.push(name.trim());
+    if (pinballRoom.status === 'instruction' || pinballRoom.status === 'playing') {
+      pinballPhysics.addBall(name.trim());
+    }
     io.emit('pinball_state', pinballRoom);
   }
   res.json({ success: true, pinballRoom });
@@ -2279,7 +2295,7 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   
   pinballRoom.winnerLimit = winnerLimit || 3;
   pinballRoom.finished = [];
-  if (!pinballRoom.seed) pinballRoom.seed = Math.floor(Math.random() * 1000000);
+  pinballRoom.seed = Math.floor(Math.random() * 1000000);
   pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, handlePinballFinish);
 
   pinballRoom.status = 'instruction';
@@ -2301,6 +2317,17 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
     setTimeout(() => {
       if (pinballRoom.status === 'playing') {
         pinballPhysics.startRace();
+        
+        // Start 100ms authoritative server sync interval
+        if (global.pinballSyncInterval) clearInterval(global.pinballSyncInterval);
+        global.pinballSyncInterval = setInterval(() => {
+          if (pinballRoom.status === 'playing') {
+            const syncData = pinballPhysics.getSyncState();
+            io.emit('pinball_server_sync', syncData);
+          } else {
+            clearInterval(global.pinballSyncInterval);
+          }
+        }, 100);
       }
     }, 5000);
   }, 5000);

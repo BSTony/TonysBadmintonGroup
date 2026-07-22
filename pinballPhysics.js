@@ -9,9 +9,9 @@ let onFinishCallback = null;
 
 const PB_WIDTH = 800;
 const PB_START_Y = Math.floor(1000 * 0.65); // 650
-const PB_TRACK_WIDTH = 180;
+const PB_TRACK_WIDTH = 200;
 const PB_MARBLE_RADIUS = 12;
-const PB_GRAVITY_Y = 0.8;
+const PB_GRAVITY_Y = 1.6; // Increased by 30%+ for faster, more thrilling racing
 
 let prngState = 12345;
 function setSeed(s) { prngState = s; }
@@ -38,7 +38,10 @@ function buildTopDownTrack(W) {
   const trackLeftX = W / 2 - PB_TRACK_WIDTH / 2;
   const trackRightX = W / 2 + PB_TRACK_WIDTH / 2;
   
-  const lStartX = -100;
+  // Ceiling to prevent flying too high
+  bodies.push(Bodies.rectangle(W/2, -500, W * 10, 1000, { isStatic: true }));
+
+  const lStartX = -1000;
   const lStartY = currentY;
   const lEndX = trackLeftX;
   const lEndY = currentY + funnelHeight;
@@ -51,7 +54,7 @@ function buildTopDownTrack(W) {
   
   const rStartX = trackRightX;
   const rStartY = currentY + funnelHeight;
-  const rEndX = W + 100;
+  const rEndX = W + 1000;
   const rEndY = currentY;
   const rLen = Math.hypot(rEndX - rStartX, rEndY - rStartY);
   const rAngle = Math.atan2(rEndY - rStartY, rEndX - rStartX);
@@ -117,11 +120,13 @@ function buildTopDownTrack(W) {
     pathPoints.push({ x: W/2, y: currentY });
   }
 
+  // Build physical guardrails along the path using overlapping circles (exact 1:1 match with client)
   const wallThickness = 120;
   const wallOffset = (PB_TRACK_WIDTH / 2) + (wallThickness / 2) - 2;
   
-  for (let i = 0; i < pathPoints.length - 1; i += 2) {
+  for (let i = 0; i < pathPoints.length; i++) {
     const p1 = pathPoints[i];
+    
     let nx, ny;
     if (i < pathPoints.length - 1) {
       const p2 = pathPoints[i+1];
@@ -145,11 +150,15 @@ function buildTopDownTrack(W) {
     const rightY = p1.y - ny * wallOffset;
     
     bodies.push(Bodies.circle(leftX, leftY, wallThickness / 2, {
-      isStatic: true, friction: 0.0, restitution: 0.2
+      isStatic: true,
+      friction: 0.0,
+      restitution: 0.2
     }));
 
     bodies.push(Bodies.circle(rightX, rightY, wallThickness / 2, {
-      isStatic: true, friction: 0.0, restitution: 0.2
+      isStatic: true,
+      friction: 0.0,
+      restitution: 0.2
     }));
   }
 
@@ -167,11 +176,15 @@ function initServerEngine(pool, seed, onFinish) {
   onFinishCallback = onFinish;
   pbBalls = {};
 
-  pbEngine = Engine.create();
+  pbEngine = Engine.create({
+    positionIterations: 12,
+    velocityIterations: 12
+  });
   pbEngine.gravity.y = 0; pbEngine.plugin = pbEngine.plugin || {}; pbEngine.plugin.raceStarted = false; // Wait for GO
   pbEngine.gravity.x = 0;
 
   const { bodies, pathPoints, finalY } = buildTopDownTrack(PB_WIDTH);
+  serverPathPoints = pathPoints;
   
   // GENERATE RANDOM OBSTACLES
   const numRows = 10;
@@ -259,11 +272,9 @@ function initServerEngine(pool, seed, onFinish) {
 
   World.add(pbEngine.world, bodies);
 
-  // Finish line sensor
-  const finishLine = Bodies.rectangle(PB_WIDTH / 2, finalY + 80, PB_TRACK_WIDTH + 60, 40, {
-    isStatic: true,
-    isSensor: true,
-    plugin: { isFinishLine: true }
+  // Finish Line Sensor (Made extremely thick to prevent high-speed tunneling)
+  const finishLine = Bodies.rectangle(PB_WIDTH / 2, finalY + 200, PB_WIDTH * 3, 400, {
+    isStatic: true, isSensor: true, plugin: { isFinishLine: true }
   });
   World.add(pbEngine.world, [finishLine]);
 
@@ -291,34 +302,93 @@ function initServerEngine(pool, seed, onFinish) {
       friction: 0.005,
       density: 0.05,
       frictionAir: 0.02,
+      isBullet: true,
       plugin: { isBall: true, name: name }
     });
     pbBalls[name] = ball;
     World.add(pbEngine.world, ball);
   });
   Events.on(pbEngine, 'beforeUpdate', () => {
-      const bodies = pbEngine.world.bodies;
-      for (let i = 0; i < bodies.length; i++) {
-        const body = bodies[i];
-        if (body.plugin && body.plugin.isRotary) {
-          Body.setAngle(body, body.angle + 0.05);
-        }
-        if (body.plugin && body.plugin.isBall && pbEngine.plugin && pbEngine.plugin.raceStarted) {
-          if (body.speed < 0.5) {
-            body.plugin.stuckFrames = (body.plugin.stuckFrames || 0) + 1;
-            if (body.plugin.stuckFrames > 60) {
-              Body.setVelocity(body, {
-                x: (Math.random() - 0.5) * 10,
-                y: -7.5
-              });
+        const bodies = pbEngine.world.bodies;
+        for (let i = 0; i < bodies.length; i++) {
+          const body = bodies[i];
+          if (body.plugin && body.plugin.isRotary) {
+            Body.setAngle(body, body.angle + 0.05);
+          }
+          if (body.plugin && body.plugin.isBall && !body.plugin.finished && pbEngine.plugin && pbEngine.plugin.raceStarted) {
+            if (body.speed < 0.5) {
+              body.plugin.stuckFrames = (body.plugin.stuckFrames || 0) + 1;
+              if (body.plugin.stuckFrames > 60) {
+                Body.setVelocity(body, {
+                  x: (Math.random() - 0.5) * 10,
+                  y: -7.5
+                });
+                body.plugin.stuckFrames = 0;
+              }
+            } else {
               body.plugin.stuckFrames = 0;
             }
-          } else {
-            body.plugin.stuckFrames = 0;
           }
         }
-      }
-    });
+        
+        // Rubber-banding (catch-up mechanic)
+        if (pbEngine.plugin && pbEngine.plugin.raceStarted) {
+            const allBalls = Object.values(pbBalls).filter(b => !b.plugin.finished);
+            const lowestY = Math.max(...allBalls.map(b => b.position.y));
+            
+            allBalls.forEach(ball => {
+              const distanceBehind = lowestY - ball.position.y;
+              let multiplier = 0;
+              if (distanceBehind > 200) multiplier = 0.05;
+              if (distanceBehind > 400) multiplier = 0.1;
+              if (distanceBehind > 600) multiplier = 0.2;
+              if (distanceBehind > 1000) multiplier = 0.35;
+              
+              const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
+              let totalYForce = baseForce * multiplier;
+              
+              Body.applyForce(ball, ball.position, { x: 0, y: totalYForce });
+              
+              // Speed clamp to prevent tunneling
+              if (ball.velocity.y > 25) {
+                Body.setVelocity(ball, { x: ball.velocity.x, y: 25 });
+              }
+              if (Math.abs(ball.velocity.x) > 25) {
+                Body.setVelocity(ball, { x: Math.sign(ball.velocity.x) * 25, y: ball.velocity.y });
+              }
+            });
+            
+            // Out-Of-Bounds Rescue Mechanic
+            allBalls.forEach(ball => {
+              if (ball.plugin.finished) return; // Don't rescue finished balls
+              if (serverPathPoints.length === 0) return;
+              
+              // If the ball has fallen past the end of the track, don't rescue it, let it fall to trigger the finish fallback
+              if (ball.position.y > serverPathPoints[serverPathPoints.length - 1].y) return;
+
+              if (ball.position.y > PB_START_Y) {
+                // Find closest track center at this Y
+                let closest = serverPathPoints[0];
+                let minDist = Math.abs(ball.position.y - closest.y);
+                for (let j = 1; j < serverPathPoints.length; j++) {
+                  const dist = Math.abs(ball.position.y - serverPathPoints[j].y);
+                  if (dist < minDist) {
+                    minDist = dist;
+                    closest = serverPathPoints[j];
+                  }
+                  if (serverPathPoints[j].y > ball.position.y + 100) break; // Optimization
+                }
+                
+                // Tightened threshold: if ball is more than 85px from center, teleport it back immediately
+                if (Math.abs(ball.position.x - closest.x) > 85) {
+                  // Teleport back to the center of the track at its current Y
+                  Body.setPosition(ball, { x: closest.x, y: closest.y });
+                  Body.setVelocity(ball, { x: 0, y: ball.velocity.y * 0.5 }); // Dampen velocity
+                }
+              }
+            });
+          }
+      });
 
   // Collision handling (Finish & Pushed Bounce)
   Events.on(pbEngine, 'collisionStart', (event) => {
@@ -330,7 +400,10 @@ function initServerEngine(pool, seed, onFinish) {
       if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
 
       if (ball && finish) {
-        if (onFinishCallback) onFinishCallback(ball.plugin.name);
+        if (!ball.plugin.finished) {
+          ball.plugin.finished = true;
+          if (onFinishCallback) onFinishCallback(ball.plugin.name);
+        }
       }
 
       if (pair.bodyA.plugin && pair.bodyA.plugin.isBall && pair.bodyB.plugin && pair.bodyB.plugin.isBall) {
@@ -362,7 +435,8 @@ function initServerEngine(pool, seed, onFinish) {
 
 function startRace() {
   if (pbEngine) {
-    // pbEngine.gravity.y = PB_GRAVITY_Y;
+    pbEngine.gravity.y = PB_GRAVITY_Y;
+    if (pbEngine.plugin) pbEngine.plugin.raceStarted = true;
     if (pbStartGate) {
       World.remove(pbEngine.world, pbStartGate);
       pbStartGate = null;
@@ -377,17 +451,7 @@ function startRace() {
 }
 
 function scatterBallsOnFive() {
-  if (pbEngine && pbBalls) {
-    // ?��??��?讓�??��?下�?，砸?��??��?
-    // pbEngine.gravity.y = PB_GRAVITY_Y;
-    
-    Object.values(pbBalls).forEach(ball => {
-      Body.setVelocity(ball, {
-        x: (Math.random() - 0.5) * 20,
-        y: (Math.random() - 0.5) * 20
-      });
-    });
-  }
+  // Deliberately do nothing. Balls should not jump before GO.
 }
 
 function pushBall(name, dir) {
@@ -411,23 +475,27 @@ function pushBall(name, dir) {
   }
 }
 
-function applyForce(name, forceX) {
+function applyForce(name, forceX, forceY) {
   if (pbEngine && pbBalls && pbBalls[name]) {
-    Body.applyForce(pbBalls[name], pbBalls[name].position, { x: forceX, y: 0 });
+    const ball = pbBalls[name];
+    if (ball.plugin && ball.plugin.finished) return; // Don't push finished balls
+    Body.applyForce(ball, ball.position, { x: forceX || 0, y: forceY || 0 });
   }
 }
 
 function getSyncState() {
-  const state = {};
-  for (const name in pbBalls) {
-    state[name] = {
-      x: pbBalls[name].position.x,
-      y: pbBalls[name].position.y,
-      a: pbBalls[name].angle
-    };
+    const state = {};
+    for (const name in pbBalls) {
+      state[name] = {
+        x: Math.round(pbBalls[name].position.x * 100) / 100,
+        y: Math.round(pbBalls[name].position.y * 100) / 100,
+        a: Math.round(pbBalls[name].angle * 1000) / 1000,
+        vx: Math.round(pbBalls[name].velocity.x * 100) / 100,
+        vy: Math.round(pbBalls[name].velocity.y * 100) / 100
+      };
+    }
+    return state;
   }
-  return state;
-}
 
 function stopEngine() {
   if (updateInterval) clearInterval(updateInterval);
@@ -439,6 +507,24 @@ function stopEngine() {
   updateInterval = null;
   pbBalls = {};
   pbStartGate = null;
+  serverPathPoints = [];
+}
+
+function addBall(name) {
+  if (!pbEngine || pbBalls[name]) return;
+  const x = PB_WIDTH / 2 + (Math.random() - 0.5) * 100;
+  const y = PB_START_Y - 50;
+
+  const ball = Bodies.circle(x, y, PB_MARBLE_RADIUS, {
+    restitution: 0.6,
+    friction: 0.005,
+    density: 0.05,
+    frictionAir: 0.02,
+    isBullet: true,
+    plugin: { isBall: true, name: name }
+  });
+  pbBalls[name] = ball;
+  World.add(pbEngine.world, ball);
 }
 
 module.exports = {
@@ -448,5 +534,6 @@ module.exports = {
   pushBall,
   applyForce,
   getSyncState,
-  stopEngine
+  stopEngine,
+  addBall
 };

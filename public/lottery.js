@@ -31,8 +31,19 @@ function initLottery(uid) {
   myUid = uid;
   
   if (btnCloseRoom) {
-    btnCloseRoom.addEventListener('click', () => {
+    btnCloseRoom.addEventListener('click', async () => {
       unifiedRoomOverlay.classList.add('hidden');
+      if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin && currentUser && currentUser.userId) {
+        try {
+          await fetch('/api/admin/room/close', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uid: currentUser.userId })
+          });
+        } catch(e) {
+          console.error(e);
+        }
+      }
     });
   }
   
