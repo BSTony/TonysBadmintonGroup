@@ -1169,7 +1169,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784639513094,
+    "lastActiveTime": 1784708276937,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1202,11 +1202,18 @@
           "Mia",
           "Kevin",
           "Ong",
-          "Jimmy"
+          "Jimmy",
+          "杜威霖 Andy"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/22 16:17",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "+1"
+      },
       {
         "time": "07/21 21:11",
         "name": "Jimmy",
