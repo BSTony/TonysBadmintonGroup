@@ -2952,10 +2952,17 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       game.paidMap = game.paidMap || {};
       game.paidMap[name] = !game.paidMap[name];
+    } else if (action === 'toggleAllowUserNoteEdit') {
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能修改此設定' });
+      }
+      game.allowUserNoteEdit = !!req.body.allow;
     } else if (action === 'updateNote' || action === 'setNote') {
+      const allowUserNoteEdit = game.allowUserNoteEdit !== false;
       const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
-      if (!isAdmin && registeredUid && registeredUid !== uid && name !== operatorName) {
-        return res.status(403).json({ error: '只能修改自己或自己代報的名單備註' });
+      const isOwner = (registeredUid && registeredUid === uid) || (name === operatorName);
+      if (!isAdmin && (!allowUserNoteEdit || !isOwner)) {
+        return res.status(403).json({ error: '目前尚未開放參加者修改備註或無權限修改' });
       }
       game.noteMap = game.noteMap || {};
       const noteStr = typeof req.body.note === 'string' ? req.body.note.trim() : '';
