@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784687281777,
+    "lastActiveTime": 1784701794943,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1136,7 +1136,10 @@
       }
     ],
     "isManualEnded": false,
-    "allowUserNoteEdit": true
+    "allowUserNoteEdit": true,
+    "noteMap": {
+      "Tony": "TEST"
+    }
   },
   "1784350912801701": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
