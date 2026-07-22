@@ -1912,18 +1912,7 @@ function renderDetail(gameId, preserveScroll = false) {
      detailList.innerHTML += `<div class="game-note">${escapeHTML(game.note)}</div>`;
   }
   
-  if (effIsAdmin) {
-    const adminSettingHtml = `
-      <div class="admin-setting-row" style="margin-top: 10px; margin-bottom: 12px; padding: 8px 12px; background-color: #f0f7ff; border: 1px solid #cce3f5; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
-        <span style="font-size: 13px; color: #1565c0; font-weight: bold;">⚙️ 管理員設定</span>
-        <label style="font-size: 12px; color: #333; cursor: pointer; display: flex; align-items: center; user-select: none;">
-          <input type="checkbox" ${game.allowUserNoteEdit !== false ? 'checked' : ''} onchange="handleToggleAllowUserNoteEdit('${game.gameId}', this.checked)" style="margin-right: 6px; cursor: pointer;">
-          開放參加者自訂備註
-        </label>
-      </div>
-    `;
-    detailList.innerHTML += adminSettingHtml;
-  }
+
   
   let historyHtml = '<div class="history-section" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #fafafa; border-radius: 8px; border-left: 4px solid #90caf9;">';
   historyHtml += '<h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">歷史紀錄</h4>';
@@ -2000,9 +1989,8 @@ function renderDetail(gameId, preserveScroll = false) {
           }
         }
 
-        const allowUserNoteEdit = game.allowUserNoteEdit !== false;
         const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
-        const canEditNote = effIsAdmin || allowUserNoteEdit;
+        const canEditNote = true;
         let noteHtml = '';
         if (canCancel) {
           if (canEditNote) {
@@ -2065,9 +2053,8 @@ function renderDetail(gameId, preserveScroll = false) {
           }
         }
         
-        const allowUserNoteEdit = game.allowUserNoteEdit !== false;
         const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
-        const canEditNote = effIsAdmin || allowUserNoteEdit;
+        const canEditNote = true;
         let noteHtml = '';
         if (canCancel) {
           if (canEditNote) {
@@ -2659,41 +2646,7 @@ async function handleEditNote(gameId, name) {
 
 window.handleEditNote = handleEditNote;
 
-async function handleToggleAllowUserNoteEdit(gameId, allow) {
-  try {
-    appDiv.className = 'loading';
-    if (statusMsg) {
-      statusMsg.style.display = 'block';
-      statusMsg.innerText = '更新設定中...';
-    }
-    const res = await fetch('/api/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: gameId,
-        uid: currentUser.userId,
-        action: 'toggleAllowUserNoteEdit',
-        allow: allow
-      })
-    });
-    const result = await res.json();
-    if (!res.ok) {
-      alert(result.error || '無法更新設定');
-      await loadGamesLobby();
-      return;
-    }
-    const idx = gamesList.findIndex(g => g.gameId === gameId);
-    if (idx !== -1) gamesList[idx] = result.game;
-    renderDetail(gameId, true);
-  } catch (e) {
-    console.error(e);
-    alert('網路錯誤，請稍後再試');
-    await loadGamesLobby();
-  }
-}
 
-window.handleToggleAllowUserNoteEdit = handleToggleAllowUserNoteEdit;
 
 window.handleReorder = async function(gameId, fromIdx, toIdx) {
   try {
@@ -3213,7 +3166,6 @@ document.getElementById('btn-submit-create').onclick = async () => {
         backupLimit: document.getElementById('cg-backup').value,
         publish: document.getElementById('cg-publish').value,
         reminder: document.getElementById('cg-reminder').value,
-        allowUserNoteEdit: document.getElementById('cg-allow-user-note-edit') ? document.getElementById('cg-allow-user-note-edit').checked : false,
         note: document.getElementById('cg-note').value.trim(),
         initialListStr: getCgListString()
       })
@@ -3316,8 +3268,6 @@ function showEditGameForm(gameId) {
   document.getElementById('eg-limit').value = section.limit || 20;
   document.getElementById('eg-backup').value = section.backupLimit || 0;
   document.getElementById('eg-ended').checked = !!game.isManualEnded;
-  const egAllowUserNoteEditEl = document.getElementById('eg-allow-user-note-edit');
-  if (egAllowUserNoteEditEl) egAllowUserNoteEditEl.checked = game.allowUserNoteEdit !== false;
   document.getElementById('eg-note').value = game.note || '';
   
   // Format timestamps to datetime-local
@@ -3380,7 +3330,6 @@ document.getElementById('btn-submit-edit').onclick = async () => {
         publish: document.getElementById('eg-publish').value,
         reminder: document.getElementById('eg-reminder').value,
         isManualEnded: document.getElementById('eg-ended').checked,
-        allowUserNoteEdit: document.getElementById('eg-allow-user-note-edit') ? document.getElementById('eg-allow-user-note-edit').checked : false,
         note: document.getElementById('eg-note').value.trim()
       })
     });
