@@ -2714,6 +2714,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         anonymousCount: 0,
         levelMap: initialLevelMap,
         paidMap: initialPaidMap,
+        noteMap: {},
         sections: [
           { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList }
         ]
@@ -2951,6 +2952,18 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       game.paidMap = game.paidMap || {};
       game.paidMap[name] = !game.paidMap[name];
+    } else if (action === 'updateNote' || action === 'setNote') {
+      const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
+      if (!isAdmin && registeredUid && registeredUid !== uid && name !== operatorName) {
+        return res.status(403).json({ error: '只能修改自己或自己代報的名單備註' });
+      }
+      game.noteMap = game.noteMap || {};
+      const noteStr = typeof req.body.note === 'string' ? req.body.note.trim() : '';
+      if (noteStr) {
+        game.noteMap[name] = noteStr;
+      } else {
+        delete game.noteMap[name];
+      }
     } else if (action === 'cancel') {
       if (!currentList.includes(name)) {
         return res.status(400).json({ error: '找不到此名稱' });
@@ -2978,6 +2991,9 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       if (game.paidMap) {
         delete game.paidMap[name];
+      }
+      if (game.noteMap) {
+        delete game.noteMap[name];
       }
       
       const mainListAfter = game.sections[0].list.slice(0, limit);
@@ -3046,7 +3062,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     await saveCurrentListSnapshot(gameId, false);
     
     // 讓所有使用者操作時，都觸發自動發話並帶上精簡資訊
-    if (action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid') {
+    if (action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid' || action === 'updateNote' || action === 'setNote') {
       const g = games[gameId];
       const sec = g.sections && g.sections[0] ? g.sections[0] : null;
       if (sec) {
@@ -3063,6 +3079,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         else if (action === 'cancel') msg += `${g.title}${opPart} -1`;
         else if (action === 'reorder') msg += `${g.title} 🔄順序更新`;
         else if (action === 'togglePaid') msg += `${g.title}${opPart} 💰繳費更新`;
+        else if (action === 'updateNote' || action === 'setNote') msg += `${g.title}${opPart} 📝備註更新`;
 
         if (triggerBumpMsg) {
            msg += `\n🎉 【遞補通知】\n${triggerBumpMsg}`;
@@ -3505,6 +3522,7 @@ async function handleEvent(event) {
         anonymousCount: 0,
         levelMap: initialLevelMap,
         paidMap: initialPaidMap,
+        noteMap: {},
         sections: [
           { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
         ]

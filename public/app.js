@@ -1929,6 +1929,17 @@ function renderDetail(gameId, preserveScroll = false) {
             paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
           }
         }
+
+        const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
+        const canEditNote = globalIsAdmin || isMe;
+        let noteHtml = '';
+        if (canCancel) {
+          if (canEditNote) {
+            noteHtml = `<button class="note-btn ${noteVal ? 'has-note' : ''}" onclick="handleEditNote('${game.gameId}', '${escapeHTML(name)}')">${noteVal ? escapeHTML(noteVal) : '📝 備註'}</button>`;
+          } else if (noteVal) {
+            noteHtml = `<span class="note-badge">${escapeHTML(noteVal)}</span>`;
+          }
+        }
         
         let moveHtml = '';
         if (globalIsAdmin) {
@@ -1948,6 +1959,7 @@ function renderDetail(gameId, preserveScroll = false) {
             <div class="list-num">${i + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
+            ${noteHtml}
             ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
@@ -1982,6 +1994,17 @@ function renderDetail(gameId, preserveScroll = false) {
           }
         }
         
+        const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
+        const canEditNote = globalIsAdmin || isMe;
+        let noteHtml = '';
+        if (canCancel) {
+          if (canEditNote) {
+            noteHtml = `<button class="note-btn ${noteVal ? 'has-note' : ''}" onclick="handleEditNote('${game.gameId}', '${escapeHTML(name)}')">${noteVal ? escapeHTML(noteVal) : '📝 備註'}</button>`;
+          } else if (noteVal) {
+            noteHtml = `<span class="note-badge">${escapeHTML(noteVal)}</span>`;
+          }
+        }
+
         let moveHtml = '';
         if (globalIsAdmin) {
           const canMoveUp = i > 0;
@@ -2000,6 +2023,7 @@ function renderDetail(gameId, preserveScroll = false) {
             <div class="list-num" style="color: #666; font-size: 12px;">候 ${i - sec.limit + 1}.</div>
             <div class="list-name ${isMe ? 'me' : ''}" style="color: #666;">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
+            ${noteHtml}
             ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
@@ -2517,6 +2541,51 @@ async function handleTogglePaid(gameId, name) {
 }
 
 window.handleTogglePaid = handleTogglePaid;
+
+async function handleEditNote(gameId, name) {
+  try {
+    const game = gamesList.find(g => g.gameId === gameId);
+    const currentNote = (game && game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
+    const newNote = prompt(`請輸入『${name}』的備註：`, currentNote);
+    if (newNote === null) return;
+    
+    appDiv.className = 'loading';
+    if (statusMsg) {
+      statusMsg.style.display = 'block';
+      statusMsg.innerText = '更新備註中...';
+    }
+    
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        gameId: gameId,
+        uid: currentUser.userId,
+        name: name,
+        action: 'updateNote',
+        note: newNote.trim()
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) {
+      alert(result.error || '發生錯誤');
+      await loadGamesLobby();
+      return;
+    }
+    
+    const idx = gamesList.findIndex(g => g.gameId === gameId);
+    if (idx !== -1) gamesList[idx] = result.game;
+    renderDetail(gameId, true);
+  } catch (err) {
+    console.error(err);
+    alert('網路錯誤，請稍後再試');
+    await loadGamesLobby();
+  }
+}
+
+window.handleEditNote = handleEditNote;
 
 window.handleReorder = async function(gameId, fromIdx, toIdx) {
   try {
