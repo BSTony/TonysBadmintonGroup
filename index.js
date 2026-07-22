@@ -2715,6 +2715,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         levelMap: initialLevelMap,
         paidMap: initialPaidMap,
         noteMap: {},
+        allowUserNoteEdit: req.body.allowUserNoteEdit === true,
         sections: [
           { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList }
         ]
@@ -2796,6 +2797,9 @@ app.post('/api/action', express.json(), async (req, res) => {
       game.note = note || '';
       game.tag = tag || '';
       game.isManualEnded = !!isManualEnded;
+      if (typeof req.body.allowUserNoteEdit !== 'undefined') {
+        game.allowUserNoteEdit = !!req.body.allowUserNoteEdit;
+      }
       
       if (game.sections && game.sections[0]) {
         game.sections[0].limit = parseInt(limit, 10) || 20;
@@ -3530,6 +3534,7 @@ async function handleEvent(event) {
         levelMap: initialLevelMap,
         paidMap: initialPaidMap,
         noteMap: {},
+        allowUserNoteEdit: false,
         sections: [
           { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
         ]
