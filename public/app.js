@@ -153,6 +153,35 @@ let globalManagedGroups = [];
 let globalLobbyTitle = '羽球接龍大廳';
 let currentGameDetailId = null;
 let lastGamesJson = '';
+let currentSimulatedRole = sessionStorage.getItem('simulatedRole') || 'superAdmin';
+
+function getEffectiveRole() {
+  if (!globalIsSuperAdmin) {
+    return {
+      isAdmin: globalIsAdmin,
+      isSuperAdmin: false
+    };
+  }
+  const role = currentSimulatedRole || 'superAdmin';
+  if (role === 'user') {
+    return { isAdmin: false, isSuperAdmin: false };
+  } else if (role === 'groupAdmin') {
+    return { isAdmin: true, isSuperAdmin: false };
+  } else {
+    return { isAdmin: true, isSuperAdmin: true };
+  }
+}
+
+function handleRoleSwitch(role) {
+  currentSimulatedRole = role;
+  sessionStorage.setItem('simulatedRole', role);
+  if (currentGameDetailId && !detailView.classList.contains('hidden')) {
+    renderDetail(currentGameDetailId, true);
+  } else {
+    renderLobby();
+  }
+}
+window.handleRoleSwitch = handleRoleSwitch;
 
 // DOM 元素
 const appDiv = document.getElementById('app');
@@ -1390,9 +1419,35 @@ function renderLobby() {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     lobbyView.classList.remove('hidden');
     
+    const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = getEffectiveRole();
+
+    let roleSwitcherContainer = document.getElementById('super-admin-role-switcher');
+    if (globalIsSuperAdmin) {
+      if (!roleSwitcherContainer) {
+        roleSwitcherContainer = document.createElement('div');
+        roleSwitcherContainer.id = 'super-admin-role-switcher';
+        lobbyView.insertBefore(roleSwitcherContainer, lobbyView.firstChild);
+      }
+      roleSwitcherContainer.style.display = 'block';
+      roleSwitcherContainer.innerHTML = `
+        <div style="margin: 10px 0 15px 0; padding: 10px 14px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+          <div style="font-size: 13px; font-weight: bold; color: #e65100; display: flex; align-items: center; gap: 6px;">
+            <span>🎭 視角切換 (超管功能)</span>
+          </div>
+          <select onchange="handleRoleSwitch(this.value)" style="padding: 5px 10px; font-size: 12px; font-weight: bold; border-radius: 6px; border: 1px solid #ffb74d; background-color: #ffffff; color: #333; cursor: pointer;">
+            <option value="superAdmin" ${currentSimulatedRole === 'superAdmin' ? 'selected' : ''}>👑 超級管理員</option>
+            <option value="groupAdmin" ${currentSimulatedRole === 'groupAdmin' ? 'selected' : ''}>🛡️ 群組管理員</option>
+            <option value="user" ${currentSimulatedRole === 'user' ? 'selected' : ''}>👤 一般使用者</option>
+          </select>
+        </div>
+      `;
+    } else if (roleSwitcherContainer) {
+      roleSwitcherContainer.style.display = 'none';
+    }
+    
     document.getElementById('lobby-title-text').innerText = globalLobbyTitle || '羽球接龍大廳';
     const btnEditTitle = document.getElementById('btn-edit-title');
-    if (globalIsSuperAdmin && btnEditTitle) {
+    if (effIsSuperAdmin && btnEditTitle) {
       btnEditTitle.classList.remove('hidden');
       btnEditTitle.onclick = handleEditLobbyTitle;
     } else if (btnEditTitle) {
@@ -1401,26 +1456,26 @@ function renderLobby() {
     
     document.getElementById('lobby-desc-text').innerText = globalLobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
     const btnEditDesc = document.getElementById('btn-edit-desc');
-    if (globalIsSuperAdmin && btnEditDesc) {
+    if (effIsSuperAdmin && btnEditDesc) {
       btnEditDesc.classList.remove('hidden');
       btnEditDesc.onclick = handleEditLobbyDesc;
     } else if (btnEditDesc) {
       btnEditDesc.classList.add('hidden');
     }
 
-    if (globalIsSuperAdmin && btnLobbyStats) {
+    if (effIsSuperAdmin && btnLobbyStats) {
       btnLobbyStats.classList.remove('hidden');
     } else if (btnLobbyStats) {
       btnLobbyStats.classList.add('hidden');
     }
 
-    if (globalIsSuperAdmin && btnSystemLogs) {
+    if (effIsSuperAdmin && btnSystemLogs) {
       btnSystemLogs.classList.remove('hidden');
     } else if (btnSystemLogs) {
       btnSystemLogs.classList.add('hidden');
     }
 
-    if (globalIsSuperAdmin && btnEasterEgg) {
+    if (effIsSuperAdmin && btnEasterEgg) {
       btnEasterEgg.classList.remove('hidden');
     } else if (btnEasterEgg) {
       btnEasterEgg.classList.add('hidden');
@@ -1762,6 +1817,8 @@ function renderDetail(gameId, preserveScroll = false) {
     window.scrollTo(0, 0);
   }
   
+  const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = getEffectiveRole();
+
   const normalize = s => (s||'').replace(/\s+/g, '');
   const autoStr = normalize([game.date, game.time, game.location].filter(Boolean).join(''));
   const isAutoTitle = normalize(game.title) === autoStr || game.title === '羽球接龍';
@@ -1786,7 +1843,7 @@ function renderDetail(gameId, preserveScroll = false) {
     };
   }
 
-  if (globalIsAdmin) {
+  if (effIsAdmin) {
     if (btnCloseGame) btnCloseGame.classList.remove('hidden');
     if (btnEditGame) {
       btnEditGame.classList.remove('hidden');
@@ -1817,7 +1874,7 @@ function renderDetail(gameId, preserveScroll = false) {
   
   detailList.innerHTML = actionRowHtml;
   
-  if (globalIsSuperAdmin) {
+  if (effIsSuperAdmin) {
     let pushListBtn = document.getElementById('admin-push-list-btn');
     if (!pushListBtn) {
       pushListBtn = document.createElement('button');
@@ -1855,7 +1912,7 @@ function renderDetail(gameId, preserveScroll = false) {
      detailList.innerHTML += `<div class="game-note">${escapeHTML(game.note)}</div>`;
   }
   
-  if (globalIsAdmin) {
+  if (effIsAdmin) {
     const adminSettingHtml = `
       <div class="admin-setting-row" style="margin-top: 10px; margin-bottom: 12px; padding: 8px 12px; background-color: #f0f7ff; border: 1px solid #cce3f5; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
         <span style="font-size: 13px; color: #1565c0; font-weight: bold;">⚙️ 管理員設定</span>
@@ -1927,8 +1984,8 @@ function renderDetail(gameId, preserveScroll = false) {
     for (let i = 0; i < sec.limit; i++) {
       if (i < sec.list.length) {
         const name = sec.list[i];
-        const isMe = game.myRegisteredNames && game.myRegisteredNames.includes(name);
         const displayName = (name === '__ANON__') ? '***' : name;
+        const isMe = (game.myRegisteredNames && game.myRegisteredNames.includes(name)) || (currentUser && (currentUser.displayName === name || currentUser.displayName === displayName));
         const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
         
         const canCancel = name !== '__ANON__';
@@ -1936,16 +1993,16 @@ function renderDetail(gameId, preserveScroll = false) {
         const isPaid = game.paidMap && game.paidMap[name];
         let paidHtml = '';
         if (canCancel) {
-          if (globalIsAdmin) {
+          if (effIsAdmin) {
             paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
           } else if (isPaid) {
             paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
           }
         }
 
-        const allowUserNoteEdit = game.allowUserNoteEdit !== false;
+        const allowUserNoteEdit = game.allowUserNoteEdit === true;
         const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
-        const canEditNote = globalIsAdmin || (allowUserNoteEdit && isMe);
+        const canEditNote = effIsAdmin || (allowUserNoteEdit && isMe);
         let noteHtml = '';
         if (canCancel) {
           if (canEditNote) {
@@ -1956,7 +2013,7 @@ function renderDetail(gameId, preserveScroll = false) {
         }
         
         let moveHtml = '';
-        if (globalIsAdmin) {
+        if (effIsAdmin) {
           const canMoveUp = i > 0;
           const canMoveDown = i < sec.list.length - 1;
           moveHtml = `
@@ -1992,8 +2049,8 @@ function renderDetail(gameId, preserveScroll = false) {
       secDiv.innerHTML += `<h3 style="margin-top:20px; color:#ff9800">候補名單</h3>`;
       for (let i = sec.limit; i < sec.list.length; i++) {
         const name = sec.list[i];
-        const isMe = game.myRegisteredNames && game.myRegisteredNames.includes(name);
         const displayName = (name === '__ANON__') ? '***' : name;
+        const isMe = (game.myRegisteredNames && game.myRegisteredNames.includes(name)) || (currentUser && (currentUser.displayName === name || currentUser.displayName === displayName));
         const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
         
         const canCancel = name !== '__ANON__';
@@ -2001,16 +2058,16 @@ function renderDetail(gameId, preserveScroll = false) {
         const isPaid = game.paidMap && game.paidMap[name];
         let paidHtml = '';
         if (canCancel) {
-          if (globalIsAdmin) {
+          if (effIsAdmin) {
             paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
           } else if (isPaid) {
             paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
           }
         }
         
-        const allowUserNoteEdit = game.allowUserNoteEdit !== false;
+        const allowUserNoteEdit = game.allowUserNoteEdit === true;
         const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
-        const canEditNote = globalIsAdmin || (allowUserNoteEdit && isMe);
+        const canEditNote = effIsAdmin || (allowUserNoteEdit && isMe);
         let noteHtml = '';
         if (canCancel) {
           if (canEditNote) {
@@ -2021,7 +2078,7 @@ function renderDetail(gameId, preserveScroll = false) {
         }
 
         let moveHtml = '';
-        if (globalIsAdmin) {
+        if (effIsAdmin) {
           const canMoveUp = i > 0;
           const canMoveDown = i < sec.list.length - 1;
           moveHtml = `

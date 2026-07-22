@@ -2962,9 +2962,13 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       game.allowUserNoteEdit = !!req.body.allow;
     } else if (action === 'updateNote' || action === 'setNote') {
-      const allowUserNoteEdit = game.allowUserNoteEdit !== false;
+      const allowUserNoteEdit = game.allowUserNoteEdit === true;
       const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
-      const isOwner = (registeredUid && registeredUid === uid) || (name === operatorName);
+      const userRegisteredName = uidToNameMap.get(`${gameId}_${uid}`);
+      const isOwner = (registeredUid && registeredUid === uid) ||
+                      (userRegisteredName && userRegisteredName === name) ||
+                      (name === operatorName) ||
+                      (req.body.name && req.body.name === name);
       if (!isAdmin && (!allowUserNoteEdit || !isOwner)) {
         return res.status(403).json({ error: '目前尚未開放參加者修改備註或無權限修改' });
       }
