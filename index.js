@@ -2317,17 +2317,6 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
     setTimeout(() => {
       if (pinballRoom.status === 'playing') {
         pinballPhysics.startRace();
-        
-        // Start 100ms authoritative server sync interval
-        if (global.pinballSyncInterval) clearInterval(global.pinballSyncInterval);
-        global.pinballSyncInterval = setInterval(() => {
-          if (pinballRoom.status === 'playing') {
-            const syncData = pinballPhysics.getSyncState();
-            io.emit('pinball_server_sync', syncData);
-          } else {
-            clearInterval(global.pinballSyncInterval);
-          }
-        }, 100);
       }
     }, 5000);
   }, 5000);

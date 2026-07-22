@@ -334,8 +334,9 @@ function initPinballEngine() {
         if (ball.speed < 0.5) {
           ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
           if (ball.plugin.stuckFrames > 40) {
+            const nudgeX = ((ball.plugin.num || 1) % 2 === 0) ? 3.0 : -3.0;
             Matter.Body.setVelocity(ball, {
-              x: (seededRandom() - 0.5) * 6,
+              x: nudgeX,
               y: -2.0
             });
             ball.plugin.stuckFrames = 0;
@@ -1184,7 +1185,8 @@ function startRace() {
 function bindPinballSocket(s) {
   window.pinballSocket = s;
   s.on('pinball_server_sync', (syncData) => {
-    if (!pbBalls || !pbState || pbState.status === 'idle') return;
+    // Pure 60 FPS local physics during race to eliminate mobile rubberbanding & replay completely
+    if (!pbBalls || !pbState || pbState.status === 'idle' || pbState.status === 'playing') return;
     Object.keys(syncData).forEach(name => {
       if (pbBalls[name]) {
         const sd = syncData[name];
