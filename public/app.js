@@ -1917,7 +1917,7 @@ function renderDetail(gameId, preserveScroll = false) {
       <div class="admin-setting-row" style="margin-top: 10px; margin-bottom: 12px; padding: 8px 12px; background-color: #f0f7ff; border: 1px solid #cce3f5; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
         <span style="font-size: 13px; color: #1565c0; font-weight: bold;">⚙️ 管理員設定</span>
         <label style="font-size: 12px; color: #333; cursor: pointer; display: flex; align-items: center; user-select: none;">
-          <input type="checkbox" ${game.allowUserNoteEdit === true ? 'checked' : ''} onchange="handleToggleAllowUserNoteEdit('${game.gameId}', this.checked)" style="margin-right: 6px; cursor: pointer;">
+          <input type="checkbox" ${game.allowUserNoteEdit !== false ? 'checked' : ''} onchange="handleToggleAllowUserNoteEdit('${game.gameId}', this.checked)" style="margin-right: 6px; cursor: pointer;">
           開放參加者自訂備註
         </label>
       </div>
@@ -2000,7 +2000,7 @@ function renderDetail(gameId, preserveScroll = false) {
           }
         }
 
-        const allowUserNoteEdit = game.allowUserNoteEdit === true;
+        const allowUserNoteEdit = game.allowUserNoteEdit !== false;
         const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
         const canEditNote = effIsAdmin || (allowUserNoteEdit && isMe);
         let noteHtml = '';
@@ -2065,7 +2065,7 @@ function renderDetail(gameId, preserveScroll = false) {
           }
         }
         
-        const allowUserNoteEdit = game.allowUserNoteEdit === true;
+        const allowUserNoteEdit = game.allowUserNoteEdit !== false;
         const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
         const canEditNote = effIsAdmin || (allowUserNoteEdit && isMe);
         let noteHtml = '';
@@ -3317,7 +3317,7 @@ function showEditGameForm(gameId) {
   document.getElementById('eg-backup').value = section.backupLimit || 0;
   document.getElementById('eg-ended').checked = !!game.isManualEnded;
   const egAllowUserNoteEditEl = document.getElementById('eg-allow-user-note-edit');
-  if (egAllowUserNoteEditEl) egAllowUserNoteEditEl.checked = game.allowUserNoteEdit === true;
+  if (egAllowUserNoteEditEl) egAllowUserNoteEditEl.checked = game.allowUserNoteEdit !== false;
   document.getElementById('eg-note').value = game.note || '';
   
   // Format timestamps to datetime-local
