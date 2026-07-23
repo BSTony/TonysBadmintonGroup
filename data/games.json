@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784805409898,
+    "lastActiveTime": 1784805450386,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1041,11 +1041,18 @@
           "Emily🙈🙉🙊",
           "Winnie",
           "Sean",
-          "嘉舜"
+          "嘉舜",
+          "陳俊傑 (Jeremy)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/23 19:17",
+        "name": "陳俊傑 (Jeremy)",
+        "operator": "陳俊傑 (Jeremy)",
+        "action": "+1"
+      },
       {
         "time": "07/23 03:32",
         "name": "嘉舜",
