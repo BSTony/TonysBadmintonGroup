@@ -437,8 +437,30 @@ function initPinballEngine() {
     // 1. Draw the road surface underneath
     if (trackPathPoints.length > 0) {
       ctx.lineJoin = 'round';
-      ctx.lineCap = 'butt';
+      ctx.lineCap = 'round';
       
+      // Outer Guardrail / Track Outer Border (Smooth continuous outer margin)
+      ctx.beginPath();
+      trackPathPoints.forEach((p, i) => {
+        const sp = toScreen(p.x, p.y);
+        if (i === 0) ctx.moveTo(sp.x, sp.y);
+        else ctx.lineTo(sp.x, sp.y);
+      });
+      ctx.strokeStyle = '#7f8c8d'; // Guardrail outer border color
+      ctx.lineWidth = (TRACK_WIDTH + 24) * scaleX;
+      ctx.stroke();
+
+      // Outer Guardrail Inner Trim (White highlight line)
+      ctx.beginPath();
+      trackPathPoints.forEach((p, i) => {
+        const sp = toScreen(p.x, p.y);
+        if (i === 0) ctx.moveTo(sp.x, sp.y);
+        else ctx.lineTo(sp.x, sp.y);
+      });
+      ctx.strokeStyle = '#bdc3c7';
+      ctx.lineWidth = (TRACK_WIDTH + 14) * scaleX;
+      ctx.stroke();
+
       // Road shadow
       ctx.beginPath();
       trackPathPoints.forEach((p, i) => {
@@ -446,18 +468,18 @@ function initPinballEngine() {
         if (i === 0) ctx.moveTo(sp.x, sp.y);
         else ctx.lineTo(sp.x, sp.y);
       });
-      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-      ctx.lineWidth = (TRACK_WIDTH + 10) * scaleX;
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = (TRACK_WIDTH + 6) * scaleX;
       ctx.stroke();
 
-      // Main Road
+      // Main Road (Grey asphalt)
       ctx.beginPath();
       trackPathPoints.forEach((p, i) => {
         const sp = toScreen(p.x, p.y);
         if (i === 0) ctx.moveTo(sp.x, sp.y);
         else ctx.lineTo(sp.x, sp.y);
       });
-      ctx.strokeStyle = '#9e9e9e'; // Grey asphalt
+      ctx.strokeStyle = '#4a4a4a'; // Darker grey asphalt
       ctx.lineWidth = TRACK_WIDTH * scaleX;
       ctx.stroke();
 
@@ -479,7 +501,7 @@ function initPinballEngine() {
         if (i === 0) ctx.moveTo(sp.x, sp.y);
         else ctx.lineTo(sp.x, sp.y);
       });
-      ctx.strokeStyle = '#7f8c8d';
+      ctx.strokeStyle = '#616161';
       ctx.lineWidth = (TRACK_WIDTH - 14) * scaleX;
       ctx.stroke();
 
@@ -999,14 +1021,14 @@ function buildTopDownTrack(W) {
       isStatic: true,
       friction: 0.0,
       restitution: 0.2, // Less bouncy so they don't jump the wall
-      render: { fillStyle: '#bdc3c7', strokeStyle: '#bdc3c7', lineWidth: 1 }
+      render: { visible: false }
     }));
 
     bodies.push(Bodies.circle(rightX, rightY, wallThickness / 2, {
       isStatic: true,
       friction: 0.0,
       restitution: 0.2,
-      render: { fillStyle: '#bdc3c7', strokeStyle: '#bdc3c7', lineWidth: 1 }
+      render: { visible: false }
     }));
   }
 
@@ -1185,8 +1207,11 @@ function startRace() {
 function bindPinballSocket(s) {
   window.pinballSocket = s;
   s.on('pinball_server_sync', (syncData) => {
-    // Pure 60 FPS local physics during race to eliminate mobile rubberbanding & replay completely
-    if (!pbBalls || !pbState || pbState.status === 'idle' || pbState.status === 'playing') return;
+    if (!pbBalls || !pbState || pbState.status === 'idle') return;
+    
+    // Host calculates authoritative physics; non-superadmin clients smoothly sync to host positions
+    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) return;
+
     Object.keys(syncData).forEach(name => {
       if (pbBalls[name]) {
         const sd = syncData[name];
@@ -1198,12 +1223,15 @@ function bindPinballSocket(s) {
           if (distSq > 4000) {
             // Teleport if huge displacement
             Matter.Body.setPosition(b, { x: sd.x, y: sd.y });
-          } else if (distSq > 9) {
-            // Smooth 15% LERP: 0 rubberband, zero stutter, 100% perfect multi-device sync!
+          } else if (distSq > 0.25) {
+            // Smooth 25% LERP: 0 rubberband, zero stutter, 100% perfect multi-device sync!
             Matter.Body.setPosition(b, {
-              x: b.position.x + dx * 0.15,
-              y: b.position.y + dy * 0.15
+              x: b.position.x + dx * 0.25,
+              y: b.position.y + dy * 0.25
             });
+          }
+          if (typeof sd.vx === 'number' && typeof sd.vy === 'number') {
+            Matter.Body.setVelocity(b, { x: sd.vx, y: sd.vy });
           }
         }
       }

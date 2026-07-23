@@ -4334,13 +4334,21 @@ const btnCloseParticipants = document.getElementById('btn-close-participants');
 
 if (btnShowParticipants && participantsPanel) {
   btnShowParticipants.addEventListener('click', () => {
-    participantsPanel.classList.toggle('hidden');
+    const isHidden = participantsPanel.classList.contains('hidden') || participantsPanel.style.display === 'none';
+    if (isHidden) {
+      participantsPanel.classList.remove('hidden');
+      participantsPanel.style.display = 'flex';
+    } else {
+      participantsPanel.classList.add('hidden');
+      participantsPanel.style.display = 'none';
+    }
   });
 }
 
 if (btnCloseParticipants && participantsPanel) {
   btnCloseParticipants.addEventListener('click', () => {
     participantsPanel.classList.add('hidden');
+    participantsPanel.style.display = 'none';
     // Also close the color picker if open
     const colorPickerUi = document.getElementById('pinball-color-picker-ui');
     if (colorPickerUi) colorPickerUi.classList.add('hidden');
