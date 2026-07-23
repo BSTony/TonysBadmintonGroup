@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784805397833,
+    "lastActiveTime": 1784805409898,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1007,7 +1007,8 @@
       "Winnie": false,
       "嘉舜": true,
       "永曄": true,
-      "江こう 洋々": true
+      "江こう 洋々": true,
+      "孟錡": true
     },
     "sections": [
       {
