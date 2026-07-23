@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784775108700,
+    "lastActiveTime": 1784805320561,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1004,7 +1004,8 @@
       "Ashley": true,
       "Jim": true,
       "John": true,
-      "Winnie": false
+      "Winnie": false,
+      "嘉舜": true
     },
     "sections": [
       {
