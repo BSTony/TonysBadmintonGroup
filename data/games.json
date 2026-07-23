@@ -1226,7 +1226,7 @@
         "action": "+1"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "allowUserNoteEdit": true,
     "noteMap": {
       "Tony": "青茶正常冰微糖",
