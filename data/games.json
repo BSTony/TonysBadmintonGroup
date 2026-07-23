@@ -1538,7 +1538,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1784816101376,
+    "lastActiveTime": 1784849765864,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1579,8 +1579,17 @@
           "Wayne",
           "Ong",
           "Ashley",
-          "John"
+          "John",
+          "楊程鈞"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/24 07:36",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1"
       }
     ]
   }
