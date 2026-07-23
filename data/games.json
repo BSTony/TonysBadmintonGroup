@@ -984,7 +984,7 @@
     "tag": "4面,25人",
     "active": true,
     "startTime": 1784210595452,
-    "lastActiveTime": 1784807484589,
+    "lastActiveTime": 1784809017559,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1011,7 +1011,8 @@
       "孟錡": true,
       "Gary": true,
       "JS Shi": true,
-      "Win Shu": true
+      "Win Shu": true,
+      "偉舫": true
     },
     "sections": [
       {
