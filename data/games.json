@@ -1407,7 +1407,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1784706590724,
+    "lastActiveTime": 1784787879764,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1447,11 +1447,18 @@
           "陳宜蓁",
           "YANG 阿傑",
           "Sean柏宏",
-          "周哲儁"
+          "周哲儁",
+          "小羅"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/23 14:24",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "+1"
+      },
       {
         "time": "07/22 15:49",
         "name": "周哲儁",
