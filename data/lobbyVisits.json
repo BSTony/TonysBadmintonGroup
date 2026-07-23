@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 1989,
+    "viewCount": 1990,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -557,8 +557,8 @@
       "U88ae9c79ca7f2ef9d91e7678fecf4416": {
         "displayName": "腳皮",
         "firstVisit": 1783823707569,
-        "count": 21,
-        "lastVisit": 1784429769514
+        "count": 22,
+        "lastVisit": 1784836171110
       },
       "U09dc6234acf423e3dcac7842dd890939": {
         "displayName": "蔡旻峰",
@@ -754,6 +754,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1784836171110,
+        "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+        "displayName": "腳皮",
+        "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
+      },
       {
         "time": 1784820819499,
         "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
@@ -1947,12 +1953,6 @@
         "userId": "U04307fbd1087e54ce656086b653a60fd",
         "displayName": "黃政豪",
         "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
-      },
-      {
-        "time": 1784472774478,
-        "userId": "U7c381eceb3dee900bbd30b986a0f8357",
-        "displayName": "陳宜蓁",
-        "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
       }
     ]
   },
