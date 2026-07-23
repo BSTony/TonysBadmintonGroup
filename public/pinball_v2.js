@@ -31,6 +31,22 @@ var pinballStatusText = document.getElementById('pinball-status-text');
 var pinballStatusTimer = document.getElementById('pinball-status-timer');
 var pinballSpectatorUi = pinballSpectatorUi || document.getElementById('pinball-spectator-ui');
 
+function isPinballHostRole() {
+  if (typeof getEffectiveRole === 'function') {
+    const role = getEffectiveRole();
+    return !!(role && (role.isAdmin || role.isSuperAdmin));
+  }
+  return !!((typeof globalIsAdmin !== 'undefined' && globalIsAdmin) || (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin));
+}
+
+function isPinballHost() {
+  if (!isPinballHostRole()) return false;
+  if (typeof pbState !== 'undefined' && pbState && pbState.hostSocketId && window.pinballSocket) {
+    return window.pinballSocket.id === pbState.hostSocketId;
+  }
+  return true;
+}
+
 // Track Constants
 const TRACK_WIDTH = 200;
 // Logical start Y fixed to match server (1000 * 0.65 = 650)
@@ -38,7 +54,7 @@ let START_Y = 650;
 // Logical width fixed to match server
 const LOGICAL_WIDTH = 800;
 const MARBLE_RADIUS = 12;
-const GRAVITY_Y = 0.8;
+const GRAVITY_Y = 0.64;
 
 // Sine wave path points for custom rendering
 let trackPathPoints = [];
@@ -279,11 +295,16 @@ function initPinballEngine() {
       if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
 
       if (ball && finish) {
-        if (!pbState.finished.includes(ball.plugin.name)) {
+        // ONLY Host screen registers official finish line crossings
+        const isAdmin = isPinballHost();
+        if (isAdmin && !pbState.finished.includes(ball.plugin.name)) {
           fetch('/api/pinball/finish', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: ball.plugin.name })
+            body: JSON.stringify({
+              name: ball.plugin.name,
+              socketId: window.pinballSocket ? window.pinballSocket.id : null
+            })
           });
         }
       }
@@ -781,7 +802,7 @@ function initPinballEngine() {
         shouldDrop = true;
       } else if (body.plugin && body.plugin.isBall) {
         const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-        const isAdmin = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin);
+        const isAdmin = isPinballHost();
         if (!isAdmin && body.plugin.name !== myName) {
           shouldDrop = true;
         }
@@ -813,7 +834,7 @@ function initPinballEngine() {
         return;
       }
       const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-      const isAdmin = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin);
+      const isAdmin = isPinballHost();
       if (!isAdmin && body.plugin.name !== myName) {
         drop(); // Deny dragging someone else's ball
       }
@@ -1064,7 +1085,21 @@ function updateDynamicLeaderboard() {
   if (!dynBoard || !dynList) return;
 
   const allBalls = Object.values(pbBalls);
-  const sortedAll = [...allBalls].sort((a, b) => b.position.y - a.position.y);
+  const finishedOrder = pbState.finished || [];
+  const sortedAll = [...allBalls].sort((a, b) => {
+    const nameA = a.plugin.name;
+    const nameB = b.plugin.name;
+    const idxA = finishedOrder.indexOf(nameA);
+    const idxB = finishedOrder.indexOf(nameB);
+    
+    if (idxA !== -1 && idxB !== -1) {
+      return idxA - idxB; // Both finished: sort strictly by official finish order!
+    }
+    if (idxA !== -1) return -1; // A finished, B not: A comes first
+    if (idxB !== -1) return 1;  // B finished, A not: B comes first
+    
+    return b.position.y - a.position.y; // Neither finished: sort by Y position (furthest down)
+  });
   
   // Find current user's rank
   let myName = typeof currentUser !== 'undefined' && currentUser ? currentUser.displayName : null;
@@ -1186,7 +1221,7 @@ function syncBalls(state) {
 function startRace() {
   window.pinballRaceStarted = true;
   if (!pbEngine) return;
-  pbEngine.gravity.y = 1.1; // Increased by 30%+ for thrilling speed
+  pbEngine.gravity.y = 0.88; // Reduced by 20% for smooth readable race speed
   
   if (startGateBody) {
     Matter.World.remove(pbEngine.world, startGateBody);
@@ -1202,15 +1237,43 @@ function startRace() {
   lastCameraSwitch = Date.now();
   pbRender.bounds.min.y = 0;
   pbRender.bounds.max.y = pbRender.options.height;
+
+  // Host emits high-frequency position sync to all player screens
+  if (isPinballHost()) {
+    if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
+    window.pinballSyncInterval = setInterval(() => {
+      if (pbState && pbState.status === 'playing' && window.pinballRaceStarted && pbBalls && window.pinballSocket) {
+        const syncData = {};
+        let hasBalls = false;
+        for (const name in pbBalls) {
+          const b = pbBalls[name];
+          if (b && b.position) {
+            syncData[name] = {
+              x: Math.round(b.position.x * 10) / 10,
+              y: Math.round(b.position.y * 10) / 10,
+              vx: Math.round(b.velocity.x * 100) / 100,
+              vy: Math.round(b.velocity.y * 100) / 100,
+              a: Math.round(b.angle * 100) / 100,
+              av: Math.round(b.angularVelocity * 100) / 100
+            };
+            hasBalls = true;
+          }
+        }
+        if (hasBalls) {
+          window.pinballSocket.emit('pinball_host_sync', syncData);
+        }
+      }
+    }, 50); // 20 updates per second
+  }
 }
 
 function bindPinballSocket(s) {
   window.pinballSocket = s;
-  s.on('pinball_server_sync', (syncData) => {
+  s.on('pinball_host_sync', (syncData) => {
     if (!pbBalls || !pbState || pbState.status === 'idle') return;
     
-    // Host calculates authoritative physics; non-superadmin clients smoothly sync to host positions
-    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) return;
+    // Host calculates authoritative physics; non-host clients smoothly sync to host positions
+    if (isPinballHost()) return;
 
     Object.keys(syncData).forEach(name => {
       if (pbBalls[name]) {
@@ -1223,15 +1286,21 @@ function bindPinballSocket(s) {
           if (distSq > 4000) {
             // Teleport if huge displacement
             Matter.Body.setPosition(b, { x: sd.x, y: sd.y });
-          } else if (distSq > 0.25) {
-            // Smooth 25% LERP: 0 rubberband, zero stutter, 100% perfect multi-device sync!
+          } else if (distSq > 0.01) {
+            // Smooth 35% LERP interpolation
             Matter.Body.setPosition(b, {
-              x: b.position.x + dx * 0.25,
-              y: b.position.y + dy * 0.25
+              x: b.position.x + dx * 0.35,
+              y: b.position.y + dy * 0.35
             });
           }
           if (typeof sd.vx === 'number' && typeof sd.vy === 'number') {
             Matter.Body.setVelocity(b, { x: sd.vx, y: sd.vy });
+          }
+          if (typeof sd.a === 'number') {
+            Matter.Body.setAngle(b, sd.a);
+          }
+          if (typeof sd.av === 'number') {
+            Matter.Body.setAngularVelocity(b, sd.av);
           }
         }
       }
@@ -1307,9 +1376,13 @@ function bindPinballSocket(s) {
       return; // Stop processing further state
     }
 
-    if (state.status === 'lobby' || state.status === 'instruction') {
+    if (state.status === 'lobby' || state.status === 'instruction' || state.status === 'finished') {
       window.pinballRaceStarted = false;
-      if (pbEngine && !startGateBody) {
+      if (window.pinballSyncInterval) {
+        clearInterval(window.pinballSyncInterval);
+        window.pinballSyncInterval = null;
+      }
+      if (pbEngine && !startGateBody && state.status !== 'finished') {
         startGateBody = Matter.Bodies.rectangle(LOGICAL_WIDTH / 2, START_Y + 95, LOGICAL_WIDTH * 2, 200, {
           isStatic: true,
           render: { visible: false },
@@ -1530,7 +1603,7 @@ function bindPinballSocket(s) {
         if (btnJoinPinball) btnJoinPinball.classList.add('hidden');
 
       const btnShake = document.getElementById('btn-pinball-shake');
-      if (btnShake && typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+      if (btnShake && isPinballHost()) {
         btnShake.classList.remove('hidden');
         if (!btnShake.hasListener) {
           btnShake.hasListener = true;
@@ -1608,9 +1681,16 @@ function bindPinballSocket(s) {
         const scoreList = document.getElementById('pinball-score-list');
         if (popup && scoreList) {
           scoreList.innerHTML = '';
-          // Sort by scores descending
           const scores = state.scores || {};
-          const sortedPlayers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+          const finishedOrder = state.finished || [];
+          const sortedPlayers = [...state.pool].sort((a, b) => {
+            const idxA = finishedOrder.indexOf(a);
+            const idxB = finishedOrder.indexOf(b);
+            if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+            if (idxA !== -1) return -1;
+            if (idxB !== -1) return 1;
+            return (scores[b] || 0) - (scores[a] || 0);
+          });
           
           sortedPlayers.forEach((p, i) => {
             const li = document.createElement('li');
@@ -1618,17 +1698,17 @@ function bindPinballSocket(s) {
             li.style.display = 'flex';
             li.style.justifyContent = 'space-between';
             const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
-            li.innerHTML = `<span>${rank} ${p}</span> <span style="color:#f1c40f; font-weight:bold;">${scores[p]} 分</span>`;
+            const pScore = scores[p] || 0;
+            li.innerHTML = `<span>${rank} ${p}</span> <span style="color:#f1c40f; font-weight:bold;">${pScore} 分</span>`;
             scoreList.appendChild(li);
           });
           popup.classList.remove('hidden');
           
-          // 超管顯示「再來一場/結束比賽」按鈕組，一般使用者顯示等待文字
           const superadminActions = document.getElementById('pinball-superadmin-actions');
           const waitingText = document.getElementById('pinball-waiting-admin-text');
           const closeBtn = document.getElementById('btn-pinball-close-popup');
           
-          if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
+          if (isPinballHost()) {
             if (superadminActions) {
               superadminActions.style.display = 'flex';
               superadminActions.classList.remove('hidden');
@@ -1649,7 +1729,15 @@ function bindPinballSocket(s) {
       if (popup && scoreList && state.finished && state.pool && state.finished.length >= state.pool.length) {
         scoreList.innerHTML = '';
         const scores = state.scores || {};
-        const sortedPlayers = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+        const finishedOrder = state.finished || [];
+        const sortedPlayers = [...state.pool].sort((a, b) => {
+          const idxA = finishedOrder.indexOf(a);
+          const idxB = finishedOrder.indexOf(b);
+          if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+          if (idxA !== -1) return -1;
+          if (idxB !== -1) return 1;
+          return (scores[b] || 0) - (scores[a] || 0);
+        });
         
         sortedPlayers.forEach((p, i) => {
           const li = document.createElement('li');
@@ -1658,7 +1746,8 @@ function bindPinballSocket(s) {
           li.style.justifyContent = 'space-between';
           li.style.padding = '8px 0';
           const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
-          li.innerHTML = `<span>${rank} ${p}</span> <span style="color:#f1c40f; font-weight:bold;">${scores[p]} 分</span>`;
+          const pScore = scores[p] || 0;
+          li.innerHTML = `<span>${rank} ${p}</span> <span style="color:#f1c40f; font-weight:bold;">${pScore} 分</span>`;
           scoreList.appendChild(li);
         });
         popup.classList.remove('hidden');
@@ -1668,7 +1757,7 @@ function bindPinballSocket(s) {
         const waitingText = document.getElementById('pinball-waiting-admin-text');
         const closeBtn = document.getElementById('btn-pinball-close-popup');
         
-        const isAdmin = (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin);
+        const isAdmin = isPinballHost();
         if (isAdmin) {
           if (superadminActions) {
             superadminActions.style.display = 'flex';

@@ -11,7 +11,7 @@ const PB_WIDTH = 800;
 const PB_START_Y = Math.floor(1000 * 0.65); // 650
 const PB_TRACK_WIDTH = 200;
 const PB_MARBLE_RADIUS = 12;
-const PB_GRAVITY_Y = 1.6; // Increased by 30%+ for faster, more thrilling racing
+const PB_GRAVITY_Y = 0.88; // Reduced by 20% for smooth readable race speed
 
 let prngState = 12345;
 function setSeed(s) { prngState = s; }

@@ -2046,6 +2046,7 @@ io.on('connection', (socket) => {
       }
     });
   socket.on('pinball_host_sync', (data) => {
+    if (pinballRoom.hostSocketId && socket.id !== pinballRoom.hostSocketId) return;
     socket.broadcast.emit('pinball_host_sync', data);
   });
 
@@ -2291,14 +2292,17 @@ app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
 });
 
 app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
-    const { uid, winnerLimit, allowControls } = req.body;
-    pinballRoom.allowControls = allowControls !== false;
+  const { uid, winnerLimit, allowControls, socketId } = req.body;
+  pinballRoom.allowControls = allowControls !== false;
+  pinballRoom.hostSocketId = socketId || null;
+  pinballRoom.hostUid = uid || null;
+
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
   pinballRoom.winnerLimit = winnerLimit || 3;
   pinballRoom.finished = [];
   pinballRoom.seed = Math.floor(Math.random() * 1000000);
-  pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, handlePinballFinish);
+  pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, null);
 
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
@@ -2331,6 +2335,7 @@ app.post('/api/admin/pinball/stop', express.json(), (req, res) => {
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
   pinballRoom.status = 'lobby';
+  pinballRoom.hostSocketId = null;
   pinballPhysics.stopEngine();
   io.emit('pinball_state', pinballRoom);
   res.json({ success: true });
@@ -2341,6 +2346,7 @@ app.post('/api/admin/pinball/reset', express.json(), (req, res) => {
   if (!uid || !isSuperAdmin(uid)) return res.status(403).json({ error: 'Permission denied' });
   
   pinballRoom.status = 'lobby';
+  pinballRoom.hostSocketId = null;
   pinballRoom.round = (pinballRoom.round || 1) + 1; // Increment round
   pinballRoom.seed = Math.floor(Math.random() * 1000000); // Generate new track
   pinballRoom.finished = [];
@@ -2351,7 +2357,10 @@ app.post('/api/admin/pinball/reset', express.json(), (req, res) => {
 });
 
 app.post('/api/pinball/finish', express.json(), (req, res) => {
-  const { name } = req.body;
+  const { name, socketId } = req.body;
+  if (pinballRoom.hostSocketId && socketId && socketId !== pinballRoom.hostSocketId) {
+    return res.json({ success: false, error: 'Not designated host' });
+  }
   if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(name)) {
     pinballRoom.finished.push(name);
     
@@ -2367,6 +2376,22 @@ app.post('/api/pinball/finish', express.json(), (req, res) => {
     if (!pinballRoom.scores) pinballRoom.scores = {};
     if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
     pinballRoom.scores[name] += points;
+
+    // Safety Fallback: 60s after 1st place finishes (in case a ball is permanently stuck)
+    if (rank === 1) {
+      if (global.pinballEndTimer) clearTimeout(global.pinballEndTimer);
+      global.pinballEndTimer = setTimeout(() => {
+        if (pinballRoom.status === 'playing') {
+          pinballRoom.status = 'finished';
+          io.emit('pinball_state', pinballRoom);
+        }
+      }, 60000);
+    }
+
+    if (pinballRoom.finished.length >= pinballRoom.pool.length) {
+      if (global.pinballEndTimer) clearTimeout(global.pinballEndTimer);
+      pinballRoom.status = 'finished';
+    }
 
     io.emit('pinball_state', pinballRoom);
   }

@@ -4536,7 +4536,12 @@ if (btnPinballAdminStart) {
       const res = await fetch('/api/admin/pinball/start-sequence', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: currentUser.userId, winnerLimit: limit, allowControls: document.getElementById('pinball-allow-controls') ? document.getElementById('pinball-allow-controls').checked : true })
+        body: JSON.stringify({
+          uid: currentUser.userId,
+          winnerLimit: limit,
+          allowControls: document.getElementById('pinball-allow-controls') ? document.getElementById('pinball-allow-controls').checked : true,
+          socketId: window.pinballSocket ? window.pinballSocket.id : null
+        })
       });
       const data = await res.json();
       if (!data.success) alert(data.error);
