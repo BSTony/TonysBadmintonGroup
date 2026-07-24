@@ -1,0 +1,112 @@
+[
+  {
+    "id": "zr_001",
+    "category": "古早味沖泡",
+    "name": "傳統油蔥麵茶",
+    "price": 150,
+    "unit": "袋",
+    "description": "鹿港傳承古早味，香濃順口，早餐與下午茶首選！",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10532819.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_002",
+    "category": "古早味沖泡",
+    "name": "無糖杏仁麵茶",
+    "price": 180,
+    "unit": "袋",
+    "description": "無添加蔗糖，濃香杏仁搭配傳統麵茶，健康無負擔。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10553346.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_003",
+    "category": "古早味沖泡",
+    "name": "養生黑芝麻粉",
+    "price": 220,
+    "unit": "罐",
+    "description": "低溫烘焙現磨，高鈣高纖，補給每日營養所需。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10532819.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_004",
+    "category": "傳統點心",
+    "name": "招牌手工爆米香 (黑糖口味)",
+    "price": 120,
+    "unit": "包",
+    "description": "傳統壓力爆香，淋上天然黑糖，酥脆不黏牙。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10553346.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_005",
+    "category": "傳統點心",
+    "name": "養生紫米爆米香",
+    "price": 135,
+    "unit": "包",
+    "description": "嚴選台灣在地黑糙米（紫米），卡滋卡滋滿滿花青素。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10532819.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_006",
+    "category": "傳統點心",
+    "name": "古早味小麥花生酥",
+    "price": 150,
+    "unit": "包",
+    "description": "濃郁花生香氣搭配爆小麥，辦公室最愛零嘴。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10553346.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_007",
+    "category": "低溫堅果",
+    "name": "原味綜合堅果 (低溫烘焙)",
+    "price": 350,
+    "unit": "罐",
+    "description": "含腰果、核桃、杏仁果、夏威夷豆，無鹽無油低溫烘焙。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10532819.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_008",
+    "category": "低溫堅果",
+    "name": "頂級原味腰果 (特大粒)",
+    "price": 320,
+    "unit": "罐",
+    "description": "嚴選特大顆腰果，自然甜味，飽滿酥脆。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10553346.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_009",
+    "category": "冷壓油品/抹醬",
+    "name": "純天然冷壓黑麻油",
+    "price": 480,
+    "unit": "瓶",
+    "description": "100% 嚴選黑芝麻低溫冷壓，溫補料理絕佳首選。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10532819.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  },
+  {
+    "id": "zr_010",
+    "category": "冷壓油品/抹醬",
+    "name": "無糖純黑芝麻醬 (現磨)",
+    "price": 250,
+    "unit": "罐",
+    "description": "完全無添加糖與油，現磨濃郁滑順，塗麵包沖泡皆宜。",
+    "imageUrl": "https://cdn.store-assets.com/s/1255165/f/10553346.jpg",
+    "linkUrl": "https://zrsh1986.com",
+    "linkText": "點我進入展榮官網"
+  }
+]

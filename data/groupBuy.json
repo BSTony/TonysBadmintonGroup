@@ -1,0 +1,1637 @@
+{
+  "default": {
+    "active": true,
+    "title": "🛒 展榮商號團購",
+    "notice": "最晚 MMM/DD截止",
+    "paymentSettings": {
+      "linePayLink": "https://zrsh1986.com",
+      "linePayQrUrl": "https://cdn.store-assets.com/s/1255165/f/10532819.jpg",
+      "bankCode": "822",
+      "bankName": "中國信託",
+      "bankAccount": "1234-5678-9012",
+      "bankAccountName": ""
+    },
+    "items": [
+      {
+        "id": "zr_0000",
+        "category": "堅果類",
+        "name": "松子",
+        "price": 585,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0001",
+        "category": "堅果類",
+        "name": "夏威夷果",
+        "price": 325,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0002",
+        "category": "堅果類",
+        "name": "南瓜子",
+        "price": 190,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0003",
+        "category": "堅果類",
+        "name": "胡桃",
+        "price": 275,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0004",
+        "category": "堅果類",
+        "name": "杏仁果",
+        "price": 229,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0005",
+        "category": "堅果類",
+        "name": "核桃",
+        "price": 195,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0006",
+        "category": "堅果類",
+        "name": "腰果",
+        "price": 229,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0007",
+        "category": "堅果類",
+        "name": "原味花生米",
+        "price": 140,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0008",
+        "category": "堅果類",
+        "name": "鹹香花生米",
+        "price": 140,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0009",
+        "category": "堅果類",
+        "name": "綜合堅果",
+        "price": 229,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0010",
+        "category": "堅果類",
+        "name": "日曬果仁",
+        "price": 360,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0011",
+        "category": "堅果類",
+        "name": "帶皮腰果",
+        "price": 325,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0012",
+        "category": "堅果類",
+        "name": "帶殼夏威夷果",
+        "price": 325,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0013",
+        "category": "堅果類",
+        "name": "福利品-碎堅果",
+        "price": 355,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0014",
+        "category": "堅果類",
+        "name": "職人堅果(原味)",
+        "price": 695,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0015",
+        "category": "堅果類",
+        "name": "職人堅果(鹹香)",
+        "price": 695,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0016",
+        "category": "無糖類",
+        "name": "黑米粉",
+        "price": 170,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0017",
+        "category": "無糖類",
+        "name": "黃豆粉",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0018",
+        "category": "無糖類",
+        "name": "純豆漿粉",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0019",
+        "category": "無糖類",
+        "name": "青仁黑豆粉",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0020",
+        "category": "無糖類",
+        "name": "黃金亞麻仁籽粉",
+        "price": 205,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0021",
+        "category": "無糖類",
+        "name": "南瓜子粉",
+        "price": 305,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0022",
+        "category": "無糖類",
+        "name": "紅薏仁粉",
+        "price": 170,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0023",
+        "category": "無糖類",
+        "name": "四神粉",
+        "price": 335,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0024",
+        "category": "無糖類",
+        "name": "杏仁粉(兩者)",
+        "price": 305,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0025",
+        "category": "無糖類",
+        "name": "美國杏仁粉",
+        "price": 185,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0026",
+        "category": "無糖類",
+        "name": "小麥胚芽粉(粗)",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0027",
+        "category": "無糖類",
+        "name": "小麥胚芽粉(細)",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0028",
+        "category": "無糖類",
+        "name": "椰子細粉",
+        "price": 220,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0029",
+        "category": "無糖類",
+        "name": "椰子粉(椰蓉)",
+        "price": 155,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0030",
+        "category": "無糖類",
+        "name": "奇亞籽(顆粒)",
+        "price": 175,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0031",
+        "category": "無糖類",
+        "name": "奇亞籽粉",
+        "price": 185,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0032",
+        "category": "無糖類",
+        "name": "洋車前子",
+        "price": 185,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0033",
+        "category": "無糖類",
+        "name": "可可",
+        "price": 195,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0034",
+        "category": "無糖類",
+        "name": "葛鬱金粉",
+        "price": 185,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0035",
+        "category": "無糖類",
+        "name": "蓮藕粉",
+        "price": 360,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0036",
+        "category": "無糖類",
+        "name": "紐西蘭奶粉",
+        "price": 355,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0037",
+        "category": "無糖類",
+        "name": "黑多寶",
+        "price": 185,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0038",
+        "category": "無糖類",
+        "name": "30種堅果粉",
+        "price": 335,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0039",
+        "category": "無糖類",
+        "name": "25種多穀雜糧粉",
+        "price": 235,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0040",
+        "category": "無糖類",
+        "name": "15種四十種十穀粉",
+        "price": 175,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0041",
+        "category": "無糖類",
+        "name": "七穀粉",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0042",
+        "category": "無糖類",
+        "name": "花東糙米麩",
+        "price": 145,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0043",
+        "category": "無糖類",
+        "name": "堅果擂茶",
+        "price": 165,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0044",
+        "category": "蔬果系列",
+        "name": "芋頭伯",
+        "price": 90,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0045",
+        "category": "蔬果系列",
+        "name": "香蕉片-焦糖",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0046",
+        "category": "蔬果系列",
+        "name": "香蕉片-原味",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0047",
+        "category": "蔬果系列",
+        "name": "脆薯叔",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0048",
+        "category": "蔬果系列",
+        "name": "脆菇菇",
+        "price": 110,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0049",
+        "category": "蔬果系列",
+        "name": "敏豆條",
+        "price": 100,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0050",
+        "category": "蔬果系列",
+        "name": "菠蘿蜜",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0051",
+        "category": "蔬果系列",
+        "name": "黃秋葵",
+        "price": 100,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0052",
+        "category": "蔬果系列",
+        "name": "蔬果脆條",
+        "price": 155,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0053",
+        "category": "果乾系列",
+        "name": "野生藍莓乾",
+        "price": 410,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0054",
+        "category": "果乾系列",
+        "name": "酸櫻桃乾",
+        "price": 260,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0055",
+        "category": "果乾系列",
+        "name": "杏桃乾",
+        "price": 259,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0056",
+        "category": "果乾系列",
+        "name": "無花果乾",
+        "price": 199,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0057",
+        "category": "果乾系列",
+        "name": "椰棗乾",
+        "price": 175,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0058",
+        "category": "果乾系列",
+        "name": "黃金葡萄乾",
+        "price": 160,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0059",
+        "category": "果乾系列",
+        "name": "青提子果乾",
+        "price": 160,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0060",
+        "category": "果乾系列",
+        "name": "大葡萄乾",
+        "price": 115,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0061",
+        "category": "果乾系列",
+        "name": "小葡萄乾",
+        "price": 115,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0062",
+        "category": "果乾系列",
+        "name": "蔓越莓乾",
+        "price": 179,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0063",
+        "category": "果乾系列",
+        "name": "綜合莓果",
+        "price": 179,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0064",
+        "category": "芝麻粒系列",
+        "name": "黑芝麻粒",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0065",
+        "category": "芝麻粒系列",
+        "name": "白芝麻粒",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0066",
+        "category": "芝麻粒系列",
+        "name": "黑白芝麻粒",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0067",
+        "category": "藜麥系列",
+        "name": "紅藜麥片",
+        "price": 205,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0068",
+        "category": "藜麥系列",
+        "name": "紅藜麥-生",
+        "price": 205,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0069",
+        "category": "藜麥系列",
+        "name": "三色藜麥-生",
+        "price": 205,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0070",
+        "category": "藜麥系列",
+        "name": "三色藜麥粉",
+        "price": 260,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0071",
+        "category": "油品系列",
+        "name": "特級冷壓初榨橄欖油",
+        "price": 489,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0072",
+        "category": "油品系列",
+        "name": "黃金亞麻仁油",
+        "price": 239,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0073",
+        "category": "油品系列",
+        "name": "印加果油",
+        "price": 420,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0074",
+        "category": "油品系列",
+        "name": "酪梨油",
+        "price": 390,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0075",
+        "category": "油品系列",
+        "name": "花生油(小)",
+        "price": 159,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0076",
+        "category": "油品系列",
+        "name": "黑芝麻油(小)",
+        "price": 159,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0077",
+        "category": "油品系列",
+        "name": "黑芝麻油",
+        "price": 350,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0078",
+        "category": "油品系列",
+        "name": "純苦茶油",
+        "price": 800,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0079",
+        "category": "油品系列",
+        "name": "冷壓初榨椰子油",
+        "price": 270,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0080",
+        "category": "隨身包(10入)",
+        "name": "鹿港麵茶",
+        "price": 150,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0081",
+        "category": "隨身包(10入)",
+        "name": "黑多寶",
+        "price": 185,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0082",
+        "category": "隨身包(10入)",
+        "name": "49穀物",
+        "price": 250,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0083",
+        "category": "隨身包(10入)",
+        "name": "原味麥片",
+        "price": 120,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0084",
+        "category": "隨身包(10入)",
+        "name": "一日堅果",
+        "price": 350,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0085",
+        "category": "隨身包(15入)",
+        "name": "鹿港麵茶",
+        "price": 225,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0086",
+        "category": "隨身包(15入)",
+        "name": "黑多寶",
+        "price": 270,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0087",
+        "category": "隨身包(15入)",
+        "name": "49穀物",
+        "price": 375,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0088",
+        "category": "隨身包(15入)",
+        "name": "原味麥片",
+        "price": 180,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0089",
+        "category": "隨身包(15入)",
+        "name": "一日堅果",
+        "price": 525,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0090",
+        "category": "蛋白/代糖/糖類",
+        "name": "海藻糖",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0091",
+        "category": "蛋白/代糖/糖類",
+        "name": "赤藻糖醇",
+        "price": 170,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0092",
+        "category": "蛋白/代糖/糖類",
+        "name": "L-阿拉伯糖",
+        "price": 505,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0093",
+        "category": "蛋白/代糖/糖類",
+        "name": "台灣黑糖",
+        "price": 90,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0094",
+        "category": "蛋白/代糖/糖類",
+        "name": "台灣冰糖",
+        "price": 90,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0095",
+        "category": "蛋白/代糖/糖類",
+        "name": "大豆蛋白",
+        "price": 115,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0096",
+        "category": "蛋白/代糖/糖類",
+        "name": "豌豆蛋白",
+        "price": 165,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0097",
+        "category": "蛋白/代糖/糖類",
+        "name": "乳清蛋白-濃縮",
+        "price": 305,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0098",
+        "category": "蛋白/代糖/糖類",
+        "name": "乳清蛋白-水解",
+        "price": 335,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0099",
+        "category": "茶包系列",
+        "name": "台灣黑豆茶 (20入)",
+        "price": 205,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0100",
+        "category": "茶包系列",
+        "name": "台灣黑豆茶 (10入)",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0101",
+        "category": "茶包系列",
+        "name": "黑豆決明子",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0102",
+        "category": "茶包系列",
+        "name": "台灣黑米",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0103",
+        "category": "茶包系列",
+        "name": "花東玄米茶",
+        "price": 110,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0104",
+        "category": "茶包系列",
+        "name": "萬丹紅豆茶",
+        "price": 110,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0105",
+        "category": "茶包系列",
+        "name": "黃金蕎麥茶",
+        "price": 110,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0106",
+        "category": "茶包系列",
+        "name": "黑糖薑母茶",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0107",
+        "category": "茶包系列",
+        "name": "東籬菊花茶",
+        "price": 135,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0108",
+        "category": "茶包系列",
+        "name": "大麥茶",
+        "price": 79,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0109",
+        "category": "茶包系列",
+        "name": "決明子茶",
+        "price": 79,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0110",
+        "category": "茶包系列",
+        "name": "大麥決明子茶",
+        "price": 79,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0111",
+        "category": "薑黃/肉桂/咖啡",
+        "name": "紅薑黃粉",
+        "price": 219,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0112",
+        "category": "薑黃/肉桂/咖啡",
+        "name": "薑黃膠囊",
+        "price": 129,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0113",
+        "category": "薑黃/肉桂/咖啡",
+        "name": "肉桂粉",
+        "price": 250,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0114",
+        "category": "薑黃/肉桂/咖啡",
+        "name": "即溶咖啡粉",
+        "price": 200,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0115",
+        "category": "麥片/糙米",
+        "name": "麥片-黑糖",
+        "price": 130,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0116",
+        "category": "麥片/糙米",
+        "name": "麥片-海苔",
+        "price": 130,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0117",
+        "category": "麥片/糙米",
+        "name": "糙米-黑糖",
+        "price": 130,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0118",
+        "category": "麥片/糙米",
+        "name": "糙米-海苔",
+        "price": 130,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0119",
+        "category": "酥糖/麻荖等",
+        "name": "黑芝麻酥",
+        "price": 165,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0120",
+        "category": "酥糖/麻荖等",
+        "name": "小麥花生酥",
+        "price": 185,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0121",
+        "category": "酥糖/麻荖等",
+        "name": "南瓜子酥",
+        "price": 245,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0122",
+        "category": "酥糖/麻荖等",
+        "name": "杏仁酥",
+        "price": 245,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0123",
+        "category": "酥糖/麻荖等",
+        "name": "黑芝麻軟糖",
+        "price": 165,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0124",
+        "category": "酥糖/麻荖等",
+        "name": "南棗核桃糕",
+        "price": 205,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0125",
+        "category": "酥糖/麻荖等",
+        "name": "原味黑豆粒",
+        "price": 139,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0126",
+        "category": "酥糖/麻荖等",
+        "name": "綜合豆仔",
+        "price": 139,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0127",
+        "category": "酥糖/麻荖等",
+        "name": "五香蒟蒻條",
+        "price": 115,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0128",
+        "category": "酥糖/麻荖等",
+        "name": "冰糖乳酪絲",
+        "price": 220,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0129",
+        "category": "酥糖/麻荖等",
+        "name": "綜合荖",
+        "price": 155,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0130",
+        "category": "酥糖/麻荖等",
+        "name": "杏仁荖",
+        "price": 195,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0131",
+        "category": "酥糖/麻荖等",
+        "name": "芝麻荖",
+        "price": 135,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0132",
+        "category": "酥糖/麻荖等",
+        "name": "花生荖",
+        "price": 165,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0133",
+        "category": "酥糖/麻荖等",
+        "name": "米荖",
+        "price": 135,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0134",
+        "category": "酥糖/麻荖等",
+        "name": "焦糖爆米花",
+        "price": 145,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0135",
+        "category": "酥糖/麻荖等",
+        "name": "巧克力爆米花",
+        "price": 145,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0136",
+        "category": "酥糖/麻荖等",
+        "name": "奶油鹽巴爆米花",
+        "price": 145,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0137",
+        "category": "酥糖/麻荖等",
+        "name": "黑麥片",
+        "price": 90,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0138",
+        "category": "酥糖/麻荖等",
+        "name": "麥片-粗",
+        "price": 65,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0139",
+        "category": "酥糖/麻荖等",
+        "name": "麥片-細",
+        "price": 65,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0140",
+        "category": "米果/穀脆",
+        "name": "小米果-花東糯米",
+        "price": 120,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0141",
+        "category": "米果/穀脆",
+        "name": "小米果-彩虹藜麥",
+        "price": 120,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0142",
+        "category": "米果/穀脆",
+        "name": "小米果-台灣黑米",
+        "price": 120,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0143",
+        "category": "米果/穀脆",
+        "name": "小米果-薏仁果",
+        "price": 120,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0144",
+        "category": "米果/穀脆",
+        "name": "穀脆餅",
+        "price": 120,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0145",
+        "category": "米果/穀脆",
+        "name": "爆蝦餅",
+        "price": 120,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0146",
+        "category": "米香/米粒",
+        "name": "爆量花生白米米香",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0147",
+        "category": "米香/米粒",
+        "name": "五穀芝麻米香",
+        "price": 85,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0148",
+        "category": "米香/米粒",
+        "name": "芝麻花生白米米香",
+        "price": 85,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0149",
+        "category": "米香/米粒",
+        "name": "原味白米米香",
+        "price": 75,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0150",
+        "category": "米香/米粒",
+        "name": "全麥芝麻花生米香",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0151",
+        "category": "米香/米粒",
+        "name": "肉桂芝麻白米米香",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0152",
+        "category": "米香/米粒",
+        "name": "脆糖腰果米香",
+        "price": 225,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0153",
+        "category": "米香/米粒",
+        "name": "脆糖堅果米香",
+        "price": 225,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0154",
+        "category": "米香/米粒",
+        "name": "白米粒",
+        "price": 75,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0155",
+        "category": "米香/米粒",
+        "name": "糙米粒",
+        "price": 75,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0156",
+        "category": "米香/米粒",
+        "name": "黑糯米粒",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0157",
+        "category": "米香/米粒",
+        "name": "紅薏仁粒",
+        "price": 105,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0158",
+        "category": "醬類",
+        "name": "黑芝麻醬(500ml)",
+        "price": 300,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0159",
+        "category": "醬類",
+        "name": "黑芝麻醬(345ml)",
+        "price": 210,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0160",
+        "category": "醬類",
+        "name": "白芝麻醬(345ml)",
+        "price": 210,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0161",
+        "category": "醬類",
+        "name": "堅果醬(345ml)",
+        "price": 320,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0162",
+        "category": "醬類",
+        "name": "滑順花生醬(345ml)",
+        "price": 175,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0163",
+        "category": "醬類",
+        "name": "顆粒花生醬(345ml)",
+        "price": 175,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0164",
+        "category": "蕎麥粒/瓜子",
+        "name": "開心果",
+        "price": 325,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0165",
+        "category": "蕎麥粒/瓜子",
+        "name": "水煮葵瓜子(五香)",
+        "price": 130,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0166",
+        "category": "蕎麥粒/瓜子",
+        "name": "水煮葵瓜子(焦糖)",
+        "price": 130,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0167",
+        "category": "蕎麥粒/瓜子",
+        "name": "黃金蕎麥粒",
+        "price": 170,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0168",
+        "category": "冰糖類",
+        "name": "黑多寶",
+        "price": 185,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0169",
+        "category": "冰糖類",
+        "name": "30種堅果粉",
+        "price": 335,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0170",
+        "category": "冰糖類",
+        "name": "25種多穀雜糧粉",
+        "price": 235,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0171",
+        "category": "冰糖類",
+        "name": "15種四十種十穀粉",
+        "price": 170,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0172",
+        "category": "冰糖類",
+        "name": "七穀粉",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0173",
+        "category": "冰糖類",
+        "name": "花東糙米麩",
+        "price": 145,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0174",
+        "category": "冰糖類",
+        "name": "油蔥麵茶",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0175",
+        "category": "冰糖類",
+        "name": "芝麻麵茶",
+        "price": 125,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0176",
+        "category": "冰糖類",
+        "name": "杏仁麵茶",
+        "price": 155,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      },
+      {
+        "id": "zr_0177",
+        "category": "冰糖類",
+        "name": "堅果擂茶",
+        "price": 165,
+        "unit": "份",
+        "description": "",
+        "contents": ""
+      }
+    ],
+    "orders": {
+      "U_TEST_PLAYER_d5htc": {
+        "userId": "U_TEST_PLAYER_d5htc",
+        "userName": "Test Player d5htc",
+        "userPhone": "",
+        "items": {
+          "zr_0000": 1,
+          "zr_0004": 1
+        },
+        "totalAmount": 814,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "updatedAt": 1784881638350
+      }
+    }
+  }
+}

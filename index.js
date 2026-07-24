@@ -29,6 +29,90 @@ const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const LOBBY_VISITS_FILE = path.join(DATA_DIR, 'lobbyVisits.json');
 const EASTER_EGG_FILE = path.join(DATA_DIR, 'easterEggSettings.json');
+const GROUP_BUY_FILE = path.join(DATA_DIR, 'groupBuy.json');
+const DEFAULT_MENU_FILE = path.join(DATA_DIR, 'defaultMenu.json');
+
+let defaultMenuItems = [];
+let groupBuyData = {}; // { [gid]: { active: false, title: "", notice: "", paymentSettings: {}, items: [], orders: {} } }
+
+function getZhanRongDefaultItems() {
+  return [
+    { id: 'zr_001', category: '古早味沖泡', name: '傳統油蔥麵茶', price: 150, unit: '袋', description: '鹿港傳承古早味，香濃順口，早餐與下午茶首選！', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_002', category: '古早味沖泡', name: '無糖杏仁麵茶', price: 180, unit: '袋', description: '無添加蔗糖，濃香杏仁搭配傳統麵茶，健康無負擔。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_003', category: '古早味沖泡', name: '養生黑芝麻粉', price: 220, unit: '罐', description: '低溫烘焙現磨，高鈣高纖，補給每日營養所需。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_004', category: '傳統點心', name: '招牌手工爆米香 (黑糖口味)', price: 120, unit: '包', description: '傳統壓力爆香，淋上天然黑糖，酥脆不黏牙。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_005', category: '傳統點心', name: '養生紫米爆米香', price: 135, unit: '包', description: '嚴選台灣在地黑糙米（紫米），卡滋卡滋滿滿花青素。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_006', category: '傳統點心', name: '古早味小麥花生酥', price: 150, unit: '包', description: '濃郁花生香氣搭配爆小麥，辦公室最愛零嘴。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_007', category: '低溫堅果', name: '原味綜合堅果 (低溫烘焙)', price: 350, unit: '罐', description: '含腰果、核桃、杏仁果、夏威夷豆，無鹽無油低溫烘焙。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_008', category: '低溫堅果', name: '頂級原味腰果 (特大粒)', price: 320, unit: '罐', description: '嚴選特大顆腰果，自然甜味，飽滿酥脆。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_009', category: '冷壓油品/抹醬', name: '純天然冷壓黑麻油', price: 480, unit: '瓶', description: '100% 嚴選黑芝麻低溫冷壓，溫補料理絕佳首選。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_010', category: '冷壓油品/抹醬', name: '無糖純黑芝麻醬 (現磨)', price: 250, unit: '罐', description: '完全無添加糖與油，現磨濃郁滑順，塗麵包沖泡皆宜。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' }
+  ];
+}
+
+function loadGroupBuyStorage() {
+  if (fs.existsSync(DEFAULT_MENU_FILE)) {
+    try {
+      defaultMenuItems = JSON.parse(fs.readFileSync(DEFAULT_MENU_FILE, 'utf8'));
+    } catch(e) { console.error('載入 defaultMenu.json 失敗:', e.message); }
+  }
+  if (fs.existsSync(GROUP_BUY_FILE)) {
+    try {
+      groupBuyData = JSON.parse(fs.readFileSync(GROUP_BUY_FILE, 'utf8'));
+    } catch(e) { console.error('載入 groupBuy.json 失敗:', e.message); }
+  }
+  if (!groupBuyData['default'] || !Array.isArray(groupBuyData['default'].items) || groupBuyData['default'].items.length === 0) {
+    groupBuyData['default'] = {
+      active: false,
+      title: '🛒 展榮商號 鹿港傳承團購專區 (1986)',
+      notice: '',
+      paymentSettings: {
+        linePayLink: 'https://zrsh1986.com',
+        linePayQrUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg',
+        bankCode: '822',
+        bankName: '中國信託',
+        bankAccount: '1234-5678-9012',
+        bankAccountName: '展榮商號'
+      },
+      items: getZhanRongDefaultItems(),
+      orders: {}
+    };
+    saveGroupBuyStorage();
+  }
+}
+
+async function saveGroupBuyStorage() {
+  try {
+    const jsonStr = JSON.stringify(groupBuyData, null, 2);
+    await fs.promises.writeFile(GROUP_BUY_FILE, jsonStr, 'utf8');
+  } catch(e) { console.error('儲存 groupBuy.json 失敗:', e.message); }
+}
+
+function getGroupBuyInfo(gid) {
+  if (!gid) gid = 'default';
+  if (!groupBuyData[gid] || !Array.isArray(groupBuyData[gid].items) || groupBuyData[gid].items.length === 0) {
+    const defaultData = groupBuyData['default'] || {};
+    groupBuyData[gid] = {
+      active: true,
+      title: defaultData.title || '🛒 展榮商號 鹿港傳承團購專區 (1986)',
+      notice: defaultData.notice || '',
+      paymentSettings: defaultData.paymentSettings || {
+        linePayLink: 'https://zrsh1986.com',
+        linePayQrUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg',
+        bankCode: '822',
+        bankName: '中國信託',
+        bankAccount: '1234-5678-9012',
+        bankAccountName: '展榮商號'
+      },
+      items: (Array.isArray(defaultData.items) && defaultData.items.length > 0)
+        ? JSON.parse(JSON.stringify(defaultData.items))
+        : getZhanRongDefaultItems(),
+      orders: groupBuyData[gid]?.orders || {}
+    };
+    saveGroupBuyStorage();
+  }
+  return groupBuyData[gid];
+}
 
 let lobbyVisits = {}; // { gid: { viewCount: 0, uniqueViewers: {}, logs: [] } }
 let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
@@ -89,6 +173,9 @@ async function loadData() {
       if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
     } catch(e) {}
   }
+  loadGroupBuyStorage();
+
+  loadGroupBuyStorage();
 
   // Then try to load from GitHub if configured
   if (USE_GITHUB) {
@@ -876,6 +963,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
     res.setHeader('Expires', '0');
   }
 }));
+app.use(express.json());
 
 // 全域存儲：支援多群組、多區段
 let games = {};
@@ -1461,6 +1549,125 @@ function notifySSEClients(gameOrGid) {
   }
 }
 
+// --- 團購專區 (Group Buy) API 端點 ---
+app.get('/api/groupbuy/:gid', (req, res) => {
+  const gid = req.params.gid;
+  const info = getGroupBuyInfo(gid);
+  res.json({ success: true, gid, data: info });
+});
+
+app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
+  const gid = req.params.gid;
+  const { uid, active } = req.body || {};
+  const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
+  if (!isAdmin) {
+    return res.status(403).json({ error: '沒有管理員權限' });
+  }
+  const info = getGroupBuyInfo(gid);
+  info.active = typeof active === 'boolean' ? active : !info.active;
+  await saveGroupBuyStorage();
+  io.emit('group_buy_state_updated', { gid, data: info });
+  notifySSEClients(gid);
+  res.json({ success: true, active: info.active });
+});
+
+app.post('/api/groupbuy/:gid/settings', async (req, res) => {
+  const gid = req.params.gid;
+  const { uid, title, notice, paymentSettings, items } = req.body || {};
+  const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
+  if (!isAdmin) {
+    return res.status(403).json({ error: '沒有管理員權限' });
+  }
+  const info = getGroupBuyInfo(gid);
+  if (typeof title === 'string') info.title = title.trim();
+  if (typeof notice === 'string') info.notice = notice.trim();
+  if (paymentSettings && typeof paymentSettings === 'object') {
+    info.paymentSettings = { ...info.paymentSettings, ...paymentSettings };
+  }
+  if (Array.isArray(items)) {
+    info.items = items;
+  }
+  await saveGroupBuyStorage();
+  io.emit('group_buy_state_updated', { gid, data: info });
+  notifySSEClients(gid);
+  res.json({ success: true, data: info });
+});
+
+app.post('/api/groupbuy/:gid/order', async (req, res) => {
+  const gid = req.params.gid;
+  const { uid, userName, userPhone, items, paymentMethod, paymentNote, note } = req.body || {};
+  if (!uid || !userName) {
+    return res.status(400).json({ error: '請提供下單姓名' });
+  }
+  const info = getGroupBuyInfo(gid);
+  if (!info.active) {
+    return res.status(400).json({ error: '目前團購未開放' });
+  }
+  let totalAmount = 0;
+  if (items && typeof items === 'object') {
+    for (const [itemId, qty] of Object.entries(items)) {
+      const p = info.items.find(i => i.id === itemId);
+      if (p && qty > 0) {
+        totalAmount += (p.price || 0) * qty;
+      }
+    }
+  }
+  const existingOrder = info.orders[uid] || {};
+  info.orders[uid] = {
+    userId: uid,
+    userName: userName.trim(),
+    userPhone: userPhone.trim(),
+    items: items || {},
+    totalAmount,
+    paymentMethod: paymentMethod || 'p2p_linepay',
+    paymentStatus: 'unverified',
+    orderStatus: 'unconfirmed',
+    paymentNote: paymentNote || '',
+    note: note || '',
+    updatedAt: Date.now(),
+    lastConfirmedItems: existingOrder.lastConfirmedItems
+  };
+  await saveGroupBuyStorage();
+  io.emit('group_buy_state_updated', { gid, data: info });
+  notifySSEClients(gid);
+  res.json({ success: true, order: info.orders[uid] });
+});
+
+app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
+  const gid = req.params.gid;
+  const { uid, targetUid, status } = req.body || {};
+  const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
+  if (!isAdmin) {
+    return res.status(403).json({ error: '沒有管理員權限' });
+  }
+  const info = getGroupBuyInfo(gid);
+  if (info.orders[targetUid]) {
+    info.orders[targetUid].paymentStatus = status === 'paid' ? 'paid' : 'unverified';
+    if (status === 'paid') {
+      info.orders[targetUid].lastConfirmedItems = JSON.parse(JSON.stringify(info.orders[targetUid].items || {}));
+    }
+    await saveGroupBuyStorage();
+    io.emit('group_buy_state_updated', { gid, data: info });
+    notifySSEClients(gid);
+  }
+  res.json({ success: true });
+});
+
+app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
+  const gid = req.params.gid;
+  const { uid } = req.body || {};
+  const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
+  if (!isAdmin) {
+    return res.status(403).json({ error: '沒有管理員權限' });
+  }
+  const info = getGroupBuyInfo(gid);
+  info.orders = {};
+  await saveGroupBuyStorage();
+  io.emit('group_buy_state_updated', { gid, data: info });
+  notifySSEClients(gid);
+  res.json({ success: true });
+});
+
 app.get('/api/game/:gid', async (req, res) => {
   const gid = req.params.gid;
   await ensureGroupSettings(gid);
@@ -2020,6 +2227,20 @@ io.on('connection', (socket) => {
   socket.emit('party_state', partyRoom);
   socket.emit('lottery_state', lotteryRoom);
   socket.emit('pinball_state', pinballRoom);
+
+  socket.on('group_buy_get', ({ gid }) => {
+    socket.emit('group_buy_state', { gid, data: getGroupBuyInfo(gid) });
+  });
+
+  socket.on('group_buy_toggle', async ({ gid, uid, active }) => {
+    const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
+    if (!isAdmin) return;
+    const info = getGroupBuyInfo(gid);
+    info.active = typeof active === 'boolean' ? active : !info.active;
+    await saveGroupBuyStorage();
+    io.emit('group_buy_state_updated', { gid, data: info });
+    notifySSEClients(gid);
+  });
 
   
     socket.on('pinball_push_ball', (data) => {
@@ -4457,7 +4678,224 @@ async function gracefulShutdown() {
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
-// 啟動服務器
+app.use(express.json());
+
+// ==========================================
+// 🛒 團購專區 API 端點 (Group Buy REST APIs)
+// ==========================================
+
+// 取得所有團購列表 (支援多團購活動同時呈現於大廳)
+app.get('/api/groupbuy_list', (req, res) => {
+  const list = Object.entries(groupBuyData).map(([id, gb]) => ({
+    id,
+    active: !!gb.active,
+    title: gb.title || '團購專區',
+    notice: gb.notice || '',
+    itemCount: Array.isArray(gb.items) ? gb.items.length : 0,
+    orderCount: gb.orders ? Object.keys(gb.orders).length : 0
+  }));
+  res.json({ success: true, list });
+});
+
+// 管理員建立全新團購活動
+app.post('/api/groupbuy_create', async (req, res) => {
+  const { title, items } = req.body || {};
+  const newGid = 'gb_' + Date.now();
+  const defaultData = groupBuyData['default'] || {};
+  
+  groupBuyData[newGid] = {
+    id: newGid,
+    active: false,
+    title: title || '🛒 全新團購活動專區',
+    notice: '📢 歡迎選購！請填寫姓名電話，送出後請完成轉帳。',
+    paymentSettings: defaultData.paymentSettings || {
+      linePayLink: '',
+      linePayQrUrl: '',
+      bankCode: '822',
+      bankName: '中國信託',
+      bankAccount: '1234-5678-9012',
+      bankAccountName: '團購主辦人'
+    },
+    items: Array.isArray(items) && items.length > 0 ? items : getZhanRongDefaultItems(),
+    orders: {}
+  };
+
+  await saveGroupBuyStorage();
+  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid: newGid, data: groupBuyData[newGid] });
+  res.json({ success: true, gid: newGid, data: groupBuyData[newGid] });
+});
+
+// 取得該群組團購狀態
+app.get('/api/groupbuy/:gid', (req, res) => {
+  const gid = req.params.gid || 'default';
+  const data = getGroupBuyInfo(gid);
+  res.json({ success: true, data });
+});
+
+// 開啟/關閉團購
+app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { uid, active } = req.body;
+  const gb = getGroupBuyInfo(gid);
+  gb.active = !!active;
+  await saveGroupBuyStorage();
+  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  res.json({ success: true, active: gb.active });
+});
+
+// 儲存團購設定
+app.post('/api/groupbuy/:gid/settings', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { uid, title, notice, paymentSettings, items } = req.body;
+  const gb = getGroupBuyInfo(gid);
+  if (title !== undefined) gb.title = title;
+  if (notice !== undefined) gb.notice = notice;
+  if (paymentSettings) gb.paymentSettings = { ...gb.paymentSettings, ...paymentSettings };
+  if (Array.isArray(items)) gb.items = items;
+  await saveGroupBuyStorage();
+  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  res.json({ success: true, data: gb });
+});
+
+// 儲存為「一鍵帶入」預設範本
+app.post('/api/groupbuy/:gid/save_preset', async (req, res) => {
+  const { items, presetName } = req.body || {};
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ success: false, error: '無效的商品資料' });
+  }
+  defaultMenuItems = items;
+  try {
+    const dataToSave = { presetName: presetName || '展榮商號 鹿港傳承名產', items };
+    await fs.promises.writeFile(DEFAULT_MENU_FILE, JSON.stringify(dataToSave, null, 2), 'utf8');
+    res.json({ success: true, count: items.length, presetName: dataToSave.presetName });
+  } catch(e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// 新增或編輯商品品項
+app.post('/api/groupbuy/:gid/item/save', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { uid, item } = req.body;
+  if (!item || !item.name || item.price === undefined) {
+    return res.status(400).json({ success: false, error: '缺少商品名稱或價格' });
+  }
+
+  const gb = getGroupBuyInfo(gid);
+  if (!Array.isArray(gb.items)) gb.items = [];
+
+  const existingIdx = gb.items.findIndex(i => i.id === item.id);
+  const itemObj = {
+    id: item.id || 'gb_item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+    name: item.name,
+    price: Number(item.price) || 0,
+    category: item.category || '自訂商品',
+    unit: item.unit || '份',
+    description: item.description || '',
+    contents: item.contents || '',
+    imageUrl: item.imageUrl || '',
+    linkUrl: item.linkUrl || '',
+    linkText: item.linkText || '點我進入'
+  };
+
+  if (existingIdx >= 0) {
+    gb.items[existingIdx] = itemObj;
+  } else {
+    gb.items.unshift(itemObj); // 新新增置頂
+  }
+
+  await saveGroupBuyStorage();
+  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  res.json({ success: true, data: itemObj });
+});
+
+// 刪除商品品項
+app.post('/api/groupbuy/:gid/item/delete', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { uid, itemId } = req.body;
+  const gb = getGroupBuyInfo(gid);
+  if (Array.isArray(gb.items)) {
+    gb.items = gb.items.filter(i => i.id !== itemId);
+  }
+  await saveGroupBuyStorage();
+  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  res.json({ success: true });
+});
+
+// 下單
+app.post('/api/groupbuy/:gid/order', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { uid, userName, userPhone, items, paymentMethod, paymentNote, note } = req.body;
+  if (!uid || !userName) {
+    return res.status(400).json({ success: false, error: '缺少使用者資訊' });
+  }
+  const gb = getGroupBuyInfo(gid);
+  if (!gb.orders) gb.orders = {};
+
+  let totalAmount = 0;
+  if (items && gb.items) {
+    for (const [itemId, qty] of Object.entries(items)) {
+      const p = gb.items.find(i => i.id === itemId);
+      if (p && qty > 0) {
+        totalAmount += (p.price || 0) * qty;
+      }
+    }
+  }
+
+  gb.orders[uid] = {
+    userId: uid,
+    userName,
+    userPhone: userPhone || '',
+    items: items || {},
+    totalAmount,
+    paymentMethod: paymentMethod || 'p2p_linepay',
+    paymentNote: paymentNote || '',
+    paymentStatus: 'unverified',
+    note: note || '',
+    updatedAt: new Date().toISOString()
+  };
+
+  await saveGroupBuyStorage();
+  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  res.json({ success: true, order: gb.orders[uid] });
+});
+
+// 標記核對付款
+app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { uid, targetUid, status } = req.body;
+  const gb = getGroupBuyInfo(gid);
+  if (gb.orders && gb.orders[targetUid]) {
+    gb.orders[targetUid].paymentStatus = status || 'paid';
+    await saveGroupBuyStorage();
+    if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  }
+  res.json({ success: true });
+});
+
+// 清空所有訂單
+app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { uid } = req.body;
+  const gb = getGroupBuyInfo(gid);
+  gb.orders = {};
+  await saveGroupBuyStorage();
+  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  res.json({ success: true });
+});
+
+// 刪除單筆訂單
+app.post('/api/groupbuy/:gid/delete_order', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { targetUid } = req.body;
+  const gb = getGroupBuyInfo(gid);
+  if (gb.orders && gb.orders[targetUid]) {
+    delete gb.orders[targetUid];
+    await saveGroupBuyStorage();
+    if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  }
+  res.json({ success: true });
+});
 
 // 隱藏的 debug 端點，用來印出當前記憶體狀態
 app.get('/api/systemLogs', async (req, res) => {

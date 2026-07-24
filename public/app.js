@@ -175,11 +175,12 @@ function getEffectiveRole() {
 function handleRoleSwitch(role) {
   currentSimulatedRole = role;
   sessionStorage.setItem('simulatedRole', role);
-  if (currentGameDetailId && !detailView.classList.contains('hidden')) {
+  if (currentGameDetailId && typeof detailView !== 'undefined' && detailView && !detailView.classList.contains('hidden')) {
     renderDetail(currentGameDetailId, true);
   } else {
     renderLobby();
   }
+  if (typeof fetchGroupBuyData === 'function') fetchGroupBuyData();
 }
 window.handleRoleSwitch = handleRoleSwitch;
 
@@ -386,6 +387,10 @@ function initSocket() {
   if (typeof bindPinballSocket === 'function') {
     bindPinballSocket(socket);
   }
+  
+  socket.on('group_buy_state_updated', (res) => {
+    fetchGroupBuyData();
+  });
   
   socket.on('global_room_state', (state) => {
     window.globalRoomState = state;
@@ -1213,21 +1218,33 @@ async function initializeLiff() {
     // 0. 本機測試模式 (Local Test Mode)
     const testParams = new URLSearchParams(window.location.search);
     const testRole = testParams.get('testRole');
-    if (testRole) {
-      console.log('Running in Local Test Mode:', testRole);
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (testRole || isLocalhost) {
+      console.log('Running in Local Test Mode:', testRole || 'localhost');
       let randomSuffix = Math.random().toString(36).substr(2, 5);
-      let mockUid = 'U_TEST_PLAYER_' + randomSuffix;
-      let mockName = testParams.get('name') || ('Test Player ' + randomSuffix);
+      let mockUid = 'U_SUPER_ADMIN_TEST_ID_' + randomSuffix;
+      let mockName = testParams.get('name') || '超級管理員 (Local Test)';
       
-      if (testRole === 'superadmin') {
-        mockUid = 'U_SUPER_ADMIN_TEST_ID_' + randomSuffix;
-        mockName = testParams.get('name') || 'Super Admin';
+      if (testRole === 'user') {
+        mockUid = 'U_TEST_PLAYER_' + randomSuffix;
+        mockName = testParams.get('name') || ('Test Player ' + randomSuffix);
       } else if (testRole === 'admin') {
         mockUid = 'U_GROUP_ADMIN_TEST_ID_' + randomSuffix;
         mockName = testParams.get('name') || 'Group Admin';
       }
       
       currentUser = { userId: mockUid, displayName: mockName };
+      const urlBuyGid = testParams.get('buy');
+      if (urlBuyGid && !testRole) {
+        globalIsSuperAdmin = false;
+        globalIsAdmin = false;
+        currentUser.displayName = '一般訪客 (Local Test)';
+      } else {
+        globalIsSuperAdmin = (testRole !== 'user');
+        globalIsAdmin = (testRole !== 'user');
+      }
+
       if (typeof initLottery === 'function') {
         initLottery(currentUser.userId);
       }
@@ -1236,7 +1253,13 @@ async function initializeLiff() {
       const h3 = document.getElementById('group-id-display');
       if (h3) h3.innerText = '群組ID: ' + currentGroupId;
       
-      await loadGamesLobby();
+      const buyGid = testParams.get('buy');
+      if (buyGid) {
+        if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
+        openGroupBuyPage(buyGid);
+      } else {
+        await loadGamesLobby();
+      }
       initSocket();
       
       const appDivEl = document.getElementById('app');
@@ -1275,6 +1298,7 @@ async function initializeLiff() {
     // 4. 取得群組 Context
     const urlParams = new URLSearchParams(window.location.search);
     const gidFromUrl = urlParams.get('gid');
+    const buyFromUrl = urlParams.get('buy');
     const context = liff.getContext();
     
     if (gidFromUrl) {
@@ -1310,10 +1334,26 @@ async function initializeLiff() {
 
   } catch (err) {
     console.error('LIFF Init Error:', err);
-    appDiv.className = '';
-    statusMsg.innerText = err.message || '發生錯誤';
-    statusMsg.style.color = '#ff5252';
-    statusMsg.style.display = 'block';
+    try {
+      currentUser = currentUser || { userId: 'U_LOCAL_TEST', displayName: '一般訪客' };
+      globalIsSuperAdmin = false;
+      globalIsAdmin = false;
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const buyFromUrl = urlParams.get('buy');
+      
+      if (buyFromUrl) {
+        if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
+        openGroupBuyPage(buyFromUrl);
+      } else {
+        await loadGamesLobby();
+      }
+      initSocket();
+    } catch(e) {}
+    const appDivEl = document.getElementById('app');
+    if (appDivEl) appDivEl.className = '';
+    const statusMsgEl = document.getElementById('status-msg');
+    if (statusMsgEl) statusMsgEl.style.display = 'none';
   }
 }
 
@@ -1342,6 +1382,9 @@ async function loadGamesLobby(silent = false) {
       globalManagedGroups = data.managedGroups || [];
       globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
       globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+      try {
+        if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
+      } catch(gbErr) { console.error('Fetch group buy error:', gbErr); }
     }
 
     try {
@@ -1485,6 +1528,25 @@ function renderLobby() {
       btnPartyAdmin.classList.remove('hidden');
     } else if (btnPartyAdmin) {
       btnPartyAdmin.classList.add('hidden');
+    }
+
+    const btnGbNav = document.getElementById('btn-group-buy-nav');
+    const gbBanner = document.getElementById('group-buy-banner');
+    const isGbActive = currentGroupBuyData && currentGroupBuyData.active;
+
+    if (btnGbNav) {
+      if (isGbActive || effIsAdmin || effIsSuperAdmin) {
+        btnGbNav.classList.remove('hidden');
+      } else {
+        btnGbNav.classList.add('hidden');
+      }
+    }
+    if (gbBanner) {
+      if (isGbActive) {
+        gbBanner.classList.remove('hidden');
+      } else {
+        gbBanner.classList.add('hidden');
+      }
     }
     
     const createContainer = document.getElementById('admin-create-game-container');
@@ -4576,4 +4638,1647 @@ if (btnPinballAdminStop) {
     } catch(e) { console.error(e); }
   });
 }
+
+// ==========================================
+// 🛒 團購專區 (Group Buy Frontend Module)
+// ==========================================
+let currentGid = 'default';
+let currentGroupBuyData = null;
+let currentCart = {}; // { [itemId]: quantity }
+let draftCart = {}; // { [itemId]: draft_quantity }
+let selectedDetailItem = null;
+let detailQty = 1;
+
+// DOM 元素引用
+const btnGroupBuyNav = document.getElementById('btn-group-buy-nav');
+const groupBuyBanner = document.getElementById('group-buy-banner');
+const btnEnterGroupBuy = document.getElementById('btn-enter-group-buy');
+const groupBuyView = document.getElementById('group-buy-view');
+const btnBackGroupBuy = document.getElementById('btn-back-group-buy');
+
+const gbModalTitle = document.getElementById('gb-modal-title');
+const gbNoticeText = document.getElementById('gb-notice-text');
+
+const gbTabItems = document.getElementById('gb-tab-items');
+const gbTabSummary = document.getElementById('gb-tab-summary');
+const gbTabAdmin = document.getElementById('gb-tab-admin');
+
+const gbPaneItems = document.getElementById('gb-pane-items');
+const gbPaneSummary = document.getElementById('gb-pane-summary');
+const gbPaneAdmin = document.getElementById('gb-pane-admin');
+
+const gbSearchInput = document.getElementById('gb-search-input');
+const gbSearchClear = document.getElementById('gb-search-clear');
+const gbCategoryNav = document.getElementById('gb-category-nav');
+const gbItemsGrid = document.getElementById('gb-items-grid');
+
+const groupBuyCartBar = document.getElementById('groupBuyCartBar');
+const gbCartCount = document.getElementById('gb-cart-count');
+const gbCartSum = document.getElementById('gb-cart-sum');
+const btnGbOpenCheckout = document.getElementById('btn-gb-open-checkout');
+
+// 商品詳情 Modal 元素
+const itemDetailModal = document.getElementById('itemDetailModal');
+const btnCloseItemDetail = document.getElementById('btn-close-item-detail');
+const itemDetailCategory = document.getElementById('item-detail-category');
+const itemDetailName = document.getElementById('item-detail-name');
+const itemDetailPrice = document.getElementById('item-detail-price');
+const itemDetailUnit = document.getElementById('item-detail-unit');
+const itemDetailDesc = document.getElementById('item-detail-desc');
+const itemDetailImgContainer = document.getElementById('item-detail-img-container');
+const itemDetailLinkContainer = document.getElementById('item-detail-link-container');
+const itemDetailLinkBtn = document.getElementById('item-detail-link-btn');
+const itemDetailLinkText = document.getElementById('item-detail-link-text');
+
+const btnDetailQtyMinus = document.getElementById('btn-detail-qty-minus');
+const btnDetailQtyPlus = document.getElementById('btn-detail-qty-plus');
+const detailQtyNum = document.getElementById('detail-qty-display');
+const btnDetailConfirmAdd = document.getElementById('btn-detail-confirm-add');
+
+// 結帳 Modal 元素
+const groupBuyCheckoutModal = document.getElementById('groupBuyCheckoutModal');
+const btnCloseCheckout = document.getElementById('btn-close-checkout');
+const gbUserName = document.getElementById('gb-user-name');
+const gbUserPhone = document.getElementById('gb-user-phone');
+const checkoutItemsList = document.getElementById('checkout-items-list');
+const checkoutTotalSum = document.getElementById('checkout-total-sum');
+const btnSubmitGbOrder = document.getElementById('btn-submit-gb-order');
+
+const paymentDetailsLinepay = document.getElementById('payment-details-linepay');
+const paymentDetailsBank = document.getElementById('payment-details-bank');
+const btnLaunchLinepay = document.getElementById('btn-launch-linepay');
+const gbLinepayQrBox = document.getElementById('gb-linepay-qr-box');
+const gbLinepayQrImg = document.getElementById('gb-linepay-qr-img');
+const gbLinepayNote = document.getElementById('gb-linepay-note');
+
+const gbBankNameDisplay = document.getElementById('gb-bank-name-display');
+const gbBankAccDisplay = document.getElementById('gb-bank-acc-display');
+const gbBankHolderDisplay = document.getElementById('gb-bank-holder-display');
+const btnCopyBankAcc = document.getElementById('btn-copy-bank-acc');
+const gbBankLast5 = document.getElementById('gb-bank-last5');
+const gbOrderNote = document.getElementById('gb-order-note');
+
+// 管理員頁面元素
+const btnGbAdminToggle = document.getElementById('btn-gb-admin-toggle');
+const gbAdminTitleInput = document.getElementById('gb-admin-title-input');
+const gbAdminNoticeInput = document.getElementById('gb-admin-notice-input');
+const gbAdminLinepayLink = document.getElementById('gb-admin-linepay-link');
+const gbAdminLinepayQr = document.getElementById('gb-admin-linepay-qr');
+const gbAdminBankCode = document.getElementById('gb-admin-bank-code');
+const gbAdminBankName = document.getElementById('gb-admin-bank-name');
+const gbAdminBankAccount = document.getElementById('gb-admin-bank-account');
+const gbAdminBankHolder = document.getElementById('gb-admin-bank-holder');
+const btnGbSaveSettings = document.getElementById('btn-gb-save-settings');
+const btnGbCopySummary = document.getElementById('btn-gb-copy-summary');
+const btnGbClearOrders = document.getElementById('btn-gb-clear-orders');
+
+let activeCategoryFilter = '全部';
+let currentSearchQuery = '';
+
+let allGroupBuysList = [];
+
+async function fetchGroupBuyData() {
+  try {
+    const listRes = await fetch('/api/groupbuy_list');
+    if (listRes.ok) {
+      const listResult = await listRes.json();
+      if (listResult.success) {
+        allGroupBuysList = listResult.list || [];
+        renderLobbyGroupBuyBanners(allGroupBuysList);
+        updateCampaignSelectorDropdown(allGroupBuysList);
+      }
+    }
+
+    const targetGid = currentGid || 'default';
+    const res = await fetch(`/api/groupbuy/${targetGid}`);
+    if (res.ok) {
+      const result = await res.json();
+      if (result.success) {
+        renderGroupBuyUI(result.data);
+      }
+    }
+  } catch(e) {
+    console.error('Fetch group buy data failed:', e);
+  }
+}
+
+function renderLobbyGroupBuyBanners(list) {
+  const container = document.getElementById('group-buy-banners-list');
+  const bannerBox = document.getElementById('group-buy-banner');
+  if (!container || !bannerBox) return;
+
+  const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = (typeof getEffectiveRole === 'function') ? getEffectiveRole() : { isAdmin: false, isSuperAdmin: false };
+  const isUserAdmin = effIsAdmin || effIsSuperAdmin;
+
+  const activeGroupBuys = (list || []).filter(gb => gb.active);
+  if (activeGroupBuys.length === 0) {
+    if (isUserAdmin) {
+      bannerBox.classList.remove('hidden');
+      container.innerHTML = `
+        <button class="btn btn-primary" onclick="openGroupBuyPage('default')" style="width: 100%; background: linear-gradient(135deg, #334155 0%, #1e293b 100%); font-weight: bold; border-radius: 14px; font-size: 15px; padding: 14px 18px; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; text-align: left; box-sizing: border-box; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:22px;">🛒</span>
+            <div>
+              <div style="font-size:15px; font-weight:bold;">⚙️ 團購專區 (活動未開啟 - 管理員專用)</div>
+              <div style="font-size:12px; font-weight:normal; opacity:0.9;">點擊進入管理介面、設定商品與開啟團購活動</div>
+            </div>
+          </div>
+          <span style="font-size:13px; font-weight:bold; background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:20px; white-space:nowrap;">進入管理 ⚙️</span>
+        </button>
+      `;
+    } else {
+      bannerBox.classList.add('hidden');
+      container.innerHTML = '';
+    }
+    return;
+  }
+
+  bannerBox.classList.remove('hidden');
+  container.innerHTML = '';
+
+  const gradients = [
+    'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+    'linear-gradient(135deg, #059669 0%, #047857 100%)',
+    'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+    'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)'
+  ];
+
+  activeGroupBuys.forEach((gb, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-primary';
+    btn.style.cssText = `width: 100%; background: ${gradients[idx % gradients.length]}; font-weight: bold; border-radius: 14px; font-size: 15px; padding: 14px 18px; color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: pulse 2s infinite; display: flex; align-items: center; justify-content: space-between; text-align: left; box-sizing: border-box;`;
+    btn.innerHTML = `
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:22px;">🛒</span>
+        <div>
+          <div style="font-size:15px; font-weight:bold;">${gb.title || '團購專區'}</div>
+          <div style="font-size:12px; font-weight:normal; opacity:0.9;">已包含 ${gb.itemCount} 款精選商品 | 熱烈選購中</div>
+        </div>
+      </div>
+      <span style="font-size:13px; font-weight:bold; background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:20px; white-space:nowrap;">進入團購 ➔</span>
+    `;
+    btn.onclick = () => openGroupBuyPage(gb.id);
+    container.appendChild(btn);
+  });
+}
+
+function updateCampaignSelectorDropdown(list) {
+  const selector = document.getElementById('gb-campaign-selector');
+  if (!selector) return;
+  
+  let html = '';
+  list.forEach(gb => {
+    const statusText = gb.active ? '🟢 開放中' : '🔴 已關閉';
+    const selectedAttr = (gb.id === currentGid) ? 'selected' : '';
+    html += `<option value="${gb.id}" ${selectedAttr}>${gb.title || '團購活動'} (${statusText})</option>`;
+  });
+  if (html) selector.innerHTML = html;
+
+  selector.onchange = (e) => {
+    currentGid = e.target.value;
+    fetchGroupBuyData();
+  };
+}
+
+function openGroupBuyPage(gid = null) {
+  if (gid) currentGid = gid;
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  if (groupBuyView) groupBuyView.classList.remove('hidden');
+
+  // 強制切換回選購品項頁籤，解決初次開啟時畫面空白問題
+  if (gbTabItems) gbTabItems.click();
+
+  fetchGroupBuyData();
+}
+
+function checkIsAdmin() {
+  if (typeof getEffectiveRole === 'function') {
+    try {
+      const role = getEffectiveRole();
+      if (role && (role.isAdmin || role.isSuperAdmin)) return true;
+    } catch(e) {}
+  }
+  if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) return true;
+  if (typeof globalIsAdmin !== 'undefined' && globalIsAdmin) return true;
+  return false;
+}
+
+function getZhanRongDefaultItemsClient() {
+  return [
+    { id: 'zr_001', category: '古早味沖泡', name: '傳統油蔥麵茶', price: 150, unit: '袋', description: '鹿港傳承古早味，香濃順口，早餐與下午茶首選！', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_002', category: '古早味沖泡', name: '無糖杏仁麵茶', price: 180, unit: '袋', description: '無添加蔗糖，濃香杏仁搭配傳統麵茶，健康無負擔。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_003', category: '古早味沖泡', name: '養生黑芝麻粉', price: 220, unit: '罐', description: '低溫烘焙現磨，高鈣高纖，補給每日營養所需。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_004', category: '傳統點心', name: '招牌手工爆米香 (黑糖口味)', price: 120, unit: '包', description: '傳統壓力爆香，淋上天然黑糖，酥脆不黏牙。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_005', category: '傳統點心', name: '養生紫米爆米香', price: 135, unit: '包', description: '嚴選台灣在地黑糙米（紫米），卡滋卡滋滿滿花青素。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_006', category: '傳統點心', name: '古早味小麥花生酥', price: 150, unit: '包', description: '濃郁花生香氣搭配爆小麥，辦公室最愛零嘴。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_007', category: '低溫堅果', name: '原味綜合堅果 (低溫烘焙)', price: 350, unit: '罐', description: '含腰果、核桃、杏仁果、夏威夷豆，無鹽無油低溫烘焙。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_008', category: '低溫堅果', name: '頂級原味腰果 (特大粒)', price: 320, unit: '罐', description: '嚴選特大顆腰果，自然甜味，飽滿酥脆。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_009', category: '冷壓油品/抹醬', name: '純天然冷壓黑麻油', price: 480, unit: '瓶', description: '100% 嚴選黑芝麻低溫冷壓，溫補料理絕佳首選。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
+    { id: 'zr_010', category: '冷壓油品/抹醬', name: '無糖純黑芝麻醬 (現磨)', price: 250, unit: '罐', description: '完全無添加糖與油，現磨濃郁滑順，塗麵包沖泡皆宜。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' }
+  ];
+}
+
+function renderGroupBuyUI(data) {
+  currentGroupBuyData = data || {};
+  if (!Array.isArray(currentGroupBuyData.items) || currentGroupBuyData.items.length === 0) {
+    currentGroupBuyData.items = getZhanRongDefaultItemsClient();
+  }
+  if (!currentGroupBuyData.title) currentGroupBuyData.title = '🛒 展榮商號 鹿港傳承團購專區 (1986)';
+  if (!currentGroupBuyData.notice) currentGroupBuyData.notice = '';
+
+  const isActive = !!currentGroupBuyData.active;
+  const isUserAdmin = checkIsAdmin();
+
+  // 導覽列按鈕 (若仍在 Modal 中保留，僅控制 Modal 內的 navBtn)
+  const navBtn = document.getElementById('btn-group-buy-nav');
+  if (navBtn) {
+    if (isActive || isUserAdmin) navBtn.classList.remove('hidden');
+    else navBtn.classList.add('hidden');
+  }
+
+  if (gbModalTitle) gbModalTitle.innerText = data.title || '團購專區';
+  if (gbNoticeText) {
+    if (data.notice) {
+      gbNoticeText.innerText = data.notice;
+      gbNoticeText.style.display = 'block';
+    } else {
+      gbNoticeText.innerText = '';
+      gbNoticeText.style.display = 'none';
+    }
+  }
+  const btnCopyLink = document.getElementById('btn-copy-buy-link');
+  if (btnCopyLink) {
+    if (isUserAdmin) {
+      btnCopyLink.classList.remove('hidden');
+      btnCopyLink.onclick = () => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('testRole');
+        url.searchParams.set('buy', currentGid);
+        const link = url.toString();
+        
+        // 為了相容行動裝置，加上 fallback 做法
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(link).then(() => {
+            alert('✅ 已複製團購專屬連結！\n' + link);
+          }).catch(() => {
+            prompt('請手動複製此連結：', link);
+          });
+        } else {
+          prompt('請手動複製此連結：', link);
+        }
+      };
+    } else {
+      btnCopyLink.classList.add('hidden');
+    }
+  }
+
+  // 頁籤權限控制：「🏷️ 選購品項」與「📊 大家買了什麼 (含熱銷排行榜)」所有人皆可見；「⚙️ 團購設定」僅管理員可見
+  if (gbTabSummary) gbTabSummary.classList.remove('hidden');
+  if (isUserAdmin) {
+    if (gbTabAdmin) gbTabAdmin.classList.remove('hidden');
+  } else {
+    if (gbTabAdmin) gbTabAdmin.classList.add('hidden');
+    if (gbPaneAdmin) {
+      gbPaneAdmin.classList.remove('active');
+      gbPaneAdmin.classList.add('hidden');
+    }
+  }
+
+  if (btnGbClearOrders) {
+    if (isUserAdmin) btnGbClearOrders.classList.remove('hidden');
+    else btnGbClearOrders.classList.add('hidden');
+  }
+
+  // 「複製匯總」按鈕僅管理員可見
+  if (btnGbCopySummary) {
+    if (isUserAdmin) btnGbCopySummary.classList.remove('hidden');
+    else btnGbCopySummary.classList.add('hidden');
+  }
+
+  // 自動復原個人歷史填寫過的的訂單內容/姓名電話
+  if (data.orders && currentUser?.userId && data.orders[currentUser.userId]) {
+    const myOrder = data.orders[currentUser.userId];
+    if (gbUserName && !gbUserName.value) gbUserName.value = myOrder.userName || '';
+    if (gbUserPhone && !gbUserPhone.value) gbUserPhone.value = myOrder.userPhone || '';
+    // 如果購物車是空的，帶入上次訂單
+    if (Object.keys(currentCart).length === 0 && myOrder.items) {
+      currentCart = { ...myOrder.items };
+    }
+  } else if (currentUser?.displayName && gbUserName && !gbUserName.value) {
+    gbUserName.value = currentUser.displayName;
+  }
+
+  renderCategoryNav();
+  renderItemsGrid();
+  updateCartBar();
+  renderSummaryTab();
+  populateAdminFields();
+}
+
+function renderCategoryNav() {
+  if (!gbCategoryNav || !currentGroupBuyData) return;
+  const categories = ['全部', '🌟 已選購'];
+  if (Array.isArray(currentGroupBuyData.items)) {
+    currentGroupBuyData.items.forEach(item => {
+      if (item.category && !categories.includes(item.category)) {
+        categories.push(item.category);
+      }
+    });
+  }
+
+  const primaryCategories = ['全部', '🌟 已選購', '堅果類', '蔬果系列', '果乾系列'];
+  
+  gbCategoryNav.innerHTML = '';
+  gbCategoryNav.style.display = window.isCategoryNavExpanded ? 'block' : 'flex';
+
+  const createBtn = (cat) => {
+    const btn = document.createElement('button');
+    btn.className = `gb-cat-btn ${cat === activeCategoryFilter ? 'active' : ''}`;
+    btn.innerText = cat;
+    btn.onclick = () => {
+      activeCategoryFilter = cat;
+      renderCategoryNav();
+      renderItemsGrid();
+      updateCartBar();
+    };
+    return btn;
+  };
+
+  const createToggleBtn = () => {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'gb-cat-btn';
+    toggleBtn.style.cssText = 'background-color:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:bold; padding:6px 16px;';
+    toggleBtn.innerText = window.isCategoryNavExpanded ? '− 收起分類' : '+';
+    toggleBtn.onclick = () => {
+      window.isCategoryNavExpanded = !window.isCategoryNavExpanded;
+      renderCategoryNav();
+    };
+    return toggleBtn;
+  };
+
+  if (!window.isCategoryNavExpanded) {
+    const displayCategories = categories.filter(c => primaryCategories.includes(c) || c === activeCategoryFilter);
+    displayCategories.forEach(cat => {
+      gbCategoryNav.appendChild(createBtn(cat));
+    });
+    if (categories.length > displayCategories.length) {
+      gbCategoryNav.appendChild(createToggleBtn());
+    }
+  } else {
+    const commonCats = categories.filter(c => ['全部', '🌟 已選購'].includes(c));
+    const mainCats = categories.filter(c => ['堅果類', '蔬果系列', '果乾系列'].includes(c));
+    const otherCats = categories.filter(c => !primaryCategories.includes(c));
+
+    const renderGroup = (title, catList) => {
+      if (catList.length === 0) return;
+      const groupDiv = document.createElement('div');
+      groupDiv.style.cssText = 'border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-bottom:12px; background:#f8fafc;';
+      const titleEl = document.createElement('div');
+      titleEl.style.cssText = 'font-size:14px; font-weight:bold; color:#475569; margin-bottom:10px;';
+      titleEl.innerText = title;
+      groupDiv.appendChild(titleEl);
+      const btnContainer = document.createElement('div');
+      btnContainer.style.cssText = 'display:flex; flex-wrap:wrap; gap:6px;';
+      catList.forEach(c => btnContainer.appendChild(createBtn(c)));
+      groupDiv.appendChild(btnContainer);
+      gbCategoryNav.appendChild(groupDiv);
+    };
+
+    renderGroup('📌 常用選項', commonCats);
+    renderGroup('⭐ 主打系列', mainCats);
+    renderGroup('🏷️ 其他分類', otherCats);
+
+    const toggleWrap = document.createElement('div');
+    toggleWrap.style.cssText = 'text-align:right; margin-bottom:8px;';
+    toggleWrap.appendChild(createToggleBtn());
+    gbCategoryNav.appendChild(toggleWrap);
+  }
+}
+
+window.expandedCategories = window.expandedCategories || {
+  '堅果類': true,
+  '蔬果系列': true,
+  '果乾系列': true
+};
+window.activeExpandedItemId = null;
+
+function renderItemsGrid() {
+  if (!gbItemsGrid || !currentGroupBuyData) return;
+  gbItemsGrid.innerHTML = '';
+
+  let filtered = currentGroupBuyData.items || [];
+  if (activeCategoryFilter === '🌟 已選購') {
+    filtered = filtered.filter(i => currentCart[i.id] > 0);
+  } else if (activeCategoryFilter !== '全部') {
+    filtered = filtered.filter(i => i.category === activeCategoryFilter);
+  }
+  if (currentSearchQuery) {
+    const q = currentSearchQuery.toLowerCase();
+    filtered = filtered.filter(i => 
+      (i.name && i.name.toLowerCase().includes(q)) ||
+      (i.category && i.category.toLowerCase().includes(q)) ||
+      (i.description && i.description.toLowerCase().includes(q))
+    );
+  }
+
+  if (filtered.length === 0) {
+    gbItemsGrid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:#888;">找不到符合條件的商品</div>';
+    return;
+  }
+
+  // 根據螢幕寬度自動決定兩欄、三欄或四欄 (最小寬度 280px)
+  
+  const createItemCard = (item) => {
+    const card = document.createElement('div');
+
+    card.className = 'gb-list-item';
+    
+    const qty = currentCart[item.id] || 0;
+    const isExpanded = (window.activeExpandedItemId === item.id);
+    
+    card.style.cssText = `background:white; border:1px solid ${qty > 0 ? '#10b981' : '#e2e8f0'}; border-radius:8px; overflow:hidden; transition:all 0.2s ease; ${qty > 0 && !isExpanded ? 'background:#ecfdf5;' : ''}`;
+
+    // 主要列
+    const rowHtml = `
+      <div class="gb-list-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px; cursor:pointer;">
+        <div style="flex:1; font-weight:bold; color:#2563eb; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+          ${item.name}
+        </div>
+        <div style="flex:0 0 auto; display:flex; align-items:center;">
+          ${qty > 0 ? `<span style="background:#10b981; color:white; font-size:11px; padding:2px 6px; border-radius:10px; margin-right:6px; font-weight:bold;">已選: ${qty}</span>` : ''}
+          <span style="font-weight:bold; font-size:15px; color:#1e293b;">${item.price}</span>
+        </div>
+      </div>
+    `;
+
+    // 展開的區塊 (無圖片、僅內容物、數量選擇同一列)
+    let expandedHtml = '';
+    if (isExpanded) {
+      const dQty = (draftCart[item.id] !== undefined) ? draftCart[item.id] : (qty || 1); 
+
+      expandedHtml = `
+        <div class="gb-accordion-body" style="padding:12px 16px; background:#f8fafc; border-top:1px solid #e2e8f0;">
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div style="font-size:13px; color:#334155; text-align:left; flex:1;">
+              <strong>內容物：</strong>${item.contents || '無'}
+            </div>
+          </div>
+          
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
+              <button class="qty-btn btn-minus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#e2e8f0;color:#334155;cursor:pointer;font-weight:bold;">-</button>
+              <span class="qty-num" style="min-width:24px;text-align:center;font-size:18px;font-weight:bold;color:#1e293b;">${dQty}</span>
+              <button class="qty-btn btn-plus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#10b981;color:white;cursor:pointer;font-weight:bold;">+</button>
+            </div>
+            
+            <div style="display:flex; gap:8px;">
+              <button class="btn-cancel-draft" style="background:#ef4444;color:white;border:none;border-radius:6px;padding:8px 12px;font-size:13px;font-weight:bold;cursor:pointer;">❌</button>
+              <button class="btn-confirm-draft" style="background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 12px;font-size:13px;font-weight:bold;cursor:pointer;">✅ 確定數量</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    card.innerHTML = rowHtml + expandedHtml;
+
+    // 事件處理
+    const row = card.querySelector('.gb-list-row');
+    row.onclick = () => {
+      if (window.activeExpandedItemId === item.id) {
+        window.activeExpandedItemId = null; // 折疊
+      } else {
+        window.activeExpandedItemId = item.id; // 展開
+        if (draftCart[item.id] === undefined) {
+          draftCart[item.id] = currentCart[item.id] || 1; // 預設數量為1或目前的選擇
+        }
+      }
+      renderItemsGrid();
+    };
+
+    if (isExpanded) {
+      const btnMinus = card.querySelector('.btn-minus');
+      const btnPlus = card.querySelector('.btn-plus');
+      const btnConfirm = card.querySelector('.btn-confirm-draft');
+      const btnCancel = card.querySelector('.btn-cancel-draft');
+
+      if (btnMinus) btnMinus.onclick = (e) => {
+        e.stopPropagation();
+        if (draftCart[item.id] > 0) {
+          draftCart[item.id]--;
+          renderItemsGrid();
+        }
+      };
+      
+      if (btnPlus) btnPlus.onclick = (e) => {
+        e.stopPropagation();
+        draftCart[item.id] = (draftCart[item.id] || 0) + 1;
+        renderItemsGrid();
+      };
+
+      if (btnConfirm) btnConfirm.onclick = (e) => {
+        e.stopPropagation();
+        if (draftCart[item.id] > 0) {
+          currentCart[item.id] = draftCart[item.id];
+        } else {
+          delete currentCart[item.id];
+        }
+        delete draftCart[item.id];
+        window.activeExpandedItemId = null; // 確認後自動折疊
+        renderItemsGrid();
+        updateCartBar();
+        saveCartToBackend();
+      };
+
+      if (btnCancel) btnCancel.onclick = (e) => {
+        e.stopPropagation();
+        delete draftCart[item.id];
+        window.activeExpandedItemId = null; // 取消後自動折疊
+        renderItemsGrid();
+      };
+    }
+
+    
+    return card;
+  };
+
+  const isAllView = (activeCategoryFilter === '全部' && (!currentSearchQuery || currentSearchQuery.trim() === ''));
+
+  if (!isAllView) {
+    gbItemsGrid.style.display = 'grid';
+    gbItemsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+    gbItemsGrid.style.gap = '8px';
+    gbItemsGrid.style.alignItems = 'start';
+    
+    filtered.forEach(item => {
+      gbItemsGrid.appendChild(createItemCard(item));
+    });
+  } else {
+    gbItemsGrid.style.display = 'block';
+    
+    const groups = {};
+    filtered.forEach(item => {
+      const cat = item.category || '未分類';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(item);
+    });
+    
+    const primaryCategories = ['堅果類', '蔬果系列', '果乾系列'];
+    const sortedCats = Object.keys(groups).sort((a, b) => {
+      const idxA = primaryCategories.indexOf(a);
+      const idxB = primaryCategories.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    sortedCats.forEach(cat => {
+      const groupDiv = document.createElement('div');
+      groupDiv.style.marginBottom = '24px';
+      groupDiv.style.background = 'transparent';
+      
+      const titleEl = document.createElement('div');
+      titleEl.style.cssText = 'font-size:16px; font-weight:bold; color:#1e293b; margin-bottom:12px; display:flex; align-items:center; gap:8px;';
+      titleEl.innerHTML = `<span style="width:4px; height:18px; background:#10b981; border-radius:2px; display:inline-block;"></span>${cat}`;
+      groupDiv.appendChild(titleEl);
+      
+      const gridDiv = document.createElement('div');
+      gridDiv.style.display = 'grid';
+      gridDiv.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+      gridDiv.style.gap = '8px';
+      gridDiv.style.alignItems = 'start';
+      
+      groups[cat].forEach(item => {
+        gridDiv.appendChild(createItemCard(item));
+      });
+      
+      groupDiv.appendChild(gridDiv);
+      gbItemsGrid.appendChild(groupDiv);
+    });
+  }
+
+}
+
+window.forceOpenDetail = function(itemId) {
+  if (!currentGroupBuyData || !currentGroupBuyData.items) return;
+  const item = currentGroupBuyData.items.find(i => i.id === itemId);
+  if (item) {
+    openItemDetail(item);
+  }
+};
+
+function openItemDetail(item) {
+  selectedDetailItem = item;
+  detailQty = currentCart[item.id] || 1;
+
+  if (itemDetailCategory) itemDetailCategory.innerText = item.category || '商品';
+  if (itemDetailName) itemDetailName.innerText = item.name;
+  if (itemDetailPrice) itemDetailPrice.innerText = item.price;
+  if (itemDetailUnit) itemDetailUnit.innerText = item.unit ? `/ ${item.unit}` : '';
+  if (itemDetailDesc) itemDetailDesc.innerText = item.description || '暫無詳細說明';
+
+  if (itemDetailImgContainer) {
+    if (item.imageUrl) {
+      itemDetailImgContainer.innerHTML = `<img src="${item.imageUrl}" alt="${item.name}" style="max-width:100%;max-height:140px;object-fit:contain;border-radius:8px;" />`;
+    } else {
+      itemDetailImgContainer.innerHTML = `<span style="font-size:48px;">📦</span>`;
+    }
+  }
+
+  // 外部連結「點我進入」處理
+  if (itemDetailLinkContainer && itemDetailLinkBtn && itemDetailLinkText) {
+    if (item.linkUrl) {
+      itemDetailLinkBtn.href = item.linkUrl;
+      itemDetailLinkText.innerText = item.linkText || '點我進入網站';
+      itemDetailLinkContainer.classList.remove('hidden');
+    } else {
+      itemDetailLinkContainer.classList.add('hidden');
+    }
+  }
+
+  if (detailQtyNum) detailQtyNum.innerText = detailQty;
+  if (itemDetailModal) itemDetailModal.classList.remove('hidden');
+}
+
+async function saveCartToBackend() {
+  if (!currentGroupBuyData || !currentUser) return;
+  
+  const gbHeaderNameInput = document.getElementById('gb-header-name');
+  const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
+  
+  const oldOrder = currentGroupBuyData.orders && currentGroupBuyData.orders[currentUser.userId];
+  const defaultName = (oldOrder && oldOrder.userName) ? oldOrder.userName : (currentUser.displayName || '未命名');
+  const defaultPhone = (oldOrder && oldOrder.userPhone) ? oldOrder.userPhone : '';
+  
+  const name = gbHeaderNameInput && gbHeaderNameInput.value.trim() ? gbHeaderNameInput.value.trim() : defaultName;
+  const phone = gbHeaderPhoneInput ? gbHeaderPhoneInput.value.trim() : defaultPhone;
+  const note = (oldOrder && oldOrder.note) ? oldOrder.note : '';
+  
+  try {
+    const res = await fetch(`/api/groupbuy/${currentGid}/order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid: currentUser.userId,
+        userName: name,
+        userPhone: phone,
+        items: currentCart,
+        paymentMethod: 'none',
+        paymentNote: '',
+        note: note
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      await fetchGroupBuyData();
+    }
+  } catch(e) {
+    console.error('發送訂單失敗:', e);
+  }
+}
+
+function updateCartBar() {
+  let count = 0;
+  let sum = 0;
+
+  if (currentGroupBuyData && currentGroupBuyData.items) {
+    for (const [itemId, qty] of Object.entries(currentCart)) {
+      if (qty > 0) {
+        count += qty;
+        const p = currentGroupBuyData.items.find(i => i.id === itemId);
+        if (p) sum += (p.price || 0) * qty;
+      }
+    }
+  }
+
+  const headerTotal = document.getElementById('gb-header-total');
+  const headerSum = document.getElementById('gb-header-sum');
+
+  if (headerSum) headerSum.innerText = sum;
+
+  if (headerTotal) {
+    if (count > 0 && groupBuyView && !groupBuyView.classList.contains('hidden')) {
+      headerTotal.classList.remove('hidden');
+    } else {
+      headerTotal.classList.add('hidden');
+    }
+  }
+}
+
+function openGroupBuyPage() {
+  fetchGroupBuyData().then(() => {
+    const gbHeaderNameInput = document.getElementById('gb-header-name');
+    const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
+    if (currentUser && currentGroupBuyData) {
+      const oldOrder = currentGroupBuyData.orders && currentGroupBuyData.orders[currentUser.userId];
+      if (gbHeaderNameInput) {
+        gbHeaderNameInput.value = (oldOrder && oldOrder.userName) ? oldOrder.userName : (currentUser.displayName || '');
+      }
+      if (gbHeaderPhoneInput) {
+        gbHeaderPhoneInput.value = (oldOrder && oldOrder.userPhone) ? oldOrder.userPhone : '';
+      }
+    }
+  });
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  if (groupBuyView) groupBuyView.classList.remove('hidden');
+  updateCartBar();
+}
+
+function renderSummaryTab() {
+  if (!currentGroupBuyData || !gbPaneSummary) return;
+
+  const isUserAdmin = checkIsAdmin();
+  const totalsContainer = document.getElementById('gb-summary-totals');
+  const ordersContainer = document.getElementById('gb-orders-list');
+  const orders = currentGroupBuyData.orders || {};
+  const itemsMap = {}; // itemId -> { name, price, totalQty }
+
+  if (currentGroupBuyData.items) {
+    currentGroupBuyData.items.forEach(i => {
+      itemsMap[i.id] = { name: i.name, price: i.price, category: i.category, qty: 0 };
+    });
+  }
+
+  let totalRevenue = 0;
+  let totalOrderCount = Object.keys(orders).length;
+
+  Object.values(orders).forEach(ord => {
+    if (ord.items) {
+      for (const [itemId, qty] of Object.entries(ord.items)) {
+        if (itemsMap[itemId] && qty > 0) {
+          itemsMap[itemId].qty += qty;
+          totalRevenue += itemsMap[itemId].price * qty;
+        }
+      }
+    }
+  });
+
+  // 1. 渲染全體加總表格（品項排名可點擊進入詳情）
+  if (totalsContainer) {
+    const orderedItems = Object.values(itemsMap).filter(x => x.qty > 0);
+    orderedItems.sort((a, b) => b.qty - a.qty); // 依數量排名
+    if (orderedItems.length === 0) {
+      totalsContainer.innerHTML = '<div style="color:#888; text-align:center; padding:15px;">目前尚無下單資料</div>';
+    } else {
+      totalsContainer.innerHTML = '';
+      const table = document.createElement('table');
+      table.style.cssText = 'width:100%; border-collapse:collapse; margin-bottom:15px;';
+      table.innerHTML = '';
+      
+      let theadHtml = `<thead><tr>
+        <th style="border:1px solid #dee2e6;padding:8px;font-size:13px;background:#e9ecef;white-space:nowrap;">排名</th>
+        <th style="border:1px solid #dee2e6;padding:8px;font-size:13px;background:#e9ecef;">品項名稱</th>
+        <th style="border:1px solid #dee2e6;padding:8px;font-size:13px;background:#e9ecef;white-space:nowrap;">單價</th>
+        <th style="border:1px solid #dee2e6;padding:8px;font-size:13px;background:#e9ecef;white-space:nowrap;">數量</th>`;
+      
+      if (isUserAdmin) {
+        theadHtml += `<th style="border:1px solid #dee2e6;padding:8px;font-size:13px;background:#e9ecef;white-space:nowrap;">小計</th>`;
+      }
+      theadHtml += `</tr></thead>`;
+      table.innerHTML = theadHtml;
+      
+      const tbody = document.createElement('tbody');
+
+      orderedItems.forEach((x, idx) => {
+        const itemObj = (currentGroupBuyData.items || []).find(i => i.name === x.name);
+        const contentsText = itemObj ? (itemObj.contents || itemObj.description || '') : '';
+
+        const tr = document.createElement('tr');
+        const rankEmoji = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
+        
+        let rowHtml = `
+          <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:center;">${rankEmoji}</td>
+          <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;cursor:pointer;color:#2563eb;text-decoration:underline;" class="gb-rank-item-name"><strong>${x.name}</strong></td>
+          <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:center;">$${x.price}</td>
+          <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:center;"><strong style="color:#27ae60;font-size:15px;">${x.qty}</strong></td>
+        `;
+        
+        if (isUserAdmin) {
+          rowHtml += `<td style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:center;">$${x.price * x.qty}</td>`;
+        }
+        
+        tr.innerHTML = rowHtml;
+
+        const nameTd = tr.querySelector('.gb-rank-item-name');
+        if (nameTd && itemObj) {
+          nameTd.onclick = () => {
+            const buyers = [];
+            let totalItemQty = 0;
+            const orders = currentGroupBuyData.orders || {};
+            Object.values(orders).forEach(ord => {
+              const q = ord.items && ord.items[itemObj.id];
+              if (q > 0) {
+                buyers.push(`- ${ord.userName} : ${q} ${itemObj.unit || ''}`);
+                totalItemQty += q;
+              }
+            });
+            
+            let extraInfo = '';
+            if (buyers.length > 0) {
+              extraInfo = `\n\n【目前購買名單】(總共 ${totalItemQty} ${itemObj.unit || ''})\n` + buyers.join('\n');
+            } else {
+              extraInfo = `\n\n【目前購買名單】\n目前尚未有任何人購買。`;
+            }
+
+            const tempItem = { ...itemObj, description: (itemObj.description || '暫無詳細說明') + extraInfo };
+            openItemDetail(tempItem);
+          };
+        }
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+
+      if (isUserAdmin) {
+        const tfoot = document.createElement('tfoot');
+        tfoot.innerHTML = `<tr><td colspan="4" style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:right;"><strong>全體總計 (${totalOrderCount} 人)</strong></td><td style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:center;"><strong style="color:#e74c3c;font-size:16px;">$${totalRevenue}</strong></td></tr>`;
+        table.appendChild(tfoot);
+      }
+      
+      totalsContainer.appendChild(table);
+    }
+  }
+
+  // 2. 渲染個人訂購明細卡片
+  if (ordersContainer) {
+    ordersContainer.innerHTML = '';
+    const orderList = Object.values(orders);
+    if (orderList.length === 0) {
+      ordersContainer.innerHTML = '<div style="color:#888; text-align:center; padding:15px;">目前沒有個人明細</div>';
+    } else {
+      orderList.forEach(ord => {
+        const card = document.createElement('div');
+        card.className = 'gb-order-card';
+
+        const isPaid = ord.paymentStatus === 'paid';
+
+        let itemsText = [];
+        if (ord.items) {
+          for (const [itemId, qty] of Object.entries(ord.items)) {
+            const p = itemsMap[itemId];
+            if (p && qty > 0) itemsText.push(`${p.name} × ${qty}`);
+          }
+        }
+
+        let diffText = [];
+        if (ord.lastConfirmedItems) {
+          const allItemIds = new Set([...Object.keys(ord.items || {}), ...Object.keys(ord.lastConfirmedItems)]);
+          allItemIds.forEach(itemId => {
+            const newQty = (ord.items && ord.items[itemId]) || 0;
+            const oldQty = ord.lastConfirmedItems[itemId] || 0;
+            if (newQty > oldQty) {
+              const p = itemsMap[itemId];
+              if (p) diffText.push(`+ ${p.name} × ${newQty - oldQty}`);
+            } else if (newQty < oldQty) {
+              const p = itemsMap[itemId];
+              if (p) diffText.push(`- ${p.name} × ${oldQty - newQty}`);
+            }
+          });
+        }
+
+        const cardBg = isPaid ? 'white' : '#fffbeb';
+        const cardBorder = isPaid ? '#e2e8f0' : '#fde68a';
+        card.style.cssText = `background:${cardBg}; border:1px solid ${cardBorder}; border-radius:12px; padding:12px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition: background 0.3s;`;
+
+        const statusBadge = isPaid 
+          ? '<span style="color:#27ae60; font-weight:bold;">✅ 訂單確認</span>' 
+          : '<span style="color:#e67e22; font-weight:bold;">⏳ 未確認</span>';
+
+        let isUserSuperAdmin = false;
+        if (typeof getEffectiveRole === 'function') {
+          isUserSuperAdmin = getEffectiveRole().isSuperAdmin;
+        }
+        const phoneDisplay = (isUserSuperAdmin && ord.userPhone) ? ` (${ord.userPhone})` : '';
+
+        const adminBtn = isUserAdmin ? `
+          <div style="display:flex; gap:8px;">
+            <button class="delete-order-btn" style="border:1px solid #ef4444; background:transparent; color:#ef4444; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold;">🗑️ 刪除</button>
+            <button class="paid-btn ${isPaid ? 'paid' : ''}" style="border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold; ${isPaid ? 'background:#e2e8f0;color:#64748b;' : 'background:#2563eb;color:white;'}">${isPaid ? '取消確認' : '確認訂單'}</button>
+          </div>
+        ` : '';
+
+        card.innerHTML = `
+          <div class="gb-order-header">
+            <span>👤 ${ord.userName}${phoneDisplay}</span>
+            <span>$${ord.totalAmount} | ${statusBadge}</span>
+          </div>
+          <div style="font-size:13px; color:#495057; margin-bottom:4px;">
+            <strong>品項：</strong>${itemsText.join(', ') || '無'}
+          </div>
+          ${diffText.length > 0 ? `<div style="font-size:13px; color:#2563eb; margin-bottom:4px; font-weight:bold;">🔄 新增/刪除異動：${diffText.join(', ')}</div>` : ''}
+          ${ord.note ? `<div style="font-size:12px; color:#2980b9; margin-top:4px;">📝 備註: ${ord.note}</div>` : ''}
+          ${adminBtn ? `<div style="display:flex; justify-content:flex-end; margin-top:8px;">${adminBtn}</div>` : ''}
+        `;
+
+        if (isUserAdmin) {
+          const btnPaid = card.querySelector('.paid-btn');
+          if (btnPaid) {
+            btnPaid.onclick = async () => {
+              const newStatus = isPaid ? 'unverified' : 'paid';
+              try {
+                await fetch(`/api/groupbuy/${currentGid || 'default'}/mark_paid`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ uid: currentUser.userId, targetUid: ord.userId, status: newStatus })
+                });
+              } catch(e) { console.error(e); }
+            };
+          }
+          const btnDelete = card.querySelector('.delete-order-btn');
+          if (btnDelete) {
+            btnDelete.onclick = async () => {
+              if (confirm(`確定要刪除 ${ord.userName} 的訂單嗎？此操作無法還原。`)) {
+                try {
+                  await fetch(`/api/groupbuy/${currentGid || 'default'}/delete_order`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetUid: ord.userId })
+                  });
+                } catch(e) { console.error(e); }
+              }
+            };
+          }
+        }
+
+        ordersContainer.appendChild(card);
+      });
+    }
+  }
+}
+
+function populateAdminFields() {
+  if (!currentGroupBuyData) return;
+  const p = currentGroupBuyData.paymentSettings || {};
+  if (btnGbAdminToggle) {
+    if (currentGroupBuyData.active) {
+      btnGbAdminToggle.innerText = '🔴 關閉團購活動';
+      btnGbAdminToggle.style.background = '#ef4444';
+      btnGbAdminToggle.style.boxShadow = '0 2px 6px rgba(239,68,68,0.3)';
+    } else {
+      btnGbAdminToggle.innerText = '🟢 開啟團購活動';
+      btnGbAdminToggle.style.background = '#10b981';
+      btnGbAdminToggle.style.boxShadow = '0 2px 6px rgba(16,185,129,0.3)';
+    }
+  }
+  if (gbAdminTitleInput) gbAdminTitleInput.value = currentGroupBuyData.title || '';
+  if (gbAdminNoticeInput) gbAdminNoticeInput.value = currentGroupBuyData.notice || '';
+  if (gbAdminLinepayLink) gbAdminLinepayLink.value = p.linePayLink || '';
+  if (gbAdminLinepayQr) gbAdminLinepayQr.value = p.linePayQrUrl || '';
+  if (gbAdminBankCode) gbAdminBankCode.value = p.bankCode || '';
+  if (gbAdminBankName) gbAdminBankName.value = p.bankName || '';
+  if (gbAdminBankAccount) gbAdminBankAccount.value = p.bankAccount || '';
+  renderAdminItemsList();
+}
+
+function renderAdminItemsList() {
+  const container = document.getElementById('gb-admin-items-list');
+  const countSpan = document.getElementById('gb-admin-items-count');
+  if (!container || !currentGroupBuyData) return;
+
+  if (!Array.isArray(currentGroupBuyData.items) || currentGroupBuyData.items.length === 0) {
+    currentGroupBuyData.items = getZhanRongDefaultItemsClient();
+  }
+
+  const items = currentGroupBuyData.items;
+  if (countSpan) countSpan.innerText = items.length;
+
+  if (items.length === 0) {
+    container.innerHTML = '<div style="color:#888; text-align:center; padding:15px;">尚無商品，請點擊上方按鈕新增！</div>';
+    return;
+  }
+
+  let html = '<div style="display:flex; flex-direction:column; gap:6px;">';
+  items.forEach(item => {
+    html += `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#f8f9fa; padding:8px 12px; border-radius:8px; border:1px solid #e9ecef;">
+        <div style="flex:1;">
+          <span style="font-size:11px; background:#e0e0e0; color:#333; padding:2px 6px; border-radius:4px; margin-right:6px;">${item.category || '自訂'}</span>
+          <strong style="font-size:14px;">${item.name}</strong>
+          <span style="color:#e74c3c; font-weight:bold; margin-left:8px;">$${item.price}</span>
+          ${item.unit ? `<span style="font-size:12px; color:#888;">/${item.unit}</span>` : ''}
+        </div>
+        <button class="btn-secondary btn-edit-item" data-id="${item.id}" style="padding:4px 10px; font-size:12px; background:#3498db; color:white; border-radius:6px;">✏️ 編輯</button>
+      </div>
+    `;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+
+  // 綁定編輯按鈕事件
+  container.querySelectorAll('.btn-edit-item').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      const targetItem = items.find(i => i.id === id);
+      if (targetItem) openItemEditModal(targetItem);
+    };
+  });
+}
+
+function openItemEditModal(item = null) {
+  const modal = document.getElementById('gbItemEditModal');
+  const title = document.getElementById('gb-item-edit-title');
+  const idInput = document.getElementById('gb-edit-item-id');
+  const catInput = document.getElementById('gb-edit-item-category');
+  const nameInput = document.getElementById('gb-edit-item-name');
+  const priceInput = document.getElementById('gb-edit-item-price');
+  const unitInput = document.getElementById('gb-edit-item-unit');
+  const linkTextInput = document.getElementById('gb-edit-item-linktext');
+  const descInput = document.getElementById('gb-edit-item-desc');
+  const contentsInput = document.getElementById('gb-edit-item-contents');
+  const linkUrlInput = document.getElementById('gb-edit-item-linkurl');
+  const imgUrlInput = document.getElementById('gb-edit-item-imgurl');
+  const btnDelete = document.getElementById('btn-gb-delete-item');
+
+  if (item) {
+    if (title) title.innerText = '✏️ 編輯商品品項';
+    if (idInput) idInput.value = item.id;
+    if (catInput) catInput.value = item.category || '';
+    if (nameInput) nameInput.value = item.name || '';
+    if (priceInput) priceInput.value = item.price || '';
+    if (unitInput) unitInput.value = item.unit || '';
+    if (linkTextInput) linkTextInput.value = item.linkText || '';
+    if (descInput) descInput.value = item.description || '';
+    if (contentsInput) contentsInput.value = item.contents || '';
+    if (linkUrlInput) linkUrlInput.value = item.linkUrl || '';
+    if (imgUrlInput) imgUrlInput.value = item.imageUrl || '';
+    if (btnDelete) btnDelete.classList.remove('hidden');
+  } else {
+    if (title) title.innerText = '➕ 新增自訂商品品項';
+    if (idInput) idInput.value = '';
+    if (catInput) catInput.value = activeCategoryFilter !== '全部' ? activeCategoryFilter : '自訂商品';
+    if (nameInput) nameInput.value = '';
+    if (priceInput) priceInput.value = '';
+    if (unitInput) unitInput.value = '';
+    if (linkTextInput) linkTextInput.value = '點我進入網站';
+    if (descInput) descInput.value = '';
+    if (linkUrlInput) linkUrlInput.value = '';
+    if (imgUrlInput) imgUrlInput.value = '';
+    if (btnDelete) btnDelete.classList.add('hidden');
+  }
+
+  if (modal) modal.classList.remove('hidden');
+}
+
+// 綁定事件監聽
+function initGroupBuyEvents() {
+  if (btnGroupBuyNav) {
+    btnGroupBuyNav.onclick = () => openGroupBuyPage();
+  }
+  if (btnEnterGroupBuy) {
+    btnEnterGroupBuy.onclick = () => openGroupBuyPage();
+  }
+  if (btnBackGroupBuy) {
+    btnBackGroupBuy.onclick = () => {
+      if (groupBuyView) groupBuyView.classList.add('hidden');
+      document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+      renderLobby();
+      if (groupBuyCartBar) groupBuyCartBar.classList.add('hidden');
+    };
+  }
+
+  // 頁籤切換
+  if (gbTabItems) {
+    gbTabItems.onclick = () => {
+      gbTabItems.classList.add('active');
+      gbTabSummary.classList.remove('active');
+      if (gbTabAdmin) gbTabAdmin.classList.remove('active');
+
+      gbPaneItems.classList.add('active');
+      gbPaneItems.classList.remove('hidden');
+      gbPaneSummary.classList.remove('active');
+      gbPaneSummary.classList.add('hidden');
+      if (gbPaneAdmin) {
+        gbPaneAdmin.classList.remove('active');
+        gbPaneAdmin.classList.add('hidden');
+      }
+      updateCartBar();
+    };
+  }
+  if (gbTabSummary) {
+    gbTabSummary.onclick = () => {
+      gbTabSummary.classList.add('active');
+      gbTabItems.classList.remove('active');
+      if (gbTabAdmin) gbTabAdmin.classList.remove('active');
+
+      gbPaneSummary.classList.add('active');
+      gbPaneSummary.classList.remove('hidden');
+      gbPaneItems.classList.remove('active');
+      gbPaneItems.classList.add('hidden');
+      if (gbPaneAdmin) {
+        gbPaneAdmin.classList.remove('active');
+        gbPaneAdmin.classList.add('hidden');
+      }
+      renderSummaryTab();
+      if (groupBuyCartBar) groupBuyCartBar.classList.add('hidden');
+    };
+  }
+  if (gbTabAdmin) {
+    gbTabAdmin.onclick = () => {
+      gbTabAdmin.classList.add('active');
+      gbTabItems.classList.remove('active');
+      gbTabSummary.classList.remove('active');
+
+      if (gbPaneAdmin) {
+        gbPaneAdmin.classList.add('active');
+        gbPaneAdmin.classList.remove('hidden');
+      }
+      if (gbPaneItems) {
+        gbPaneItems.classList.remove('active');
+        gbPaneItems.classList.add('hidden');
+      }
+      if (gbPaneSummary) {
+        gbPaneSummary.classList.remove('active');
+        gbPaneSummary.classList.add('hidden');
+      }
+      if (groupBuyCartBar) groupBuyCartBar.classList.add('hidden');
+      populateAdminFields();
+    };
+  }
+
+
+
+  // 詳情 Modal 事件
+  const btnCloseItemDetailBottom = document.getElementById('btn-close-item-detail-bottom');
+  if (btnCloseItemDetail) {
+    btnCloseItemDetail.onclick = () => itemDetailModal.classList.add('hidden');
+  }
+  if (btnCloseItemDetailBottom) {
+    btnCloseItemDetailBottom.onclick = () => itemDetailModal.classList.add('hidden');
+  }
+  if (itemDetailModal) {
+    itemDetailModal.onclick = (e) => {
+      if (e.target === itemDetailModal) itemDetailModal.classList.add('hidden');
+    };
+  }
+  if (btnDetailQtyMinus) {
+    btnDetailQtyMinus.onclick = () => {
+      if (detailQty > 0) {
+        detailQty--;
+        if (detailQtyNum) detailQtyNum.innerText = detailQty;
+      }
+    };
+  }
+  if (btnDetailQtyPlus) {
+    btnDetailQtyPlus.onclick = () => {
+      detailQty++;
+      if (detailQtyNum) detailQtyNum.innerText = detailQty;
+    };
+  }
+  if (btnDetailConfirmAdd) {
+    btnDetailConfirmAdd.onclick = () => {
+      if (selectedDetailItem) {
+        if (detailQty > 0) {
+          currentCart[selectedDetailItem.id] = detailQty;
+        } else {
+          delete currentCart[selectedDetailItem.id];
+        }
+        renderItemsGrid();
+        updateCartBar();
+        saveCartToBackend();
+        itemDetailModal.classList.add('hidden');
+      }
+    };
+  }
+
+  // 結帳 Modal 事件
+  if (btnGbOpenCheckout) {
+    btnGbOpenCheckout.onclick = () => openCheckoutModal();
+  }
+  if (btnCloseCheckout) {
+    btnCloseCheckout.onclick = () => groupBuyCheckoutModal.classList.add('hidden');
+  }
+
+
+  // 送出團購訂單
+  if (btnSubmitGbOrder) {
+    btnSubmitGbOrder.onclick = async () => {
+      const name = gbUserName.value.trim();
+      const phone = gbUserPhone.value.trim();
+      if (!name || !phone) {
+        alert('請填寫姓名與聯絡電話！');
+        return;
+      }
+
+
+
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: currentUser.userId,
+            userName: name,
+            userPhone: phone,
+            items: currentCart,
+            paymentMethod: 'none',
+            paymentNote: '',
+            note: gbOrderNote ? gbOrderNote.value.trim() : ''
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alert('🎉 訂單已順利送出！');
+          groupBuyCheckoutModal.classList.add('hidden');
+          renderItemsGrid();
+          updateCartBar();
+        } else {
+          alert('送出失敗：' + data.error);
+        }
+      } catch(e) {
+        alert('發送訂單失敗：' + e.message);
+      }
+    };
+  }
+
+  // 一鍵複製統計文字
+  if (btnGbCopySummary) {
+    btnGbCopySummary.onclick = () => {
+      if (!currentGroupBuyData) return;
+      const orders = currentGroupBuyData.orders || {};
+      const itemsMap = {};
+      (currentGroupBuyData.items || []).forEach(i => { itemsMap[i.id] = { name: i.name, price: i.price, qty: 0 }; });
+
+      let totalRevenue = 0;
+      Object.values(orders).forEach(ord => {
+        if (ord.items) {
+          for (const [id, qty] of Object.entries(ord.items)) {
+            if (itemsMap[id] && qty > 0) {
+              itemsMap[id].qty += qty;
+              totalRevenue += itemsMap[id].price * qty;
+            }
+          }
+        }
+      });
+
+      let summaryText = `🛒 【${currentGroupBuyData.title || '羽球社團購'}】統計總計：\n`;
+      summaryText += `----------------------------------------\n`;
+      Object.values(itemsMap).filter(x => x.qty > 0).forEach(x => {
+        summaryText += `- ${x.name} x ${x.qty} ($${x.price * x.qty})\n`;
+      });
+      summaryText += `----------------------------------------\n`;
+      summaryText += `總金額：$${totalRevenue}\n`;
+      summaryText += `總訂購人數：${Object.keys(orders).length} 人\n`;
+
+      navigator.clipboard.writeText(summaryText).then(() => {
+        alert('已成功複製統計報單文字至剪貼簿！');
+      });
+    };
+  }
+
+  // 團購設定子頁籤切換 (主題設定 / 收款設定 / 商品設定)
+  const subBtnTheme = document.getElementById('btn-admin-subtab-theme');
+  const subBtnItems = document.getElementById('btn-admin-subtab-items');
+
+  const subPaneTheme = document.getElementById('gb-admin-subpane-theme');
+  const subPaneItems = document.getElementById('gb-admin-subpane-items');
+
+  function switchAdminSubTab(target) {
+    [subBtnTheme, subBtnItems].forEach(b => {
+      if (b) {
+        b.style.background = 'transparent';
+        b.style.color = '#64748b';
+        b.style.boxShadow = 'none';
+      }
+    });
+    if (subPaneTheme) subPaneTheme.classList.add('hidden');
+    if (subPaneItems) subPaneItems.classList.add('hidden');
+
+    if (target === 'theme') {
+      if (subBtnTheme) { subBtnTheme.style.background = 'white'; subBtnTheme.style.color = '#2563eb'; subBtnTheme.style.boxShadow = '0 2px 5px rgba(0,0,0,0.06)'; }
+      if (subPaneTheme) subPaneTheme.classList.remove('hidden');
+    } else if (target === 'payment') {
+      if (subBtnPayment) { subBtnPayment.style.background = 'white'; subBtnPayment.style.color = '#2563eb'; subBtnPayment.style.boxShadow = '0 2px 5px rgba(0,0,0,0.06)'; }
+      if (subPanePayment) subPanePayment.classList.remove('hidden');
+    } else if (target === 'items') {
+      if (subBtnItems) { subBtnItems.style.background = 'white'; subBtnItems.style.color = '#2563eb'; subBtnItems.style.boxShadow = '0 2px 5px rgba(0,0,0,0.06)'; }
+      if (subPaneItems) subPaneItems.classList.remove('hidden');
+    }
+  }
+
+  if (subBtnTheme) subBtnTheme.onclick = () => switchAdminSubTab('theme');
+  if (subBtnItems) subBtnItems.onclick = () => switchAdminSubTab('items');
+
+  const btnSaveThemeSettings = document.querySelector('.btn-save-theme-settings');
+  if (btnSaveThemeSettings) {
+    btnSaveThemeSettings.onclick = () => {
+      if (btnGbSaveSettings) btnGbSaveSettings.click();
+    };
+  }
+
+  // 管理員開關團購
+  if (btnGbAdminToggle) {
+    btnGbAdminToggle.onclick = async () => {
+      if (!currentGroupBuyData) return;
+      const newActive = !currentGroupBuyData.active;
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/toggle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: currentUser?.userId || 'admin', active: newActive })
+        });
+        const result = await res.json();
+        if (result.success) {
+          currentGroupBuyData.active = result.active;
+          populateAdminFields();
+          await fetchGroupBuyData();
+          alert(result.active ? '✅ 團購已成功開啟！大廳即刻公開顯示團購選購入口按鈕。' : '🔴 團購已成功關閉！大廳即刻隱藏該團購選購入口。');
+        }
+      } catch(e) { alert('切換失敗：' + e.message); }
+    };
+  }
+
+  // 管理員建立全新團購活動
+  const btnCreateNewCampaign = document.getElementById('btn-gb-create-new-campaign');
+  if (btnCreateNewCampaign) {
+    btnCreateNewCampaign.onclick = async () => {
+      const title = prompt('➕ 請輸入新團購活動的名稱：\n(例如: 🥤 50嵐 暑期涼爽手搖飲團購)', '🥤 暑期飲料涼爽團購');
+      if (!title || !title.trim()) return;
+
+      try {
+        const res = await fetch('/api/groupbuy_create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: title.trim() })
+        });
+        const result = await res.json();
+        if (result.success) {
+          currentGid = result.gid;
+          await fetchGroupBuyData();
+          alert(`✅ 已成功建立並開啟新團購活動：「${result.data.title}」！\n大廳已即時出現專屬選購入口按鈕。`);
+        }
+      } catch(e) { alert('建立新團購失敗：' + e.message); }
+    };
+  }
+
+  // 管理員儲存設定
+  if (btnGbSaveSettings) {
+    btnGbSaveSettings.onclick = async () => {
+      const payload = {
+        uid: currentUser.userId,
+        title: gbAdminTitleInput.value.trim(),
+        notice: gbAdminNoticeInput.value.trim()
+      };
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/settings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) alert('✅ 團購設定已儲存！');
+      } catch(e) { alert('儲存失敗：' + e.message); }
+    };
+  }
+
+  // 管理員清空所有訂單
+  if (btnGbClearOrders) {
+    btnGbClearOrders.onclick = async () => {
+      if (!confirm('⚠️ 確定要清空全體成員的訂單資料嗎？此動作無法復原！')) return;
+      try {
+        await fetch(`/api/groupbuy/${currentGid || 'default'}/clear_orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: currentUser.userId })
+        });
+        currentCart = {};
+        alert('✅ 已成功清空所有訂單');
+      } catch(e) { alert('清空失敗：' + e.message); }
+    };
+  }
+
+  // 一鍵帶入展榮商號菜單
+  const btnImportZhanRong = document.getElementById('btn-gb-import-zhanrong');
+  if (btnImportZhanRong) {
+    btnImportZhanRong.onclick = async () => {
+      if (!confirm('✨ 確定要一鍵載入展榮商號的 10 款熱銷商品與圖片嗎？')) return;
+      const zhanRongItems = getZhanRongDefaultItemsClient();
+      if (!currentGroupBuyData) currentGroupBuyData = {};
+      currentGroupBuyData.items = zhanRongItems;
+      currentGroupBuyData.title = '🛒 展榮商號 鹿港傳承團購專區 (1986)';
+      currentGroupBuyData.notice = '';
+
+      try {
+        await fetch(`/api/groupbuy/${currentGid || 'default'}/settings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: currentUser?.userId || 'admin',
+            title: currentGroupBuyData.title,
+            notice: currentGroupBuyData.notice,
+            items: zhanRongItems
+          })
+        });
+      } catch(e) { console.error(e); }
+
+      renderGroupBuyUI(currentGroupBuyData);
+      alert('✅ 已成功一鍵載入預設熱銷商品菜單與圖片！');
+    };
+  }
+
+  // 管理員將目前商品儲存為「一鍵帶入」預設範本 UI 操作 (彈窗命名確認)
+  const btnSaveAsPreset = document.getElementById('btn-gb-save-as-preset');
+  const gbSavePresetModal = document.getElementById('gbSavePresetModal');
+  const btnCloseSavePreset = document.getElementById('btn-close-save-preset');
+  const btnCancelSavePreset = document.getElementById('btn-cancel-save-preset');
+  const btnConfirmSavePreset = document.getElementById('btn-confirm-save-preset');
+  const gbPresetNameInput = document.getElementById('gb-preset-name-input');
+  const gbPresetItemsPreview = document.getElementById('gb-preset-items-preview');
+  const gbPresetSelect = document.getElementById('gb-preset-select');
+
+  if (btnCloseSavePreset) btnCloseSavePreset.onclick = () => gbSavePresetModal.classList.add('hidden');
+  if (btnCancelSavePreset) btnCancelSavePreset.onclick = () => gbSavePresetModal.classList.add('hidden');
+  if (gbSavePresetModal) {
+    gbSavePresetModal.onclick = (e) => {
+      if (e.target === gbSavePresetModal) gbSavePresetModal.classList.add('hidden');
+    };
+  }
+
+  if (btnSaveAsPreset) {
+    btnSaveAsPreset.onclick = () => {
+      const items = currentGroupBuyData?.items || [];
+      if (items.length === 0) {
+        alert('目前商品清單為空，無法設為預設範本！請先新增商品。');
+        return;
+      }
+      if (gbPresetNameInput) gbPresetNameInput.value = `展榮商號 鹿港傳承名產 (${items.length} 項)`;
+      if (gbPresetItemsPreview) {
+        gbPresetItemsPreview.innerHTML = items.map(i => `• [${i.category || '自訂'}] ${i.name} ($${i.price})`).join('<br/>');
+      }
+      if (gbSavePresetModal) gbSavePresetModal.classList.remove('hidden');
+    };
+  }
+
+  if (btnConfirmSavePreset) {
+    btnConfirmSavePreset.onclick = async () => {
+      const items = currentGroupBuyData?.items || [];
+      const presetName = gbPresetNameInput ? gbPresetNameInput.value.trim() : '';
+      if (!presetName) {
+        alert('請輸入範本名稱！');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/save_preset`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items, presetName })
+        });
+        const result = await res.json();
+        if (result.success) {
+          if (gbSavePresetModal) gbSavePresetModal.classList.add('hidden');
+          if (gbPresetSelect) {
+            gbPresetSelect.innerHTML = `<option value="custom">${result.presetName} (${items.length} 項)</option>`;
+          }
+          alert(`✅ 已成功儲存預設範本：「${result.presetName}」！\n操作者完全無需碰 JSON 檔案。`);
+        } else {
+          alert('儲存範本失敗：' + (result.error || '未知錯誤'));
+        }
+      } catch(e) {
+        alert('儲存範本失敗：' + e.message);
+      }
+    };
+  }
+
+  // 管理員新增/編輯商品 Modal 事件
+  const btnOpenAddItem = document.getElementById('btn-gb-open-add-item');
+  const btnCloseItemEdit = document.getElementById('btn-close-item-edit');
+  const btnSaveItem = document.getElementById('btn-gb-save-item');
+  const btnDeleteItem = document.getElementById('btn-gb-delete-item');
+  const itemEditModal = document.getElementById('gbItemEditModal');
+
+  if (btnOpenAddItem) btnOpenAddItem.onclick = () => openItemEditModal();
+  if (btnCloseItemEdit) btnCloseItemEdit.onclick = () => itemEditModal.classList.add('hidden');
+
+  if (btnSaveItem) {
+    btnSaveItem.onclick = async () => {
+      const id = document.getElementById('gb-edit-item-id').value;
+      const category = document.getElementById('gb-edit-item-category').value.trim();
+      const name = document.getElementById('gb-edit-item-name').value.trim();
+      const price = parseFloat(document.getElementById('gb-edit-item-price').value);
+
+      if (!category || !name || isNaN(price)) {
+        alert('請填寫必填欄位（商品分類、名稱、價格）！');
+        return;
+      }
+
+      const itemPayload = {
+        id: id || undefined,
+        category,
+        name,
+        price,
+        unit: document.getElementById('gb-edit-item-unit').value.trim(),
+        linkText: document.getElementById('gb-edit-item-linktext').value.trim(),
+        description: document.getElementById('gb-edit-item-desc').value.trim(),
+        contents: (document.getElementById('gb-edit-item-contents') ? document.getElementById('gb-edit-item-contents').value.trim() : ''),
+        linkUrl: document.getElementById('gb-edit-item-linkurl').value.trim(),
+        imageUrl: document.getElementById('gb-edit-item-imgurl').value.trim()
+      };
+
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/item/save`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: currentUser.userId, item: itemPayload })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('✅ 商品已儲存！');
+          if (itemEditModal) itemEditModal.classList.add('hidden');
+        } else {
+          alert('儲存失敗：' + data.error);
+        }
+      } catch(e) { alert('儲存失敗：' + e.message); }
+    };
+  }
+
+  if (btnDeleteItem) {
+    btnDeleteItem.onclick = async () => {
+      const id = document.getElementById('gb-edit-item-id').value;
+      if (!id) return;
+      if (!confirm('確定要刪除此商品品項嗎？')) return;
+
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/item/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: currentUser.userId, itemId: id })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('✅ 已刪除商品');
+          if (itemEditModal) itemEditModal.classList.add('hidden');
+        } else {
+          alert('刪除失敗：' + data.error);
+        }
+      } catch(e) { alert('刪除失敗：' + e.message); }
+    };
+  }
+}
+
+function openCheckoutModal() {
+  if (!currentGroupBuyData || Object.keys(currentCart).length === 0) {
+    alert('您的購物車是空的，請先挑選商品！');
+    return;
+  }
+
+  // 渲染購物車明細
+  if (checkoutItemsList) {
+    checkoutItemsList.innerHTML = '';
+    let sum = 0;
+    for (const [itemId, qty] of Object.entries(currentCart)) {
+      const item = currentGroupBuyData.items.find(i => i.id === itemId);
+      if (item && qty > 0) {
+        const subtotal = item.price * qty;
+        sum += subtotal;
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.justifyContent = 'space-between';
+        row.style.fontSize = '14px';
+        row.style.margin = '4px 0';
+        row.innerHTML = `<span>${item.name} × ${qty}</span><span>$${subtotal}</span>`;
+        checkoutItemsList.appendChild(row);
+      }
+    }
+    if (checkoutTotalSum) checkoutTotalSum.innerText = sum;
+  }
+
+  // 帶入付款帳戶資訊
+  const p = currentGroupBuyData.paymentSettings || {};
+  if (gbBankNameDisplay) gbBankNameDisplay.innerText = `${p.bankName || '銀行'} (${p.bankCode || '代碼'})`;
+  if (gbBankAccDisplay) gbBankAccDisplay.innerText = p.bankAccount || '未設定帳號';
+  if (gbBankHolderDisplay) gbBankHolderDisplay.innerText = p.bankAccountName || '未設定戶名';
+
+  // LINE Pay 轉帳按鈕與 QR Code
+  if (btnLaunchLinepay) {
+    if (p.linePayLink) {
+      btnLaunchLinepay.href = p.linePayLink;
+      btnLaunchLinepay.classList.remove('hidden');
+    } else {
+      btnLaunchLinepay.href = '#';
+      btnLaunchLinepay.innerText = '🟢 請向主辦人索取 LINE 轉帳連結';
+    }
+  }
+
+  if (gbLinepayQrBox && gbLinepayQrImg) {
+    if (p.linePayQrUrl) {
+      gbLinepayQrImg.src = p.linePayQrUrl;
+      gbLinepayQrBox.classList.remove('hidden');
+    } else {
+      gbLinepayQrBox.classList.add('hidden');
+    }
+  }
+
+  if (groupBuyCheckoutModal) groupBuyCheckoutModal.classList.remove('hidden');
+}
+
+// 頁面加載完成時初始化
+document.addEventListener('DOMContentLoaded', () => {
+  initializeLiff();
+  initGroupBuyEvents();
+  fetchGroupBuyData();
+});
+
 
