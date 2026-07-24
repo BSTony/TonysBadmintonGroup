@@ -5968,8 +5968,22 @@ function initGroupBuyEvents() {
 
   const btnSaveThemeSettings = document.querySelector('.btn-save-theme-settings');
   if (btnSaveThemeSettings) {
-    btnSaveThemeSettings.onclick = () => {
-      if (btnGbSaveSettings) btnGbSaveSettings.click();
+    btnSaveThemeSettings.onclick = async () => {
+      const payload = {
+        uid: currentUser.userId,
+        title: gbAdminTitleInput ? gbAdminTitleInput.value.trim() : '',
+        notice: gbAdminNoticeInput ? gbAdminNoticeInput.value.trim() : '',
+        hiddenFromLobby: gbAdminHiddenLobbyInput ? gbAdminHiddenLobbyInput.checked : false
+      };
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/settings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) alert('✅ 團購設定已儲存！');
+      } catch(e) { alert('儲存失敗：' + e.message); }
     };
   }
 
