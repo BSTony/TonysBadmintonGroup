@@ -981,7 +981,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784736728143,
+    "lastActiveTime": 1784869342855,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1016,11 +1016,18 @@
           "Ong",
           "Jimmy",
           "杜威霖 Andy",
-          "Charles"
+          "Charles",
+          "詹詹"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/24 13:02",
+        "name": "詹詹",
+        "operator": "Wayne",
+        "action": "+1"
+      },
       {
         "time": "07/23 00:12",
         "name": "Charles",
