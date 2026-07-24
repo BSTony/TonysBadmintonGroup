@@ -1345,7 +1345,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1784647337901,
+    "lastActiveTime": 1784863960177,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1363,7 +1363,6 @@
           "林煥杰",
           "ALAN LIU",
           "JoeLin",
-          "沂 Lexie🐷",
           "奕翔",
           "wayne",
           "小金(Chen Pei Hung)"
@@ -1372,6 +1371,12 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/24 11:32",
+        "name": "沂 Lexie🐷",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/21 23:22",
         "name": "小金(Chen Pei Hung)",
