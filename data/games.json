@@ -1369,7 +1369,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1784863960177,
+    "lastActiveTime": 1784871860556,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1389,12 +1389,19 @@
           "JoeLin",
           "奕翔",
           "wayne",
-          "小金(Chen Pei Hung)"
+          "小金(Chen Pei Hung)",
+          "陳呈"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/24 13:44",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1"
+      },
       {
         "time": "07/24 11:32",
         "name": "沂 Lexie🐷",
