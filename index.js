@@ -1558,13 +1558,14 @@ app.get('/api/groupbuy/:gid', (req, res) => {
 
 app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
   const gid = req.params.gid;
-  const { uid, active } = req.body || {};
+  const { uid, active, hiddenFromLobby } = req.body || {};
   const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
   if (!isAdmin) {
     return res.status(403).json({ error: '沒有管理員權限' });
   }
   const info = getGroupBuyInfo(gid);
   info.active = typeof active === 'boolean' ? active : !info.active;
+  if (hiddenFromLobby !== undefined) info.hiddenFromLobby = hiddenFromLobby;
   await saveGroupBuyStorage();
   io.emit('group_buy_state_updated', { gid, data: info });
   notifySSEClients(gid);
@@ -4736,9 +4737,10 @@ app.get('/api/groupbuy/:gid', (req, res) => {
 // 開啟/關閉團購
 app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
   const gid = req.params.gid || 'default';
-  const { uid, active } = req.body;
+  const { uid, active, hiddenFromLobby } = req.body;
   const gb = getGroupBuyInfo(gid);
   gb.active = !!active;
+  if (hiddenFromLobby !== undefined) gb.hiddenFromLobby = hiddenFromLobby;
   await saveGroupBuyStorage();
   if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
   res.json({ success: true, active: gb.active });

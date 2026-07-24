@@ -1,6 +1,6 @@
 {
   "default": {
-    "active": true,
+    "active": false,
     "title": "🛒 展榮商號團購",
     "notice": "最晚 MMM/DD截止",
     "paymentSettings": {
@@ -1615,23 +1615,7 @@
         "contents": ""
       }
     ],
-    "orders": {
-      "U_TEST_PLAYER_d5htc": {
-        "userId": "U_TEST_PLAYER_d5htc",
-        "userName": "Test Player d5htc",
-        "userPhone": "",
-        "items": {
-          "zr_0000": 1,
-          "zr_0004": 1
-        },
-        "totalAmount": 814,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "updatedAt": 1784881638350
-      }
-    }
+    "orders": {},
+    "hiddenFromLobby": true
   }
 }
