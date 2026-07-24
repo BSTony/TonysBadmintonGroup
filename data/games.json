@@ -981,7 +981,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784869581399,
+    "lastActiveTime": 1784871201075,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1018,11 +1018,18 @@
           "杜威霖 Andy",
           "Charles",
           "詹詹",
-          "黃政豪"
+          "黃政豪",
+          "均翔"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/24 13:33",
+        "name": "均翔",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/24 13:06",
         "name": "黃政豪",
