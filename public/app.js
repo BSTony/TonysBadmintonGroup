@@ -5281,7 +5281,7 @@ function openItemDetail(item) {
   if (itemDetailName) itemDetailName.innerText = item.name;
   if (itemDetailPrice) itemDetailPrice.innerText = item.price;
   if (itemDetailUnit) itemDetailUnit.innerText = item.unit ? `/ ${item.unit}` : '';
-  if (itemDetailDesc) itemDetailDesc.innerText = item.description || '暫無詳細說明';
+  if (itemDetailDesc) itemDetailDesc.innerHTML = (item.description || '暫無詳細說明').replace(/\n/g, '<br/>');
 
   if (itemDetailImgContainer) {
     if (item.imageUrl) {
@@ -5328,6 +5328,7 @@ async function saveCartToBackend() {
         uid: currentUser.userId,
         userName: name,
         userPhone: phone,
+        userPictureUrl: currentUser.pictureUrl || '',
         items: currentCart,
         paymentMethod: 'none',
         paymentNote: '',
@@ -5474,7 +5475,8 @@ function renderSummaryTab() {
             Object.values(orders).forEach(ord => {
               const q = ord.items && ord.items[itemObj.id];
               if (q > 0) {
-                buyers.push(`- ${ord.userName} : ${q} ${itemObj.unit || ''}`);
+                const avatarHtml = ord.userPictureUrl ? `<img src="${ord.userPictureUrl}" style="width:20px;height:20px;border-radius:50%;vertical-align:middle;margin-right:4px;">` : '👤';
+                buyers.push(`- ${avatarHtml} ${ord.userName} : ${q} ${itemObj.unit || ''}`);
                 totalItemQty += q;
               }
             });
@@ -5565,7 +5567,7 @@ function renderSummaryTab() {
 
         card.innerHTML = `
           <div class="gb-order-header">
-            <span>👤 ${ord.userName}${phoneDisplay}</span>
+            <span>${ord.userPictureUrl ? `<img src="${ord.userPictureUrl}" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;">` : '👤 '}${ord.userName}${phoneDisplay}</span>
             <span>$${ord.totalAmount} | ${statusBadge}</span>
           </div>
           <div style="font-size:13px; color:#495057; margin-bottom:4px;">

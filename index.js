@@ -1597,7 +1597,7 @@ app.post('/api/groupbuy/:gid/settings', async (req, res) => {
 
 app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid;
-  const { uid, userName, userPhone, items, paymentMethod, paymentNote, note } = req.body || {};
+  const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note } = req.body || {};
   if (!uid || !userName) {
     return res.status(400).json({ error: '請提供下單姓名' });
   }
@@ -1619,6 +1619,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     userId: uid,
     userName: userName.trim(),
     userPhone: userPhone.trim(),
+    userPictureUrl: userPictureUrl || '',
     items: items || {},
     totalAmount,
     paymentMethod: paymentMethod || 'p2p_linepay',
