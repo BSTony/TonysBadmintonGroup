@@ -1573,7 +1573,7 @@ app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
 
 app.post('/api/groupbuy/:gid/settings', async (req, res) => {
   const gid = req.params.gid;
-  const { uid, title, notice, paymentSettings, items } = req.body || {};
+  const { uid, title, notice, hiddenFromLobby, paymentSettings, items } = req.body || {};
   const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
   if (!isAdmin) {
     return res.status(403).json({ error: '沒有管理員權限' });
@@ -1581,6 +1581,7 @@ app.post('/api/groupbuy/:gid/settings', async (req, res) => {
   const info = getGroupBuyInfo(gid);
   if (typeof title === 'string') info.title = title.trim();
   if (typeof notice === 'string') info.notice = notice.trim();
+  if (hiddenFromLobby !== undefined) info.hiddenFromLobby = hiddenFromLobby;
   if (paymentSettings && typeof paymentSettings === 'object') {
     info.paymentSettings = { ...info.paymentSettings, ...paymentSettings };
   }
@@ -4746,10 +4747,11 @@ app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
 // 儲存團購設定
 app.post('/api/groupbuy/:gid/settings', async (req, res) => {
   const gid = req.params.gid || 'default';
-  const { uid, title, notice, paymentSettings, items } = req.body;
+  const { uid, title, notice, hiddenFromLobby, paymentSettings, items } = req.body;
   const gb = getGroupBuyInfo(gid);
   if (title !== undefined) gb.title = title;
   if (notice !== undefined) gb.notice = notice;
+  if (hiddenFromLobby !== undefined) gb.hiddenFromLobby = hiddenFromLobby;
   if (paymentSettings) gb.paymentSettings = { ...gb.paymentSettings, ...paymentSettings };
   if (Array.isArray(items)) gb.items = items;
   await saveGroupBuyStorage();

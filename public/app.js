@@ -4722,6 +4722,7 @@ const gbOrderNote = document.getElementById('gb-order-note');
 const btnGbAdminToggle = document.getElementById('btn-gb-admin-toggle');
 const gbAdminTitleInput = document.getElementById('gb-admin-title-input');
 const gbAdminNoticeInput = document.getElementById('gb-admin-notice-input');
+const gbAdminHiddenLobbyInput = document.getElementById('gb-admin-hidden-lobby-input');
 const gbAdminLinepayLink = document.getElementById('gb-admin-linepay-link');
 const gbAdminLinepayQr = document.getElementById('gb-admin-linepay-qr');
 const gbAdminBankCode = document.getElementById('gb-admin-bank-code');
@@ -4770,7 +4771,10 @@ function renderLobbyGroupBuyBanners(list) {
   const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = (typeof getEffectiveRole === 'function') ? getEffectiveRole() : { isAdmin: false, isSuperAdmin: false };
   const isUserAdmin = effIsAdmin || effIsSuperAdmin;
 
-  const activeGroupBuys = (list || []).filter(gb => gb.active);
+  let activeGroupBuys = (list || []).filter(gb => gb.active);
+  if (!isUserAdmin) {
+    activeGroupBuys = activeGroupBuys.filter(gb => !gb.hiddenFromLobby);
+  }
   if (activeGroupBuys.length === 0) {
     if (isUserAdmin) {
       bannerBox.classList.remove('hidden');
@@ -4811,7 +4815,7 @@ function renderLobbyGroupBuyBanners(list) {
       <div style="display:flex; align-items:center; gap:10px;">
         <span style="font-size:22px;">🛒</span>
         <div>
-          <div style="font-size:15px; font-weight:bold;">${gb.title || '團購專區'}</div>
+          <div style="font-size:15px; font-weight:bold;">${gb.title || '團購專區'} ${gb.hiddenFromLobby ? '<span style="color:#facc15;font-size:12px;">[大廳隱藏]</span>' : ''}</div>
           <div style="font-size:12px; font-weight:normal; opacity:0.9;">已包含 ${gb.itemCount} 款精選商品 | 熱烈選購中</div>
         </div>
       </div>
@@ -5624,6 +5628,7 @@ function populateAdminFields() {
   }
   if (gbAdminTitleInput) gbAdminTitleInput.value = currentGroupBuyData.title || '';
   if (gbAdminNoticeInput) gbAdminNoticeInput.value = currentGroupBuyData.notice || '';
+  if (gbAdminHiddenLobbyInput) gbAdminHiddenLobbyInput.checked = !!currentGroupBuyData.hiddenFromLobby;
   if (gbAdminLinepayLink) gbAdminLinepayLink.value = p.linePayLink || '';
   if (gbAdminLinepayQr) gbAdminLinepayQr.value = p.linePayQrUrl || '';
   if (gbAdminBankCode) gbAdminBankCode.value = p.bankCode || '';
@@ -6019,7 +6024,8 @@ function initGroupBuyEvents() {
       const payload = {
         uid: currentUser.userId,
         title: gbAdminTitleInput.value.trim(),
-        notice: gbAdminNoticeInput.value.trim()
+        notice: gbAdminNoticeInput.value.trim(),
+        hiddenFromLobby: gbAdminHiddenLobbyInput ? gbAdminHiddenLobbyInput.checked : false
       };
       try {
         const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/settings`, {
