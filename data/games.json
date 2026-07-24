@@ -981,7 +981,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784871201075,
+    "lastActiveTime": 1784896231003,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1019,11 +1019,18 @@
           "Charles",
           "詹詹",
           "黃政豪",
-          "均翔"
+          "均翔",
+          "Grant"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/24 20:30",
+        "name": "Grant",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/24 13:33",
         "name": "均翔",
