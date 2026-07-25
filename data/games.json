@@ -1199,7 +1199,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1784985791612,
+    "lastActiveTime": 1784989197294,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1241,11 +1241,18 @@
           "Tiong1",
           "Tiong2",
           "卡比",
-          "Jet"
+          "Jet",
+          "Yuuuu"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/25 22:19",
+        "name": "Yuuuu",
+        "operator": "Yuuuu",
+        "action": "+1"
+      },
       {
         "time": "07/25 21:23",
         "name": "Jet",
