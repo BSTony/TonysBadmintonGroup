@@ -1438,7 +1438,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1784949971861,
+    "lastActiveTime": 1784989132488,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1458,13 +1458,18 @@
           "JoeLin",
           "奕翔",
           "wayne",
-          "小金(Chen Pei Hung)",
-          "鐘順立"
+          "小金(Chen Pei Hung)"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/25 22:18",
+        "name": "鐘順立",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/25 11:26",
         "name": "陳呈",
