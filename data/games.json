@@ -981,7 +981,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784957922059,
+    "lastActiveTime": 1784957925757,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1008,7 +1008,9 @@
       "Andrew": true,
       "均翔": true,
       "wayne": true,
-      "Mia": true
+      "Mia": true,
+      "Kevin": true,
+      "楊程鈞": true
     },
     "sections": [
       {
