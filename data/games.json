@@ -1240,7 +1240,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1785023653262,
+    "lastActiveTime": 1785023655457,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1248,7 +1248,8 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "林煥杰": true
+      "林煥杰": true,
+      "wayne": true
     },
     "sections": [
       {
