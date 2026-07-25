@@ -1708,7 +1708,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1784954650361,
+    "lastActiveTime": 1784982048697,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1731,8 +1731,17 @@
         "list": [
           "Tony",
           "Kay",
-          "陳呈"
+          "陳呈",
+          "俊吉"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/25 20:20",
+        "name": "俊吉",
+        "operator": "Jimmy",
+        "action": "+1"
       }
     ]
   }
