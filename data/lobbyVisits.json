@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2159,
+    "viewCount": 2160,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -125,8 +125,8 @@
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
         "firstVisit": 1783229231612,
-        "count": 51,
-        "lastVisit": 1784999239514
+        "count": 52,
+        "lastVisit": 1785003194197
       },
       "U9a1ff0a8477529c49db5bca1e7313bd0": {
         "displayName": "Jimmy",
@@ -778,6 +778,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1785003194197,
+        "userId": "U04307fbd1087e54ce656086b653a60fd",
+        "displayName": "黃政豪",
+        "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
+      },
       {
         "time": 1784999239514,
         "userId": "U04307fbd1087e54ce656086b653a60fd",
@@ -1971,12 +1977,6 @@
         "userId": "Ub88763e6825e6fb9bdd1db3e80f2c7e8",
         "displayName": "陳俊傑 (Jeremy)",
         "pictureUrl": "https://profile.line-scdn.net/0hMNVZE4dNEmF7Izsf5kpsHgtzEQtYUktzB0FcUk0jSlZDRgJiXkVdVU4nGFNGQFMyAhcNUEwlSlN3MGUHZXXuVXwTT1BGElA_UU1Ygg"
-      },
-      {
-        "time": 1784805331810,
-        "userId": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
-        "displayName": "Gary",
-        "pictureUrl": "https://profile.line-scdn.net/0hre1VhxdsLUocLwAkQrpTNWx_LiA_XnRYZ0oxe319J3gpTGMUNx5iKSspIH52Hj4aNRlrKi57ICgQPFosAnnRfhsfcHshHm8UNkFnqQ"
       }
     ]
   },
