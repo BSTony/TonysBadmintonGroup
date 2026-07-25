@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2058,
+    "viewCount": 2059,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -677,8 +677,8 @@
       "Ud00a4c36fa1e023212f6e85031b569b9": {
         "displayName": "Kelly 馨德",
         "firstVisit": 1784362061286,
-        "count": 1,
-        "lastVisit": 1784362061286
+        "count": 2,
+        "lastVisit": 1784934332713
       },
       "U935093aaf7acba2a7f7a333f4c2fa183": {
         "displayName": "秭旭Archie",
@@ -760,6 +760,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1784934332713,
+        "userId": "Ud00a4c36fa1e023212f6e85031b569b9",
+        "displayName": "Kelly 馨德",
+        "pictureUrl": "https://profile.line-scdn.net/0hrfIKAdhfLUlkMjM8i6VTdxRiLiNHQ3RbSVBqKQZncXBQUT5MQFI2elZneykMVWsfTQNhLlZmei5GeT8aLzUeajZiDx5YUBV5OFNgajdAKH0hAB9ITlIBXxNMFR0dZA16GBBmfCtRegpQAAMeQCccWQ9VKTojdT4eLmVBH2EAQ8oLMFocSVRjKlk0e3zc"
+      },
       {
         "time": 1784917274797,
         "userId": "U94d0fd3752c6d2521d871658f63822b7",
@@ -1953,12 +1959,6 @@
         "userId": "U9904ed725b1f420b8718791594e3756b",
         "displayName": "偉舫",
         "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
-      },
-      {
-        "time": 1784707658352,
-        "userId": "U8b4e160fd2505afd265b09e8f651ebab",
-        "displayName": "杜威霖 Andy",
-        "pictureUrl": "https://profile.line-scdn.net/0hMKNM-ElNEmRjNA18D45sGxNkEQ5ARUt2S1oNBgQ3SF1fUVMySFJYBVM3RFVZVgYyGlpZVV41SFxvJ2UCfWLuUGQET1VeBVA6SVpYhw"
       }
     ]
   },
