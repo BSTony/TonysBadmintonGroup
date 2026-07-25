@@ -1199,7 +1199,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1784950030555,
+    "lastActiveTime": 1784978466515,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1234,7 +1234,6 @@
           "丁丁",
           "Mia",
           "Kevin",
-          "King",
           "Alice",
           "陳宜蓁",
           "YANG 阿傑",
@@ -1247,6 +1246,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/25 19:21",
+        "name": "King",
+        "operator": "King",
+        "action": "-1"
+      },
       {
         "time": "07/23 22:20",
         "name": "Tiong2",
