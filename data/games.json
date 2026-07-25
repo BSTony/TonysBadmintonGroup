@@ -1406,7 +1406,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1784942453894,
+    "lastActiveTime": 1784949971861,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1427,13 +1427,18 @@
           "奕翔",
           "wayne",
           "小金(Chen Pei Hung)",
-          "陳呈",
           "鐘順立"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/25 11:26",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "-1"
+      },
       {
         "time": "07/25 09:20",
         "name": "鐘順立",
