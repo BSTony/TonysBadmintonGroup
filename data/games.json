@@ -981,7 +981,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784350912802,
-    "lastActiveTime": 1784941976868,
+    "lastActiveTime": 1784941978813,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -999,7 +999,8 @@
       "Grant": true,
       "Charles": true,
       "詹詹": true,
-      "杜威霖 Andy": true
+      "杜威霖 Andy": true,
+      "Jimmy": true
     },
     "sections": [
       {
