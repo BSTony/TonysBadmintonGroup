@@ -1677,5 +1677,50 @@
         "action": "+1"
       }
     ]
+  },
+  "1784954650360876": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "1784954650360876",
+    "title": "週六 港中 打三小",
+    "date": "8/1 (六)",
+    "time": "09:00~12:00",
+    "location": "南港高中",
+    "fee": "250",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1784954650361,
+    "lastActiveTime": 1784954650361,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "Tony": true,
+      "Kay": true,
+      "陳呈": true
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 23,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Tony",
+          "Kay",
+          "陳呈"
+        ]
+      }
+    ]
   }
 }
