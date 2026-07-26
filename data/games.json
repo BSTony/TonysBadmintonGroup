@@ -977,7 +977,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1785031583727,
+    "lastActiveTime": 1785036930882,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -996,7 +996,8 @@
       "奧斯卡": true,
       "Jet": true,
       "Sammy Su": true,
-      "Gary": true
+      "Gary": true,
+      "林立峰": true
     },
     "sections": [
       {
