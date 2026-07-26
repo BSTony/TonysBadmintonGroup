@@ -1241,7 +1241,7 @@
         "action": "+1"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "allowUserNoteEdit": false,
     "noteMap": {
       "小可愛": "不可愛⊙ω⊙"
