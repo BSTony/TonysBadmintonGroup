@@ -1259,7 +1259,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1785031595377,
+    "lastActiveTime": 1785031604379,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1287,12 +1287,19 @@
           "奕翔",
           "wayne",
           "小金(Chen Pei Hung)",
-          "Tiong1"
+          "Tiong1",
+          "Tiong2"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/26 10:06",
+        "name": "Tiong2",
+        "operator": "Kay",
+        "action": "+1"
+      },
       {
         "time": "07/26 10:06",
         "name": "Tiong1",
