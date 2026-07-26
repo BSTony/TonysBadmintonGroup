@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2238,
+    "viewCount": 2240,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -125,8 +125,8 @@
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
         "firstVisit": 1783229231612,
-        "count": 52,
-        "lastVisit": 1785003194197
+        "count": 53,
+        "lastVisit": 1785079275201
       },
       "U9a1ff0a8477529c49db5bca1e7313bd0": {
         "displayName": "Jimmy",
@@ -335,8 +335,8 @@
       "Ud9c980235866b4402d34cdfa250b9aed": {
         "displayName": "周哲儁",
         "firstVisit": 1783479169830,
-        "count": 14,
-        "lastVisit": 1784989101669
+        "count": 15,
+        "lastVisit": 1785078439286
       },
       "U929413d689b43d7ed7c44c3d6142ea43": {
         "displayName": "延武",
@@ -790,6 +790,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1785079275201,
+        "userId": "U04307fbd1087e54ce656086b653a60fd",
+        "displayName": "黃政豪",
+        "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
+      },
+      {
+        "time": 1785078439286,
+        "userId": "Ud9c980235866b4402d34cdfa250b9aed",
+        "displayName": "周哲儁",
+        "pictureUrl": "https://profile.line-scdn.net/0hxfGTG7BjJ0lqLQpt_W1ZNhp9JCNJXH5bExxrLQsofnoESGYeThhvf1skeHtSFGBLQE08egwvLn1mPlAvdHvbfW0denhXHGUXQENtqg"
+      },
       {
         "time": 1785073145904,
         "userId": "Ub2e84850d9446141bcb1ae89ec450821",
@@ -1976,18 +1988,6 @@
         "userId": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
         "displayName": "Ong",
         "pictureUrl": "https://profile.line-scdn.net/0hQX53XLkfDncYShq8j7ZwCGgaDR07O1dlMy5GE35PUkYgeEtzMSwSRSxOVBJyfRkkNCoSF3keVEQUWXkRBhzyQx96U0Yle0wpMiRElA"
-      },
-      {
-        "time": 1784900232955,
-        "userId": "Ua25db9888517a9033e5dad6f843ff9bc",
-        "displayName": "AddieWang",
-        "pictureUrl": "https://profile.line-scdn.net/0hv4pTuHeSKRtdLTad7FpXJS19KnF-XHAJeUk0fjx4dSpkGWkeeE0zfGkocipgSGsYeB5lfW95Int_fCoKIzsAFhFJa25lVGZMBShgLxRyBS8fXTYJIjsdPRNuCE8GGA8ZFUkzFT9DNmoTFRspCC0PGm51CVMQdTUxKXpFTVgfR5gyL15OcEtneGArfy7l"
-      },
-      {
-        "time": 1784900137474,
-        "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-        "displayName": "腳皮",
-        "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
       }
     ]
   },
