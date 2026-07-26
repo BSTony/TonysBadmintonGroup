@@ -1649,7 +1649,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041215959,
-    "lastActiveTime": 1785041215959,
+    "lastActiveTime": 1785042300407,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1665,7 +1665,17 @@
         "limit": 7,
         "backupLimit": 5,
         "label": "",
-        "list": []
+        "list": [
+          "云"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/26 13:05",
+        "name": "云",
+        "operator": "鄭人云",
+        "action": "+1"
       }
     ]
   },
