@@ -1653,7 +1653,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041215959,
-    "lastActiveTime": 1785048062481,
+    "lastActiveTime": 1785050799896,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1671,11 +1671,18 @@
         "label": "",
         "list": [
           "云",
-          "俊吉"
+          "俊吉",
+          "ALAN LIU"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/26 15:26",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1"
+      },
       {
         "time": "07/26 14:41",
         "name": "俊吉",
