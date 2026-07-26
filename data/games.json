@@ -1513,7 +1513,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1784849765864,
+    "lastActiveTime": 1785059794863,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1555,11 +1555,18 @@
           "Ong",
           "Ashley",
           "John",
-          "楊程鈞"
+          "楊程鈞",
+          "陳俊傑 (Jeremy)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/26 17:56",
+        "name": "陳俊傑 (Jeremy)",
+        "operator": "陳俊傑 (Jeremy)",
+        "action": "+1"
+      },
       {
         "time": "07/24 07:36",
         "name": "楊程鈞",
