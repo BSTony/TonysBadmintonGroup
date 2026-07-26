@@ -977,7 +977,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1785027926061,
+    "lastActiveTime": 1785031581774,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -994,7 +994,6 @@
       "小宇": false,
       "沂 Lexie🐷": true,
       "奧斯卡": true,
-      "Tiong1": true,
       "Tiong2": true,
       "Jet": true,
       "Sammy Su": true,
@@ -1027,7 +1026,6 @@
           "Sean柏宏",
           "周哲儁",
           "小羅",
-          "Tiong1",
           "Tiong2",
           "卡比",
           "Jet"
@@ -1035,6 +1033,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/26 10:06",
+        "name": "Tiong1",
+        "operator": "Kay",
+        "action": "-1"
+      },
       {
         "time": "07/26 01:07",
         "name": "Neil",
