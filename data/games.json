@@ -1696,7 +1696,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785041272313,
+    "lastActiveTime": 1785042591912,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1717,8 +1717,17 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay"
+          "Kay",
+          "Gary"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/26 13:09",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1"
       }
     ]
   }
