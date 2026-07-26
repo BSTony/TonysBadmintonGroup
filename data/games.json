@@ -977,7 +977,7 @@
     "tag": "10-11有冷氣",
     "active": true,
     "startTime": 1784442775167,
-    "lastActiveTime": 1785027922059,
+    "lastActiveTime": 1785027926061,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -997,7 +997,8 @@
       "Tiong1": true,
       "Tiong2": true,
       "Jet": true,
-      "Sammy Su": true
+      "Sammy Su": true,
+      "Gary": true
     },
     "sections": [
       {
