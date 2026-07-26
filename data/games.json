@@ -1259,7 +1259,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784442822915,
-    "lastActiveTime": 1785027954115,
+    "lastActiveTime": 1785031595377,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1286,12 +1286,19 @@
           "JoeLin",
           "奕翔",
           "wayne",
-          "小金(Chen Pei Hung)"
+          "小金(Chen Pei Hung)",
+          "Tiong1"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "07/26 10:06",
+        "name": "Tiong1",
+        "operator": "Kay",
+        "action": "+1"
+      },
       {
         "time": "07/25 22:18",
         "name": "鐘順立",
