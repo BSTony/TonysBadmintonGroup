@@ -1274,7 +1274,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785155374267,
+    "lastActiveTime": 1785155382261,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1302,11 +1302,18 @@
           "Gary",
           "Jet",
           "AddieWang",
-          "Mia"
+          "Mia",
+          "Kevin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/27 20:29",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1"
+      },
       {
         "time": "07/27 20:29",
         "name": "Mia",
