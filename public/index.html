@@ -681,7 +681,7 @@
         <h3 id="item-detail-name" style="margin:0 0 8px;font-size:18px;color:#1e293b;">商品名稱</h3>
         <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px;">
           <span style="font-size:22px;font-weight:bold;color:#e74c3c;">$<span id="item-detail-price">0</span></span>
-          <span id="item-detail-unit" style="font-size:14px;color:#64748b;">/ 包</span>
+
         </div>
         <p id="item-detail-desc" style="font-size:14px;color:#475569;line-height:1.6;margin-bottom:12px;"></p>
         <div id="item-detail-link-container" class="hidden" style="margin-bottom:12px;">
@@ -741,9 +741,9 @@
         <input type="hidden" id="gb-edit-item-id" />
         <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">商品分類 *</label><input type="text" id="gb-edit-item-category" placeholder="如：堅果類、飲品系列..." list="gb-category-suggestions" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /><datalist id="gb-category-suggestions"><option value="堅果類"><option value="無糖/粉類"><option value="油品系列"><option value="醬類"><option value="羽球裝備"><option value="飲品/點心"></datalist></div>
         <div style="display:flex;gap:10px;margin-bottom:10px;"><div style="flex:2;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">商品名稱 *</label><input type="text" id="gb-edit-item-name" placeholder="例如：原味堅果包" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div><div style="flex:1;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">價格 ($) *</label><input type="number" id="gb-edit-item-price" placeholder="250" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div></div>
-        <div style="display:flex;gap:10px;margin-bottom:10px;"><div style="flex:1;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">單位</label><input type="text" id="gb-edit-item-unit" placeholder="包、罐、盒..." style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div><div style="flex:2;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">連結按鈕文字</label><input type="text" id="gb-edit-item-linktext" placeholder="點我進入網站" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div></div>
+        <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">連結按鈕文字</label><input type="text" id="gb-edit-item-linktext" placeholder="點我進入網站" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div>
         <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">簡短說明 (顯示於列表)</label><textarea id="gb-edit-item-desc" rows="2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;resize:vertical;"></textarea></div>
-        <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">內容物</label><textarea id="gb-edit-item-contents" rows="2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;resize:vertical;"></textarea></div>
+        <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">備註 (選填)</label><textarea id="gb-edit-item-contents" rows="2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;resize:vertical;"></textarea></div>
         <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">外部連結網址</label><input type="text" id="gb-edit-item-linkurl" placeholder="https://example.com" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div>
         <div style="margin-bottom:15px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">圖片網址</label><input type="text" id="gb-edit-item-imgurl" placeholder="https://example.com/item.jpg" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div>
         <div style="display:flex;gap:10px;">
@@ -798,6 +798,11 @@
         <label for="gb-header-phone" style="font-weight:bold;color:#334155;white-space:nowrap;">電話</label>
         <input type="text" id="gb-header-phone" style="padding:6px 10px;border:1px solid #cbd5e1;border-radius:6px;width:120px;font-size:14px;" placeholder="(選填)">
       </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-left:8px;">
+        <label style="display:flex;align-items:center;font-size:13px;font-weight:bold;color:#334155;cursor:pointer;">
+          <input type="checkbox" id="gb-header-anonymous" style="margin-right:6px;width:16px;height:16px;"> 匿名購買
+        </label>
+      </div>
     </div>
     <div style="display:flex;border-bottom:1px solid #e2e8f0;background:white;flex-shrink:0;">
       <button id="gb-tab-items" class="gb-tab active">🏷️ 選購品項</button>
@@ -806,8 +811,14 @@
     </div>
     <div style="flex:1;overflow-y:auto;position:relative;">
       <div id="gb-pane-items" class="gb-tab-pane active" style="padding:12px;">
-        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
-          <div id="gb-category-nav" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+          <div id="gb-category-nav" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;"></div>
+          <div id="gb-admin-items-controls" class="hidden" style="display:flex;gap:6px;flex-wrap:wrap;">
+            <select id="gb-preset-select" style="padding:6px 10px;font-size:12px;border:1px solid #cbd5e1;border-radius:6px;background:white;"><option value="">-- 預設檔 --</option></select>
+            <button id="btn-gb-import-zhanrong" style="padding:6px 10px;font-size:12px;font-weight:bold;border-radius:6px;border:none;background:#e0f2fe;color:#0369a1;cursor:pointer;">📥</button>
+            <button id="btn-gb-save-as-preset" style="padding:6px 10px;font-size:12px;font-weight:bold;border-radius:6px;border:none;background:#f3e8ff;color:#7c3aed;cursor:pointer;">💾</button>
+            <button id="btn-gb-add-item" style="padding:6px 12px;font-size:12px;font-weight:bold;border-radius:6px;border:none;background:#10b981;color:white;cursor:pointer;">➕ 新增</button>
+          </div>
         </div>
         <div id="gb-items-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div>
       </div>
@@ -821,11 +832,8 @@
         </div>
       </div>
       <div id="gb-pane-admin" class="gb-tab-pane hidden" style="padding:16px;">
-        <div style="display:flex;gap:6px;margin-bottom:16px;background:#e2e8f0;padding:4px;border-radius:10px;">
-          <button id="btn-admin-subtab-theme" class="gb-admin-subtab-btn" style="flex:1;padding:8px 10px;font-size:13px;font-weight:bold;border-radius:8px;border:none;cursor:pointer;background:white;color:#2563eb;">🎨 主題</button>
-          <button id="btn-admin-subtab-items" class="gb-admin-subtab-btn" style="flex:1;padding:8px 10px;font-size:13px;font-weight:bold;border-radius:8px;border:none;cursor:pointer;background:transparent;color:#64748b;">📦 商品</button>
-        </div>
-        <div id="gb-admin-subpane-theme" class="gb-admin-subpane">
+
+        <div id="gb-admin-subpane-theme">
           <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:18px;">
             <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:10px;padding:12px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;">
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
@@ -836,29 +844,35 @@
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px dashed #e2e8f0;padding-bottom:12px;">
               <h3 style="font-size:16px;margin:0;color:#1e293b;">⚡ 活動狀態</h3>
-              <button id="btn-gb-admin-toggle" style="background:#10b981;color:white;padding:8px 18px;font-size:14px;font-weight:bold;border-radius:8px;border:none;cursor:pointer;">🟢 開啟團購活動</button>
+              <div style="display:flex; gap:20px;">
+                
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span id="lbl-hide" style="font-size:14px; font-weight:bold; color:#64748b; transition:0.3s; cursor:pointer;" onclick="if(!currentGroupBuyData.hiddenFromLobby) document.getElementById('btn-gb-admin-hidden-toggle').click()">隱藏</span>
+                  <button id="btn-gb-admin-hidden-toggle" style="position:relative; width:52px; height:28px; border-radius:28px; border:none; cursor:pointer; transition:background 0.3s; background:#ccc; padding:0; outline:none;">
+                    <div class="toggle-knob" style="position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%; background:white; transition:transform 0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
+                  </button>
+                  <span id="lbl-show" style="font-size:14px; font-weight:bold; color:#64748b; transition:0.3s; cursor:pointer;" onclick="if(currentGroupBuyData.hiddenFromLobby) document.getElementById('btn-gb-admin-hidden-toggle').click()">顯示</span>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span id="lbl-close" style="font-size:14px; font-weight:bold; color:#64748b; transition:0.3s; cursor:pointer;" onclick="if(currentGroupBuyData.active) document.getElementById('btn-gb-admin-toggle').click()">不開團</span>
+                  <button id="btn-gb-admin-toggle" style="position:relative; width:52px; height:28px; border-radius:28px; border:none; cursor:pointer; transition:background 0.3s; background:#ccc; padding:0; outline:none;">
+                    <div class="toggle-knob" style="position:absolute; top:2px; left:2px; width:24px; height:24px; border-radius:50%; background:white; transition:transform 0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>
+                  </button>
+                  <span id="lbl-open" style="font-size:14px; font-weight:bold; color:#64748b; transition:0.3s; cursor:pointer;" onclick="if(!currentGroupBuyData.active) document.getElementById('btn-gb-admin-toggle').click()">開團</span>
+                </div>
+
+              </div>
             </div>
             <div style="display:flex;flex-direction:column;gap:14px;">
               <div><label style="display:block;font-size:13px;font-weight:bold;color:#334155;margin-bottom:6px;">📌 活動標題</label><input type="text" id="gb-admin-title-input" placeholder="例如：7/25 羽球用品團購" style="width:100%;padding:10px 14px;font-size:14px;border:1px solid #cbd5e1;border-radius:8px;box-sizing:border-box;" /></div>
               <div><label style="display:block;font-size:13px;font-weight:bold;color:#334155;margin-bottom:6px;">📢 活動公告</label><textarea id="gb-admin-notice-input" rows="3" placeholder="例如：請於當天 18:00 前完成下單..." style="width:100%;padding:10px 14px;font-size:14px;border:1px solid #cbd5e1;border-radius:8px;box-sizing:border-box;resize:vertical;"></textarea></div>
-              <div><label style="display:flex;align-items:center;font-size:13px;font-weight:bold;color:#334155;cursor:pointer;"><input type="checkbox" id="gb-admin-hidden-lobby-input" style="margin-right:8px;width:16px;height:16px;" /> 🙈 不顯示在羽球大廳 (僅能透過專屬連結進入)</label></div>
               <button class="btn-save-theme-settings" style="width:100%;padding:12px;font-size:15px;font-weight:bold;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:10px;cursor:pointer;">💾 儲存主題設定</button>
             </div>
           </div>
         </div>
 
-        <div id="gb-admin-subpane-items" class="gb-admin-subpane hidden">
-          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-            <select id="gb-preset-select" style="flex:1;padding:8px 12px;font-size:13px;border:1px solid #cbd5e1;border-radius:8px;background:white;min-width:140px;"><option value="">📂 選擇預設菜單範本</option></select>
-            <button id="btn-gb-import-zhanrong" style="padding:8px 12px;font-size:13px;font-weight:bold;border-radius:8px;border:none;background:#e0f2fe;color:#0369a1;cursor:pointer;">✨ 一鍵帶入</button>
-            <button id="btn-gb-save-as-preset" style="padding:8px 12px;font-size:13px;font-weight:bold;border-radius:8px;border:none;background:#f3e8ff;color:#7c3aed;cursor:pointer;">⭐ 儲存範本</button>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <span id="gb-admin-items-count" style="font-size:13px;color:#64748b;">共 0 件商品</span>
-            <button id="btn-gb-add-item" style="padding:7px 14px;font-size:13px;font-weight:bold;border-radius:8px;border:none;background:#10b981;color:white;cursor:pointer;">➕ 新增商品</button>
-          </div>
-          <div id="gb-admin-items-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-        </div>
+
       </div>
     </div>
   </div>

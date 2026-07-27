@@ -1597,7 +1597,7 @@ app.post('/api/groupbuy/:gid/settings', async (req, res) => {
 
 app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid;
-  const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note } = req.body || {};
+  const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note, anonymous } = req.body || {};
   if (!uid || !userName) {
     return res.status(400).json({ error: '請提供下單姓名' });
   }
@@ -1627,6 +1627,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     orderStatus: 'unconfirmed',
     paymentNote: paymentNote || '',
     note: note || '',
+    anonymous: !!anonymous,
     updatedAt: Date.now(),
     lastConfirmedItems: existingOrder.lastConfirmedItems
   };
@@ -4695,7 +4696,8 @@ app.get('/api/groupbuy_list', (req, res) => {
     title: gb.title || '團購專區',
     notice: gb.notice || '',
     itemCount: Array.isArray(gb.items) ? gb.items.length : 0,
-    orderCount: gb.orders ? Object.keys(gb.orders).length : 0
+    orderCount: gb.orders ? Object.keys(gb.orders).length : 0,
+    hiddenFromLobby: !!gb.hiddenFromLobby
   }));
   res.json({ success: true, list });
 });
@@ -4827,10 +4829,26 @@ app.post('/api/groupbuy/:gid/item/delete', async (req, res) => {
   res.json({ success: true });
 });
 
+// 批量修改分類名稱
+app.post('/api/groupbuy/:gid/category/rename', async (req, res) => {
+  const gid = req.params.gid || 'default';
+  const { uid, oldName, newName } = req.body;
+  const gb = getGroupBuyInfo(gid);
+  if (Array.isArray(gb.items)) {
+    gb.items.forEach(i => {
+      if (i.category === oldName) {
+        i.category = newName;
+      }
+    });
+  }
+  await saveGroupBuyStorage();
+  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
+  res.json({ success: true });
+});
 // 下單
 app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid || 'default';
-  const { uid, userName, userPhone, items, paymentMethod, paymentNote, note } = req.body;
+  const { uid, userName, userPhone, items, paymentMethod, paymentNote, note, anonymous } = req.body;
   if (!uid || !userName) {
     return res.status(400).json({ success: false, error: '缺少使用者資訊' });
   }
@@ -4857,6 +4875,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     paymentNote: paymentNote || '',
     paymentStatus: 'unverified',
     note: note || '',
+    anonymous: !!anonymous,
     updatedAt: new Date().toISOString()
   };
 
