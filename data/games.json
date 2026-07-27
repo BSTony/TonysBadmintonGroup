@@ -1452,7 +1452,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785151929661,
+    "lastActiveTime": 1785155425596,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1475,11 +1475,18 @@
           "Tony",
           "Kay",
           "Gary",
-          "小可愛"
+          "小可愛",
+          "Mia"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/27 20:30",
+        "name": "Mia",
+        "operator": "賴鈺臻",
+        "action": "+1"
+      },
       {
         "time": "07/27 19:32",
         "name": "小可愛",
