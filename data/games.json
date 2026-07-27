@@ -1431,7 +1431,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785042591912,
+    "lastActiveTime": 1785151929661,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1453,11 +1453,18 @@
         "list": [
           "Tony",
           "Kay",
-          "Gary"
+          "Gary",
+          "小可愛"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/27 19:32",
+        "name": "小可愛",
+        "operator": "林俊佑",
+        "action": "+1"
+      },
       {
         "time": "07/26 13:09",
         "name": "Gary",
