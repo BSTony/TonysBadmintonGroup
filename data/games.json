@@ -1274,7 +1274,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785041323180,
+    "lastActiveTime": 1785151544358,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1300,11 +1300,18 @@
           "陳呈",
           "俊吉",
           "Gary",
-          "Jet"
+          "Jet",
+          "AddieWang"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/27 19:25",
+        "name": "AddieWang",
+        "operator": "AddieWang",
+        "action": "+1"
+      },
       {
         "time": "07/26 12:48",
         "name": "Jet",
