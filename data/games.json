@@ -1096,7 +1096,7 @@
     "tag": "DE場",
     "active": true,
     "startTime": 1784637338069,
-    "lastActiveTime": 1785218498394,
+    "lastActiveTime": 1785232571167,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1130,11 +1130,18 @@
           "小周",
           "Joe",
           "afrahuang",
-          "張建發"
+          "張建發",
+          "Yoshi(王安迪)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/28 17:56",
+        "name": "Yoshi(王安迪)",
+        "operator": "Yoshi(王安迪)",
+        "action": "+1"
+      },
       {
         "time": "07/28 14:01",
         "name": "Sean",
