@@ -1625,7 +1625,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785243735255,
-    "lastActiveTime": 1785243735255,
+    "lastActiveTime": 1785243916059,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1658,8 +1658,17 @@
           "Ong",
           "小周",
           "海棠",
-          "偉舫"
+          "偉舫",
+          "afrahuang"
         ]
+      }
+    ],
+    "history": [
+      {
+        "time": "07/28 21:05",
+        "name": "afrahuang",
+        "operator": "afrahuang",
+        "action": "+1"
       }
     ]
   }
