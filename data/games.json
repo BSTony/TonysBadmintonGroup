@@ -1096,7 +1096,7 @@
     "tag": "DE場",
     "active": true,
     "startTime": 1784637338069,
-    "lastActiveTime": 1785232571167,
+    "lastActiveTime": 1785232625379,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1131,11 +1131,18 @@
           "Joe",
           "afrahuang",
           "張建發",
-          "Yoshi(王安迪)"
+          "Yoshi(王安迪)",
+          "Winnie"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/28 17:57",
+        "name": "Winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1"
+      },
       {
         "time": "07/28 17:56",
         "name": "Yoshi(王安迪)",
