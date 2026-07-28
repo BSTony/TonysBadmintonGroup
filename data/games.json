@@ -1625,7 +1625,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785243735255,
-    "lastActiveTime": 1785248281764,
+    "lastActiveTime": 1785251369259,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1660,11 +1660,18 @@
           "海棠",
           "偉舫",
           "afrahuang",
-          "Sean"
+          "Sean",
+          "Joe"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/28 23:09",
+        "name": "Joe",
+        "operator": "振喬 Joe",
+        "action": "+1"
+      },
       {
         "time": "07/28 22:18",
         "name": "Sean",
