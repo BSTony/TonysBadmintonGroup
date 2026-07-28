@@ -1193,7 +1193,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785205098284,
+    "lastActiveTime": 1785232617310,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1237,11 +1237,18 @@
           "陳俊傑 (Jeremy)",
           "江こう 洋々",
           "孟錡",
-          "Gary"
+          "Gary",
+          "Emily🙈🙉🙊"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/28 17:56",
+        "name": "Emily🙈🙉🙊",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1"
+      },
       {
         "time": "07/28 10:18",
         "name": "Kay",
