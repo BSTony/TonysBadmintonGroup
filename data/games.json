@@ -1205,7 +1205,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785240196464,
+    "lastActiveTime": 1785240373265,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1254,11 +1254,18 @@
           "Winnie",
           "Kelly",
           "瑋頡1",
-          "瑋頡2"
+          "瑋頡2",
+          "紀凡"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/28 20:06",
+        "name": "紀凡",
+        "operator": "紀凡",
+        "action": "+1"
+      },
       {
         "time": "07/28 20:03",
         "name": "瑋頡2",
