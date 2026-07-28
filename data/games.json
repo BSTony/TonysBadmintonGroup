@@ -1205,7 +1205,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785240373265,
+    "lastActiveTime": 1785243677082,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1221,7 +1221,6 @@
       "Iven": true,
       "Mina": true,
       "Wayne": true,
-      "Ong": true,
       "Ashley": true,
       "John": true
     },
@@ -1242,7 +1241,6 @@
           "Iven",
           "Mina",
           "Wayne",
-          "Ong",
           "Ashley",
           "John",
           "楊程鈞",
@@ -1260,6 +1258,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/28 21:01",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1"
+      },
       {
         "time": "07/28 20:06",
         "name": "紀凡",
