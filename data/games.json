@@ -1513,7 +1513,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785155430109,
+    "lastActiveTime": 1785233389165,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1538,11 +1538,18 @@
           "Gary",
           "小可愛",
           "Mia",
-          "Kevin"
+          "Kevin",
+          "Hsin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/28 18:09",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "+1"
+      },
       {
         "time": "07/27 20:30",
         "name": "Kevin",
