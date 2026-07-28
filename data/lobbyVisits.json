@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2335,
+    "viewCount": 2337,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -209,8 +209,8 @@
       "U487e8a8976a1c65af4311f4b3f842a9c": {
         "displayName": "紀凡",
         "firstVisit": 1783327880748,
-        "count": 54,
-        "lastVisit": 1785233266868
+        "count": 56,
+        "lastVisit": 1785237889185
       },
       "Ue8024b6514a8c8ed6a992979d92c699d": {
         "displayName": "黃家弘(Orange)    ⃒⃘⃤ 9¾ ⚯͛",
@@ -820,6 +820,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1785237889185,
+        "userId": "U487e8a8976a1c65af4311f4b3f842a9c",
+        "displayName": "紀凡",
+        "pictureUrl": "https://profile.line-scdn.net/0haLjLFUwFPmNHNStqZU5AHDdlPQlkRGdxPlclASE3ZFUtV3A8P1p5Vyc1Y1IqBi5hO1V2BnI1MFBLJkkFWWPCV0AFY1J6BHw9bVt0gA"
+      },
+      {
+        "time": 1785237486003,
+        "userId": "U487e8a8976a1c65af4311f4b3f842a9c",
+        "displayName": "紀凡",
+        "pictureUrl": "https://profile.line-scdn.net/0haLjLFUwFPmNHNStqZU5AHDdlPQlkRGdxPlclASE3ZFUtV3A8P1p5Vyc1Y1IqBi5hO1V2BnI1MFBLJkkFWWPCV0AFY1J6BHw9bVt0gA"
+      },
       {
         "time": 1785235927491,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -2006,18 +2018,6 @@
         "userId": "Ud9c980235866b4402d34cdfa250b9aed",
         "displayName": "周哲儁",
         "pictureUrl": "https://profile.line-scdn.net/0hxfGTG7BjJ0lqLQpt_W1ZNhp9JCNJXH5bExxrLQsofnoESGYeThhvf1skeHtSFGBLQE08egwvLn1mPlAvdHvbfW0denhXHGUXQENtqg"
-      },
-      {
-        "time": 1784989073357,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1784988457780,
-        "userId": "U433bba23fffec0bbdba4f408822eb6ec",
-        "displayName": "鄭人云",
-        "pictureUrl": "https://profile.line-scdn.net/0m038116677251f5f20d758c68646c37e0dd69ac72a59c"
       }
     ]
   },
