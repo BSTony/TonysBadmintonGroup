@@ -1205,7 +1205,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785240186583,
+    "lastActiveTime": 1785240196464,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1253,11 +1253,18 @@
           "Emily🙈🙉🙊",
           "Winnie",
           "Kelly",
-          "瑋頡1"
+          "瑋頡1",
+          "瑋頡2"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/28 20:03",
+        "name": "瑋頡2",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/28 20:03",
         "name": "瑋頡1",
