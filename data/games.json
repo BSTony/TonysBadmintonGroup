@@ -1096,7 +1096,7 @@
     "tag": "DE場",
     "active": true,
     "startTime": 1784637338069,
-    "lastActiveTime": 1784688818637,
+    "lastActiveTime": 1785218498394,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1129,13 +1129,18 @@
           "偉舫",
           "小周",
           "Joe",
-          "Sean",
           "afrahuang",
           "張建發"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/28 14:01",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "-1"
+      },
       {
         "time": "07/22 10:53",
         "name": "張建發",
