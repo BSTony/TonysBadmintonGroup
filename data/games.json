@@ -1181,7 +1181,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785202973568,
+    "lastActiveTime": 1785205098284,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1190,7 +1190,6 @@
     "levelMap": {},
     "paidMap": {
       "Tony": true,
-      "Kay": true,
       "陳呈": true,
       "Jim": true,
       "小周": true,
@@ -1212,7 +1211,6 @@
         "label": "",
         "list": [
           "Tony",
-          "Kay",
           "陳呈",
           "Jim",
           "小周",
@@ -1232,6 +1230,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/28 10:18",
+        "name": "Kay",
+        "operator": "Kay",
+        "action": "-1"
+      },
       {
         "time": "07/28 09:42",
         "name": "Gary",
