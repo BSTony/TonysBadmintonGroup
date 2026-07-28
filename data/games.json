@@ -1285,7 +1285,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785155382261,
+    "lastActiveTime": 1785208581559,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1310,7 +1310,6 @@
           "Kay",
           "陳呈",
           "俊吉",
-          "Gary",
           "Jet",
           "AddieWang",
           "Mia",
@@ -1319,6 +1318,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/28 11:16",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1"
+      },
       {
         "time": "07/27 20:29",
         "name": "Kevin",
