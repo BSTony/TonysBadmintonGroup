@@ -5064,6 +5064,7 @@ function renderGroupBuyUI(data) {
   }
 
   renderCategoryNav();
+  initAdminEditToggles();
   renderItemsGrid();
   updateCartBar();
   renderSummaryTab();
