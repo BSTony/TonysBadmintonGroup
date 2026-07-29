@@ -4933,34 +4933,41 @@ window.gbIsAdminEditMode = false;
 
 function initAdminEditToggles() {
   const adminControls = document.getElementById('gb-admin-items-controls');
-  const btnUser = document.getElementById('btn-gb-mode-user');
-  const btnEdit = document.getElementById('btn-gb-mode-edit');
+  const btnToggle = document.getElementById('btn-gb-mode-toggle');
+  const lblEdit = document.getElementById('lbl-mode-edit');
+  const lblUser = document.getElementById('lbl-mode-user');
   
   if (adminControls && typeof getEffectiveRole === 'function' && getEffectiveRole().isSuperAdmin) {
     adminControls.classList.remove('hidden');
     
-    if (btnUser && btnEdit) {
-      btnUser.onclick = () => {
-        window.gbIsAdminEditMode = false;
-        btnUser.style.background = 'white';
-        btnUser.style.color = '#334155';
-        btnUser.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-        btnEdit.style.background = 'transparent';
-        btnEdit.style.color = '#64748b';
-        btnEdit.style.boxShadow = 'none';
-        initAdminEditToggles();
-  renderItemsGrid();
+    if (btnToggle) {
+      const updateToggleUI = () => {
+        const knob = btnToggle.querySelector('.mode-toggle-knob');
+        if (window.gbIsAdminEditMode) {
+          btnToggle.style.background = '#f59e0b';
+          knob.style.transform = 'translateX(0px)';
+          lblEdit.style.color = '#f59e0b';
+          lblUser.style.color = '#64748b';
+        } else {
+          btnToggle.style.background = '#3b82f6';
+          knob.style.transform = 'translateX(20px)';
+          lblEdit.style.color = '#64748b';
+          lblUser.style.color = '#3b82f6';
+        }
       };
-      btnEdit.onclick = () => {
-        window.gbIsAdminEditMode = true;
-        btnEdit.style.background = 'white';
-        btnEdit.style.color = '#334155';
-        btnEdit.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-        btnUser.style.background = 'transparent';
-        btnUser.style.color = '#64748b';
-        btnUser.style.boxShadow = 'none';
+      
+      const toggleMode = () => {
+        window.gbIsAdminEditMode = !window.gbIsAdminEditMode;
+        updateToggleUI();
         renderItemsGrid();
       };
+      
+      btnToggle.onclick = toggleMode;
+      if (lblEdit) lblEdit.onclick = () => { if (!window.gbIsAdminEditMode) toggleMode(); };
+      if (lblUser) lblUser.onclick = () => { if (window.gbIsAdminEditMode) toggleMode(); };
+      
+      // Initialize
+      updateToggleUI();
     }
   }
 }

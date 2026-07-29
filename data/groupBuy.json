@@ -1652,6 +1652,40 @@
         "note": "",
         "anonymous": false,
         "updatedAt": 1785310113860
+      },
+      "test player q7pzr_0912345679": {
+        "userId": "0912345679",
+        "userName": "Test Player q7pzr",
+        "userPhone": "0912345679",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0000": 1
+        },
+        "totalAmount": 585,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1785310251929
+      },
+      "test player q7pzr_0912345678": {
+        "userId": "0912345678",
+        "userName": "Test Player q7pzr",
+        "userPhone": "0912345678",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0001": 1
+        },
+        "totalAmount": 325,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1785310258629
       }
     },
     "hiddenFromLobby": false
