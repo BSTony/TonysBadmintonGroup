@@ -1626,7 +1626,7 @@
         },
         "totalAmount": 585,
         "paymentMethod": "none",
-        "paymentStatus": "paid",
+        "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
@@ -1635,6 +1635,23 @@
         "lastConfirmedItems": {
           "zr_0000": 1
         }
+      },
+      "0912345679": {
+        "userId": "0912345679",
+        "userName": "Test Player vn5",
+        "userPhone": "0912345679",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0000": 1
+        },
+        "totalAmount": 585,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1785310113860
       }
     },
     "hiddenFromLobby": false

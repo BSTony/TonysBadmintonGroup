@@ -1604,7 +1604,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid;
   const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note, anonymous } = req.body || {};
   if (!uid || !userName) {
-    return res.status(400).json({ error: '請提供下單姓名' });
+    return res.status(400).json({ error: '請提供必填資訊' });
   }
   const info = getGroupBuyInfo(gid);
   if (!info.active) {
@@ -1619,11 +1619,12 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
       }
     }
   }
-  const existingOrder = info.orders[uid] || {};
-  info.orders[uid] = {
+  const orderKey = (userName && userPhone) ? `${userName.trim().toLowerCase()}_${userPhone.trim()}` : uid;
+  const existingOrder = info.orders[orderKey] || {};
+  info.orders[orderKey] = {
     userId: uid,
     userName: userName.trim(),
-    userPhone: userPhone.trim(),
+    userPhone: (userPhone || '').trim(),
     userPictureUrl: userPictureUrl || '',
     items: items || {},
     totalAmount,
@@ -1639,7 +1640,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   await saveGroupBuyStorage();
   io.emit('group_buy_state_updated', { gid, data: info });
   notifySSEClients(gid);
-  res.json({ success: true, order: info.orders[uid] });
+  res.json({ success: true, order: info.orders[orderKey] });
 });
 
 app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
