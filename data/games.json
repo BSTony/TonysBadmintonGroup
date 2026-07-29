@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785320923423,
+    "lastActiveTime": 1785322091860,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1119,7 +1119,6 @@
           "Wayne",
           "Ashley",
           "John",
-          "楊程鈞",
           "陳俊傑 (Jeremy)",
           "江こう 洋々",
           "孟錡",
@@ -1137,6 +1136,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/29 18:48",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "-1"
+      },
       {
         "time": "07/29 18:28",
         "name": "YaoHu",
