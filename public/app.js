@@ -5474,14 +5474,14 @@ function openGroupBuyPage() {
     const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
     
     if (gbHeaderPhoneInput) {
-      gbHeaderPhoneInput.addEventListener('blur', () => {
+      gbHeaderPhoneInput.addEventListener('input', () => {
         const p = gbHeaderPhoneInput.value.trim();
-        if (p && currentGroupBuyData && currentGroupBuyData.orders && currentGroupBuyData.orders[p]) {
-          currentCart = { ...currentGroupBuyData.orders[p].items };
-          renderItemsGrid();
-          updateCartBar();
-        } else if (p) {
-          currentCart = {};
+        if (p === '' || /^09\d{8}$/.test(p)) {
+          if (p && currentGroupBuyData && currentGroupBuyData.orders && currentGroupBuyData.orders[p]) {
+            currentCart = { ...currentGroupBuyData.orders[p].items };
+          } else {
+            currentCart = {};
+          }
           renderItemsGrid();
           updateCartBar();
         }
