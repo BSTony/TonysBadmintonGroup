@@ -1,8 +1,8 @@
 {
   "default": {
-    "active": false,
-    "title": "🛒 展榮商號團購",
-    "notice": "最晚 MMM/DD截止",
+    "active": true,
+    "title": "",
+    "notice": "",
     "paymentSettings": {
       "linePayLink": "https://zrsh1986.com",
       "linePayQrUrl": "https://cdn.store-assets.com/s/1255165/f/10532819.jpg",
@@ -1615,7 +1615,42 @@
         "contents": ""
       }
     ],
-    "orders": {},
-    "hiddenFromLobby": true
+    "orders": {
+      "U_SUPER_ADMIN_TEST_ID_k6rh7": {
+        "userId": "U_SUPER_ADMIN_TEST_ID_k6rh7",
+        "userName": "超級管理員 (Local Test)",
+        "userPhone": "",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0000": 2
+        },
+        "totalAmount": 1170,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1785202204097
+      },
+      "U_SUPER_ADMIN_TEST_ID_i78zh": {
+        "userId": "U_SUPER_ADMIN_TEST_ID_i78zh",
+        "userName": "超級管理員 (Local Test)",
+        "userPhone": "",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0000": 1
+        },
+        "totalAmount": 585,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1785207988486
+      }
+    },
+    "hiddenFromLobby": false
   }
 }

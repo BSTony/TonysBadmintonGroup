@@ -4720,9 +4720,9 @@ const gbOrderNote = document.getElementById('gb-order-note');
 
 // 管理員頁面元素
 const btnGbAdminToggle = document.getElementById('btn-gb-admin-toggle');
-const btnGbAdminHiddenToggle = document.getElementById('btn-gb-admin-hidden-toggle');
 const gbAdminTitleInput = document.getElementById('gb-admin-title-input');
 const gbAdminNoticeInput = document.getElementById('gb-admin-notice-input');
+const gbAdminHiddenLobbyInput = document.getElementById('gb-admin-hidden-lobby-input');
 const gbAdminLinepayLink = document.getElementById('gb-admin-linepay-link');
 const gbAdminLinepayQr = document.getElementById('gb-admin-linepay-qr');
 const gbAdminBankCode = document.getElementById('gb-admin-bank-code');
@@ -4830,12 +4830,8 @@ function updateCampaignSelectorDropdown(list) {
   const selector = document.getElementById('gb-campaign-selector');
   if (!selector) return;
   
-  const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = (typeof getEffectiveRole === 'function') ? getEffectiveRole() : { isAdmin: false, isSuperAdmin: false };
-  const isUserAdmin = effIsAdmin || effIsSuperAdmin;
-
   let html = '';
   list.forEach(gb => {
-    if (!isUserAdmin && gb.hiddenFromLobby && gb.id !== currentGid) return;
     const statusText = gb.active ? '🟢 開放中' : '🔴 已關閉';
     const selectedAttr = (gb.id === currentGid) ? 'selected' : '';
     html += `<option value="${gb.id}" ${selectedAttr}>${gb.title || '團購活動'} (${statusText})</option>`;
@@ -5001,10 +4997,6 @@ function renderCategoryNav() {
   gbCategoryNav.style.display = window.isCategoryNavExpanded ? 'block' : 'flex';
 
   const createBtn = (cat) => {
-    const wrapper = document.createElement('div');
-    wrapper.style.display = 'inline-flex';
-    wrapper.style.alignItems = 'center';
-
     const btn = document.createElement('button');
     btn.className = `gb-cat-btn ${cat === activeCategoryFilter ? 'active' : ''}`;
     btn.innerText = cat;
@@ -5014,36 +5006,7 @@ function renderCategoryNav() {
       renderItemsGrid();
       updateCartBar();
     };
-    wrapper.appendChild(btn);
-
-    if (isUserAdmin && cat !== '全部' && cat !== '🌟 已選購') {
-      const editBtn = document.createElement('button');
-      editBtn.innerHTML = '✏️';
-      editBtn.style.cssText = 'background:none; border:none; padding:4px; font-size:12px; cursor:pointer; margin-left:-6px; z-index:1; opacity:0.6;';
-      editBtn.title = '編輯分類名稱';
-      editBtn.onclick = async (e) => {
-        e.stopPropagation();
-        const newName = prompt(`請問要將分類「${cat}」改為什麼？`, cat);
-        if (newName && newName.trim() && newName.trim() !== cat) {
-          try {
-            const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/category/rename`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ uid: currentUser.userId, oldName: cat, newName: newName.trim() })
-            });
-            const data = await res.json();
-            if (data.success) {
-              if (activeCategoryFilter === cat) activeCategoryFilter = newName.trim();
-              fetchGroupBuyState();
-            } else {
-              alert('修改失敗：' + data.error);
-            }
-          } catch(err) { alert('發生錯誤：' + err.message); }
-        }
-      };
-      wrapper.appendChild(editBtn);
-    }
-    return wrapper;
+    return btn;
   };
 
   const createToggleBtn = () => {
@@ -5104,25 +5067,9 @@ window.expandedCategories = window.expandedCategories || {
 };
 window.activeExpandedItemId = null;
 
-if (!window.gbClickOutsideListenerAdded) {
-  document.addEventListener('click', (e) => {
-    if (window.activeExpandedItemId && !e.target.closest('.gb-list-item')) {
-      window.activeExpandedItemId = null;
-      renderItemsGrid();
-    }
-  });
-  window.gbClickOutsideListenerAdded = true;
-}
-
 function renderItemsGrid() {
   if (!gbItemsGrid || !currentGroupBuyData) return;
   gbItemsGrid.innerHTML = '';
-  
-  const adminControls = document.getElementById('gb-admin-items-controls');
-  if (adminControls) {
-    if (isUserAdmin) adminControls.classList.remove('hidden');
-    else adminControls.classList.add('hidden');
-  }
 
   let filtered = currentGroupBuyData.items || [];
   if (activeCategoryFilter === '🌟 已選購') {
@@ -5177,24 +5124,22 @@ function renderItemsGrid() {
       expandedHtml = `
         <div class="gb-accordion-body" style="padding:12px 16px; background:#f8fafc; border-top:1px solid #e2e8f0;">
           
-          ${item.contents ? `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <div style="font-size:13px; color:#334155; text-align:left; flex:1;">
-              <strong>備註：</strong>${item.contents}
+              <strong>內容物：</strong>${item.contents || '無'}
             </div>
           </div>
-          ` : ''}
           
           <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
             <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
-              <button class="qty-btn btn-minus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#e2e8f0;color:#334155;cursor:pointer;font-weight:bold;display:flex;align-items:center;justify-content:center;">-</button>
+              <button class="qty-btn btn-minus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#e2e8f0;color:#334155;cursor:pointer;font-weight:bold;">-</button>
               <span class="qty-num" style="min-width:24px;text-align:center;font-size:18px;font-weight:bold;color:#1e293b;">${dQty}</span>
-              <button class="qty-btn btn-plus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#10b981;color:white;cursor:pointer;font-weight:bold;display:flex;align-items:center;justify-content:center;">+</button>
+              <button class="qty-btn btn-plus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#10b981;color:white;cursor:pointer;font-weight:bold;">+</button>
             </div>
             
             <div style="display:flex; gap:8px;">
-              <button class="btn-cancel-draft" style="width:36px;height:36px;background:#ef4444;color:white;border:none;border-radius:6px;font-size:16px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
-              <button class="btn-confirm-draft" style="width:36px;height:36px;background:#2563eb;color:white;border:none;border-radius:6px;font-size:16px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;">✓</button>
+              <button class="btn-cancel-draft" style="background:#ef4444;color:white;border:none;border-radius:6px;padding:8px 12px;font-size:13px;font-weight:bold;cursor:pointer;">❌</button>
+              <button class="btn-confirm-draft" style="background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 12px;font-size:13px;font-weight:bold;cursor:pointer;">✅ 確定數量</button>
             </div>
           </div>
         </div>
@@ -5259,43 +5204,6 @@ function renderItemsGrid() {
       };
     }
 
-    if (isUserAdmin) {
-      card.style.position = 'relative';
-      const adminControls = document.createElement('div');
-      adminControls.style.cssText = 'position:absolute; top:8px; right:8px; display:flex; gap:6px; z-index:10;';
-      const btnEdit = document.createElement('button');
-      btnEdit.innerHTML = '✏️ 編輯';
-      btnEdit.style.cssText = 'background:rgba(255,255,255,0.9); border:1px solid #cbd5e1; padding:5px 8px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold; color:#334155; box-shadow:0 2px 4px rgba(0,0,0,0.1); backdrop-filter:blur(4px);';
-      btnEdit.onclick = (e) => {
-        e.stopPropagation();
-        openItemEditModal(item);
-      };
-      
-      const btnDelete = document.createElement('button');
-      btnDelete.innerHTML = '❌ 刪除';
-      btnDelete.style.cssText = 'background:rgba(254,226,226,0.9); border:1px solid #f87171; padding:5px 8px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:bold; color:#b91c1c; box-shadow:0 2px 4px rgba(0,0,0,0.1); backdrop-filter:blur(4px);';
-      btnDelete.onclick = async (e) => {
-        e.stopPropagation();
-        if (confirm(`確定要刪除「${item.name}」嗎？`)) {
-          try {
-            const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/item/delete`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ uid: currentUser.userId, itemId: item.id })
-            });
-            const data = await res.json();
-            if (data.success) {
-              fetchGroupBuyState();
-            } else {
-              alert('刪除失敗：' + data.error);
-            }
-          } catch(err) { alert('刪除失敗：' + err.message); }
-        }
-      };
-      adminControls.appendChild(btnEdit);
-      adminControls.appendChild(btnDelete);
-      card.appendChild(adminControls);
-    }
     
     return card;
   };
@@ -5373,7 +5281,7 @@ function openItemDetail(item) {
   if (itemDetailCategory) itemDetailCategory.innerText = item.category || '商品';
   if (itemDetailName) itemDetailName.innerText = item.name;
   if (itemDetailPrice) itemDetailPrice.innerText = item.price;
-  
+  if (itemDetailUnit) itemDetailUnit.innerText = item.unit ? `/ ${item.unit}` : '';
   if (itemDetailDesc) itemDetailDesc.innerHTML = (item.description || '暫無詳細說明').replace(/\n/g, '<br/>');
 
   if (itemDetailImgContainer) {
@@ -5404,7 +5312,6 @@ async function saveCartToBackend() {
   
   const gbHeaderNameInput = document.getElementById('gb-header-name');
   const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
-  const gbHeaderAnonymousInput = document.getElementById('gb-header-anonymous');
   
   const oldOrder = currentGroupBuyData.orders && currentGroupBuyData.orders[currentUser.userId];
   const defaultName = (oldOrder && oldOrder.userName) ? oldOrder.userName : (currentUser.displayName || '未命名');
@@ -5413,7 +5320,6 @@ async function saveCartToBackend() {
   const name = gbHeaderNameInput && gbHeaderNameInput.value.trim() ? gbHeaderNameInput.value.trim() : defaultName;
   const phone = gbHeaderPhoneInput ? gbHeaderPhoneInput.value.trim() : defaultPhone;
   const note = (oldOrder && oldOrder.note) ? oldOrder.note : '';
-  const isAnonymous = gbHeaderAnonymousInput ? gbHeaderAnonymousInput.checked : false;
   
   try {
     const res = await fetch(`/api/groupbuy/${currentGid}/order`, {
@@ -5478,10 +5384,6 @@ function openGroupBuyPage() {
       }
       if (gbHeaderPhoneInput) {
         gbHeaderPhoneInput.value = (oldOrder && oldOrder.userPhone) ? oldOrder.userPhone : '';
-      }
-      const gbHeaderAnonymousInput = document.getElementById('gb-header-anonymous');
-      if (gbHeaderAnonymousInput) {
-        gbHeaderAnonymousInput.checked = (oldOrder && oldOrder.anonymous) ? true : false;
       }
     }
   });
@@ -5574,20 +5476,15 @@ function renderSummaryTab() {
             Object.values(orders).forEach(ord => {
               const q = ord.items && ord.items[itemObj.id];
               if (q > 0) {
-                let dName = ord.userName;
-                let aHtml = ord.userPictureUrl ? `<img src="${ord.userPictureUrl}" style="width:20px;height:20px;border-radius:50%;vertical-align:middle;margin-right:4px;">` : '👤';
-                if (ord.anonymous) {
-                  if (isUserAdmin) dName = `${ord.userName} (匿名)`;
-                  else { dName = '匿名'; aHtml = '👤'; }
-                }
-                buyers.push(`- ${aHtml} ${dName} : ${q}`);
+                const avatarHtml = ord.userPictureUrl ? `<img src="${ord.userPictureUrl}" style="width:20px;height:20px;border-radius:50%;vertical-align:middle;margin-right:4px;">` : '👤';
+                buyers.push(`- ${avatarHtml} ${ord.userName} : ${q} ${itemObj.unit || ''}`);
                 totalItemQty += q;
               }
             });
             
             let extraInfo = '';
             if (buyers.length > 0) {
-              extraInfo = `\n\n【目前購買名單】(總共 ${totalItemQty})\n` + buyers.join('\n');
+              extraInfo = `\n\n【目前購買名單】(總共 ${totalItemQty} ${itemObj.unit || ''})\n` + buyers.join('\n');
             } else {
               extraInfo = `\n\n【目前購買名單】\n目前尚未有任何人購買。`;
             }
@@ -5669,16 +5566,9 @@ function renderSummaryTab() {
           </div>
         ` : '';
 
-        let cardAvatar = ord.userPictureUrl ? `<img src="${ord.userPictureUrl}" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;">` : '👤 ';
-        let cardName = ord.userName;
-        let cardPhone = phoneDisplay;
-        if (ord.anonymous) {
-          if (isUserAdmin) cardName = `${ord.userName} (匿名)`;
-          else { cardName = '匿名'; cardAvatar = '👤 '; cardPhone = ''; }
-        }
         card.innerHTML = `
           <div class="gb-order-header">
-            <span>${cardAvatar}${cardName}${cardPhone}</span>
+            <span>${ord.userPictureUrl ? `<img src="${ord.userPictureUrl}" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:6px;">` : '👤 '}${ord.userName}${phoneDisplay}</span>
             <span>$${ord.totalAmount} | ${statusBadge}</span>
           </div>
           <div style="font-size:13px; color:#495057; margin-bottom:4px;">
@@ -5730,42 +5620,23 @@ function populateAdminFields() {
   const p = currentGroupBuyData.paymentSettings || {};
   if (btnGbAdminToggle) {
     const knob = btnGbAdminToggle.querySelector('.toggle-knob');
-    const lblClose = document.getElementById('lbl-close');
     const lblOpen = document.getElementById('lbl-open');
+    const lblClose = document.getElementById('lbl-close');
     if (currentGroupBuyData.active) {
       btnGbAdminToggle.style.background = '#10b981';
-      btnGbAdminToggle.style.boxShadow = '0 2px 6px rgba(16,185,129,0.3)';
       if (knob) knob.style.transform = 'translateX(24px)';
       if (lblOpen) lblOpen.style.color = '#10b981';
-      if (lblClose) lblClose.style.color = '#64748b';
+      if (lblClose) lblClose.style.color = '#cbd5e1';
     } else {
       btnGbAdminToggle.style.background = '#cbd5e1';
-      btnGbAdminToggle.style.boxShadow = 'none';
       if (knob) knob.style.transform = 'translateX(0)';
-      if (lblOpen) lblOpen.style.color = '#64748b';
+      if (lblOpen) lblOpen.style.color = '#cbd5e1';
       if (lblClose) lblClose.style.color = '#ef4444';
-    }
-  }
-  if (btnGbAdminHiddenToggle) {
-    const knob = btnGbAdminHiddenToggle.querySelector('.toggle-knob');
-    const lblHide = document.getElementById('lbl-hide');
-    const lblShow = document.getElementById('lbl-show');
-    if (currentGroupBuyData.hiddenFromLobby) {
-      btnGbAdminHiddenToggle.style.background = '#cbd5e1';
-      btnGbAdminHiddenToggle.style.boxShadow = 'none';
-      if (knob) knob.style.transform = 'translateX(0)';
-      if (lblHide) lblHide.style.color = '#ef4444';
-      if (lblShow) lblShow.style.color = '#64748b';
-    } else {
-      btnGbAdminHiddenToggle.style.background = '#3b82f6';
-      btnGbAdminHiddenToggle.style.boxShadow = '0 2px 6px rgba(59,130,246,0.3)';
-      if (knob) knob.style.transform = 'translateX(24px)';
-      if (lblHide) lblHide.style.color = '#64748b';
-      if (lblShow) lblShow.style.color = '#3b82f6';
     }
   }
   if (gbAdminTitleInput) gbAdminTitleInput.value = currentGroupBuyData.title || '';
   if (gbAdminNoticeInput) gbAdminNoticeInput.value = currentGroupBuyData.notice || '';
+  if (gbAdminHiddenLobbyInput) gbAdminHiddenLobbyInput.checked = !!currentGroupBuyData.hiddenFromLobby;
   if (gbAdminLinepayLink) gbAdminLinepayLink.value = p.linePayLink || '';
   if (gbAdminLinepayQr) gbAdminLinepayQr.value = p.linePayQrUrl || '';
   if (gbAdminBankCode) gbAdminBankCode.value = p.bankCode || '';
@@ -5799,7 +5670,7 @@ function renderAdminItemsList() {
           <span style="font-size:11px; background:#e0e0e0; color:#333; padding:2px 6px; border-radius:4px; margin-right:6px;">${item.category || '自訂'}</span>
           <strong style="font-size:14px;">${item.name}</strong>
           <span style="color:#e74c3c; font-weight:bold; margin-left:8px;">$${item.price}</span>
-          
+          ${item.unit ? `<span style="font-size:12px; color:#888;">/${item.unit}</span>` : ''}
         </div>
         <button class="btn-secondary btn-edit-item" data-id="${item.id}" style="padding:4px 10px; font-size:12px; background:#3498db; color:white; border-radius:6px;">✏️ 編輯</button>
       </div>
@@ -5839,7 +5710,7 @@ function openItemEditModal(item = null) {
     if (catInput) catInput.value = item.category || '';
     if (nameInput) nameInput.value = item.name || '';
     if (priceInput) priceInput.value = item.price || '';
-    
+    if (unitInput) unitInput.value = item.unit || '';
     if (linkTextInput) linkTextInput.value = item.linkText || '';
     if (descInput) descInput.value = item.description || '';
     if (contentsInput) contentsInput.value = item.contents || '';
@@ -6013,7 +5884,6 @@ function initGroupBuyEvents() {
             uid: currentUser.userId,
             userName: name,
             userPhone: phone,
-            anonymous: isAnonymous,
             items: currentCart,
             paymentMethod: 'none',
             paymentNote: '',
@@ -6111,7 +5981,7 @@ function initGroupBuyEvents() {
         uid: currentUser.userId,
         title: gbAdminTitleInput ? gbAdminTitleInput.value.trim() : '',
         notice: gbAdminNoticeInput ? gbAdminNoticeInput.value.trim() : '',
-        hiddenFromLobby: currentGroupBuyData ? currentGroupBuyData.hiddenFromLobby : false
+        hiddenFromLobby: gbAdminHiddenLobbyInput ? gbAdminHiddenLobbyInput.checked : false
       };
       try {
         const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/settings`, {
@@ -6126,49 +5996,15 @@ function initGroupBuyEvents() {
   }
 
   // 管理員開關團購
-  if (btnGbAdminHiddenToggle) {
-    btnGbAdminHiddenToggle.onclick = async () => {
-      if (!currentGroupBuyData) return;
-      const newHidden = !currentGroupBuyData.hiddenFromLobby;
-      try {
-        const payload = {
-          uid: currentUser?.userId || 'admin',
-          active: currentGroupBuyData.active,
-          hiddenFromLobby: newHidden
-        };
-        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/toggle`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const result = await res.json();
-        if (result.success) {
-          currentGroupBuyData.hiddenFromLobby = newHidden;
-          populateAdminFields();
-          await fetchGroupBuyData();
-        } else {
-          alert('切換失敗');
-        }
-      } catch (e) {
-        alert('錯誤：' + e.message);
-      }
-    };
-  }
-
   if (btnGbAdminToggle) {
     btnGbAdminToggle.onclick = async () => {
       if (!currentGroupBuyData) return;
       const newActive = !currentGroupBuyData.active;
       try {
-        const payload = {
-          uid: currentUser?.userId || 'admin',
-          active: newActive,
-          hiddenFromLobby: currentGroupBuyData.hiddenFromLobby
-        };
         const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/toggle`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ uid: currentUser?.userId || 'admin', active: newActive })
         });
         const result = await res.json();
         if (result.success) {
@@ -6335,7 +6171,7 @@ function initGroupBuyEvents() {
   }
 
   // 管理員新增/編輯商品 Modal 事件
-  const btnOpenAddItem = document.getElementById('btn-gb-add-item');
+  const btnOpenAddItem = document.getElementById('btn-gb-open-add-item');
   const btnCloseItemEdit = document.getElementById('btn-close-item-edit');
   const btnSaveItem = document.getElementById('btn-gb-save-item');
   const btnDeleteItem = document.getElementById('btn-gb-delete-item');
@@ -6361,6 +6197,7 @@ function initGroupBuyEvents() {
         category,
         name,
         price,
+        unit: document.getElementById('gb-edit-item-unit').value.trim(),
         linkText: document.getElementById('gb-edit-item-linktext').value.trim(),
         description: document.getElementById('gb-edit-item-desc').value.trim(),
         contents: (document.getElementById('gb-edit-item-contents') ? document.getElementById('gb-edit-item-contents').value.trim() : ''),
@@ -6407,6 +6244,72 @@ function initGroupBuyEvents() {
       } catch(e) { alert('刪除失敗：' + e.message); }
     };
   }
+  const btnGbSaveSettingsNew = document.getElementById('btn-gb-save-settings');
+  if (btnGbSaveSettingsNew) {
+    btnGbSaveSettingsNew.onclick = async () => {
+      const payload = {
+        uid: currentUser?.userId || 'admin',
+        title: document.getElementById('gb-admin-title-input') ? document.getElementById('gb-admin-title-input').value.trim() : '',
+        notice: document.getElementById('gb-admin-notice-input') ? document.getElementById('gb-admin-notice-input').value.trim() : '',
+        paymentSettings: {
+          linePayLink: document.getElementById('gb-admin-linepay-link') ? document.getElementById('gb-admin-linepay-link').value.trim() : '',
+          linePayQrUrl: document.getElementById('gb-admin-linepay-qr') ? document.getElementById('gb-admin-linepay-qr').value.trim() : '',
+          bankCode: document.getElementById('gb-admin-bank-code') ? document.getElementById('gb-admin-bank-code').value.trim() : '',
+          bankName: document.getElementById('gb-admin-bank-name') ? document.getElementById('gb-admin-bank-name').value.trim() : '',
+          bankAccount: document.getElementById('gb-admin-bank-account') ? document.getElementById('gb-admin-bank-account').value.trim() : '',
+          bankAccountName: document.getElementById('gb-admin-bank-holder') ? document.getElementById('gb-admin-bank-holder').value.trim() : ''
+        }
+      };
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/settings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+           alert('✅ 設定已儲存！');
+           fetchGroupBuyData();
+        } else {
+           alert('儲存失敗：' + data.error);
+        }
+      } catch(e) { alert('儲存失敗：' + e.message); }
+    };
+  }
+
+  const btnGbAdminHiddenToggleNew = document.getElementById('btn-gb-admin-hidden-toggle');
+  if (btnGbAdminHiddenToggleNew) {
+    btnGbAdminHiddenToggleNew.onclick = async () => {
+      if (!currentGroupBuyData) return;
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/toggle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: currentUser?.userId || 'admin', hiddenFromLobby: !currentGroupBuyData.hiddenFromLobby })
+        });
+        const data = await res.json();
+        if (data.success) fetchGroupBuyData();
+      } catch(e) { console.error(e); }
+    };
+  }
+  
+  const btnGbClearOrdersNew = document.getElementById('btn-gb-clear-orders');
+  if (btnGbClearOrdersNew) {
+    btnGbClearOrdersNew.onclick = async () => {
+      if (!confirm('⚠️ 確定要清空所有訂單記錄嗎？此操作無法還原！')) return;
+      try {
+        const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/clear_orders`, {
+          method: 'POST'
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('🗑️ 已清空所有訂單！');
+          fetchGroupBuyData();
+        } else alert('清空失敗：' + data.error);
+      } catch(e) { alert('清空失敗：' + e.message); }
+    };
+  }
+
 }
 
 function openCheckoutModal() {
