@@ -1269,7 +1269,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785321649865,
+    "lastActiveTime": 1785330333657,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1298,11 +1298,18 @@
           "AddieWang",
           "Mia",
           "Kevin",
-          "張建發"
+          "張建發",
+          "柏宏"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 21:05",
+        "name": "柏宏",
+        "operator": "Sean柏宏",
+        "action": "+1"
+      },
       {
         "time": "07/29 18:40",
         "name": "張建發",
