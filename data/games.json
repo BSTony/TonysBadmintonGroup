@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785310000555,
+    "lastActiveTime": 1785320923423,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1131,11 +1131,18 @@
           "紀凡",
           "Win Shu",
           "張智安",
-          "小黑"
+          "小黑",
+          "YaoHu"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 18:28",
+        "name": "YaoHu",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/29 15:26",
         "name": "小黑",
