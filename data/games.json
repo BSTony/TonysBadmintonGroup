@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785243677082,
+    "lastActiveTime": 1785288655160,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1123,7 +1123,6 @@
           "陳俊傑 (Jeremy)",
           "江こう 洋々",
           "孟錡",
-          "Gary",
           "Emily🙈🙉🙊",
           "Winnie",
           "Kelly",
@@ -1134,6 +1133,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/29 09:30",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1"
+      },
       {
         "time": "07/28 21:01",
         "name": "Ong",
