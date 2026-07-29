@@ -4928,6 +4928,43 @@ function getZhanRongDefaultItemsClient() {
   ];
 }
 
+
+window.gbIsAdminEditMode = false;
+
+function initAdminEditToggles() {
+  const adminControls = document.getElementById('gb-admin-items-controls');
+  const btnUser = document.getElementById('btn-gb-mode-user');
+  const btnEdit = document.getElementById('btn-gb-mode-edit');
+  
+  if (adminControls && typeof getEffectiveRole === 'function' && getEffectiveRole().isSuperAdmin) {
+    adminControls.classList.remove('hidden');
+    
+    if (btnUser && btnEdit) {
+      btnUser.onclick = () => {
+        window.gbIsAdminEditMode = false;
+        btnUser.style.background = 'white';
+        btnUser.style.color = '#334155';
+        btnUser.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        btnEdit.style.background = 'transparent';
+        btnEdit.style.color = '#64748b';
+        btnEdit.style.boxShadow = 'none';
+        initAdminEditToggles();
+  renderItemsGrid();
+      };
+      btnEdit.onclick = () => {
+        window.gbIsAdminEditMode = true;
+        btnEdit.style.background = 'white';
+        btnEdit.style.color = '#334155';
+        btnEdit.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        btnUser.style.background = 'transparent';
+        btnUser.style.color = '#64748b';
+        btnUser.style.boxShadow = 'none';
+        renderItemsGrid();
+      };
+    }
+  }
+}
+
 function renderGroupBuyUI(data) {
   currentGroupBuyData = data || {};
   if (!Array.isArray(currentGroupBuyData.items) || currentGroupBuyData.items.length === 0) {
@@ -5192,7 +5229,22 @@ function renderItemsGrid() {
       `;
     }
 
+    
+    if (isExpanded && window.gbIsAdminEditMode && typeof getEffectiveRole === 'function' && getEffectiveRole().isSuperAdmin) {
+      expandedHtml += `
+        <div style="padding:12px 16px; background:#fef3c7; border-top:1px solid #fde68a;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+             <input type="text" class="inline-edit-name" value="${item.name}" style="flex:1; margin-right:8px; padding:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:14px;">
+             <input type="number" class="inline-edit-price" value="${item.price}" style="width:80px; padding:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:14px;">
+          </div>
+          <div style="display:flex; justify-content:flex-end;">
+             <button class="btn-inline-save" style="background:#f59e0b; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">儲存修改</button>
+          </div>
+        </div>
+      `;
+    }
     card.innerHTML = rowHtml + expandedHtml;
+
 
     // 事件處理
     const row = card.querySelector('.gb-list-row');
