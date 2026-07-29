@@ -1421,7 +1421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785233389165,
+    "lastActiveTime": 1785287447064,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1447,11 +1447,18 @@
           "小可愛",
           "Mia",
           "Kevin",
-          "Hsin"
+          "Hsin",
+          "戴鏡達"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 09:10",
+        "name": "戴鏡達",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/28 18:09",
         "name": "Hsin",
