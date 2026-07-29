@@ -5196,7 +5196,7 @@ function renderItemsGrid() {
 
     // 事件處理
     const row = card.querySelector('.gb-list-row');
-    row.onclick = () => {
+    row.onclick = () => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
       if (window.activeExpandedItemId === item.id) {
         window.activeExpandedItemId = null; // 折疊
       } else {
@@ -5228,7 +5228,7 @@ function renderItemsGrid() {
         renderItemsGrid();
       };
 
-      if (btnConfirm) btnConfirm.onclick = (e) => {
+      if (btnConfirm) btnConfirm.onclick = (e) => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
         e.stopPropagation();
         if (draftCart[item.id] > 0) {
           currentCart[item.id] = draftCart[item.id];
