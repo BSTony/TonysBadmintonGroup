@@ -1616,39 +1616,27 @@
       }
     ],
     "orders": {
-      "U_SUPER_ADMIN_TEST_ID_k6rh7": {
-        "userId": "U_SUPER_ADMIN_TEST_ID_k6rh7",
+      "U_SUPER_ADMIN_TEST_ID_ku30p": {
+        "userId": "U_SUPER_ADMIN_TEST_ID_ku30p",
         "userName": "超級管理員 (Local Test)",
         "userPhone": "",
         "userPictureUrl": "",
         "items": {
-          "zr_0000": 2
+          "zr_0000": 2,
+          "zr_0001": 5
         },
-        "totalAmount": 1170,
+        "totalAmount": 2795,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1785202204097
-      },
-      "U_SUPER_ADMIN_TEST_ID_i78zh": {
-        "userId": "U_SUPER_ADMIN_TEST_ID_i78zh",
-        "userName": "超級管理員 (Local Test)",
-        "userPhone": "",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0000": 1
-        },
-        "totalAmount": 585,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1785207988486
+        "updatedAt": 1785287677622,
+        "lastConfirmedItems": {
+          "zr_0000": 2,
+          "zr_0001": 5
+        }
       }
     },
     "hiddenFromLobby": false

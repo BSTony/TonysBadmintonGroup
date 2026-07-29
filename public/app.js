@@ -5326,10 +5326,7 @@ async function saveCartToBackend() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: currentUser.userId,
-        userName: name,
-        userPhone: phone,
-        userPictureUrl: currentUser.pictureUrl || '',
+        uid: phone, userName: name, userPhone: phone, userPictureUrl: currentUser.pictureUrl || '',
         items: currentCart,
         paymentMethod: 'none',
         paymentNote: '',
@@ -5557,7 +5554,7 @@ function renderSummaryTab() {
         if (typeof getEffectiveRole === 'function') {
           isUserSuperAdmin = getEffectiveRole().isSuperAdmin;
         }
-        const phoneDisplay = (isUserSuperAdmin && ord.userPhone) ? ` (${ord.userPhone})` : '';
+        const phoneDisplay = (isUserAdmin && ord.userPhone) ? ` (${ord.userPhone})` : '';
 
         const adminBtn = isUserAdmin ? `
           <div style="display:flex; gap:8px;">
@@ -5881,10 +5878,7 @@ function initGroupBuyEvents() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            uid: currentUser.userId,
-            userName: name,
-            userPhone: phone,
-            items: currentCart,
+            uid: phone, userName: name, userPhone: phone, items: currentCart,
             paymentMethod: 'none',
             paymentNote: '',
             note: gbOrderNote ? gbOrderNote.value.trim() : ''
@@ -6321,6 +6315,12 @@ function openCheckoutModal() {
   }
 
   // 渲染購物車明細
+  
+  const gbHeaderNameInput = document.getElementById('gb-header-name');
+  const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
+  if (gbHeaderNameInput && gbUserName) gbUserName.value = gbHeaderNameInput.value.trim();
+  if (gbHeaderPhoneInput && gbUserPhone) gbUserPhone.value = gbHeaderPhoneInput.value.trim();
+
   if (checkoutItemsList) {
     checkoutItemsList.innerHTML = '';
     let sum = 0;
