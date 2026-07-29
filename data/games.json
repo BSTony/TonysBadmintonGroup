@@ -1264,7 +1264,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785208581559,
+    "lastActiveTime": 1785321649865,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1292,11 +1292,18 @@
           "Jet",
           "AddieWang",
           "Mia",
-          "Kevin"
+          "Kevin",
+          "張建發"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 18:40",
+        "name": "張建發",
+        "operator": "張建發",
+        "action": "+1"
+      },
       {
         "time": "07/28 11:16",
         "name": "Gary",
