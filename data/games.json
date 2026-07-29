@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785331544462,
+    "lastActiveTime": 1785333818230,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1132,11 +1132,18 @@
           "張智安",
           "小黑",
           "YaoHu",
-          "偉舫"
+          "偉舫",
+          "JiaYun"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 22:03",
+        "name": "JiaYun",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/29 21:25",
         "name": "偉舫",
