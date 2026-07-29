@@ -5168,7 +5168,7 @@ function renderItemsGrid() {
       const btnConfirm = card.querySelector('.btn-confirm-draft');
       const btnCancel = card.querySelector('.btn-cancel-draft');
 
-      if (btnMinus) btnMinus.onclick = (e) => {
+      if (btnMinus) btnMinus.onclick = (e) => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
         e.stopPropagation();
         if (draftCart[item.id] > 0) {
           draftCart[item.id]--;
@@ -5176,7 +5176,7 @@ function renderItemsGrid() {
         }
       };
       
-      if (btnPlus) btnPlus.onclick = (e) => {
+      if (btnPlus) btnPlus.onclick = (e) => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
         e.stopPropagation();
         draftCart[item.id] = (draftCart[item.id] || 0) + 1;
         renderItemsGrid();
