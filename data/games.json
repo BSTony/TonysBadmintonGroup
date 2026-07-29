@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785295792370,
+    "lastActiveTime": 1785310000555,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1130,11 +1130,18 @@
           "瑋頡2",
           "紀凡",
           "Win Shu",
-          "張智安"
+          "張智安",
+          "小黑"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 15:26",
+        "name": "小黑",
+        "operator": "陳宜蓁",
+        "action": "+1"
+      },
       {
         "time": "07/29 11:29",
         "name": "張智安",
