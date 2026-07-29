@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785322091860,
+    "lastActiveTime": 1785331544462,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1131,11 +1131,18 @@
           "Win Shu",
           "張智安",
           "小黑",
-          "YaoHu"
+          "YaoHu",
+          "偉舫"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 21:25",
+        "name": "偉舫",
+        "operator": "偉舫",
+        "action": "+1"
+      },
       {
         "time": "07/29 18:48",
         "name": "楊程鈞",
