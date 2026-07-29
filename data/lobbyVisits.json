@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2411,
+    "viewCount": 2412,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -665,8 +665,8 @@
       "U94d0fd3752c6d2521d871658f63822b7": {
         "displayName": "Jet",
         "firstVisit": 1784350850473,
-        "count": 23,
-        "lastVisit": 1785145368493
+        "count": 24,
+        "lastVisit": 1785346504757
       },
       "Ub3c88b14c263f06b8e25ed63ceadf241": {
         "displayName": "豐",
@@ -826,6 +826,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1785346504757,
+        "userId": "U94d0fd3752c6d2521d871658f63822b7",
+        "displayName": "Jet",
+        "pictureUrl": "https://profile.line-scdn.net/0hvp2qW2VZKV8fCDfk95lXYW9YKjU8eXBNMmpkay4NIGcjPG1eMzxubSgMImcka2wPMWdmPSIIID89TxZvVxhnUi4NCzx9WQtdOxM9Yih6dC18fhFeay0AZF9XDWlFPAtKXW89TkRyJBIgbgpAVGxhSkNUECtlPTJobF9FCRo6R9xwCl4KMm5nPCIOf2qn"
+      },
       {
         "time": 1785337424275,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -2019,12 +2025,6 @@
         "userId": "Ueab389b7ed59afb14651d8449997efec",
         "displayName": "黃建榮",
         "pictureUrl": "https://profile.line-scdn.net/ch/v2/p/u16fa8d01bf7059c7802e863bc8537b83/1352457785269"
-      },
-      {
-        "time": 1785043634272,
-        "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
-        "displayName": "小金(Chen Pei Hung)",
-        "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
       }
     ]
   },
