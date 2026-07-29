@@ -5635,7 +5635,7 @@ function renderSummaryTab() {
   // 2. 渲染個人訂購明細卡片
   if (ordersContainer) {
     ordersContainer.innerHTML = '';
-    const orderList = Object.values(orders);
+    const orderList = Object.entries(orders).map(([k, v]) => ({ ...v, orderKey: k }));
     if (orderList.length === 0) {
       ordersContainer.innerHTML = '<div style="color:#888; text-align:center; padding:15px;">目前沒有個人明細</div>';
     } else {

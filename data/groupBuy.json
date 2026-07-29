@@ -1618,40 +1618,23 @@
     "orders": {
       "0912345678": {
         "userId": "0912345678",
-        "userName": "TEST1",
+        "userName": "Test Player vn5f4",
         "userPhone": "0912345678",
         "userPictureUrl": "",
         "items": {
-          "zr_0000": 1,
-          "zr_0001": 1,
-          "zr_0002": 1
+          "zr_0000": 1
         },
-        "totalAmount": 1100,
+        "totalAmount": 585,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1785306966178
-      },
-      "0912345679": {
-        "userId": "0912345679",
-        "userName": "Test Player bsu7k",
-        "userPhone": "0912345679",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0005": 1,
-          "zr_0004": 1
-        },
-        "totalAmount": 424,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1785306986979
+        "updatedAt": 1785309832719,
+        "lastConfirmedItems": {
+          "zr_0000": 1
+        }
       }
     },
     "hiddenFromLobby": false
