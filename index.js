@@ -4852,6 +4852,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   if (!uid || !userName) {
     return res.status(400).json({ success: false, error: '缺少使用者資訊' });
   }
+  const orderKey = userPhone ? userPhone.trim() : uid;
   const gb = getGroupBuyInfo(gid);
   if (!gb.orders) gb.orders = {};
 
@@ -4865,7 +4866,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     }
   }
 
-  gb.orders[uid] = {
+  gb.orders[orderKey] = {
     userId: uid,
     userName,
     userPhone: userPhone || '',
@@ -4881,7 +4882,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
 
   await saveGroupBuyStorage();
   if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  res.json({ success: true, order: gb.orders[uid] });
+  res.json({ success: true, order: gb.orders[orderKey] });
 });
 
 // 標記核對付款
