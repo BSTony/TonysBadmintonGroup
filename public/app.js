@@ -5712,7 +5712,7 @@ function renderSummaryTab() {
                 await fetch(`/api/groupbuy/${currentGid || 'default'}/mark_paid`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ uid: currentUser.userId, targetUid: (ord.userName && ord.userPhone) ? `${ord.userName.trim().toLowerCase()}_${ord.userPhone.trim()}` : ord.userId, status: newStatus })
+                  body: JSON.stringify({ uid: currentUser?.userId || 'admin', targetUid: ord.orderKey, status: newStatus })
                 });
               } catch(e) { console.error(e); }
             };
@@ -5725,7 +5725,7 @@ function renderSummaryTab() {
                   await fetch(`/api/groupbuy/${currentGid || 'default'}/delete_order`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ targetUid: (ord.userName && ord.userPhone) ? `${ord.userName.trim().toLowerCase()}_${ord.userPhone.trim()}` : ord.userId })
+                    body: JSON.stringify({ targetUid: ord.orderKey })
                   });
                 } catch(e) { console.error(e); }
               }
