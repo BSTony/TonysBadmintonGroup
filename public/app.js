@@ -4644,7 +4644,53 @@ if (btnPinballAdminStop) {
 // ==========================================
 let currentGid = 'default';
 let currentGroupBuyData = null;
-let currentCart = {}; // { [itemId]: quantity }
+let currentCart = {};
+
+window.validateNamePhone = function() {
+  const n = document.getElementById('gb-header-name');
+  const p = document.getElementById('gb-header-phone');
+  if (!n || !p) return true;
+  const nv = n.value.trim();
+  const pv = p.value.trim();
+  
+  // Clear previous styles
+  n.style.boxShadow = '';
+  n.style.borderColor = '#cbd5e1';
+  p.style.boxShadow = '';
+  p.style.borderColor = '#cbd5e1';
+  
+  let isValid = true;
+  let msg = '';
+  
+  if (!nv) {
+    isValid = false;
+    n.style.borderColor = '#ef4444';
+    n.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.8)';
+    msg += '姓名不能為空！\n';
+  }
+  
+  if (!pv) {
+    isValid = false;
+    p.style.borderColor = '#ef4444';
+    p.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.8)';
+    msg += '電話不能為空！\n';
+  } else if (!/^09\d{8}$/.test(pv)) {
+    isValid = false;
+    p.style.borderColor = '#ef4444';
+    p.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.8)';
+    msg += '電話格式錯誤！請輸入09開頭的十位數字！\n';
+  }
+  
+  if (!isValid) {
+    alert(msg + '請先填寫上方您的姓名與正確電話，才可以開始挑選商品喔！');
+    return false;
+  }
+  
+  localStorage.setItem('gb_last_name', nv);
+  localStorage.setItem('gb_last_phone', pv);
+  return true;
+};
+ // { [itemId]: quantity }
 let draftCart = {}; // { [itemId]: draft_quantity }
 let selectedDetailItem = null;
 let detailQty = 1;
