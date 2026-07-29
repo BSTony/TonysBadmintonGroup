@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785294460217,
+    "lastActiveTime": 1785295792370,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1129,11 +1129,18 @@
           "瑋頡1",
           "瑋頡2",
           "紀凡",
-          "Win Shu"
+          "Win Shu",
+          "張智安"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 11:29",
+        "name": "張智安",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/29 11:07",
         "name": "Win Shu",
