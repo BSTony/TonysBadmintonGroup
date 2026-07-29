@@ -6299,7 +6299,9 @@ function initGroupBuyEvents() {
       if (!confirm('⚠️ 確定要清空所有訂單記錄嗎？此操作無法還原！')) return;
       try {
         const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/clear_orders`, {
-          method: 'POST'
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: currentUser?.userId || 'admin' })
         });
         const data = await res.json();
         if (data.success) {
