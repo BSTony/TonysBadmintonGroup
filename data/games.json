@@ -1487,7 +1487,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785287447064,
+    "lastActiveTime": 1785335301860,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1514,11 +1514,18 @@
           "Mia",
           "Kevin",
           "Hsin",
-          "戴鏡達"
+          "戴鏡達",
+          "小宇"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 22:28",
+        "name": "小宇",
+        "operator": "詹敬智(胞弟)",
+        "action": "+1"
+      },
       {
         "time": "07/29 09:10",
         "name": "戴鏡達",
