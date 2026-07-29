@@ -4852,7 +4852,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   if (!uid || !userName) {
     return res.status(400).json({ success: false, error: '缺少使用者資訊' });
   }
-  const orderKey = userPhone ? userPhone.trim() : uid;
+  const orderKey = (userName && userPhone) ? `${userName.trim().toLowerCase()}_${userPhone.trim()}` : uid;
   const gb = getGroupBuyInfo(gid);
   if (!gb.orders) gb.orders = {};
 

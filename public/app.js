@@ -5474,18 +5474,32 @@ function openGroupBuyPage() {
     const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
     
     if (gbHeaderPhoneInput) {
+      
+      const reloadCart = () => {
+        const n = (gbHeaderNameInput && gbHeaderNameInput.value.trim().toLowerCase()) || '';
+        const p = (gbHeaderPhoneInput && gbHeaderPhoneInput.value.trim()) || '';
+        const key = (n && p) ? `${n}_${p}` : '';
+        
+        if (key && currentGroupBuyData && currentGroupBuyData.orders && currentGroupBuyData.orders[key]) {
+          currentCart = { ...currentGroupBuyData.orders[key].items };
+        } else if (p || n) {
+          currentCart = {};
+        }
+        renderItemsGrid();
+        updateCartBar();
+      };
+      
       gbHeaderPhoneInput.addEventListener('input', () => {
         const p = gbHeaderPhoneInput.value.trim();
-        if (p === '' || /^09\d{8}$/.test(p)) {
-          if (p && currentGroupBuyData && currentGroupBuyData.orders && currentGroupBuyData.orders[p]) {
-            currentCart = { ...currentGroupBuyData.orders[p].items };
-          } else {
-            currentCart = {};
-          }
-          renderItemsGrid();
-          updateCartBar();
-        }
+        if (p === '' || /^09\d{8}$/.test(p)) reloadCart();
       });
+      if (gbHeaderNameInput) {
+        gbHeaderNameInput.addEventListener('input', () => {
+          const p = gbHeaderPhoneInput ? gbHeaderPhoneInput.value.trim() : '';
+          if (p === '' || /^09\d{8}$/.test(p)) reloadCart();
+        });
+      }
+
     }
     if (currentUser && currentGroupBuyData) {
       const oldOrder = currentGroupBuyData.orders && currentGroupBuyData.orders[currentUser.userId];
@@ -5698,7 +5712,7 @@ function renderSummaryTab() {
                 await fetch(`/api/groupbuy/${currentGid || 'default'}/mark_paid`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ uid: currentUser.userId, targetUid: ord.userPhone || ord.userId, status: newStatus })
+                  body: JSON.stringify({ uid: currentUser.userId, targetUid: (ord.userName && ord.userPhone) ? `${ord.userName.trim().toLowerCase()}_${ord.userPhone.trim()}` : ord.userId, status: newStatus })
                 });
               } catch(e) { console.error(e); }
             };
@@ -5711,7 +5725,7 @@ function renderSummaryTab() {
                   await fetch(`/api/groupbuy/${currentGid || 'default'}/delete_order`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ targetUid: ord.userPhone || ord.userId })
+                    body: JSON.stringify({ targetUid: (ord.userName && ord.userPhone) ? `${ord.userName.trim().toLowerCase()}_${ord.userPhone.trim()}` : ord.userId })
                   });
                 } catch(e) { console.error(e); }
               }

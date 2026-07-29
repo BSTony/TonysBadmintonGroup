@@ -1638,20 +1638,22 @@
       },
       "0912345679": {
         "userId": "0912345679",
-        "userName": "Test Player 0x23o",
+        "userName": "Test Player1",
         "userPhone": "0912345679",
         "userPictureUrl": "",
         "items": {
-          "zr_0000": 1
+          "zr_0000": 1,
+          "zr_0001": 1,
+          "zr_0002": 1
         },
-        "totalAmount": 585,
+        "totalAmount": 1100,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1785292697234
+        "updatedAt": 1785296719001
       }
     },
     "hiddenFromLobby": false
