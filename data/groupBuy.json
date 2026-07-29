@@ -1,7 +1,7 @@
 {
   "default": {
     "active": true,
-    "title": "",
+    "title": "🛒 展榮商號 堅果團購",
     "notice": "",
     "paymentSettings": {
       "linePayLink": "https://zrsh1986.com",
@@ -1618,28 +1618,8 @@
     "orders": {
       "0912345678": {
         "userId": "0912345678",
-        "userName": "Test Player 0x23o",
+        "userName": "TEST1",
         "userPhone": "0912345678",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0000": 1,
-          "zr_0001": 1,
-          "zr_0002": 1,
-          "zr_0003": 1
-        },
-        "totalAmount": 1375,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1785292680151
-      },
-      "0912345679": {
-        "userId": "0912345679",
-        "userName": "Test Player1",
-        "userPhone": "0912345679",
         "userPictureUrl": "",
         "items": {
           "zr_0000": 1,
@@ -1653,7 +1633,25 @@
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1785296719001
+        "updatedAt": 1785306966178
+      },
+      "0912345679": {
+        "userId": "0912345679",
+        "userName": "Test Player bsu7k",
+        "userPhone": "0912345679",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0005": 1,
+          "zr_0004": 1
+        },
+        "totalAmount": 424,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1785306986979
       }
     },
     "hiddenFromLobby": false

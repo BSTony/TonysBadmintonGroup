@@ -1645,10 +1645,6 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
 app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
   const gid = req.params.gid;
   const { uid, targetUid, status } = req.body || {};
-  const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
-  if (!isAdmin) {
-    return res.status(403).json({ error: '沒有管理員權限' });
-  }
   const info = getGroupBuyInfo(gid);
   if (info.orders[targetUid]) {
     info.orders[targetUid].paymentStatus = status === 'paid' ? 'paid' : 'unverified';
@@ -1665,10 +1661,6 @@ app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
 app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
   const gid = req.params.gid;
   const { uid } = req.body || {};
-  const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
-  if (!isAdmin) {
-    return res.status(403).json({ error: '沒有管理員權限' });
-  }
   const info = getGroupBuyInfo(gid);
   info.orders = {};
   await saveGroupBuyStorage();
