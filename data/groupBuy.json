@@ -1,6 +1,6 @@
 {
   "default": {
-    "active": false,
+    "active": true,
     "title": "",
     "notice": "",
     "paymentSettings": {
@@ -1656,6 +1656,6 @@
         "updatedAt": 1785296719001
       }
     },
-    "hiddenFromLobby": true
+    "hiddenFromLobby": false
   }
 }

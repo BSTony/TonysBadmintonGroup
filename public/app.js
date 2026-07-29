@@ -5758,6 +5758,26 @@ function populateAdminFields() {
       if (lblClose) lblClose.style.color = '#ef4444';
     }
   }
+  
+  const btnGbAdminHiddenToggle = document.getElementById('btn-gb-admin-hidden-toggle');
+  if (btnGbAdminHiddenToggle) {
+    const knob2 = btnGbAdminHiddenToggle.querySelector('.toggle-knob');
+    const lblShow = document.getElementById('lbl-show');
+    const lblHide = document.getElementById('lbl-hide');
+    if (!currentGroupBuyData.hiddenFromLobby) {
+      // 顯示
+      btnGbAdminHiddenToggle.style.background = '#10b981';
+      if (knob2) knob2.style.transform = 'translateX(24px)';
+      if (lblShow) lblShow.style.color = '#10b981';
+      if (lblHide) lblHide.style.color = '#cbd5e1';
+    } else {
+      // 隱藏
+      btnGbAdminHiddenToggle.style.background = '#cbd5e1';
+      if (knob2) knob2.style.transform = 'translateX(0)';
+      if (lblShow) lblShow.style.color = '#cbd5e1';
+      if (lblHide) lblHide.style.color = '#ef4444';
+    }
+  }
   if (gbAdminTitleInput) gbAdminTitleInput.value = currentGroupBuyData.title || '';
   if (gbAdminNoticeInput) gbAdminNoticeInput.value = currentGroupBuyData.notice || '';
   if (gbAdminHiddenLobbyInput) gbAdminHiddenLobbyInput.checked = !!currentGroupBuyData.hiddenFromLobby;
@@ -6482,6 +6502,26 @@ function openCheckoutModal() {
     } else {
       btnLaunchLinepay.href = '#';
       btnLaunchLinepay.innerText = '🟢 請向主辦人索取 LINE 轉帳連結';
+    }
+  }
+  
+  const btnGbAdminHiddenToggle = document.getElementById('btn-gb-admin-hidden-toggle');
+  if (btnGbAdminHiddenToggle) {
+    const knob2 = btnGbAdminHiddenToggle.querySelector('.toggle-knob');
+    const lblShow = document.getElementById('lbl-show');
+    const lblHide = document.getElementById('lbl-hide');
+    if (!currentGroupBuyData.hiddenFromLobby) {
+      // 顯示
+      btnGbAdminHiddenToggle.style.background = '#10b981';
+      if (knob2) knob2.style.transform = 'translateX(24px)';
+      if (lblShow) lblShow.style.color = '#10b981';
+      if (lblHide) lblHide.style.color = '#cbd5e1';
+    } else {
+      // 隱藏
+      btnGbAdminHiddenToggle.style.background = '#cbd5e1';
+      if (knob2) knob2.style.transform = 'translateX(0)';
+      if (lblShow) lblShow.style.color = '#cbd5e1';
+      if (lblHide) lblHide.style.color = '#ef4444';
     }
   }
 
