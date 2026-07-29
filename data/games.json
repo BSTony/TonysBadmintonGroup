@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785288655160,
+    "lastActiveTime": 1785294460217,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1128,11 +1128,18 @@
           "Kelly",
           "瑋頡1",
           "瑋頡2",
-          "紀凡"
+          "紀凡",
+          "Win Shu"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/29 11:07",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1"
+      },
       {
         "time": "07/29 09:30",
         "name": "Gary",
