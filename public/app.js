@@ -5170,11 +5170,11 @@ function renderItemsGrid() {
       expandedHtml = `
         <div class="gb-accordion-body" style="padding:12px 16px; background:#f8fafc; border-top:1px solid #e2e8f0;">
           
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          ${item.contents ? `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <div style="font-size:13px; color:#334155; text-align:left; flex:1;">
-              <strong>內容物：</strong>${item.contents || '無'}
+              <strong>備註：</strong>${item.contents}
             </div>
-          </div>
+          </div>` : ''}
           
           <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
             <div style="display:flex; align-items:center; justify-content:center; gap:12px;">

@@ -1616,27 +1616,22 @@
       }
     ],
     "orders": {
-      "U_SUPER_ADMIN_TEST_ID_ku30p": {
-        "userId": "U_SUPER_ADMIN_TEST_ID_ku30p",
-        "userName": "超級管理員 (Local Test)",
-        "userPhone": "",
+      "0912345678": {
+        "userId": "0912345678",
+        "userName": "Test Player p5svu",
+        "userPhone": "0912345678",
         "userPictureUrl": "",
         "items": {
-          "zr_0000": 2,
-          "zr_0001": 5
+          "zr_0000": 1
         },
-        "totalAmount": 2795,
+        "totalAmount": 585,
         "paymentMethod": "none",
-        "paymentStatus": "paid",
+        "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1785287677622,
-        "lastConfirmedItems": {
-          "zr_0000": 2,
-          "zr_0001": 5
-        }
+        "updatedAt": 1785288903600
       }
     },
     "hiddenFromLobby": false
