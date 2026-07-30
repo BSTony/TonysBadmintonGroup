@@ -5884,7 +5884,7 @@ function openItemEditModal(item = null) {
   const catInput = document.getElementById('gb-edit-item-category');
   const nameInput = document.getElementById('gb-edit-item-name');
   const priceInput = document.getElementById('gb-edit-item-price');
-  const unitInput = document.getElementById('gb-edit-item-unit');
+  
   const linkTextInput = document.getElementById('gb-edit-item-linktext');
   const descInput = document.getElementById('gb-edit-item-desc');
   const contentsInput = document.getElementById('gb-edit-item-contents');
@@ -5898,7 +5898,7 @@ function openItemEditModal(item = null) {
     if (catInput) catInput.value = item.category || '';
     if (nameInput) nameInput.value = item.name || '';
     if (priceInput) priceInput.value = item.price || '';
-    if (unitInput) unitInput.value = item.unit || '';
+    
     if (linkTextInput) linkTextInput.value = item.linkText || '';
     if (descInput) descInput.value = item.description || '';
     if (contentsInput) contentsInput.value = item.contents || '';
@@ -5911,7 +5911,7 @@ function openItemEditModal(item = null) {
     if (catInput) catInput.value = activeCategoryFilter !== '全部' ? activeCategoryFilter : '自訂商品';
     if (nameInput) nameInput.value = '';
     if (priceInput) priceInput.value = '';
-    if (unitInput) unitInput.value = '';
+    
     if (linkTextInput) linkTextInput.value = '點我進入網站';
     if (descInput) descInput.value = '';
     if (linkUrlInput) linkUrlInput.value = '';
@@ -6382,7 +6382,7 @@ function initGroupBuyEvents() {
         category,
         name,
         price,
-        unit: document.getElementById('gb-edit-item-unit').value.trim(),
+        unit: (document.getElementById('gb-edit-item-unit') ? document.getElementById('gb-edit-item-unit').value.trim() : ''),
         linkText: document.getElementById('gb-edit-item-linktext').value.trim(),
         description: document.getElementById('gb-edit-item-desc').value.trim(),
         contents: (document.getElementById('gb-edit-item-contents') ? document.getElementById('gb-edit-item-contents').value.trim() : ''),
