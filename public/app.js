@@ -5194,7 +5194,7 @@ function renderItemsGrid() {
   
   const createItemCard = (item) => {
     const card = document.createElement('div');
-
+    card.id = 'gb-item-card-' + item.id;
     card.className = 'gb-list-item';
     
     const qty = currentCart[item.id] || 0;
@@ -5640,7 +5640,7 @@ function renderSummaryTab() {
         
         let rowHtml = `
           <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:center;">${rankEmoji}</td>
-          <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;cursor:pointer;color:#2563eb;text-decoration:underline;" class="gb-rank-item-name"><strong>${x.name}</strong></td>
+          <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;"><span style="cursor:pointer;color:#2563eb;text-decoration:underline;margin-right:8px;" class="gb-rank-item-name"><strong>${x.name}</strong></span><span class="gb-rank-item-buyers" style="cursor:pointer;font-size:14px;" title="查看購買名單">👥</span></td>
           <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:center;">$${x.price}</td>
           <td style="border:1px solid #dee2e6;padding:8px;font-size:13px;text-align:center;"><strong style="color:#27ae60;font-size:15px;">${x.qty}</strong></td>
         `;
@@ -5651,9 +5651,29 @@ function renderSummaryTab() {
         
         tr.innerHTML = rowHtml;
 
-        const nameTd = tr.querySelector('.gb-rank-item-name');
-        if (nameTd && itemObj) {
-          nameTd.onclick = () => {
+        const nameSpan = tr.querySelector('.gb-rank-item-name');
+        const buyersSpan = tr.querySelector('.gb-rank-item-buyers');
+        if (itemObj) {
+          if (nameSpan) {
+            nameSpan.onclick = () => {
+              if (typeof gbTabItems !== 'undefined' && gbTabItems) gbTabItems.click();
+              activeCategoryFilter = itemObj.category || '全部';
+              renderCategoryNav();
+              window.activeExpandedItemId = itemObj.id;
+              renderItemsGrid();
+              setTimeout(() => {
+                const card = document.getElementById('gb-item-card-' + itemObj.id);
+                if (card) {
+                  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  card.style.transition = 'box-shadow 0.3s';
+                  card.style.boxShadow = '0 0 15px rgba(37,99,235,0.6)';
+                  setTimeout(() => card.style.boxShadow = '', 2000);
+                }
+              }, 100);
+            };
+          }
+          if (buyersSpan) {
+            buyersSpan.onclick = () => {
             const buyers = [];
             let totalItemQty = 0;
             const orders = currentGroupBuyData.orders || {};
@@ -5674,8 +5694,9 @@ function renderSummaryTab() {
             }
 
             const tempItem = { ...itemObj, description: (itemObj.description || '暫無詳細說明') + extraInfo };
-            openItemDetail(tempItem);
-          };
+              openItemDetail(tempItem);
+            };
+          }
         }
         tbody.appendChild(tr);
       });
