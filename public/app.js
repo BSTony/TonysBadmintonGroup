@@ -5873,7 +5873,7 @@ function renderAdminItemsList() {
 }
 
 function openItemEditModal(item = null) {
-  console.log('openItemEditModal called!');
+  alert('openItemEditModal function executing!');
   const modal = document.getElementById('gbItemEditModal');
   const title = document.getElementById('gb-item-edit-title');
   const idInput = document.getElementById('gb-edit-item-id');
@@ -5915,7 +5915,7 @@ function openItemEditModal(item = null) {
     if (btnDelete) btnDelete.classList.add('hidden');
   }
 
-  if (modal) modal.classList.remove('hidden');
+  if (modal) { alert('Modal is found, removing hidden class'); modal.classList.remove('hidden'); } else { alert('Modal NOT found in DOM!'); }
 }
 
 // 綁定事件監聽
@@ -6358,7 +6358,7 @@ function initGroupBuyEvents() {
   const btnDeleteItem = document.getElementById('btn-gb-delete-item');
   const itemEditModal = document.getElementById('gbItemEditModal');
 
-  if (btnOpenAddItem) btnOpenAddItem.onclick = (e) => { e.preventDefault(); console.log('Global Add button clicked!'); openItemEditModal(); };
+  if (btnOpenAddItem) btnOpenAddItem.onclick = (e) => { e.preventDefault(); alert('Add button clicked!'); openItemEditModal(); };
   if (btnCloseItemEdit) btnCloseItemEdit.onclick = () => itemEditModal.classList.add('hidden');
 
   if (btnSaveItem) {
