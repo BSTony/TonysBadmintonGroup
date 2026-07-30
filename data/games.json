@@ -1421,13 +1421,15 @@
     "tag": "",
     "active": true,
     "startTime": 1785041215959,
-    "lastActiveTime": 1785216180592,
+    "lastActiveTime": 1785419770569,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "Jean": "候補"
+    },
     "paidMap": {},
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -1445,11 +1447,18 @@
           "林煥杰",
           "兔兔(玉儒)",
           "小金(Chen Pei Hung)",
-          "JoeLin"
+          "JoeLin",
+          "Jean"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/30 21:56",
+        "name": "Jean",
+        "operator": "文馨Jean",
+        "action": "+1"
+      },
       {
         "time": "07/28 13:23",
         "name": "JoeLin",
