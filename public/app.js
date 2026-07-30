@@ -5242,8 +5242,7 @@ function renderItemsGrid() {
             </div>
             
             <div style="display:flex; gap:8px;">
-              <button class="btn-cancel-draft" style="background:#ef4444;color:white;border:none;border-radius:6px;padding:8px 12px;font-size:13px;font-weight:bold;cursor:pointer;">❌</button>
-              <button class="btn-confirm-draft" style="background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 12px;font-size:13px;font-weight:bold;cursor:pointer;">✅ 確定數量</button>
+              <button class="btn-confirm-draft" style="background:#10b981;color:white;border:none;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 2px 4px rgba(16,185,129,0.3);">✅</button>
             </div>
           </div>
         </div>
@@ -5285,7 +5284,7 @@ function renderItemsGrid() {
       const btnMinus = card.querySelector('.btn-minus');
       const btnPlus = card.querySelector('.btn-plus');
       const btnConfirm = card.querySelector('.btn-confirm-draft');
-      const btnCancel = card.querySelector('.btn-cancel-draft');
+      
 
       if (btnMinus) btnMinus.onclick = (e) => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
         e.stopPropagation();
@@ -5344,12 +5343,7 @@ function renderItemsGrid() {
         saveCartToBackend();
       };
 
-      if (btnCancel) btnCancel.onclick = (e) => {
-        e.stopPropagation();
-        delete draftCart[item.id];
-        window.activeExpandedItemId = null; // 取消後自動折疊
-        renderItemsGrid();
-      };
+      
     }
 
     
