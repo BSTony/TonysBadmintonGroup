@@ -1494,7 +1494,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785335301860,
+    "lastActiveTime": 1785406053258,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1522,11 +1522,18 @@
           "Kevin",
           "Hsin",
           "戴鏡達",
-          "小宇"
+          "小宇",
+          "h"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/30 18:07",
+        "name": "h",
+        "operator": "Hsin",
+        "action": "+1"
+      },
       {
         "time": "07/29 22:28",
         "name": "小宇",
