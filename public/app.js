@@ -4952,8 +4952,10 @@ function initAdminEditToggles() {
           knob.style.transform = 'translateX(0px)';
           lblEdit.style.color = '#f59e0b';
           lblUser.style.color = '#64748b';
+          if (adminControls) adminControls.style.display = 'flex';
         } else {
           btnToggle.style.background = '#3b82f6';
+          if (adminControls) adminControls.style.display = 'none';
           knob.style.transform = 'translateX(20px)';
           lblEdit.style.color = '#64748b';
           lblUser.style.color = '#3b82f6';
