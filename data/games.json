@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785409676961,
+    "lastActiveTime": 1785409763757,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1099,7 +1099,8 @@
       "Wayne": true,
       "Ashley": true,
       "John": true,
-      "孟錡": true
+      "孟錡": true,
+      "Kelly": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
