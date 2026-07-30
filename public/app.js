@@ -651,6 +651,8 @@ function joinPartyLobby() {
   if (globalIsSuperAdmin) {
     const adminControls = document.getElementById('bh-admin-controls');
     if (adminControls) adminControls.classList.remove('hidden');
+    const modeContainer = document.getElementById('admin-mode-container');
+    if (modeContainer) modeContainer.classList.remove('hidden');
   }
   
   bhPlayer = document.createElement('div');
@@ -4939,6 +4941,8 @@ function initAdminEditToggles() {
   
   if (adminControls && typeof getEffectiveRole === 'function' && getEffectiveRole().isSuperAdmin) {
     adminControls.classList.remove('hidden');
+    const modeContainer = document.getElementById('admin-mode-container');
+    if (modeContainer) modeContainer.classList.remove('hidden');
     
     if (btnToggle) {
       const updateToggleUI = () => {
