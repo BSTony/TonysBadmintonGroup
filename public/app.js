@@ -5872,6 +5872,16 @@ function renderAdminItemsList() {
   });
 }
 
+function closeItemEditModal() {
+  const modal = document.getElementById('gbItemEditModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.removeProperty('display');
+    modal.style.removeProperty('opacity');
+    modal.style.removeProperty('z-index');
+  }
+}
+
 function openItemEditModal(item = null) {
     const modal = document.getElementById('gbItemEditModal');
   const title = document.getElementById('gb-item-edit-title');
@@ -5886,6 +5896,14 @@ function openItemEditModal(item = null) {
   const linkUrlInput = document.getElementById('gb-edit-item-linkurl');
   const imgUrlInput = document.getElementById('gb-edit-item-imgurl');
   const btnDelete = document.getElementById('btn-gb-delete-item');
+
+  const suggestions = document.getElementById('gb-category-suggestions');
+  if (suggestions && currentGroupBuyData && currentGroupBuyData.items) {
+    const cats = new Set();
+    currentGroupBuyData.items.forEach(i => { if (i.category) cats.add(i.category); });
+    suggestions.innerHTML = Array.from(cats).map(c => `<option value="${c}">`).join('');
+  }
+
 
   if (item) {
     if (title) title.innerText = '✏️ 編輯商品品項';
@@ -6358,7 +6376,7 @@ function initGroupBuyEvents() {
   const itemEditModal = document.getElementById('gbItemEditModal');
 
   if (btnOpenAddItem) btnOpenAddItem.onclick = (e) => { e.preventDefault(); openItemEditModal(); };
-  if (btnCloseItemEdit) btnCloseItemEdit.onclick = () => itemEditModal.classList.add('hidden');
+  if (btnCloseItemEdit) btnCloseItemEdit.onclick = () => closeItemEditModal();
 
   if (btnSaveItem) {
     btnSaveItem.onclick = async () => {
@@ -6394,7 +6412,7 @@ function initGroupBuyEvents() {
         const data = await res.json();
         if (data.success) {
           alert('✅ 商品已儲存！');
-          if (itemEditModal) itemEditModal.classList.add('hidden');
+          if (itemEditModal) closeItemEditModal();
         } else {
           alert('儲存失敗：' + data.error);
         }
@@ -6417,7 +6435,7 @@ function initGroupBuyEvents() {
         const data = await res.json();
         if (data.success) {
           alert('✅ 已刪除商品');
-          if (itemEditModal) itemEditModal.classList.add('hidden');
+          if (itemEditModal) closeItemEditModal();
         } else {
           alert('刪除失敗：' + data.error);
         }

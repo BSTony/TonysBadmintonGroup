@@ -742,10 +742,10 @@
         <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">商品分類 *</label><input type="text" id="gb-edit-item-category" placeholder="如：堅果類、飲品系列..." list="gb-category-suggestions" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /><datalist id="gb-category-suggestions"><option value="堅果類"><option value="無糖/粉類"><option value="油品系列"><option value="醬類"><option value="羽球裝備"><option value="飲品/點心"></datalist></div>
         <div style="display:flex;gap:10px;margin-bottom:10px;"><div style="flex:2;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">商品名稱 *</label><input type="text" id="gb-edit-item-name" placeholder="例如：原味堅果包" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div><div style="flex:1;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">價格 ($) *</label><input type="number" id="gb-edit-item-price" placeholder="250" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div></div>
         <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">連結按鈕文字</label><input type="text" id="gb-edit-item-linktext" placeholder="點我進入網站" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div>
-        <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">簡短說明 (顯示於列表)</label><textarea id="gb-edit-item-desc" rows="2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;resize:vertical;"></textarea></div>
-        <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">備註 (選填)</label><textarea id="gb-edit-item-contents" rows="2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;resize:vertical;"></textarea></div>
-        <div style="margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">外部連結網址</label><input type="text" id="gb-edit-item-linkurl" placeholder="https://example.com" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div>
-        <div style="margin-bottom:15px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">圖片網址</label><input type="text" id="gb-edit-item-imgurl" placeholder="https://example.com/item.jpg" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div>
+        <div style="display:none;margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">簡短說明 (顯示於列表)</label><textarea id="gb-edit-item-desc" rows="2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;resize:vertical;"></textarea></div>
+        <div style="display:none;margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">備註 (選填)</label><textarea id="gb-edit-item-contents" rows="2" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;resize:vertical;"></textarea></div>
+        <div style="display:none;margin-bottom:10px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">外部連結網址</label><input type="text" id="gb-edit-item-linkurl" placeholder="https://example.com" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div>
+        <div style="display:none;margin-bottom:15px;"><label style="font-weight:bold;font-size:13px;display:block;margin-bottom:4px;">圖片網址</label><input type="text" id="gb-edit-item-imgurl" placeholder="https://example.com/item.jpg" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;" /></div>
         <div style="display:flex;gap:10px;">
           <button id="btn-gb-save-item" style="flex:2;background:#27ae60;padding:10px;font-weight:bold;border-radius:8px;border:none;cursor:pointer;color:white;">💾 儲存商品</button>
           <button id="btn-gb-delete-item" class="hidden" style="flex:1;background:#e74c3c;color:white;padding:10px;font-weight:bold;border-radius:8px;border:none;cursor:pointer;">🗑️ 刪除</button>
@@ -886,7 +886,7 @@
   </div>
 
   <div id="app-version-display" style="text-align: center; color: #999; font-size: 12px; padding: 20px 0; width: 100%; pointer-events: none; margin-top: 20px;">
-    Version: V202607301144
+    Version: V202607301411
   </div>
 
   <style>
@@ -906,7 +906,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
   <script src="pinball_v2.js?v=20260723_fix01"></script>
-  <script src="app.js?v=V202607301144"></script>
+  <script src="app.js?v=V202607301411"></script>
 
 </body>
 </html>
