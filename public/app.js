@@ -4963,6 +4963,35 @@ function initAdminEditToggles() {
       };
       
       btnToggle.onclick = toggleMode;
+      const btnAddItem = document.getElementById('btn-gb-add-item');
+      if (btnAddItem) {
+        btnAddItem.onclick = async () => {
+          const newName = prompt('請輸入新商品名稱:');
+          if (!newName) return;
+          const newPriceStr = prompt('請輸入商品價格:');
+          if (!newPriceStr) return;
+          const newPrice = parseFloat(newPriceStr);
+          if (isNaN(newPrice)) { alert('價格必須為數字'); return; }
+          try {
+            const newItemId = 'item_' + Date.now();
+            const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/item/save`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                uid: currentUser?.userId || 'admin',
+                item: { id: newItemId, name: newName.trim(), price: newPrice }
+              })
+            });
+            const data = await res.json();
+            if (data.success) {
+              alert('新增成功！');
+            } else {
+              alert('新增失敗');
+            }
+          } catch(err) { console.error(err); }
+        };
+      }
+
       if (lblEdit) lblEdit.onclick = () => { if (!window.gbIsAdminEditMode) toggleMode(); };
       if (lblUser) lblUser.onclick = () => { if (window.gbIsAdminEditMode) toggleMode(); };
       
@@ -5287,6 +5316,35 @@ function renderItemsGrid() {
         draftCart[item.id] = (draftCart[item.id] || 0) + 1;
         renderItemsGrid();
       };
+      if (window.gbIsAdminEditMode && typeof getEffectiveRole === 'function' && getEffectiveRole().isSuperAdmin) {
+        const btnInlineSave = card.querySelector('.btn-inline-save');
+        const inputName = card.querySelector('.inline-edit-name');
+        const inputPrice = card.querySelector('.inline-edit-price');
+        if (btnInlineSave) {
+          btnInlineSave.onclick = async (e) => {
+            e.stopPropagation();
+            const newName = inputName.value.trim();
+            const newPrice = parseFloat(inputPrice.value);
+            if (!newName || isNaN(newPrice)) { alert('品名與價格不能為空'); return; }
+            try {
+              const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/item/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  uid: currentUser?.userId || 'admin',
+                  item: { ...item, name: newName, price: newPrice }
+                })
+              });
+              const data = await res.json();
+              if (data.success) {
+                alert('修改成功！');
+              } else {
+                alert('修改失敗');
+              }
+            } catch(err) { console.error(err); }
+          };
+        }
+      }
 
       if (btnConfirm) btnConfirm.onclick = (e) => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
         e.stopPropagation();
