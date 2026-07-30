@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785416747475,
+    "lastActiveTime": 1785417761958,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1144,11 +1144,18 @@
           "小黑",
           "YaoHu",
           "偉舫",
-          "JiaYun"
+          "JiaYun",
+          "小金(Chen Pei Hung)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/30 21:22",
+        "name": "小金(Chen Pei Hung)",
+        "operator": "小金(Chen Pei Hung)",
+        "action": "+1"
+      },
       {
         "time": "07/29 22:03",
         "name": "JiaYun",
