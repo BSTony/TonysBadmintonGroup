@@ -5873,8 +5873,7 @@ function renderAdminItemsList() {
 }
 
 function openItemEditModal(item = null) {
-  alert('openItemEditModal function executing!');
-  const modal = document.getElementById('gbItemEditModal');
+    const modal = document.getElementById('gbItemEditModal');
   const title = document.getElementById('gb-item-edit-title');
   const idInput = document.getElementById('gb-edit-item-id');
   const catInput = document.getElementById('gb-edit-item-category');
@@ -5915,7 +5914,7 @@ function openItemEditModal(item = null) {
     if (btnDelete) btnDelete.classList.add('hidden');
   }
 
-  if (modal) { alert('Modal is found, removing hidden class'); modal.classList.remove('hidden'); } else { alert('Modal NOT found in DOM!'); }
+  if (modal) { modal.classList.remove('hidden'); modal.style.setProperty('display', 'flex', 'important'); modal.style.setProperty('opacity', '1', 'important'); modal.style.setProperty('z-index', '999999', 'important'); }
 }
 
 // 綁定事件監聽
@@ -6358,7 +6357,7 @@ function initGroupBuyEvents() {
   const btnDeleteItem = document.getElementById('btn-gb-delete-item');
   const itemEditModal = document.getElementById('gbItemEditModal');
 
-  if (btnOpenAddItem) btnOpenAddItem.onclick = (e) => { e.preventDefault(); alert('Add button clicked!'); openItemEditModal(); };
+  if (btnOpenAddItem) btnOpenAddItem.onclick = (e) => { e.preventDefault(); openItemEditModal(); };
   if (btnCloseItemEdit) btnCloseItemEdit.onclick = () => itemEditModal.classList.add('hidden');
 
   if (btnSaveItem) {
