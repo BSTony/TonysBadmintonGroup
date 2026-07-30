@@ -13,18 +13,6 @@
     },
     "items": [
       {
-        "id": "gb_item_1785390635445_95al",
-        "name": "TEST１",
-        "price": 2000,
-        "category": "堅果類",
-        "unit": "份",
-        "description": "",
-        "contents": "",
-        "imageUrl": "",
-        "linkUrl": "",
-        "linkText": "點我進入網站"
-      },
-      {
         "id": "item_1785373235525",
         "name": "松子1",
         "price": 590,

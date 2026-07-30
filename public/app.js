@@ -5942,7 +5942,7 @@ function openItemEditModal(item = null) {
   } else {
     if (title) title.innerText = '➕ 新增自訂商品品項';
     if (idInput) idInput.value = '';
-    if (catInput) catInput.value = activeCategoryFilter !== '全部' ? activeCategoryFilter : '自訂商品';
+    if (catInput) catInput.value = activeCategoryFilter !== '全部' ? activeCategoryFilter : '';
     if (nameInput) nameInput.value = '';
     if (priceInput) priceInput.value = '';
     
