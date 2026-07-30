@@ -1701,6 +1701,21 @@
         "note": "",
         "anonymous": false,
         "updatedAt": 1785310258629
+      },
+      "超級管理員 (local test)_0912345679": {
+        "userId": "0912345679",
+        "userName": "超級管理員 (Local Test)",
+        "userPhone": "0912345679",
+        "userPictureUrl": "",
+        "items": {},
+        "totalAmount": 0,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1785375812251
       }
     },
     "hiddenFromLobby": false

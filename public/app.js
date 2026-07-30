@@ -5242,7 +5242,7 @@ function renderItemsGrid() {
             </div>
             
             <div style="display:flex; gap:8px;">
-              <button class="btn-confirm-draft" style="background:#10b981;color:white;border:none;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:0 2px 4px rgba(16,185,129,0.3);">✅</button>
+              <button class="btn-confirm-draft" style="background:#10b981;color:white;border:none;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 4px rgba(16,185,129,0.3); transition: transform 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" style="width:24px;height:24px;"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg></button>
             </div>
           </div>
         </div>
