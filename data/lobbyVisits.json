@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2459,
+    "viewCount": 2461,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -23,8 +23,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 512,
-        "lastVisit": 1785403322556
+        "count": 513,
+        "lastVisit": 1785409622370
       },
       "U092196c10fe7e15591482c6b7942a147": {
         "displayName": "Sammy Su",
@@ -293,8 +293,8 @@
       "U1cb334975d37ef2d2ef6b7598dc2ea06": {
         "displayName": "Emily🙈🙉🙊",
         "firstVisit": 1783394184758,
-        "count": 16,
-        "lastVisit": 1785324681093
+        "count": 17,
+        "lastVisit": 1785412347186
       },
       "U27553de40b136b5c968005d5ab15bae8": {
         "displayName": "群傑",
@@ -844,6 +844,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1785412347186,
+        "userId": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+        "displayName": "Emily🙈🙉🙊",
+        "pictureUrl": "https://profile.line-scdn.net/0hz-HDxm_sJQJlPTqeMoNbPBVtJmhGTHwQT19oYFg9fTBQWmZTHVhiM1Y-fDcKBWRRHgk9M1k8fGdHWRcWSVsfIwY8Z3UMRGEKCgQaNxB4fHFfCjkXCkcjHFNfJFMhBSJUOxooD1RtCVU6VWdUSAUQIgdrekFcdTsEIGpJVGAPS4EKP1JXSFtrYVg7czfd"
+      },
+      {
+        "time": 1785409622370,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1785408115798,
         "userId": "Uf2f63c157d1e4f7e5d289d377c568582",
@@ -2028,18 +2040,6 @@
         "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
         "displayName": "小金(Chen Pei Hung)",
         "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
-      },
-      {
-        "time": 1785152448607,
-        "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
-        "displayName": "小金(Chen Pei Hung)",
-        "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
-      },
-      {
-        "time": 1785152294768,
-        "userId": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
-        "displayName": "Ong",
-        "pictureUrl": "https://profile.line-scdn.net/0hQX53XLkfDncYShq8j7ZwCGgaDR07O1dlMy5GE35PUkYgeEtzMSwSRSxOVBJyfRkkNCoSF3keVEQUWXkRBhzyQx96U0Yle0wpMiRElA"
       }
     ]
   },
