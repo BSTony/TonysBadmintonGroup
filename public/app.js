@@ -5237,12 +5237,12 @@ function renderItemsGrid() {
           <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
             <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
               <button class="qty-btn btn-minus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#e2e8f0;color:#334155;cursor:pointer;font-weight:bold;">-</button>
-              <span class="qty-num" style="min-width:24px;text-align:center;font-size:18px;font-weight:bold;color:#1e293b;">${dQty}</span>
+              <span class="qty-num" style="min-width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid #cbd5e1;border-radius:4px;font-size:16px;font-weight:bold;color:#1e293b;background:white;">${dQty}</span>
               <button class="qty-btn btn-plus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#10b981;color:white;cursor:pointer;font-weight:bold;">+</button>
             </div>
             
             <div style="display:flex; gap:8px;">
-              <button class="btn-confirm-draft" style="background:#10b981;color:white;border:none;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 4px rgba(16,185,129,0.3); transition: transform 0.1s;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" style="width:24px;height:24px;"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg></button>
+              <button class="btn-confirm-draft" style="background:transparent;color:#10b981;border:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.1s;padding:0;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:32px;height:32px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button>
             </div>
           </div>
         </div>
