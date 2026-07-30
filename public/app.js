@@ -4969,12 +4969,7 @@ function initAdminEditToggles() {
       };
       
       btnToggle.onclick = toggleMode;
-      const btnAddItem = document.getElementById('btn-gb-add-item');
-      if (btnAddItem) {
-        btnAddItem.onclick = () => {
-          if (typeof openItemEditModal === 'function') openItemEditModal();
-        };
-      }
+      
 
       if (lblEdit) lblEdit.onclick = () => { if (!window.gbIsAdminEditMode) toggleMode(); };
       if (lblUser) lblUser.onclick = () => { if (window.gbIsAdminEditMode) toggleMode(); };
@@ -5878,6 +5873,7 @@ function renderAdminItemsList() {
 }
 
 function openItemEditModal(item = null) {
+  console.log('openItemEditModal called!');
   const modal = document.getElementById('gbItemEditModal');
   const title = document.getElementById('gb-item-edit-title');
   const idInput = document.getElementById('gb-edit-item-id');
@@ -6356,13 +6352,13 @@ function initGroupBuyEvents() {
   }
 
   // 管理員新增/編輯商品 Modal 事件
-  const btnOpenAddItem = document.getElementById('btn-gb-open-add-item');
+  const btnOpenAddItem = document.getElementById('btn-gb-add-item');
   const btnCloseItemEdit = document.getElementById('btn-close-item-edit');
   const btnSaveItem = document.getElementById('btn-gb-save-item');
   const btnDeleteItem = document.getElementById('btn-gb-delete-item');
   const itemEditModal = document.getElementById('gbItemEditModal');
 
-  if (btnOpenAddItem) btnOpenAddItem.onclick = () => openItemEditModal();
+  if (btnOpenAddItem) btnOpenAddItem.onclick = (e) => { e.preventDefault(); console.log('Global Add button clicked!'); openItemEditModal(); };
   if (btnCloseItemEdit) btnCloseItemEdit.onclick = () => itemEditModal.classList.add('hidden');
 
   if (btnSaveItem) {

@@ -1707,15 +1707,18 @@
         "userName": "超級管理員 (Local Test)",
         "userPhone": "0912345679",
         "userPictureUrl": "",
-        "items": {},
-        "totalAmount": 0,
+        "items": {
+          "zr_0000": 2,
+          "zr_0002": 4
+        },
+        "totalAmount": 1930,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1785375812251
+        "updatedAt": 1785377088605
       }
     },
     "hiddenFromLobby": false
