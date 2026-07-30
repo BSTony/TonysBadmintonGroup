@@ -5193,7 +5193,7 @@ function renderItemsGrid() {
     return;
   }
 
-  // 根據螢幕寬度自動決定兩欄、三欄或四欄 (最小寬度 280px)
+  // 根據螢幕寬度自動決定兩欄、三欄或四欄 (最小寬度 190px)
   
   const createItemCard = (item) => {
     const card = document.createElement('div');
@@ -5358,7 +5358,7 @@ function renderItemsGrid() {
 
   if (!isAllView) {
     gbItemsGrid.style.display = 'grid';
-    gbItemsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+    gbItemsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(190px, 1fr))';
     gbItemsGrid.style.gap = '8px';
     gbItemsGrid.style.alignItems = 'start';
     
@@ -5397,7 +5397,7 @@ function renderItemsGrid() {
       
       const gridDiv = document.createElement('div');
       gridDiv.style.display = 'grid';
-      gridDiv.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+      gridDiv.style.gridTemplateColumns = 'repeat(auto-fill, minmax(190px, 1fr))';
       gridDiv.style.gap = '8px';
       gridDiv.style.alignItems = 'start';
       
