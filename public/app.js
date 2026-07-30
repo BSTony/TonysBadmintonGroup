@@ -5303,7 +5303,27 @@ function renderItemsGrid() {
             e.stopPropagation();
             const newName = inputName.value.trim();
             const newPrice = parseFloat(inputPrice.value);
-            if (!newName || isNaN(newPrice)) { alert('品名與價格不能為空'); return; }
+            
+            if (!newName) {
+              if (!confirm('品名為空，確定要刪除此商品嗎？')) return;
+              try {
+                const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/item/delete`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ uid: currentUser?.userId || 'admin', itemId: item.id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                  if (typeof fetchGroupBuyData === 'function') fetchGroupBuyData(currentGid);
+                } else {
+                  alert('刪除失敗');
+                }
+              } catch(err) { console.error(err); }
+              return;
+            }
+
+            if (isNaN(newPrice)) { alert('價格不能為空'); return; }
+            
             try {
               const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/item/save`, {
                 method: 'POST',
@@ -5316,6 +5336,7 @@ function renderItemsGrid() {
               const data = await res.json();
               if (data.success) {
                 alert('修改成功！');
+                if (typeof fetchGroupBuyData === 'function') fetchGroupBuyData(currentGid);
               } else {
                 alert('修改失敗');
               }
