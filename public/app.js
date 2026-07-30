@@ -4965,30 +4965,8 @@ function initAdminEditToggles() {
       btnToggle.onclick = toggleMode;
       const btnAddItem = document.getElementById('btn-gb-add-item');
       if (btnAddItem) {
-        btnAddItem.onclick = async () => {
-          const newName = prompt('請輸入新商品名稱:');
-          if (!newName) return;
-          const newPriceStr = prompt('請輸入商品價格:');
-          if (!newPriceStr) return;
-          const newPrice = parseFloat(newPriceStr);
-          if (isNaN(newPrice)) { alert('價格必須為數字'); return; }
-          try {
-            const newItemId = 'item_' + Date.now();
-            const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/item/save`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                uid: currentUser?.userId || 'admin',
-                item: { id: newItemId, name: newName.trim(), price: newPrice }
-              })
-            });
-            const data = await res.json();
-            if (data.success) {
-              alert('新增成功！');
-            } else {
-              alert('新增失敗');
-            }
-          } catch(err) { console.error(err); }
+        btnAddItem.onclick = () => {
+          if (typeof openItemEditModal === 'function') openItemEditModal();
         };
       }
 

@@ -13,13 +13,28 @@
     },
     "items": [
       {
-        "id": "zr_0000",
-        "category": "堅果類",
-        "name": "松子",
-        "price": 585,
+        "id": "item_1785373235525",
+        "name": "松子1",
+        "price": 590,
+        "category": "自訂商品",
         "unit": "份",
         "description": "",
-        "contents": ""
+        "contents": "",
+        "imageUrl": "",
+        "linkUrl": "",
+        "linkText": "點我進入"
+      },
+      {
+        "id": "zr_0000",
+        "name": "松子",
+        "price": 585,
+        "category": "堅果類",
+        "unit": "份",
+        "description": "",
+        "contents": "",
+        "imageUrl": "",
+        "linkUrl": "",
+        "linkText": "點我進入"
       },
       {
         "id": "zr_0001",
