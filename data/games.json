@@ -1283,7 +1283,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785330333657,
+    "lastActiveTime": 1785404837460,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1313,11 +1313,18 @@
           "Mia",
           "Kevin",
           "張建發",
-          "柏宏"
+          "柏宏",
+          "黃政豪"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/30 17:47",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1"
+      },
       {
         "time": "07/29 21:05",
         "name": "柏宏",
