@@ -1081,7 +1081,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784816094808,
-    "lastActiveTime": 1785416745612,
+    "lastActiveTime": 1785416747475,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1108,7 +1108,8 @@
       "Winnie": true,
       "瑋頡1": true,
       "瑋頡2": true,
-      "張智安": true
+      "張智安": true,
+      "JiaYun": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
