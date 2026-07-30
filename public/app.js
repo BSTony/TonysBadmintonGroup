@@ -5914,7 +5914,7 @@ function openItemEditModal(item = null) {
     if (btnDelete) btnDelete.classList.add('hidden');
   }
 
-  if (modal) { modal.classList.remove('hidden'); modal.style.setProperty('display', 'flex', 'important'); modal.style.setProperty('opacity', '1', 'important'); modal.style.setProperty('z-index', '999999', 'important'); }
+  if (modal) { document.body.appendChild(modal); modal.classList.remove('hidden'); modal.style.setProperty('display', 'flex', 'important'); modal.style.setProperty('opacity', '1', 'important'); modal.style.setProperty('z-index', '999999', 'important'); }
 }
 
 // 綁定事件監聽
