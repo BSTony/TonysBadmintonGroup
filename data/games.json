@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785501673167,
+    "lastActiveTime": 1785509315778,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1061,11 +1061,18 @@
           "辛言",
           "柏林",
           "腳皮",
-          "L"
+          "L",
+          "Lee"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 22:48",
+        "name": "Lee",
+        "operator": "Lee",
+        "action": "+1"
+      },
       {
         "time": "07/31 20:41",
         "name": "L",
@@ -1251,7 +1258,8 @@
       "辛言": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "柏林": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-      "L": "Uc85aca08d5834bad3d829179ce81db1e"
+      "L": "Uc85aca08d5834bad3d829179ce81db1e",
+      "Lee": "U466bc2a892e61095f9d463f7429cbd57"
     }
   },
   "178504121595969": {
