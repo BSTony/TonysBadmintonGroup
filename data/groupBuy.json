@@ -1,6 +1,6 @@
 {
   "default": {
-    "active": true,
+    "active": false,
     "title": "🛒 展榮商號 堅果團購",
     "notice": "",
     "paymentSettings": {
@@ -1630,97 +1630,7 @@
         "contents": ""
       }
     ],
-    "orders": {
-      "0912345678": {
-        "userId": "0912345678",
-        "userName": "Test Player vn5f4",
-        "userPhone": "0912345678",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0000": 1
-        },
-        "totalAmount": 585,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1785309832719,
-        "lastConfirmedItems": {
-          "zr_0000": 1
-        }
-      },
-      "0912345679": {
-        "userId": "0912345679",
-        "userName": "Test Player vn5",
-        "userPhone": "0912345679",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0000": 1
-        },
-        "totalAmount": 585,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1785310113860
-      },
-      "test player q7pzr_0912345679": {
-        "userId": "0912345679",
-        "userName": "Test Player q7pzr",
-        "userPhone": "0912345679",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0000": 1
-        },
-        "totalAmount": 585,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1785310251929
-      },
-      "test player q7pzr_0912345678": {
-        "userId": "0912345678",
-        "userName": "Test Player q7pzr",
-        "userPhone": "0912345678",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0001": 1
-        },
-        "totalAmount": 325,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1785310258629
-      },
-      "超級管理員 (local test)_0912345679": {
-        "userId": "0912345679",
-        "userName": "超級管理員 (Local Test)",
-        "userPhone": "0912345679",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0000": 2,
-          "zr_0002": 4
-        },
-        "totalAmount": 1930,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1785377088605
-      }
-    },
+    "orders": {},
     "hiddenFromLobby": false
   }
 }
