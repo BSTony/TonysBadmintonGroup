@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785464177782,
+    "lastActiveTime": 1785474763793,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1028,7 +1028,6 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "Tony": true,
       "Kay": true,
       "陳呈": true
     },
@@ -1041,7 +1040,6 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "Tony",
           "Kay",
           "陳呈",
           "俊吉",
@@ -1057,6 +1055,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/31 13:12",
+        "name": "Tony",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/31 10:16",
         "name": "登",
