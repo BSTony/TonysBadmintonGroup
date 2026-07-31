@@ -8,9 +8,9 @@ const https = require('https');
 const GAMES_FILE = path.join(__dirname, 'games.json');
 const LOG_FILE = path.join(__dirname, 'schedule.log');
 
-// --- 名單快照 CSV（最精簡，使用 GitHub 儲存） ---
-// 位置：data/registrations.csv（GitHub）
-// 欄位：gid,sectionIdx,name
+// --- ?�單快照 CSV（�?精簡，使??GitHub ?��?�?---
+// 位置：data/registrations.csv（GitHub�?
+// 欄�?：gid,sectionIdx,name
 let groupAdmins = {}; // { gid: Set<uid> }
 let superAdmins = new Set(); // Set<uid>
 let groupCodes = {}; // { '1234': 'Cxxxx' }
@@ -37,16 +37,16 @@ let groupBuyData = {}; // { [gid]: { active: false, title: "", notice: "", payme
 
 function getZhanRongDefaultItems() {
   return [
-    { id: 'zr_001', category: '古早味沖泡', name: '傳統油蔥麵茶', price: 150, unit: '袋', description: '鹿港傳承古早味，香濃順口，早餐與下午茶首選！', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_002', category: '古早味沖泡', name: '無糖杏仁麵茶', price: 180, unit: '袋', description: '無添加蔗糖，濃香杏仁搭配傳統麵茶，健康無負擔。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_003', category: '古早味沖泡', name: '養生黑芝麻粉', price: 220, unit: '罐', description: '低溫烘焙現磨，高鈣高纖，補給每日營養所需。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_004', category: '傳統點心', name: '招牌手工爆米香 (黑糖口味)', price: 120, unit: '包', description: '傳統壓力爆香，淋上天然黑糖，酥脆不黏牙。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_005', category: '傳統點心', name: '養生紫米爆米香', price: 135, unit: '包', description: '嚴選台灣在地黑糙米（紫米），卡滋卡滋滿滿花青素。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_006', category: '傳統點心', name: '古早味小麥花生酥', price: 150, unit: '包', description: '濃郁花生香氣搭配爆小麥，辦公室最愛零嘴。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_007', category: '低溫堅果', name: '原味綜合堅果 (低溫烘焙)', price: 350, unit: '罐', description: '含腰果、核桃、杏仁果、夏威夷豆，無鹽無油低溫烘焙。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_008', category: '低溫堅果', name: '頂級原味腰果 (特大粒)', price: 320, unit: '罐', description: '嚴選特大顆腰果，自然甜味，飽滿酥脆。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_009', category: '冷壓油品/抹醬', name: '純天然冷壓黑麻油', price: 480, unit: '瓶', description: '100% 嚴選黑芝麻低溫冷壓，溫補料理絕佳首選。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' },
-    { id: 'zr_010', category: '冷壓油品/抹醬', name: '無糖純黑芝麻醬 (現磨)', price: 250, unit: '罐', description: '完全無添加糖與油，現磨濃郁滑順，塗麵包沖泡皆宜。', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點我進入展榮官網' }
+    { id: 'zr_001', category: '?�早?��?�?, name: '?�統油蔥麵茶', price: 150, unit: '�?, description: '鹿港?�承?�早?��?香�??�口，早餐�?下�??��??��?', imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_002', category: '?�早?��?�?, name: '?��??��?麵茶', price: 180, unit: '�?, description: '?�添?��?糖�?濃�??��??��??�統麵茶，健康無負�???, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_003', category: '?�早?��?�?, name: '養�?黑�?麻�?', price: 220, unit: '�?, description: '低溫?��??�磨，�????纖�?補給每日?��??�?�??, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_004', category: '?�統點�?', name: '?��??�工?�米�?(黑�???��)', price: 120, unit: '??, description: '?�統壓�??��?，�?上天?��?糖�??��?不�??��?, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_005', category: '?�統點�?', name: '養�?紫米?�米�?, price: 135, unit: '??, description: '?�選?�灣?�地黑�?米�?紫米）�??��??��?滿滿?��?素�?, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_006', category: '?�統點�?', name: '?�早?��?麥花?�酥', price: 150, unit: '??, description: '濃�??��?香氣?��??��?麥�?辦公室�??�零?��?, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_007', category: '低溫?��?', name: '?�味綜�??��? (低溫?��?)', price: 350, unit: '�?, description: '?�腰?�、核桃、�?仁�??��?威夷豆�??�鹽?�油低溫?��???, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_008', category: '低溫?��?', name: '?��??�味?��? (?�大�?', price: 320, unit: '�?, description: '?�選?�大顆腰?��??�然?�味，飽滿酥?��?, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_009', category: '?��?油�?/?�醬', name: '純天?�冷壓�?麻油', price: 480, unit: '??, description: '100% ?�選黑�?麻�?溫冷壓�?溫�??��?絕佳首選??, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' },
+    { id: 'zr_010', category: '?��?油�?/?�醬', name: '?��?純�??�麻??(?�磨)', price: 250, unit: '�?, description: '完全?�添?��??�油，現磨�??��??��?塗麵?��?泡�?宜�?, imageUrl: 'https://cdn.store-assets.com/s/1255165/f/10553346.jpg', linkUrl: 'https://zrsh1986.com', linkText: '點�??�入展榮官網' }
   ];
 }
 
@@ -54,26 +54,26 @@ function loadGroupBuyStorage() {
   if (fs.existsSync(DEFAULT_MENU_FILE)) {
     try {
       defaultMenuItems = JSON.parse(fs.readFileSync(DEFAULT_MENU_FILE, 'utf8'));
-    } catch(e) { console.error('載入 defaultMenu.json 失敗:', e.message); }
+    } catch(e) { console.error('載入 defaultMenu.json 失�?:', e.message); }
   }
   if (fs.existsSync(GROUP_BUY_FILE)) {
     try {
       groupBuyData = JSON.parse(fs.readFileSync(GROUP_BUY_FILE, 'utf8'));
-    } catch(e) { console.error('載入 groupBuy.json 失敗:', e.message); }
+    } catch(e) { console.error('載入 groupBuy.json 失�?:', e.message); }
   }
   if (!groupBuyData['default'] || !Array.isArray(groupBuyData['default'].items) || groupBuyData['default'].items.length === 0) {
     groupBuyData['default'] = {
       active: false,
       hiddenFromLobby: true,
-      title: '🛒 展榮商號 鹿港傳承團購專區 (1986)',
+      title: '?? 展榮?��? 鹿港?�承?�購專�? (1986)',
       notice: '',
       paymentSettings: {
         linePayLink: 'https://zrsh1986.com',
         linePayQrUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg',
         bankCode: '822',
-        bankName: '中國信託',
+        bankName: '中�?信�?',
         bankAccount: '1234-5678-9012',
-        bankAccountName: '展榮商號'
+        bankAccountName: '展榮?��?'
       },
       items: getZhanRongDefaultItems(),
       orders: {}
@@ -105,7 +105,7 @@ function saveGroupBuyStorage() {
           console.error('Failed to sync groupBuy to GitHub:', ghErr.message);
         }
       }
-    } catch(e) { console.error('儲存 groupBuy.json 失敗:', e.message); }
+    } catch(e) { console.error('?��? groupBuy.json 失�?:', e.message); }
   }).catch(e => console.error(e));
   return groupBuySaveChain;
 }
@@ -117,15 +117,15 @@ function getGroupBuyInfo(gid) {
     groupBuyData[gid] = {
       active: false,
       hiddenFromLobby: true,
-      title: defaultData.title || '🛒 展榮商號 鹿港傳承團購專區 (1986)',
+      title: defaultData.title || '?? 展榮?��? 鹿港?�承?�購專�? (1986)',
       notice: defaultData.notice || '',
       paymentSettings: defaultData.paymentSettings || {
         linePayLink: 'https://zrsh1986.com',
         linePayQrUrl: 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg',
         bankCode: '822',
-        bankName: '中國信託',
+        bankName: '中�?信�?',
         bankAccount: '1234-5678-9012',
-        bankAccountName: '展榮商號'
+        bankAccountName: '展榮?��?'
       },
       items: (Array.isArray(defaultData.items) && defaultData.items.length > 0)
         ? JSON.parse(JSON.stringify(defaultData.items))
@@ -138,19 +138,19 @@ function getGroupBuyInfo(gid) {
 }
 
 let lobbyVisits = {}; // { gid: { viewCount: 0, uniqueViewers: {}, logs: [] } }
-let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
+let easterEggSettings = { enabled: false, message: '?�示此畫?�給Tony?�以?��?一條握?��?', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
 
-// 讀取既有設定
+// 讀?�既?�設�?
 let adminsSha = null;
 let superAdminsSha = null;
 let codesSha = null;
 let settingsSha = null;
 let templatesSha = null;
-let gamesSha = null; // GitHub games.json 的 SHA
-let visitsSha = null; // GitHub lobbyVisits.json 的 SHA
-let easterEggSha = null; // GitHub easterEggSettings.json 的 SHA
-let groupBuySha = null; // GitHub groupBuy.json 的 SHA
-let gamesSaveChain = Promise.resolve(); // 防併發串行保存
+let gamesSha = null; // GitHub games.json ??SHA
+let visitsSha = null; // GitHub lobbyVisits.json ??SHA
+let easterEggSha = null; // GitHub easterEggSettings.json ??SHA
+let groupBuySha = null; // GitHub groupBuy.json ??SHA
+let gamesSaveChain = Promise.resolve(); // ?�併?�串行�?�?
 let lobbyVisitClickCount = 0;
 
 async function loadData() {
@@ -204,7 +204,7 @@ async function loadData() {
   // Then try to load from GitHub if configured
   if (USE_GITHUB) {
     try {
-      console.log('從 GitHub 讀取 groupAdmins.json...');
+      console.log('�?GitHub 讀??groupAdmins.json...');
       const adminRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupAdmins.json?ref=${GITHUB_BRANCH}`);
       if (adminRes.content) {
         adminsSha = adminRes.sha;
@@ -214,53 +214,53 @@ async function loadData() {
           groupAdmins[g] = new Set(admins);
         }
       }
-    } catch(e) { console.error('無法從 GitHub 讀取 groupAdmins.json:', e.message); }
+    } catch(e) { console.error('?��?�?GitHub 讀??groupAdmins.json:', e.message); }
 
     try {
-      console.log('從 GitHub 讀取 superAdmins.json...');
+      console.log('�?GitHub 讀??superAdmins.json...');
       const saRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/superAdmins.json?ref=${GITHUB_BRANCH}`);
       if (saRes.content) {
         superAdminsSha = saRes.sha;
         const data = JSON.parse(Buffer.from(saRes.content, 'base64').toString('utf8'));
         superAdmins = new Set(data);
       }
-    } catch(e) { console.error('無法從 GitHub 讀取 superAdmins.json:', e.message); }
+    } catch(e) { console.error('?��?�?GitHub 讀??superAdmins.json:', e.message); }
 
     try {
-      console.log('從 GitHub 讀取 groupCodes.json...');
+      console.log('�?GitHub 讀??groupCodes.json...');
       const codesRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupCodes.json?ref=${GITHUB_BRANCH}`);
       if (codesRes.content) {
         codesSha = codesRes.sha;
         groupCodes = JSON.parse(Buffer.from(codesRes.content, 'base64').toString('utf8'));
       }
-    } catch(e) { console.error('無法從 GitHub 讀取 groupCodes.json:', e.message); }
+    } catch(e) { console.error('?��?�?GitHub 讀??groupCodes.json:', e.message); }
 
     try {
-      console.log('從 GitHub 讀取 groupSettings.json...');
+      console.log('�?GitHub 讀??groupSettings.json...');
       const settingsRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupSettings.json?ref=${GITHUB_BRANCH}`);
       if (settingsRes.content) {
         settingsSha = settingsRes.sha;
         groupSettings = JSON.parse(Buffer.from(settingsRes.content, 'base64').toString('utf8'));
       }
-    } catch(e) { console.error('無法從 GitHub 讀取 groupSettings.json:', e.message); }
+    } catch(e) { console.error('?��?�?GitHub 讀??groupSettings.json:', e.message); }
 
     try {
-      console.log('從 GitHub 讀取 rosterTemplates.json...');
+      console.log('�?GitHub 讀??rosterTemplates.json...');
       const templatesRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/rosterTemplates.json?ref=${GITHUB_BRANCH}`);
       if (templatesRes.content) {
         templatesSha = templatesRes.sha;
         rosterTemplates = JSON.parse(Buffer.from(templatesRes.content, 'base64').toString('utf8'));
       }
-    } catch(e) { console.error('無法從 GitHub 讀取 rosterTemplates.json:', e.message); }
+    } catch(e) { console.error('?��?�?GitHub 讀??rosterTemplates.json:', e.message); }
 
     try {
-      console.log('從 GitHub 讀取 games.json...');
+      console.log('�?GitHub 讀??games.json...');
       const gamesRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/games.json?ref=${GITHUB_BRANCH}`);
       if (gamesRes.content) {
         gamesSha = gamesRes.sha;
         const rawStr = Buffer.from(gamesRes.content, 'base64').toString('utf8');
         const parsedGames = JSON.parse(rawStr);
-        // 直接合併進全域 games 物件，loadGames() 後續會做結構正規化
+        // ?�接?�併?�全??games ?�件，loadGames() 後�??��?結�?�????
         for (const [k, v] of Object.entries(parsedGames)) {
           if (typeof v === 'string') {
             try { games[k] = JSON.parse(v); } catch(e) { games[k] = v; }
@@ -268,21 +268,21 @@ async function loadData() {
             games[k] = v;
           }
         }
-        console.log(`已從 GitHub 載入 ${Object.keys(parsedGames).length} 筆場次資料`);
+        console.log(`已�? GitHub 載入 ${Object.keys(parsedGames).length} 筆場次�??�`);
       }
-    } catch(e) { console.error('無法從 GitHub 讀取 games.json:', e.message); }
+    } catch(e) { console.error('?��?�?GitHub 讀??games.json:', e.message); }
 
     try {
-      console.log('從 GitHub 讀取 lobbyVisits.json...');
+      console.log('�?GitHub 讀??lobbyVisits.json...');
       const visitsRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/lobbyVisits.json?ref=${GITHUB_BRANCH}`);
       if (visitsRes.content) {
         visitsSha = visitsRes.sha;
         lobbyVisits = JSON.parse(Buffer.from(visitsRes.content, 'base64').toString('utf8'));
       }
-    } catch(e) { console.error('無法從 GitHub 讀取 lobbyVisits.json:', e.message); }
+    } catch(e) { console.error('?��?�?GitHub 讀??lobbyVisits.json:', e.message); }
 
     try {
-      console.log('從 GitHub 讀取 easterEggSettings.json...');
+      console.log('�?GitHub 讀??easterEggSettings.json...');
       const eeRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/easterEggSettings.json?ref=${GITHUB_BRANCH}`);
       if (eeRes.content) {
         easterEggSha = eeRes.sha;
@@ -290,7 +290,7 @@ async function loadData() {
         if (!easterEggSettings.activeGame) easterEggSettings.activeGame = 'piggy_run';
         if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
       }
-    } catch(e) { console.error('無法從 GitHub 讀取 easterEggSettings.json:', e.message); }
+    } catch(e) { console.error('?��?�?GitHub 讀??easterEggSettings.json:', e.message); }
   }
 }
 
@@ -313,7 +313,7 @@ async function saveAdmins() {
       if (adminsSha) payload.sha = adminsSha;
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupAdmins.json`, payload);
       if (res.content && res.content.sha) adminsSha = res.content.sha;
-    } catch(e) { console.error('備份 groupAdmins 至 GitHub 失敗:', e.message); }
+    } catch(e) { console.error('?�份 groupAdmins ??GitHub 失�?:', e.message); }
   }
 }
 
@@ -333,7 +333,7 @@ async function saveSuperAdmins() {
       if (superAdminsSha) payload.sha = superAdminsSha;
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/superAdmins.json`, payload);
       if (res.content && res.content.sha) superAdminsSha = res.content.sha;
-    } catch(e) { console.error('備份 superAdmins 至 GitHub 失敗:', e.message); }
+    } catch(e) { console.error('?�份 superAdmins ??GitHub 失�?:', e.message); }
   }
 }
 
@@ -352,7 +352,7 @@ async function saveGroupCodes() {
       if (codesSha) payload.sha = codesSha;
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupCodes.json`, payload);
       if (res.content && res.content.sha) codesSha = res.content.sha;
-    } catch(e) { console.error('備份 groupCodes 至 GitHub 失敗:', e.message); }
+    } catch(e) { console.error('?�份 groupCodes ??GitHub 失�?:', e.message); }
   }
 }
 
@@ -371,7 +371,7 @@ async function saveGroupSettings() {
       if (settingsSha) payload.sha = settingsSha;
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupSettings.json`, payload);
       if (res.content && res.content.sha) settingsSha = res.content.sha;
-    } catch(e) { console.error('備份 groupSettings 至 GitHub 失敗:', e.message); }
+    } catch(e) { console.error('?�份 groupSettings ??GitHub 失�?:', e.message); }
   }
 }
 
@@ -390,7 +390,7 @@ async function saveRosterTemplates() {
       if (templatesSha) payload.sha = templatesSha;
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/rosterTemplates.json`, payload);
       if (res.content && res.content.sha) templatesSha = res.content.sha;
-    } catch(e) { console.error('備份 rosterTemplates 至 GitHub 失敗:', e.message); }
+    } catch(e) { console.error('?�份 rosterTemplates ??GitHub 失�?:', e.message); }
   }
 }
 
@@ -408,7 +408,7 @@ async function saveLobbyVisits() {
       if (visitsSha) payload.sha = visitsSha;
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/lobbyVisits.json`, payload);
       if (res.content && res.content.sha) visitsSha = res.content.sha;
-    } catch(e) { console.error('備份 lobbyVisits 至 GitHub 失敗:', e.message); }
+    } catch(e) { console.error('?�份 lobbyVisits ??GitHub 失�?:', e.message); }
   }
 }
 
@@ -426,11 +426,11 @@ async function saveEasterEggSettings() {
       if (easterEggSha) payload.sha = easterEggSha;
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/easterEggSettings.json`, payload);
       if (res.content && res.content.sha) easterEggSha = res.content.sha;
-    } catch(e) { console.error('備份 easterEggSettings 至 GitHub 失敗:', e.message); }
+    } catch(e) { console.error('?�份 easterEggSettings ??GitHub 失�?:', e.message); }
   }
 }
 
-// GitHub 設定（從環境變數讀取）
+// GitHub 設�?（�??��?變數讀?��?
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_OWNER = process.env.GITHUB_OWNER || process.env.GITHUB_REPOSITORY?.split('/')[0];
 const GITHUB_REPO = process.env.GITHUB_REPO || process.env.GITHUB_REPOSITORY?.split('/')[1];
@@ -439,27 +439,27 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const USE_GITHUB = !!(GITHUB_TOKEN && GITHUB_OWNER && GITHUB_REPO);
 
 if (USE_GITHUB) {
-  console.log(`✅ 使用 GitHub 儲存 CSV: ${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_CSV_PATH}`);
-  console.log(`   分支: ${GITHUB_BRANCH}`);
-  console.log(`   Token: ${GITHUB_TOKEN ? GITHUB_TOKEN.substring(0, 8) + '...' : '未設定'}`);
+  console.log(`??使用 GitHub ?��? CSV: ${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_CSV_PATH}`);
+  console.log(`   ?�支: ${GITHUB_BRANCH}`);
+  console.log(`   Token: ${GITHUB_TOKEN ? GITHUB_TOKEN.substring(0, 8) + '...' : '?�設�?}`);
 } else {
-  console.log('⚠️  未設定 GitHub 環境變數，將使用本地檔案儲存');
-  console.log('   需要設定: GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO');
-  console.log('   目前狀態:');
-  console.log(`     GITHUB_TOKEN: ${GITHUB_TOKEN ? '已設定' : '❌ 未設定'}`);
-  console.log(`     GITHUB_OWNER: ${GITHUB_OWNER || '❌ 未設定'}`);
-  console.log(`     GITHUB_REPO: ${GITHUB_REPO || '❌ 未設定'}`);
+  console.log('?��?  ?�設�?GitHub ?��?變數，�?使用?�地檔�??��?');
+  console.log('   ?�要設�? GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO');
+  console.log('   ?��??�??');
+  console.log(`     GITHUB_TOKEN: ${GITHUB_TOKEN ? '已設�? : '???�設�?}`);
+  console.log(`     GITHUB_OWNER: ${GITHUB_OWNER || '???�設�?}`);
+  console.log(`     GITHUB_REPO: ${GITHUB_REPO || '???�設�?}`);
 }
 
-let regCsvWriteChain = Promise.resolve(); // 併發保護：所有寫入串成單一 Promise 佇列
+let regCsvWriteChain = Promise.resolve(); // 併發保護：�??�寫?�串?�單一 Promise 佇�?
 let regCsvLastBackupYMD = null;
-let regCsvContent = ''; // 快取 CSV 內容（用於 GitHub 模式）
-let regCsvSha = null; // GitHub 檔案的 SHA（用於更新）
+let regCsvContent = ''; // 快�? CSV ?�容（用??GitHub 模�?�?
+let regCsvSha = null; // GitHub 檔�???SHA（用?�更?��?
 
 function csvEscape(v) {
   if (v === null || v === undefined) return '';
   const s = String(v);
-  // 有逗號、引號、換行就必須用雙引號包起來，並把引號變成兩個引號
+  // ?�逗�??��??�、�?行就必�??��?引�??�起來�?並�?引�?變�??�個�???
   if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
@@ -471,12 +471,12 @@ function ymd(date) {
   return `${y}-${m}-${d}`;
 }
 
-// GitHub API 輔助函數
+// GitHub API 輔助?�數
 async function githubApiRequest(method, endpoint, data = null) {
   const url = `https://api.github.com${endpoint}`;
   
   const headers = {
-    'Authorization': `Bearer ${GITHUB_TOKEN}`, // 使用 Bearer 格式
+    'Authorization': `Bearer ${GITHUB_TOKEN}`, // 使用 Bearer ?��?
     'Accept': 'application/vnd.github.v3+json',
     'User-Agent': 'line-bot-csv-storage',
     'X-GitHub-Api-Version': '2022-11-28'
@@ -496,7 +496,7 @@ async function githubApiRequest(method, endpoint, data = null) {
       path: urlObj.pathname + urlObj.search,
       method: method,
       headers: headers,
-      timeout: 10000 // 10秒超時
+      timeout: 10000 // 10秒�???
     }, (res) => {
       let responseBody = '';
       res.on('data', (chunk) => { responseBody += chunk; });
@@ -508,18 +508,18 @@ async function githubApiRequest(method, endpoint, data = null) {
           } else {
             const errorJson = responseBody ? JSON.parse(responseBody) : {};
             const errorMsg = errorJson.message || responseBody || `HTTP ${res.statusCode}`;
-            console.error(`❌ GitHub API 錯誤 [${res.statusCode}]:`, errorMsg);
+            console.error(`??GitHub API ?�誤 [${res.statusCode}]:`, errorMsg);
             reject(new Error(`GitHub API Error: ${res.statusCode} - ${errorMsg}`));
           }
         } catch (e) {
-          console.error('❌ 解析 GitHub API 回應失敗:', e.message, 'Response:', responseBody.substring(0, 200));
+          console.error('??�?? GitHub API ?��?失�?:', e.message, 'Response:', responseBody.substring(0, 200));
           reject(new Error(`Failed to parse response: ${e.message}`));
         }
       });
     });
     
     req.on('error', (err) => {
-      console.error('❌ GitHub API 請求失敗:', err.message);
+      console.error('??GitHub API 請�?失�?:', err.message);
       reject(err);
     });
     
@@ -535,61 +535,61 @@ async function githubApiRequest(method, endpoint, data = null) {
   });
 }
 
-// 從 GitHub 讀取 CSV
+// �?GitHub 讀??CSV
 async function loadCsvFromGitHub() {
   if (!USE_GITHUB) {
-    console.log('⚠️  GitHub 模式未啟用，跳過讀取');
+    console.log('?��?  GitHub 模�??��??��?跳�?讀??);
     return null;
   }
   
   try {
     const endpoint = `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${encodeURIComponent(GITHUB_CSV_PATH)}?ref=${GITHUB_BRANCH}`;
-    console.log(`📥 從 GitHub 讀取 CSV: ${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_CSV_PATH}`);
+    console.log(`?�� �?GitHub 讀??CSV: ${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_CSV_PATH}`);
     const response = await githubApiRequest('GET', endpoint);
     
     if (response.content) {
-      // GitHub API 返回 base64 編碼的內容
+      // GitHub API 返�? base64 編碼?�內�?
       const content = Buffer.from(response.content, 'base64').toString('utf8');
       regCsvSha = response.sha;
       regCsvContent = content;
-      const recordCount = content.split('\n').length - 1; // 減去標題行
-      console.log(`✅ 從 GitHub 載入 CSV: ${recordCount} 筆記錄`);
+      const recordCount = content.split('\n').length - 1; // 減去標�?�?
+      console.log(`??�?GitHub 載入 CSV: ${recordCount} 筆�??�`);
       logToFile(`[SUCCESS] Loaded CSV from GitHub: ${recordCount} records`);
       return content;
     } else {
-      throw new Error('GitHub API 回應中沒有 content 欄位');
+      throw new Error('GitHub API ?��?中�???content 欄�?');
     }
   } catch (e) {
     if (e.message.includes('404') || e.message.includes('Not Found')) {
-      console.log('ℹ️  GitHub 上尚未有 CSV 檔案，將建立新檔案');
+      console.log('?��?  GitHub 上�??��? CSV 檔�?，�?建�??��?�?);
       regCsvContent = 'gid,sectionIdx,name\n';
-      regCsvSha = null; // 新檔案沒有 SHA
+      regCsvSha = null; // ?��?案�???SHA
       return null;
     }
-    console.error('❌ 從 GitHub 讀取 CSV 失敗:', e.message);
-    console.error('   端點:', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_CSV_PATH}`);
+    console.error('??�?GitHub 讀??CSV 失�?:', e.message);
+    console.error('   端�?:', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_CSV_PATH}`);
     logToFile(`[ERROR] Failed to load CSV from GitHub: ${e.message}`);
     
-    // 如果讀取失敗，嘗試從本地檔案載入（如果有）
+    // 如�?讀?�失?��??�試從本?��?案�??��?如�??��?
     try {
       if (fs.existsSync(REG_CSV_FILE)) {
         const localContent = await fs.promises.readFile(REG_CSV_FILE, 'utf8');
         regCsvContent = localContent;
-        console.log('⚠️  已從本地檔案載入 CSV（GitHub 讀取失敗）');
+        console.log('?��?  已�??�地檔�?載入 CSV（GitHub 讀?�失?��?');
         return localContent;
       }
     } catch (localError) {
-      console.error('❌ 本地檔案載入也失敗:', localError.message);
+      console.error('???�地檔�?載入也失??', localError.message);
     }
     
     return null;
   }
 }
 
-// 寫入 CSV 到 GitHub
+// 寫入 CSV ??GitHub
 async function writeCsvToGitHub(content, message = 'Update registrations.csv', allowRetry = true) {
   if (!USE_GITHUB) {
-    console.log('⚠️  GitHub 模式未啟用，跳過寫入');
+    console.log('?��?  GitHub 模�??��??��?跳�?寫入');
     return false;
   }
   
@@ -604,10 +604,10 @@ async function writeCsvToGitHub(content, message = 'Update registrations.csv', a
     };
     
     if (regCsvSha) {
-      data.sha = regCsvSha; // 更新現有檔案需要 SHA
-      console.log(`📝 更新 GitHub CSV (SHA: ${regCsvSha.substring(0, 8)}...)`);
+      data.sha = regCsvSha; // ?�新?��?檔�??��?SHA
+      console.log(`?? ?�新 GitHub CSV (SHA: ${regCsvSha.substring(0, 8)}...)`);
     } else {
-      console.log(`📝 建立新 GitHub CSV 檔案`);
+      console.log(`?? 建�???GitHub CSV 檔�?`);
     }
     
     const response = await githubApiRequest('PUT', endpoint, data);
@@ -615,38 +615,38 @@ async function writeCsvToGitHub(content, message = 'Update registrations.csv', a
     if (response.content && response.content.sha) {
       regCsvSha = response.content.sha;
       regCsvContent = content;
-      console.log(`✅ CSV 已寫入 GitHub (${content.split('\n').length - 1} 筆記錄)`);
+      console.log(`??CSV 已寫??GitHub (${content.split('\n').length - 1} 筆�???`);
       logToFile(`[SUCCESS] CSV written to GitHub: ${content.split('\n').length - 1} records`);
       return true;
     } else {
-      throw new Error('GitHub API 回應格式錯誤：缺少 content.sha');
+      throw new Error('GitHub API ?��??��??�誤：缺�?content.sha');
     }
   } catch (e) {
-    // 若遇到 SHA 衝突（409），先重新載入最新檔案再重試一次
+    // ?��???SHA 衝�?�?09）�??��??��??��??��?案�??�試一�?
     const isShaConflict = String(e.message).includes('409') || String(e.message).includes('does not match');
     if (isShaConflict && allowRetry) {
-      console.warn('⚠️  偵測到 GitHub SHA 衝突，重新載入後重試一次');
+      console.warn('?��?  ?�測??GitHub SHA 衝�?，�??��??��??�試一�?);
       try {
         await loadCsvFromGitHub();
       } catch (reloadErr) {
-        console.error('❌ 重新載入 GitHub CSV 失敗:', reloadErr.message);
+        console.error('???�新載入 GitHub CSV 失�?:', reloadErr.message);
       }
       return await writeCsvToGitHub(content, message, false);
     }
 
-    console.error('❌ 寫入 CSV 到 GitHub 失敗:', e.message);
-    console.error('   端點:', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_CSV_PATH}`);
-    console.error('   分支:', GITHUB_BRANCH);
+    console.error('??寫入 CSV ??GitHub 失�?:', e.message);
+    console.error('   端�?:', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_CSV_PATH}`);
+    console.error('   ?�支:', GITHUB_BRANCH);
     logToFile(`[ERROR] Failed to write CSV to GitHub: ${e.message}`);
     
-    // 如果寫入失敗，降級到本地檔案模式（至少保留資料）
+    // 如�?寫入失�?，�?級到?�地檔�?模�?（至少�??��??��?
     try {
       await fs.promises.mkdir(DATA_DIR, { recursive: true });
       await fs.promises.writeFile(REG_CSV_FILE, content, 'utf8');
-      console.log('⚠️  已降級到本地檔案模式儲存');
+      console.log('?��?  已�?級到?�地檔�?模�??��?');
       logToFile(`[WARN] Fallback to local file storage`);
     } catch (fallbackError) {
-      console.error('❌ 本地檔案備份也失敗:', fallbackError.message);
+      console.error('???�地檔�??�份也失??', fallbackError.message);
     }
     
     return false;
@@ -655,7 +655,7 @@ async function writeCsvToGitHub(content, message = 'Update registrations.csv', a
 
 async function ensureRegCsvReady() {
   if (USE_GITHUB) {
-    // GitHub 模式：確保已載入內容
+    // GitHub 模�?：確保已載入?�容
     if (!regCsvContent) {
       await loadCsvFromGitHub();
       if (!regCsvContent) {
@@ -663,7 +663,7 @@ async function ensureRegCsvReady() {
       }
     }
   } else {
-    // 本地檔案模式
+    // ?�地檔�?模�?
     await fs.promises.mkdir(DATA_DIR, { recursive: true });
     const exists = fs.existsSync(REG_CSV_FILE);
     if (!exists) {
@@ -679,11 +679,11 @@ async function maybeBackupRegCsv(now = new Date()) {
   regCsvLastBackupYMD = today;
 
   try {
-    // 沒有檔案就不備份
+    // 沒�?檔�?就�??�份
     if (!fs.existsSync(REG_CSV_FILE)) return;
     await fs.promises.mkdir(REG_CSV_BACKUP_DIR, { recursive: true });
     const backupPath = path.join(REG_CSV_BACKUP_DIR, `registrations-${today}.csv`);
-    // 同一天只備份一次（若已存在就跳過）
+    // ?��?天只?�份一次�??�已存在就跳?��?
     if (fs.existsSync(backupPath)) return;
     await fs.promises.copyFile(REG_CSV_FILE, backupPath);
   } catch (e) {
@@ -692,16 +692,16 @@ async function maybeBackupRegCsv(now = new Date()) {
   }
 }
 
-// 保存當前接龍名單快照到 CSV（只記錄當前狀態，不記錄歷史操作）
+// 保�??��??��??�單快照??CSV（只記�??��??�?��?不�??�歷?��?作�?
 async function saveCurrentListSnapshot(gid, waitForWrite = false) {
   const rows = [];
   
-  // 建立 CSV 內容：只記錄當前名單中的每個人（所有場次）
+  // 建�? CSV ?�容：只記�??��??�單中�?每個人（�??�場次�?
   Object.values(games).forEach((g) => {
     if (!g || !g.sections) return;
     g.sections.forEach((section, sectionIdx) => {
       section.list.forEach((name) => {
-        // 只記錄實名，不記錄匿名占位符
+        // ?��??�實?��?不�??�匿?��?位符
         if (name !== '__ANON__') {
           rows.push([
             g.gid || '',
@@ -726,27 +726,27 @@ async function saveCurrentListSnapshot(gid, waitForWrite = false) {
         
         if (USE_GITHUB) {
           const label = gid ? (games[gid]?.title || gid) : 'all-groups';
-          console.log(`📝 保存接龍名單快照到 GitHub: ${label} (${rows.length} 人)`);
+          console.log(`?? 保�??��??�單快照??GitHub: ${label} (${rows.length} �?`);
           const success = await writeCsvToGitHub(csvContent, `Update current list snapshot: ${label}`);
           
           if (!success) {
-            throw new Error('GitHub 寫入失敗');
+            throw new Error('GitHub 寫入失�?');
           }
         } else {
-          // 本地檔案模式：覆蓋寫入（不是追加）
+          // ?�地檔�?模�?：�??�寫?��?不是追�?�?
           await fs.promises.writeFile(REG_CSV_FILE, csvContent, 'utf8');
           const label = gid ? (games[gid]?.title || gid) : 'all-groups';
-          console.log(`✅ 已保存接龍名單快照: ${label} (${rows.length} 人)`);
+          console.log(`??已�?存接龍�??�快?? ${label} (${rows.length} �?`);
         }
       } catch (e) {
-        console.error('❌ Failed to save list snapshot:', e);
+        console.error('??Failed to save list snapshot:', e);
         logToFile(`[ERROR] Failed to save list snapshot: ${e.message}`);
         throw e;
       }
     });
 
   regCsvWriteChain = writePromise.catch((e) => {
-    console.error('⚠️  CSV 寫入鏈中的錯誤（已記錄，繼續處理）:', e.message);
+    console.error('?��?  CSV 寫入?�中?�錯誤�?已�??��?繼�??��?�?', e.message);
   });
 
   if (waitForWrite) {
@@ -820,7 +820,7 @@ async function restoreGamesFromCsv() {
     const gid = (cols[idxGid] || '').trim();
     const name = (cols[idxName] || '').trim();
     const sectionIdx = parseInt((cols[idxSection] || '0').trim(), 10);
-    const rawTitle = idxTitle >= 0 ? (cols[idxTitle] || '').trim() : '羽球接龍';
+    const rawTitle = idxTitle >= 0 ? (cols[idxTitle] || '').trim() : '羽�??��?';
     const gameId = idxGameId >= 0 && cols[idxGameId] ? cols[idxGameId].trim() : `${gid}_${rawTitle}`;
 
     if (!gid || !name) continue;
@@ -876,7 +876,7 @@ async function restoreGamesFromCsv() {
       const meta = data.metaMap.get(idx) || {};
       const limit = meta.limit || Math.max(20, list.length);
       sections.push({
-        title: idx === 0 ? '報名名單' : `區段${idx + 1}`,
+        title: idx === 0 ? '?��??�單' : `?��?{idx + 1}`,
         limit: limit,
         backupLimit: meta.backupLimit ?? 5,
         label: '',
@@ -903,10 +903,10 @@ async function restoreGamesFromCsv() {
   return true;
 }
 
-// 強制以台灣時間運行（台北時區），避免顯示成 UTC
+// 強制以台????��?行�??��??��?）�??��?顯示??UTC
 if (!process.env.TZ) process.env.TZ = 'Asia/Taipei';
 
-// 過濾掉舊版 checkSchedules 相關日誌，避免每秒刷屏
+// ?�濾?��???checkSchedules ?��??��?，避?��?秒刷�?
 const _origConsoleLog = console.log;
 console.log = (...args) => {
   const shouldSkip = args.some(a => typeof a === 'string' && a.includes('[checkSchedules]'));
@@ -914,17 +914,17 @@ console.log = (...args) => {
   _origConsoleLog(...args);
 };
 
-// 簡易日誌函數 - 使用異步寫入避免阻塞
+// 簡�??��??�數 - 使用?�步寫入?��??��?
 let logQueue = [];
 let isWritingLog = false;
 let lastFileSizeCheck = 0;
-const FILE_SIZE_CHECK_INTERVAL = 60 * 1000; // 每60秒檢查一次文件大小
+const FILE_SIZE_CHECK_INTERVAL = 60 * 1000; // �?0秒檢?��?次�?件大�?
 
 async function logToFile(msg) {
-  // 只在重要訊息時記錄到文件，大幅減少I/O操作
-  // 只記錄錯誤、觸發事件和警告
+  // ?�在?��?訊息?��??�到?�件，大幅�?少I/O?��?
+  // ?��??�錯誤、觸?��?件�?警�?
   if (!msg.includes('[ERROR]') && !msg.includes('[TRIGGER]') && !msg.includes('[WARN]') && !msg.includes('[SUCCESS]')) {
-    return; // 只記錄重要事件
+    return; // ?��??��?要�?�?
   }
   
   const logEntry = `[${new Date().toISOString()}] ${msg}\n`;
@@ -934,11 +934,11 @@ async function logToFile(msg) {
     isWritingLog = true;
     setImmediate(async () => {
       while (logQueue.length > 0) {
-        const entries = logQueue.splice(0, 10); // 批量寫入，減少I/O
+        const entries = logQueue.splice(0, 10); // ?��?寫入，�?少I/O
         try {
           await fs.promises.appendFile(LOG_FILE, entries.join(''), 'utf8');
           
-          // 減少文件大小檢查頻率（每60秒檢查一次）
+          // 減�??�件大�?檢查?��?（�?60秒檢?��?次�?
           const now = Date.now();
           if (now - lastFileSizeCheck > FILE_SIZE_CHECK_INTERVAL) {
             lastFileSizeCheck = now;
@@ -960,17 +960,17 @@ let Pool;
 try {
   Pool = require('pg').Pool;
 } catch (e) {
-  console.warn('⚠️ 未安裝 pg 套件，將使用記憶體模式 (請執行 npm install pg)');
+  console.warn('?��? ?��?�?pg 套件，�?使用記憶體模�?(請執�?npm install pg)');
 }
 
-// 從環境變數讀取敏感資訊，避免洩露到 Git
+// 從環境�??��??��??��?訊�??��?洩露??Git
 const config = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || 'fake_token',
   channelSecret: process.env.LINE_CHANNEL_SECRET || 'fake_secret'
 };
 
 if (!process.env.LINE_CHANNEL_ACCESS_TOKEN || !process.env.LINE_CHANNEL_SECRET) {
-  console.warn('⚠️ 警告：未設定 LINE 環境變數，本機將以假 Token 啟動（LINE Bot 訊息功能將失效，但網頁可正常測試）');
+  console.warn('?��? 警�?：未設�? LINE ?��?變數，本機�?以�? Token ?��?（LINE Bot 訊息?�能將失?��?但網?�可�?��測試�?);
 }
 
 const client = new Client(config);
@@ -988,29 +988,29 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 app.use((req, res, next) => {
-  // Skip JSON parsing for /webhook — LINE SDK middleware needs the raw body
+  // Skip JSON parsing for /webhook ??LINE SDK middleware needs the raw body
   if (req.path === '/webhook') return next();
   express.json()(req, res, next);
 });
 
-// 全域存儲：支援多群組、多區段
+// ?��?存儲：支?��?群�??��??��?
 let games = {};
 let systemLogs = [];
 const nameToUidMap = new Map();
-// 從環境變數讀取管理員密碼，如果未設定則使用預設值（不建議）
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '鈞鈞是豬豬';
+// 從環境�??��??�管?�員密碼，�??�未設�??�使?��?設值�?不建議�?
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '?��??�豬�?;
 
-// 用戶名稱快取，減少 API 呼叫以節省額度
+// ?�戶?�稱快�?，�?�?API ?�叫以�??��?�?
 const userNameCache = new Map(); // key: "gid_uid", value: { name, timestamp }
-const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24小時快取過期時間
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24小�?快�??��??��?
 
-// UID 到名稱的映射（從名單中提取），用於快速匹配，減少 API 呼叫
+// UID ?��?稱�??��?（�??�單中�??��?，用?�快?�匹?��?減�? API ?�叫
 const uidToNameMap = new Map(); // key: "gid_uid", value: name
 
-// 追蹤首次使用指令的群組（用於顯示歡迎訊息，而非加入時推播）
-const firstUseGroups = new Set(); // 記錄已經顯示過歡迎訊息的群組
+// 追蹤首次使用?�令?�群組�??�於顯示歡�?訊息，而�??�入?�推?��?
+const firstUseGroups = new Set(); // 記�?已�?顯示?�歡迎�??��?群�?
 
-// === 權限輔助函式 ===
+// === 權�?輔助?��? ===
 let superAdminViewOverrides = {}; // uid -> 'user' | 'admin' | 'superadmin'
 
 function isTrueSuperAdmin(uid) {
@@ -1049,29 +1049,29 @@ function isGroupAdmin(uid, gid) {
   return !!(groupAdmins[gid] && groupAdmins[gid].has(uid));
 }
 
-// PostgreSQL 連線設定（已停用，改用 CSV 檔案儲存）
-// 如果不需要 PostgreSQL，可以移除或註解掉以下程式碼
-// 目前強制使用檔案模式，避免連線錯誤訊息
+// PostgreSQL ???設�?（已?�用，改??CSV 檔�??��?�?
+// 如�?不�?�?PostgreSQL，可以移?��?註解?�以下�?式碼
+// ?��?強制使用檔�?模�?，避?��???�誤訊息
 if (!process.env.DATABASE_URL) {
-  console.log('ℹ️  使用檔案模式儲存資料（games.json + registrations.csv）');
+  console.log('?��?  使用檔�?模�??��?資�?（games.json + registrations.csv�?);
 } else {
-  console.log('ℹ️  已停用 PostgreSQL，使用檔案模式儲存資料（games.json + registrations.csv）');
+  console.log('?��?  已�???PostgreSQL，使?��?案模式儲存�??��?games.json + registrations.csv�?);
 }
 
 let pool = null;
-// 停用 PostgreSQL 連線，強制使用檔案模式
+// ?�用 PostgreSQL ???，強?�使?��?案模�?
 /*
 if (Pool && process.env.DATABASE_URL) {
-  console.log('嘗試連線至資料庫:', process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':****@'));
+  console.log('?�試????��??�庫:', process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':****@'));
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
-    max: 2, // 免費版限制連接數
-    idleTimeoutMillis: 30000, // 30秒後關閉空閒連接
-    connectionTimeoutMillis: 5000 // 5秒連接超時
+    max: 2, // ?�費?��??��?��??
+    idleTimeoutMillis: 30000, // 30秒�??��?空�???��
+    connectionTimeoutMillis: 5000 // 5秒�?��超�?
   });
   
-  // 處理連接錯誤，避免崩潰
+  // ?��???��?�誤，避?�崩�?
   pool.on('error', (err) => {
     console.error('Unexpected database pool error:', err);
   });
@@ -1079,10 +1079,10 @@ if (Pool && process.env.DATABASE_URL) {
 */
 
 async function initializeApp() {
-  console.log('🔄 啟動中：正在自 GitHub 載入系統設定與備份資料...');
+  console.log('?? ?��?中�?�?��??GitHub 載入系統設�??��?份�???..');
   await loadData();
   
-  console.log('🔄 啟動中：正在載入本地/本地緩存場次...');
+  console.log('?? ?��?中�?�?��載入?�地/?�地緩�??�次...');
   if (pool) {
     try {
       await pool.query(`
@@ -1093,7 +1093,7 @@ async function initializeApp() {
       `);
       await loadGames();
     } catch(err) {
-      console.log('ℹ️  資料庫連線失敗，已切換到檔案模式');
+      console.log('?��?  資�?庫�??失�?，已?��??��?案模�?);
       pool = null;
       await loadGames();
     }
@@ -1105,7 +1105,7 @@ async function initializeApp() {
     try {
       await loadCsvFromGitHub();
     } catch (err) {
-      console.error('⚠️  載入 GitHub CSV 失敗（將繼續使用本地模式）:', err.message);
+      console.error('?��?  載入 GitHub CSV 失�?（�?繼�?使用?�地模�?�?', err.message);
     }
   }
 }
@@ -1140,21 +1140,21 @@ async function loadGames() {
       res.rows.forEach(row => {
         games[row.gid] = deeplyParseJson(row.data);
       });
-      console.log(`已從資料庫載入 ${res.rowCount} 筆接龍資料`);
+      console.log(`已�?資�?庫�???${res.rowCount} 筆接龍�??�`);
     } else {
-      // 如果已從 GitHub 載入資料，就不從本地檔案覆蓋
+      // 如�?已�? GitHub 載入資�?，就不�??�地檔�?覆�?
       const alreadyLoadedFromGithub = USE_GITHUB && Object.keys(games).length > 0;
       if (!alreadyLoadedFromGithub && fs.existsSync(GAMES_FILE)) {
         try {
           const content = fs.readFileSync(GAMES_FILE, 'utf8') || '{}';
           const obj = JSON.parse(content);
           games = obj || {};
-          console.log(`已從 ${GAMES_FILE} 載入 ${Object.keys(games).length} 筆接龍資料`);
+          console.log(`已�? ${GAMES_FILE} 載入 ${Object.keys(games).length} 筆接龍�??�`);
         } catch (e) {
-          console.error('從檔案載入接龍資料失敗:', e);
+          console.error('從�?案�??�接龍�??�失??', e);
         }
       } else if (alreadyLoadedFromGithub) {
-        console.log(`已從 GitHub 載入場次資料，跳過本地檔案讀取`);
+        console.log(`已�? GitHub 載入?�次資�?，跳?�本?��?案�??�`);
       }
     }
 
@@ -1180,7 +1180,7 @@ async function loadGames() {
     }
     games = newGames;
 
-    // 啟動時重建記憶體中的 UID 映射表
+    // ?��??��?建�??��?中�? UID ?��?�?
     for (const [id, g] of Object.entries(games)) {
       if (g.uidMap) {
         for (const [name, uid] of Object.entries(g.uidMap)) {
@@ -1192,7 +1192,7 @@ async function loadGames() {
     }
 
     if (oldKeysToDelete.length > 0) {
-      console.log('執行資料庫遷移：刪除舊結構並儲存新結構...');
+      console.log('?��?資�?庫遷移�??�除?��?構並?��??��?�?..');
       if (pool) {
         for (const k of oldKeysToDelete) {
           try {
@@ -1209,27 +1209,27 @@ async function loadGames() {
     }
 
   } catch (e) {
-    console.error('載入資料失敗:', e);
+    console.error('載入資�?失�?:', e);
   }
 }
 
-// 檔案寫入防抖，避免頻繁寫入
+// 檔�?寫入?��?，避?�頻繁寫??
 let saveFileTimeout = null;
 let pendingSaves = new Set();
 let isShuttingDown = false;
 
-// 立即寫入檔案（用於關鍵時刻或關閉時）
+// 立即寫入檔�?（用?��??��??��??��??��?
 async function flushFileSave() {
   if (pendingSaves.size === 0) return;
   try {
     await fs.promises.writeFile(GAMES_FILE, JSON.stringify(games, null, 2), 'utf8');
     pendingSaves.clear();
-    console.log('✅ 接龍資料已寫入檔案');
+    console.log('???��?資�?已寫?��?�?);
   } catch (e) {
-    console.error('❌ 儲存接龍資料至檔案失敗:', e);
+    console.error('???��??��?資�??��?案失??', e);
   }
 
-  // 同步儲存到 GitHub
+  // ?�步?��???GitHub
   if (USE_GITHUB) {
     gamesSaveChain = gamesSaveChain.then(async () => {
       const jsonStr = JSON.stringify(games, null, 2);
@@ -1245,20 +1245,20 @@ async function flushFileSave() {
           if (gamesSha) payload.sha = gamesSha;
           const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/games.json`, payload);
           if (res.content && res.content.sha) gamesSha = res.content.sha;
-          console.log('✅ 場次資料已同步儲存至 GitHub (data/games.json)');
+          console.log('???�次資�?已�?步儲存至 GitHub (data/games.json)');
         } catch(e) {
           const isShaConflict = String(e.message).includes('409') || String(e.message).includes('does not match');
           if (isShaConflict && allowRetry) {
-            console.warn('⚠️ 偵測到 GitHub games.json SHA 衝突，重新取得最新 SHA 後重試');
+            console.warn('?��? ?�測??GitHub games.json SHA 衝�?，�??��?得�???SHA 後�?�?);
             try {
               const getRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/games.json?ref=${GITHUB_BRANCH}`);
               if (getRes.sha) gamesSha = getRes.sha;
             } catch (getErr) {
-              console.error('❌ 無法取得最新的 games.json SHA:', getErr.message);
+              console.error('???��??��??�?��? games.json SHA:', getErr.message);
             }
             await attemptSave(false);
           } else {
-            console.error('❌ 儲存 games.json 至 GitHub 失敗:', e.message);
+            console.error('???��? games.json ??GitHub 失�?:', e.message);
           }
         }
       }
@@ -1276,7 +1276,7 @@ async function checkSchedules() {
     const g = games[gameId];
     if (!g) continue;
     
-    // 1. 處理預約發布 (scheduleTime)
+    // 1. ?��??��??��? (scheduleTime)
     if (g.scheduleTime) {
       const sched = Number(g.scheduleTime);
       if (isNaN(sched)) {
@@ -1285,10 +1285,10 @@ async function checkSchedules() {
         await saveGame(gameId);
       } else if (sched <= now) {
         logToFile(`[TRIGGER] TRIGGER! Sending scheduled list for ${gameId}`);
-        delete g.scheduleTime; // 移除設定避免重複觸發
+        delete g.scheduleTime; // 移除設�??��??��?觸發
         await saveGame(gameId);
         try { 
-          await sendList(null, gameId, "⏰ 定時推播");
+          await sendList(null, gameId, "??定�??�播");
           logToFile(`[SUCCESS] Scheduled push sent for ${gameId}`);
         } catch (e) { 
           console.error('Failed to push scheduled list:', e);
@@ -1297,7 +1297,7 @@ async function checkSchedules() {
       }
     }
     
-    // 2. 處理溫馨提醒 (reminderTime)
+    // 2. ?��?溫馨?��? (reminderTime)
     if (g.reminderTime) {
       const rem = Number(g.reminderTime);
       if (isNaN(rem)) {
@@ -1306,14 +1306,14 @@ async function checkSchedules() {
         await saveGame(gameId);
       } else if (rem <= now) {
         logToFile(`[TRIGGER] TRIGGER! Sending reminder for ${gameId}`);
-        delete g.reminderTime; // 移除設定避免重複觸發
+        delete g.reminderTime; // 移除設�??��??��?觸發
         await saveGame(gameId);
         try {
           const pushTargets = g.targetGids || [g.gid];
           for (const targetGid of pushTargets) {
             try {
-              // 因應要求，暫時關閉會消耗額度的推播功能
-              // await client.pushMessage(targetGid, { type: 'text', text: `⏰ 溫馨提醒：【 ${g.title} 】 即將開始！\n請有報名的群友注意時間喔！` });
+              // ?��?要�?，暫?��??��?消耗�?度�??�播?�能
+              // await client.pushMessage(targetGid, { type: 'text', text: `??溫馨?��?：�?${g.title} ???��??��?！\n請�??��??�群?�注?��??��?！` });
             } catch (e) {
               console.error(`Failed to push reminder to ${targetGid}:`, e);
             }
@@ -1337,8 +1337,8 @@ async function saveGame(gid, immediate = false) {
       [gid, games[gid]]
     );
     } catch (e) {
-      console.error('資料庫儲存失敗:', e);
-      // 降級到檔案備份
+      console.error('資�?庫儲存失??', e);
+      // ?��??��?案�?�?
       pendingSaves.add(gid);
       if (immediate) {
         await flushFileSave();
@@ -1362,11 +1362,11 @@ function touchGame(gid) {
 }
 
 function scheduleFileSave() {
-  if (saveFileTimeout) return; // 已有排程，等待執行
+  if (saveFileTimeout) return; // 已�??��?，�?待執�?
   saveFileTimeout = setTimeout(async () => {
     saveFileTimeout = null;
     await flushFileSave();
-  }, 500); // 防抖：500ms內的多個保存請求合併為一次
+  }, 500); // ?��?�?00ms?��?多個�?存�?求�?併為一�?
 }
 
 async function deleteGame(gid) {
@@ -1375,16 +1375,16 @@ async function deleteGame(gid) {
     try {
       await pool.query('DELETE FROM games WHERE gid = $1', [gid]);
     } catch (e) {
-      console.error('資料庫刪除失敗:', e);
+      console.error('資�?庫刪?�失??', e);
     }
   }
-  // 檔案會在下次saveGame時自動更新
-  pendingSaves.add('__all__'); // 標記需要保存
+  // 檔�??�在下次saveGame?�自?�更??
+  pendingSaves.add('__all__'); // 標�??�要�?�?
   scheduleFileSave();
 }
 
-// 自動清除超過 7 天的接龍資料
-const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000; // 7天
+// ?��?清除超�? 7 天�??��?資�?
+const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000; // 7�?
 async function checkExpiredGames() {
   const now = Date.now();
   const gids = Object.keys(games);
@@ -1397,13 +1397,13 @@ async function checkExpiredGames() {
     }
     const lastActive = games[gid].lastActiveTime || games[gid].startTime || now;
     if (now - lastActive > EXPIRY_TIME) {
-      console.log(`群組 ${gid} 接龍已過期自動刪除`);
+      console.log(`群�? ${gid} ?��?已�??�自?�刪?�`);
       await deleteGame(gid);
       await saveCurrentListSnapshot(null, false);
     }
   }
 }
-checkExpiredGames().catch(console.error); // 啟動時檢查一次
+checkExpiredGames().catch(console.error); // ?��??�檢?��?�?
 
 function startDailyExpiryCheck() {
   const now = new Date();
@@ -1416,11 +1416,11 @@ function startDailyExpiryCheck() {
 }
 startDailyExpiryCheck();
 
-// 排程檢查的執行鎖，避免重入
+// ?��?檢查?�執行�?，避?��???
 let checkingSchedules = false;
 
-// 定時推播檢查 (已合併至上方 checkSchedules 實作中)
-// 每分鐘的00秒時檢查一次排程
+// 定�??�播檢查 (已�?併至上方 checkSchedules 實�?�?
+// 每�??��?00秒�?檢查一次�?�?
 function startMinuteCheck() {
   const executeCheck = async () => {
   if (checkingSchedules) return;
@@ -1434,35 +1434,35 @@ function startMinuteCheck() {
   }
   };
   
-  // 計算到下一個整分鐘的延遲時間
+  // 計�??��?一?�整?��??�延?��???
   const now = new Date();
   const msUntilNextMinute = ((60 - now.getSeconds()) * 1000) - now.getMilliseconds();
   const delay = msUntilNextMinute > 0 ? msUntilNextMinute : 60 * 1000;
   
   setTimeout(() => {
     executeCheck();
-    // 之後每60秒執行一次（對齊每分鐘00秒）
+    // 之�?�?0秒執行�?次�?對�?每�???0秒�?
     setInterval(executeCheck, 60 * 1000);
   }, delay);
 }
 
-// 待載入完成後立即檢查一次，以恢復並觸發在停機期間已到期或保留的排程
+// 待�??��??��?立即檢查一次�?以恢復並觸發?��?機�??�已?��??��??��??��?
 loadPromise.then(async () => {
   const restored = await restoreGamesFromCsv().catch((e) => {
     console.error('Failed to restore games from CSV:', e);
     return false;
   });
   if (restored) {
-    console.log('✅ 已從 CSV 還原接龍名單');
+    console.log('??已�? CSV ?��??��??�單');
   }
   console.log('[Startup] Data loaded, performing initial schedule check');
   return checkSchedules().catch(console.error);
 }).then(() => {
-  // 資料載入完成後，啟動每分鐘定時檢查
+  // 資�?載入完�?後�??��?每�??��??�檢??
   startMinuteCheck();
 }).catch(console.error);
 
-// 健康檢查端點 - 用於保持服務器喚醒
+// ?�康檢查端�? - ?�於保�??��??��???
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'ok', 
@@ -1472,12 +1472,12 @@ app.get('/health', (req, res) => {
   });
 });
 
-// LIFF 系統設定
+// LIFF 系統設�?
 app.get('/api/config', (req, res) => {
   res.json({ liffId: process.env.LIFF_ID || '' });
 });
 
-// 取得特定群組所有進行中的接龍
+// ?��??��?群�??�?�進�?中�??��?
 async function fetchGroupName(gid) {
   if (!gid || !gid.startsWith('C')) return null;
   try {
@@ -1488,7 +1488,7 @@ async function fetchGroupName(gid) {
       const data = await res.json();
       return data.groupName;
     } else if (res.status === 404 || res.status === 400) {
-      return "未知群組 (Bot已退出)";
+      return "?�知群�? (Bot已退??";
     }
   } catch (e) {
     console.error('Failed to fetch group name:', e.message);
@@ -1522,21 +1522,21 @@ app.get('/api/group/code/:code', async (req, res) => {
     const gName = groupSettings[foundGid]?.groupName || foundGid;
     return res.json({ success: true, gid: foundGid, groupName: gName });
   } else {
-    return res.status(404).json({ error: '找不到該群組代號' });
+    return res.status(404).json({ error: '?��??�該群�?�??' });
   }
 });
 
-// --- Server-Sent Events (SSE) 推播機制 ---
+// --- Server-Sent Events (SSE) ?�播機制 ---
 const sseClients = new Map(); // gid -> Set of Response objects
 
 app.get('/api/events/:gid', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  // 發送 X-Accel-Buffering 來關閉 Nginx 的緩衝
+  // ?��?X-Accel-Buffering 來�???Nginx ?�緩�?
   res.setHeader('X-Accel-Buffering', 'no');
   
-  // 避免連線過期，發送初始空註解，並加入 2KB 的 padding 強制推送緩衝區
+  // ?��?????��?，發?��?始空註解，並?�入 2KB ??padding 強制?�送緩衝�?
   res.write(':' + Array(2048).join(' ') + '\n\n');
   if (res.flush) res.flush();
 
@@ -1547,7 +1547,7 @@ app.get('/api/events/:gid', (req, res) => {
   const clientsSet = sseClients.get(gid);
   clientsSet.add(res);
 
-  // 每隔一段時間發送 ping 以保持連線
+  // 每�?一段�??�發??ping 以�??��??
   const pingInterval = setInterval(() => {
     try { 
       res.write(':\n\n'); 
@@ -1588,7 +1588,7 @@ function notifySSEClients(gameOrGid) {
   }
 }
 
-// --- 團購專區 (Group Buy) API 端點 ---
+// --- ?�購專�? (Group Buy) API 端�? ---
 app.get('/api/groupbuy/:gid', (req, res) => {
   const gid = req.params.gid;
   const info = getGroupBuyInfo(gid);
@@ -1621,7 +1621,7 @@ app.post('/api/groupbuy/:gid/settings', async (req, res) => {
   const { uid, title, notice, hiddenFromLobby, paymentSettings, items } = req.body || {};
   const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
   if (!isAdmin) {
-    return res.status(403).json({ error: '沒有管理員權限' });
+    return res.status(403).json({ error: '沒�?管�??��??? });
   }
   const info = getGroupBuyInfo(gid);
   if (typeof title === 'string') info.title = title.trim();
@@ -1643,11 +1643,11 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid;
   const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note, anonymous } = req.body || {};
   if (!uid || !userName) {
-    return res.status(400).json({ error: '請提供必填資訊' });
+    return res.status(400).json({ error: '請�?供�?填�?�? });
   }
   const info = getGroupBuyInfo(gid);
   if (!info.active) {
-    return res.status(400).json({ error: '目前團購未開放' });
+    return res.status(400).json({ error: '?��??�購?��??? });
   }
   let totalAmount = 0;
   if (items && typeof items === 'object') {
@@ -1712,8 +1712,8 @@ app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
 app.get('/api/game/:gid', async (req, res) => {
   const gid = req.params.gid;
   await ensureGroupSettings(gid);
-  const lobbyTitle = groupSettings[gid]?.lobbyTitle || '羽球接龍大廳';
-  const lobbyDesc = groupSettings[gid]?.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+  const lobbyTitle = groupSettings[gid]?.lobbyTitle || '羽�??��?大廳';
+  const lobbyDesc = groupSettings[gid]?.lobbyDesc || '?�週臨?��?額�??��?趕快?��?，�??��?豬�?起快樂揮?�吧�?;
   const uid = req.query.uid;
   const superAdmin = isSuperAdmin(uid);
   const isAdmin = superAdmin || isGroupAdmin(uid, gid);
@@ -1744,8 +1744,8 @@ app.get('/api/game/:gid', async (req, res) => {
         }
       } else {
         await ensureGroupSettings(g);
-        const gName = groupSettings[g]?.groupName || '未命名群組';
-        managedGroups.push({ gid: g, code: g === gid ? '目前群組' : '無代碼', groupName: gName });
+        const gName = groupSettings[g]?.groupName || '?�命?�群�?;
+        managedGroups.push({ gid: g, code: g === gid ? '?��?群�?' : '?�代�?, groupName: gName });
       }
     }
   }
@@ -1756,14 +1756,14 @@ app.get('/api/game/:gid', async (req, res) => {
     if (g.gid === gid) return true;
     if (g.targetGids && g.targetGids.includes(gid)) return true;
     
-    // 超級管理員模式：如果在個人聊天室中，且是 SUPER_ADMIN，則顯示系統內「所有」活躍場次
+    // 超�?管�??�模式�?如�??�個人?�天室中，�???SUPER_ADMIN，�?顯示系統?�「�??�」活躍場�?
     if (gid === uid && superAdmin) {
       return true;
     }
     
-    // 如果管理員是從個人聊天室/直接網址進入 (gid === uid)，顯示所有他管理的群組的場次
+    // 如�?管�??�是從個人?�天�??�接網�??�入 (gid === uid)，顯示�??��?管�??�群組�??�次
     if (gid === uid) {
-      // 檢查此場次是否屬於他管理的任何一個群組
+      // 檢查此場次是?�屬?��?管�??�任何�??�群�?
       const isManaged = managedGroups.some(mg => 
         mg.gid === g.gid || (g.targetGids && g.targetGids.includes(mg.gid))
       );
@@ -1776,13 +1776,13 @@ app.get('/api/game/:gid', async (req, res) => {
 
 
   if (groupGames.length === 0) {
-      return res.json({ games: [], isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc }); // 不報錯，回傳空陣列
+      return res.json({ games: [], isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc }); // 不報?��??�傳空陣??
   }
   
-  // 深拷貝以避免污染記憶體中的 games 物件
+  // 深拷貝以?��?污�?記憶體中??games ?�件
   groupGames = JSON.parse(JSON.stringify(groupGames));
   
-  // 若有提供 uid，附上該用戶報名的名單
+  // ?��??��? uid，�?上該?�戶?��??��???
   if (uid) {
     groupGames.forEach(g => {
       g.myRegisteredNames = g.sections[0].list.filter(name => {
@@ -1791,7 +1791,7 @@ app.get('/api/game/:gid', async (req, res) => {
     });
   }
   
-  // 智慧排序：嘗試解析日期 (如 7/3, 10/1)，越早的排上面。若無日期則依建立時間排序
+  // ?�慧?��?：�?試解?�日??(�?7/3, 10/1)，�??��??��??�。若?�日?��?依建立�??��?�?
   const parseDateStr = (dateStr) => {
     if (!dateStr) return Number.MAX_SAFE_INTEGER;
     const match = dateStr.match(/(\d{1,2})\/(\d{1,2})/);
@@ -1807,18 +1807,18 @@ app.get('/api/game/:gid', async (req, res) => {
     const dateA = parseDateStr(a.date);
     const dateB = parseDateStr(b.date);
     if (dateA !== dateB) {
-      return dateA - dateB; // 日期早的排前面
+      return dateA - dateB; // ?��??��??��???
     }
-    // 如果日期相同，或者都沒寫日期，則依建立時間排序 (舊的在前面或新的在前面，預設為新的在前面)
+    // 如�??��??��?，�??�都沒寫?��?，�?依建立�??��?�?(?��??��??��??��??��??��??�設?�新?�在?�面)
     return b.startTime - a.startTime;
   });
   
-  // 回傳結果
+  // ?�傳結�?
   res.json({ games: groupGames, isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc });
 });
 
-// 取得特定群組的預設名單範本
-// 大廳點擊紀錄與分析
+// ?��??��?群�??��?設�??��???
+// 大廳點�?紀?��??��?
 app.post('/api/lobby_visit', express.json(), (req, res) => {
   const { gid, userId, displayName, pictureUrl } = req.body;
   if (!gid || !userId) return res.json({ success: false });
@@ -1835,7 +1835,7 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
     groupStats.uniqueViewers[userId] = { displayName, firstVisit: Date.now(), count: 0, lastVisit: 0 };
   }
 
-  // 每分鐘只記錄一次
+  // 每�??�只記�?一�?
   const now = Date.now();
   if (now - groupStats.uniqueViewers[userId].lastVisit < 60000) {
     return res.json({ success: true, message: 'Throttled' });
@@ -1847,10 +1847,10 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
   groupStats.uniqueViewers[userId].lastVisit = now;
   groupStats.uniqueViewers[userId].count++;
 
-  // 記錄最近的造訪
+  // 記�??�近�??�訪
   groupStats.logs.unshift({ time: now, userId, displayName, pictureUrl });
   
-  // 保留最近 200 筆即可，避免無限制長大
+  // 保�??��?200 筆即?��??��??��??�長�?
   if (groupStats.logs.length > 200) {
     groupStats.logs = groupStats.logs.slice(0, 200);
   }
@@ -1862,10 +1862,10 @@ app.get('/api/lobby_stats/:gid', (req, res) => {
   const gid = req.params.gid;
   const uid = req.query.uid;
   
-  // 驗證是否為超級管理員
+  // 驗�??�否?��?級管?�員
   const isAdmin = uid && isSuperAdmin(uid);
   if (!isAdmin) {
-    return res.status(403).json({ error: '只有超級管理員能查看大廳分析數據' });
+    return res.status(403).json({ error: '?��?超�?管�??�能?��?大廳?��??��?' });
   }
   
   const stats = lobbyVisits[gid] || { viewCount: 0, uniqueViewers: {}, logs: [] };
@@ -1879,7 +1879,7 @@ app.get('/api/lobby_stats/:gid', (req, res) => {
 
 app.get('/api/admin/all_stats', async (req, res) => {
   const uid = req.query.uid;
-  if (!uid) return res.status(403).json({ error: '需要 uid' });
+  if (!uid) return res.status(403).json({ error: '?��?uid' });
 
   const isSuperAdminUser = isSuperAdmin(uid);
   let adminGids = [];
@@ -1887,8 +1887,8 @@ app.get('/api/admin/all_stats', async (req, res) => {
   if (isSuperAdminUser) {
     adminGids = Object.keys(lobbyVisits);
   } else {
-    // 即使是 groupAdmins 也無法使用此 API，直接阻擋
-    return res.status(403).json({ error: '只有超級管理員能查看全域數據分析' });
+    // ?�使??groupAdmins 也無法使?�此 API，直?�阻??
+    return res.status(403).json({ error: '?��?超�?管�??�能?��??��??��??��?' });
   }
 
   let allStats = [];
@@ -1968,42 +1968,42 @@ app.get('/api/templates/:gid', (req, res) => {
   res.json({ success: true, templates });
 });
 
-// 儲存/刪除特定群組的預設名單範本
+// ?��?/?�除?��?群�??��?設�??��???
 app.post('/api/templates/:gid', express.json(), async (req, res) => {
   const gid = req.params.gid;
   const { action, name, content, uid } = req.body;
   
   const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
   if (!isAdmin) {
-    return res.status(403).json({ error: '只有管理員能修改預設名單' });
+    return res.status(403).json({ error: '?��?管�??�能修改?�設?�單' });
   }
   
   if (!rosterTemplates[gid]) rosterTemplates[gid] = {};
   
   if (action === 'save') {
     if (!name || !content) {
-      return res.status(400).json({ error: '名稱與內容不可為空' });
+      return res.status(400).json({ error: '?�稱?�內容�??�為�? });
     }
     rosterTemplates[gid][name] = content;
   } else if (action === 'delete') {
     if (!name) {
-      return res.status(400).json({ error: '未指定要刪除的範本名稱' });
+      return res.status(400).json({ error: '?��?定�??�除?��??��?�? });
     }
     delete rosterTemplates[gid][name];
   } else {
-    return res.status(400).json({ error: '無效的 action' });
+    return res.status(400).json({ error: '?��???action' });
   }
   
   try {
     await saveRosterTemplates();
     res.json({ success: true, templates: rosterTemplates[gid] });
   } catch (e) {
-    console.error('儲存範本失敗:', e);
-    res.status(500).json({ error: '伺服器儲存錯誤' });
+    console.error('?��?範本失�?:', e);
+    res.status(500).json({ error: '伺�??�儲存錯�? });
   }
 });
 
-// 產生完整名單字串的輔助函式
+// ?��?完整?�單字串?��??�函�?
 function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
   const flexContents = [];
   targetGames.forEach((g, index) => {
@@ -2012,8 +2012,8 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     const count = sec.list.length;
     const limit = sec.limit || 0;
     const isFull = limit > 0 && count >= limit;
-    const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
-    const titleText = g.title || g.date || '場次';
+    const statusText = isFull ? '滿�?' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
+    const titleText = g.title || g.date || '?�次';
     
     let combinedTitle = titleText;
     if (g.date && g.date !== g.title) {
@@ -2026,7 +2026,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText && cleanText.includes(g.title);
 
     const rowContents = [
-      { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
+      { type: "text", text: isTarget ? `?�� ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
       {
         type: "box",
         layout: "horizontal",
@@ -2041,7 +2041,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
           { type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }
         ]
       },
-      { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
+      { type: "text", text: "??, size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
     ];
 
     const rowBox = {
@@ -2052,7 +2052,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       paddingStart: isTarget ? "10px" : "4px",
       paddingEnd: "4px",
       alignItems: "center",
-      action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
+      action: { type: "uri", label: "?��??�單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
       contents: rowContents
     };
 
@@ -2081,7 +2081,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     margin: "lg",
     justifyContent: "center",
     contents: [
-      { type: "text", text: "點選上方場次查看詳細名單 👆", size: "xs", color: "#888888", align: "center" }
+      { type: "text", text: "點選上方?�次?��?詳細?�單 ??", size: "xs", color: "#888888", align: "center" }
     ]
   });
 
@@ -2095,7 +2095,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       cornerRadius: "md",
       alignItems: "center",
       contents: [
-        { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446", flex: 0 },
+        { type: "text", text: "?? ?�?�通知", size: "xs", weight: "bold", color: "#1DB446", flex: 0 },
         { type: "text", text: cleanText, size: "xs", color: "#333333", wrap: true, margin: "sm", flex: 1 }
       ]
     });
@@ -2114,14 +2114,14 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
           layout: "horizontal",
           alignItems: "center",
           contents: [
-            { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
+            { type: "text", text: "?�� 羽�??��?大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
             {
               type: "button",
               style: "primary",
               color: "#1DB446",
               height: "sm",
               flex: 0,
-              action: { type: "uri", label: "進入大廳", uri: liffBaseUrl }
+              action: { type: "uri", label: "?�入大廳", uri: liffBaseUrl }
             }
           ]
         },
@@ -2148,22 +2148,22 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
           const backupLimit = section.backupLimit || 0;
           
           const isFull = limit > 0 && list.length >= limit;
-          const statusText = isFull ? '滿團' : (limit > 0 ? `${list.length}/${limit}` : `${list.length}人`);
+          const statusText = isFull ? '滿�?' : (limit > 0 ? `${list.length}/${limit}` : `${list.length}人`);
 
           // Date and location
-          let infoLine = `🕒 ${g.date || ''} ${g.time || ''}`.trim();
-          if (g.location) infoLine += `\n📍 ${g.location}`;
+          let infoLine = `?? ${g.date || ''} ${g.time || ''}`.trim();
+          if (g.location) infoLine += `\n?? ${g.location}`;
 
           // Format names for two columns
           const listBoxes = [];
           for (let i = 0; i < list.length && i < limit; i += 2) {
-              const name1 = list[i] === '__ANON__' ? '匿名' : list[i];
-              const name2 = (i + 1 < list.length && i + 1 < limit) ? (list[i+1] === '__ANON__' ? '匿名' : list[i+1]) : '';
+              const name1 = list[i] === '__ANON__' ? '?��?' : list[i];
+              const name2 = (i + 1 < list.length && i + 1 < limit) ? (list[i+1] === '__ANON__' ? '?��?' : list[i+1]) : '';
               
               const formatName = (idx, name) => {
                   if (!name) return "";
                   const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                  const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
+                  const paidStr = (g.paidMap && g.paidMap[name]) ? '?��' : '';
                   return `${idx+1}. ${name}${levelStr}${paidStr}`;
               };
 
@@ -2200,7 +2200,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                 layout: "horizontal",
                 margin: "md",
                 contents: [
-                  { type: "text", text: "📝 報名狀況", size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
+                  { type: "text", text: "?? ?��??��?, size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
                   {
                     type: "box",
                     layout: "horizontal",
@@ -2234,21 +2234,21 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   layout: "horizontal",
                   margin: "md",
                   contents: [
-                    { type: "text", text: "⌛ 候補名單", size: "sm", color: "#FF9800", weight: "bold", flex: 1 }
+                    { type: "text", text: "???��??�單", size: "sm", color: "#FF9800", weight: "bold", flex: 1 }
                   ]
               });
               
               const backupBoxes = [];
               let backupCount = 0;
               for (let i = limit; i < list.length; i += 2) {
-                  const name1 = list[i] === '__ANON__' ? '匿名' : list[i];
-                  const name2 = (i + 1 < list.length) ? (list[i+1] === '__ANON__' ? '匿名' : list[i+1]) : '';
+                  const name1 = list[i] === '__ANON__' ? '?��?' : list[i];
+                  const name2 = (i + 1 < list.length) ? (list[i+1] === '__ANON__' ? '?��?' : list[i+1]) : '';
                   
                   const formatBackup = (idx, name, bc) => {
                       if (!name) return "";
                       const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                      const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
-                      return `補${bc+1}. ${name}${levelStr}${paidStr}`;
+                      const paidStr = (g.paidMap && g.paidMap[name]) ? '?��' : '';
+                      return `�?{bc+1}. ${name}${levelStr}${paidStr}`;
                   };
 
                   backupBoxes.push({
@@ -2282,7 +2282,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   layout: "vertical",
                   paddingBottom: "none",
                   contents: [
-                      { type: "text", text: `🏸 ${g.title}`, weight: "bold", size: "md", color: "#1DB446", wrap: true }
+                      { type: "text", text: `?�� ${g.title}`, weight: "bold", size: "md", color: "#1DB446", wrap: true }
                   ]
               },
               body: {
@@ -2305,7 +2305,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                           color: "#1DB446",
                           height: "sm",
                           flex: 1,
-                          action: { type: "uri", label: "本次報名", uri: liffGameUrl }
+                          action: { type: "uri", label: "?�次?��?", uri: liffGameUrl }
                       },
                       {
                           type: "button",
@@ -2313,7 +2313,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                           color: "#eeeeee",
                           height: "sm",
                           flex: 1,
-                          action: { type: "uri", label: "大廳首頁", uri: liffMainUrl }
+                          action: { type: "uri", label: "大廳首�?", uri: liffMainUrl }
                       }
                   ]
               };
@@ -2324,7 +2324,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
 
       const carouselMsg = {
           type: "flex",
-          altText: "接龍名單",
+          altText: "?��??�單",
           contents: {
               type: "carousel",
               contents: flexBubbles
@@ -2360,7 +2360,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               // We produce at most ONE mention message with the first 50 UIDs to avoid rejection
               const chunk = uidArray.slice(0, 50);
               // prefix must be pure ASCII/CJK (no emoji) to keep byte index accurate
-              const prefix = "報名成功提醒： "; 
+              const prefix = "?��??��??��?�?"; 
               let textMsg = prefix;
               const mentionees = [];
               
@@ -2399,13 +2399,13 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
 }
 
 function generateListMessage(g, customTitle = null) {
-  let msg = `📢 ${customTitle || '名單更新通知'}\n\n🏸 ${g.title}\n`;
-  if (g.date) msg += `📅 ${g.date}\n`;
-  if (g.time) msg += `⏰ ${g.time}\n`;
-  if (g.location) msg += `📍 ${g.location}\n`;
+  let msg = `?�� ${customTitle || '?�單?�新?�知'}\n\n?�� ${g.title}\n`;
+  if (g.date) msg += `?? ${g.date}\n`;
+  if (g.time) msg += `??${g.time}\n`;
+  if (g.location) msg += `?? ${g.location}\n`;
   
   g.sections.forEach(sec => {
-    msg += `\n【${sec.title}】 (目前 ${sec.list.length} / ${sec.limit} 人)\n`;
+    msg += `\n??{sec.title}??(?��? ${sec.list.length} / ${sec.limit} �?\n`;
     const limit = sec.limit;
     const count = Math.min(sec.list.length, limit);
     for (let i = 0; i < count; i++) {
@@ -2413,24 +2413,24 @@ function generateListMessage(g, customTitle = null) {
       const name = n === '__ANON__' ? '***' : n;
       const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
       const noteStr = g.noteMap && g.noteMap[n] ? ` [${g.noteMap[n]}]` : '';
-      const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
+      const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳�?' : '';
       msg += `${i+1}. ${name} ${level}${noteStr}${paidStr}\n`.trim() + '\n';
     }
     
-    // 如果未滿額，顯示最後一個空席位的號碼（依據使用者要求）
+    // 如�??�滿額�?顯示?�後�??�空席�??��?碼�?依�?使用?��?求�?
     if (sec.list.length < limit) {
       msg += `${limit}. \n`;
     }
     
     if (sec.list.length > limit) {
-      msg += `\n【候補名單】\n`;
+      msg += `\n?�候�??�單?�\n`;
       for (let i = sec.limit; i < sec.list.length; i++) {
         const n = sec.list[i];
         const name = n === '__ANON__' ? '***' : n;
         const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
         const noteStr = g.noteMap && g.noteMap[n] ? ` [${g.noteMap[n]}]` : '';
-        const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
-        msg += `候${i - sec.limit + 1}. ${name} ${level}${noteStr}${paidStr}\n`.trim() + '\n';
+        const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳�?' : '';
+        msg += `??{i - sec.limit + 1}. ${name} ${level}${noteStr}${paidStr}\n`.trim() + '\n';
       }
     }
   });
@@ -2488,7 +2488,7 @@ let pinballRoom = {
   positions: {} // for server authoritative state
 };
 
-// --- 彩蛋功能 API ---
+// --- 彩�??�能 API ---
 app.get('/api/easter_egg/status', (req, res) => {
   res.json({ enabled: easterEggSettings.enabled, activeGame: easterEggSettings.activeGame || 'piggy_run' });
 });
@@ -2498,7 +2498,7 @@ app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
   if (!uid) return res.status(400).json({ success: false, message: 'Missing uid' });
   
   if (!easterEggSettings.enabled) {
-    return res.json({ success: false, message: '活動未開啟' });
+    return res.json({ success: false, message: '活�??��??? });
   }
 
   // Handle bullet_hell score (Leaderboard)
@@ -2777,7 +2777,7 @@ io.on('connection', (socket) => {
   socket.on('join_party', (data) => {
     if (partyRoom.status === 'idle') return;
     const { uid, name, icon, x, y } = data;
-    partyRoom.players[socket.id] = { uid, name, icon: icon || '🐷', x: x || -100, y: y || -100, alive: true, id: socket.id, lives: 3, invincibleUntil: 0 };
+    partyRoom.players[socket.id] = { uid, name, icon: icon || '?��', x: x || -100, y: y || -100, alive: true, id: socket.id, lives: 3, invincibleUntil: 0 };
     socket.emit('party_state', partyRoom);
     socket.broadcast.emit('player_joined', partyRoom.players[socket.id]);
   });
@@ -3290,7 +3290,7 @@ app.post('/api/admin/party/next-round', express.json(), (req, res) => {
   res.json({ success: true });
 });
 
-// 處理 LIFF 前端傳來的報名或取消請求
+// ?��? LIFF ?�端?��??�報?��??��?請�?
 app.post('/api/action', express.json(), async (req, res) => {
   const originalJson = res.json;
   res.json = function(body) {
@@ -3321,12 +3321,12 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
     }
     
-    // 儲存要讓前端觸發的訊息
+    // ?��?要�??�端觸發?��???
     let triggerBumpMsg = null;
     
     if (action === 'createGame') {
       if (!isSuperAdminUser) {
-        return res.status(403).json({ error: '只有超級管理員能建立場次' });
+        return res.status(403).json({ error: '?��?超�?管�??�能建�??�次' });
       }
       
       const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, initialListStr, targetGid, targetGids } = req.body;
@@ -3355,12 +3355,12 @@ app.post('/api/action', express.json(), async (req, res) => {
       let initialPaidMap = {};
       
       if (initialListStr) {
-          const rawList = initialListStr.split(/[\s,、，\n]+/).map(n => n.trim()).filter(Boolean);
+          const rawList = initialListStr.split(/[\s,?��?\n]+/).map(n => n.trim()).filter(Boolean);
           rawList.forEach(n => {
             let isPaid = false;
-            if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
+            if (n.endsWith('$') || n.endsWith('�?) || n.endsWith('(已繳�?') || n.endsWith('（已繳費�?)) {
                 isPaid = true;
-                n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+                n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費�?/, '');
             }
             const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
             if (match) {
@@ -3380,7 +3380,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         gid: actualGid,
         targetGids: (targetGids && targetGids.length > 0) ? targetGids : [actualGid],
         gameId: newGameId,
-        title: title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽球接龍',
+        title: title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽�??��?',
         date: date || '',
         time: time || '',
         location: loc || '',
@@ -3400,7 +3400,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         noteMap: {},
         allowUserNoteEdit: req.body.allowUserNoteEdit !== false,
         sections: [
-          { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList }
+          { title: '?��??�單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList }
         ]
       };
       
@@ -3412,7 +3412,7 @@ app.post('/api/action', express.json(), async (req, res) => {
           const gidsToPush = (targetGids && targetGids.length > 0) ? targetGids : [actualGid];
           for (const gId of gidsToPush) {
              try {
-                await sendLobbyLink(null, gId, "🚀 場次建立成功！\n" + (title || '新場次開放報名中'));
+                await sendLobbyLink(null, gId, "?? ?�次建�??��?！\n" + (title || '?�場次�??�報?�中'));
              } catch(e) {
                 console.error(`createGame pushMessage failed for ${gId}:`, e);
                 const detail = e.originalError?.response?.data?.message || e.response?.data?.message || e.message;
@@ -3426,10 +3426,10 @@ app.post('/api/action', express.json(), async (req, res) => {
     
     if (action === 'closeGame') {
       if (!isAdmin) {
-        return res.status(403).json({ error: '只有管理員能關閉場次' });
+        return res.status(403).json({ error: '?��?管�??�能?��??�次' });
       }
       if (!gameId || !games[gameId]) {
-        return res.status(404).json({ error: '找不到該場次' });
+        return res.status(404).json({ error: '?��??�該?�次' });
       }
       
       const targetGame = games[gameId];
@@ -3440,7 +3440,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (isSuperAdminUser) {
         for (const tGid of pushTargets) {
           try {
-            await pushToAdmins(tGid, { type: 'text', text: `🔒 ${targetGame.title || '此場次'} 已由管理員關閉，無法再報名。` });
+            await pushToAdmins(tGid, { type: 'text', text: `?? ${targetGame.title || '此場�?} 已由管�??��??��??��??�報?�。` });
           } catch (e) {}
         }
       }
@@ -3450,10 +3450,10 @@ app.post('/api/action', express.json(), async (req, res) => {
     
     if (action === 'editGame') {
       if (!isAdmin) {
-        return res.status(403).json({ error: '只有管理員能編輯場次' });
+        return res.status(403).json({ error: '?��?管�??�能編輯?�次' });
       }
       if (!gameId || !games[gameId]) {
-        return res.status(404).json({ error: '找不到該場次' });
+        return res.status(404).json({ error: '?��??�該?�次' });
       }
       
       const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, targetGids, isManualEnded } = req.body;
@@ -3466,13 +3466,13 @@ app.post('/api/action', express.json(), async (req, res) => {
         if (newlyAdded.length > 0 && isSuperAdminUser) {
           for (const gId of newlyAdded) {
             try {
-              await sendLobbyLink(null, gId, `🚀 新增跨群組開放報名！\n\n🏸 ${title || game.title || '新場次'}`);
+              await sendLobbyLink(null, gId, `?? ?��?跨群組�??�報?��?\n\n?�� ${title || game.title || '?�場�?}`);
             } catch(e) {}
           }
         }
       }
 
-      game.title = title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽球接龍';
+      game.title = title || `${date || ''} ${time || ''} ${loc || ''}`.trim() || '羽�??��?';
       game.date = date || '';
       game.time = time || '';
       game.location = loc || '';
@@ -3514,7 +3514,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     
     if (action === 'customPush') {
       if (!isSuperAdminUser) {
-        return res.status(403).json({ error: '只有超級管理員能發送推播' });
+        return res.status(403).json({ error: '?��?超�?管�??�能?�送推?? });
       }
       
       let targetGids = [gid];
@@ -3525,7 +3525,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       let successCount = 0;
       for (const tGid of targetGids) {
         try {
-          await sendLobbyLink(null, tGid, `📢 管理員廣播：\n${text}`);
+          await sendLobbyLink(null, tGid, `?�� 管�??�廣?��?\n${text}`);
           successCount++;
         } catch(e) { console.error('Push error:', e); }
       }
@@ -3533,7 +3533,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
     
     if (action === 'updateLobbyTitle') {
-      if (!isSuperAdminUser) return res.status(403).json({ error: '只有超級管理員能修改大廳標題' });
+      if (!isSuperAdminUser) return res.status(403).json({ error: '?��?超�?管�??�能修改大廳標�?' });
       
       const newTitle = text ? text.trim() : '';
       await ensureGroupSettings(gid);
@@ -3543,7 +3543,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
 
     if (action === 'updateLobbyDesc') {
-      if (!isSuperAdminUser) return res.status(403).json({ error: '只有超級管理員能修改大廳描述' });
+      if (!isSuperAdminUser) return res.status(403).json({ error: '?��?超�?管�??�能修改大廳?�述' });
       
       const newDesc = text ? text.trim() : '';
       await ensureGroupSettings(gid);
@@ -3554,13 +3554,13 @@ app.post('/api/action', express.json(), async (req, res) => {
 
     if (action === 'pushList') {
       if (!isSuperAdminUser) {
-        return res.status(403).json({ error: '只有超級管理員能推播名單' });
+        return res.status(403).json({ error: '?��?超�?管�??�能?�播?�單' });
       }
       if (!gameId || !games[gameId]) {
-        return res.status(400).json({ error: '找不到此場次' });
+        return res.status(400).json({ error: '?��??�此?�次' });
       }
       const g = games[gameId];
-      let msg = generateListMessage(g, '管理員推播目前名單');
+      let msg = generateListMessage(g, '管�??�推?�目?��???);
       
       let pushTargetGids = g.targetGids || [g.gid];
       if (req.body.targetCode) {
@@ -3568,28 +3568,28 @@ app.post('/api/action', express.json(), async (req, res) => {
         if (groupCodes[targetCode]) {
           pushTargetGids = [groupCodes[targetCode]];
         } else {
-          return res.status(400).json({ error: `找不到代碼為 ${targetCode} 的群組` });
+          return res.status(400).json({ error: `?��??�代碼為 ${targetCode} ?�群組` });
         }
       }
       
       let hasError = false;
       let errorMsgs = [];
       
-      let singleTargetGid = pushTargetGids[0]; // 自動發話只能發到單一群組
+      let singleTargetGid = pushTargetGids[0]; // ?��??�話?�能?�到?��?群�?
       let currentMsg = msg;
       if (process.env.LIFF_ID) {
-        currentMsg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
+        currentMsg += `\n?? 點�?下方????��?大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${singleTargetGid}`;
       }
 
       if (clientSupportsLiffSendMessage && isAdmin) {
-        // 交給前端自動發話
+        // 交給?�端?��??�話
         triggerBumpMsg = currentMsg;
       } else {
-        // 直接推播到目標群組
+        // ?�接?�播?�目標群�?
         for (const targetGid of pushTargetGids) {
           let pushMsg = msg;
           if (process.env.LIFF_ID) {
-            pushMsg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
+            pushMsg += `\n?? 點�?下方????��?大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
           }
           try {
             await client.pushMessage(targetGid, { type: 'text', text: pushMsg.trim() });
@@ -3616,7 +3616,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     }
     const game = games[gameId];
     if (!game || !game.active) {
-      return res.status(400).json({ error: '接龍不存在或已結束' });
+      return res.status(400).json({ error: '?��?不�??��?已�??? });
     }
     
     const currentList = game.sections[0].list;
@@ -3628,7 +3628,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       const hasDuplicate = currentList.includes(name);
       if (hasDuplicate) { 
-        return res.status(400).json({ error: '您已經報名過了' });
+        return res.status(400).json({ error: '?�已經報?��?�? });
       }
       
       namesToAdd.forEach(n => {
@@ -3644,7 +3644,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       });
         } else if (action === 'togglePaid') {
       if (!isAdmin) {
-        return res.status(403).json({ error: '只有管理員能修改繳費狀態' });
+        return res.status(403).json({ error: '?��?管�??�能修改繳費?�?? });
       }
       game.paidMap = game.paidMap || {};
       game.paidMap[name] = !game.paidMap[name];
@@ -3658,13 +3658,13 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
     } else if (action === 'cancel') {
       if (!currentList.includes(name)) {
-        return res.status(400).json({ error: '找不到此名稱' });
+        return res.status(400).json({ error: '?��??�此?�稱' });
       }
       
       const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
       
       if (!isAdmin && registeredUid && registeredUid !== uid) {
-        return res.status(403).json({ error: '只能取消自己或自己代報的名單' });
+        return res.status(403).json({ error: '?�能?��??�己?�自己代?��??�單' });
       }
       
       const limit = game.sections[0].limit;
@@ -3690,44 +3690,44 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       const mainListAfter = game.sections[0].list.slice(0, limit);
       
-      // 找出遞補上來的人 (在 mainListAfter 但不在 mainListBefore)
+      // ?�出?��?上�??�人 (??mainListAfter 但�???mainListBefore)
       const bumpedNames = mainListAfter.filter(n => !mainListBefore.includes(n) && n !== '__ANON__');
       
       if (bumpedNames.length > 0) {
         try {
-          const bumpMsg = `『${bumpedNames.join('、')}』後補上 請注意訊息`;
-          triggerBumpMsg = bumpMsg; // 記錄下來，稍後傳給前端
+          const bumpMsg = `??{bumpedNames.join('??)}?��?補�? 請注?��??�`;
+          triggerBumpMsg = bumpMsg; // 記�?下�?，�?後傳給�?�?
           
           if (clientSupportsLiffSendMessage && isAdmin) {
-            console.log('[Webhook] 前端支援且為管理員，跳過 pushToAdmins，交由前端 liff.sendMessages 觸發');
+            console.log('[Webhook] ?�端?�援且為管�??��?跳�? pushToAdmins，交?��?�?liff.sendMessages 觸發');
           } else {
             const pushTargets = game.targetGids || [game.gid];
             for (const targetGid of pushTargets) {
               try {
                 await pushToAdmins(targetGid, { type: 'text', text: `${game.title}\n${bumpMsg}` });
               } catch (e) {
-                console.error(`遞補推播代理失敗 for ${targetGid}:`, e);
+                console.error(`?��??�播�??失�? for ${targetGid}:`, e);
               }
             }
           }
         } catch(e) {
-          console.error('遞補處理失敗:', e);
+          console.error('?��??��?失�?:', e);
         }
       }
       
     } else if (action === 'reorder') {
       if (!isAdmin) {
-        return res.status(403).json({ error: '只有管理員能調整順序' });
+        return res.status(403).json({ error: '?��?管�??�能調整?��?' });
       }
       
       const { fromIdx, toIdx } = req.body;
       const list = game.sections[0].list;
       
       if (typeof fromIdx !== 'number' || typeof toIdx !== 'number') {
-        return res.status(400).json({ error: '參數錯誤' });
+        return res.status(400).json({ error: '?�數?�誤' });
       }
       if (fromIdx < 0 || fromIdx >= list.length || toIdx < 0 || toIdx >= list.length) {
-        return res.status(400).json({ error: '無效的順序' });
+        return res.status(400).json({ error: '?��??��?�? });
       }
       
       const element = list.splice(fromIdx, 1)[0];
@@ -3736,7 +3736,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (!game.history) game.history = [];
       const now = new Date();
       const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      game.history.unshift({ time: timeStr, name: '系統', operator: operatorName || name, action: '錯誤', errorMsg: text });
+      game.history.unshift({ time: timeStr, name: '系統', operator: operatorName || name, action: '?�誤', errorMsg: text });
       if (game.history.length > 200) game.history.pop();
       
       systemLogs.unshift({ time: timeStr, gameTitle: game.title, operator: operatorName || name, errorMsg: text });
@@ -3753,7 +3753,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     await saveGame(gameId, true);
     await saveCurrentListSnapshot(gameId, false);
     
-    // 讓所有使用者操作時，都觸發自動發話並帶上精簡資訊
+    // 讓�??�使?�者�?作�?，都觸發?��??�話並帶上精簡�?�?
     if (action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid' || action === 'updateNote' || action === 'setNote') {
       const g = games[gameId];
       const sec = g.sections && g.sections[0] ? g.sections[0] : null;
@@ -3769,12 +3769,12 @@ app.post('/api/action', express.json(), async (req, res) => {
 
         if (action === 'register') msg += `${g.title}${opPart} +1`;
         else if (action === 'cancel') msg += `${g.title}${opPart} -1`;
-        else if (action === 'reorder') msg += `${g.title} 🔄順序更新`;
-        else if (action === 'togglePaid') msg += `${g.title}${opPart} 💰繳費更新`;
-        else if (action === 'updateNote' || action === 'setNote') msg += `${g.title}${opPart} 📝備註更新`;
+        else if (action === 'reorder') msg += `${g.title} ???��??�新`;
+        else if (action === 'togglePaid') msg += `${g.title}${opPart} ?��繳費?�新`;
+        else if (action === 'updateNote' || action === 'setNote') msg += `${g.title}${opPart} ???�註?�新`;
 
         if (triggerBumpMsg) {
-           msg += `\n🎉 【遞補通知】\n${triggerBumpMsg}`;
+           msg += `\n?? ?��?補通知?�\n${triggerBumpMsg}`;
         }
         
         triggerBumpMsg = msg.trim();
@@ -3784,7 +3784,7 @@ app.post('/api/action', express.json(), async (req, res) => {
           const pushTargets = g.targetGids || [g.gid];
           for (const targetGid of pushTargets) {
             try {
-              pushToAdmins(targetGid, { type: 'text', text: triggerBumpMsg + '\n\n[系統代發]' });
+              pushToAdmins(targetGid, { type: 'text', text: triggerBumpMsg + '\n\n[系統�?��]' });
             } catch (e) {
               console.error('Fallback pushToAdmins failed:', e);
             }
@@ -3811,12 +3811,12 @@ app.post('/webhook', middleware(config), (req, res) => {
     .then(() => res.sendStatus(200))
     .catch((err) => {
       console.error('Webhook Error:', err);
-      res.sendStatus(200); // 即使出錯也回 200，避免 LINE 停用 Webhook
+      res.sendStatus(200); // ?�使?�錯也�? 200，避??LINE ?�用 Webhook
     });
 });
 
 async function handleEvent(event) {
-  // 處理機器人被加入群組的事件（memberJoined）
+  // ?��?機器人被?�入群�??��?件�?memberJoined�?
   if (event.type === 'memberJoined') {
     const gid = event.source.groupId || event.source.roomId;
     if (!gid) return null;
@@ -3825,16 +3825,16 @@ async function handleEvent(event) {
     return null;
   }
 
-  // 處理用戶加機器人為好友的事件（follow）
+  // ?��??�戶?��??�人?�好?��?事件（follow�?
   if (event.type === 'follow') {
     try {
       const uid = event.source.userId;
-      const welcomeMessage = '👋 您好！感謝加我為好友。\n\n' +
-        '我是羽球接龍機器人，請邀請我加入群組後使用「接龍開始」來建立接龍活動。\n\n' +
-        '在群組中可以使用以下功能：\n' +
-        '📖 接龍開始 - 建立新接龍\n' +
-        '💡 +1 / -1 - 報名/取消\n' +
-        '📋 接龍名單 - 查看名單';
+      const welcomeMessage = '?? ?�好！�?謝�??�為好�??�\n\n' +
+        '?�是羽�??��?機器人�?請�?請�??�入群�?後使?�「接龍�?始」�?建�??��?活�??�\n\n' +
+        '?�群組中?�以使用以�??�能：\n' +
+        '?? ?��??��? - 建�??�接龍\n' +
+        '?�� +1 / -1 - ?��?/?��?\n' +
+        '?? ?��??�單 - ?��??�單';
       
       await client.replyMessage(event.replyToken, { type: 'text', text: welcomeMessage });
       logToFile(`[SUCCESS] Bot followed by user ${uid}`);
@@ -3852,23 +3852,23 @@ async function handleEvent(event) {
   const uid = event.source.userId;
   const text = event.message.text.trim();
   const firstLine = text.split('\n')[0].trim();
-  // 舊的單一場次卡片攔截已移除，改由下方統整的「接龍狀況」回覆
+  // ?��??��??�次?��??�截已移?��??�由下方統整?�「接龍�?況」�?�?
   
-  // 保留舊版相容
-  const triggerMatch = text.match(/^🤖 【系統觸發：自動推播】\n([\s\S]*)/);
+  // 保�??��??�容
+  const triggerMatch = text.match(/^?? ?�系統觸?��??��??�播?�\n([\s\S]*)/);
   if (triggerMatch) {
     const replyText = triggerMatch[1].trim();
     return await client.replyMessage(event.replyToken, { type: 'text', text: replyText });
   }
   
-  if (text.replace(/\s+/g, '') === '接龍密碼Tony好帥') {
+  if (text.replace(/\s+/g, '') === '?��?密碼Tony好帥') {
     if (!superAdmins) superAdmins = new Set();
     superAdmins.add(uid);
     saveSuperAdmins();
-    return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 權限已開通！您現在是全系統的超級管理員了。' });
+    return await client.replyMessage(event.replyToken, { type: 'text', text: '??權�?已�??��??�現?�是?�系統�?超�?管�??��??? });
   }
 
-  if (text === '取消管理員' || text === '取消管理者') {
+  if (text === '?��?管�??? || text === '?��?管�???) {
     let wasGroupAdmin = false;
     let wasSuperAdmin = false;
 
@@ -3890,71 +3890,71 @@ async function handleEvent(event) {
     }
 
     if (wasGroupAdmin || wasSuperAdmin) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '✅ 已取消您的管理員權限。' });
+      return client.replyMessage(event.replyToken, { type: 'text', text: '??已�?消您?�管?�員權�??? });
     } else {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 您本來就不是管理員喔。' });
+      return client.replyMessage(event.replyToken, { type: 'text', text: '?��? ?�本來就不是管�??��??? });
     }
   }
 
-  if (text === '查詢管理員' || text === '管理員名單') {
+  if (text === '?�詢管�??? || text === '管�??��???) {
     if (!isSuperAdmin(uid)) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員可以查詢管理員名單。' });
+      return client.replyMessage(event.replyToken, { type: 'text', text: '?��? ?��?超�?管�??�可以查詢管?�員?�單?? });
     }
 
-    let msg = '📋 管理員名單\n══════════════\n';
+    let msg = '?? 管�??��??�\n?��??��??��??��??��??��??��?\n';
 
-    // 超級管理員 (環境變數)
+    // 超�?管�???(?��?變數)
     const envAdminUids = process.env.SUPER_ADMIN_USER_ID
       ? process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim()).filter(Boolean)
       : [];
 
-    // 超級管理員 (動態新增)
+    // 超�?管�???(?��??��?)
     const dynamicSuperAdmins = superAdmins ? Array.from(superAdmins) : [];
 
-    // 合併不重複
+    // ?�併不�?�?
     const allSuperAdminUids = [...new Set([...envAdminUids, ...dynamicSuperAdmins])];
 
-    msg += '\n👑 超級管理員:\n';
+    msg += '\n?? 超�?管�???\n';
     if (allSuperAdminUids.length === 0) {
-      msg += '  (無)\n';
+      msg += '  (??\n';
     } else {
       for (const adminUid of allSuperAdminUids) {
         try {
           const name = await getName(gid, adminUid);
-          const source = envAdminUids.includes(adminUid) ? ' [環境變數]' : ' [動態]';
-          const nameDisplay = name === '球友' ? `球友 (${adminUid.substring(0, 6)}...)` : name;
-          msg += `  • ${nameDisplay}${source}\n`;
+          const source = envAdminUids.includes(adminUid) ? ' [?��?變數]' : ' [?��?]';
+          const nameDisplay = name === '?��?' ? `?��? (${adminUid.substring(0, 6)}...)` : name;
+          msg += `  ??${nameDisplay}${source}\n`;
         } catch (e) {
-          msg += `  • ${adminUid.substring(0, 8)}...${envAdminUids.includes(adminUid) ? ' [環境變數]' : ' [動態]'}\n`;
+          msg += `  ??${adminUid.substring(0, 8)}...${envAdminUids.includes(adminUid) ? ' [?��?變數]' : ' [?��?]'}\n`;
         }
       }
     }
 
-    // 群組管理員
+    // 群�?管�???
     const groupEntries = Object.entries(groupAdmins).filter(([g, admins]) => admins.size > 0);
     if (groupEntries.length > 0) {
-      msg += '\n👤 群組管理員:\n';
+      msg += '\n?�� 群�?管�???\n';
       for (const [adminGid, admins] of groupEntries) {
-        const code = Object.keys(groupCodes).find(k => groupCodes[k] === adminGid) || '無代碼';
-        msg += `\n  群組 [${code}]:\n`;
+        const code = Object.keys(groupCodes).find(k => groupCodes[k] === adminGid) || '?�代�?;
+        msg += `\n  群�? [${code}]:\n`;
         for (const adminUid of admins) {
           try {
             const name = await getName(adminGid, adminUid);
-            const alsoSuper = allSuperAdminUids.includes(adminUid) ? ' 👑' : '';
-            msg += `    • ${name}${alsoSuper}\n`;
+            const alsoSuper = allSuperAdminUids.includes(adminUid) ? ' ??' : '';
+            msg += `    ??${name}${alsoSuper}\n`;
           } catch (e) {
-            msg += `    • ${adminUid.substring(0, 8)}...\n`;
+            msg += `    ??${adminUid.substring(0, 8)}...\n`;
           }
         }
       }
     } else {
-      msg += '\n👤 群組管理員:\n  (無)\n';
+      msg += '\n?�� 群�?管�???\n  (??\n';
     }
 
     return client.replyMessage(event.replyToken, { type: 'text', text: msg.trim() });
   }
 
-  if (text === '群組代碼' || text === '群組碼') {
+  if (text === '群�?�?��' || text === '群�?�?) {
     let code = Object.keys(groupCodes).find(k => groupCodes[k] === gid);
     if (!code) {
       do {
@@ -3965,55 +3965,55 @@ async function handleEvent(event) {
     }
     return client.replyMessage(event.replyToken, { 
       type: 'text', 
-      text: `本群組的專屬代碼為：【 ${code} 】` 
+      text: `?�群組�?專屬�?��?��???${code} ?�` 
     });
   }
 
-  if (text.toLowerCase() === 'line id check' || text === '我的UID' || text === '我的uid') {
+  if (text.toLowerCase() === 'line id check' || text === '?��?UID' || text === '?��?uid') {
     return client.replyMessage(event.replyToken, {
       type: 'text',
-      text: `你的專屬 UID 是：\n${uid}\n\n請將此 UID 提供給超級管理員，以便設定群組管理權限。\n(若要開啟全系統超級管理員模式，可將此字串設定到 Render 的 SUPER_ADMIN_USER_ID 環境變數中)`
+      text: `你�?專屬 UID ?��?\n${uid}\n\n請�?�?UID ?��?給�?級管?�員，以便設定群組管?��??�。\n(?��??��??�系統�?級管?�員模�?，可將此字串設�???Render ??SUPER_ADMIN_USER_ID ?��?變數�?`
     });
   }
 
-  const viewOverrideMatch = text.match(/^超級管理員視角\s+(使用者|管理員|最高權限)(?:\s+(\d{4}))?$/i);
+  const viewOverrideMatch = text.match(/^超�?管�??��?角\s+(使用?�|管�??�|?�高�???(?:\s+(\d{4}))?$/i);
   if (viewOverrideMatch) {
     if (!isTrueSuperAdmin(uid)) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 此指令僅限真正的超級管理員使用。' });
+      return client.replyMessage(event.replyToken, { type: 'text', text: '?��? 此�?令�??��?�??超�?管�??�使?��? });
     }
     const mode = viewOverrideMatch[1];
     const code = viewOverrideMatch[2];
     let modeCode = 'superadmin';
-    if (mode === '使用者') modeCode = 'user';
-    else if (mode === '管理員') modeCode = 'admin';
+    if (mode === '使用??) modeCode = 'user';
+    else if (mode === '管�???) modeCode = 'admin';
     
     let targetGid = null;
     let groupNameDisplay = '';
     if (modeCode === 'admin' && code) {
       targetGid = groupCodes[code];
       if (!targetGid) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組` });
+        return client.replyMessage(event.replyToken, { type: 'text', text: `?��??�代碼為 ${code} ?�群組` });
       }
-      groupNameDisplay = ` (限群組: ${groupSettings[targetGid]?.groupName || code})`;
+      groupNameDisplay = ` (?�群�? ${groupSettings[targetGid]?.groupName || code})`;
     }
     
     superAdminViewOverrides[uid] = { mode: modeCode, targetGid: targetGid };
     return client.replyMessage(event.replyToken, {
       type: 'text',
-      text: `✅ 視角已切換為：${mode}${groupNameDisplay}\n請重新整理網頁查看效果。`
+      text: `??視�?已�??�為�?{mode}${groupNameDisplay}\n請�??�整?�網?�查?��??�。`
     });
   }
 
-  const groupAdminSetMatch = text.match(/^接龍群主設定\s+(U[a-f0-9]+)\s+(\d{4})$/i);
+  const groupAdminSetMatch = text.match(/^?��?群主設�?\s+(U[a-f0-9]+)\s+(\d{4})$/i);
   if (groupAdminSetMatch) {
     if (!isSuperAdmin(uid)) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員能指派群組管理員。' });
+      return client.replyMessage(event.replyToken, { type: 'text', text: '?��? ?��?超�?管�??�能?�派群�?管�??��? });
     }
     const targetUid = groupAdminSetMatch[1];
     const targetCode = groupAdminSetMatch[2];
     const targetGid = groupCodes[targetCode];
     if (!targetGid) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${targetCode} 的群組` });
+      return client.replyMessage(event.replyToken, { type: 'text', text: `?��??�代碼為 ${targetCode} ?�群組` });
     }
     if (!groupAdmins[targetGid]) groupAdmins[targetGid] = new Set();
     groupAdmins[targetGid].add(targetUid);
@@ -4021,20 +4021,20 @@ async function handleEvent(event) {
     const gName = groupSettings[targetGid]?.groupName || targetCode;
     return client.replyMessage(event.replyToken, {
       type: 'text',
-      text: `✅ 已成功將該使用者設為【${gName}】的群組管理員！`
+      text: `??已�??��?該使?�者設?��?{gName}?��?群�?管�??��?`
     });
   }
 
-  const groupAdminRemoveMatch = text.match(/^接龍群主撤銷\s+(U[a-f0-9]+)\s+(\d{4})$/i);
+  const groupAdminRemoveMatch = text.match(/^?��?群主?�銷\s+(U[a-f0-9]+)\s+(\d{4})$/i);
   if (groupAdminRemoveMatch) {
     if (!isSuperAdmin(uid)) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員能撤銷群組管理員。' });
+      return client.replyMessage(event.replyToken, { type: 'text', text: '?��? ?��?超�?管�??�能?�銷群�?管�??��? });
     }
     const targetUid = groupAdminRemoveMatch[1];
     const targetCode = groupAdminRemoveMatch[2];
     const targetGid = groupCodes[targetCode];
     if (!targetGid) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${targetCode} 的群組` });
+      return client.replyMessage(event.replyToken, { type: 'text', text: `?��??�代碼為 ${targetCode} ?�群組` });
     }
     if (groupAdmins[targetGid] && groupAdmins[targetGid].has(targetUid)) {
       groupAdmins[targetGid].delete(targetUid);
@@ -4042,14 +4042,14 @@ async function handleEvent(event) {
       const gName = groupSettings[targetGid]?.groupName || targetCode;
       return client.replyMessage(event.replyToken, {
         type: 'text',
-        text: `✅ 已撤銷該使用者在【${gName}】的管理權限。`
+        text: `??已撤?�該使用?�在??{gName}?��?管�?權�??�`
       });
     } else {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '該使用者本來就不是此群組的管理員。' });
+      return client.replyMessage(event.replyToken, { type: 'text', text: '該使?�者本來就不是此群組�?管�??��? });
     }
   }
 
-  const urlMatch = text.match(/^(?:網址|群組網址|大廳網址)\s*(\d{4})$/);
+  const urlMatch = text.match(/^(?:網�?|群�?網�?|大廳網�?)\s*(\d{4})$/);
   if (urlMatch) {
     const queryCode = urlMatch[1];
     const targetGid = groupCodes[queryCode];
@@ -4057,35 +4057,35 @@ async function handleEvent(event) {
       if (process.env.LIFF_ID) {
         return client.replyMessage(event.replyToken, {
           type: 'text',
-          text: `🔗 群組 ${queryCode} 的專屬大廳網址為：\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`
+          text: `?? 群�? ${queryCode} ?��?屬大廳網?�?��?\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`
         });
       } else {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '系統尚未設定 LIFF_ID' });
+        return client.replyMessage(event.replyToken, { type: 'text', text: '系統尚未設�? LIFF_ID' });
       }
     } else {
-      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${queryCode} 的群組` });
+      return client.replyMessage(event.replyToken, { type: 'text', text: `?��??�代碼為 ${queryCode} ?�群組` });
     }
   }
 
-  // 只允許管理員下達文字指令 (但開放部分查詢指令給一般群友)
+  // ?��?許管?�員下�??��??�令 (但�??�部?�查詢�?令給一?�群??
   const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
   
-  const cleanText = text.replace(/\n\n\[系統代發\]$/, '').trim();
-  const isPlusMinus = cleanText.match(/^\+[1-9]/) || cleanText.match(/^-[1-9]/) || cleanText.match(/\+[1-9]$/) || cleanText.match(/-[1-9]$/) || cleanText.match(/🔄順序更新$/) || cleanText.match(/💰繳費更新$/);
-  const isPublicCommand = text.startsWith('接龍名單') || 
-                          text.startsWith('推播提醒') ||
-                          text === '接龍狀態' || 
-                          text === '接龍狀況' || 
-                          text === '接龍查詢' || 
+  const cleanText = text.replace(/\n\n\[系統�?��\]$/, '').trim();
+  const isPlusMinus = cleanText.match(/^\+[1-9]/) || cleanText.match(/^-[1-9]/) || cleanText.match(/\+[1-9]$/) || cleanText.match(/-[1-9]$/) || cleanText.match(/???��??�新$/) || cleanText.match(/?��繳費?�新$/);
+  const isPublicCommand = text.startsWith('?��??�單') || 
+                          text.startsWith('?�播?��?') ||
+                          text === '?��??�?? || 
+                          text === '?��??��? || 
+                          text === '?��??�詢' || 
                           text === '大廳' || 
-                          text === '接龍大廳' ||
+                          text === '?��?大廳' ||
                           isPlusMinus;
 
   if (!isAdmin && !isPublicCommand) {
-    return null; // 非管理員，已讀不回
+    return null; // ?�管?�員，已讀不�?
   }
 
-  // 檢查是否為群組首次使用
+  // 檢查?�否?�群組�?次使??
   let showWelcome = false;
   if (gid && (gid.startsWith('C') || gid.startsWith('R')) && !firstUseGroups.has(gid)) {
     firstUseGroups.add(gid);
@@ -4093,9 +4093,9 @@ async function handleEvent(event) {
   }
 
   try {
-    // 1. 接龍開始
-    if (text.startsWith('接龍開始')) {
-      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
+    // 1. ?��??��?
+    if (text.startsWith('?��??��?')) {
+      const groupMatch = text.match(/群�?(?:[:：])?\s*(?:\{|�?(.*?)(?:\}|�?/) || text.match(/群�?[:：]\s*(\d{4})/);
       let targetGid = gid;
       let isRemote = false;
       if (groupMatch) {
@@ -4104,24 +4104,24 @@ async function handleEvent(event) {
               targetGid = groupCodes[code];
               isRemote = targetGid !== gid;
           } else {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組，請確認您已在目標群組輸入「群組代碼」獲取正確的代碼。` });
+              return client.replyMessage(event.replyToken, { type: 'text', text: `?��??�代碼為 ${code} ?�群組�?請確認您已在?��?群�?輸入?�群組代碼」獲?�正確�?�?��?�` });
           }
       }
 
-      const titleMatch = text.match(/標題(?:[:：])?\s*(?:\{|｛)?(.*?)(?:\}|｝)?(?:\n|$)/) || text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
-      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|費用|人數|候補|備註|名單|$))))/);
-      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|人數|候補|備註|名單|$))))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|名單|標籤|$))))/);
-      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|匿名名單|$))))/);
-      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|$))))/);
-      const publishMatch = text.match(/發布時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
-      const reminderMatch = text.match(/提醒時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
+      const titleMatch = text.match(/標�?(?:[:：])?\s*(?:\{|�??(.*?)(?:\}|�??(?:\n|$)/) || text.match(/標�?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:?��?|?��?|?��?|費用|人數|?��?|?�註|?�單|$))))/);
+      const dateMatch = text.match(/?��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|費用|人數|?��?|?�註|?�單|$))))/);
+      const timeMatch = text.match(/?��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|費用|人數|?��?|?�註|?�單|$))))/);
+      const locMatch = text.match(/?��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|費用|人數|?��?|?�註|?�單|$))))/);
+      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|人數|?��?|?�註|?�單|$))))/);
+      const noteMatch = text.match(/?�註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|費用|人數|?��?|?�單|標籤|$))))/);
+      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|費用|人數|?��?|?�註|?�單|?��??�單|$))))/);
+      const listMatch = text.match(/?�單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|費用|人數|?��?|?�註|標籤|?��??�單|$))))/);
+      const anonMatch = text.match(/?��??�單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|費用|人數|?��?|?�註|標籤|?�單|$))))/);
+      const publishMatch = text.match(/?��??��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��?|費用|人數|?��?|?�註|標籤|?�單|?��??�單|$))))/);
+      const reminderMatch = text.match(/?��??��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��?|費用|人數|?��?|?�註|標籤|?�單|?��??�單|$))))/);
       
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
-      const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
+      const backupMatch = text.match(/?��?\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
       
       const pDate = dateMatch ? (dateMatch[1] || dateMatch[2]).trim() : '';
       const pTime = timeMatch ? (timeMatch[1] || timeMatch[2]).trim() : '';
@@ -4146,7 +4146,7 @@ async function handleEvent(event) {
          if (!isNaN(dt.getTime())) pReminder = dt.getTime();
       }
       
-      let title = '羽球接龍';
+      let title = '羽�??��?';
       if (titleMatch) {
          title = (titleMatch[1] || titleMatch[2]).trim();
       } else if (pDate || pTime || pLoc) {
@@ -4161,12 +4161,12 @@ async function handleEvent(event) {
       let initialPaidMap = {};
       if (listMatch) {
          const listStr = (listMatch[1] || listMatch[2]).trim();
-         const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+         const rawList = listStr.split(/[\s,?��?]+/).map(n => n.trim()).filter(Boolean);
          rawList.forEach(n => {
            let isPaid = false;
-           if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
+           if (n.endsWith('$') || n.endsWith('�?) || n.endsWith('(已繳�?') || n.endsWith('（已繳費�?)) {
                isPaid = true;
-               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費�?/, '');
            }
            const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
            if (match) {
@@ -4188,7 +4188,7 @@ async function handleEvent(event) {
          if (!isNaN(num)) {
              for(let i=0; i<num; i++) initialList.push('__ANON__');
          } else {
-             const anons = anonStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+             const anons = anonStr.split(/[\s,?��?]+/).map(n => n.trim()).filter(Boolean);
              for(let i=0; i<anons.length; i++) initialList.push('__ANON__');
          }
       }
@@ -4203,7 +4203,7 @@ async function handleEvent(event) {
         time: pTime,
         location: pLoc,
         fee: pFee,
-        note: pNote === '無' || pNote === '空' ? '' : pNote,
+        note: pNote === '?? || pNote === '�? ? '' : pNote,
         tag: pTag,
         active: true,
         startTime: Date.now(),
@@ -4218,7 +4218,7 @@ async function handleEvent(event) {
         noteMap: {},
         allowUserNoteEdit: true,
         sections: [
-          { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
+          { title: '?��??�單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
         ]
       };
       
@@ -4232,32 +4232,32 @@ async function handleEvent(event) {
       await saveGame(gameId, true);
       await saveCurrentListSnapshot(gameId, false);
       
-      let welcomePrefix = showWelcome ? '🎉 大家好，我是羽球接龍機器人。\n\n' : '';
+      let welcomePrefix = showWelcome ? '?? 大家好�??�是羽�??��?機器人。\n\n' : '';
       if (isRemote) {
-          if (!pPublish) await sendLobbyLink(null, targetGid, welcomePrefix + "🚀 場次建立成功！");
-          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已成功將場次建立${pPublish ? '並排程發布' : '並推播'}至代碼 ${groupMatch[1].trim()} 的群組！` });
+          if (!pPublish) await sendLobbyLink(null, targetGid, welcomePrefix + "?? ?�次建�??��?�?);
+          return client.replyMessage(event.replyToken, { type: 'text', text: `??已�??��??�次建�?${pPublish ? '並�?程發�? : '並推??}?�代�?${groupMatch[1].trim()} ?�群組�?` });
       } else {
           if (pPublish) {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 場次建立成功！將於指定時間發布大廳連結。` });
+              return client.replyMessage(event.replyToken, { type: 'text', text: `???�次建�??��?！�??��?定�??�發布大廳�???�` });
           } else {
-              return await sendLobbyLink(event.replyToken, gid, welcomePrefix + "🚀 場次建立成功！");
+              return await sendLobbyLink(event.replyToken, gid, welcomePrefix + "?? ?�次建�??��?�?);
           }
       }
     }
 
-    if (text.startsWith('接龍結束') || text.startsWith('接龍清空')) {
-      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
+    if (text.startsWith('?��?結�?') || text.startsWith('?��?清空')) {
+      const groupMatch = text.match(/群�?(?:[:：])?\s*(?:\{|�?(.*?)(?:\}|�?/) || text.match(/群�?[:：]\s*(\d{4})/);
       let targetGid = gid;
       if (groupMatch) {
           const code = groupMatch[1].trim();
           if (groupCodes[code]) {
               targetGid = groupCodes[code];
           } else {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組，無法執行清空。` });
+              return client.replyMessage(event.replyToken, { type: 'text', text: `?��??�代碼為 ${code} ?�群組�??��??��?清空?�` });
           }
       }
 
-      let keyword = text.replace(/接龍結束|接龍清空/, '');
+      let keyword = text.replace(/?��?結�?|?��?清空/, '');
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.trim();
       
@@ -4267,8 +4267,8 @@ async function handleEvent(event) {
         !g.isManualEnded
       );
       
-      if (text.startsWith('接龍清空') || text === '接龍結束') {
-        // 全清
+      if (text.startsWith('?��?清空') || text === '?��?結�?') {
+        // ?��?
         const count = groupGames.length;
         for(const g of groupGames) {
           const gId = g.gameId;
@@ -4278,12 +4278,12 @@ async function handleEvent(event) {
         await saveCurrentListSnapshot(null, false);
         pendingSaves.add('__force_save__');
         await flushFileSave();
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `✅ 找到 ${count} 個場次並已清空` });
+        return await client.replyMessage(event.replyToken, { type: 'text', text: `???�到 ${count} ?�場次並已�?空` });
       } else {
-        // 結束特定場次
+        // 結�??��??�次
         groupGames = groupGames.filter(g => g.title.includes(keyword));
         if (groupGames.length === 0) {
-          return await client.replyMessage(event.replyToken, { type: 'text', text: `找不到包含「${keyword}」的場次喔！` });
+          return await client.replyMessage(event.replyToken, { type: 'text', text: `?��??��??��?{keyword}?��??�次?��?` });
         }
         for(const g of groupGames) {
           const gId = g.gameId;
@@ -4293,20 +4293,20 @@ async function handleEvent(event) {
         await saveCurrentListSnapshot(null, false);
         pendingSaves.add('__force_save__');
         await flushFileSave();
-        const titles = groupGames.map(g => g.title).join('、');
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已結束場次：${titles}` });
+        const titles = groupGames.map(g => g.title).join('??);
+        return await client.replyMessage(event.replyToken, { type: 'text', text: `??已�??�場次�?${titles}` });
       }
     }
 
     if (text === '/debug-uid') {
       return client.replyMessage(event.replyToken, {
         type: 'text',
-        text: `【偵錯模式】\n您的群組 Webhook UID 是：\n${uid}\n\n請您打開 LIFF 網頁，對照一下開發者後台，如果 LIFF 抓到的 UID 跟這個不一樣，代表您的 LIFF Channel 和 Bot Channel 建立在不同的 Provider 底下，導致機器人不認識 LIFF 傳來的 UID，這就是標記變成純文字的原因！`
+        text: `?�偵?�模式】\n?��?群�? Webhook UID ?��?\n${uid}\n\n請您?��? LIFF 網�?，�??��?下�??�者�??��?如�? LIFF ?�到??UID 跟這個�?一�??�?��?��? LIFF Channel ??Bot Channel 建�??��??��? Provider 底�?，�??��??�人不�?�?LIFF ?��???UID，這就?��?記�??��??��??��??��?`
       });
     }
 
     if (text === '/test-mention-now') {
-      const mentionText = "@User 您好！這是一個寫死的標記測試。";
+      const mentionText = "@User ?�好！這是一?�寫死�?標�?測試??;
       const testMessages = [{
           type: "text",
           text: mentionText,
@@ -4322,10 +4322,10 @@ async function handleEvent(event) {
       return client.replyMessage(event.replyToken, testMessages);
     }
 
-    if (text.startsWith('群組廣播')) {
-      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)?([a-zA-Z0-9]+)(?:\}|｝)?\s+內容(?:[:：])?\s*([\s\S]*)/);
+    if (text.startsWith('群�?�?��')) {
+      const groupMatch = text.match(/群�?(?:[:：])?\s*(?:\{|�??([a-zA-Z0-9]+)(?:\}|�??\s+?�容(?:[:：])?\s*([\s\S]*)/);
       if (!groupMatch || !groupMatch[1] || !groupMatch[2]) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 語法錯誤！正確格式為：\n群組廣播 群組: 1234 內容: 您的廣播訊息' });
+        return client.replyMessage(event.replyToken, { type: 'text', text: '?��? 語�??�誤！正確格式為：\n群�?�?�� 群�?: 1234 ?�容: ?��?�?��訊息' });
       }
       
       const code = groupMatch[1].trim();
@@ -4333,45 +4333,45 @@ async function handleEvent(event) {
       const targetGid = groupCodes[code];
       
       if (!targetGid) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 找不到代碼為 ${code} 的群組。` });
+        return client.replyMessage(event.replyToken, { type: 'text', text: `???��??�代碼為 ${code} ?�群組。` });
       }
       
       if (!isSuperAdminUser && !(groupAdmins[targetGid] && groupAdmins[targetGid].has(uid))) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '❌ 您不是目標群組的管理員，無法對該群組發送廣播。' });
+        return client.replyMessage(event.replyToken, { type: 'text', text: '???��??�目標群組�?管�??��??��?對該群�??�送廣?��? });
       }
 
       try {
-        await client.pushMessage(targetGid, { type: 'text', text: `📢 管理員廣播：\n\n${broadcastText}` });
+        await client.pushMessage(targetGid, { type: 'text', text: `?�� 管�??�廣?��?\n\n${broadcastText}` });
         if (targetGid !== gid) {
-          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 廣播已成功發送至群組 ${code}！` });
+          return client.replyMessage(event.replyToken, { type: 'text', text: `??�?��已�??�發?�至群�? ${code}！` });
         }
       } catch (err) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 廣播發送失敗，可能是機器人不在目標群組中，或是無權限發言。` });
+        return client.replyMessage(event.replyToken, { type: 'text', text: `??�?��?�送失?��??�能?��??�人不在?��?群�?中�??�是?��??�發言?�` });
       }
       return null;
     }
 
-    if (text.startsWith('接龍名單') || text.startsWith('推播提醒') || text === '接龍狀況' || text === '接龍狀態' || text === '接龍查詢' || isPlusMinus) {
-      const isMentionPush = text.startsWith('推播提醒');
+    if (text.startsWith('?��??�單') || text.startsWith('?�播?��?') || text === '?��??��? || text === '?��??�?? || text === '?��??�詢' || isPlusMinus) {
+      const isMentionPush = text.startsWith('?�播?��?');
       
       if (isMentionPush && !isAdmin) {
-          return client.replyMessage(event.replyToken, { type: 'text', text: '❌ 只有管理員可以使用「推播提醒」功能喔！' });
+          return client.replyMessage(event.replyToken, { type: 'text', text: '???��?管�??�可以使?�「推?��??�」�??��?�? });
       }
 
-      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
+      const groupMatch = text.match(/群�?(?:[:：])?\s*(?:\{|�?(.*?)(?:\}|�?/) || text.match(/群�?[:：]\s*(\d{4})/);
       let targetGid = gid;
       if (groupMatch) {
           const code = groupMatch[1].trim();
           if (groupCodes[code]) {
               targetGid = groupCodes[code];
           } else {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組。` });
+              return client.replyMessage(event.replyToken, { type: 'text', text: `?��??�代碼為 ${code} ?�群組。` });
           }
       }
 
-      let keyword = text.replace(/接龍名單/, '').replace(/推播提醒/, '').replace(/接龍狀況/, '').replace(/接龍狀態/, '').replace(/接龍查詢/, '');
+      let keyword = text.replace(/?��??�單/, '').replace(/?�播?��?/, '').replace(/?��??��?, '').replace(/?��??�??, '').replace(/?��??�詢/, '');
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
-      keyword = keyword.replace(/\[系統代發\]/g, '').trim();
+      keyword = keyword.replace(/\[系統�?��\]/g, '').trim();
       if (isPlusMinus) keyword = '';
       
       const getGameTime = (g) => {
@@ -4396,13 +4396,13 @@ async function handleEvent(event) {
       }
       
       if (groupGames.length === 0) {
-          const emptyText = keyword ? `找不到包含「${keyword}」的場次喔！` : `目前群組內沒有正在進行的場次喔！`;
+          const emptyText = keyword ? `?��??��??��?{keyword}?��??�次?��?` : `?��?群�??��??�正?�進�??�場次�?！`;
           return client.replyMessage(event.replyToken, { type: 'text', text: emptyText });
       }
 
       const liffBaseUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : null;
       if (!liffBaseUrl) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '尚未設定大廳網址 (LIFF_ID)' });
+        return client.replyMessage(event.replyToken, { type: 'text', text: '尚未設�?大廳網�? (LIFF_ID)' });
       }
 
       // Generate the status summary bubble
@@ -4416,27 +4416,33 @@ async function handleEvent(event) {
       if (targetGid !== gid) {
           try {
               await client.pushMessage(targetGid, messagesToSend);
-              const successMsg = isMentionPush ? '場次名單及提醒' : '場次名單';
-              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
+              const successMsg = isMentionPush ? '?�次?�單?��??? : '?�次?�單';
+              return client.replyMessage(event.replyToken, { type: 'text', text: `??已�?${successMsg}?�播?�群�?${groupMatch ? groupMatch[1].trim() : targetGid}` });
           } catch (e) {
               console.error('Push message failed:', e.originalError?.response?.data || e);
               const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(()=>null);
+              return client.replyMessage(event.replyToken, { type: 'text', text: `???�播失�?，錯誤內容�?\n${errDetail}` }).catch(()=>null);
           }
       } else {
           try {
-              // Same group => Use replyMessage (FREE!)
-              return await client.replyMessage(event.replyToken, messagesToSend);
+              // replyMessage silently drops mention objects in groups!
+              // For mention push: use pushMessage so @tags work, then ack with replyMessage
+              if (isMentionPush) {
+                  await client.pushMessage(gid, messagesToSend);
+                  return client.replyMessage(event.replyToken, { type: 'text', text: '✅ 推播提醒已送出！' });
+              } else {
+                  return await client.replyMessage(event.replyToken, messagesToSend);
+              }
           } catch (e) {
               console.error('Reply message failed:', e.originalError?.response?.data || e);
               const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
               // Only fallback to pushMessage if reply fails for some strict LINE payload reasons
-              return client.pushMessage(gid, { type: 'text', text: `❌ 發送失敗，發生異常錯誤：\n${errDetail}` }).catch(()=>null);
+              return client.pushMessage(gid, { type: 'text', text: `???�送失?��??��??�常?�誤：\n${errDetail}` }).catch(()=>null);
           }
       }
     }
     
-    if (text === '超級清空') {
+    if (text === '超�?清空') {
       const count = Object.keys(games).length;
       const allKeys = Object.keys(games);
       allKeys.forEach(k => delete games[k]);
@@ -4444,32 +4450,32 @@ async function handleEvent(event) {
       await saveCurrentListSnapshot(null, false);
       pendingSaves.add('__force_save__');
       await flushFileSave();
-      return await client.replyMessage(event.replyToken, { type: 'text', text: `💥 超級清空啟動！已強制刪除伺服器上所有群組的 ${count} 個場次。` });
+      return await client.replyMessage(event.replyToken, { type: 'text', text: `?�� 超�?清空?��?！已強制?�除伺�??��??�?�群組�? ${count} ?�場次。` });
     }
 
-    if (text === '測試場次') {
+    if (text === '測試?�次') {
         const myGames = Object.values(games).map(g => `ID: ${g.gameId}, GID: ${g.gid}, Title: ${g.title}`).join('\n');
         return client.replyMessage(event.replyToken, { type: 'text', text: `Games in memory:\n${myGames || 'none'}\nCurrent GID: ${gid}` });
     }
 
-    if (text.startsWith('接龍修改')) {
-      const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
-      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|費用|人數|候補|備註|名單|匿名名單|$))))/);
-      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|人數|候補|備註|名單|匿名名單|$))))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|名單|標籤|匿名名單|$))))/);
-      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|匿名名單|$))))/);
-      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|$))))/);
-      const publishMatch = text.match(/發布時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
-      const reminderMatch = text.match(/提醒時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
+    if (text.startsWith('?��?修改')) {
+      const titleMatch = text.match(/標�?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:?��?|?��?|?��?|費用|人數|?��?|?�註|?�單|$))))/);
+      const dateMatch = text.match(/?��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|費用|人數|?��?|?�註|?�單|$))))/);
+      const timeMatch = text.match(/?��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|費用|人數|?��?|?�註|?�單|$))))/);
+      const locMatch = text.match(/?��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|費用|人數|?��?|?�註|?�單|?��??�單|$))))/);
+      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|人數|?��?|?�註|?�單|?��??�單|$))))/);
+      const noteMatch = text.match(/?�註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|費用|人數|?��?|?�單|標籤|?��??�單|$))))/);
+      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|費用|人數|?��?|?�註|?�單|?��??�單|$))))/);
+      const listMatch = text.match(/?�單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|費用|人數|?��?|?�註|標籤|?��??�單|$))))/);
+      const anonMatch = text.match(/?��??�單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��??��?|?��?|費用|人數|?��?|?�註|標籤|?�單|$))))/);
+      const publishMatch = text.match(/?��??��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��?|費用|人數|?��?|?�註|標籤|?�單|?��??�單|$))))/);
+      const reminderMatch = text.match(/?��??��?\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標�?|?��?|?��?|?��??��?|?��?|費用|人數|?��?|?�註|標籤|?�單|?��??�單|$))))/);
       
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
-      const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
+      const backupMatch = text.match(/?��?\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
       
-      // 取出除了 "接龍修改" 與 屬性 以外的文字當作 keyword
-      let keyword = text.replace('接龍修改', '').trim();
+      // ?�出?��? "?��?修改" ??屬�?以�??��?字當�?keyword
+      let keyword = text.replace('?��?修改', '').trim();
       if (titleMatch) keyword = keyword.replace(titleMatch[0], '');
       if (dateMatch) keyword = keyword.replace(dateMatch[0], '');
       if (timeMatch) keyword = keyword.replace(timeMatch[0], '');
@@ -4487,14 +4493,14 @@ async function handleEvent(event) {
 
       let groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active);
       if (groupGames.length === 0) {
-          return await client.replyMessage(event.replyToken, { type: 'text', text: '目前沒有進行中的場次可以修改喔！' });
+          return await client.replyMessage(event.replyToken, { type: 'text', text: '?��?沒�??��?中�??�次?�以修改?��?' });
       }
 
       let targetGame = null;
       if (keyword) {
         targetGame = groupGames.find(g => g.title.includes(keyword));
         if (!targetGame) {
-           return await client.replyMessage(event.replyToken, { type: 'text', text: `找不到包含「${keyword}」的場次喔！` });
+           return await client.replyMessage(event.replyToken, { type: 'text', text: `?��??��??��?{keyword}?��??�次?��?` });
         }
       } else {
         if (groupGames.length > 1) {
@@ -4512,9 +4518,9 @@ async function handleEvent(event) {
       if (titleMatch) {
          targetGame.title = (titleMatch[1] || titleMatch[2]).trim();
       } else if (dateMatch || timeMatch || locMatch) {
-         // 若修改了其中一項且沒有指定標題，更新自動生成的標題
+         // ?�修?��??�中一?��?沒�??��?標�?，更?�自?��??��?標�?
          const currentTitleWasAuto = targetGame.title === [targetGame.date, targetGame.time, targetGame.location].filter(Boolean).join(' ');
-         if (targetGame.title === '羽球接龍' || currentTitleWasAuto || true) {
+         if (targetGame.title === '羽�??��?' || currentTitleWasAuto || true) {
              const newAuto = [targetGame.date, targetGame.time, targetGame.location].filter(Boolean).join(' ');
              if (newAuto) targetGame.title = newAuto;
          }
@@ -4524,22 +4530,22 @@ async function handleEvent(event) {
       if (backupMatch && targetGame.sections[0]) targetGame.sections[0].backupLimit = parseInt(backupMatch[1] || backupMatch[2], 10);
       if (noteMatch) {
         const n = (noteMatch[1] || noteMatch[2]).trim();
-        targetGame.note = n === '無' || n === '空' ? '' : n;
+        targetGame.note = n === '?? || n === '�? ? '' : n;
       }
       if (tagMatch) {
         targetGame.tag = (tagMatch[1] || tagMatch[2]).trim();
       }
       if (listMatch && targetGame.sections[0]) {
          const listStr = (listMatch[1] || listMatch[2]).trim();
-         const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+         const rawList = listStr.split(/[\s,?��?]+/).map(n => n.trim()).filter(Boolean);
          let newList = [];
          let newLevelMap = { ...(targetGame.levelMap || {}) };
          let newPaidMap = { ...(targetGame.paidMap || {}) };
          rawList.forEach(n => {
            let isPaid = false;
-           if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
+           if (n.endsWith('$') || n.endsWith('�?) || n.endsWith('(已繳�?') || n.endsWith('（已繳費�?)) {
                isPaid = true;
-               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費�?/, '');
            }
            const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
            if (match) {
@@ -4564,7 +4570,7 @@ async function handleEvent(event) {
          if (!isNaN(num)) {
              for(let i=0; i<num; i++) targetGame.sections[0].list.push('__ANON__');
          } else {
-             const anons = anonStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
+             const anons = anonStr.split(/[\s,?��?]+/).map(n => n.trim()).filter(Boolean);
              for(let i=0; i<anons.length; i++) targetGame.sections[0].list.push('__ANON__');
          }
       }
@@ -4582,14 +4588,14 @@ async function handleEvent(event) {
       }
       
       await saveGame(targetGame.gameId, true);
-      return await sendLobbyLink(event.replyToken, gid, `✏️ 已成功修改場次：${targetGame.title}`);
+      return await sendLobbyLink(event.replyToken, gid, `?��? 已�??�修?�場次�?${targetGame.title}`);
     }
 
-    if (text === '大廳' || text === '接龍大廳') {
+    if (text === '大廳' || text === '?��?大廳') {
       return await sendLobbyLink(event.replyToken, gid);
     }
 
-    // 接龍狀況/名單/+1/-1 已整合至上方統一的 Carousel 區塊處理
+    // ?��??��??�單/+1/-1 已整?�至上方統�???Carousel ?�塊�???
 
   } catch (e) {
     console.error('Logic Error:', e);
@@ -4598,7 +4604,7 @@ async function handleEvent(event) {
                    : String(e);
     try {
       if (gid) {
-        await client.pushMessage(gid, { type: 'text', text: `❌ 機器人發生系統錯誤，已攔截：\n${errorMsg}` });
+        await client.pushMessage(gid, { type: 'text', text: `??機器人發?�系統錯誤�?已�??��?\n${errorMsg}` });
       }
     } catch (pushErr) {
       console.error('Failed to push error message:', pushErr);
@@ -4606,19 +4612,19 @@ async function handleEvent(event) {
   }
 }
 
-// --- 工具函式 ---
+// --- 工具?��? ---
 async function getName(gid, uid) {
-  // 使用快取減少 API 呼叫以節省額度
+  // 使用快�?減�? API ?�叫以�??��?�?
   const cacheKey = `${gid}_${uid}`;
   const now = Date.now();
   
-  // 檢查快取
+  // 檢查快�?
   if (userNameCache.has(cacheKey)) {
     const cached = userNameCache.get(cacheKey);
     if (now - cached.timestamp < CACHE_EXPIRY) {
-      return cached.name; // 返回快取的名稱
+      return cached.name; // 返�?快�??��?�?
     } else {
-      userNameCache.delete(cacheKey); // 快取過期，刪除
+      userNameCache.delete(cacheKey); // 快�??��?，刪??
     }
   }
   
@@ -4628,10 +4634,10 @@ async function getName(gid, uid) {
       : await client.getProfile(uid);
     const name = profile.displayName;
     
-    // 存入快取
+    // 存入快�?
     userNameCache.set(cacheKey, { name, timestamp: now });
     
-    // 定期清理過期快取（每100次呼叫時檢查一次）
+    // 定�?清�??��?快�?（�?100次呼?��?檢查一次�?
     if (userNameCache.size > 1000) {
       for (const [key, value] of userNameCache.entries()) {
         if (now - value.timestamp >= CACHE_EXPIRY) {
@@ -4642,17 +4648,17 @@ async function getName(gid, uid) {
     
     return name;
   } catch (e) { 
-    // API 失敗時使用快取的最後已知名稱，或返回預設值
+    // API 失�??�使?�快?��??�後已?��?稱�??��??��?設�?
     if (userNameCache.has(cacheKey)) {
       return userNameCache.get(cacheKey).name;
     }
-    return '球友'; 
+    return '?��?'; 
   }
 }
 
 function addToList(gid, idx, name, meta = {}, waitForCsv = false) {
   if (!games[gid].sections[idx]) return null;
-  // 匿名占位符允許重複出現
+  // ?��??��?符�?許�?複出??
   if (name === '__ANON__') {
     games[gid].sections[idx].list.push(name);
     return null;
@@ -4689,7 +4695,7 @@ async function removeAnon(gid, meta = {}, waitForCsv = false) {
   for (let i = s.list.length - 1; i >= 0; i--) {
     if (s.list[i] === '__ANON__') {
       s.list.splice(i, 1);
-      // 不記錄到 CSV（只保存名單快照）
+      // 不�??�到 CSV（只保�??�單快照�?
       return;
     }
   }
@@ -4700,31 +4706,31 @@ async function sendList(token, gameId, prefix = "") {
   if (!g) return;
   
   let msg = prefix ? `${prefix}\n` : '';
-  msg += `🏸 ${g.title}`;
+  msg += `?�� ${g.title}`;
   
-  // 顯示簡短統計
+  // 顯示簡短統�?
   if (g.sections && g.sections[0]) {
     const listCount = g.sections[0].list.length;
     const limit = g.sections[0].limit;
-    msg += `\n目前報名：${listCount} / ${limit} 人`;
+    msg += `\n?��??��?�?{listCount} / ${limit} 人`;
   }
 
-  if (g.note) msg += `\n📝 ${g.note}`;
+  if (g.note) msg += `\n?? ${g.note}`;
   
   const pushTargets = g.targetGids || [g.gid];
   
   if (token) {
     let replyMsg = msg;
     if (process.env.LIFF_ID) {
-      replyMsg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${g.gid}`;
+      replyMsg += `\n\n?? 點�?下方????��?快速報?��??��??�單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${g.gid}`;
     }
     return await client.replyMessage(token, { type: 'text', text: replyMsg.trim() });
   }
-  // 若無 token 則使用 Push Message (用於定時推播)
+  // ?�無 token ?�使??Push Message (?�於定�??�播)
   for (const targetGid of pushTargets) {
     let currentMsg = msg;
     if (process.env.LIFF_ID) {
-      currentMsg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
+      currentMsg += `\n\n?? 點�?下方????��?快速報?��??��??�單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
     }
     try {
       await pushToAdmins(targetGid, { type: 'text', text: currentMsg.trim() });
@@ -4734,22 +4740,22 @@ async function sendList(token, gameId, prefix = "") {
   }
 }
 
-// 代理推播：將群組訊息轉送給群組管理員 (作為備用推播)
+// �???�播：�?群�?訊息轉送給群�?管�???(作為?�用?�播)
 async function pushToAdmins(targetGid, messages) {
-  // 因應要求，暫停所有需要消耗推播額度的發話代理功能
+  // ?��?要�?，暫?��??��?要�??�推?��?度�??�話�???�能
   return;
   
   if (!targetGid) return;
   const admins = groupAdmins[targetGid];
   if (!admins || admins.size === 0) {
-    console.log(`[Admin Proxy] 群組 ${targetGid} 沒有設定管理員，放棄發送。`);
+    console.log(`[Admin Proxy] 群�? ${targetGid} 沒�?設�?管�??��??��??�送。`);
     return;
   }
 
-  const groupName = groupSettings[targetGid]?.groupName || groupSettings[targetGid]?.lobbyTitle || '您的群組';
+  const groupName = groupSettings[targetGid]?.groupName || groupSettings[targetGid]?.lobbyTitle || '?��?群�?';
   const prefixMsg = { 
     type: 'text', 
-    text: `🔔 【系統通知】\n此為「${groupName}」的事件，請協助轉發以下訊息至群組：` 
+    text: `?? ?�系統通知?�\n此為??{groupName}?��?事件，�??�助轉發以�?訊息?�群組�?` 
   };
 
   const msgsArray = Array.isArray(messages) ? messages : [messages];
@@ -4758,9 +4764,9 @@ async function pushToAdmins(targetGid, messages) {
   for (const adminUid of admins) {
     try {
       await client.pushMessage(adminUid, finalMessages);
-      console.log(`[Admin Proxy] 已發送通知給管理員: ${adminUid}`);
+      console.log(`[Admin Proxy] 已發?�通知給管?�員: ${adminUid}`);
     } catch (e) {
-      console.error(`[Admin Proxy] 發送給管理員 ${adminUid} 失敗:`, e);
+      console.error(`[Admin Proxy] ?�送給管�???${adminUid} 失�?:`, e);
     }
   }
 }
@@ -4769,9 +4775,9 @@ const port = process.env.PORT || 3000;
 const AUTO_WAKE_ENABLED = (process.env.AUTO_WAKE_ENABLED || 'true').toLowerCase() !== 'false';
 const AUTO_WAKE_INTERVAL_MINUTES = Math.max(5, parseInt(process.env.AUTO_WAKE_INTERVAL_MINUTES || '10', 10) || 10);
 
-// 內部定時器：定期訪問自己的健康檢查端點以保持喚醒
+// ?�部定�??��?定�?訪�??�己?�健康檢?�端點以保�??��?
 async function pingSelf() {
-  // 優先使用 RENDER_EXTERNAL_URL，如果沒有則嘗試其他環境變數或使用 localhost
+  // ?��?使用 RENDER_EXTERNAL_URL，�??��??��??�試?��??��?變數?�使??localhost
   const baseUrl = process.env.RENDER_EXTERNAL_URL || 
                   process.env.APP_URL || 
                   process.env.URL || 
@@ -4789,7 +4795,7 @@ async function pingSelf() {
       port: url.port || defaultPort,
       path: url.pathname,
       method: 'GET',
-      timeout: 10000 // 10秒超時
+      timeout: 10000 // 10秒�???
     };
     
     return new Promise((resolve, reject) => {
@@ -4797,13 +4803,13 @@ async function pingSelf() {
         let data = '';
         res.on('data', (chunk) => { data += chunk; });
         res.on('end', () => {
-          // 只在錯誤時記錄，成功時減少日誌輸出
+          // ?�在?�誤?��??��??��??��?少日誌輸??
           resolve();
         });
       });
       
       req.on('error', (err) => {
-        // 只在連續失敗時記錄，避免日誌過多
+        // ?�在???失�??��??��??��??��??��?
         logToFile(`[ERROR] [PING] Self-ping failed: ${err.message}`);
         reject(err);
       });
@@ -4822,51 +4828,51 @@ async function pingSelf() {
   }
 }
 
-// Graceful shutdown：確保資料寫入
+// Graceful shutdown：確保�??�寫??
 async function gracefulShutdown() {
-  console.log('🛑 正在關閉服務器，確保資料寫入...');
+  console.log('?? �?��?��??��??��?確�?資�?寫入...');
   isShuttingDown = true;
   
-  // 等待所有待寫入的資料
+  // 等�??�?��?寫入?��???
   if (saveFileTimeout) {
     clearTimeout(saveFileTimeout);
     saveFileTimeout = null;
   }
   await flushFileSave();
   
-  // 等待所有 CSV 寫入完成
+  // 等�??�??CSV 寫入完�?
   try {
     await regCsvWriteChain;
     
-    // 如果使用 GitHub 模式，確保最後的內容已寫入
+    // 如�?使用 GitHub 模�?，確保�?後�??�容已寫??
     if (USE_GITHUB && regCsvContent) {
       await writeCsvToGitHub(regCsvContent, 'Final save before shutdown');
     }
     
-    console.log('✅ 所有資料已寫入完成');
+    console.log('???�?��??�已寫入完�?');
   } catch (e) {
-    console.error('⚠️ CSV 寫入過程中發生錯誤:', e);
+    console.error('?��? CSV 寫入?��?中發?�錯�?', e);
   }
   
   process.exit(0);
 }
 
-// 監聽關閉信號
+// ??��?��?信�?
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
 app.use(express.json());
 
 // ==========================================
-// 🛒 團購專區 API 端點 (Group Buy REST APIs)
+// ?? ?�購專�? API 端�? (Group Buy REST APIs)
 // ==========================================
 
-// 取得所有團購列表 (支援多團購活動同時呈現於大廳)
+// ?��??�?��?購�?�?(?�援多�?購活?��??��??�於大廳)
 app.get('/api/groupbuy_list', (req, res) => {
   const list = Object.entries(groupBuyData).map(([id, gb]) => ({
     id,
     active: !!gb.active,
-    title: gb.title || '團購專區',
+    title: gb.title || '?�購專�?',
     notice: gb.notice || '',
     itemCount: Array.isArray(gb.items) ? gb.items.length : 0,
     orderCount: gb.orders ? Object.keys(gb.orders).length : 0,
@@ -4875,7 +4881,7 @@ app.get('/api/groupbuy_list', (req, res) => {
   res.json({ success: true, list });
 });
 
-// 管理員建立全新團購活動
+// 管�??�建立全?��?購活??
 app.post('/api/groupbuy_create', async (req, res) => {
   const { title, items } = req.body || {};
   const newGid = 'gb_' + Date.now();
@@ -4884,15 +4890,15 @@ app.post('/api/groupbuy_create', async (req, res) => {
   groupBuyData[newGid] = {
     id: newGid,
     active: false,
-    title: title || '🛒 全新團購活動專區',
-    notice: '📢 歡迎選購！請填寫姓名電話，送出後請完成轉帳。',
+    title: title || '?? ?�新?�購活�?專�?',
+    notice: '?�� 歡�??�購！�?填寫姓�??�話，送出後�?完�?轉帳??,
     paymentSettings: defaultData.paymentSettings || {
       linePayLink: '',
       linePayQrUrl: '',
       bankCode: '822',
-      bankName: '中國信託',
+      bankName: '中�?信�?',
       bankAccount: '1234-5678-9012',
-      bankAccountName: '團購主辦人'
+      bankAccountName: '?�購主辦�?
     },
     items: Array.isArray(items) && items.length > 0 ? items : getZhanRongDefaultItems(),
     orders: {}
@@ -4903,14 +4909,14 @@ app.post('/api/groupbuy_create', async (req, res) => {
   res.json({ success: true, gid: newGid, data: groupBuyData[newGid] });
 });
 
-// 取得該群組團購狀態
+// ?��?該群組�?購�???
 app.get('/api/groupbuy/:gid', (req, res) => {
   const gid = req.params.gid || 'default';
   const data = getGroupBuyInfo(gid);
   res.json({ success: true, data });
 });
 
-// 開啟/關閉團購
+// ?��?/?��??�購
 app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid, active, hiddenFromLobby } = req.body || {};
@@ -4931,7 +4937,7 @@ app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
   res.json({ success: true, active: gb.active });
 });
 
-// 儲存團購設定
+// ?��??�購設�?
 app.post('/api/groupbuy/:gid/settings', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid, title, notice, hiddenFromLobby, paymentSettings, items } = req.body;
@@ -4946,15 +4952,15 @@ app.post('/api/groupbuy/:gid/settings', async (req, res) => {
   res.json({ success: true, data: gb });
 });
 
-// 儲存為「一鍵帶入」預設範本
+// ?��??�「�??�帶?�」�?設�???
 app.post('/api/groupbuy/:gid/save_preset', async (req, res) => {
   const { items, presetName } = req.body || {};
   if (!Array.isArray(items)) {
-    return res.status(400).json({ success: false, error: '無效的商品資料' });
+    return res.status(400).json({ success: false, error: '?��??��??��??? });
   }
   defaultMenuItems = items;
   try {
-    const dataToSave = { presetName: presetName || '展榮商號 鹿港傳承名產', items };
+    const dataToSave = { presetName: presetName || '展榮?��? 鹿港?�承?�產', items };
     await fs.promises.writeFile(DEFAULT_MENU_FILE, JSON.stringify(dataToSave, null, 2), 'utf8');
     res.json({ success: true, count: items.length, presetName: dataToSave.presetName });
   } catch(e) {
@@ -4962,12 +4968,12 @@ app.post('/api/groupbuy/:gid/save_preset', async (req, res) => {
   }
 });
 
-// 新增或編輯商品品項
+// ?��??�編輯�??��???
 app.post('/api/groupbuy/:gid/item/save', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid, item } = req.body;
   if (!item || !item.name || item.price === undefined) {
-    return res.status(400).json({ success: false, error: '缺少商品名稱或價格' });
+    return res.status(400).json({ success: false, error: '缺�??��??�稱?�價?? });
   }
 
   const gb = getGroupBuyInfo(gid);
@@ -4978,19 +4984,19 @@ app.post('/api/groupbuy/:gid/item/save', async (req, res) => {
     id: item.id || 'gb_item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
     name: item.name,
     price: Number(item.price) || 0,
-    category: item.category || '自訂商品',
-    unit: item.unit || '份',
+    category: item.category || '?��??��?',
+    unit: item.unit || '�?,
     description: item.description || '',
     contents: item.contents || '',
     imageUrl: item.imageUrl || '',
     linkUrl: item.linkUrl || '',
-    linkText: item.linkText || '點我進入'
+    linkText: item.linkText || '點�??�入'
   };
 
   if (existingIdx >= 0) {
     gb.items[existingIdx] = itemObj;
   } else {
-    gb.items.unshift(itemObj); // 新新增置頂
+    gb.items.unshift(itemObj); // ?�新增置??
   }
 
   await saveGroupBuyStorage();
@@ -4998,7 +5004,7 @@ app.post('/api/groupbuy/:gid/item/save', async (req, res) => {
   res.json({ success: true, data: itemObj });
 });
 
-// 刪除商品品項
+// ?�除?��??��?
 app.post('/api/groupbuy/:gid/item/delete', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid, itemId } = req.body;
@@ -5011,7 +5017,7 @@ app.post('/api/groupbuy/:gid/item/delete', async (req, res) => {
   res.json({ success: true });
 });
 
-// 批量修改分類名稱
+// ?��?修改?��??�稱
 app.post('/api/groupbuy/:gid/category/rename', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid, oldName, newName } = req.body;
@@ -5032,7 +5038,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid, userName, userPhone, items, paymentMethod, paymentNote, note, anonymous } = req.body;
   if (!uid || !userName) {
-    return res.status(400).json({ success: false, error: '缺少使用者資訊' });
+    return res.status(400).json({ success: false, error: '缺�?使用?��?�? });
   }
   const orderKey = (userName && userPhone) ? `${userName.trim().toLowerCase()}_${userPhone.trim()}` : uid;
   const gb = getGroupBuyInfo(gid);
@@ -5067,7 +5073,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   res.json({ success: true, order: gb.orders[orderKey] });
 });
 
-// 標記核對付款
+// 標�??��?付款
 app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid, targetUid, status } = req.body;
@@ -5080,7 +5086,7 @@ app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
   res.json({ success: true });
 });
 
-// 清空所有訂單
+// 清空?�?��???
 app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid } = req.body;
@@ -5091,7 +5097,7 @@ app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
   res.json({ success: true });
 });
 
-// 刪除單筆訂單
+// ?�除?��?訂單
 app.post('/api/groupbuy/:gid/delete_order', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { targetUid } = req.body;
@@ -5104,13 +5110,13 @@ app.post('/api/groupbuy/:gid/delete_order', async (req, res) => {
   res.json({ success: true });
 });
 
-// 隱藏的 debug 端點，用來印出當前記憶體狀態
+// ?��???debug 端�?，用來印?�當?��??��??�??
 app.get('/api/systemLogs', async (req, res) => {
-  // 簡易權限檢查
+  // 簡�?權�?檢查
   const { uid } = req.query;
   const isSuperAdminUser = isSuperAdmin(uid);
   
-  // 目前先允許 uid 存在就回傳，或直接回傳 (LIFF端會隱藏按鈕)
+  // ?��??��?�?uid 存在就�??��??�直?��???(LIFF端�??��??��?)
   res.json(systemLogs);
 });
 
@@ -5125,27 +5131,27 @@ loadPromise.then(() => {
     console.log(`Badminton Bot Running on port ${port}...`);
     
     if (AUTO_WAKE_ENABLED) {
-      // 立即執行一次（延遲5秒，確保服務器完全啟動）
+      // 立即?��?一次�?延遲5秒�?確�??��??��??��??��?
       setTimeout(() => {
         pingSelf().catch(console.error);
       }, 5000);
       
-      // 依設定頻率執行自我PING
+      // 依設定頻?�執行自?�PING
       setInterval(() => {
         pingSelf().catch(console.error);
       }, AUTO_WAKE_INTERVAL_MINUTES * 60 * 1000);
       
-      console.log(`✅ 自動喚醒定時器已啟動（每 ${AUTO_WAKE_INTERVAL_MINUTES} 分鐘）`);
+      console.log(`???��??��?定�??�已?��?（�? ${AUTO_WAKE_INTERVAL_MINUTES} ?��?）`);
       logToFile(`[STARTUP] Auto-wake timer started (every ${AUTO_WAKE_INTERVAL_MINUTES} minutes)`);
     } else {
-      console.log('ℹ️ 已停用自動喚醒定時器（AUTO_WAKE_ENABLED=false）');
+      console.log('?��? 已�??�自?��??��??�器（AUTO_WAKE_ENABLED=false�?);
     }
   });
 }).catch(err => {
-  console.error('❌ 伺服器啟動初始化失敗:', err);
+  console.error('??伺�??��??��?始�?失�?:', err);
 });
 
-// 設定大廳紀錄「每小時整點」自動儲存上傳
+// 設�?大廳紀?�「�?小�??��??�自?�儲存�???
 function scheduleHourlySaveLobbyVisits() {
   const now = new Date();
   const delayToNextHour = 3600000 - (now.getMinutes() * 60000 + now.getSeconds() * 1000 + now.getMilliseconds());
@@ -5153,7 +5159,7 @@ function scheduleHourlySaveLobbyVisits() {
     saveLobbyVisits().catch(e => console.error(e));
     setInterval(() => {
       saveLobbyVisits().catch(e => console.error(e));
-    }, 3600000); // 之後每隔一小時
+    }, 3600000); // 之�?每�?一小�?
   }, delayToNextHour);
 }
 scheduleHourlySaveLobbyVisits();
@@ -5162,13 +5168,13 @@ async function sendLobbyLink(token, gid, prefix = "") {
   
   const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded);
   if (groupGames.length === 0) {
-    msg += '目前沒有進行中的場次喔！請輸入「接龍開始」來建立。';
+    msg += '?��?沒�??��?中�??�次?��?請輸?�「接龍�?始」�?建�???;
   } else {
-    msg += `目前共有 ${groupGames.length} 個場次開放報名中 🏸\n`;
+    msg += `?��??��? ${groupGames.length} ?�場次�??�報?�中 ?��\n`;
   }
   
   if (process.env.LIFF_ID) {
-    msg += `\n👇 點擊下方連結進入報名大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
+    msg += `\n?? 點�?下方????�入?��?大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
   }
   
   const message = { type: 'text', text: msg.trim() };
@@ -5187,7 +5193,7 @@ function getLobbyCard(gid) {
   if (!process.env.LIFF_ID) return null;
   return {
     type: 'flex',
-    altText: '點我進大廳',
+    altText: '點�??�大�?,
     contents: {
       type: 'bubble',
       size: 'kilo',
@@ -5201,7 +5207,7 @@ function getLobbyCard(gid) {
             height: 'sm',
             action: {
               type: 'uri',
-              label: '進入大廳',
+              label: '?�入大廳',
               uri: `https://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`
             }
           }
