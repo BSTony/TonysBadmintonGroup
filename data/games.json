@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785481883123,
+    "lastActiveTime": 1785481889952,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1052,11 +1052,18 @@
           "黃政豪",
           "登",
           "陳沛君",
-          "沛君朋友"
+          "沛君朋友",
+          "Tony"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 15:11",
+        "name": "Tony",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/31 15:11",
         "name": "Tony",
@@ -1153,7 +1160,10 @@
         "operator": "Jimmy",
         "action": "+1"
       }
-    ]
+    ],
+    "uidMap": {
+      "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+    }
   },
   "178504121595969": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
