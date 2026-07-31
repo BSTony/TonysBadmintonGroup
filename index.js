@@ -3176,14 +3176,14 @@ app.post('/api/action', express.json(), async (req, res) => {
         // 交給前端自動發話
         triggerBumpMsg = currentMsg;
       } else {
-        // 回退到私訊代理
+        // 直接推播到目標群組
         for (const targetGid of pushTargetGids) {
           let pushMsg = msg;
           if (process.env.LIFF_ID) {
             pushMsg += `\n👇 點擊下方連結開啟大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
           }
           try {
-            await pushToAdmins(targetGid, { type: 'text', text: pushMsg.trim() });
+            await client.pushMessage(targetGid, { type: 'text', text: pushMsg.trim() });
           } catch (e) {
             hasError = true;
             errorMsgs.push(`${targetGid}: ${e.message}`);
@@ -4179,7 +4179,7 @@ async function handleEvent(event) {
               // We'll limit to 4 mention messages to ensure total messages (1 carousel + 4 texts) <= 5.
               for (let i = 0; i < uidArray.length && i < 200; i += 50) {
                   const chunk = uidArray.slice(i, i + 50);
-                  let textMsg = "📢 報名成功提醒：\n";
+                  let textMsg = "報名成功提醒：\n"; // 移除 Emoji 避免 index 計算錯誤
                   const mentionees = [];
                   
                   for (let j = 0; j < chunk.length; j++) {
@@ -4218,11 +4218,16 @@ async function handleEvent(event) {
               const successMsg = isMentionPush ? '場次名單及提醒' : '場次名單';
               return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
           } catch (e) {
-              console.error(e);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中，或是推送訊息數量超過限制。` });
+              console.error('Push message failed:', e.originalError?.response?.data || e);
+              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中，或是推送訊息數量/標記超限。` });
           }
       } else {
-          return client.replyMessage(event.replyToken, messagesToSend);
+          try {
+              return await client.replyMessage(event.replyToken, messagesToSend);
+          } catch (e) {
+              console.error('Reply message failed in 推播提醒:', e.originalError?.response?.data || e);
+              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 發送失敗，發生異常錯誤（可能是 LINE 標記數量或格式錯誤）。` }).catch(err=>console.error(err));
+          }
       }
     }
     
