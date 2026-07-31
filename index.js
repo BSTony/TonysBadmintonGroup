@@ -4297,6 +4297,12 @@ async function handleEvent(event) {
       }
     }
 
+    if (text === '/debug-uid') {
+      return client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: `【偵錯模式】\n您的群組 Webhook UID 是：\n${uid}\n\n請您打開 LIFF 網頁，對照一下開發者後台，如果 LIFF 抓到的 UID 跟這個不一樣，代表您的 LIFF Channel 和 Bot Channel 建立在不同的 Provider 底下，導致機器人不認識 LIFF 傳來的 UID，這就是標記變成純文字的原因！`
+      });
+    }
 
     if (text.startsWith('群組廣播')) {
       const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)?([a-zA-Z0-9]+)(?:\}|｝)?\s+內容(?:[:：])?\s*([\s\S]*)/);
