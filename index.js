@@ -3856,7 +3856,8 @@ async function handleEvent(event) {
     }
 
 
-    if (text.startsWith('接龍名單')) {
+    if (text.startsWith('接龍名單') || text.startsWith('推播提醒')) {
+      const isMentionPush = text.startsWith('推播提醒');
       const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
       let targetGid = gid;
       if (groupMatch) {
@@ -3868,7 +3869,7 @@ async function handleEvent(event) {
           }
       }
 
-      let keyword = text.replace(/接龍名單/, '');
+      let keyword = text.replace(/接龍名單/, '').replace(/推播提醒/, '');
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.replace(/\[系統代發\]/g, '').trim();
       
@@ -4090,16 +4091,76 @@ async function handleEvent(event) {
           }
       };
 
+      const messagesToSend = [carouselMsg];
+      
+      if (isMentionPush) {
+          const uidsToMention = new Set();
+          for (const g of groupGames) {
+              const section = g.sections && g.sections[0] ? g.sections[0] : { list: [] };
+              const list = section.list || [];
+              for (const name of list) {
+                  if (name !== '__ANON__') {
+                      let uid = nameToUidMap.get(`${g.gameId}_${name}`);
+                      if (!uid) {
+                          uid = nameToUidMap.get(`${targetGid}_${name}`);
+                      }
+                      if (uid) {
+                          uidsToMention.add(uid);
+                      }
+                  }
+              }
+          }
+
+          const uidArray = Array.from(uidsToMention);
+          if (uidArray.length > 0) {
+              // LINE API text message allows max 50 mentions, and pushMessage max 5 messages.
+              // We'll limit to 4 mention messages to ensure total messages (1 carousel + 4 texts) <= 5.
+              for (let i = 0; i < uidArray.length && i < 200; i += 50) {
+                  const chunk = uidArray.slice(i, i + 50);
+                  let textMsg = "📢 報名成功提醒：\n";
+                  const mentionees = [];
+                  
+                  for (let j = 0; j < chunk.length; j++) {
+                      const uid = chunk[j];
+                      const placeholder = "@User";
+                      mentionees.push({
+                          index: textMsg.length,
+                          length: placeholder.length,
+                          userId: uid
+                      });
+                      textMsg += placeholder;
+                      if (j < chunk.length - 1) {
+                          textMsg += " ";
+                      }
+                  }
+                  
+                  messagesToSend.push({
+                      type: "text",
+                      text: textMsg,
+                      mention: {
+                          mentionees: mentionees
+                      }
+                  });
+              }
+          } else {
+              messagesToSend.push({
+                  type: "text",
+                  text: "📢 報名成功提醒：\n目前尚未紀錄到任何可標記的報名者 UID。"
+              });
+          }
+      }
+
       if (targetGid !== gid) {
           try {
-              await client.pushMessage(targetGid, carouselMsg);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將場次名單推播至群組 ${groupMatch[1].trim()}` });
+              await client.pushMessage(targetGid, messagesToSend);
+              const successMsg = isMentionPush ? '場次名單及提醒' : '場次名單';
+              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
           } catch (e) {
               console.error(e);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中。` });
+              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中，或是推送訊息數量超過限制。` });
           }
       } else {
-          return client.replyMessage(event.replyToken, carouselMsg);
+          return client.replyMessage(event.replyToken, messagesToSend);
       }
     }
     
