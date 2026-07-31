@@ -3154,6 +3154,15 @@ app.post('/api/action', express.json(), async (req, res) => {
       let msg = generateListMessage(g, '管理員推播目前名單');
       
       let pushTargetGids = g.targetGids || [g.gid];
+      if (req.body.targetCode) {
+        const targetCode = req.body.targetCode;
+        if (groupCodes[targetCode]) {
+          pushTargetGids = [groupCodes[targetCode]];
+        } else {
+          return res.status(400).json({ error: `找不到代碼為 ${targetCode} 的群組` });
+        }
+      }
+      
       let hasError = false;
       let errorMsgs = [];
       

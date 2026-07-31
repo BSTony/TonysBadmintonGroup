@@ -2803,7 +2803,10 @@ window.handleCustomPush = async function() {
 };
 
 window.handlePushList = async function(gameId) {
-  if (!confirm('確定要在群組內推播「目前詳細名單」嗎？\n(這將會把所有人的名字送到聊天室中)')) return;
+  const targetCode = prompt('請輸入要推播名單的「目標群組代碼」：\n(若欲發送至您目前所在的群組，請直接留白並按確定)');
+  if (targetCode === null) return;
+  
+  if (!confirm('確定要推播「目前詳細名單」嗎？\n(這將會把所有人的名字送到聊天室中)')) return;
   
   try {
     appDiv.className = 'loading';
@@ -2813,30 +2816,33 @@ window.handlePushList = async function(gameId) {
       statusMsg.innerText = '推播名單中...';
     }
     
-    // 如果可以自動發話，直接代替使用者送出「接龍名單」指令，機器人就會自動回覆完整名單！
-    if (typeof liff !== 'undefined' && liff.isInClient()) {
+    // 如果可以自動發話，且沒有指定特定群組代碼，直接代替使用者送出「接龍名單」指令
+    if (!targetCode && typeof liff !== 'undefined' && liff.isInClient()) {
       try {
         await liff.sendMessages([{ type: 'text', text: `接龍名單\n\n[系統代發]` }]);
         alert('✅ 名單推播成功！已自動在聊天室呼叫機器人。');
         return;
       } catch (e) {
         console.error('自動發話失敗:', e);
-        alert('自動發話失敗，可能未授權發言權限');
+        // Fallback to backend API
       }
     }
     
-    // 以下為舊版回退機制（若無法自動發話）
+    // 透過後端推播 (指定群組代碼或無法自動發話)
+    const reqBody = {
+      gid: currentGroupId,
+      gameId: gameId,
+      uid: currentUser.userId,
+      name: currentUser.displayName,
+      action: 'pushList',
+      clientSupportsLiffSendMessage: false
+    };
+    if (targetCode) reqBody.targetCode = targetCode.trim();
+    
     const res = await fetch('/api/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gid: currentGroupId,
-        gameId: gameId,
-        uid: currentUser.userId,
-        name: currentUser.displayName,
-        action: 'pushList',
-        clientSupportsLiffSendMessage: false
-      })
+      body: JSON.stringify(reqBody)
     });
     
     const result = await res.json();
