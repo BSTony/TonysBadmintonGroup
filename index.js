@@ -987,7 +987,11 @@ app.use(express.static(path.join(__dirname, 'public'), {
     res.setHeader('Expires', '0');
   }
 }));
-app.use(express.json());
+app.use((req, res, next) => {
+  // Skip JSON parsing for /webhook — LINE SDK middleware needs the raw body
+  if (req.path === '/webhook') return next();
+  express.json()(req, res, next);
+});
 
 // 全域存儲：支援多群組、多區段
 let games = {};
