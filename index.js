@@ -82,11 +82,32 @@ function loadGroupBuyStorage() {
   }
 }
 
-async function saveGroupBuyStorage() {
-  try {
-    const jsonStr = JSON.stringify(groupBuyData, null, 2);
-    await fs.promises.writeFile(GROUP_BUY_FILE, jsonStr, 'utf8');
-  } catch(e) { console.error('儲存 groupBuy.json 失敗:', e.message); }
+let groupBuySaveChain = Promise.resolve();
+function saveGroupBuyStorage() {
+  groupBuySaveChain = groupBuySaveChain.then(async () => {
+    try {
+      const jsonStr = JSON.stringify(groupBuyData, null, 2);
+      await fs.promises.writeFile(GROUP_BUY_FILE, jsonStr, 'utf8');
+      
+      if (USE_GITHUB) {
+        try {
+          const payload = {
+            message: 'chore: update groupBuy data',
+            content: Buffer.from(jsonStr).toString('base64')
+          };
+          if (groupBuySha) payload.sha = groupBuySha;
+          
+          const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupBuy.json`, payload);
+          if (res && res.content && res.content.sha) {
+            groupBuySha = res.content.sha;
+          }
+        } catch (ghErr) {
+          console.error('Failed to sync groupBuy to GitHub:', ghErr.message);
+        }
+      }
+    } catch(e) { console.error('儲存 groupBuy.json 失敗:', e.message); }
+  }).catch(e => console.error(e));
+  return groupBuySaveChain;
 }
 
 function getGroupBuyInfo(gid) {
@@ -128,6 +149,7 @@ let templatesSha = null;
 let gamesSha = null; // GitHub games.json 的 SHA
 let visitsSha = null; // GitHub lobbyVisits.json 的 SHA
 let easterEggSha = null; // GitHub easterEggSettings.json 的 SHA
+let groupBuySha = null; // GitHub groupBuy.json 的 SHA
 let gamesSaveChain = Promise.resolve(); // 防併發串行保存
 let lobbyVisitClickCount = 0;
 

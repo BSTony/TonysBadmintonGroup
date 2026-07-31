@@ -5815,6 +5815,7 @@ function renderSummaryTab() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ targetUid: ord.orderKey })
                   });
+                  if (typeof fetchGroupBuyData === 'function') fetchGroupBuyData(currentGid);
                 } catch(e) { console.error(e); }
               }
             };
