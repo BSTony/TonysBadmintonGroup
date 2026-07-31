@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2514,
+    "viewCount": 2515,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -23,8 +23,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 525,
-        "lastVisit": 1785476558380
+        "count": 526,
+        "lastVisit": 1785481198192
       },
       "U092196c10fe7e15591482c6b7942a147": {
         "displayName": "Sammy Su",
@@ -850,6 +850,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1785481198192,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1785477377973,
         "userId": "Ucc18abd872eeb2825efa5241bb92bfa0",
@@ -2039,12 +2045,6 @@
         "userId": "U1902d5e6d155f6dcf1f365f8494d557f",
         "displayName": "紀霆(Jimmy)",
         "pictureUrl": "https://profile.line-scdn.net/0hx3Ff6hgzJxxrHza1s3NZYxtPJHZIbn4OEytqLgsZLHsEf2IaQXBhcl4fKSVRe2JJQnpqLl4acXxnDFB6dUnbKGwvei1WLmVCQXFt_w"
-      },
-      {
-        "time": 1785226718378,
-        "userId": "U8d28d03013fc8d69b56d79e9d0fcc33a",
-        "displayName": "東東",
-        "pictureUrl": "https://profile.line-scdn.net/0hvdwShjiwKUtaKgZNIwZXNCp6KiF5W3BZIR80emwtJXhnST4acU5gLz9-dyxmSTwbd01iKG4rfnNWOV4tRHzVf10adHpnG2sVcERjqA"
       }
     ]
   },
