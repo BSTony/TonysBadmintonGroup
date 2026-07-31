@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785483317466,
+    "lastActiveTime": 1785490928310,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1054,11 +1054,18 @@
           "陳沛君",
           "沛君朋友",
           "謝東霖 Tony",
-          "王小明"
+          "王小明",
+          "Ong"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 17:42",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "+1"
+      },
       {
         "time": "07/31 15:35",
         "name": "王小明",
@@ -1195,7 +1202,8 @@
     "uidMap": {
       "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "王小明": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "王小明": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb"
     }
   },
   "178504121595969": {
