@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2510,
+    "viewCount": 2514,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -23,8 +23,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 524,
-        "lastVisit": 1785470112499
+        "count": 525,
+        "lastVisit": 1785476558380
       },
       "U092196c10fe7e15591482c6b7942a147": {
         "displayName": "Sammy Su",
@@ -377,8 +377,8 @@
       "Ucc18abd872eeb2825efa5241bb92bfa0": {
         "displayName": "Cliff Huang",
         "firstVisit": 1783515555907,
-        "count": 3,
-        "lastVisit": 1784897145977
+        "count": 4,
+        "lastVisit": 1785477377973
       },
       "U7224dcf829dda94227f70908b96deeed": {
         "displayName": "陳彥至🦁Roger",
@@ -623,8 +623,8 @@
       "U8b4e160fd2505afd265b09e8f651ebab": {
         "displayName": "杜威霖 Andy",
         "firstVisit": 1784123296953,
-        "count": 7,
-        "lastVisit": 1785461717356
+        "count": 8,
+        "lastVisit": 1785476774022
       },
       "Ua8084c5a3922bcb0051b494a8f17d622": {
         "displayName": "俊翰",
@@ -845,11 +845,35 @@
       "U2113543b0061ea9d8877cb8ab2a69b54": {
         "displayName": "Andrew",
         "firstVisit": 1785461882873,
-        "count": 1,
-        "lastVisit": 1785461882873
+        "count": 2,
+        "lastVisit": 1785476998515
       }
     },
     "logs": [
+      {
+        "time": 1785477377973,
+        "userId": "Ucc18abd872eeb2825efa5241bb92bfa0",
+        "displayName": "Cliff Huang",
+        "pictureUrl": "https://profile.line-scdn.net/0hWPdJON5OCH9JMxRfFcl2QTljCxVqQlFtNlBOTS5kUh13Bk4qbVRCTHo6VUtzVh8qMVYUHnUwA0lrajBKOwsUQC40XxkpXSQqLCpba2BYBR0mUDZLJycDEQNbJkwLdEpyBgo8WwprERonXzQqZgUkcnRvEBAxbSlOYWRkKUwBZvwmMX8qZFVGHHQ1Xkrx"
+      },
+      {
+        "time": 1785476998515,
+        "userId": "U2113543b0061ea9d8877cb8ab2a69b54",
+        "displayName": "Andrew",
+        "pictureUrl": "https://profile.line-scdn.net/0hlQ1y6ha2M34cACwzeXNNQGxQMBQ_cWpsOTN5EHsHPU4mM3V7ODR_ECkFOUd2ZCcoYDZ-G3sGbko-WABTcgc7SElcLwljMCxyaAMOGXllNBt-aQBvNWN9fHJfDTckMzBBNjkKZkxCC0ZHRhRSWD0BU3xaOVJCZHxre1dfKBkyXf1zAkQrMWZ9HSEGZUuk"
+      },
+      {
+        "time": 1785476774022,
+        "userId": "U8b4e160fd2505afd265b09e8f651ebab",
+        "displayName": "杜威霖 Andy",
+        "pictureUrl": "https://profile.line-scdn.net/0hMKNM-ElNEmRjNA18D45sGxNkEQ5ARUt2S1oNBgQ3SF1fUVMySFJYBVM3RFVZVgYyGlpZVV41SFxvJ2UCfWLuUGQET1VeBVA6SVpYhw"
+      },
+      {
+        "time": 1785476558380,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1785470677058,
         "userId": "U94d0fd3752c6d2521d871658f63822b7",
@@ -2021,30 +2045,6 @@
         "userId": "U8d28d03013fc8d69b56d79e9d0fcc33a",
         "displayName": "東東",
         "pictureUrl": "https://profile.line-scdn.net/0hvdwShjiwKUtaKgZNIwZXNCp6KiF5W3BZIR80emwtJXhnST4acU5gLz9-dyxmSTwbd01iKG4rfnNWOV4tRHzVf10adHpnG2sVcERjqA"
-      },
-      {
-        "time": 1785226487858,
-        "userId": "Ub2e84850d9446141bcb1ae89ec450821",
-        "displayName": "林煥杰",
-        "pictureUrl": "https://profile.line-scdn.net/0hxdPS2trOJ0t9KjRJ6D1ZNA16JCFeW35ZUE9oLEAocHIVSmdKBR87K08icX8TSjceUklrJU8if35xOVAtY3zbf3oaenpAG2UVV0RtqA"
-      },
-      {
-        "time": 1785220536593,
-        "userId": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
-        "displayName": "江こう 洋々",
-        "pictureUrl": "https://profile.line-scdn.net/0hey1N8wDuOlYcNyWrR3tEaGxnOTw_RmNENQYnMy9gMDV1BC4FZVVyZCs0Z24mVC9TOFR9MXkwMGU-Uwh0ew0Tbk4zGh4jVDhiciUyY2hzGxZ5WwNfXhURN0J1YxtEYRNaQi4sWFpAYHppZC1mbAp0Y08rGhZyThtQaGBWABkFVNVzNU0DMVF0NSExbGOk"
-      },
-      {
-        "time": 1785220007016,
-        "userId": "U0d5cd265fe89cec2cca1c78bbc237321",
-        "displayName": "張嘉舜",
-        "pictureUrl": "https://profile.line-scdn.net/0hyrcnkSUeJl1OFw83GjJYIj5HJTdtZn9PYHFtbi8Xf2p7IzJfMiVsOHoVL210d2UKZSFhbn4RLGlCBFE7UEHaaUkne2xzJmQDZHlsvg"
-      },
-      {
-        "time": 1785219753624,
-        "userId": "U515f3eafb608f3aada94b73067dcc156",
-        "displayName": "古書羽",
-        "pictureUrl": "https://profile.line-scdn.net/0hdIE3m2LrO2ZoShL9UARFGRgaOAxLO2J0TCRwBAlCN1FReHViTXwgBg9MZV9cci85F3h1BF1MZQFkWUwAdhzHUm96ZldVe3k4QiRxhQ"
       }
     ]
   },
