@@ -1180,6 +1180,17 @@ async function loadGames() {
     }
     games = newGames;
 
+    // 啟動時重建記憶體中的 UID 映射表
+    for (const [id, g] of Object.entries(games)) {
+      if (g.uidMap) {
+        for (const [name, uid] of Object.entries(g.uidMap)) {
+          nameToUidMap.set(`${id}_${name}`, uid);
+          nameToUidMap.set(`${g.gid}_${name}`, uid);
+          uidToNameMap.set(`${id}_${uid}`, name);
+        }
+      }
+    }
+
     if (oldKeysToDelete.length > 0) {
       console.log('執行資料庫遷移：刪除舊結構並儲存新結構...');
       if (pool) {
@@ -2330,6 +2341,9 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               for (const name of list) {
                   if (name !== '__ANON__') {
                       let uid = nameToUidMap.get(`${g.gameId}_${name}`);
+                      if (!uid && g.uidMap) {
+                          uid = g.uidMap[name];
+                      }
                       if (!uid) {
                           uid = nameToUidMap.get(`${targetGid}_${name}`);
                       }
@@ -4625,6 +4639,8 @@ function addToList(gid, idx, name, meta = {}, waitForCsv = false) {
   if (!games[gid].sections[idx].list.includes(name)) {
     games[gid].sections[idx].list.push(name);
     if (meta && meta.uid) {
+      if (!games[gid].uidMap) games[gid].uidMap = {};
+      games[gid].uidMap[name] = meta.uid;
       nameToUidMap.set(`${gid}_${name}`, meta.uid);
     }
     if (meta && meta.level) {
