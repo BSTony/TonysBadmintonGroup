@@ -2366,16 +2366,13 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               
               for (let j = 0; j < chunk.length; j++) {
                   const uid = chunk[j];
-                  // LINE requires placeholder length === actual display name length in UTF-16 code units.
-                  // Using a fixed placeholder '@' + padded spaces is NOT allowed.
-                  // Use 'userId' type mentionees with length=1 (LINE fills actual name itself).
+                  const placeholder = "@User";
                   mentionees.push({
                       index: textMsg.length,
-                      length: 1,
-                      userId: uid,
-                      type: "user"
+                      length: placeholder.length,
+                      userId: uid
                   });
-                  textMsg += "@";
+                  textMsg += placeholder;
                   if (j < chunk.length - 1) {
                       textMsg += " ";
                   }
