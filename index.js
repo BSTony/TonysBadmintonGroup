@@ -2334,7 +2334,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
       const messagesToSend = [carouselMsg];
       
       if (isMentionPush) {
-          const uidsToMention = new Set();
+          const uidsToMention = new Map();
           for (const g of groupGames) {
               const section = g.sections && g.sections[0] ? g.sections[0] : { list: [] };
               const list = section.list || [];
@@ -2348,13 +2348,13 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                           uid = nameToUidMap.get(`${targetGid}_${name}`);
                       }
                       if (uid) {
-                          uidsToMention.add(uid);
+                          uidsToMention.set(uid, name);
                       }
                   }
               }
           }
 
-          const uidArray = Array.from(uidsToMention);
+          const uidArray = Array.from(uidsToMention.entries());
           if (uidArray.length > 0) {
               // LINE mention text: max 50 mentions per message, max 4 mention messages (1 carousel + 4 = 5 total)
               // We produce at most ONE mention message with the first 50 UIDs to avoid rejection
@@ -2365,8 +2365,8 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               const mentionees = [];
               
               for (let j = 0; j < chunk.length; j++) {
-                  const uid = chunk[j];
-                  const placeholder = "@User";
+                  const [uid, name] = chunk[j];
+                  const placeholder = "@" + name;
                   mentionees.push({
                       index: textMsg.length,
                       length: placeholder.length,
