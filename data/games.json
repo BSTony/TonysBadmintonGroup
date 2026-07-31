@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785501469497,
+    "lastActiveTime": 1785501516968,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1059,11 +1059,18 @@
           "Andrew",
           "Christie",
           "辛言",
-          "柏林"
+          "柏林",
+          "腳皮"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 20:38",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1"
+      },
       {
         "time": "07/31 20:37",
         "name": "柏林",
@@ -1235,7 +1242,8 @@
       "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "Christie": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "辛言": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "柏林": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "柏林": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
     }
   },
   "178504121595969": {
