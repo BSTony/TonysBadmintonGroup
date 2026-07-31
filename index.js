@@ -4231,14 +4231,14 @@ async function handleEvent(event) {
               return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
           } catch (e) {
               console.error('Push message failed:', e.originalError?.response?.data || e);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中，或是推送訊息數量/標記超限。` });
+              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中，或是推送訊息數量/標記超限。\n錯誤內容: ${JSON.stringify(e.originalError?.response?.data || e.message)}` });
           }
       } else {
           try {
               return await client.replyMessage(event.replyToken, messagesToSend);
           } catch (e) {
               console.error('Reply message failed in 推播提醒:', e.originalError?.response?.data || e);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 發送失敗，發生異常錯誤（可能是 LINE 標記數量或格式錯誤）。` }).catch(err=>console.error(err));
+              return client.pushMessage(gid, { type: 'text', text: `❌ 發送失敗，發生異常錯誤（可能是 LINE 標記數量或格式錯誤）。\n錯誤內容: ${JSON.stringify(e.originalError?.response?.data || e.message)}` }).catch(err=>console.error(err));
           }
       }
     }
