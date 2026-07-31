@@ -2205,39 +2205,42 @@ const flexBubbles = [];
 
           const uidArray = Array.from(uidsToMention);
           if (uidArray.length > 0) {
-              // LINE API text message allows max 50 mentions, and pushMessage max 5 messages.
-              // We'll limit to 4 mention messages to ensure total messages (1 carousel + 4 texts) <= 5.
-              for (let i = 0; i < uidArray.length && i < 200; i += 50) {
-                  const chunk = uidArray.slice(i, i + 50);
-                  let textMsg = "報名成功提醒：\n"; // 移除 Emoji 避免 index 計算錯誤
-                  const mentionees = [];
-                  
-                  for (let j = 0; j < chunk.length; j++) {
-                      const uid = chunk[j];
-                      const placeholder = "@User";
-                      mentionees.push({
-                          index: textMsg.length,
-                          length: placeholder.length,
-                          userId: uid
-                      });
-                      textMsg += placeholder;
-                      if (j < chunk.length - 1) {
-                          textMsg += " ";
-                      }
-                  }
-                  
-                  messagesToSend.push({
-                      type: "text",
-                      text: textMsg,
-                      mention: {
-                          mentionees: mentionees
-                      }
+              // LINE mention text: max 50 mentions per message, max 4 mention messages (1 carousel + 4 = 5 total)
+              // We produce at most ONE mention message with the first 50 UIDs to avoid rejection
+              const chunk = uidArray.slice(0, 50);
+              // prefix must be pure ASCII/CJK (no emoji) to keep byte index accurate
+              const prefix = "\u5831\u540d\u6210\u529f\u63d0\u9192\uff1a\n"; // '報名成功提醒：\n'
+              let textMsg = prefix;
+              const mentionees = [];
+              
+              for (let j = 0; j < chunk.length; j++) {
+                  const uid = chunk[j];
+                  // LINE requires placeholder length === actual display name length in UTF-16 code units.
+                  // Using a fixed placeholder '@' + padded spaces is NOT allowed.
+                  // Use 'userId' type mentionees with length=1 (LINE fills actual name itself).
+                  mentionees.push({
+                      index: textMsg.length,
+                      length: 1,
+                      userId: uid,
+                      type: "user"
                   });
+                  textMsg += "@";
+                  if (j < chunk.length - 1) {
+                      textMsg += " ";
+                  }
               }
+              
+              messagesToSend.push({
+                  type: "text",
+                  text: textMsg,
+                  mention: {
+                      mentionees: mentionees
+                  }
+              });
           } else {
               messagesToSend.push({
                   type: "text",
-                  text: "📢 報名成功提醒：\n目前尚未紀錄到任何可標記的報名者 UID。"
+                  text: "\u26a0\ufe0f \u63a8\u64ad\u63d0\u9192\uff1a\n\u76ee\u524d\u5c1a\u672a\u8a18\u9304\u5230\u4efb\u4f55\u53ef\u6a19\u8a18\u7684\u5831\u540d\u8005 UID\u3002\n\u5efa\u8b70\u8acb\u5831\u540d\u8005\u9700\u7d93\u7531 LIFF \u5927\u5ef3\u5831\u540d\uff0c\u7cfb\u7d71\u624d\u80fd\u8a18\u9304\u5176 LINE ID\u3002"
               });
           }
       }
@@ -4224,22 +4227,18 @@ async function handleEvent(event) {
       }
 
       const messagesToSend = generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap);
-      if (targetGid !== gid) {
-          try {
-              await client.pushMessage(targetGid, messagesToSend);
-              const successMsg = isMentionPush ? '場次名單及提醒' : '場次名單';
-              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
-          } catch (e) {
-              console.error('Push message failed:', e.originalError?.response?.data || e);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中，或是推送訊息數量/標記超限。\n錯誤內容: ${JSON.stringify(e.originalError?.response?.data || e.message)}` });
-          }
-      } else {
-          try {
-              return await client.replyMessage(event.replyToken, messagesToSend);
-          } catch (e) {
-              console.error('Reply message failed in 推播提醒:', e.originalError?.response?.data || e);
-              return client.pushMessage(gid, { type: 'text', text: `❌ 發送失敗，發生異常錯誤（可能是 LINE 標記數量或格式錯誤）。\n錯誤內容: ${JSON.stringify(e.originalError?.response?.data || e.message)}` }).catch(err=>console.error(err));
-          }
+      
+      // Always use pushMessage for the actual content (supports multi-message arrays and mention tags).
+      // Use replyMessage only for the short confirmation reply.
+      try {
+          await client.pushMessage(targetGid, messagesToSend);
+          const successMsg = isMentionPush ? '場次名單及提醒' : '場次名單';
+          const destLabel = targetGid !== gid ? `群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` : '本群組';
+          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至${destLabel}！` });
+      } catch (e) {
+          console.error('Push message failed in 推播提醒:', e.originalError?.response?.data || e);
+          const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
+          return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(() => null);
       }
     }
     
