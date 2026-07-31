@@ -3880,6 +3880,35 @@ async function handleEvent(event) {
     }
 
 
+    if (text.startsWith('群組廣播')) {
+      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)?([a-zA-Z0-9]+)(?:\}|｝)?\s+內容(?:[:：])?\s*([\s\S]*)/);
+      if (!groupMatch || !groupMatch[1] || !groupMatch[2]) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 語法錯誤！正確格式為：\n群組廣播 群組: 1234 內容: 您的廣播訊息' });
+      }
+      
+      const code = groupMatch[1].trim();
+      const broadcastText = groupMatch[2].trim();
+      const targetGid = groupCodes[code];
+      
+      if (!targetGid) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 找不到代碼為 ${code} 的群組。` });
+      }
+      
+      if (!isSuperAdminUser && !(groupAdmins[targetGid] && groupAdmins[targetGid].has(uid))) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '❌ 您不是目標群組的管理員，無法對該群組發送廣播。' });
+      }
+
+      try {
+        await client.pushMessage(targetGid, { type: 'text', text: `📢 管理員廣播：\n\n${broadcastText}` });
+        if (targetGid !== gid) {
+          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 廣播已成功發送至群組 ${code}！` });
+        }
+      } catch (err) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 廣播發送失敗，可能是機器人不在目標群組中，或是無權限發言。` });
+      }
+      return null;
+    }
+
     if (text.startsWith('接龍名單') || text.startsWith('推播提醒')) {
       const isMentionPush = text.startsWith('推播提醒');
       const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
