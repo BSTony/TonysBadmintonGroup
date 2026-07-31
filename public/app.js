@@ -2826,10 +2826,10 @@ window.handlePushList = async function(gameId) {
       statusMsg.innerText = '推播名單中...';
     }
     
-    // 如果可以自動發話，且沒有指定特定群組代碼，直接代替使用者送出「接龍名單」指令
+    // 如果可以自動發話，且沒有指定特定群組代碼，直接代替使用者送出「推播提醒」指令
     if (!targetCode && typeof liff !== 'undefined' && liff.isInClient()) {
       try {
-        await liff.sendMessages([{ type: 'text', text: `接龍名單\n\n[系統代發]` }]);
+        await liff.sendMessages([{ type: 'text', text: `推播提醒\n\n[系統代發]` }]);
         alert('✅ 名單推播成功！已自動在聊天室呼叫機器人。');
         return;
       } catch (e) {
