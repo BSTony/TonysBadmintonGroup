@@ -64,6 +64,7 @@ function loadGroupBuyStorage() {
   if (!groupBuyData['default'] || !Array.isArray(groupBuyData['default'].items) || groupBuyData['default'].items.length === 0) {
     groupBuyData['default'] = {
       active: false,
+      hiddenFromLobby: true,
       title: '🛒 展榮商號 鹿港傳承團購專區 (1986)',
       notice: '',
       paymentSettings: {
@@ -93,7 +94,8 @@ function getGroupBuyInfo(gid) {
   if (!groupBuyData[gid] || !Array.isArray(groupBuyData[gid].items) || groupBuyData[gid].items.length === 0) {
     const defaultData = groupBuyData['default'] || {};
     groupBuyData[gid] = {
-      active: true,
+      active: false,
+      hiddenFromLobby: true,
       title: defaultData.title || '🛒 展榮商號 鹿港傳承團購專區 (1986)',
       notice: defaultData.notice || '',
       paymentSettings: defaultData.paymentSettings || {
