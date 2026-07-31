@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785509315778,
+    "lastActiveTime": 1785510639176,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1061,12 +1061,17 @@
           "辛言",
           "柏林",
           "腳皮",
-          "L",
-          "Lee"
+          "L"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 23:10",
+        "name": "Lee",
+        "operator": "Lee",
+        "action": "-1"
+      },
       {
         "time": "07/31 22:48",
         "name": "Lee",
