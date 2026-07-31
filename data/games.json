@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785497597338,
+    "lastActiveTime": 1785497789425,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1057,11 +1057,18 @@
           "王小明",
           "Ong",
           "Andrew",
-          "Christie"
+          "Christie",
+          "辛言"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 19:36",
+        "name": "辛言",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/31 19:33",
         "name": "Christie",
@@ -1219,7 +1226,8 @@
       "王小明": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
       "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "Christie": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Christie": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "辛言": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     }
   },
   "178504121595969": {
