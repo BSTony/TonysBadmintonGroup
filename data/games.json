@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785476356704,
+    "lastActiveTime": 1785481883123,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1042,7 +1042,6 @@
         "list": [
           "Kay",
           "陳呈",
-          "Tony",
           "俊吉",
           "Jet",
           "AddieWang",
@@ -1058,6 +1057,12 @@
       }
     ],
     "history": [
+      {
+        "time": "07/31 15:11",
+        "name": "Tony",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/31 13:39",
         "name": "沛君朋友",
