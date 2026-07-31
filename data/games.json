@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785404837460,
+    "lastActiveTime": 1785464177782,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1051,11 +1051,18 @@
           "Kevin",
           "張建發",
           "柏宏",
-          "黃政豪"
+          "黃政豪",
+          "登"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 10:16",
+        "name": "登",
+        "operator": "登登登登～",
+        "action": "+1"
+      },
       {
         "time": "07/30 17:47",
         "name": "黃政豪",
