@@ -1399,8 +1399,15 @@ async function loadGamesLobby(silent = false) {
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlGameId = urlParams.get('gameId');
+    const urlBuy = urlParams.get('buy');
+    
+    // 若為初次載入且網址有指定 buy，則直接進入團購商場
+    if (!silent && urlBuy) {
+      if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
+      openGroupBuyPage(urlBuy);
+    }
     // 若為初次載入且網址有指定 gameId，則直接進入該場次，否則留在首頁
-    if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
+    else if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
       renderDetail(urlGameId);
     } else if (!currentGameDetailId) {
       renderLobby();
