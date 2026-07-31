@@ -4305,6 +4305,23 @@ async function handleEvent(event) {
       });
     }
 
+    if (text === '/test-mention-now') {
+      const mentionText = "@User 您好！這是一個寫死的標記測試。";
+      const testMessages = [{
+          type: "text",
+          text: mentionText,
+          mention: {
+              mentionees: [{
+                  index: 0,
+                  length: 5,
+                  type: "user",
+                  userId: uid
+              }]
+          }
+      }];
+      return client.replyMessage(event.replyToken, testMessages);
+    }
+
     if (text.startsWith('群組廣播')) {
       const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)?([a-zA-Z0-9]+)(?:\}|｝)?\s+內容(?:[:：])?\s*([\s\S]*)/);
       if (!groupMatch || !groupMatch[1] || !groupMatch[2]) {
