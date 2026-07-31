@@ -2370,6 +2370,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   mentionees.push({
                       index: textMsg.length,
                       length: placeholder.length,
+                      type: "user",
                       userId: uid
                   });
                   textMsg += placeholder;
