@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785490928310,
+    "lastActiveTime": 1785491347444,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1055,11 +1055,18 @@
           "沛君朋友",
           "謝東霖 Tony",
           "王小明",
-          "Ong"
+          "Ong",
+          "Andrew"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 17:49",
+        "name": "Andrew",
+        "operator": "Andrew Kuo",
+        "action": "+1"
+      },
       {
         "time": "07/31 17:42",
         "name": "Ong",
@@ -1203,7 +1210,8 @@
       "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "王小明": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb"
+      "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
+      "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     }
   },
   "178504121595969": {
