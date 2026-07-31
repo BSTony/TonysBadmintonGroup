@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785482685061,
+    "lastActiveTime": 1785482688379,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1052,11 +1052,18 @@
           "黃政豪",
           "登",
           "陳沛君",
-          "沛君朋友"
+          "沛君朋友",
+          "謝東霖 Tony"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 15:24",
+        "name": "謝東霖 Tony",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "07/31 15:24",
         "name": "謝東霖 Tony",
