@@ -4570,6 +4570,16 @@ async function handleEvent(event) {
 
   } catch (e) {
     console.error('Logic Error:', e);
+    const errorMsg = e.originalError?.response?.data 
+                   ? JSON.stringify(e.originalError.response.data) 
+                   : String(e);
+    try {
+      if (gid) {
+        await client.pushMessage(gid, { type: 'text', text: `❌ 機器人發生系統錯誤，已攔截：\n${errorMsg}` });
+      }
+    } catch (pushErr) {
+      console.error('Failed to push error message:', pushErr);
+    }
   }
 }
 
