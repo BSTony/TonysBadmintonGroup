@@ -2803,7 +2803,17 @@ window.handleCustomPush = async function() {
 };
 
 window.handlePushList = async function(gameId) {
-  const targetCode = prompt('請輸入要推播名單的「目標群組代碼」：\n(若欲發送至您目前所在的群組，請直接留白並按確定)');
+  let groupsText = '';
+  if (typeof globalManagedGroups !== 'undefined' && globalManagedGroups.length > 0) {
+    groupsText = '\n\n可用的群組：\n' + globalManagedGroups.map(g => `${g.code} - ${g.groupName}`).join('\n');
+  } else {
+    const savedCg = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
+    if (savedCg.length > 0) {
+      groupsText = '\n\n可用的群組：\n' + savedCg.map(g => `${g.code} - ${g.groupName}`).join('\n');
+    }
+  }
+
+  const targetCode = prompt(`請輸入要推播名單的「目標群組代碼」：\n(若欲發送至您目前所在的群組，請直接留白並按確定)${groupsText}`);
   if (targetCode === null) return;
   
   if (!confirm('確定要推播「目前詳細名單」嗎？\n(這將會把所有人的名字送到聊天室中)')) return;
