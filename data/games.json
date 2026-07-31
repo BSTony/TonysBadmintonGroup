@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785474791623,
+    "lastActiveTime": 1785476288492,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1051,11 +1051,18 @@
           "張建發",
           "柏宏",
           "黃政豪",
-          "登"
+          "登",
+          "陳沛君"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 13:38",
+        "name": "陳沛君",
+        "operator": "陳沛君",
+        "action": "+1"
+      },
       {
         "time": "07/31 13:12",
         "name": "Tony",
