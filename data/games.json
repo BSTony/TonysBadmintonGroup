@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785501516968,
+    "lastActiveTime": 1785501673167,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1060,11 +1060,18 @@
           "Christie",
           "辛言",
           "柏林",
-          "腳皮"
+          "腳皮",
+          "L"
         ]
       }
     ],
     "history": [
+      {
+        "time": "07/31 20:41",
+        "name": "L",
+        "operator": "L",
+        "action": "+1"
+      },
       {
         "time": "07/31 20:38",
         "name": "腳皮",
@@ -1243,7 +1250,8 @@
       "Christie": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "辛言": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "柏林": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "L": "Uc85aca08d5834bad3d829179ce81db1e"
     }
   },
   "178504121595969": {
