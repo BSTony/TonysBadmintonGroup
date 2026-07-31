@@ -2360,7 +2360,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               // We produce at most ONE mention message with the first 50 UIDs to avoid rejection
               const chunk = uidArray.slice(0, 50);
               // prefix must be pure ASCII/CJK (no emoji) to keep byte index accurate
-              const prefix = "\u5831\u540d\u6210\u529f\u63d0\u9192\uff1a\n"; // '報名成功提醒：\n'
+              const prefix = "報名成功提醒： "; 
               let textMsg = prefix;
               const mentionees = [];
               
