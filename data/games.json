@@ -1324,7 +1324,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041215959,
-    "lastActiveTime": 1785461799957,
+    "lastActiveTime": 1785587127164,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1351,13 +1351,18 @@
           "兔兔(玉儒)",
           "小金(Chen Pei Hung)",
           "JoeLin",
-          "Jean",
           "鈞",
           "杜威霖 Andy"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/01 20:25",
+        "name": "Jean",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "07/31 09:36",
         "name": "杜威霖 Andy",
