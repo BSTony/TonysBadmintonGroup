@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785553100662,
+    "lastActiveTime": 1785556482714,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1046,7 +1046,8 @@
       "Ong": true,
       "柏宏": true,
       "Mia": true,
-      "Kevin": true
+      "Kevin": true,
+      "柏林": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
