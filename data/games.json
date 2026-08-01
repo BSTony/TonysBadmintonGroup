@@ -1324,7 +1324,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041215959,
-    "lastActiveTime": 1785587128918,
+    "lastActiveTime": 1785593337962,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1351,11 +1351,18 @@
           "兔兔(玉儒)",
           "小金(Chen Pei Hung)",
           "JoeLin",
-          "杜威霖 Andy"
+          "杜威霖 Andy",
+          "秭旭Archie"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/01 22:08",
+        "name": "秭旭Archie",
+        "operator": "秭旭Archie",
+        "action": "+1"
+      },
       {
         "time": "08/01 20:25",
         "name": "鈞",
@@ -1435,7 +1442,10 @@
         "action": "+1"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "uidMap": {
+      "秭旭Archie": "U935093aaf7acba2a7f7a333f4c2fa183"
+    }
   },
   "1785041272313876": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
