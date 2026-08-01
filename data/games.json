@@ -1443,7 +1443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785569002170,
+    "lastActiveTime": 1785571569928,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1472,7 +1472,6 @@
           "戴鏡達",
           "小宇",
           "Pu",
-          "腳皮",
           "胞弟",
           "Sammy Su",
           "周哲儁",
@@ -1481,6 +1480,12 @@
       }
     ],
     "history": [
+      {
+        "time": "08/01 16:06",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "-1"
+      },
       {
         "time": "08/01 15:23",
         "name": "seal",
