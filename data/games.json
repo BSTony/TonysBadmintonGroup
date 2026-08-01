@@ -1106,7 +1106,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041215959,
-    "lastActiveTime": 1785593648751,
+    "lastActiveTime": 1785628075781,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1115,7 +1115,9 @@
     "levelMap": {
       "Jean": "候補"
     },
-    "paidMap": {},
+    "paidMap": {
+      "林煥杰": true
+    },
     "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
