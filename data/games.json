@@ -1324,7 +1324,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041215959,
-    "lastActiveTime": 1785593337962,
+    "lastActiveTime": 1785593648751,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1352,11 +1352,18 @@
           "小金(Chen Pei Hung)",
           "JoeLin",
           "杜威霖 Andy",
-          "秭旭Archie"
+          "秭旭Archie",
+          "陳呈"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/01 22:14",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1"
+      },
       {
         "time": "08/01 22:08",
         "name": "秭旭Archie",
@@ -1444,7 +1451,8 @@
     ],
     "isManualEnded": false,
     "uidMap": {
-      "秭旭Archie": "U935093aaf7acba2a7f7a333f4c2fa183"
+      "秭旭Archie": "U935093aaf7acba2a7f7a333f4c2fa183",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
     }
   },
   "1785041272313876": {
