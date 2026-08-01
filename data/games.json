@@ -1421,7 +1421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785512439410,
+    "lastActiveTime": 1785548241183,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1451,11 +1451,18 @@
           "小宇",
           "Pu",
           "腳皮",
-          "胞弟"
+          "胞弟",
+          "Sammy Su"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/01 09:37",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "+1"
+      },
       {
         "time": "07/31 23:40",
         "name": "胞弟",
@@ -1537,7 +1544,8 @@
     ],
     "uidMap": {
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-      "胞弟": "U09e4f0126678f203e0b139a474c17637"
+      "胞弟": "U09e4f0126678f203e0b139a474c17637",
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
     }
   },
   "1785243735255375": {
