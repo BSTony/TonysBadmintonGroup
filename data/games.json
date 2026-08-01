@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785556482714,
+    "lastActiveTime": 1785560278547,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1080,11 +1080,18 @@
           "柏林",
           "腳皮",
           "L",
-          "小金(Chen Pei Hung)"
+          "小金(Chen Pei Hung)",
+          "凱"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/01 12:57",
+        "name": "凱",
+        "operator": "凱",
+        "action": "+1"
+      },
       {
         "time": "07/31 23:14",
         "name": "小金(Chen Pei Hung)",
@@ -1290,7 +1297,8 @@
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "L": "Uc85aca08d5834bad3d829179ce81db1e",
       "Lee": "U466bc2a892e61095f9d463f7429cbd57",
-      "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189"
+      "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
+      "凱": "U108e37bbede32b8d2bf987dae0f9c544"
     }
   },
   "178504121595969": {
