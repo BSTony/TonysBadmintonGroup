@@ -1254,7 +1254,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785594506909,
+    "lastActiveTime": 1785602935066,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1287,11 +1287,18 @@
           "Sammy Su",
           "周哲儁",
           "seal",
-          "陳俊傑 (Jeremy)"
+          "陳俊傑 (Jeremy)",
+          "卡比"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/02 00:48",
+        "name": "卡比",
+        "operator": "卡比",
+        "action": "+1"
+      },
       {
         "time": "08/01 22:28",
         "name": "陳俊傑 (Jeremy)",
@@ -1407,7 +1414,8 @@
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "seal": "U49e2484c80056990b759e9039a74e1a6",
-      "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8"
+      "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8",
+      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510"
     }
   },
   "1785243735255375": {
