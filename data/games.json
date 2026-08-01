@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785546102542,
+    "lastActiveTime": 1785546103499,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1032,7 +1032,8 @@
       "陳呈": true,
       "Christie": true,
       "小金(Chen Pei Hung)": true,
-      "登": true
+      "登": true,
+      "謝東霖 Tony": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
