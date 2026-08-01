@@ -1106,7 +1106,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041215959,
-    "lastActiveTime": 1785628082594,
+    "lastActiveTime": 1785628527313,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1117,7 +1117,8 @@
     },
     "paidMap": {
       "林煥杰": true,
-      "小金(Chen Pei Hung)": true
+      "小金(Chen Pei Hung)": true,
+      "ALAN LIU": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
