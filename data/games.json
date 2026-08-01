@@ -1339,7 +1339,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 7,
+        "limit": 11,
         "backupLimit": 5,
         "label": "",
         "list": [
@@ -1424,7 +1424,8 @@
         "operator": "鄭人云",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1785041272313876": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
