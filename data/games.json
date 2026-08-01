@@ -1472,7 +1472,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785571569928,
+    "lastActiveTime": 1785594506909,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1504,11 +1504,18 @@
           "胞弟",
           "Sammy Su",
           "周哲儁",
-          "seal"
+          "seal",
+          "陳俊傑 (Jeremy)"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/01 22:28",
+        "name": "陳俊傑 (Jeremy)",
+        "operator": "陳俊傑 (Jeremy)",
+        "action": "+1"
+      },
       {
         "time": "08/01 16:06",
         "name": "腳皮",
@@ -1617,7 +1624,8 @@
       "胞弟": "U09e4f0126678f203e0b139a474c17637",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
-      "seal": "U49e2484c80056990b759e9039a74e1a6"
+      "seal": "U49e2484c80056990b759e9039a74e1a6",
+      "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8"
     }
   },
   "1785243735255375": {
