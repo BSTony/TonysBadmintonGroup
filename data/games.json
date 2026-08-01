@@ -1254,7 +1254,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785602935066,
+    "lastActiveTime": 1785626728886,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1288,11 +1288,18 @@
           "周哲儁",
           "seal",
           "陳俊傑 (Jeremy)",
-          "卡比"
+          "卡比",
+          "瑋"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/02 07:25",
+        "name": "瑋",
+        "operator": "瑋",
+        "action": "+1"
+      },
       {
         "time": "08/02 00:48",
         "name": "卡比",
@@ -1415,7 +1422,8 @@
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "seal": "U49e2484c80056990b759e9039a74e1a6",
       "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8",
-      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510"
+      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510",
+      "瑋": "U799d4a509b3c76b76c249151f5a3f690"
     }
   },
   "1785243735255375": {
