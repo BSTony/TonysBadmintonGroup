@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785546359461,
+    "lastActiveTime": 1785547086654,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1037,7 +1037,8 @@
       "辛言": true,
       "L": true,
       "俊吉": true,
-      "Jet": true
+      "Jet": true,
+      "黃政豪": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
