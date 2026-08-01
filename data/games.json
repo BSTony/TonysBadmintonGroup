@@ -1429,7 +1429,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785548241183,
+    "lastActiveTime": 1785560241677,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1460,11 +1460,18 @@
           "Pu",
           "腳皮",
           "胞弟",
-          "Sammy Su"
+          "Sammy Su",
+          "周哲儁"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/01 12:57",
+        "name": "周哲儁",
+        "operator": "周哲儁",
+        "action": "+1"
+      },
       {
         "time": "08/01 09:37",
         "name": "Sammy Su",
@@ -1553,7 +1560,8 @@
     "uidMap": {
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "胞弟": "U09e4f0126678f203e0b139a474c17637",
-      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
     }
   },
   "1785243735255375": {
