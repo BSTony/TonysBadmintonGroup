@@ -1020,7 +1020,7 @@
     "tag": "",
     "active": true,
     "startTime": 1784954650361,
-    "lastActiveTime": 1785548679440,
+    "lastActiveTime": 1785548708675,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1041,7 +1041,8 @@
       "黃政豪": true,
       "AddieWang": true,
       "王小明": true,
-      "Andrew": true
+      "Andrew": true,
+      "腳皮": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
