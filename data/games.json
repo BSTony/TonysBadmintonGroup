@@ -1262,7 +1262,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785628889773,
+    "lastActiveTime": 1785632675719,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1273,7 +1273,8 @@
       "Tony": true,
       "Kay": true,
       "瑋": true,
-      "卡比": true
+      "卡比": true,
+      "Sammy Su": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
