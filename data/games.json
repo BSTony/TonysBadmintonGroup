@@ -1258,7 +1258,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785628509394,
+    "lastActiveTime": 1785628889773,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1268,7 +1268,8 @@
     "paidMap": {
       "Tony": true,
       "Kay": true,
-      "瑋": true
+      "瑋": true,
+      "卡比": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
