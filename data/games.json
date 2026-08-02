@@ -1557,7 +1557,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785571405129,
+    "lastActiveTime": 1785648822410,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1582,16 +1582,24 @@
           "Kay",
           "陳呈",
           "俊吉",
-          "Jet"
+          "Jet",
+          "楊程鈞"
         ]
       }
     ],
     "isManualEnded": false,
     "uidMap": {
       "俊吉": "U9a1ff0a8477529c49db5bca1e7313bd0",
-      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "history": [
+      {
+        "time": "08/02 13:33",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1"
+      },
       {
         "time": "08/01 16:03",
         "name": "Jet",
