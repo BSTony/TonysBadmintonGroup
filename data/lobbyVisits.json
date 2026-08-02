@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2721,
+    "viewCount": 2725,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -191,8 +191,8 @@
       "U4f877c526e048afcda3730edce9ba746": {
         "displayName": "楊程鈞",
         "firstVisit": 1783234301758,
-        "count": 14,
-        "lastVisit": 1785322083775
+        "count": 15,
+        "lastVisit": 1785648806268
       },
       "U4cbba92203148484d06d213547203e35": {
         "displayName": "小高",
@@ -623,8 +623,8 @@
       "U8b4e160fd2505afd265b09e8f651ebab": {
         "displayName": "杜威霖 Andy",
         "firstVisit": 1784123296953,
-        "count": 10,
-        "lastVisit": 1785644057992
+        "count": 11,
+        "lastVisit": 1785649111038
       },
       "Ua8084c5a3922bcb0051b494a8f17d622": {
         "displayName": "俊翰",
@@ -683,8 +683,8 @@
       "U935093aaf7acba2a7f7a333f4c2fa183": {
         "displayName": "秭旭Archie",
         "firstVisit": 1784362990880,
-        "count": 5,
-        "lastVisit": 1785593333642
+        "count": 6,
+        "lastVisit": 1785649653920
       },
       "Ufb12bb922c93c69d206c9a6fc3b07510": {
         "displayName": "卡比",
@@ -883,9 +883,39 @@
         "firstVisit": 1785585319501,
         "count": 1,
         "lastVisit": 1785585319501
+      },
+      "U33ec3d57827236fa5ed0f2da4c6e8205": {
+        "displayName": "Matt孟錡",
+        "firstVisit": 1785648408782,
+        "count": 1,
+        "lastVisit": 1785648408782
       }
     },
     "logs": [
+      {
+        "time": 1785649653920,
+        "userId": "U935093aaf7acba2a7f7a333f4c2fa183",
+        "displayName": "秭旭Archie",
+        "pictureUrl": "https://profile.line-scdn.net/0htaaxQKijK05MATgRxRRVMTxRKCRvcHJcZmVhKy4Bdyx1OG0bYGMxeypVdix3OW0YMmRgeH8CJ3xAElwoUlfXeksxdn9xMGkQZm9hrQ"
+      },
+      {
+        "time": 1785649111038,
+        "userId": "U8b4e160fd2505afd265b09e8f651ebab",
+        "displayName": "杜威霖 Andy",
+        "pictureUrl": "https://profile.line-scdn.net/0hMKNM-ElNEmRjNA18D45sGxNkEQ5ARUt2S1oNBgQ3SF1fUVMySFJYBVM3RFVZVgYyGlpZVV41SFxvJ2UCfWLuUGQET1VeBVA6SVpYhw"
+      },
+      {
+        "time": 1785648806268,
+        "userId": "U4f877c526e048afcda3730edce9ba746",
+        "displayName": "楊程鈞",
+        "pictureUrl": "https://profile.line-scdn.net/0hC85nNh2uHBcYFwLgmt5iKWhHH307ZkUFNnEDdn1DRSV2c1sVNSFUI34QFSdwIFJEYyRRdX0RRi86YCc_fzE6JVJDS0J5elkmfQk6BWkXIy57QwQUTiQgdUVyGlhBbAgSdQgqDUYRN3ttL0cndig2CXQTHWVkJQs6XEBwQR0lcpR3FWtCNXFSdCURSiKg"
+      },
+      {
+        "time": 1785648408782,
+        "userId": "U33ec3d57827236fa5ed0f2da4c6e8205",
+        "displayName": "Matt孟錡",
+        "pictureUrl": "https://profile.line-scdn.net/0hnhuiWYH1MUdYECFqNUpPOChAMi17YWhVJ3V2dD9EPyQwcHdGcnErcj4XZ35jInQQciV9dT0Yb3RUA0YhRkbNc18gbHZlIXMZcn57pA"
+      },
       {
         "time": 1785646132869,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -2059,30 +2089,6 @@
         "time": 1785496197092,
         "userId": "U3c633bac1ead8ca7a7def805e6f58248",
         "displayName": "小蔡"
-      },
-      {
-        "time": 1785495771206,
-        "userId": "Ub88763e6825e6fb9bdd1db3e80f2c7e8",
-        "displayName": "陳俊傑 (Jeremy)",
-        "pictureUrl": "https://profile.line-scdn.net/0hMNVZE4dNEmF7Izsf5kpsHgtzEQtYUktzB0FcUk0jSlZDRgJiXkVdVU4nGFNGQFMyAhcNUEwlSlN3MGUHZXXuVXwTT1BGElA_UU1Ygg"
-      },
-      {
-        "time": 1785491813812,
-        "userId": "U49e2484c80056990b759e9039a74e1a6",
-        "displayName": "Kay",
-        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
-      },
-      {
-        "time": 1785491294218,
-        "userId": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-        "displayName": "Andrew Kuo",
-        "pictureUrl": "https://profile.line-scdn.net/0hqcPFDnAZLkx9PwOl3oZQMw1vLSZeTndeBlhof0k7dXxBDm9OUws0Ik09J31FWjlOAVljLBo3dStxLFkqY2nSeHoPc31ADmwSV1Fkrw"
-      },
-      {
-        "time": 1785491186248,
-        "userId": "U94d0fd3752c6d2521d871658f63822b7",
-        "displayName": "Jet",
-        "pictureUrl": "https://profile.line-scdn.net/0hvp2qW2VZKV8fCDfk95lXYW9YKjU8eXBNMmpkay4NIGcjPG1eMzxubSgMImcka2wPMWdmPSIIID89TxZvVxhnUi4NCzx9WQtdOxM9Yih6dC18fhFeay0AZF9XDWlFPAtKXW89TkRyJBIgbgpAVGxhSkNUECtlPTJobF9FCRo6R9xwCl4KMm5nPCIOf2qn"
       }
     ]
   },
