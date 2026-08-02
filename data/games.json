@@ -1243,7 +1243,7 @@
         "action": "+1"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "uidMap": {
       "秭旭Archie": "U935093aaf7acba2a7f7a333f4c2fa183",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
