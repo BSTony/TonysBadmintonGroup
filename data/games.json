@@ -1613,5 +1613,42 @@
         "action": "+1"
       }
     ]
+  },
+  "1785651707130343": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "1785651707130343",
+    "title": "週四沒開QQ 不要點我",
+    "date": "8/6 (四)",
+    "time": "19:20~21:30",
+    "location": "玉成國小",
+    "fee": "999",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1785651707130,
+    "lastActiveTime": 1785651707130,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 1,
+        "backupLimit": 5,
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
