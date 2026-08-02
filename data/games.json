@@ -1265,7 +1265,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785041272313,
-    "lastActiveTime": 1785634683784,
+    "lastActiveTime": 1785636303683,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1280,7 +1280,8 @@
       "Sammy Su": true,
       "小宇": true,
       "陳俊傑 (Jeremy)": true,
-      "戴鏡達": true
+      "戴鏡達": true,
+      "seal": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
