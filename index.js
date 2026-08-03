@@ -2000,9 +2000,14 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
   const flexContents = [];
   targetGames.forEach((g, index) => {
     if (index >= 15) return;
-    const sec = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 0 };
-    const count = sec.list.length;
-    const limit = sec.limit || 0;
+    let count = 0;
+    let limit = 0;
+    if (g.sections && g.sections.length > 0) {
+      g.sections.forEach(s => {
+        count += (s.list || []).length;
+        limit += (s.limit || 0);
+      });
+    }
     const isFull = limit > 0 && count >= limit;
     const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
     const titleText = g.title || g.date || '場次';
