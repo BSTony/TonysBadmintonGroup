@@ -2368,6 +2368,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               const chunk = uidArray.slice(0, 50);
               let textParts = ['報名成功提醒：'];
               const substitution = {};
+              const _names = {};
               
               for (let j = 0; j < chunk.length; j++) {
                   const [uid, name] = chunk[j];
@@ -2380,12 +2381,14 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                           userId: uid
                       }
                   };
+                  _names[key] = name;
               }
               
               messagesToSend.push({
                   type: "textV2",
                   text: textParts.join(' '),
-                  substitution: substitution
+                  substitution: substitution,
+                  _names: _names
               });
           } else {
               messagesToSend.push({
@@ -4318,7 +4321,8 @@ async function handleEvent(event) {
                       userId: uid
                   }
               }
-          }
+          },
+          _names: { you: '測試發言者' }
       }];
       return client.replyMessage(event.replyToken, testMessages).catch(e => {
           const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
@@ -4432,20 +4436,76 @@ async function handleEvent(event) {
               // Now that we use textV2, replyMessage can successfully send mentions!
               return await client.replyMessage(event.replyToken, messagesToSend);
           } catch (e) {
-              console.error('Reply message failed:', e.originalError?.response?.data || e);
-              const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
+              const errData = e.originalError?.response?.data;
+              const errDetail = JSON.stringify(errData || e.message);
+              console.error('Reply message failed:', errData || e);
               
-              // Fallback without mentions if it fails
+              // Smart retry mechanism for "user not found in group"
+              if (errData && errData.details) {
+                  let hasMentionError = false;
+                  // Look for specific substitution errors (e.g. substitution["user0"].mentionee)
+                  let badKeys = [];
+                  errData.details.forEach(d => {
+                      if (d.message === 'The mentioned user is not found in the group.' && d.property) {
+                          const match = d.property.match(/substitution\["([^"]+)"\]/);
+                          if (match && match[1]) {
+                              badKeys.push(match[1]);
+                              hasMentionError = true;
+                          }
+                      }
+                  });
+                  
+                  if (hasMentionError && badKeys.length > 0) {
+                      // We can fix this by replacing the bad keys with plain text!
+                      const retryMessages = JSON.parse(JSON.stringify(messagesToSend)); // deep copy
+                      let fallbackNotice = [];
+                      for (let m of retryMessages) {
+                          if (m.type === 'textV2' && m.substitution) {
+                              badKeys.forEach(k => {
+                                  if (m.substitution[k]) {
+                                      const userName = (m._names && m._names[k]) ? m._names[k] : 'User';
+                                      // Replace {user0} with @Name in the text
+                                      m.text = m.text.replace(`{${k}}`, `@${userName}`);
+                                      // Remove it from substitution
+                                      delete m.substitution[k];
+                                      fallbackNotice.push(userName);
+                                  }
+                              });
+                              // Clean up _names so LINE API doesn't complain about unknown property, just in case
+                              delete m._names;
+                          }
+                      }
+                      
+                      try {
+                          // Push instead of reply because replyToken might be consumed
+                          await client.pushMessage(gid, retryMessages);
+                          if (fallbackNotice.length > 0) {
+                              await client.pushMessage(gid, { type: 'text', text: `⚠️ 系統提示：\n以下球友因隱私設定或不在群組內，無法使用藍色標記，已自動轉為純文字：\n${fallbackNotice.join(', ')}` });
+                          }
+                          return;
+                      } catch (retryErr) {
+                          console.error('Retry push failed:', retryErr);
+                      }
+                  }
+              }
+              
+              // Absolute Fallback without any mentions if smart retry fails
               const fallbackMessages = messagesToSend.map(m => {
                   if (m.type === 'textV2') {
-                      return { type: 'text', text: m.text.replace(/\{user\d+\}/g, '').trim() + '\n(標記失敗，已轉換為純文字)' };
+                      let plainText = m.text;
+                      if (m._names) {
+                          for (const k in m._names) plainText = plainText.replace(`{${k}}`, `@${m._names[k]}`);
+                      } else {
+                          plainText = plainText.replace(/\{user\d+\}/g, '').trim();
+                      }
+                      return { type: 'text', text: plainText + '\n(標記全數失敗，已轉換為純文字)' };
                   }
                   return m;
               });
               
               try {
                   await client.pushMessage(gid, fallbackMessages);
-                  await client.pushMessage(gid, { type: 'text', text: `⚠️ 標記發送異常，已降級為純文字。\n除錯資訊: ${errDetail}\nWebhook UID: ${event.source.userId}` });
+                  await client.pushMessage(gid, { type: 'text', text: `⚠️ 標記發送嚴重異常。\n除錯資訊: ${errDetail}\nWebhook UID: ${event.source.userId}` });
               } catch (e2) {
                   // Ignore
               }
