@@ -4324,10 +4324,43 @@ async function handleEvent(event) {
           },
           _names: { you: '測試發言者' }
       }];
-      return client.replyMessage(event.replyToken, testMessages).catch(e => {
-          const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
-          return client.pushMessage(gid, { type: 'text', text: `⚠️ 測試標記失敗\nUID: ${uid}\nError: ${errDetail}` });
-      });
+      
+      const sendTestWithRetry = async (msgs, fallbackNotices = []) => {
+          try {
+              await client.replyMessage(event.replyToken, msgs);
+          } catch (e) {
+              const errData = e.originalError?.response?.data;
+              let badKey = null;
+              if (errData && errData.details) {
+                  errData.details.forEach(d => {
+                      if (d.message === 'The mentioned user is not found in the group.' && d.property) {
+                          const match = d.property.match(/substitution\["?([^"]+)"?\]/);
+                          if (match && match[1]) badKey = match[1];
+                      }
+                  });
+              }
+              if (badKey) {
+                  const retryMsgs = JSON.parse(JSON.stringify(msgs));
+                  for (let m of retryMsgs) {
+                      if (m.type === 'textV2' && m.substitution && m.substitution[badKey]) {
+                          m.text = m.text.replace(`{${badKey}}`, `@${m._names[badKey]}`);
+                          delete m.substitution[badKey];
+                          if (Object.keys(m.substitution).length === 0) {
+                              m.type = 'text';
+                              delete m.substitution;
+                          }
+                      }
+                  }
+                  await client.pushMessage(gid, retryMsgs).catch(() => {
+                      client.pushMessage(gid, { type: 'text', text: `⚠️ 測試標記失敗 (重試也失敗)\nError: ${JSON.stringify(errData)}` });
+                  });
+              } else {
+                  client.pushMessage(gid, { type: 'text', text: `⚠️ 測試標記失敗\nUID: ${uid}\nError: ${JSON.stringify(errData)}` });
+              }
+          }
+      };
+      
+      return sendTestWithRetry(testMessages);
     }
 
     if (text.startsWith('群組廣播')) {
@@ -4432,64 +4465,113 @@ async function handleEvent(event) {
               return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(()=>null);
           }
       } else {
-          try {
-              // Now that we use textV2, replyMessage can successfully send mentions!
-              return await client.replyMessage(event.replyToken, messagesToSend);
-          } catch (e) {
-              const errData = e.originalError?.response?.data;
-              const errDetail = JSON.stringify(errData || e.message);
-              console.error('Reply message failed:', errData || e);
-              
-              // Smart retry mechanism for "user not found in group"
-              if (errData && errData.details) {
-                  let hasMentionError = false;
-                  // Look for specific substitution errors (e.g. substitution["user0"].mentionee)
-                  let badKeys = [];
-                  errData.details.forEach(d => {
-                      if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                          const match = d.property.match(/substitution\["([^"]+)"\]/);
-                          if (match && match[1]) {
-                              badKeys.push(match[1]);
-                              hasMentionError = true;
-                          }
-                      }
-                  });
+          // Helper function for recursive retry
+          const sendWithRetry = async (messages, fallbackNotices = []) => {
+              try {
+                  await client.replyMessage(event.replyToken, messages);
+                  if (fallbackNotices.length > 0) {
+                      await client.pushMessage(gid, { type: 'text', text: `⚠️ 系統提示：\n以下球友因隱私設定或不在本群組內，無法使用藍色標記，已自動轉為純文字：\n${fallbackNotices.join(', ')}` });
+                  }
+              } catch (e) {
+                  const errData = e.originalError?.response?.data;
                   
-                  if (hasMentionError && badKeys.length > 0) {
-                      // We can fix this by replacing the bad keys with plain text!
-                      const retryMessages = JSON.parse(JSON.stringify(messagesToSend)); // deep copy
-                      let fallbackNotice = [];
+                  // If replyToken is consumed or we need to push, use pushMessage
+                  const tryPush = async (msgs) => {
+                      await client.pushMessage(gid, msgs);
+                      if (fallbackNotices.length > 0) {
+                          await client.pushMessage(gid, { type: 'text', text: `⚠️ 系統提示：\n以下球友因隱私設定或不在本群組內，無法使用藍色標記，已自動轉為純文字：\n${fallbackNotices.join(', ')}` });
+                      }
+                  };
+
+                  let hasMentionError = false;
+                  let badKey = null;
+                  
+                  if (errData && errData.details) {
+                      errData.details.forEach(d => {
+                          if (d.message === 'The mentioned user is not found in the group.' && d.property) {
+                              const match = d.property.match(/substitution\["?([^"]+)"?\]/);
+                              if (match && match[1]) {
+                                  badKey = match[1];
+                                  hasMentionError = true;
+                              }
+                          }
+                      });
+                  }
+                  
+                  if (hasMentionError && badKey) {
+                      const retryMessages = JSON.parse(JSON.stringify(messages));
                       for (let m of retryMessages) {
-                          if (m.type === 'textV2' && m.substitution) {
-                              badKeys.forEach(k => {
-                                  if (m.substitution[k]) {
-                                      const userName = (m._names && m._names[k]) ? m._names[k] : 'User';
-                                      // Replace {user0} with @Name in the text
-                                      m.text = m.text.replace(`{${k}}`, `@${userName}`);
-                                      // Remove it from substitution
-                                      delete m.substitution[k];
-                                      fallbackNotice.push(userName);
-                                  }
-                              });
-                              // Clean up _names so LINE API doesn't complain about unknown property, just in case
-                              delete m._names;
+                          if (m.type === 'textV2' && m.substitution && m.substitution[badKey]) {
+                              const userName = (m._names && m._names[badKey]) ? m._names[badKey] : 'User';
+                              m.text = m.text.replace(`{${badKey}}`, `@${userName}`);
+                              delete m.substitution[badKey];
+                              fallbackNotices.push(userName);
+                              
+                              // Check if there are no more substitutions left
+                              if (Object.keys(m.substitution).length === 0) {
+                                  m.type = 'text';
+                                  delete m.substitution;
+                              }
                           }
                       }
                       
                       try {
-                          // Push instead of reply because replyToken might be consumed
-                          await client.pushMessage(gid, retryMessages);
-                          if (fallbackNotice.length > 0) {
-                              await client.pushMessage(gid, { type: 'text', text: `⚠️ 系統提示：\n以下球友因隱私設定或不在群組內，無法使用藍色標記，已自動轉為純文字：\n${fallbackNotice.join(', ')}` });
-                          }
-                          return;
+                          // Try sending again with pushMessage (since replyToken might be dead)
+                          await tryPush(retryMessages);
                       } catch (retryErr) {
-                          console.error('Retry push failed:', retryErr);
+                          const retryErrData = retryErr.originalError?.response?.data;
+                          // If it fails again with mention error, recurse!
+                          if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
+                              // Recursively call a push-only version
+                              const pushWithRetry = async (msgs, notices) => {
+                                  try {
+                                      await client.pushMessage(gid, msgs);
+                                      if (notices.length > 0) {
+                                          await client.pushMessage(gid, { type: 'text', text: `⚠️ 系統提示：\n以下球友因隱私設定或不在本群組內，無法使用藍色標記，已自動轉為純文字：\n${notices.join(', ')}` });
+                                      }
+                                  } catch (e3) {
+                                      const e3Data = e3.originalError?.response?.data;
+                                      let e3BadKey = null;
+                                      if (e3Data && e3Data.details) {
+                                          e3Data.details.forEach(d => {
+                                              if (d.message === 'The mentioned user is not found in the group.' && d.property) {
+                                                  const match = d.property.match(/substitution\["?([^"]+)"?\]/);
+                                                  if (match && match[1]) e3BadKey = match[1];
+                                              }
+                                          });
+                                      }
+                                      if (e3BadKey) {
+                                          const nextMsgs = JSON.parse(JSON.stringify(msgs));
+                                          for (let m of nextMsgs) {
+                                              if (m.type === 'textV2' && m.substitution && m.substitution[e3BadKey]) {
+                                                  const uName = (m._names && m._names[e3BadKey]) ? m._names[e3BadKey] : 'User';
+                                                  m.text = m.text.replace(`{${e3BadKey}}`, `@${uName}`);
+                                                  delete m.substitution[e3BadKey];
+                                                  notices.push(uName);
+                                                  if (Object.keys(m.substitution).length === 0) {
+                                                      m.type = 'text';
+                                                      delete m.substitution;
+                                                  }
+                                              }
+                                          }
+                                          await pushWithRetry(nextMsgs, notices);
+                                      } else {
+                                          throw e3; // Unhandled error
+                                      }
+                                  }
+                              };
+                              await pushWithRetry(retryMessages, fallbackNotices).catch(() => fallback(errData));
+                          } else {
+                              fallback(errData);
+                          }
                       }
+                  } else {
+                      fallback(errData || e.message);
                   }
               }
-              
-              // Absolute Fallback without any mentions if smart retry fails
+          };
+
+          const fallback = async (errDetail) => {
               const fallbackMessages = messagesToSend.map(m => {
                   if (m.type === 'textV2') {
                       let plainText = m.text;
@@ -4502,14 +4584,13 @@ async function handleEvent(event) {
                   }
                   return m;
               });
-              
               try {
                   await client.pushMessage(gid, fallbackMessages);
-                  await client.pushMessage(gid, { type: 'text', text: `⚠️ 標記發送嚴重異常。\n除錯資訊: ${errDetail}\nWebhook UID: ${event.source.userId}` });
-              } catch (e2) {
-                  // Ignore
-              }
-          }
+                  await client.pushMessage(gid, { type: 'text', text: `⚠️ 標記發送嚴重異常。\n除錯資訊: ${JSON.stringify(errDetail)}\nWebhook UID: ${event.source.userId}` });
+              } catch (e2) {}
+          };
+
+          await sendWithRetry(messagesToSend);
       }
     }
     
