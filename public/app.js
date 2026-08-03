@@ -2015,6 +2015,7 @@ function renderDetail(gameId, preserveScroll = false) {
                 <div style="padding-right: 30px;">
                     <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px; margin-bottom: 8px;">
                         <span style="color: #333;">${escapeHTML(sec.title)}</span>
+                        ${sec.fee ? `<span style="color: var(--primary-color); font-size: 14px;">💰 ${escapeHTML(formatFee(sec.fee))}</span>` : ''}
                     </div>
                     <div style="background-color: #eee; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 5px;">
                         <div style="background-color: ${secIsFull ? '#F44336' : '#4CAF50'}; height: 100%; width: ${progress}%;"></div>
