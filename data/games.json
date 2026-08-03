@@ -1563,7 +1563,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785723589296,
+    "lastActiveTime": 1785742173722,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1589,8 +1589,7 @@
           "陳呈",
           "俊吉",
           "Jet",
-          "楊程鈞",
-          "謝東霖 Tony"
+          "楊程鈞"
         ]
       }
     ],
@@ -1602,6 +1601,12 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/03 15:29",
+        "name": "謝東霖 Tony",
+        "operator": "謝東霖 Tony",
+        "action": "-1"
+      },
       {
         "time": "08/03 10:19",
         "name": "謝東霖 Tony",
