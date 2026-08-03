@@ -2366,7 +2366,9 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               // Use LINE textV2 format which is the ONLY way to send mentions from a bot
               // textV2 uses {placeholder} substitution syntax
               const chunk = uidArray.slice(0, 50);
-              let textParts = ['報名成功提醒：'];
+              const gameTitles = groupGames.map(g => g.title).filter(Boolean).join('、');
+              const prefix = gameTitles ? `[${gameTitles}] 已報名成功，記得來打球：` : '報名成功提醒：';
+              let textParts = [prefix];
               const substitution = {};
               const _names = {};
               
@@ -4466,21 +4468,15 @@ async function handleEvent(event) {
           }
       } else {
           // Helper function for recursive retry
-          const sendWithRetry = async (messages, fallbackNotices = []) => {
+          const sendWithRetry = async (messages) => {
               try {
                   await client.replyMessage(event.replyToken, messages);
-                  if (fallbackNotices.length > 0) {
-                      await client.pushMessage(gid, { type: 'text', text: `⚠️ 系統提示：\n以下球友因隱私設定或不在本群組內，無法使用藍色標記，已自動轉為純文字：\n${fallbackNotices.join(', ')}` });
-                  }
               } catch (e) {
                   const errData = e.originalError?.response?.data;
                   
                   // If replyToken is consumed or we need to push, use pushMessage
                   const tryPush = async (msgs) => {
                       await client.pushMessage(gid, msgs);
-                      if (fallbackNotices.length > 0) {
-                          await client.pushMessage(gid, { type: 'text', text: `⚠️ 系統提示：\n以下球友因隱私設定或不在本群組內，無法使用藍色標記，已自動轉為純文字：\n${fallbackNotices.join(', ')}` });
-                      }
                   };
 
                   let hasMentionError = false;
@@ -4505,7 +4501,7 @@ async function handleEvent(event) {
                               const userName = (m._names && m._names[badKey]) ? m._names[badKey] : 'User';
                               m.text = m.text.replace(`{${badKey}}`, `@${userName}`);
                               delete m.substitution[badKey];
-                              fallbackNotices.push(userName);
+                              // Removed fallbackNotice push
                               
                               // Check if there are no more substitutions left
                               if (Object.keys(m.substitution).length === 0) {
@@ -4523,12 +4519,9 @@ async function handleEvent(event) {
                           // If it fails again with mention error, recurse!
                           if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
                               // Recursively call a push-only version
-                              const pushWithRetry = async (msgs, notices) => {
+                              const pushWithRetry = async (msgs) => {
                                   try {
                                       await client.pushMessage(gid, msgs);
-                                      if (notices.length > 0) {
-                                          await client.pushMessage(gid, { type: 'text', text: `⚠️ 系統提示：\n以下球友因隱私設定或不在本群組內，無法使用藍色標記，已自動轉為純文字：\n${notices.join(', ')}` });
-                                      }
                                   } catch (e3) {
                                       const e3Data = e3.originalError?.response?.data;
                                       let e3BadKey = null;
@@ -4547,20 +4540,19 @@ async function handleEvent(event) {
                                                   const uName = (m._names && m._names[e3BadKey]) ? m._names[e3BadKey] : 'User';
                                                   m.text = m.text.replace(`{${e3BadKey}}`, `@${uName}`);
                                                   delete m.substitution[e3BadKey];
-                                                  notices.push(uName);
                                                   if (Object.keys(m.substitution).length === 0) {
                                                       m.type = 'text';
                                                       delete m.substitution;
                                                   }
                                               }
                                           }
-                                          await pushWithRetry(nextMsgs, notices);
+                                          await pushWithRetry(nextMsgs);
                                       } else {
                                           throw e3; // Unhandled error
                                       }
                                   }
                               };
-                              await pushWithRetry(retryMessages, fallbackNotices).catch(() => fallback(errData));
+                              await pushWithRetry(retryMessages).catch(() => fallback(errData));
                           } else {
                               fallback(errData);
                           }
