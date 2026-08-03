@@ -1465,7 +1465,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785243735255,
-    "lastActiveTime": 1785401820660,
+    "lastActiveTime": 1785737539958,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1502,12 +1502,17 @@
           "afrahuang",
           "Sean",
           "Joe",
-          "Vicky",
-          "張建發"
+          "Vicky"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/03 14:12",
+        "name": "張建發",
+        "operator": "張建發",
+        "action": "-1"
+      },
       {
         "time": "07/30 16:57",
         "name": "張建發",
