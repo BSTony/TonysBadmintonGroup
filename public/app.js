@@ -1676,15 +1676,44 @@ function renderLobby() {
         
         ${game.note ? `<div class="game-note" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">${escapeHTML(game.note)}</div>` : ''}
         
-        <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
-          <div class="progress-header">
-            <span>名額進度</span>
-            <span class="progress-value" style="color: ${count > limit ? 'var(--danger-color)' : 'var(--text-main)'}">${count} / ${limit} 人</span>
-          </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" style="width: ${progressPercent}%; background-color: ${progressColor};"></div>
-          </div>
-        </div>
+        ${(() => {
+          if (!isMultiSection) {
+            const section = game.sections[0] || { list: [], limit: 20 };
+            const limit = section.limit || 0;
+            const count = (section.list || []).length;
+            const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
+            const progressColor = count > limit ? 'var(--danger-color)' : 'var(--primary-color)';
+            return `
+              <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
+                <div class="progress-header">
+                  <span>名額進度</span>
+                  <span class="progress-value" style="color: ${count > limit ? 'var(--danger-color)' : 'var(--text-main)'}">${count} / ${limit} 人</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" style="width: ${progressPercent}%; background-color: ${progressColor};"></div>
+                </div>
+              </div>
+            `;
+          } else {
+            return game.sections.map(sec => {
+              const secLimit = sec.limit || 0;
+              const secCount = (sec.list || []).length;
+              const secProgressPercent = secLimit > 0 ? Math.min(100, (secCount / secLimit) * 100) : 0;
+              const secProgressColor = secCount > secLimit ? 'var(--danger-color)' : '#007BFF'; // Using blue color for multi-sections as seen in the screenshot for active section, but let's stick to theme primary unless active. Actually, the screenshot showed a blue selected state maybe? I'll use primary color.
+              return `
+                <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer; margin-bottom: 8px;">
+                  <div class="progress-header">
+                    <span>${escapeHTML(sec.title || '時段')}</span>
+                    <span class="progress-value" style="color: ${secCount > secLimit ? 'var(--danger-color)' : 'var(--text-main)'}">${secCount} / ${secLimit} 人</span>
+                  </div>
+                  <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: ${secProgressPercent}%; background-color: ${secCount > secLimit ? 'var(--danger-color)' : 'var(--primary-color)'};"></div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+        })()}
       `;
         
       let actionRowHtml = '';
@@ -3510,8 +3539,22 @@ function showEditGameForm(gameId) {
   const section = game.sections[0] || {};
   document.getElementById('eg-limit').value = section.limit || 20;
   document.getElementById('eg-backup').value = section.backupLimit || 0;
+  document.getElementById('eg-fee').value = game.fee || section.fee || '';
   document.getElementById('eg-ended').checked = !!game.isManualEnded;
   document.getElementById('eg-note').value = game.note || '';
+  
+  // 初始化多時段設定
+  egSections = JSON.parse(JSON.stringify(game.sections || []));
+  if (egSections.length > 1) {
+    document.getElementById('eg-multi-section-toggle').checked = true;
+    document.getElementById('eg-single-section-block').classList.add('hidden');
+    document.getElementById('eg-multi-section-block').classList.remove('hidden');
+  } else {
+    document.getElementById('eg-multi-section-toggle').checked = false;
+    document.getElementById('eg-single-section-block').classList.remove('hidden');
+    document.getElementById('eg-multi-section-block').classList.add('hidden');
+  }
+  renderEgSections();
   
   // Format timestamps to datetime-local
   const fmt = (ts) => {
@@ -3524,6 +3567,77 @@ function showEditGameForm(gameId) {
   document.getElementById('eg-publish').value = fmt(game.scheduleTime);
   document.getElementById('eg-reminder').value = fmt(game.reminderTime);
 }
+
+let egSections = [];
+
+function renderEgSections() {
+  const container = document.getElementById('eg-sections-list');
+  container.innerHTML = '';
+  egSections.forEach((sec, idx) => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-section-card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:bold; color:var(--primary-color);">時段/分區 ${idx + 1}</span>
+        ${egSections.length > 1 ? `<button type="button" class="btn-icon" style="color:var(--danger-color);" onclick="removeEgSection(${idx})">❌</button>` : ''}
+      </div>
+      <div class="form-group">
+        <label>名稱 (如: 8-10)</label>
+        <input type="text" id="eg-sec-title-${idx}" value="${sec.title || ''}" placeholder="例如：8-10">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>人數上限</label>
+          <input type="number" id="eg-sec-limit-${idx}" value="${sec.limit || 20}" min="1">
+        </div>
+        <div class="form-group">
+          <label>費用</label>
+          <input type="text" id="eg-sec-fee-${idx}" value="${sec.fee || ''}" placeholder="例如：200">
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+window.removeEgSection = (idx) => {
+  saveEgSectionsData();
+  egSections.splice(idx, 1);
+  renderEgSections();
+};
+
+function saveEgSectionsData() {
+  egSections = egSections.map((sec, idx) => {
+    return {
+      ...sec, // 必須保留既有的名單(list)等屬性
+      title: document.getElementById(`eg-sec-title-${idx}`)?.value || '',
+      limit: document.getElementById(`eg-sec-limit-${idx}`)?.value || 20,
+      fee: document.getElementById(`eg-sec-fee-${idx}`)?.value || ''
+    };
+  });
+}
+
+document.getElementById('eg-multi-section-toggle').addEventListener('change', (e) => {
+  const isMulti = e.target.checked;
+  if (isMulti) {
+    document.getElementById('eg-single-section-block').classList.add('hidden');
+    document.getElementById('eg-multi-section-block').classList.remove('hidden');
+    if (egSections.length === 0) {
+      egSections.push({ title: '8-10', limit: document.getElementById('eg-limit').value || 20, fee: document.getElementById('eg-fee').value || '' });
+      egSections.push({ title: '10-12', limit: document.getElementById('eg-limit').value || 20, fee: document.getElementById('eg-fee').value || '' });
+    }
+    renderEgSections();
+  } else {
+    document.getElementById('eg-single-section-block').classList.remove('hidden');
+    document.getElementById('eg-multi-section-block').classList.add('hidden');
+  }
+});
+
+document.getElementById('btn-eg-add-section').onclick = () => {
+  saveEgSectionsData();
+  egSections.push({ title: '', limit: 20, fee: '', list: [] });
+  renderEgSections();
+};
 
 document.getElementById('btn-cancel-edit').onclick = () => {
   editGameView.classList.add('hidden');
@@ -3573,7 +3687,8 @@ document.getElementById('btn-submit-edit').onclick = async () => {
         publish: document.getElementById('eg-publish').value,
         reminder: document.getElementById('eg-reminder').value,
         isManualEnded: document.getElementById('eg-ended').checked,
-        note: document.getElementById('eg-note').value.trim()
+        note: document.getElementById('eg-note').value.trim(),
+        sections: document.getElementById('eg-multi-section-toggle').checked ? (saveEgSectionsData(), egSections) : null
       })
     });
     

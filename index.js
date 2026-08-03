@@ -3524,9 +3524,24 @@ app.post('/api/action', express.json(), async (req, res) => {
         game.allowUserNoteEdit = !!req.body.allowUserNoteEdit;
       }
       
-      if (game.sections && game.sections[0]) {
+      if (req.body.sections && Array.isArray(req.body.sections) && req.body.sections.length > 0) {
+        const oldSections = game.sections || [];
+        game.sections = req.body.sections.map((s, idx) => {
+          return {
+            title: s.title || `分區 ${idx+1}`,
+            limit: parseInt(s.limit, 10) || 20,
+            backupLimit: parseInt(backupLimit, 10) || 5,
+            fee: s.fee || '',
+            label: '',
+            list: oldSections[idx] ? oldSections[idx].list : (idx === 0 && oldSections[0] ? oldSections[0].list : [])
+          };
+        });
+      } else if (game.sections && game.sections[0]) {
         game.sections[0].limit = parseInt(limit, 10) || 20;
         game.sections[0].backupLimit = parseInt(backupLimit, 10) || 0;
+        game.sections[0].fee = fee || '';
+        // If it was a multi-section and now changed to single, keep the first section's list and discard others.
+        game.sections = [game.sections[0]];
       }
       
       let pPublish = null;
