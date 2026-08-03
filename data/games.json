@@ -1637,8 +1637,9 @@
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
       "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C073dd061239f9bc2df13af0a1ecb4bdb",
-      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C073dd061239f9bc2df13af0a1ecb4bdb"
     ],
     "gameId": "1785651707130343",
     "title": "週四沒開QQ 不要點我",
@@ -1666,9 +1667,11 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": []
+        "list": [],
+        "fee": "999"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "178574316297281": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
