@@ -2363,35 +2363,29 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
 
           const uidArray = Array.from(uidsToMention.entries());
           if (uidArray.length > 0) {
-              // LINE mention text: max 50 mentions per message, max 4 mention messages (1 carousel + 4 = 5 total)
-              // We produce at most ONE mention message with the first 50 UIDs to avoid rejection
+              // Use LINE textV2 format which is the ONLY way to send mentions from a bot
+              // textV2 uses {placeholder} substitution syntax
               const chunk = uidArray.slice(0, 50);
-              // prefix must be pure ASCII/CJK (no emoji) to keep byte index accurate
-              const prefix = "報名成功提醒： "; 
-              let textMsg = prefix;
-              const mentionees = [];
+              let textParts = ['報名成功提醒：'];
+              const substitution = {};
               
               for (let j = 0; j < chunk.length; j++) {
                   const [uid, name] = chunk[j];
-                  const placeholder = "@" + name;
-                  mentionees.push({
-                      index: textMsg.length,
-                      length: placeholder.length,
-                      type: "user",
-                      userId: uid
-                  });
-                  textMsg += placeholder;
-                  if (j < chunk.length - 1) {
-                      textMsg += " ";
-                  }
+                  const key = `user${j}`;
+                  textParts.push(`{${key}}`);
+                  substitution[key] = {
+                      type: "mention",
+                      mentionee: {
+                          type: "user",
+                          userId: uid
+                      }
+                  };
               }
               
               messagesToSend.push({
-                  type: "text",
-                  text: textMsg,
-                  mention: {
-                      mentionees: mentionees
-                  }
+                  type: "textV2",
+                  text: textParts.join(' '),
+                  substitution: substitution
               });
           } else {
               messagesToSend.push({
@@ -4313,20 +4307,20 @@ async function handleEvent(event) {
     }
 
     if (text === '/test-mention-now') {
-      const mentionText = "@User 您好！這是一個寫死的標記測試。";
       const testMessages = [{
-          type: "text",
-          text: mentionText,
-          mention: {
-              mentionees: [{
-                  index: 0,
-                  length: 5,
-                  type: "user",
-                  userId: uid
-              }]
+          type: "textV2",
+          text: "標記測試： {you}",
+          substitution: {
+              you: {
+                  type: "mention",
+                  mentionee: {
+                      type: "user",
+                      userId: uid
+                  }
+              }
           }
       }];
-      return client.replyMessage(event.replyToken, testMessages);
+      return client.pushMessage(gid, testMessages);
     }
 
     if (text.startsWith('群組廣播')) {
