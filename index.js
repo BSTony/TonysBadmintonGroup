@@ -1779,7 +1779,8 @@ app.get('/api/game/:gid', async (req, res) => {
   // 智慧排序：嘗試解析日期 (如 7/3, 10/1)，越早的排上面。若無日期則依建立時間排序
   const parseDateStr = (dateStr) => {
     if (!dateStr) return Number.MAX_SAFE_INTEGER;
-    const match = dateStr.match(/(\d{1,2})\/(\d{1,2})/);
+    let dStr = dateStr.replace(/[\s\(（].*$/, '').trim();
+    const match = dStr.match(/(?:(?:19|20)\d\d[-\/])?(\d{1,2})[-\/](\d{1,2})/);
     if (match) {
       const month = parseInt(match[1], 10);
       const day = parseInt(match[2], 10);
@@ -4531,11 +4532,14 @@ async function handleEvent(event) {
       const getGameTime = (g) => {
         let t = 0;
         if (g.date) {
-          let dStr = g.date.trim();
+          let dStr = g.date.replace(/[\s\(（].*$/, '').trim();
           if (dStr.match(/^\d{1,2}\/\d{1,2}$/)) {
             dStr = new Date().getFullYear() + '/' + dStr;
+          } else if (dStr.match(/^\d{1,2}-\d{1,2}$/)) {
+            dStr = new Date().getFullYear() + '-' + dStr;
           }
-          const pd = new Date(`${dStr} ${g.time || ''}`.trim());
+          const tStr = g.time ? g.time.replace(/[\s\(（].*$/, '').trim() : '';
+          const pd = new Date(`${dStr} ${tStr}`.trim());
           if (!isNaN(pd.getTime())) t = pd.getTime();
         }
         return t === 0 ? (g.startTime || 0) : t;
