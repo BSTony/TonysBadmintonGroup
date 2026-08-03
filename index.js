@@ -1770,7 +1770,13 @@ app.get('/api/game/:gid', async (req, res) => {
   // 若有提供 uid，附上該用戶報名的名單
   if (uid) {
     groupGames.forEach(g => {
-      g.myRegisteredNames = g.sections[0].list.filter(name => {
+      const allList = [];
+      if (g.sections) {
+        g.sections.forEach(s => {
+          if (s.list) allList.push(...s.list);
+        });
+      }
+      g.myRegisteredNames = allList.filter(name => {
         return nameToUidMap.get(`${g.gameId}_${name}`) === uid;
       });
     });
@@ -2420,19 +2426,21 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
       if (isMentionPush) {
           const uidsToMention = new Map();
           for (const g of groupGames) {
-              const section = g.sections && g.sections[0] ? g.sections[0] : { list: [] };
-              const list = section.list || [];
-              for (const name of list) {
-                  if (name !== '__ANON__') {
-                      let uid = nameToUidMap.get(`${g.gameId}_${name}`);
-                      if (!uid && g.uidMap) {
-                          uid = g.uidMap[name];
-                      }
-                      if (!uid) {
-                          uid = nameToUidMap.get(`${targetGid}_${name}`);
-                      }
-                      if (uid) {
-                          uidsToMention.set(uid, name);
+              const sections = g.sections && g.sections.length > 0 ? g.sections : [{ list: [] }];
+              for (const section of sections) {
+                  const list = section.list || [];
+                  for (const name of list) {
+                      if (name !== '__ANON__') {
+                          let uid = nameToUidMap.get(`${g.gameId}_${name}`);
+                          if (!uid && g.uidMap) {
+                              uid = g.uidMap[name];
+                          }
+                          if (!uid) {
+                              uid = nameToUidMap.get(`${targetGid}_${name}`);
+                          }
+                          if (uid) {
+                              uidsToMention.set(uid, name);
+                          }
                       }
                   }
               }
@@ -3884,8 +3892,7 @@ app.post('/api/action', express.json(), async (req, res) => {
     // 讓所有使用者操作時，都觸發自動發話並帶上精簡資訊
     if (action === 'register' || action === 'cancel' || action === 'reorder' || action === 'togglePaid' || action === 'updateNote' || action === 'setNote') {
       const g = games[gameId];
-      const sec = g.sections && g.sections[0] ? g.sections[0] : null;
-      if (sec) {
+      if (g && g.sections && g.sections.length > 0) {
         let msg = '';
         
         let opPart = name;
@@ -5027,9 +5034,13 @@ async function sendList(token, gameId, prefix = "") {
   msg += `🏸 ${g.title}`;
   
   // 顯示簡短統計
-  if (g.sections && g.sections[0]) {
-    const listCount = g.sections[0].list.length;
-    const limit = g.sections[0].limit;
+  if (g.sections && g.sections.length > 0) {
+    let listCount = 0;
+    let limit = 0;
+    g.sections.forEach(s => {
+      listCount += (s.list || []).length;
+      limit += s.limit || 0;
+    });
     msg += `\n目前報名：${listCount} / ${limit} 人`;
   }
 
