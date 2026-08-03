@@ -1603,6 +1603,23 @@ function renderLobby() {
           totalLimit = limit + (section.backupLimit || 0);
       }
       
+      let displayFee = formatFee(game.fee) || '未設定';
+      if (isMultiSection) {
+          const uniqueFees = Array.from(new Set(game.sections.map(s => s.fee ? s.fee.toString().trim() : '').filter(Boolean)));
+          if (uniqueFees.length > 1) {
+              const numericFees = uniqueFees.map(f => parseInt(f.replace(/[^\d]/g, ''), 10)).filter(n => !isNaN(n));
+              if (numericFees.length === uniqueFees.length && numericFees.length > 0) {
+                  const min = Math.min(...numericFees);
+                  const max = Math.max(...numericFees);
+                  displayFee = `${min}~${max}元`;
+              } else {
+                  displayFee = uniqueFees.map(f => formatFee(f)).join(' / ');
+              }
+          } else if (uniqueFees.length === 1) {
+              displayFee = formatFee(uniqueFees[0]);
+          }
+      }
+      
       const isExpired = isGameExpired(game);
       const isFull = count >= totalLimit;
       const isWaitlist = count >= limit && count < totalLimit;
@@ -1670,7 +1687,7 @@ function renderLobby() {
           </div>
           <div class="info-item">
             <span class="info-icon">💰</span>
-            <span>${escapeHTML(formatFee(game.fee) || '未設定')}</span>
+            <span>${escapeHTML(displayFee)}</span>
           </div>
         </div>
         
