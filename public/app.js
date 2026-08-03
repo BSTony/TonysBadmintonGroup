@@ -1685,8 +1685,9 @@ function renderLobby() {
             <div class="progress-bar-fill" style="width: ${progressPercent}%; background-color: ${progressColor};"></div>
           </div>
         </div>
+      `;
         
-        let actionRowHtml = '';
+      let actionRowHtml = '';
         if (isMultiSection) {
             actionRowHtml = `
               <div class="action-row" style="margin-top: 10px;">
