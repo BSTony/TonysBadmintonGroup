@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2740,
+    "viewCount": 2744,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -203,8 +203,8 @@
       "U24c3b63e1d18834db9830f243aedaeae": {
         "displayName": "陳呈",
         "firstVisit": 1783327710672,
-        "count": 36,
-        "lastVisit": 1785593562202
+        "count": 37,
+        "lastVisit": 1785747181432
       },
       "U487e8a8976a1c65af4311f4b3f842a9c": {
         "displayName": "紀凡",
@@ -305,8 +305,8 @@
       "U1a05e97623cee1f79b0876626e88f0ab": {
         "displayName": "Wayne",
         "firstVisit": 1783407532808,
-        "count": 34,
-        "lastVisit": 1785403184455
+        "count": 35,
+        "lastVisit": 1785747174371
       },
       "U7691f78ef6e34371e591dc7b0c57ce9a": {
         "displayName": "林立峰",
@@ -617,14 +617,14 @@
       "U17eaf2f1e1b41288876d992044d9bdf9": {
         "displayName": "張建發",
         "firstVisit": 1784048192089,
-        "count": 10,
-        "lastVisit": 1785737533426
+        "count": 11,
+        "lastVisit": 1785747439787
       },
       "U8b4e160fd2505afd265b09e8f651ebab": {
         "displayName": "杜威霖 Andy",
         "firstVisit": 1784123296953,
-        "count": 11,
-        "lastVisit": 1785649111038
+        "count": 12,
+        "lastVisit": 1785747012114
       },
       "Ua8084c5a3922bcb0051b494a8f17d622": {
         "displayName": "俊翰",
@@ -892,6 +892,30 @@
       }
     },
     "logs": [
+      {
+        "time": 1785747439787,
+        "userId": "U17eaf2f1e1b41288876d992044d9bdf9",
+        "displayName": "張建發",
+        "pictureUrl": "https://profile.line-scdn.net/0h3mi51NhKbEJETH0nPTYSPTQcbyhnPTVQan92cXZFNSF6KyhDb3h3JHgfMHUqeS0XbXkhcyZOMCBIXxskWhqQdkN8MXN5fS4cbiImoQ"
+      },
+      {
+        "time": 1785747181432,
+        "userId": "U24c3b63e1d18834db9830f243aedaeae",
+        "displayName": "陳呈",
+        "pictureUrl": "https://profile.line-scdn.net/0hlAgC3G9hM25KOiL3Q7BNETpqMARpS2p8NFh_C3Zoblp-AiM4Y1gsXHw-OF12DCA-Mll5WnppZFhGKUQIVGzPWk0Kbl93C3EwYFR5jQ"
+      },
+      {
+        "time": 1785747174371,
+        "userId": "U1a05e97623cee1f79b0876626e88f0ab",
+        "displayName": "Wayne",
+        "pictureUrl": "https://profile.line-scdn.net/0hOz6QC2p6EFUbKA6J6vZua2t4Ez84WUlHNU9XNX4sRmJyS1YLYBxZMy0tTmcjTwVXZE1fNisqTzU5eQUKQhkle0luDQZ8fQwDQSgjdkAqOh0ncCFHSBQ5dDJVGTNgTEt-VEc2YS1NSjBneyloYCs-SHpVBQBuBCwfd398Ax4aftZ0KmcANk5eNiYuRmCj"
+      },
+      {
+        "time": 1785747012114,
+        "userId": "U8b4e160fd2505afd265b09e8f651ebab",
+        "displayName": "杜威霖 Andy",
+        "pictureUrl": "https://profile.line-scdn.net/0hMKNM-ElNEmRjNA18D45sGxNkEQ5ARUt2S1oNBgQ3SF1fUVMySFJYBVM3RFVZVgYyGlpZVV41SFxvJ2UCfWLuUGQET1VeBVA6SVpYhw"
+      },
       {
         "time": 1785737533426,
         "userId": "U17eaf2f1e1b41288876d992044d9bdf9",
