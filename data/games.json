@@ -1869,7 +1869,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785744644901,
+    "lastActiveTime": 1785744720776,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1894,7 +1894,9 @@
         "backupLimit": 5,
         "fee": "210",
         "label": "",
-        "list": []
+        "list": [
+          "周哲儁"
+        ]
       },
       {
         "title": "8:00-12:00",
@@ -1910,9 +1912,17 @@
     ],
     "uidMap": {
       "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Kay": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Kay": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
     },
     "history": [
+      {
+        "time": "08/03 16:12",
+        "name": "周哲儁",
+        "operator": "周哲儁",
+        "action": "+1",
+        "section": "10:00-12:00"
+      },
       {
         "time": "08/03 16:10",
         "name": "Kay",
