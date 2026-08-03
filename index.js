@@ -3432,8 +3432,15 @@ app.post('/api/action', express.json(), async (req, res) => {
         paidMap: initialPaidMap,
         noteMap: {},
         allowUserNoteEdit: req.body.allowUserNoteEdit !== false,
-        sections: [
-          { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList }
+        sections: (req.body.sections && Array.isArray(req.body.sections) && req.body.sections.length > 0) ? req.body.sections.map((s, idx) => ({
+          title: s.title || `分區 ${idx+1}`,
+          limit: parseInt(s.limit, 10) || 20,
+          backupLimit: parseInt(backupLimit, 10) || 5,
+          fee: s.fee || '',
+          label: '',
+          list: idx === 0 ? initialList : []
+        })) : [
+          { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList, fee: fee || '' }
         ]
       };
       

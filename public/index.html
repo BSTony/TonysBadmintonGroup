@@ -128,23 +128,48 @@
           </datalist>
         </div>
         <div class="form-row">
-          <div class="form-group">
-            <label>💰 費用 (選填)</label>
-            <input type="text" id="cg-fee" placeholder="例如：200">
-          </div>
-          <div class="form-group">
+          <div class="form-group" style="flex: 1;">
             <label>🏷️ 標籤 (選填)</label>
             <input type="text" id="cg-tag" placeholder="例如：歡樂場,新手友善">
           </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>👥 人數上限</label>
-            <input type="number" id="cg-limit" value="20" min="1">
-          </div>
-          <div class="form-group">
+          <div class="form-group" style="flex: 1;">
             <label>⏳ 候補上限</label>
             <input type="number" id="cg-backup" value="5" min="0">
+          </div>
+        </div>
+        
+        <div class="section-config-container" style="margin-top: 10px; background: rgba(255, 255, 255, 0.5); padding: 16px; border-radius: 12px; border: 1px solid rgba(216, 141, 147, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="margin: 0; font-size: 16px; font-weight: bold; color: var(--primary-color);">🎯 名額與費用設定</label>
+            <div class="toggle-switch-wrapper" style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 13px; font-weight: bold; color: var(--text-muted);">啟用多時段/分區</span>
+              <label class="switch">
+                <input type="checkbox" id="cg-multi-section-toggle">
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- 單一分區 (預設) -->
+          <div id="cg-single-section-block">
+            <div class="form-row">
+              <div class="form-group">
+                <label>👥 人數上限</label>
+                <input type="number" id="cg-limit" value="20" min="1">
+              </div>
+              <div class="form-group">
+                <label>💰 費用 (選填)</label>
+                <input type="text" id="cg-fee" placeholder="例如：200">
+              </div>
+            </div>
+          </div>
+          
+          <!-- 多分區動態清單 (啟用時顯示) -->
+          <div id="cg-multi-section-block" class="hidden" style="display: flex; flex-direction: column; gap: 12px;">
+            <div id="cg-sections-list">
+              <!-- 動態新增的分區卡片會放在這 -->
+            </div>
+            <button type="button" id="btn-cg-add-section" class="btn-secondary" style="width: 100%; border: 1px dashed var(--primary-color); color: var(--primary-color); background: rgba(216, 141, 147, 0.05);">➕ 新增時段/分區</button>
           </div>
         </div>
         

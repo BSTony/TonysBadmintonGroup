@@ -3296,6 +3296,77 @@ document.getElementById('btn-cancel-create').onclick = () => {
   lobbyView.classList.remove('hidden');
 };
 
+let cgSections = [];
+
+function renderCgSections() {
+  const container = document.getElementById('cg-sections-list');
+  container.innerHTML = '';
+  cgSections.forEach((sec, idx) => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-section-card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-weight:bold; color:var(--primary-color);">時段/分區 ${idx + 1}</span>
+        ${cgSections.length > 1 ? `<button type="button" class="btn-icon" style="color:var(--danger-color);" onclick="removeCgSection(${idx})">❌</button>` : ''}
+      </div>
+      <div class="form-group">
+        <label>名稱 (如: 8-10)</label>
+        <input type="text" id="cg-sec-title-${idx}" value="${sec.title || ''}" placeholder="例如：8-10">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>人數上限</label>
+          <input type="number" id="cg-sec-limit-${idx}" value="${sec.limit || 20}" min="1">
+        </div>
+        <div class="form-group">
+          <label>費用</label>
+          <input type="text" id="cg-sec-fee-${idx}" value="${sec.fee || ''}" placeholder="例如：200">
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+window.removeCgSection = (idx) => {
+  saveCgSectionsData();
+  cgSections.splice(idx, 1);
+  renderCgSections();
+};
+
+function saveCgSectionsData() {
+  cgSections = cgSections.map((sec, idx) => {
+    return {
+      title: document.getElementById(`cg-sec-title-${idx}`)?.value || '',
+      limit: document.getElementById(`cg-sec-limit-${idx}`)?.value || 20,
+      fee: document.getElementById(`cg-sec-fee-${idx}`)?.value || ''
+    };
+  });
+}
+
+document.getElementById('cg-multi-section-toggle').addEventListener('change', (e) => {
+  const isMulti = e.target.checked;
+  if (isMulti) {
+    document.getElementById('cg-single-section-block').classList.add('hidden');
+    document.getElementById('cg-multi-section-block').classList.remove('hidden');
+    if (cgSections.length === 0) {
+      cgSections.push({ title: '8-10', limit: document.getElementById('cg-limit').value || 20, fee: document.getElementById('cg-fee').value || '' });
+      cgSections.push({ title: '10-12', limit: document.getElementById('cg-limit').value || 20, fee: document.getElementById('cg-fee').value || '' });
+    }
+    renderCgSections();
+  } else {
+    document.getElementById('cg-single-section-block').classList.remove('hidden');
+    document.getElementById('cg-multi-section-block').classList.add('hidden');
+  }
+});
+
+document.getElementById('btn-cg-add-section').onclick = () => {
+  saveCgSectionsData();
+  cgSections.push({ title: '', limit: 20, fee: '' });
+  renderCgSections();
+};
+
+
 document.getElementById('btn-submit-create').onclick = async () => {
   const rawDateStr = document.getElementById('cg-date').value;
   const dateStr = rawDateStr ? formatLocalGameDate(rawDateStr) : '';
@@ -3338,7 +3409,8 @@ document.getElementById('btn-submit-create').onclick = async () => {
         publish: document.getElementById('cg-publish').value,
         reminder: document.getElementById('cg-reminder').value,
         note: document.getElementById('cg-note').value.trim(),
-        initialListStr: getCgListString()
+        initialListStr: getCgListString(),
+        sections: document.getElementById('cg-multi-section-toggle').checked ? (saveCgSectionsData(), cgSections) : null
       })
     });
     
