@@ -1821,7 +1821,8 @@ app.get('/api/game/:gid', async (req, res) => {
 // 大廳點擊紀錄與分析
 app.post('/api/lobby_visit', express.json(), (req, res) => {
   const { gid, userId, displayName, pictureUrl } = req.body;
-  if (!gid || !userId) return res.json({ success: false });
+  // 擋掉空值，以及擋掉 U 開頭的個人對話框 (避免污染群組分析資料)
+  if (!gid || !userId || gid.startsWith('U')) return res.json({ success: false });
 
   if (!lobbyVisits[gid]) {
     lobbyVisits[gid] = { viewCount: 0, uniqueViewers: {}, logs: [] };
@@ -1885,7 +1886,13 @@ app.get('/api/admin/all_stats', async (req, res) => {
   let adminGids = [];
 
   if (isSuperAdminUser) {
-    adminGids = Object.keys(lobbyVisits);
+    // 濾掉開頭為 U 的個人對話框造訪紀錄，只保留真正的群組 (C) 或房間 (R)
+    adminGids = Object.keys(lobbyVisits).filter(id => !id.startsWith('U'));
+    
+    // 順手把舊的 U 開頭垃圾資料清掉，避免資料檔越來越大
+    Object.keys(lobbyVisits).forEach(id => {
+      if (id.startsWith('U')) delete lobbyVisits[id];
+    });
   } else {
     // 即使是 groupAdmins 也無法使用此 API，直接阻擋
     return res.status(403).json({ error: '只有超級管理員能查看全域數據分析' });
