@@ -91,7 +91,7 @@
       
       <div class="form-container">
         <div class="form-group">
-          <label>發布目標群組 (必填)</label>
+          <label>🎯 發布目標群組 (必填)</label>
           <div style="display:flex; gap:5px; margin-bottom: 10px;">
             <input type="text" id="cg-new-group-code" placeholder="輸入群組代號 (例: 1234)" style="flex: 1;">
             <button id="btn-cg-add-group" type="button" class="btn-secondary" style="white-space: nowrap; padding: 0 10px;">加入</button>
@@ -101,25 +101,25 @@
           </div>
         </div>
         <div class="form-group">
-          <label>標題 (選填)</label>
+          <label>📝 標題 (選填)</label>
           <input type="text" id="cg-title" placeholder="例如：週二晚間快樂打">
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>日期 (必填)</label>
+            <label>📅 日期 (必填)</label>
             <input type="date" id="cg-date">
           </div>
           <div class="form-group">
-            <label>時間 (必填)</label>
+            <label>⏰ 時間 (必填)</label>
             <div style="display:flex; align-items:center; gap: 5px;">
               <input type="time" id="cg-time-start">
-              <span>~</span>
+              <span style="color: #666; font-weight: bold;">~</span>
               <input type="time" id="cg-time-end">
             </div>
           </div>
         </div>
         <div class="form-group">
-          <label>地點 (必填)</label>
+          <label>📍 地點 (必填)</label>
           <input type="text" id="cg-loc" list="loc-options" placeholder="輸入或選擇地點">
           <datalist id="loc-options">
             <option value="南港運動中心">
@@ -129,56 +129,62 @@
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>費用 (選填)</label>
+            <label>💰 費用 (選填)</label>
             <input type="text" id="cg-fee" placeholder="例如：200">
           </div>
           <div class="form-group">
-            <label>標籤 (選填)</label>
+            <label>🏷️ 標籤 (選填)</label>
             <input type="text" id="cg-tag" placeholder="例如：歡樂場,新手友善">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>人數上限</label>
+            <label>👥 人數上限</label>
             <input type="number" id="cg-limit" value="20" min="1">
           </div>
           <div class="form-group">
-            <label>候補上限</label>
+            <label>⏳ 候補上限</label>
             <input type="number" id="cg-backup" value="5" min="0">
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>發布時間 (選填)</label>
-            <input type="datetime-local" id="cg-publish">
-          </div>
-          <div class="form-group">
-            <label>提醒時間 (選填)</label>
-            <input type="datetime-local" id="cg-reminder">
-          </div>
-        </div>
         
-        <div class="form-group">
-          <label>自定義預設名單 (選填)</label>
-          <div style="display: flex; gap: 5px; margin-bottom: 5px;">
-            <select id="cg-template-select" style="flex: 1;">
-              <option value="">-- 選擇群組範本 --</option>
-            </select>
-            <button id="btn-save-template" class="btn-secondary" style="padding: 0 10px; font-size: 12px; white-space: nowrap;">儲存為新範本</button>
-            <button id="btn-delete-template" class="btn-danger" style="padding: 0 10px; font-size: 12px; white-space: nowrap;">刪除</button>
-          </div>
-          <div id="cg-initial-list-container" style="display:flex; flex-direction:column; gap:5px; margin-bottom:5px;">
-            <!-- 動態加入的格子 -->
-          </div>
-          <button type="button" id="btn-cg-add-row" class="btn-secondary" style="width:100%; margin-top:5px; padding:8px; font-weight:bold;">➕ 新增一格</button>
-        </div>
+        <details class="advanced-settings" style="margin-top: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #eee;">
+          <summary style="padding: 12px 16px; font-weight: bold; color: var(--primary-color); cursor: pointer; outline: none; list-style-type: '⚙️ ';">進階設定 (發布時間、備註、預設名單)</summary>
+          <div style="padding: 16px; border-top: 1px solid #eee;">
+            <div class="form-row" style="margin-bottom: 16px;">
+              <div class="form-group">
+                <label>發布時間 (選填)</label>
+                <input type="datetime-local" id="cg-publish">
+              </div>
+              <div class="form-group">
+                <label>提醒時間 (選填)</label>
+                <input type="datetime-local" id="cg-reminder">
+              </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>自定義預設名單 (選填)</label>
+              <div style="display: flex; gap: 5px; margin-bottom: 5px;">
+                <select id="cg-template-select" style="flex: 1;">
+                  <option value="">-- 選擇群組範本 --</option>
+                </select>
+                <button id="btn-save-template" class="btn-secondary" style="padding: 0 10px; font-size: 12px; white-space: nowrap;">儲存為範本</button>
+                <button id="btn-delete-template" class="btn-danger" style="padding: 0 10px; font-size: 12px; white-space: nowrap;">刪除</button>
+              </div>
+              <div id="cg-initial-list-container" style="display:flex; flex-direction:column; gap:5px; margin-bottom:5px;">
+                <!-- 動態加入的格子 -->
+              </div>
+              <button type="button" id="btn-cg-add-row" class="btn-secondary" style="width:100%; margin-top:5px; padding:8px; font-weight:bold;">➕ 新增一格</button>
+            </div>
 
-
-        <div class="form-group">
-          <label>備註 (選填)</label>
-          <textarea id="cg-note" rows="3" placeholder="其他注意事項..."></textarea>
-        </div>
-        <button id="btn-submit-create" class="btn-primary" style="margin-top: 15px;">確認開團</button>
+            <div class="form-group">
+              <label>備註 (選填)</label>
+              <textarea id="cg-note" rows="3" placeholder="其他注意事項..."></textarea>
+            </div>
+          </div>
+        </details>
+        
+        <button id="btn-submit-create" class="btn-primary">確認開團</button>
       </div>
     </div>
 
