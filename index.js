@@ -4320,7 +4320,10 @@ async function handleEvent(event) {
               }
           }
       }];
-      return client.pushMessage(gid, testMessages);
+      return client.replyMessage(event.replyToken, testMessages).catch(e => {
+          const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
+          return client.pushMessage(gid, { type: 'text', text: `⚠️ 測試標記失敗\nUID: ${uid}\nError: ${errDetail}` });
+      });
     }
 
     if (text.startsWith('群組廣播')) {
@@ -4426,19 +4429,26 @@ async function handleEvent(event) {
           }
       } else {
           try {
-              // replyMessage silently drops mention objects in groups!
-              // For mention push: use pushMessage so @tags work, then ack with replyMessage
-              if (isMentionPush) {
-                  await client.pushMessage(gid, messagesToSend);
-                  return client.replyMessage(event.replyToken, { type: 'text', text: '✅ 推播提醒已送出！' });
-              } else {
-                  // Same group => Use replyMessage (FREE!)
-                  return await client.replyMessage(event.replyToken, messagesToSend);
-              }
+              // Now that we use textV2, replyMessage can successfully send mentions!
+              return await client.replyMessage(event.replyToken, messagesToSend);
           } catch (e) {
-              console.error('Reply/push message failed:', e.originalError?.response?.data || e);
+              console.error('Reply message failed:', e.originalError?.response?.data || e);
               const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 發送失敗，發生異常錯誤：\n${errDetail}` }).catch(()=>null);
+              
+              // Fallback without mentions if it fails
+              const fallbackMessages = messagesToSend.map(m => {
+                  if (m.type === 'textV2') {
+                      return { type: 'text', text: m.text.replace(/\{user\d+\}/g, '').trim() + '\n(標記失敗，已轉換為純文字)' };
+                  }
+                  return m;
+              });
+              
+              try {
+                  await client.pushMessage(gid, fallbackMessages);
+                  await client.pushMessage(gid, { type: 'text', text: `⚠️ 標記發送異常，已降級為純文字。\n除錯資訊: ${errDetail}\nWebhook UID: ${event.source.userId}` });
+              } catch (e2) {
+                  // Ignore
+              }
           }
       }
     }
