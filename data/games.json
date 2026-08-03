@@ -1869,7 +1869,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785745077543,
+    "lastActiveTime": 1785745298771,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1886,7 +1886,9 @@
         "backupLimit": 5,
         "fee": "150",
         "label": "",
-        "list": []
+        "list": [
+          "ALAN LIU"
+        ]
       },
       {
         "title": "10:00-12:00",
@@ -1915,9 +1917,17 @@
       "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf"
     },
     "history": [
+      {
+        "time": "08/03 16:21",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/03 16:17",
         "name": "楊程鈞",
