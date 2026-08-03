@@ -1558,7 +1558,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785648822410,
+    "lastActiveTime": 1785723589296,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1584,7 +1584,8 @@
           "陳呈",
           "俊吉",
           "Jet",
-          "楊程鈞"
+          "楊程鈞",
+          "謝東霖 Tony"
         ]
       }
     ],
@@ -1592,9 +1593,16 @@
     "uidMap": {
       "俊吉": "U9a1ff0a8477529c49db5bca1e7313bd0",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/03 10:19",
+        "name": "謝東霖 Tony",
+        "operator": "謝東霖 Tony",
+        "action": "+1"
+      },
       {
         "time": "08/02 13:33",
         "name": "楊程鈞",
