@@ -1383,9 +1383,9 @@ async function deleteGame(gid) {
   scheduleFileSave();
 }
 
-// 自動清除超過 7 天的接龍資料
-const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000; // 7天
+// 自動清除超過 7 天的接龍資料 (已取消，依使用者要求永久保留)
 async function checkExpiredGames() {
+  // 不再刪除場次，僅確保有 startTime
   const now = Date.now();
   const gids = Object.keys(games);
   for (const gid of gids) {
@@ -1395,26 +1395,11 @@ async function checkExpiredGames() {
       games[gid].lastActiveTime = now;
       await saveGame(gid, true);
     }
-    const lastActive = games[gid].lastActiveTime || games[gid].startTime || now;
-    if (now - lastActive > EXPIRY_TIME) {
-      console.log(`群組 ${gid} 接龍已過期自動刪除`);
-      await deleteGame(gid);
-      await saveCurrentListSnapshot(null, false);
-    }
   }
 }
-checkExpiredGames().catch(console.error); // 啟動時檢查一次
+checkExpiredGames().catch(console.error); // 啟動時確保資料完整性
 
-function startDailyExpiryCheck() {
-  const now = new Date();
-  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-  const msUntilMidnight = nextMidnight.getTime() - now.getTime();
-  setTimeout(() => {
-    checkExpiredGames().catch(console.error);
-    setInterval(() => checkExpiredGames().catch(console.error), 24 * 60 * 60 * 1000);
-  }, msUntilMidnight);
-}
-startDailyExpiryCheck();
+// function startDailyExpiryCheck() { ... } // 不再需要定期檢查過期
 
 // 排程檢查的執行鎖，避免重入
 let checkingSchedules = false;
@@ -1851,9 +1836,9 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
   // 記錄最近的造訪
   groupStats.logs.unshift({ time: now, userId, displayName, pictureUrl });
   
-  // 保留最近 200 筆即可，避免無限制長大
-  if (groupStats.logs.length > 200) {
-    groupStats.logs = groupStats.logs.slice(0, 200);
+  // 保留最近 2000 筆即可，避免無限制長大
+  if (groupStats.logs.length > 2000) {
+    groupStats.logs = groupStats.logs.slice(0, 2000);
   }
   
   res.json({ success: true });
@@ -3704,7 +3689,7 @@ app.post('/api/action', express.json(), async (req, res) => {
           const now = new Date();
           const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
           game.history.unshift({ time: timeStr, name: n, operator: operatorName || name, action: '+1', section: targetSection.title });
-          if (game.history.length > 200) game.history.pop();
+          if (game.history.length > 2000) game.history.pop();
         }
       });
         } else if (action === 'togglePaid') {
@@ -3753,7 +3738,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       const now = new Date();
       const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       game.history.unshift({ time: timeStr, name: name, operator: operatorName || name, action: '-1', section: game.sections[foundInSecIdx].title });
-      if (game.history.length > 200) game.history.pop();
+      if (game.history.length > 2000) game.history.pop();
       
       if (game.paidMap) delete game.paidMap[name];
       if (game.noteMap) delete game.noteMap[name];
@@ -3815,7 +3800,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       const now = new Date();
       const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       game.history.unshift({ time: timeStr, name: '系統', operator: operatorName || name, action: '錯誤', errorMsg: text });
-      if (game.history.length > 200) game.history.pop();
+      if (game.history.length > 2000) game.history.pop();
       
       systemLogs.unshift({ time: timeStr, gameTitle: game.title, operator: operatorName || name, errorMsg: text });
       if (systemLogs.length > 500) systemLogs.pop();

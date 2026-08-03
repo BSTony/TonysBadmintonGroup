@@ -1777,6 +1777,29 @@ function renderLobby() {
       const contentEl = document.createElement('div');
       contentEl.style.marginTop = '15px';
       
+      endedGames.sort((a, b) => {
+        const getT = (g) => {
+          if (g.isManualEnded && g.manualEndTime) return g.manualEndTime;
+          if (!g.date) return g.startTime || 0;
+          const match = g.date.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+          if (!match) return g.startTime || 0;
+          const year = parseInt(match[1]);
+          const month = parseInt(match[2]) - 1;
+          const day = parseInt(match[3]);
+          let hour = 23, minute = 59;
+          if (g.time) {
+             const tm = g.time.match(/([01]?[0-9]|2[0-3]):([0-5][0-9])/g);
+             if (tm && tm.length > 0) {
+                const parts = tm[tm.length - 1].split(':');
+                hour = parseInt(parts[0]);
+                minute = parseInt(parts[1]);
+             }
+          }
+          return new Date(year, month, day, hour, minute).getTime();
+        };
+        return getT(b) - getT(a);
+      });
+      
       endedGames.forEach(game => contentEl.appendChild(renderCard(game)));
       
       detailsEl.appendChild(summaryEl);
