@@ -1869,7 +1869,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785747216030,
+    "lastActiveTime": 1785748231453,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1889,7 +1889,8 @@
         "list": [
           "ALAN LIU",
           "杜威霖 Andy",
-          "陳呈"
+          "陳呈",
+          "林煥杰"
         ]
       },
       {
@@ -1922,9 +1923,17 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
     },
     "history": [
+      {
+        "time": "08/03 17:10",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/03 16:53",
         "name": "陳呈",
