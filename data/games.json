@@ -1869,7 +1869,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785744637979,
+    "lastActiveTime": 1785744644901,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1903,14 +1903,23 @@
         "fee": "320",
         "label": "",
         "list": [
-          "Tony"
+          "Tony",
+          "Kay"
         ]
       }
     ],
     "uidMap": {
-      "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/03 16:10",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8:00-12:00"
+      },
       {
         "time": "08/03 16:10",
         "name": "Tony",
