@@ -2230,13 +2230,6 @@ function renderDetail(gameId, preserveScroll = false) {
             ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
           </div>
         `;
-      } else {
-        secDiv.innerHTML += `
-          <div class="list-item" style="opacity: 0.3">
-            <div class="list-num">${i + 1}.</div>
-            <div class="list-name">-- 虛位以待 --</div>
-          </div>
-        `;
       }
     }
     
