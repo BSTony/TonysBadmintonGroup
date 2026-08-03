@@ -1743,7 +1743,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785743776153,
-    "lastActiveTime": 1785743848953,
+    "lastActiveTime": 1785743857944,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1770,7 +1770,9 @@
         "backupLimit": 5,
         "fee": "210",
         "label": "",
-        "list": []
+        "list": [
+          "B"
+        ]
       },
       {
         "title": "8:00-12:00",
@@ -1782,9 +1784,17 @@
       }
     ],
     "uidMap": {
-      "A": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "A": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "B": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/03 15:57",
+        "name": "B",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10:00-12:00"
+      },
       {
         "time": "08/03 15:57",
         "name": "A",
