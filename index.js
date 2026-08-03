@@ -2023,40 +2023,99 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
 
     const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText && cleanText.includes(g.title);
 
-    const rowContents = [
-      { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
-      {
+    let finalBox = null;
+
+    if (g.sections && g.sections.length > 1) {
+      const titleRowContents = [
+        { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
+        { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
+      ];
+      const titleRowBox = {
         type: "box",
         layout: "horizontal",
-        flex: 0,
-        height: "22px",
-        width: isFull ? "36px" : "48px",
-        cornerRadius: "sm",
-        backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
-        justifyContent: "center",
+        paddingTop: "8px",
+        paddingBottom: "4px",
+        paddingStart: isTarget ? "10px" : "4px",
+        paddingEnd: "4px",
         alignItems: "center",
-        contents: [
-          { type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }
-        ]
-      },
-      { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
-    ];
+        contents: titleRowContents
+      };
 
-    const rowBox = {
-      type: "box",
-      layout: "horizontal",
-      paddingTop: "8px",
-      paddingBottom: "8px",
-      paddingStart: isTarget ? "10px" : "4px",
-      paddingEnd: "4px",
-      alignItems: "center",
-      action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
-      contents: rowContents
-    };
+      const sectionRows = g.sections.map(s => {
+        const sCount = (s.list || []).length;
+        const sLimit = s.limit || 0;
+        const sIsFull = sLimit > 0 && sCount >= sLimit;
+        const sStatusText = sIsFull ? '滿' : (sLimit > 0 ? `${sCount}/${sLimit}` : `${sCount}`);
+        return {
+          type: "box",
+          layout: "horizontal",
+          paddingTop: "2px",
+          paddingBottom: "4px",
+          paddingStart: isTarget ? "14px" : "8px",
+          paddingEnd: "22px",
+          alignItems: "center",
+          contents: [
+            { type: "text", text: `🔹 ${s.title || '時段'}`, size: "xxs", color: "#888888", flex: 4, wrap: false },
+            {
+              type: "box",
+              layout: "horizontal",
+              flex: 0,
+              height: "18px",
+              width: sIsFull ? "28px" : "36px",
+              cornerRadius: "sm",
+              backgroundColor: sIsFull ? "#ffebee" : "#e8f5e9",
+              justifyContent: "center",
+              alignItems: "center",
+              contents: [
+                { type: "text", text: sStatusText, size: "xxs", color: sIsFull ? "#ff4c4c" : "#1DB446", align: "center" }
+              ]
+            }
+          ]
+        };
+      });
+      finalBox = {
+         type: "box",
+         layout: "vertical",
+         paddingBottom: "6px",
+         action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
+         contents: [titleRowBox, ...sectionRows]
+      };
+    } else {
+      const rowContents = [
+        { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
+        {
+          type: "box",
+          layout: "horizontal",
+          flex: 0,
+          height: "22px",
+          width: isFull ? "36px" : "48px",
+          cornerRadius: "sm",
+          backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
+          justifyContent: "center",
+          alignItems: "center",
+          contents: [
+            { type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }
+          ]
+        },
+        { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
+      ];
+
+      finalBox = {
+        type: "box",
+        layout: "horizontal",
+        paddingTop: "8px",
+        paddingBottom: "8px",
+        paddingStart: isTarget ? "10px" : "4px",
+        paddingEnd: "4px",
+        alignItems: "center",
+        action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
+        contents: rowContents
+      };
+    }
 
     if (isTarget) {
-      rowBox.backgroundColor = "#FFF3CD";
-      rowBox.cornerRadius = "md";
+      finalBox.backgroundColor = "#FFF3CD";
+      finalBox.cornerRadius = "md";
     }
 
     if (index > 0 && !isTarget) {
@@ -2066,7 +2125,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
     }
 
-    flexContents.push(rowBox);
+    flexContents.push(finalBox);
 
     if (isTarget) {
       flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
