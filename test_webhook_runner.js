@@ -987,11 +987,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
     res.setHeader('Expires', '0');
   }
 }));
-app.use((req, res, next) => {
-  // Skip JSON parsing for /webhook — LINE SDK middleware needs the raw body
-  if (req.path === '/webhook') return next();
-  express.json()(req, res, next);
-});
+app.use(express.json());
 
 // 全域存儲：支援多群組、多區段
 let games = {};
@@ -1179,17 +1175,6 @@ async function loadGames() {
       }
     }
     games = newGames;
-
-    // 啟動時重建記憶體中的 UID 映射表
-    for (const [id, g] of Object.entries(games)) {
-      if (g.uidMap) {
-        for (const [name, uid] of Object.entries(g.uidMap)) {
-          nameToUidMap.set(`${id}_${name}`, uid);
-          nameToUidMap.set(`${g.gid}_${name}`, uid);
-          uidToNameMap.set(`${id}_${uid}`, name);
-        }
-      }
-    }
 
     if (oldKeysToDelete.length > 0) {
       console.log('執行資料庫遷移：刪除舊結構並儲存新結構...');
@@ -1411,7 +1396,7 @@ function startDailyExpiryCheck() {
   const msUntilMidnight = nextMidnight.getTime() - now.getTime();
   setTimeout(() => {
     checkExpiredGames().catch(console.error);
-    setInterval(() => checkExpiredGames().catch(console.error), 24 * 60 * 60 * 1000);
+    console.log("Skipped setInterval");
   }, msUntilMidnight);
 }
 startDailyExpiryCheck();
@@ -1442,7 +1427,7 @@ function startMinuteCheck() {
   setTimeout(() => {
     executeCheck();
     // 之後每60秒執行一次（對齊每分鐘00秒）
-    setInterval(executeCheck, 60 * 1000);
+    console.log("Skipped setInterval");
   }, delay);
 }
 
@@ -1548,9 +1533,7 @@ app.get('/api/events/:gid', (req, res) => {
   clientsSet.add(res);
 
   // 每隔一段時間發送 ping 以保持連線
-  const pingInterval = setInterval(() => {
-    try { 
-      res.write(':\n\n'); 
+  const pingInterval = console.log("Skipped setInterval"); 
       if (res.flush) res.flush();
     } catch(e) {}
   }, 30000);
@@ -1821,8 +1804,7 @@ app.get('/api/game/:gid', async (req, res) => {
 // 大廳點擊紀錄與分析
 app.post('/api/lobby_visit', express.json(), (req, res) => {
   const { gid, userId, displayName, pictureUrl } = req.body;
-  // 擋掉空值，以及擋掉 U 開頭的個人對話框 (避免污染群組分析資料)
-  if (!gid || !userId || gid.startsWith('U')) return res.json({ success: false });
+  if (!gid || !userId) return res.json({ success: false });
 
   if (!lobbyVisits[gid]) {
     lobbyVisits[gid] = { viewCount: 0, uniqueViewers: {}, logs: [] };
@@ -1886,13 +1868,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
   let adminGids = [];
 
   if (isSuperAdminUser) {
-    // 濾掉開頭為 U 的個人對話框造訪紀錄，只保留真正的群組 (C) 或房間 (R)
-    adminGids = Object.keys(lobbyVisits).filter(id => !id.startsWith('U'));
-    
-    // 順手把舊的 U 開頭垃圾資料清掉，避免資料檔越來越大
-    Object.keys(lobbyVisits).forEach(id => {
-      if (id.startsWith('U')) delete lobbyVisits[id];
-    });
+    adminGids = Object.keys(lobbyVisits);
   } else {
     // 即使是 groupAdmins 也無法使用此 API，直接阻擋
     return res.status(403).json({ error: '只有超級管理員能查看全域數據分析' });
@@ -2011,160 +1987,18 @@ app.post('/api/templates/:gid', express.json(), async (req, res) => {
 });
 
 // 產生完整名單字串的輔助函式
-function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
-  const flexContents = [];
-  targetGames.forEach((g, index) => {
-    if (index >= 15) return;
-    const sec = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 0 };
-    const count = sec.list.length;
-    const limit = sec.limit || 0;
-    const isFull = limit > 0 && count >= limit;
-    const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
-    const titleText = g.title || g.date || '場次';
-    
-    let combinedTitle = titleText;
-    if (g.date && g.date !== g.title) {
-      const shortDate = g.date.replace(/\s*[（\(].*?[)）]\s*/g, '').trim();
-      if (shortDate) {
-        combinedTitle = `${shortDate} ${titleText}`;
-      }
-    }
-
-    const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText && cleanText.includes(g.title);
-
-    const rowContents = [
-      { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
-      {
-        type: "box",
-        layout: "horizontal",
-        flex: 0,
-        height: "22px",
-        width: isFull ? "36px" : "48px",
-        cornerRadius: "sm",
-        backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
-        justifyContent: "center",
-        alignItems: "center",
-        contents: [
-          { type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }
-        ]
-      },
-      { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
-    ];
-
-    const rowBox = {
-      type: "box",
-      layout: "horizontal",
-      paddingTop: "8px",
-      paddingBottom: "8px",
-      paddingStart: isTarget ? "10px" : "4px",
-      paddingEnd: "4px",
-      alignItems: "center",
-      action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
-      contents: rowContents
-    };
-
-    if (isTarget) {
-      rowBox.backgroundColor = "#FFF3CD";
-      rowBox.cornerRadius = "md";
-    }
-
-    if (index > 0 && !isTarget) {
-      flexContents.push({ type: "separator", color: "#f4f4f4" });
-    }
-    if (index > 0 && isTarget) {
-      flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
-    }
-
-    flexContents.push(rowBox);
-
-    if (isTarget) {
-      flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
-    }
-  });
-
-  flexContents.push({
-    type: "box",
-    layout: "horizontal",
-    margin: "lg",
-    justifyContent: "center",
-    contents: [
-      { type: "text", text: "點選上方場次查看詳細名單 👆", size: "xs", color: "#888888", align: "center" }
-    ]
-  });
-
-  if (isPlusMinus && cleanText !== '+1' && cleanText !== '-1') {
-    flexContents.push({
-      type: "box",
-      layout: "horizontal",
-      margin: "md",
-      paddingAll: "10px",
-      backgroundColor: "#e8f5e9",
-      cornerRadius: "md",
-      alignItems: "center",
-      contents: [
-        { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446", flex: 0 },
-        { type: "text", text: cleanText, size: "xs", color: "#333333", wrap: true, margin: "sm", flex: 1 }
-      ]
-    });
-  }
-
-  return {
-    type: "bubble",
-    size: "mega",
-    header: {
-      type: "box",
-      layout: "vertical",
-      paddingBottom: "none",
-      contents: [
-        {
-          type: "box",
-          layout: "horizontal",
-          alignItems: "center",
-          contents: [
-            { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
-            {
-              type: "button",
-              style: "primary",
-              color: "#1DB446",
-              height: "sm",
-              flex: 0,
-              action: { type: "uri", label: "進入大廳", uri: liffBaseUrl }
-            }
-          ]
-        },
-        { type: "separator", margin: "md", color: "#eeeeee" }
-      ]
-    },
-    body: {
-      type: "box",
-      layout: "vertical",
-      paddingAll: "16px",
-      contents: flexContents
-    }
-  };
-}
-
-function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble) {
-      const flexBubbles = statusBubble ? [statusBubble] : [];
+function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap) {
+const flexBubbles = [];
       for (const g of groupGames) {
           if (flexBubbles.length >= 12) break; // LINE Carousel maximum is 12 bubbles
 
-          const isMultiSection = g.sections && g.sections.length > 1;
           const section = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 20 };
           const list = section.list || [];
           const limit = section.limit || 20;
+          const backupLimit = section.backupLimit || 0;
           
-          let totalListLen = 0;
-          let totalLimit = 0;
-          if (g.sections) {
-              g.sections.forEach(s => {
-                  totalListLen += (s.list || []).length;
-                  totalLimit += (s.limit || 0);
-              });
-          }
-          
-          const isFull = totalLimit > 0 && totalListLen >= totalLimit;
-          const statusText = isFull ? '滿團' : (totalLimit > 0 ? `${totalListLen}/${totalLimit}` : `${totalListLen}人`);
+          const isFull = limit > 0 && list.length >= limit;
+          const statusText = isFull ? '滿團' : (limit > 0 ? `${list.length}/${limit}` : `${list.length}人`);
 
           // Date and location
           let infoLine = `🕒 ${g.date || ''} ${g.time || ''}`.trim();
@@ -2172,59 +2006,41 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
 
           // Format names for two columns
           const listBoxes = [];
-          if (isMultiSection) {
-              listBoxes.push({
-                  type: "box",
-                  layout: "horizontal",
-                  contents: [
-                      { type: "text", text: "👉 此場次包含多個時段與分區", size: "sm", color: "#333333", flex: 1, wrap: true }
-                  ]
-              });
-              listBoxes.push({
-                  type: "box",
-                  layout: "horizontal",
-                  margin: "sm",
-                  contents: [
-                      { type: "text", text: "請點擊下方「報名/名單」查看各區詳情", size: "sm", color: "#666666", flex: 1, wrap: true }
-                  ]
-              });
-          } else {
-              for (let i = 0; i < list.length && i < limit; i += 2) {
-                  const name1 = list[i] === '__ANON__' ? '匿名' : list[i];
-                  const name2 = (i + 1 < list.length && i + 1 < limit) ? (list[i+1] === '__ANON__' ? '匿名' : list[i+1]) : '';
-                  
-                  const formatName = (idx, name) => {
-                      if (!name) return "";
-                      const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                      const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
-                      return `${idx+1}. ${name}${levelStr}${paidStr}`;
-                  };
-
-                  listBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      paddingTop: "2px",
-                      paddingBottom: "2px",
-                      contents: [
-                          { type: "text", text: formatName(i, name1), size: "xs", color: "#333333", flex: 1, wrap: false },
-                          { type: "text", text: name2 ? formatName(i+1, name2) : " ", size: "xs", color: "#333333", flex: 1, wrap: false }
-                      ]
-                  });
-              }
+          for (let i = 0; i < list.length && i < limit; i += 2) {
+              const name1 = list[i] === '__ANON__' ? '匿名' : list[i];
+              const name2 = (i + 1 < list.length && i + 1 < limit) ? (list[i+1] === '__ANON__' ? '匿名' : list[i+1]) : '';
               
-              if (list.length < limit) {
-                  // Add an empty spot indicator for the next available spot
-                  listBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      paddingTop: "2px",
-                      paddingBottom: "2px",
-                      contents: [
-                          { type: "text", text: `${list.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
-                          { type: "text", text: " ", size: "xs", color: "#333333", flex: 1, wrap: false }
-                      ]
-                  });
-              }
+              const formatName = (idx, name) => {
+                  if (!name) return "";
+                  const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
+                  const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
+                  return `${idx+1}. ${name}${levelStr}${paidStr}`;
+              };
+
+              listBoxes.push({
+                  type: "box",
+                  layout: "horizontal",
+                  paddingTop: "2px",
+                  paddingBottom: "2px",
+                  contents: [
+                      { type: "text", text: formatName(i, name1), size: "xs", color: "#333333", flex: 1, wrap: false },
+                      { type: "text", text: name2 ? formatName(i+1, name2) : " ", size: "xs", color: "#333333", flex: 1, wrap: false }
+                  ]
+              });
+          }
+          
+          if (list.length < limit) {
+              // Add an empty spot indicator for the next available spot
+              listBoxes.push({
+                  type: "box",
+                  layout: "horizontal",
+                  paddingTop: "2px",
+                  paddingBottom: "2px",
+                  contents: [
+                      { type: "text", text: `${list.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
+                      { type: "text", text: " ", size: "xs", color: "#333333", flex: 1, wrap: false }
+                  ]
+              });
           }
 
           const bodyContents = [
@@ -2261,7 +2077,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
           ];
 
           // Backups
-          if (!isMultiSection && list.length > limit) {
+          if (list.length > limit) {
               bodyContents.push({ type: "separator", margin: "md", color: "#eeeeee" });
               bodyContents.push({
                   type: "box",
@@ -2368,61 +2184,58 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
       const messagesToSend = [carouselMsg];
       
       if (isMentionPush) {
-          const uidsToMention = new Map();
+          const uidsToMention = new Set();
           for (const g of groupGames) {
               const section = g.sections && g.sections[0] ? g.sections[0] : { list: [] };
               const list = section.list || [];
               for (const name of list) {
                   if (name !== '__ANON__') {
                       let uid = nameToUidMap.get(`${g.gameId}_${name}`);
-                      if (!uid && g.uidMap) {
-                          uid = g.uidMap[name];
-                      }
                       if (!uid) {
                           uid = nameToUidMap.get(`${targetGid}_${name}`);
                       }
                       if (uid) {
-                          uidsToMention.set(uid, name);
+                          uidsToMention.add(uid);
                       }
                   }
               }
           }
 
-          const uidArray = Array.from(uidsToMention.entries());
+          const uidArray = Array.from(uidsToMention);
           if (uidArray.length > 0) {
-              // Use LINE textV2 format which is the ONLY way to send mentions from a bot
-              // textV2 uses {placeholder} substitution syntax
-              const chunk = uidArray.slice(0, 50);
-              const gameTitles = groupGames.map(g => g.title).filter(Boolean).join('、');
-              const prefix = gameTitles ? `[${gameTitles}] 已報名成功，記得來打球：` : '報名成功提醒：';
-              let textParts = [prefix];
-              const substitution = {};
-              const _names = {};
-              
-              for (let j = 0; j < chunk.length; j++) {
-                  const [uid, name] = chunk[j];
-                  const key = `user${j}`;
-                  textParts.push(`{${key}}`);
-                  substitution[key] = {
-                      type: "mention",
-                      mentionee: {
-                          type: "user",
+              // LINE API text message allows max 50 mentions, and pushMessage max 5 messages.
+              // We'll limit to 4 mention messages to ensure total messages (1 carousel + 4 texts) <= 5.
+              for (let i = 0; i < uidArray.length && i < 200; i += 50) {
+                  const chunk = uidArray.slice(i, i + 50);
+                  let textMsg = "報名成功提醒：\n"; // 移除 Emoji 避免 index 計算錯誤
+                  const mentionees = [];
+                  
+                  for (let j = 0; j < chunk.length; j++) {
+                      const uid = chunk[j];
+                      const placeholder = "@User";
+                      mentionees.push({
+                          index: textMsg.length,
+                          length: placeholder.length,
                           userId: uid
+                      });
+                      textMsg += placeholder;
+                      if (j < chunk.length - 1) {
+                          textMsg += " ";
                       }
-                  };
-                  _names[key] = name;
+                  }
+                  
+                  messagesToSend.push({
+                      type: "text",
+                      text: textMsg,
+                      mention: {
+                          mentionees: mentionees
+                      }
+                  });
               }
-              
-              messagesToSend.push({
-                  type: "textV2",
-                  text: textParts.join(' '),
-                  substitution: substitution,
-                  _names: _names
-              });
           } else {
               messagesToSend.push({
                   type: "text",
-                  text: "\u26a0\ufe0f \u63a8\u64ad\u63d0\u9192\uff1a\n\u76ee\u524d\u5c1a\u672a\u8a18\u9304\u5230\u4efb\u4f55\u53ef\u6a19\u8a18\u7684\u5831\u540d\u8005 UID\u3002\n\u5efa\u8b70\u8acb\u5831\u540d\u8005\u9700\u7d93\u7531 LIFF \u5927\u5ef3\u5831\u540d\uff0c\u7cfb\u7d71\u624d\u80fd\u8a18\u9304\u5176 LINE ID\u3002"
+                  text: "📢 報名成功提醒：\n目前尚未紀錄到任何可標記的報名者 UID。"
               });
           }
       }
@@ -3188,9 +3001,7 @@ app.post('/api/admin/party/play', express.json(), (req, res) => {
   let lastHeartSpawn = Date.now();
   let lastStarSpawn = Date.now();
   
-  partyBulletInterval = setInterval(() => {
-    if (partyRoom.status !== 'playing') {
-      clearInterval(partyBulletInterval);
+  partyBulletInterval = console.log("Skipped setInterval");
       return;
     }
     const now = Date.now();
@@ -3656,32 +3467,22 @@ app.post('/api/action', express.json(), async (req, res) => {
     const c = count || 1;
     
     if (action === 'register') {
-      const targetSecIdx = (typeof req.body.sectionIdx === 'number' && req.body.sectionIdx < game.sections.length) ? req.body.sectionIdx : 0;
-      const targetSection = game.sections[targetSecIdx];
       const namesToAdd = [name];
       for(let i=1; i<c; i++) namesToAdd.push('__ANON__');
       
-      // Prevent multi-section duplicate registration
-      let hasDuplicate = false;
-      for (let i = 0; i < game.sections.length; i++) {
-        if (game.sections[i].list.includes(name)) {
-          hasDuplicate = true;
-          break;
-        }
-      }
-      
+      const hasDuplicate = currentList.includes(name);
       if (hasDuplicate) { 
-        return res.status(400).json({ error: '您已經報名過了（每人限選一時段）' });
+        return res.status(400).json({ error: '您已經報名過了' });
       }
       
       namesToAdd.forEach(n => {
-        addToList(gameId, targetSecIdx, n, { uid, level: n !== '__ANON__' ? level : undefined });
+        addToList(gameId, 0, n, { uid, level: n !== '__ANON__' ? level : undefined });
         if (n !== '__ANON__') {
           uidToNameMap.set(`${gameId}_${uid}`, n);
           if (!game.history) game.history = [];
           const now = new Date();
           const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-          game.history.unshift({ time: timeStr, name: n, operator: operatorName || name, action: '+1', section: targetSection.title });
+          game.history.unshift({ time: timeStr, name: n, operator: operatorName || name, action: '+1' });
           if (game.history.length > 200) game.history.pop();
         }
       });
@@ -3700,57 +3501,45 @@ app.post('/api/action', express.json(), async (req, res) => {
         delete game.noteMap[name];
       }
     } else if (action === 'cancel') {
-      let foundInSecIdx = -1;
-      for (let i = 0; i < game.sections.length; i++) {
-          if (game.sections[i].list.includes(name)) {
-              foundInSecIdx = i;
-              break;
-          }
-      }
-      
-      if (foundInSecIdx === -1) {
+      if (!currentList.includes(name)) {
         return res.status(400).json({ error: '找不到此名稱' });
       }
       
       const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
+      
       if (!isAdmin && registeredUid && registeredUid !== uid) {
         return res.status(403).json({ error: '只能取消自己或自己代報的名單' });
       }
       
-      // Capture lists before removal for bump logic
-      const listsBefore = game.sections.map(s => s.list.slice(0, s.limit));
+      const limit = game.sections[0].limit;
+      const mainListBefore = game.sections[0].list.slice(0, limit);
       
       await removeFromList(gameId, name, { uid });
       for(let i=1; i<c; i++) {
-        // removeAnon doesn't specify section, it just removes one ANON from somewhere.
-        // It's acceptable for now, but let's be careful.
         await removeAnon(gameId, { uid });
       }
       
       if (!game.history) game.history = [];
       const now = new Date();
       const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      game.history.unshift({ time: timeStr, name: name, operator: operatorName || name, action: '-1', section: game.sections[foundInSecIdx].title });
+      game.history.unshift({ time: timeStr, name: name, operator: operatorName || name, action: '-1' });
       if (game.history.length > 200) game.history.pop();
       
-      if (game.paidMap) delete game.paidMap[name];
-      if (game.noteMap) delete game.noteMap[name];
-      
-      // Check bumps for all sections
-      const listsAfter = game.sections.map(s => s.list.slice(0, s.limit));
-      let allBumpedMsgs = [];
-      
-      for (let i = 0; i < game.sections.length; i++) {
-          const bumpedNames = listsAfter[i].filter(n => !listsBefore[i].includes(n) && n !== '__ANON__');
-          if (bumpedNames.length > 0) {
-              const secPrefix = game.sections.length > 1 ? `[${game.sections[i].title}] ` : '';
-              allBumpedMsgs.push(`${secPrefix}『${bumpedNames.join('、')}』後補上 請注意訊息`);
-          }
+      if (game.paidMap) {
+        delete game.paidMap[name];
+      }
+      if (game.noteMap) {
+        delete game.noteMap[name];
       }
       
-      if (allBumpedMsgs.length > 0) {
+      const mainListAfter = game.sections[0].list.slice(0, limit);
+      
+      // 找出遞補上來的人 (在 mainListAfter 但不在 mainListBefore)
+      const bumpedNames = mainListAfter.filter(n => !mainListBefore.includes(n) && n !== '__ANON__');
+      
+      if (bumpedNames.length > 0) {
         try {
-          const bumpMsg = allBumpedMsgs.join('\n');
+          const bumpMsg = `『${bumpedNames.join('、')}』後補上 請注意訊息`;
           triggerBumpMsg = bumpMsg; // 記錄下來，稍後傳給前端
           
           if (clientSupportsLiffSendMessage && isAdmin) {
@@ -3776,8 +3565,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       const { fromIdx, toIdx } = req.body;
-      const targetSecIdx = (typeof req.body.sectionIdx === 'number' && req.body.sectionIdx < game.sections.length) ? req.body.sectionIdx : 0;
-      const list = game.sections[targetSecIdx].list;
+      const list = game.sections[0].list;
       
       if (typeof fromIdx !== 'number' || typeof toIdx !== 'number') {
         return res.status(400).json({ error: '參數錯誤' });
@@ -3862,13 +3650,7 @@ app.post('/api/action', express.json(), async (req, res) => {
   }
 });
 
-app.post('/webhook', middleware(config), (req, res) => {
-  Promise.all(req.body.events.map(handleEvent))
-    .then(() => res.sendStatus(200))
-    .catch((err) => {
-      console.error('Webhook Error:', err);
-      res.sendStatus(200); // 即使出錯也回 200，避免 LINE 停用 Webhook
-    });
+console.log("Skipped app.post webhook");
 });
 
 async function handleEvent(event) {
@@ -4171,10 +3953,9 @@ async function handleEvent(event) {
       const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|人數|候補|備註|名單|$))))/);
       const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|名單|標籤|$))))/);
       const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|匿名名單|分區|$))))/);
-      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|分區|$))))/);
-      const publishMatch = text.match(/發布時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|分區|$))))/);
-      const sectionMatch = text.match(/分區\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
+      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|匿名名單|$))))/);
+      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|$))))/);
+      const publishMatch = text.match(/發布時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
       const reminderMatch = text.match(/提醒時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
       
       const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
@@ -4250,56 +4031,6 @@ async function handleEvent(event) {
          }
       }
       
-      let pSections = [];
-      if (sectionMatch) {
-         const sectionStr = (sectionMatch[1] || sectionMatch[2]).trim();
-         const parts = sectionStr.split(/[/／]/).map(s => s.trim()).filter(Boolean);
-         parts.forEach(part => {
-             let sLimit = limit;
-             let sFee = pFee;
-             let sTitle = part;
-             
-             const sLimitMatch = part.match(/(\d+)\s*人/);
-             if (sLimitMatch) {
-                 sLimit = parseInt(sLimitMatch[1], 10);
-                 sTitle = sTitle.replace(sLimitMatch[0], '').trim();
-             }
-             
-             // Extract fee (number followed by 元 or $)
-             const sFeeMatch = part.match(/(\d+)\s*[元\$]/);
-             if (sFeeMatch) {
-                 sFee = sFeeMatch[1] + '元';
-                 sTitle = sTitle.replace(sFeeMatch[0], '').trim();
-             }
-             
-             // Extract optional note inside () e.g. (10-11冷氣)
-             let sNote = '';
-             const noteMatch = sTitle.match(/\(([^)]+)\)|（([^）]+)）/);
-             if (noteMatch) {
-                 sNote = (noteMatch[1] || noteMatch[2]).trim();
-                 sTitle = sTitle.replace(noteMatch[0], '').trim();
-             }
-             
-             pSections.push({ 
-                 title: sTitle || '時段', 
-                 limit: sLimit, 
-                 backupLimit: backupLimit, 
-                 label: '', 
-                 list: [], 
-                 fee: sFee,
-                 note: sNote
-             });
-         });
-      }
-      
-      if (pSections.length === 0) {
-          pSections = [
-              { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
-          ];
-      } else {
-          pSections[0].list = initialList;
-      }
-      
       const gameId = Date.now().toString() + Math.floor(Math.random()*1000);
       
       games[gameId] = {
@@ -4324,7 +4055,9 @@ async function handleEvent(event) {
         paidMap: initialPaidMap,
         noteMap: {},
         allowUserNoteEdit: true,
-        sections: pSections
+        sections: [
+          { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
+        ]
       };
       
       // Setup uid mapping if admin creates the list with themselves in it
@@ -4403,66 +4136,6 @@ async function handleEvent(event) {
       }
     }
 
-    if (text === '/debug-uid') {
-      return client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: `【偵錯模式】\n您的群組 Webhook UID 是：\n${uid}\n\n請您打開 LIFF 網頁，對照一下開發者後台，如果 LIFF 抓到的 UID 跟這個不一樣，代表您的 LIFF Channel 和 Bot Channel 建立在不同的 Provider 底下，導致機器人不認識 LIFF 傳來的 UID，這就是標記變成純文字的原因！`
-      });
-    }
-
-    if (text === '/test-mention-now') {
-      const testMessages = [{
-          type: "textV2",
-          text: "標記測試： {you}",
-          substitution: {
-              you: {
-                  type: "mention",
-                  mentionee: {
-                      type: "user",
-                      userId: uid
-                  }
-              }
-          },
-          _names: { you: '測試發言者' }
-      }];
-      
-      const sendTestWithRetry = async (msgs, fallbackNotices = []) => {
-          try {
-              await client.replyMessage(event.replyToken, msgs);
-          } catch (e) {
-              const errData = e.originalError?.response?.data;
-              let badKey = null;
-              if (errData && errData.details) {
-                  errData.details.forEach(d => {
-                      if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                          const match = d.property.match(/substitution\["?([^"]+)"?\]/);
-                          if (match && match[1]) badKey = match[1];
-                      }
-                  });
-              }
-              if (badKey) {
-                  const retryMsgs = JSON.parse(JSON.stringify(msgs));
-                  for (let m of retryMsgs) {
-                      if (m.type === 'textV2' && m.substitution && m.substitution[badKey]) {
-                          m.text = m.text.replace(`{${badKey}}`, `@${m._names[badKey]}`);
-                          delete m.substitution[badKey];
-                          if (Object.keys(m.substitution).length === 0) {
-                              m.type = 'text';
-                              delete m.substitution;
-                          }
-                      }
-                  }
-                  await client.pushMessage(gid, retryMsgs).catch(() => {
-                      client.pushMessage(gid, { type: 'text', text: `⚠️ 測試標記失敗 (重試也失敗)\nError: ${JSON.stringify(errData)}` });
-                  });
-              } else {
-                  client.pushMessage(gid, { type: 'text', text: `⚠️ 測試標記失敗\nUID: ${uid}\nError: ${JSON.stringify(errData)}` });
-              }
-          }
-      };
-      
-      return sendTestWithRetry(testMessages);
-    }
 
     if (text.startsWith('群組廣播')) {
       const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)?([a-zA-Z0-9]+)(?:\}|｝)?\s+內容(?:[:：])?\s*([\s\S]*)/);
@@ -4493,7 +4166,7 @@ async function handleEvent(event) {
       return null;
     }
 
-    if (text.startsWith('接龍名單') || text.startsWith('推播提醒') || text === '接龍狀況' || text === '接龍狀態' || text === '接龍查詢' || isPlusMinus) {
+    if (text.startsWith('接龍名單') || text.startsWith('推播提醒')) {
       const isMentionPush = text.startsWith('推播提醒');
       
       if (isMentionPush && !isAdmin) {
@@ -4511,10 +4184,9 @@ async function handleEvent(event) {
           }
       }
 
-      let keyword = text.replace(/接龍名單/, '').replace(/推播提醒/, '').replace(/接龍狀況/, '').replace(/接龍狀態/, '').replace(/接龍查詢/, '');
+      let keyword = text.replace(/接龍名單/, '').replace(/推播提醒/, '');
       if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
       keyword = keyword.replace(/\[系統代發\]/g, '').trim();
-      if (isPlusMinus) keyword = '';
       
       const getGameTime = (g) => {
         let t = 0;
@@ -4532,29 +4204,16 @@ async function handleEvent(event) {
       let groupGames = Object.values(games)
         .filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active && !g.isManualEnded)
         .sort((a, b) => getGameTime(a) - getGameTime(b));
-      
       if (keyword) {
           groupGames = groupGames.filter(g => g.title.includes(keyword));
       }
       
       if (groupGames.length === 0) {
-          const emptyText = keyword ? `找不到包含「${keyword}」的場次喔！` : `目前群組內沒有正在進行的場次喔！`;
-          return client.replyMessage(event.replyToken, { type: 'text', text: emptyText });
+          const text = keyword ? `找不到包含「${keyword}」的場次喔！` : `目前群組內沒有正在進行的場次。`;
+          return client.replyMessage(event.replyToken, { type: 'text', text });
       }
 
-      const liffBaseUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : null;
-      if (!liffBaseUrl) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '尚未設定大廳網址 (LIFF_ID)' });
-      }
-
-      // Generate the status summary bubble
-      const statusBubble = generateStatusBubble(groupGames, liffBaseUrl, cleanText, isPlusMinus);
-
-      // Generate the full carousel (Status Bubble + Detail Bubbles + Mentions)
-      const messagesToSend = generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble);
-      
-      // We NEVER consume quota for standard replies!
-      // Only when explicitly pushing to a DIFFERENT group do we use pushMessage.
+      const messagesToSend = generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap);
       if (targetGid !== gid) {
           try {
               await client.pushMessage(targetGid, messagesToSend);
@@ -4562,126 +4221,15 @@ async function handleEvent(event) {
               return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
           } catch (e) {
               console.error('Push message failed:', e.originalError?.response?.data || e);
-              const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(()=>null);
+              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 無法發送至指定群組，請確認機器人是否在該群組中，或是推送訊息數量/標記超限。\n錯誤內容: ${JSON.stringify(e.originalError?.response?.data || e.message)}` });
           }
       } else {
-          // Helper function for recursive retry
-          const sendWithRetry = async (messages) => {
-              try {
-                  await client.replyMessage(event.replyToken, messages);
-              } catch (e) {
-                  const errData = e.originalError?.response?.data;
-                  
-                  // If replyToken is consumed or we need to push, use pushMessage
-                  const tryPush = async (msgs) => {
-                      await client.pushMessage(gid, msgs);
-                  };
-
-                  let hasMentionError = false;
-                  let badKey = null;
-                  
-                  if (errData && errData.details) {
-                      errData.details.forEach(d => {
-                          if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                              const match = d.property.match(/substitution\["?([^"]+)"?\]/);
-                              if (match && match[1]) {
-                                  badKey = match[1];
-                                  hasMentionError = true;
-                              }
-                          }
-                      });
-                  }
-                  
-                  if (hasMentionError && badKey) {
-                      const retryMessages = JSON.parse(JSON.stringify(messages));
-                      for (let m of retryMessages) {
-                          if (m.type === 'textV2' && m.substitution && m.substitution[badKey]) {
-                              const userName = (m._names && m._names[badKey]) ? m._names[badKey] : 'User';
-                              m.text = m.text.replace(`{${badKey}}`, `@${userName}`);
-                              delete m.substitution[badKey];
-                              // Removed fallbackNotice push
-                              
-                              // Check if there are no more substitutions left
-                              if (Object.keys(m.substitution).length === 0) {
-                                  m.type = 'text';
-                                  delete m.substitution;
-                              }
-                          }
-                      }
-                      
-                      try {
-                          // Try sending again with pushMessage (since replyToken might be dead)
-                          await tryPush(retryMessages);
-                      } catch (retryErr) {
-                          const retryErrData = retryErr.originalError?.response?.data;
-                          // If it fails again with mention error, recurse!
-                          if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
-                              // Recursively call a push-only version
-                              const pushWithRetry = async (msgs) => {
-                                  try {
-                                      await client.pushMessage(gid, msgs);
-                                  } catch (e3) {
-                                      const e3Data = e3.originalError?.response?.data;
-                                      let e3BadKey = null;
-                                      if (e3Data && e3Data.details) {
-                                          e3Data.details.forEach(d => {
-                                              if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                                                  const match = d.property.match(/substitution\["?([^"]+)"?\]/);
-                                                  if (match && match[1]) e3BadKey = match[1];
-                                              }
-                                          });
-                                      }
-                                      if (e3BadKey) {
-                                          const nextMsgs = JSON.parse(JSON.stringify(msgs));
-                                          for (let m of nextMsgs) {
-                                              if (m.type === 'textV2' && m.substitution && m.substitution[e3BadKey]) {
-                                                  const uName = (m._names && m._names[e3BadKey]) ? m._names[e3BadKey] : 'User';
-                                                  m.text = m.text.replace(`{${e3BadKey}}`, `@${uName}`);
-                                                  delete m.substitution[e3BadKey];
-                                                  if (Object.keys(m.substitution).length === 0) {
-                                                      m.type = 'text';
-                                                      delete m.substitution;
-                                                  }
-                                              }
-                                          }
-                                          await pushWithRetry(nextMsgs);
-                                      } else {
-                                          throw e3; // Unhandled error
-                                      }
-                                  }
-                              };
-                              await pushWithRetry(retryMessages).catch(() => fallback(errData));
-                          } else {
-                              fallback(errData);
-                          }
-                      }
-                  } else {
-                      fallback(errData || e.message);
-                  }
-              }
-          };
-
-          const fallback = async (errDetail) => {
-              const fallbackMessages = messagesToSend.map(m => {
-                  if (m.type === 'textV2') {
-                      let plainText = m.text;
-                      if (m._names) {
-                          for (const k in m._names) plainText = plainText.replace(`{${k}}`, `@${m._names[k]}`);
-                      } else {
-                          plainText = plainText.replace(/\{user\d+\}/g, '').trim();
-                      }
-                      return { type: 'text', text: plainText + '\n(標記全數失敗，已轉換為純文字)' };
-                  }
-                  return m;
-              });
-              try {
-                  await client.pushMessage(gid, fallbackMessages);
-                  await client.pushMessage(gid, { type: 'text', text: `⚠️ 標記發送嚴重異常。\n除錯資訊: ${JSON.stringify(errDetail)}\nWebhook UID: ${event.source.userId}` });
-              } catch (e2) {}
-          };
-
-          await sendWithRetry(messagesToSend);
+          try {
+              return await client.replyMessage(event.replyToken, messagesToSend);
+          } catch (e) {
+              console.error('Reply message failed in 推播提醒:', e.originalError?.response?.data || e);
+              return client.pushMessage(gid, { type: 'text', text: `❌ 發送失敗，發生異常錯誤（可能是 LINE 標記數量或格式錯誤）。\n錯誤內容: ${JSON.stringify(e.originalError?.response?.data || e.message)}` }).catch(err=>console.error(err));
+          }
       }
     }
     
@@ -4834,24 +4382,184 @@ async function handleEvent(event) {
       return await sendLobbyLink(event.replyToken, gid, `✏️ 已成功修改場次：${targetGame.title}`);
     }
 
-    if (text === '大廳' || text === '接龍大廳') {
+    if (text === '接龍名單' || text === '接龍狀態' || text === '接龍查詢' || text === '大廳' || text === '接龍大廳') {
       return await sendLobbyLink(event.replyToken, gid);
     }
+    
+    if (text === '接龍狀況' || text === '接龍狀態' || isPlusMinus) {
+      const getGameTime = (g) => {
+        let t = 0;
+        if (g.date) {
+          let dStr = g.date.trim();
+          if (dStr.match(/^\d{1,2}\/\d{1,2}$/)) {
+            dStr = new Date().getFullYear() + '/' + dStr;
+          }
+          const pd = new Date(`${dStr} ${g.time || ''}`.trim());
+          if (!isNaN(pd.getTime())) t = pd.getTime();
+        }
+        return t === 0 ? (g.startTime || 0) : t;
+      };
 
-    // 接龍狀況/名單/+1/-1 已整合至上方統一的 Carousel 區塊處理
+      const targetGames = Object.values(games)
+        .filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded)
+        .sort((a, b) => getGameTime(a) - getGameTime(b));
+        
+      if (targetGames.length === 0) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '目前沒有進行中的場次喔！' });
+      }
+
+      const liffBaseUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${gid}` : null;
+      if (!liffBaseUrl) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '尚未設定大廳網址 (LIFF_ID)' });
+      }
+
+      const flexContents = [];
+
+      targetGames.forEach((g, index) => {
+        if (index >= 15) return;
+        const sec = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 0 };
+        const count = sec.list.length;
+        const limit = sec.limit || 0;
+        const isFull = limit > 0 && count >= limit;
+        const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
+        const titleText = g.title || g.date || '場次';
+        
+        let combinedTitle = titleText;
+        if (g.date && g.date !== g.title) {
+          const shortDate = g.date.replace(/\s*[（\(].*?[)）]\s*/g, '').trim();
+          if (shortDate) {
+            combinedTitle = `${shortDate} ${titleText}`;
+          }
+        }
+
+        const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText.includes(g.title);
+
+        // 每一列的容器
+        const rowContents = [
+          { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
+          {
+            type: "box",
+            layout: "horizontal",
+            flex: 0,
+            height: "22px",
+            width: isFull ? "36px" : "48px",
+            cornerRadius: "sm",
+            backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
+            justifyContent: "center",
+            alignItems: "center",
+            contents: [
+              { type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }
+            ]
+          },
+          { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
+        ];
+
+        const rowBox = {
+          type: "box",
+          layout: "horizontal",
+          paddingTop: "8px",
+          paddingBottom: "8px",
+          paddingStart: isTarget ? "10px" : "4px",
+          paddingEnd: "4px",
+          alignItems: "center",
+          action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
+          contents: rowContents
+        };
+
+        if (isTarget) {
+          rowBox.backgroundColor = "#FFF3CD";
+          rowBox.cornerRadius = "md";
+        }
+
+        // 分隔線（第一項之後才加）
+        if (index > 0 && !isTarget) {
+          flexContents.push({ type: "separator", color: "#f4f4f4" });
+        }
+        if (index > 0 && isTarget) {
+          flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
+        }
+
+        flexContents.push(rowBox);
+
+        if (isTarget) {
+          flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
+        }
+      });
+
+      // 在最下方加入一次性的提示文字
+      flexContents.push({
+        type: "box",
+        layout: "horizontal",
+        margin: "lg",
+        justifyContent: "center",
+        contents: [
+          { type: "text", text: "點選上方場次查看詳細名單 👆", size: "xs", color: "#888888", align: "center" }
+        ]
+      });
+
+      // 如果這是由 LIFF 系統發送的操作通知
+      if (isPlusMinus && cleanText !== '+1' && cleanText !== '-1') {
+        flexContents.push({
+          type: "box",
+          layout: "horizontal",
+          margin: "md",
+          paddingAll: "10px",
+          backgroundColor: "#e8f5e9",
+          cornerRadius: "md",
+          alignItems: "center",
+          contents: [
+            { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446", flex: 0 },
+            { type: "text", text: cleanText, size: "xs", color: "#333333", wrap: true, margin: "sm", flex: 1 }
+          ]
+        });
+      }
+
+      const flexMessage = {
+        type: "flex",
+        altText: "目前接龍狀況",
+        contents: {
+          type: "bubble",
+          size: "mega",
+          header: {
+            type: "box",
+            layout: "vertical",
+            paddingBottom: "none",
+            contents: [
+              {
+                type: "box",
+                layout: "horizontal",
+                alignItems: "center",
+                contents: [
+                  { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
+                  {
+                    type: "button",
+                    style: "primary",
+                    color: "#1DB446",
+                    height: "sm",
+                    flex: 0,
+                    action: { type: "uri", label: "進入大廳", uri: liffBaseUrl }
+                  }
+                ]
+              },
+              { type: "separator", margin: "md", color: "#eeeeee" }
+            ]
+          },
+          body: {
+            type: "box",
+            layout: "vertical",
+            paddingAll: "16px",
+            contents: flexContents
+          }
+        }
+      };
+
+      return await client.replyMessage(event.replyToken, flexMessage);
+    }
+    
+    // 舊的 +1 / -1 阻擋已移除，現在會直接回傳接龍狀況
 
   } catch (e) {
     console.error('Logic Error:', e);
-    const errorMsg = e.originalError?.response?.data 
-                   ? JSON.stringify(e.originalError.response.data) 
-                   : String(e);
-    try {
-      if (gid) {
-        await client.pushMessage(gid, { type: 'text', text: `❌ 機器人發生系統錯誤，已攔截：\n${errorMsg}` });
-      }
-    } catch (pushErr) {
-      console.error('Failed to push error message:', pushErr);
-    }
   }
 }
 
@@ -4909,8 +4617,6 @@ function addToList(gid, idx, name, meta = {}, waitForCsv = false) {
   if (!games[gid].sections[idx].list.includes(name)) {
     games[gid].sections[idx].list.push(name);
     if (meta && meta.uid) {
-      if (!games[gid].uidMap) games[gid].uidMap = {};
-      games[gid].uidMap[name] = meta.uid;
       nameToUidMap.set(`${gid}_${name}`, meta.uid);
     }
     if (meta && meta.level) {
@@ -5380,8 +5086,7 @@ loadPromise.then(() => {
       }, 5000);
       
       // 依設定頻率執行自我PING
-      setInterval(() => {
-        pingSelf().catch(console.error);
+      console.log("Skipped setInterval");
       }, AUTO_WAKE_INTERVAL_MINUTES * 60 * 1000);
       
       console.log(`✅ 自動喚醒定時器已啟動（每 ${AUTO_WAKE_INTERVAL_MINUTES} 分鐘）`);
@@ -5400,8 +5105,7 @@ function scheduleHourlySaveLobbyVisits() {
   const delayToNextHour = 3600000 - (now.getMinutes() * 60000 + now.getSeconds() * 1000 + now.getMilliseconds());
   setTimeout(() => {
     saveLobbyVisits().catch(e => console.error(e));
-    setInterval(() => {
-      saveLobbyVisits().catch(e => console.error(e));
+    console.log("Skipped setInterval");
     }, 3600000); // 之後每隔一小時
   }, delayToNextHour);
 }
@@ -5459,3 +5163,33 @@ function getLobbyCard(gid) {
     }
   };
 }
+
+setTimeout(async () => {
+    games['mock_game'] = {
+        title: '週六打球',
+        date: '07/31',
+        time: '14:00',
+        location: 'Stadium',
+        gid: 'group123',
+        gameId: 'mock_game',
+        active: true,
+        sections: [{ list: ['Tony', 'Alice'] }]
+    };
+    
+    superAdmins.add('U12345');
+    
+    console.log('--- TESTING 推播提醒 週六 ---');
+    const event = {
+        type: 'message',
+        message: { type: 'text', text: '推播提醒 週六' },
+        source: { userId: 'U12345', groupId: 'group123' },
+        replyToken: 'dummy_token'
+    };
+    try {
+        await handleMessageEvent(event);
+        console.log('--- TEST FINISHED ---');
+    } catch (e) {
+        console.error('--- CRASH ---', e);
+    }
+    process.exit(0);
+}, 2000);

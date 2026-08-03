@@ -1585,11 +1585,23 @@ function renderLobby() {
     });
     
     const renderCard = (game) => {
-      const section = game.sections[0] || { list: [], limit: 20 };
-      const count = section.list.length;
-      const limit = section.limit;
-      const backupLimit = section.backupLimit || 0;
-      const totalLimit = limit + backupLimit;
+      let count = 0;
+      let limit = 0;
+      let totalLimit = 0;
+      let isMultiSection = game.sections && game.sections.length > 1;
+
+      if (isMultiSection) {
+          game.sections.forEach(s => {
+              count += (s.list || []).length;
+              limit += (s.limit || 0);
+              totalLimit += (s.limit || 0) + (s.backupLimit || 0);
+          });
+      } else {
+          const section = game.sections[0] || { list: [], limit: 20 };
+          count = section.list.length;
+          limit = section.limit;
+          totalLimit = limit + (section.backupLimit || 0);
+      }
       
       const isExpired = isGameExpired(game);
       const isFull = count >= totalLimit;
@@ -1674,14 +1686,28 @@ function renderLobby() {
           </div>
         </div>
         
-        <div class="action-row" style="flex-wrap: wrap;">
-          <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
-          <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
-          <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
-          <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
-        </div>
-        <div id="error-msg-${game.gameId}" class="error-msg"></div>
-      `;
+        let actionRowHtml = '';
+        if (isMultiSection) {
+            actionRowHtml = `
+              <div class="action-row" style="margin-top: 10px;">
+                  <button class="btn btn-primary" style="width: 100%; border-radius: 8px; padding: 12px; font-size: 16px; background-color: #03c75a; border: none; box-shadow: 0 2px 4px rgba(3,199,90,0.3);" onclick="showDetail('${game.gameId}')">
+                     👉 此場次包含多時段，點擊進入報名
+                  </button>
+              </div>
+            `;
+        } else {
+            actionRowHtml = `
+              <div class="action-row" style="flex-wrap: wrap;">
+                <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
+                <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
+                <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
+                <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+              </div>
+              <div id="error-msg-${game.gameId}" class="error-msg"></div>
+            `;
+        }
+        
+        card.innerHTML += actionRowHtml;
       return card;
     };
     
@@ -1927,15 +1953,55 @@ function renderDetail(gameId, preserveScroll = false) {
   
   const section = game.sections[0] || { list: [], limit: 20 };
   const isRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
-  detailCount.innerText = `${isRegistered ? '(已報名) ' : ''}${section.list.length} / ${section.limit}`;
   
-
+  let isMultiSection = game.sections && game.sections.length > 1;
+  let totalListLen = 0;
+  let totalLimit = 0;
+  if (game.sections) {
+      game.sections.forEach(s => {
+          totalListLen += (s.list || []).length;
+          totalLimit += (s.limit || 0);
+      });
+  }
+  
+  detailCount.innerText = `${isRegistered ? '(已報名) ' : ''}${isMultiSection ? totalListLen : section.list.length} / ${isMultiSection ? totalLimit : section.limit}`;
   const isExpired = isGameExpired(game);
-  const isFull = section.list.length >= (section.limit + (section.backupLimit || 0));
+  
+  // NOTE: When multi-section, the +1 button should not be disabled strictly based on total isFull, 
+  // because users could still +1 to a section that isn't full, or we just let them try and server rejects it.
+  // We'll leave it enabled unless expired, and server will validate.
+  const isFullSingle = !isMultiSection && section.list.length >= (section.limit + (section.backupLimit || 0));
 
-  let actionRowHtml = `
-    <div class="action-row" style="flex-wrap: wrap; margin-top: 15px; margin-bottom: 10px;">
-      <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
+  let actionRowHtml = '';
+  if (isMultiSection) {
+      actionRowHtml += '<div class="section-options" style="margin-top: 15px; margin-bottom: 10px;">';
+      game.sections.forEach((sec, idx) => {
+          const secIsFull = sec.list.length >= sec.limit;
+          const progress = Math.min(100, Math.round((sec.list.length / sec.limit) * 100));
+          
+          actionRowHtml += `
+            <label class="section-option ${secIsFull ? 'full' : ''}" style="display: block; border: 2px solid ${secIsFull ? '#ffebee' : '#e8f5e9'}; border-radius: 8px; padding: 10px; margin-bottom: 8px; cursor: pointer; position: relative; background: ${secIsFull ? '#fffafa' : '#fcfdfc'};">
+                <input type="radio" name="sectionIdx-${game.gameId}-detail" value="${idx}" ${idx === 0 ? 'checked' : ''} style="position: absolute; right: 15px; top: 20px; transform: scale(1.5);">
+                <div style="padding-right: 30px;">
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px; margin-bottom: 8px;">
+                        <span style="color: #333;">${escapeHTML(sec.title)}</span>
+                    </div>
+                    <div style="background-color: #eee; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 5px;">
+                        <div style="background-color: ${secIsFull ? '#F44336' : '#4CAF50'}; height: 100%; width: ${progress}%;"></div>
+                    </div>
+                    <div style="text-align: right; font-size: 13px; color: ${secIsFull ? '#F44336' : '#666'};">
+                        ${sec.list.length} / ${sec.limit} 人 ${secIsFull ? '(已滿額)' : ''}
+                    </div>
+                </div>
+            </label>
+          `;
+      });
+      actionRowHtml += '</div>';
+  }
+
+  actionRowHtml += `
+    <div class="action-row" style="flex-wrap: wrap; margin-top: ${isMultiSection ? '5px' : '15px'}; margin-bottom: 10px;">
+      <button class="btn btn-primary btn-square" ${(isFullSingle || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
       <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
       <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
       <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
@@ -2077,8 +2143,8 @@ function renderDetail(gameId, preserveScroll = false) {
           const canMoveDown = i < sec.list.length - 1;
           moveHtml = `
             <div style="display:flex; flex-direction:column; margin-right: 5px; min-width: 20px;">
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1})"` : 'disabled'}>🔼</button>
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1})"` : 'disabled'}>🔽</button>
+              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1}, ${sIdx})"` : 'disabled'}>🔼</button>
+              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1}, ${sIdx})"` : 'disabled'}>🔽</button>
             </div>
           `;
         }
@@ -2141,8 +2207,8 @@ function renderDetail(gameId, preserveScroll = false) {
           const canMoveDown = i < sec.list.length - 1;
           moveHtml = `
             <div style="display:flex; flex-direction:column; margin-right: 5px; min-width: 20px;">
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1})"` : 'disabled'}>🔼</button>
-              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1})"` : 'disabled'}>🔽</button>
+              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1}, ${sIdx})"` : 'disabled'}>🔼</button>
+              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1}, ${sIdx})"` : 'disabled'}>🔽</button>
             </div>
           `;
         }
@@ -2549,16 +2615,31 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
   const game = gamesList.find(g => g.gameId === gameId);
   if (!game) return;
   
-  const section = game.sections[0] || { list: [] };
-  const exists = section.list.includes(name);
+  // Find selected section
+  let sectionIdx = 0;
+  const radioGroup = document.querySelector(`input[name="sectionIdx-${gameId}${suffix}"]:checked`);
+  if (radioGroup) {
+      sectionIdx = parseInt(radioGroup.value, 10);
+  } else {
+      // If there's a multiple section layout but nothing is checked (should have default checked though)
+      const anyRadio = document.querySelector(`input[name="sectionIdx-${gameId}${suffix}"]`);
+      if (anyRadio) sectionIdx = parseInt(anyRadio.value, 10);
+  }
   
-  if (action === 'register' && exists) {
-    errorEl.innerText = '名稱已重複';
+  const section = game.sections[sectionIdx] || { list: [] };
+  
+  let existsAnywhere = false;
+  game.sections.forEach(s => {
+      if (s.list.includes(name)) existsAnywhere = true;
+  });
+  
+  if (action === 'register' && existsAnywhere) {
+    errorEl.innerText = '您已經報名過了（每人限選一時段）';
     errorEl.style.display = 'block';
     return;
   }
   
-  if (action === 'cancel' && !exists) {
+  if (action === 'cancel' && !existsAnywhere) {
     errorEl.innerText = '找不到此名稱';
     errorEl.style.display = 'block';
     return;
@@ -2583,6 +2664,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
         operatorName: currentUser.displayName,
         level: level,
         action: action,
+        sectionIdx: sectionIdx,
         clientSupportsLiffSendMessage: typeof liff !== 'undefined' && liff.isInClient()
       })
     });
@@ -2719,7 +2801,7 @@ window.handleEditNote = handleEditNote;
 
 
 
-window.handleReorder = async function(gameId, fromIdx, toIdx) {
+window.handleReorder = async function(gameId, fromIdx, toIdx, sectionIdx = 0) {
   try {
     appDiv.className = 'loading';
     statusMsg.style.display = 'block';
@@ -2735,7 +2817,8 @@ window.handleReorder = async function(gameId, fromIdx, toIdx) {
         name: currentUser.displayName,
         action: 'reorder',
         fromIdx: fromIdx,
-        toIdx: toIdx
+        toIdx: toIdx,
+        sectionIdx: sectionIdx
       })
     });
     

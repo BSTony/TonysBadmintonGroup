@@ -987,11 +987,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
     res.setHeader('Expires', '0');
   }
 }));
-app.use((req, res, next) => {
-  // Skip JSON parsing for /webhook — LINE SDK middleware needs the raw body
-  if (req.path === '/webhook') return next();
-  express.json()(req, res, next);
-});
+app.use(express.json());
 
 // 全域存儲：支援多群組、多區段
 let games = {};
@@ -1179,17 +1175,6 @@ async function loadGames() {
       }
     }
     games = newGames;
-
-    // 啟動時重建記憶體中的 UID 映射表
-    for (const [id, g] of Object.entries(games)) {
-      if (g.uidMap) {
-        for (const [name, uid] of Object.entries(g.uidMap)) {
-          nameToUidMap.set(`${id}_${name}`, uid);
-          nameToUidMap.set(`${g.gid}_${name}`, uid);
-          uidToNameMap.set(`${id}_${uid}`, name);
-        }
-      }
-    }
 
     if (oldKeysToDelete.length > 0) {
       console.log('執行資料庫遷移：刪除舊結構並儲存新結構...');
@@ -1821,8 +1806,7 @@ app.get('/api/game/:gid', async (req, res) => {
 // 大廳點擊紀錄與分析
 app.post('/api/lobby_visit', express.json(), (req, res) => {
   const { gid, userId, displayName, pictureUrl } = req.body;
-  // 擋掉空值，以及擋掉 U 開頭的個人對話框 (避免污染群組分析資料)
-  if (!gid || !userId || gid.startsWith('U')) return res.json({ success: false });
+  if (!gid || !userId) return res.json({ success: false });
 
   if (!lobbyVisits[gid]) {
     lobbyVisits[gid] = { viewCount: 0, uniqueViewers: {}, logs: [] };
@@ -1886,13 +1870,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
   let adminGids = [];
 
   if (isSuperAdminUser) {
-    // 濾掉開頭為 U 的個人對話框造訪紀錄，只保留真正的群組 (C) 或房間 (R)
-    adminGids = Object.keys(lobbyVisits).filter(id => !id.startsWith('U'));
-    
-    // 順手把舊的 U 開頭垃圾資料清掉，避免資料檔越來越大
-    Object.keys(lobbyVisits).forEach(id => {
-      if (id.startsWith('U')) delete lobbyVisits[id];
-    });
+    adminGids = Object.keys(lobbyVisits);
   } else {
     // 即使是 groupAdmins 也無法使用此 API，直接阻擋
     return res.status(403).json({ error: '只有超級管理員能查看全域數據分析' });
@@ -2011,160 +1989,18 @@ app.post('/api/templates/:gid', express.json(), async (req, res) => {
 });
 
 // 產生完整名單字串的輔助函式
-function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
-  const flexContents = [];
-  targetGames.forEach((g, index) => {
-    if (index >= 15) return;
-    const sec = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 0 };
-    const count = sec.list.length;
-    const limit = sec.limit || 0;
-    const isFull = limit > 0 && count >= limit;
-    const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
-    const titleText = g.title || g.date || '場次';
-    
-    let combinedTitle = titleText;
-    if (g.date && g.date !== g.title) {
-      const shortDate = g.date.replace(/\s*[（\(].*?[)）]\s*/g, '').trim();
-      if (shortDate) {
-        combinedTitle = `${shortDate} ${titleText}`;
-      }
-    }
-
-    const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText && cleanText.includes(g.title);
-
-    const rowContents = [
-      { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
-      {
-        type: "box",
-        layout: "horizontal",
-        flex: 0,
-        height: "22px",
-        width: isFull ? "36px" : "48px",
-        cornerRadius: "sm",
-        backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
-        justifyContent: "center",
-        alignItems: "center",
-        contents: [
-          { type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }
-        ]
-      },
-      { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
-    ];
-
-    const rowBox = {
-      type: "box",
-      layout: "horizontal",
-      paddingTop: "8px",
-      paddingBottom: "8px",
-      paddingStart: isTarget ? "10px" : "4px",
-      paddingEnd: "4px",
-      alignItems: "center",
-      action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
-      contents: rowContents
-    };
-
-    if (isTarget) {
-      rowBox.backgroundColor = "#FFF3CD";
-      rowBox.cornerRadius = "md";
-    }
-
-    if (index > 0 && !isTarget) {
-      flexContents.push({ type: "separator", color: "#f4f4f4" });
-    }
-    if (index > 0 && isTarget) {
-      flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
-    }
-
-    flexContents.push(rowBox);
-
-    if (isTarget) {
-      flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
-    }
-  });
-
-  flexContents.push({
-    type: "box",
-    layout: "horizontal",
-    margin: "lg",
-    justifyContent: "center",
-    contents: [
-      { type: "text", text: "點選上方場次查看詳細名單 👆", size: "xs", color: "#888888", align: "center" }
-    ]
-  });
-
-  if (isPlusMinus && cleanText !== '+1' && cleanText !== '-1') {
-    flexContents.push({
-      type: "box",
-      layout: "horizontal",
-      margin: "md",
-      paddingAll: "10px",
-      backgroundColor: "#e8f5e9",
-      cornerRadius: "md",
-      alignItems: "center",
-      contents: [
-        { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446", flex: 0 },
-        { type: "text", text: cleanText, size: "xs", color: "#333333", wrap: true, margin: "sm", flex: 1 }
-      ]
-    });
-  }
-
-  return {
-    type: "bubble",
-    size: "mega",
-    header: {
-      type: "box",
-      layout: "vertical",
-      paddingBottom: "none",
-      contents: [
-        {
-          type: "box",
-          layout: "horizontal",
-          alignItems: "center",
-          contents: [
-            { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
-            {
-              type: "button",
-              style: "primary",
-              color: "#1DB446",
-              height: "sm",
-              flex: 0,
-              action: { type: "uri", label: "進入大廳", uri: liffBaseUrl }
-            }
-          ]
-        },
-        { type: "separator", margin: "md", color: "#eeeeee" }
-      ]
-    },
-    body: {
-      type: "box",
-      layout: "vertical",
-      paddingAll: "16px",
-      contents: flexContents
-    }
-  };
-}
-
-function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble) {
-      const flexBubbles = statusBubble ? [statusBubble] : [];
+function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap) {
+const flexBubbles = [];
       for (const g of groupGames) {
           if (flexBubbles.length >= 12) break; // LINE Carousel maximum is 12 bubbles
 
-          const isMultiSection = g.sections && g.sections.length > 1;
           const section = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 20 };
           const list = section.list || [];
           const limit = section.limit || 20;
+          const backupLimit = section.backupLimit || 0;
           
-          let totalListLen = 0;
-          let totalLimit = 0;
-          if (g.sections) {
-              g.sections.forEach(s => {
-                  totalListLen += (s.list || []).length;
-                  totalLimit += (s.limit || 0);
-              });
-          }
-          
-          const isFull = totalLimit > 0 && totalListLen >= totalLimit;
-          const statusText = isFull ? '滿團' : (totalLimit > 0 ? `${totalListLen}/${totalLimit}` : `${totalListLen}人`);
+          const isFull = limit > 0 && list.length >= limit;
+          const statusText = isFull ? '滿團' : (limit > 0 ? `${list.length}/${limit}` : `${list.length}人`);
 
           // Date and location
           let infoLine = `🕒 ${g.date || ''} ${g.time || ''}`.trim();
@@ -2172,59 +2008,41 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
 
           // Format names for two columns
           const listBoxes = [];
-          if (isMultiSection) {
-              listBoxes.push({
-                  type: "box",
-                  layout: "horizontal",
-                  contents: [
-                      { type: "text", text: "👉 此場次包含多個時段與分區", size: "sm", color: "#333333", flex: 1, wrap: true }
-                  ]
-              });
-              listBoxes.push({
-                  type: "box",
-                  layout: "horizontal",
-                  margin: "sm",
-                  contents: [
-                      { type: "text", text: "請點擊下方「報名/名單」查看各區詳情", size: "sm", color: "#666666", flex: 1, wrap: true }
-                  ]
-              });
-          } else {
-              for (let i = 0; i < list.length && i < limit; i += 2) {
-                  const name1 = list[i] === '__ANON__' ? '匿名' : list[i];
-                  const name2 = (i + 1 < list.length && i + 1 < limit) ? (list[i+1] === '__ANON__' ? '匿名' : list[i+1]) : '';
-                  
-                  const formatName = (idx, name) => {
-                      if (!name) return "";
-                      const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                      const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
-                      return `${idx+1}. ${name}${levelStr}${paidStr}`;
-                  };
-
-                  listBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      paddingTop: "2px",
-                      paddingBottom: "2px",
-                      contents: [
-                          { type: "text", text: formatName(i, name1), size: "xs", color: "#333333", flex: 1, wrap: false },
-                          { type: "text", text: name2 ? formatName(i+1, name2) : " ", size: "xs", color: "#333333", flex: 1, wrap: false }
-                      ]
-                  });
-              }
+          for (let i = 0; i < list.length && i < limit; i += 2) {
+              const name1 = list[i] === '__ANON__' ? '匿名' : list[i];
+              const name2 = (i + 1 < list.length && i + 1 < limit) ? (list[i+1] === '__ANON__' ? '匿名' : list[i+1]) : '';
               
-              if (list.length < limit) {
-                  // Add an empty spot indicator for the next available spot
-                  listBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      paddingTop: "2px",
-                      paddingBottom: "2px",
-                      contents: [
-                          { type: "text", text: `${list.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
-                          { type: "text", text: " ", size: "xs", color: "#333333", flex: 1, wrap: false }
-                      ]
-                  });
-              }
+              const formatName = (idx, name) => {
+                  if (!name) return "";
+                  const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
+                  const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
+                  return `${idx+1}. ${name}${levelStr}${paidStr}`;
+              };
+
+              listBoxes.push({
+                  type: "box",
+                  layout: "horizontal",
+                  paddingTop: "2px",
+                  paddingBottom: "2px",
+                  contents: [
+                      { type: "text", text: formatName(i, name1), size: "xs", color: "#333333", flex: 1, wrap: false },
+                      { type: "text", text: name2 ? formatName(i+1, name2) : " ", size: "xs", color: "#333333", flex: 1, wrap: false }
+                  ]
+              });
+          }
+          
+          if (list.length < limit) {
+              // Add an empty spot indicator for the next available spot
+              listBoxes.push({
+                  type: "box",
+                  layout: "horizontal",
+                  paddingTop: "2px",
+                  paddingBottom: "2px",
+                  contents: [
+                      { type: "text", text: `${list.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
+                      { type: "text", text: " ", size: "xs", color: "#333333", flex: 1, wrap: false }
+                  ]
+              });
           }
 
           const bodyContents = [
@@ -2261,7 +2079,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
           ];
 
           // Backups
-          if (!isMultiSection && list.length > limit) {
+          if (list.length > limit) {
               bodyContents.push({ type: "separator", margin: "md", color: "#eeeeee" });
               bodyContents.push({
                   type: "box",
@@ -2368,61 +2186,58 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
       const messagesToSend = [carouselMsg];
       
       if (isMentionPush) {
-          const uidsToMention = new Map();
+          const uidsToMention = new Set();
           for (const g of groupGames) {
               const section = g.sections && g.sections[0] ? g.sections[0] : { list: [] };
               const list = section.list || [];
               for (const name of list) {
                   if (name !== '__ANON__') {
                       let uid = nameToUidMap.get(`${g.gameId}_${name}`);
-                      if (!uid && g.uidMap) {
-                          uid = g.uidMap[name];
-                      }
                       if (!uid) {
                           uid = nameToUidMap.get(`${targetGid}_${name}`);
                       }
                       if (uid) {
-                          uidsToMention.set(uid, name);
+                          uidsToMention.add(uid);
                       }
                   }
               }
           }
 
-          const uidArray = Array.from(uidsToMention.entries());
+          const uidArray = Array.from(uidsToMention);
           if (uidArray.length > 0) {
-              // Use LINE textV2 format which is the ONLY way to send mentions from a bot
-              // textV2 uses {placeholder} substitution syntax
-              const chunk = uidArray.slice(0, 50);
-              const gameTitles = groupGames.map(g => g.title).filter(Boolean).join('、');
-              const prefix = gameTitles ? `[${gameTitles}] 已報名成功，記得來打球：` : '報名成功提醒：';
-              let textParts = [prefix];
-              const substitution = {};
-              const _names = {};
-              
-              for (let j = 0; j < chunk.length; j++) {
-                  const [uid, name] = chunk[j];
-                  const key = `user${j}`;
-                  textParts.push(`{${key}}`);
-                  substitution[key] = {
-                      type: "mention",
-                      mentionee: {
-                          type: "user",
+              // LINE API text message allows max 50 mentions, and pushMessage max 5 messages.
+              // We'll limit to 4 mention messages to ensure total messages (1 carousel + 4 texts) <= 5.
+              for (let i = 0; i < uidArray.length && i < 200; i += 50) {
+                  const chunk = uidArray.slice(i, i + 50);
+                  let textMsg = "報名成功提醒：\n"; // 移除 Emoji 避免 index 計算錯誤
+                  const mentionees = [];
+                  
+                  for (let j = 0; j < chunk.length; j++) {
+                      const uid = chunk[j];
+                      const placeholder = "@User";
+                      mentionees.push({
+                          index: textMsg.length,
+                          length: placeholder.length,
                           userId: uid
+                      });
+                      textMsg += placeholder;
+                      if (j < chunk.length - 1) {
+                          textMsg += " ";
                       }
-                  };
-                  _names[key] = name;
+                  }
+                  
+                  messagesToSend.push({
+                      type: "text",
+                      text: textMsg,
+                      mention: {
+                          mentionees: mentionees
+                      }
+                  });
               }
-              
-              messagesToSend.push({
-                  type: "textV2",
-                  text: textParts.join(' '),
-                  substitution: substitution,
-                  _names: _names
-              });
           } else {
               messagesToSend.push({
                   type: "text",
-                  text: "\u26a0\ufe0f \u63a8\u64ad\u63d0\u9192\uff1a\n\u76ee\u524d\u5c1a\u672a\u8a18\u9304\u5230\u4efb\u4f55\u53ef\u6a19\u8a18\u7684\u5831\u540d\u8005 UID\u3002\n\u5efa\u8b70\u8acb\u5831\u540d\u8005\u9700\u7d93\u7531 LIFF \u5927\u5ef3\u5831\u540d\uff0c\u7cfb\u7d71\u624d\u80fd\u8a18\u9304\u5176 LINE ID\u3002"
+                  text: "📢 報名成功提醒：\n目前尚未紀錄到任何可標記的報名者 UID。"
               });
           }
       }
@@ -3656,32 +3471,22 @@ app.post('/api/action', express.json(), async (req, res) => {
     const c = count || 1;
     
     if (action === 'register') {
-      const targetSecIdx = (typeof req.body.sectionIdx === 'number' && req.body.sectionIdx < game.sections.length) ? req.body.sectionIdx : 0;
-      const targetSection = game.sections[targetSecIdx];
       const namesToAdd = [name];
       for(let i=1; i<c; i++) namesToAdd.push('__ANON__');
       
-      // Prevent multi-section duplicate registration
-      let hasDuplicate = false;
-      for (let i = 0; i < game.sections.length; i++) {
-        if (game.sections[i].list.includes(name)) {
-          hasDuplicate = true;
-          break;
-        }
-      }
-      
+      const hasDuplicate = currentList.includes(name);
       if (hasDuplicate) { 
-        return res.status(400).json({ error: '您已經報名過了（每人限選一時段）' });
+        return res.status(400).json({ error: '您已經報名過了' });
       }
       
       namesToAdd.forEach(n => {
-        addToList(gameId, targetSecIdx, n, { uid, level: n !== '__ANON__' ? level : undefined });
+        addToList(gameId, 0, n, { uid, level: n !== '__ANON__' ? level : undefined });
         if (n !== '__ANON__') {
           uidToNameMap.set(`${gameId}_${uid}`, n);
           if (!game.history) game.history = [];
           const now = new Date();
           const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-          game.history.unshift({ time: timeStr, name: n, operator: operatorName || name, action: '+1', section: targetSection.title });
+          game.history.unshift({ time: timeStr, name: n, operator: operatorName || name, action: '+1' });
           if (game.history.length > 200) game.history.pop();
         }
       });
@@ -3700,57 +3505,45 @@ app.post('/api/action', express.json(), async (req, res) => {
         delete game.noteMap[name];
       }
     } else if (action === 'cancel') {
-      let foundInSecIdx = -1;
-      for (let i = 0; i < game.sections.length; i++) {
-          if (game.sections[i].list.includes(name)) {
-              foundInSecIdx = i;
-              break;
-          }
-      }
-      
-      if (foundInSecIdx === -1) {
+      if (!currentList.includes(name)) {
         return res.status(400).json({ error: '找不到此名稱' });
       }
       
       const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
+      
       if (!isAdmin && registeredUid && registeredUid !== uid) {
         return res.status(403).json({ error: '只能取消自己或自己代報的名單' });
       }
       
-      // Capture lists before removal for bump logic
-      const listsBefore = game.sections.map(s => s.list.slice(0, s.limit));
+      const limit = game.sections[0].limit;
+      const mainListBefore = game.sections[0].list.slice(0, limit);
       
       await removeFromList(gameId, name, { uid });
       for(let i=1; i<c; i++) {
-        // removeAnon doesn't specify section, it just removes one ANON from somewhere.
-        // It's acceptable for now, but let's be careful.
         await removeAnon(gameId, { uid });
       }
       
       if (!game.history) game.history = [];
       const now = new Date();
       const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      game.history.unshift({ time: timeStr, name: name, operator: operatorName || name, action: '-1', section: game.sections[foundInSecIdx].title });
+      game.history.unshift({ time: timeStr, name: name, operator: operatorName || name, action: '-1' });
       if (game.history.length > 200) game.history.pop();
       
-      if (game.paidMap) delete game.paidMap[name];
-      if (game.noteMap) delete game.noteMap[name];
-      
-      // Check bumps for all sections
-      const listsAfter = game.sections.map(s => s.list.slice(0, s.limit));
-      let allBumpedMsgs = [];
-      
-      for (let i = 0; i < game.sections.length; i++) {
-          const bumpedNames = listsAfter[i].filter(n => !listsBefore[i].includes(n) && n !== '__ANON__');
-          if (bumpedNames.length > 0) {
-              const secPrefix = game.sections.length > 1 ? `[${game.sections[i].title}] ` : '';
-              allBumpedMsgs.push(`${secPrefix}『${bumpedNames.join('、')}』後補上 請注意訊息`);
-          }
+      if (game.paidMap) {
+        delete game.paidMap[name];
+      }
+      if (game.noteMap) {
+        delete game.noteMap[name];
       }
       
-      if (allBumpedMsgs.length > 0) {
+      const mainListAfter = game.sections[0].list.slice(0, limit);
+      
+      // 找出遞補上來的人 (在 mainListAfter 但不在 mainListBefore)
+      const bumpedNames = mainListAfter.filter(n => !mainListBefore.includes(n) && n !== '__ANON__');
+      
+      if (bumpedNames.length > 0) {
         try {
-          const bumpMsg = allBumpedMsgs.join('\n');
+          const bumpMsg = `『${bumpedNames.join('、')}』後補上 請注意訊息`;
           triggerBumpMsg = bumpMsg; // 記錄下來，稍後傳給前端
           
           if (clientSupportsLiffSendMessage && isAdmin) {
@@ -3776,8 +3569,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       const { fromIdx, toIdx } = req.body;
-      const targetSecIdx = (typeof req.body.sectionIdx === 'number' && req.body.sectionIdx < game.sections.length) ? req.body.sectionIdx : 0;
-      const list = game.sections[targetSecIdx].list;
+      const list = game.sections[0].list;
       
       if (typeof fromIdx !== 'number' || typeof toIdx !== 'number') {
         return res.status(400).json({ error: '參數錯誤' });
@@ -3862,1600 +3654,16 @@ app.post('/api/action', express.json(), async (req, res) => {
   }
 });
 
-app.post('/webhook', middleware(config), (req, res) => {
-  Promise.all(req.body.events.map(handleEvent))
-    .then(() => res.sendStatus(200))
-    .catch((err) => {
-      console.error('Webhook Error:', err);
-      res.sendStatus(200); // 即使出錯也回 200，避免 LINE 停用 Webhook
-    });
-});
 
-async function handleEvent(event) {
-  // 處理機器人被加入群組的事件（memberJoined）
-  if (event.type === 'memberJoined') {
-    const gid = event.source.groupId || event.source.roomId;
-    if (!gid) return null;
-    
-    logToFile(`[INFO] Bot joined group/room ${gid} - waiting for first command`);
-    return null;
-  }
-
-  // 處理用戶加機器人為好友的事件（follow）
-  if (event.type === 'follow') {
-    try {
-      const uid = event.source.userId;
-      const welcomeMessage = '👋 您好！感謝加我為好友。\n\n' +
-        '我是羽球接龍機器人，請邀請我加入群組後使用「接龍開始」來建立接龍活動。\n\n' +
-        '在群組中可以使用以下功能：\n' +
-        '📖 接龍開始 - 建立新接龍\n' +
-        '💡 +1 / -1 - 報名/取消\n' +
-        '📋 接龍名單 - 查看名單';
-      
-      await client.replyMessage(event.replyToken, { type: 'text', text: welcomeMessage });
-      logToFile(`[SUCCESS] Bot followed by user ${uid}`);
-      return null;
-    } catch (e) {
-      console.error('Failed to respond to follow event:', e);
-      logToFile(`[ERROR] Failed to respond to follow event: ${e.message}`);
-      return null;
-    }
-  }
-
-  if (event.type !== 'message' || event.message.type !== 'text') return null;
-
-  const gid = event.source.groupId || event.source.roomId || event.source.userId;
-  const uid = event.source.userId;
-  const text = event.message.text.trim();
-  const firstLine = text.split('\n')[0].trim();
-  // 舊的單一場次卡片攔截已移除，改由下方統整的「接龍狀況」回覆
-  
-  // 保留舊版相容
-  const triggerMatch = text.match(/^🤖 【系統觸發：自動推播】\n([\s\S]*)/);
-  if (triggerMatch) {
-    const replyText = triggerMatch[1].trim();
-    return await client.replyMessage(event.replyToken, { type: 'text', text: replyText });
-  }
-  
-  if (text.replace(/\s+/g, '') === '接龍密碼Tony好帥') {
-    if (!superAdmins) superAdmins = new Set();
-    superAdmins.add(uid);
-    saveSuperAdmins();
-    return await client.replyMessage(event.replyToken, { type: 'text', text: '✅ 權限已開通！您現在是全系統的超級管理員了。' });
-  }
-
-  if (text === '取消管理員' || text === '取消管理者') {
-    let wasGroupAdmin = false;
-    let wasSuperAdmin = false;
-
-    if (superAdmins && superAdmins.has(uid)) {
-      superAdmins.delete(uid);
-      saveSuperAdmins();
-      wasSuperAdmin = true;
-    }
-
-    for (const g in groupAdmins) {
-      if (groupAdmins[g].has(uid)) {
-        groupAdmins[g].delete(uid);
-        wasGroupAdmin = true;
-      }
-    }
-    
-    if (wasGroupAdmin) {
-      saveAdmins();
-    }
-
-    if (wasGroupAdmin || wasSuperAdmin) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '✅ 已取消您的管理員權限。' });
-    } else {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 您本來就不是管理員喔。' });
-    }
-  }
-
-  if (text === '查詢管理員' || text === '管理員名單') {
-    if (!isSuperAdmin(uid)) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員可以查詢管理員名單。' });
-    }
-
-    let msg = '📋 管理員名單\n══════════════\n';
-
-    // 超級管理員 (環境變數)
-    const envAdminUids = process.env.SUPER_ADMIN_USER_ID
-      ? process.env.SUPER_ADMIN_USER_ID.split(',').map(id => id.trim()).filter(Boolean)
-      : [];
-
-    // 超級管理員 (動態新增)
-    const dynamicSuperAdmins = superAdmins ? Array.from(superAdmins) : [];
-
-    // 合併不重複
-    const allSuperAdminUids = [...new Set([...envAdminUids, ...dynamicSuperAdmins])];
-
-    msg += '\n👑 超級管理員:\n';
-    if (allSuperAdminUids.length === 0) {
-      msg += '  (無)\n';
-    } else {
-      for (const adminUid of allSuperAdminUids) {
-        try {
-          const name = await getName(gid, adminUid);
-          const source = envAdminUids.includes(adminUid) ? ' [環境變數]' : ' [動態]';
-          const nameDisplay = name === '球友' ? `球友 (${adminUid.substring(0, 6)}...)` : name;
-          msg += `  • ${nameDisplay}${source}\n`;
-        } catch (e) {
-          msg += `  • ${adminUid.substring(0, 8)}...${envAdminUids.includes(adminUid) ? ' [環境變數]' : ' [動態]'}\n`;
-        }
-      }
-    }
-
-    // 群組管理員
-    const groupEntries = Object.entries(groupAdmins).filter(([g, admins]) => admins.size > 0);
-    if (groupEntries.length > 0) {
-      msg += '\n👤 群組管理員:\n';
-      for (const [adminGid, admins] of groupEntries) {
-        const code = Object.keys(groupCodes).find(k => groupCodes[k] === adminGid) || '無代碼';
-        msg += `\n  群組 [${code}]:\n`;
-        for (const adminUid of admins) {
-          try {
-            const name = await getName(adminGid, adminUid);
-            const alsoSuper = allSuperAdminUids.includes(adminUid) ? ' 👑' : '';
-            msg += `    • ${name}${alsoSuper}\n`;
-          } catch (e) {
-            msg += `    • ${adminUid.substring(0, 8)}...\n`;
-          }
-        }
-      }
-    } else {
-      msg += '\n👤 群組管理員:\n  (無)\n';
-    }
-
-    return client.replyMessage(event.replyToken, { type: 'text', text: msg.trim() });
-  }
-
-  if (text === '群組代碼' || text === '群組碼') {
-    let code = Object.keys(groupCodes).find(k => groupCodes[k] === gid);
-    if (!code) {
-      do {
-        code = Math.floor(1000 + Math.random() * 9000).toString();
-      } while (groupCodes[code]);
-      groupCodes[code] = gid;
-      saveGroupCodes();
-    }
-    return client.replyMessage(event.replyToken, { 
-      type: 'text', 
-      text: `本群組的專屬代碼為：【 ${code} 】` 
-    });
-  }
-
-  if (text.toLowerCase() === 'line id check' || text === '我的UID' || text === '我的uid') {
-    return client.replyMessage(event.replyToken, {
-      type: 'text',
-      text: `你的專屬 UID 是：\n${uid}\n\n請將此 UID 提供給超級管理員，以便設定群組管理權限。\n(若要開啟全系統超級管理員模式，可將此字串設定到 Render 的 SUPER_ADMIN_USER_ID 環境變數中)`
-    });
-  }
-
-  const viewOverrideMatch = text.match(/^超級管理員視角\s+(使用者|管理員|最高權限)(?:\s+(\d{4}))?$/i);
-  if (viewOverrideMatch) {
-    if (!isTrueSuperAdmin(uid)) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 此指令僅限真正的超級管理員使用。' });
-    }
-    const mode = viewOverrideMatch[1];
-    const code = viewOverrideMatch[2];
-    let modeCode = 'superadmin';
-    if (mode === '使用者') modeCode = 'user';
-    else if (mode === '管理員') modeCode = 'admin';
-    
-    let targetGid = null;
-    let groupNameDisplay = '';
-    if (modeCode === 'admin' && code) {
-      targetGid = groupCodes[code];
-      if (!targetGid) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組` });
-      }
-      groupNameDisplay = ` (限群組: ${groupSettings[targetGid]?.groupName || code})`;
-    }
-    
-    superAdminViewOverrides[uid] = { mode: modeCode, targetGid: targetGid };
-    return client.replyMessage(event.replyToken, {
-      type: 'text',
-      text: `✅ 視角已切換為：${mode}${groupNameDisplay}\n請重新整理網頁查看效果。`
-    });
-  }
-
-  const groupAdminSetMatch = text.match(/^接龍群主設定\s+(U[a-f0-9]+)\s+(\d{4})$/i);
-  if (groupAdminSetMatch) {
-    if (!isSuperAdmin(uid)) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員能指派群組管理員。' });
-    }
-    const targetUid = groupAdminSetMatch[1];
-    const targetCode = groupAdminSetMatch[2];
-    const targetGid = groupCodes[targetCode];
-    if (!targetGid) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${targetCode} 的群組` });
-    }
-    if (!groupAdmins[targetGid]) groupAdmins[targetGid] = new Set();
-    groupAdmins[targetGid].add(targetUid);
-    saveAdmins();
-    const gName = groupSettings[targetGid]?.groupName || targetCode;
-    return client.replyMessage(event.replyToken, {
-      type: 'text',
-      text: `✅ 已成功將該使用者設為【${gName}】的群組管理員！`
-    });
-  }
-
-  const groupAdminRemoveMatch = text.match(/^接龍群主撤銷\s+(U[a-f0-9]+)\s+(\d{4})$/i);
-  if (groupAdminRemoveMatch) {
-    if (!isSuperAdmin(uid)) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 只有超級管理員能撤銷群組管理員。' });
-    }
-    const targetUid = groupAdminRemoveMatch[1];
-    const targetCode = groupAdminRemoveMatch[2];
-    const targetGid = groupCodes[targetCode];
-    if (!targetGid) {
-      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${targetCode} 的群組` });
-    }
-    if (groupAdmins[targetGid] && groupAdmins[targetGid].has(targetUid)) {
-      groupAdmins[targetGid].delete(targetUid);
-      saveAdmins();
-      const gName = groupSettings[targetGid]?.groupName || targetCode;
-      return client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: `✅ 已撤銷該使用者在【${gName}】的管理權限。`
-      });
-    } else {
-      return client.replyMessage(event.replyToken, { type: 'text', text: '該使用者本來就不是此群組的管理員。' });
-    }
-  }
-
-  const urlMatch = text.match(/^(?:網址|群組網址|大廳網址)\s*(\d{4})$/);
-  if (urlMatch) {
-    const queryCode = urlMatch[1];
-    const targetGid = groupCodes[queryCode];
-    if (targetGid) {
-      if (process.env.LIFF_ID) {
-        return client.replyMessage(event.replyToken, {
-          type: 'text',
-          text: `🔗 群組 ${queryCode} 的專屬大廳網址為：\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`
-        });
-      } else {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '系統尚未設定 LIFF_ID' });
-      }
-    } else {
-      return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${queryCode} 的群組` });
-    }
-  }
-
-  // 只允許管理員下達文字指令 (但開放部分查詢指令給一般群友)
-  const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
-  
-  const cleanText = text.replace(/\n\n\[系統代發\]$/, '').trim();
-  const isPlusMinus = cleanText.match(/^\+[1-9]/) || cleanText.match(/^-[1-9]/) || cleanText.match(/\+[1-9]$/) || cleanText.match(/-[1-9]$/) || cleanText.match(/🔄順序更新$/) || cleanText.match(/💰繳費更新$/);
-  const isPublicCommand = text.startsWith('接龍名單') || 
-                          text.startsWith('推播提醒') ||
-                          text === '接龍狀態' || 
-                          text === '接龍狀況' || 
-                          text === '接龍查詢' || 
-                          text === '大廳' || 
-                          text === '接龍大廳' ||
-                          isPlusMinus;
-
-  if (!isAdmin && !isPublicCommand) {
-    return null; // 非管理員，已讀不回
-  }
-
-  // 檢查是否為群組首次使用
-  let showWelcome = false;
-  if (gid && (gid.startsWith('C') || gid.startsWith('R')) && !firstUseGroups.has(gid)) {
-    firstUseGroups.add(gid);
-    showWelcome = true;
-  }
-
-  try {
-    // 1. 接龍開始
-    if (text.startsWith('接龍開始')) {
-      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
-      let targetGid = gid;
-      let isRemote = false;
-      if (groupMatch) {
-          const code = groupMatch[1].trim();
-          if (groupCodes[code]) {
-              targetGid = groupCodes[code];
-              isRemote = targetGid !== gid;
-          } else {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組，請確認您已在目標群組輸入「群組代碼」獲取正確的代碼。` });
-          }
-      }
-
-      const titleMatch = text.match(/標題(?:[:：])?\s*(?:\{|｛)?(.*?)(?:\}|｝)?(?:\n|$)/) || text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
-      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|費用|人數|候補|備註|名單|$))))/);
-      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|人數|候補|備註|名單|$))))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|名單|標籤|$))))/);
-      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|匿名名單|分區|$))))/);
-      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|分區|$))))/);
-      const publishMatch = text.match(/發布時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|分區|$))))/);
-      const sectionMatch = text.match(/分區\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
-      const reminderMatch = text.match(/提醒時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
-      
-      const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
-      const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
-      
-      const pDate = dateMatch ? (dateMatch[1] || dateMatch[2]).trim() : '';
-      const pTime = timeMatch ? (timeMatch[1] || timeMatch[2]).trim() : '';
-      const pLoc = locMatch ? (locMatch[1] || locMatch[2]).trim() : '';
-      const pFee = feeMatch ? (feeMatch[1] || feeMatch[2]).trim() : '';
-      const pNote = noteMatch ? (noteMatch[1] || noteMatch[2]).trim() : '';
-      const pTag = tagMatch ? (tagMatch[1] || tagMatch[2]).trim() : '';
-      
-      let pPublish = null;
-      if (publishMatch) {
-         let ptStr = (publishMatch[1] || publishMatch[2]).trim();
-         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
-         const dt = new Date(ptStr);
-         if (!isNaN(dt.getTime())) pPublish = dt.getTime();
-      }
-      
-      let pReminder = null;
-      if (reminderMatch) {
-         let rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
-         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
-         const dt = new Date(rtStr);
-         if (!isNaN(dt.getTime())) pReminder = dt.getTime();
-      }
-      
-      let title = '羽球接龍';
-      if (titleMatch) {
-         title = (titleMatch[1] || titleMatch[2]).trim();
-      } else if (pDate || pTime || pLoc) {
-         title = [pDate, pTime, pLoc].filter(Boolean).join(' ');
-      }
-      
-      const limit = limitMatch ? parseInt(limitMatch[1] || limitMatch[2], 10) : 20;
-      const backupLimit = backupMatch ? parseInt(backupMatch[1] || backupMatch[2], 10) : 5;
-      
-      let initialList = [];
-      let initialLevelMap = {};
-      let initialPaidMap = {};
-      if (listMatch) {
-         const listStr = (listMatch[1] || listMatch[2]).trim();
-         const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
-         rawList.forEach(n => {
-           let isPaid = false;
-           if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
-               isPaid = true;
-               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
-           }
-           const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
-           if (match) {
-             const trueName = match[1].trim();
-             const lvl = (match[2] || match[3]).trim();
-             initialList.push(trueName);
-             initialLevelMap[trueName] = lvl;
-             if (isPaid) initialPaidMap[trueName] = true;
-           } else {
-             initialList.push(n);
-             if (isPaid) initialPaidMap[n] = true;
-           }
-         });
-      }
-      
-      if (anonMatch) {
-         const anonStr = (anonMatch[1] || anonMatch[2]).trim();
-         const num = parseInt(anonStr, 10);
-         if (!isNaN(num)) {
-             for(let i=0; i<num; i++) initialList.push('__ANON__');
-         } else {
-             const anons = anonStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
-             for(let i=0; i<anons.length; i++) initialList.push('__ANON__');
-         }
-      }
-      
-      let pSections = [];
-      if (sectionMatch) {
-         const sectionStr = (sectionMatch[1] || sectionMatch[2]).trim();
-         const parts = sectionStr.split(/[/／]/).map(s => s.trim()).filter(Boolean);
-         parts.forEach(part => {
-             let sLimit = limit;
-             let sFee = pFee;
-             let sTitle = part;
-             
-             const sLimitMatch = part.match(/(\d+)\s*人/);
-             if (sLimitMatch) {
-                 sLimit = parseInt(sLimitMatch[1], 10);
-                 sTitle = sTitle.replace(sLimitMatch[0], '').trim();
-             }
-             
-             // Extract fee (number followed by 元 or $)
-             const sFeeMatch = part.match(/(\d+)\s*[元\$]/);
-             if (sFeeMatch) {
-                 sFee = sFeeMatch[1] + '元';
-                 sTitle = sTitle.replace(sFeeMatch[0], '').trim();
-             }
-             
-             // Extract optional note inside () e.g. (10-11冷氣)
-             let sNote = '';
-             const noteMatch = sTitle.match(/\(([^)]+)\)|（([^）]+)）/);
-             if (noteMatch) {
-                 sNote = (noteMatch[1] || noteMatch[2]).trim();
-                 sTitle = sTitle.replace(noteMatch[0], '').trim();
-             }
-             
-             pSections.push({ 
-                 title: sTitle || '時段', 
-                 limit: sLimit, 
-                 backupLimit: backupLimit, 
-                 label: '', 
-                 list: [], 
-                 fee: sFee,
-                 note: sNote
-             });
-         });
-      }
-      
-      if (pSections.length === 0) {
-          pSections = [
-              { title: '報名名單', limit: limit, backupLimit: backupLimit, label: '', list: initialList }
-          ];
-      } else {
-          pSections[0].list = initialList;
-      }
-      
-      const gameId = Date.now().toString() + Math.floor(Math.random()*1000);
-      
-      games[gameId] = {
-        gid: targetGid,
-        gameId: gameId,
-        title: title,
-        date: pDate,
-        time: pTime,
-        location: pLoc,
-        fee: pFee,
-        note: pNote === '無' || pNote === '空' ? '' : pNote,
-        tag: pTag,
-        active: true,
-        startTime: Date.now(),
-        lastActiveTime: Date.now(),
-        scheduleTime: pPublish,
-        reminderTime: pReminder,
-        scheduleInput: null,
-        anonymous: [],
-        anonymousCount: 0,
-        levelMap: initialLevelMap,
-        paidMap: initialPaidMap,
-        noteMap: {},
-        allowUserNoteEdit: true,
-        sections: pSections
-      };
-      
-      // Setup uid mapping if admin creates the list with themselves in it
-      initialList.forEach(n => {
-        if (n === uidToNameMap.get(uid)) {
-            nameToUidMap.set(`${gameId}_${n}`, uid);
-        }
-      });
-      
-      await saveGame(gameId, true);
-      await saveCurrentListSnapshot(gameId, false);
-      
-      let welcomePrefix = showWelcome ? '🎉 大家好，我是羽球接龍機器人。\n\n' : '';
-      if (isRemote) {
-          if (!pPublish) await sendLobbyLink(null, targetGid, welcomePrefix + "🚀 場次建立成功！");
-          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已成功將場次建立${pPublish ? '並排程發布' : '並推播'}至代碼 ${groupMatch[1].trim()} 的群組！` });
-      } else {
-          if (pPublish) {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 場次建立成功！將於指定時間發布大廳連結。` });
-          } else {
-              return await sendLobbyLink(event.replyToken, gid, welcomePrefix + "🚀 場次建立成功！");
-          }
-      }
-    }
-
-    if (text.startsWith('接龍結束') || text.startsWith('接龍清空')) {
-      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
-      let targetGid = gid;
-      if (groupMatch) {
-          const code = groupMatch[1].trim();
-          if (groupCodes[code]) {
-              targetGid = groupCodes[code];
-          } else {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組，無法執行清空。` });
-          }
-      }
-
-      let keyword = text.replace(/接龍結束|接龍清空/, '');
-      if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
-      keyword = keyword.trim();
-      
-      let groupGames = Object.values(games).filter(g => 
-        (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && 
-        g.active && 
-        !g.isManualEnded
-      );
-      
-      if (text.startsWith('接龍清空') || text === '接龍結束') {
-        // 全清
-        const count = groupGames.length;
-        for(const g of groupGames) {
-          const gId = g.gameId;
-          delete games[gId];
-          await saveGame(gId, true);
-        }
-        await saveCurrentListSnapshot(null, false);
-        pendingSaves.add('__force_save__');
-        await flushFileSave();
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `✅ 找到 ${count} 個場次並已清空` });
-      } else {
-        // 結束特定場次
-        groupGames = groupGames.filter(g => g.title.includes(keyword));
-        if (groupGames.length === 0) {
-          return await client.replyMessage(event.replyToken, { type: 'text', text: `找不到包含「${keyword}」的場次喔！` });
-        }
-        for(const g of groupGames) {
-          const gId = g.gameId;
-          delete games[gId];
-          await saveGame(gId, true);
-        }
-        await saveCurrentListSnapshot(null, false);
-        pendingSaves.add('__force_save__');
-        await flushFileSave();
-        const titles = groupGames.map(g => g.title).join('、');
-        return await client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已結束場次：${titles}` });
-      }
-    }
-
-    if (text === '/debug-uid') {
-      return client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: `【偵錯模式】\n您的群組 Webhook UID 是：\n${uid}\n\n請您打開 LIFF 網頁，對照一下開發者後台，如果 LIFF 抓到的 UID 跟這個不一樣，代表您的 LIFF Channel 和 Bot Channel 建立在不同的 Provider 底下，導致機器人不認識 LIFF 傳來的 UID，這就是標記變成純文字的原因！`
-      });
-    }
-
-    if (text === '/test-mention-now') {
-      const testMessages = [{
-          type: "textV2",
-          text: "標記測試： {you}",
-          substitution: {
-              you: {
-                  type: "mention",
-                  mentionee: {
-                      type: "user",
-                      userId: uid
-                  }
-              }
-          },
-          _names: { you: '測試發言者' }
-      }];
-      
-      const sendTestWithRetry = async (msgs, fallbackNotices = []) => {
-          try {
-              await client.replyMessage(event.replyToken, msgs);
-          } catch (e) {
-              const errData = e.originalError?.response?.data;
-              let badKey = null;
-              if (errData && errData.details) {
-                  errData.details.forEach(d => {
-                      if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                          const match = d.property.match(/substitution\["?([^"]+)"?\]/);
-                          if (match && match[1]) badKey = match[1];
-                      }
-                  });
-              }
-              if (badKey) {
-                  const retryMsgs = JSON.parse(JSON.stringify(msgs));
-                  for (let m of retryMsgs) {
-                      if (m.type === 'textV2' && m.substitution && m.substitution[badKey]) {
-                          m.text = m.text.replace(`{${badKey}}`, `@${m._names[badKey]}`);
-                          delete m.substitution[badKey];
-                          if (Object.keys(m.substitution).length === 0) {
-                              m.type = 'text';
-                              delete m.substitution;
-                          }
-                      }
-                  }
-                  await client.pushMessage(gid, retryMsgs).catch(() => {
-                      client.pushMessage(gid, { type: 'text', text: `⚠️ 測試標記失敗 (重試也失敗)\nError: ${JSON.stringify(errData)}` });
-                  });
-              } else {
-                  client.pushMessage(gid, { type: 'text', text: `⚠️ 測試標記失敗\nUID: ${uid}\nError: ${JSON.stringify(errData)}` });
-              }
-          }
-      };
-      
-      return sendTestWithRetry(testMessages);
-    }
-
-    if (text.startsWith('群組廣播')) {
-      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)?([a-zA-Z0-9]+)(?:\}|｝)?\s+內容(?:[:：])?\s*([\s\S]*)/);
-      if (!groupMatch || !groupMatch[1] || !groupMatch[2]) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '⚠️ 語法錯誤！正確格式為：\n群組廣播 群組: 1234 內容: 您的廣播訊息' });
-      }
-      
-      const code = groupMatch[1].trim();
-      const broadcastText = groupMatch[2].trim();
-      const targetGid = groupCodes[code];
-      
-      if (!targetGid) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 找不到代碼為 ${code} 的群組。` });
-      }
-      
-      if (!isSuperAdminUser && !(groupAdmins[targetGid] && groupAdmins[targetGid].has(uid))) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '❌ 您不是目標群組的管理員，無法對該群組發送廣播。' });
-      }
-
-      try {
-        await client.pushMessage(targetGid, { type: 'text', text: `📢 管理員廣播：\n\n${broadcastText}` });
-        if (targetGid !== gid) {
-          return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 廣播已成功發送至群組 ${code}！` });
-        }
-      } catch (err) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 廣播發送失敗，可能是機器人不在目標群組中，或是無權限發言。` });
-      }
-      return null;
-    }
-
-    if (text.startsWith('接龍名單') || text.startsWith('推播提醒') || text === '接龍狀況' || text === '接龍狀態' || text === '接龍查詢' || isPlusMinus) {
-      const isMentionPush = text.startsWith('推播提醒');
-      
-      if (isMentionPush && !isAdmin) {
-          return client.replyMessage(event.replyToken, { type: 'text', text: '❌ 只有管理員可以使用「推播提醒」功能喔！' });
-      }
-
-      const groupMatch = text.match(/群組(?:[:：])?\s*(?:\{|｛)(.*?)(?:\}|｝)/) || text.match(/群組[:：]\s*(\d{4})/);
-      let targetGid = gid;
-      if (groupMatch) {
-          const code = groupMatch[1].trim();
-          if (groupCodes[code]) {
-              targetGid = groupCodes[code];
-          } else {
-              return client.replyMessage(event.replyToken, { type: 'text', text: `找不到代碼為 ${code} 的群組。` });
-          }
-      }
-
-      let keyword = text.replace(/接龍名單/, '').replace(/推播提醒/, '').replace(/接龍狀況/, '').replace(/接龍狀態/, '').replace(/接龍查詢/, '');
-      if (groupMatch) keyword = keyword.replace(groupMatch[0], '');
-      keyword = keyword.replace(/\[系統代發\]/g, '').trim();
-      if (isPlusMinus) keyword = '';
-      
-      const getGameTime = (g) => {
-        let t = 0;
-        if (g.date) {
-          let dStr = g.date.trim();
-          if (dStr.match(/^\d{1,2}\/\d{1,2}$/)) {
-            dStr = new Date().getFullYear() + '/' + dStr;
-          }
-          const pd = new Date(`${dStr} ${g.time || ''}`.trim());
-          if (!isNaN(pd.getTime())) t = pd.getTime();
-        }
-        return t === 0 ? (g.startTime || 0) : t;
-      };
-
-      let groupGames = Object.values(games)
-        .filter(g => (g.gid === targetGid || (g.targetGids && g.targetGids.includes(targetGid))) && g.active && !g.isManualEnded)
-        .sort((a, b) => getGameTime(a) - getGameTime(b));
-      
-      if (keyword) {
-          groupGames = groupGames.filter(g => g.title.includes(keyword));
-      }
-      
-      if (groupGames.length === 0) {
-          const emptyText = keyword ? `找不到包含「${keyword}」的場次喔！` : `目前群組內沒有正在進行的場次喔！`;
-          return client.replyMessage(event.replyToken, { type: 'text', text: emptyText });
-      }
-
-      const liffBaseUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : null;
-      if (!liffBaseUrl) {
-        return client.replyMessage(event.replyToken, { type: 'text', text: '尚未設定大廳網址 (LIFF_ID)' });
-      }
-
-      // Generate the status summary bubble
-      const statusBubble = generateStatusBubble(groupGames, liffBaseUrl, cleanText, isPlusMinus);
-
-      // Generate the full carousel (Status Bubble + Detail Bubbles + Mentions)
-      const messagesToSend = generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble);
-      
-      // We NEVER consume quota for standard replies!
-      // Only when explicitly pushing to a DIFFERENT group do we use pushMessage.
-      if (targetGid !== gid) {
-          try {
-              await client.pushMessage(targetGid, messagesToSend);
-              const successMsg = isMentionPush ? '場次名單及提醒' : '場次名單';
-              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
-          } catch (e) {
-              console.error('Push message failed:', e.originalError?.response?.data || e);
-              const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(()=>null);
-          }
-      } else {
-          // Helper function for recursive retry
-          const sendWithRetry = async (messages) => {
-              try {
-                  await client.replyMessage(event.replyToken, messages);
-              } catch (e) {
-                  const errData = e.originalError?.response?.data;
-                  
-                  // If replyToken is consumed or we need to push, use pushMessage
-                  const tryPush = async (msgs) => {
-                      await client.pushMessage(gid, msgs);
-                  };
-
-                  let hasMentionError = false;
-                  let badKey = null;
-                  
-                  if (errData && errData.details) {
-                      errData.details.forEach(d => {
-                          if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                              const match = d.property.match(/substitution\["?([^"]+)"?\]/);
-                              if (match && match[1]) {
-                                  badKey = match[1];
-                                  hasMentionError = true;
-                              }
-                          }
-                      });
-                  }
-                  
-                  if (hasMentionError && badKey) {
-                      const retryMessages = JSON.parse(JSON.stringify(messages));
-                      for (let m of retryMessages) {
-                          if (m.type === 'textV2' && m.substitution && m.substitution[badKey]) {
-                              const userName = (m._names && m._names[badKey]) ? m._names[badKey] : 'User';
-                              m.text = m.text.replace(`{${badKey}}`, `@${userName}`);
-                              delete m.substitution[badKey];
-                              // Removed fallbackNotice push
-                              
-                              // Check if there are no more substitutions left
-                              if (Object.keys(m.substitution).length === 0) {
-                                  m.type = 'text';
-                                  delete m.substitution;
-                              }
-                          }
-                      }
-                      
-                      try {
-                          // Try sending again with pushMessage (since replyToken might be dead)
-                          await tryPush(retryMessages);
-                      } catch (retryErr) {
-                          const retryErrData = retryErr.originalError?.response?.data;
-                          // If it fails again with mention error, recurse!
-                          if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
-                              // Recursively call a push-only version
-                              const pushWithRetry = async (msgs) => {
-                                  try {
-                                      await client.pushMessage(gid, msgs);
-                                  } catch (e3) {
-                                      const e3Data = e3.originalError?.response?.data;
-                                      let e3BadKey = null;
-                                      if (e3Data && e3Data.details) {
-                                          e3Data.details.forEach(d => {
-                                              if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                                                  const match = d.property.match(/substitution\["?([^"]+)"?\]/);
-                                                  if (match && match[1]) e3BadKey = match[1];
-                                              }
-                                          });
-                                      }
-                                      if (e3BadKey) {
-                                          const nextMsgs = JSON.parse(JSON.stringify(msgs));
-                                          for (let m of nextMsgs) {
-                                              if (m.type === 'textV2' && m.substitution && m.substitution[e3BadKey]) {
-                                                  const uName = (m._names && m._names[e3BadKey]) ? m._names[e3BadKey] : 'User';
-                                                  m.text = m.text.replace(`{${e3BadKey}}`, `@${uName}`);
-                                                  delete m.substitution[e3BadKey];
-                                                  if (Object.keys(m.substitution).length === 0) {
-                                                      m.type = 'text';
-                                                      delete m.substitution;
-                                                  }
-                                              }
-                                          }
-                                          await pushWithRetry(nextMsgs);
-                                      } else {
-                                          throw e3; // Unhandled error
-                                      }
-                                  }
-                              };
-                              await pushWithRetry(retryMessages).catch(() => fallback(errData));
-                          } else {
-                              fallback(errData);
-                          }
-                      }
-                  } else {
-                      fallback(errData || e.message);
-                  }
-              }
-          };
-
-          const fallback = async (errDetail) => {
-              const fallbackMessages = messagesToSend.map(m => {
-                  if (m.type === 'textV2') {
-                      let plainText = m.text;
-                      if (m._names) {
-                          for (const k in m._names) plainText = plainText.replace(`{${k}}`, `@${m._names[k]}`);
-                      } else {
-                          plainText = plainText.replace(/\{user\d+\}/g, '').trim();
-                      }
-                      return { type: 'text', text: plainText + '\n(標記全數失敗，已轉換為純文字)' };
-                  }
-                  return m;
-              });
-              try {
-                  await client.pushMessage(gid, fallbackMessages);
-                  await client.pushMessage(gid, { type: 'text', text: `⚠️ 標記發送嚴重異常。\n除錯資訊: ${JSON.stringify(errDetail)}\nWebhook UID: ${event.source.userId}` });
-              } catch (e2) {}
-          };
-
-          await sendWithRetry(messagesToSend);
-      }
-    }
-    
-    if (text === '超級清空') {
-      const count = Object.keys(games).length;
-      const allKeys = Object.keys(games);
-      allKeys.forEach(k => delete games[k]);
-      for (const k of allKeys) await saveGame(k, true);
-      await saveCurrentListSnapshot(null, false);
-      pendingSaves.add('__force_save__');
-      await flushFileSave();
-      return await client.replyMessage(event.replyToken, { type: 'text', text: `💥 超級清空啟動！已強制刪除伺服器上所有群組的 ${count} 個場次。` });
-    }
-
-    if (text === '測試場次') {
-        const myGames = Object.values(games).map(g => `ID: ${g.gameId}, GID: ${g.gid}, Title: ${g.title}`).join('\n');
-        return client.replyMessage(event.replyToken, { type: 'text', text: `Games in memory:\n${myGames || 'none'}\nCurrent GID: ${gid}` });
-    }
-
-    if (text.startsWith('接龍修改')) {
-      const titleMatch = text.match(/標題\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:日期|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const dateMatch = text.match(/日期\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|時間|地點|費用|人數|候補|備註|名單|$))))/);
-      const timeMatch = text.match(/時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|地點|費用|人數|候補|備註|名單|$))))/);
-      const locMatch = text.match(/地點\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|費用|人數|候補|備註|名單|匿名名單|$))))/);
-      const feeMatch = text.match(/費用\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|人數|候補|備註|名單|匿名名單|$))))/);
-      const noteMatch = text.match(/備註\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|名單|標籤|匿名名單|$))))/);
-      const tagMatch = text.match(/標籤\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|名單|匿名名單|$))))/);
-      const listMatch = text.match(/名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|匿名名單|$))))/);
-      const anonMatch = text.match(/匿名名單\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|$))))/);
-      const publishMatch = text.match(/發布時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|提醒時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
-      const reminderMatch = text.match(/提醒時間\s*[:：]?\s*(?:[{\uff5b]([\s\S]*?)[}\uff5d]|([^\n]*?(?=\s*(?:標題|日期|時間|發布時間|地點|費用|人數|候補|備註|標籤|名單|匿名名單|$))))/);
-      
-      const limitMatch = text.match(/人數\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
-      const backupMatch = text.match(/候補\s*[:：]?\s*(?:[{\uff5b](\d+)[}\uff5d]|(\d+))/);
-      
-      // 取出除了 "接龍修改" 與 屬性 以外的文字當作 keyword
-      let keyword = text.replace('接龍修改', '').trim();
-      if (titleMatch) keyword = keyword.replace(titleMatch[0], '');
-      if (dateMatch) keyword = keyword.replace(dateMatch[0], '');
-      if (timeMatch) keyword = keyword.replace(timeMatch[0], '');
-      if (locMatch) keyword = keyword.replace(locMatch[0], '');
-      if (feeMatch) keyword = keyword.replace(feeMatch[0], '');
-      if (noteMatch) keyword = keyword.replace(noteMatch[0], '');
-      if (limitMatch) keyword = keyword.replace(limitMatch[0], '');
-      if (backupMatch) keyword = keyword.replace(backupMatch[0], '');
-      if (tagMatch) keyword = keyword.replace(tagMatch[0], '');
-      if (listMatch) keyword = keyword.replace(listMatch[0], '');
-      if (anonMatch) keyword = keyword.replace(anonMatch[0], '');
-      if (publishMatch) keyword = keyword.replace(publishMatch[0], '');
-      if (reminderMatch) keyword = keyword.replace(reminderMatch[0], '');
-      keyword = keyword.trim();
-
-      let groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active);
-      if (groupGames.length === 0) {
-          return await client.replyMessage(event.replyToken, { type: 'text', text: '目前沒有進行中的場次可以修改喔！' });
-      }
-
-      let targetGame = null;
-      if (keyword) {
-        targetGame = groupGames.find(g => g.title.includes(keyword));
-        if (!targetGame) {
-           return await client.replyMessage(event.replyToken, { type: 'text', text: `找不到包含「${keyword}」的場次喔！` });
-        }
-      } else {
-        if (groupGames.length > 1) {
-           targetGame = groupGames.sort((a,b) => b.startTime - a.startTime)[0];
-        } else {
-           targetGame = groupGames[0];
-        }
-      }
-
-      if (dateMatch) targetGame.date = (dateMatch[1] || dateMatch[2]).trim();
-      if (timeMatch) targetGame.time = (timeMatch[1] || timeMatch[2]).trim();
-      if (locMatch) targetGame.location = (locMatch[1] || locMatch[2]).trim();
-      if (feeMatch) targetGame.fee = (feeMatch[1] || feeMatch[2]).trim();
-      
-      if (titleMatch) {
-         targetGame.title = (titleMatch[1] || titleMatch[2]).trim();
-      } else if (dateMatch || timeMatch || locMatch) {
-         // 若修改了其中一項且沒有指定標題，更新自動生成的標題
-         const currentTitleWasAuto = targetGame.title === [targetGame.date, targetGame.time, targetGame.location].filter(Boolean).join(' ');
-         if (targetGame.title === '羽球接龍' || currentTitleWasAuto || true) {
-             const newAuto = [targetGame.date, targetGame.time, targetGame.location].filter(Boolean).join(' ');
-             if (newAuto) targetGame.title = newAuto;
-         }
-      }
-
-      if (limitMatch && targetGame.sections[0]) targetGame.sections[0].limit = parseInt(limitMatch[1] || limitMatch[2], 10);
-      if (backupMatch && targetGame.sections[0]) targetGame.sections[0].backupLimit = parseInt(backupMatch[1] || backupMatch[2], 10);
-      if (noteMatch) {
-        const n = (noteMatch[1] || noteMatch[2]).trim();
-        targetGame.note = n === '無' || n === '空' ? '' : n;
-      }
-      if (tagMatch) {
-        targetGame.tag = (tagMatch[1] || tagMatch[2]).trim();
-      }
-      if (listMatch && targetGame.sections[0]) {
-         const listStr = (listMatch[1] || listMatch[2]).trim();
-         const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
-         let newList = [];
-         let newLevelMap = { ...(targetGame.levelMap || {}) };
-         let newPaidMap = { ...(targetGame.paidMap || {}) };
-         rawList.forEach(n => {
-           let isPaid = false;
-           if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
-               isPaid = true;
-               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
-           }
-           const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
-           if (match) {
-             const trueName = match[1].trim();
-             const lvl = (match[2] || match[3]).trim();
-             newList.push(trueName);
-             newLevelMap[trueName] = lvl;
-             if (isPaid) newPaidMap[trueName] = true;
-           } else {
-             newList.push(n);
-             if (isPaid) newPaidMap[n] = true;
-           }
-         });
-         targetGame.sections[0].list = newList;
-         targetGame.levelMap = newLevelMap;
-         targetGame.paidMap = newPaidMap;
-      }
-      if (anonMatch && targetGame.sections[0]) {
-         targetGame.sections[0].list = targetGame.sections[0].list.filter(n => n !== '__ANON__');
-         const anonStr = (anonMatch[1] || anonMatch[2]).trim();
-         const num = parseInt(anonStr, 10);
-         if (!isNaN(num)) {
-             for(let i=0; i<num; i++) targetGame.sections[0].list.push('__ANON__');
-         } else {
-             const anons = anonStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
-             for(let i=0; i<anons.length; i++) targetGame.sections[0].list.push('__ANON__');
-         }
-      }
-      if (publishMatch) {
-         let ptStr = (publishMatch[1] || publishMatch[2]).trim();
-         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
-         const dt = new Date(ptStr);
-         if (!isNaN(dt.getTime())) targetGame.scheduleTime = dt.getTime();
-      }
-      if (reminderMatch) {
-         let rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
-         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
-         const dt = new Date(rtStr);
-         if (!isNaN(dt.getTime())) targetGame.reminderTime = dt.getTime();
-      }
-      
-      await saveGame(targetGame.gameId, true);
-      return await sendLobbyLink(event.replyToken, gid, `✏️ 已成功修改場次：${targetGame.title}`);
-    }
-
-    if (text === '大廳' || text === '接龍大廳') {
-      return await sendLobbyLink(event.replyToken, gid);
-    }
-
-    // 接龍狀況/名單/+1/-1 已整合至上方統一的 Carousel 區塊處理
-
-  } catch (e) {
-    console.error('Logic Error:', e);
-    const errorMsg = e.originalError?.response?.data 
-                   ? JSON.stringify(e.originalError.response.data) 
-                   : String(e);
-    try {
-      if (gid) {
-        await client.pushMessage(gid, { type: 'text', text: `❌ 機器人發生系統錯誤，已攔截：\n${errorMsg}` });
-      }
-    } catch (pushErr) {
-      console.error('Failed to push error message:', pushErr);
-    }
-  }
-}
-
-// --- 工具函式 ---
-async function getName(gid, uid) {
-  // 使用快取減少 API 呼叫以節省額度
-  const cacheKey = `${gid}_${uid}`;
-  const now = Date.now();
-  
-  // 檢查快取
-  if (userNameCache.has(cacheKey)) {
-    const cached = userNameCache.get(cacheKey);
-    if (now - cached.timestamp < CACHE_EXPIRY) {
-      return cached.name; // 返回快取的名稱
-    } else {
-      userNameCache.delete(cacheKey); // 快取過期，刪除
-    }
-  }
-  
-  try {
-    const profile = (gid.startsWith('C') || gid.startsWith('R')) 
-      ? await client.getGroupMemberProfile(gid, uid) 
-      : await client.getProfile(uid);
-    const name = profile.displayName;
-    
-    // 存入快取
-    userNameCache.set(cacheKey, { name, timestamp: now });
-    
-    // 定期清理過期快取（每100次呼叫時檢查一次）
-    if (userNameCache.size > 1000) {
-      for (const [key, value] of userNameCache.entries()) {
-        if (now - value.timestamp >= CACHE_EXPIRY) {
-          userNameCache.delete(key);
-        }
-      }
-    }
-    
-    return name;
-  } catch (e) { 
-    // API 失敗時使用快取的最後已知名稱，或返回預設值
-    if (userNameCache.has(cacheKey)) {
-      return userNameCache.get(cacheKey).name;
-    }
-    return '球友'; 
-  }
-}
-
-function addToList(gid, idx, name, meta = {}, waitForCsv = false) {
-  if (!games[gid].sections[idx]) return null;
-  // 匿名占位符允許重複出現
-  if (name === '__ANON__') {
-    games[gid].sections[idx].list.push(name);
-    return null;
-  }
-  if (!games[gid].sections[idx].list.includes(name)) {
-    games[gid].sections[idx].list.push(name);
-    if (meta && meta.uid) {
-      if (!games[gid].uidMap) games[gid].uidMap = {};
-      games[gid].uidMap[name] = meta.uid;
-      nameToUidMap.set(`${gid}_${name}`, meta.uid);
-    }
-    if (meta && meta.level) {
-      if (!games[gid].levelMap) games[gid].levelMap = {};
-      games[gid].levelMap[name] = meta.level;
-    }
-    return null;
-  }
-  return null;
-}
-
-async function removeFromList(gid, name, meta = {}, waitForCsv = false) {
-  games[gid].sections.forEach((s, idx) => {
-    const i = s.list.indexOf(name);
-    if (i > -1) {
-      s.list.splice(i, 1);
-      nameToUidMap.delete(`${gid}_${name}`);
-    }
-  });
-}
-
-async function removeAnon(gid, meta = {}, waitForCsv = false) {
-  const s = games[gid].sections[0];
-  if (!s) return;
-  for (let i = s.list.length - 1; i >= 0; i--) {
-    if (s.list[i] === '__ANON__') {
-      s.list.splice(i, 1);
-      // 不記錄到 CSV（只保存名單快照）
-      return;
-    }
-  }
-}
-
-async function sendList(token, gameId, prefix = "") {
-  const g = games[gameId];
-  if (!g) return;
-  
-  let msg = prefix ? `${prefix}\n` : '';
-  msg += `🏸 ${g.title}`;
-  
-  // 顯示簡短統計
-  if (g.sections && g.sections[0]) {
-    const listCount = g.sections[0].list.length;
-    const limit = g.sections[0].limit;
-    msg += `\n目前報名：${listCount} / ${limit} 人`;
-  }
-
-  if (g.note) msg += `\n📝 ${g.note}`;
-  
-  const pushTargets = g.targetGids || [g.gid];
-  
-  if (token) {
-    let replyMsg = msg;
-    if (process.env.LIFF_ID) {
-      replyMsg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${g.gid}`;
-    }
-    return await client.replyMessage(token, { type: 'text', text: replyMsg.trim() });
-  }
-  // 若無 token 則使用 Push Message (用於定時推播)
-  for (const targetGid of pushTargets) {
-    let currentMsg = msg;
-    if (process.env.LIFF_ID) {
-      currentMsg += `\n\n👇 點擊下方連結開啟快速報名與查看名單\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}`;
-    }
-    try {
-      await pushToAdmins(targetGid, { type: 'text', text: currentMsg.trim() });
-    } catch (e) {
-      console.error(`pushToAdmins failed for ${targetGid}:`, e);
-    }
-  }
-}
-
-// 代理推播：將群組訊息轉送給群組管理員 (作為備用推播)
-async function pushToAdmins(targetGid, messages) {
-  // 因應要求，暫停所有需要消耗推播額度的發話代理功能
-  return;
-  
-  if (!targetGid) return;
-  const admins = groupAdmins[targetGid];
-  if (!admins || admins.size === 0) {
-    console.log(`[Admin Proxy] 群組 ${targetGid} 沒有設定管理員，放棄發送。`);
-    return;
-  }
-
-  const groupName = groupSettings[targetGid]?.groupName || groupSettings[targetGid]?.lobbyTitle || '您的群組';
-  const prefixMsg = { 
-    type: 'text', 
-    text: `🔔 【系統通知】\n此為「${groupName}」的事件，請協助轉發以下訊息至群組：` 
+async function runTest() {
+  superAdmins = new Set(['U12345']);
+  const event = {
+    type: 'message',
+    replyToken: 'dummyToken',
+    source: { type: 'user', userId: 'U12345' },
+    message: { type: 'text', text: '接龍狀況' }
   };
-
-  const msgsArray = Array.isArray(messages) ? messages : [messages];
-  const finalMessages = [prefixMsg, ...msgsArray];
-
-  for (const adminUid of admins) {
-    try {
-      await client.pushMessage(adminUid, finalMessages);
-      console.log(`[Admin Proxy] 已發送通知給管理員: ${adminUid}`);
-    } catch (e) {
-      console.error(`[Admin Proxy] 發送給管理員 ${adminUid} 失敗:`, e);
-    }
-  }
+  await handleMessageEvent(event);
+  console.log('Test done');
 }
-
-const port = process.env.PORT || 3000;
-const AUTO_WAKE_ENABLED = (process.env.AUTO_WAKE_ENABLED || 'true').toLowerCase() !== 'false';
-const AUTO_WAKE_INTERVAL_MINUTES = Math.max(5, parseInt(process.env.AUTO_WAKE_INTERVAL_MINUTES || '10', 10) || 10);
-
-// 內部定時器：定期訪問自己的健康檢查端點以保持喚醒
-async function pingSelf() {
-  // 優先使用 RENDER_EXTERNAL_URL，如果沒有則嘗試其他環境變數或使用 localhost
-  const baseUrl = process.env.RENDER_EXTERNAL_URL || 
-                  process.env.APP_URL || 
-                  process.env.URL || 
-                  `http://localhost:${port}`;
-  const healthUrl = `${baseUrl}/health`;
-  
-  try {
-    const url = new URL(healthUrl);
-    const isHttps = url.protocol === 'https:';
-    const httpModule = isHttps ? https : http;
-    const defaultPort = isHttps ? 443 : 80;
-    
-    const options = {
-      hostname: url.hostname,
-      port: url.port || defaultPort,
-      path: url.pathname,
-      method: 'GET',
-      timeout: 10000 // 10秒超時
-    };
-    
-    return new Promise((resolve, reject) => {
-      const req = httpModule.request(options, (res) => {
-        let data = '';
-        res.on('data', (chunk) => { data += chunk; });
-        res.on('end', () => {
-          // 只在錯誤時記錄，成功時減少日誌輸出
-          resolve();
-        });
-      });
-      
-      req.on('error', (err) => {
-        // 只在連續失敗時記錄，避免日誌過多
-        logToFile(`[ERROR] [PING] Self-ping failed: ${err.message}`);
-        reject(err);
-      });
-      
-      req.on('timeout', () => {
-        req.destroy();
-        logToFile(`[ERROR] [PING] Self-ping timeout`);
-        reject(new Error('Request timeout'));
-      });
-      
-      req.setTimeout(10000);
-      req.end();
-    });
-  } catch (err) {
-    logToFile(`[ERROR] [PING] Self-ping error: ${err.message}`);
-  }
-}
-
-// Graceful shutdown：確保資料寫入
-async function gracefulShutdown() {
-  console.log('🛑 正在關閉服務器，確保資料寫入...');
-  isShuttingDown = true;
-  
-  // 等待所有待寫入的資料
-  if (saveFileTimeout) {
-    clearTimeout(saveFileTimeout);
-    saveFileTimeout = null;
-  }
-  await flushFileSave();
-  
-  // 等待所有 CSV 寫入完成
-  try {
-    await regCsvWriteChain;
-    
-    // 如果使用 GitHub 模式，確保最後的內容已寫入
-    if (USE_GITHUB && regCsvContent) {
-      await writeCsvToGitHub(regCsvContent, 'Final save before shutdown');
-    }
-    
-    console.log('✅ 所有資料已寫入完成');
-  } catch (e) {
-    console.error('⚠️ CSV 寫入過程中發生錯誤:', e);
-  }
-  
-  process.exit(0);
-}
-
-// 監聽關閉信號
-process.on('SIGTERM', gracefulShutdown);
-process.on('SIGINT', gracefulShutdown);
-
-app.use(express.json());
-
-// ==========================================
-// 🛒 團購專區 API 端點 (Group Buy REST APIs)
-// ==========================================
-
-// 取得所有團購列表 (支援多團購活動同時呈現於大廳)
-app.get('/api/groupbuy_list', (req, res) => {
-  const list = Object.entries(groupBuyData).map(([id, gb]) => ({
-    id,
-    active: !!gb.active,
-    title: gb.title || '團購專區',
-    notice: gb.notice || '',
-    itemCount: Array.isArray(gb.items) ? gb.items.length : 0,
-    orderCount: gb.orders ? Object.keys(gb.orders).length : 0,
-    hiddenFromLobby: !!gb.hiddenFromLobby
-  }));
-  res.json({ success: true, list });
-});
-
-// 管理員建立全新團購活動
-app.post('/api/groupbuy_create', async (req, res) => {
-  const { title, items } = req.body || {};
-  const newGid = 'gb_' + Date.now();
-  const defaultData = groupBuyData['default'] || {};
-  
-  groupBuyData[newGid] = {
-    id: newGid,
-    active: false,
-    title: title || '🛒 全新團購活動專區',
-    notice: '📢 歡迎選購！請填寫姓名電話，送出後請完成轉帳。',
-    paymentSettings: defaultData.paymentSettings || {
-      linePayLink: '',
-      linePayQrUrl: '',
-      bankCode: '822',
-      bankName: '中國信託',
-      bankAccount: '1234-5678-9012',
-      bankAccountName: '團購主辦人'
-    },
-    items: Array.isArray(items) && items.length > 0 ? items : getZhanRongDefaultItems(),
-    orders: {}
-  };
-
-  await saveGroupBuyStorage();
-  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid: newGid, data: groupBuyData[newGid] });
-  res.json({ success: true, gid: newGid, data: groupBuyData[newGid] });
-});
-
-// 取得該群組團購狀態
-app.get('/api/groupbuy/:gid', (req, res) => {
-  const gid = req.params.gid || 'default';
-  const data = getGroupBuyInfo(gid);
-  res.json({ success: true, data });
-});
-
-// 開啟/關閉團購
-app.post('/api/groupbuy/:gid/toggle', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { uid, active, hiddenFromLobby } = req.body || {};
-  const gb = getGroupBuyInfo(gid);
-  
-  if (typeof active === 'boolean') {
-    gb.active = active;
-  } else if (hiddenFromLobby === undefined) {
-    gb.active = !gb.active;
-  }
-  
-  if (hiddenFromLobby !== undefined) {
-    gb.hiddenFromLobby = hiddenFromLobby;
-  }
-  
-  await saveGroupBuyStorage();
-  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  res.json({ success: true, active: gb.active });
-});
-
-// 儲存團購設定
-app.post('/api/groupbuy/:gid/settings', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { uid, title, notice, hiddenFromLobby, paymentSettings, items } = req.body;
-  const gb = getGroupBuyInfo(gid);
-  if (title !== undefined) gb.title = title;
-  if (notice !== undefined) gb.notice = notice;
-  if (hiddenFromLobby !== undefined) gb.hiddenFromLobby = hiddenFromLobby;
-  if (paymentSettings) gb.paymentSettings = { ...gb.paymentSettings, ...paymentSettings };
-  if (Array.isArray(items)) gb.items = items;
-  await saveGroupBuyStorage();
-  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  res.json({ success: true, data: gb });
-});
-
-// 儲存為「一鍵帶入」預設範本
-app.post('/api/groupbuy/:gid/save_preset', async (req, res) => {
-  const { items, presetName } = req.body || {};
-  if (!Array.isArray(items)) {
-    return res.status(400).json({ success: false, error: '無效的商品資料' });
-  }
-  defaultMenuItems = items;
-  try {
-    const dataToSave = { presetName: presetName || '展榮商號 鹿港傳承名產', items };
-    await fs.promises.writeFile(DEFAULT_MENU_FILE, JSON.stringify(dataToSave, null, 2), 'utf8');
-    res.json({ success: true, count: items.length, presetName: dataToSave.presetName });
-  } catch(e) {
-    res.status(500).json({ success: false, error: e.message });
-  }
-});
-
-// 新增或編輯商品品項
-app.post('/api/groupbuy/:gid/item/save', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { uid, item } = req.body;
-  if (!item || !item.name || item.price === undefined) {
-    return res.status(400).json({ success: false, error: '缺少商品名稱或價格' });
-  }
-
-  const gb = getGroupBuyInfo(gid);
-  if (!Array.isArray(gb.items)) gb.items = [];
-
-  const existingIdx = gb.items.findIndex(i => i.id === item.id);
-  const itemObj = {
-    id: item.id || 'gb_item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-    name: item.name,
-    price: Number(item.price) || 0,
-    category: item.category || '自訂商品',
-    unit: item.unit || '份',
-    description: item.description || '',
-    contents: item.contents || '',
-    imageUrl: item.imageUrl || '',
-    linkUrl: item.linkUrl || '',
-    linkText: item.linkText || '點我進入'
-  };
-
-  if (existingIdx >= 0) {
-    gb.items[existingIdx] = itemObj;
-  } else {
-    gb.items.unshift(itemObj); // 新新增置頂
-  }
-
-  await saveGroupBuyStorage();
-  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  res.json({ success: true, data: itemObj });
-});
-
-// 刪除商品品項
-app.post('/api/groupbuy/:gid/item/delete', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { uid, itemId } = req.body;
-  const gb = getGroupBuyInfo(gid);
-  if (Array.isArray(gb.items)) {
-    gb.items = gb.items.filter(i => i.id !== itemId);
-  }
-  await saveGroupBuyStorage();
-  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  res.json({ success: true });
-});
-
-// 批量修改分類名稱
-app.post('/api/groupbuy/:gid/category/rename', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { uid, oldName, newName } = req.body;
-  const gb = getGroupBuyInfo(gid);
-  if (Array.isArray(gb.items)) {
-    gb.items.forEach(i => {
-      if (i.category === oldName) {
-        i.category = newName;
-      }
-    });
-  }
-  await saveGroupBuyStorage();
-  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  res.json({ success: true });
-});
-// 下單
-app.post('/api/groupbuy/:gid/order', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { uid, userName, userPhone, items, paymentMethod, paymentNote, note, anonymous } = req.body;
-  if (!uid || !userName) {
-    return res.status(400).json({ success: false, error: '缺少使用者資訊' });
-  }
-  const orderKey = (userName && userPhone) ? `${userName.trim().toLowerCase()}_${userPhone.trim()}` : uid;
-  const gb = getGroupBuyInfo(gid);
-  if (!gb.orders) gb.orders = {};
-
-  let totalAmount = 0;
-  if (items && gb.items) {
-    for (const [itemId, qty] of Object.entries(items)) {
-      const p = gb.items.find(i => i.id === itemId);
-      if (p && qty > 0) {
-        totalAmount += (p.price || 0) * qty;
-      }
-    }
-  }
-
-  gb.orders[orderKey] = {
-    userId: uid,
-    userName,
-    userPhone: userPhone || '',
-    items: items || {},
-    totalAmount,
-    paymentMethod: paymentMethod || 'p2p_linepay',
-    paymentNote: paymentNote || '',
-    paymentStatus: 'unverified',
-    note: note || '',
-    anonymous: !!anonymous,
-    updatedAt: new Date().toISOString()
-  };
-
-  await saveGroupBuyStorage();
-  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  res.json({ success: true, order: gb.orders[orderKey] });
-});
-
-// 標記核對付款
-app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { uid, targetUid, status } = req.body;
-  const gb = getGroupBuyInfo(gid);
-  if (gb.orders && gb.orders[targetUid]) {
-    gb.orders[targetUid].paymentStatus = status || 'paid';
-    await saveGroupBuyStorage();
-    if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  }
-  res.json({ success: true });
-});
-
-// 清空所有訂單
-app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { uid } = req.body;
-  const gb = getGroupBuyInfo(gid);
-  gb.orders = {};
-  await saveGroupBuyStorage();
-  if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  res.json({ success: true });
-});
-
-// 刪除單筆訂單
-app.post('/api/groupbuy/:gid/delete_order', async (req, res) => {
-  const gid = req.params.gid || 'default';
-  const { targetUid } = req.body;
-  const gb = getGroupBuyInfo(gid);
-  if (gb.orders && gb.orders[targetUid]) {
-    delete gb.orders[targetUid];
-    await saveGroupBuyStorage();
-    if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
-  }
-  res.json({ success: true });
-});
-
-// 隱藏的 debug 端點，用來印出當前記憶體狀態
-app.get('/api/systemLogs', async (req, res) => {
-  // 簡易權限檢查
-  const { uid } = req.query;
-  const isSuperAdminUser = isSuperAdmin(uid);
-  
-  // 目前先允許 uid 存在就回傳，或直接回傳 (LIFF端會隱藏按鈕)
-  res.json(systemLogs);
-});
-
-app.get('/api/debug_games', (req, res) => {
-  res.json({
-    total: Object.keys(games).length,
-    games: games
-  });
-});
-loadPromise.then(() => {
-  server.listen(port, () => {
-    console.log(`Badminton Bot Running on port ${port}...`);
-    
-    if (AUTO_WAKE_ENABLED) {
-      // 立即執行一次（延遲5秒，確保服務器完全啟動）
-      setTimeout(() => {
-        pingSelf().catch(console.error);
-      }, 5000);
-      
-      // 依設定頻率執行自我PING
-      setInterval(() => {
-        pingSelf().catch(console.error);
-      }, AUTO_WAKE_INTERVAL_MINUTES * 60 * 1000);
-      
-      console.log(`✅ 自動喚醒定時器已啟動（每 ${AUTO_WAKE_INTERVAL_MINUTES} 分鐘）`);
-      logToFile(`[STARTUP] Auto-wake timer started (every ${AUTO_WAKE_INTERVAL_MINUTES} minutes)`);
-    } else {
-      console.log('ℹ️ 已停用自動喚醒定時器（AUTO_WAKE_ENABLED=false）');
-    }
-  });
-}).catch(err => {
-  console.error('❌ 伺服器啟動初始化失敗:', err);
-});
-
-// 設定大廳紀錄「每小時整點」自動儲存上傳
-function scheduleHourlySaveLobbyVisits() {
-  const now = new Date();
-  const delayToNextHour = 3600000 - (now.getMinutes() * 60000 + now.getSeconds() * 1000 + now.getMilliseconds());
-  setTimeout(() => {
-    saveLobbyVisits().catch(e => console.error(e));
-    setInterval(() => {
-      saveLobbyVisits().catch(e => console.error(e));
-    }, 3600000); // 之後每隔一小時
-  }, delayToNextHour);
-}
-scheduleHourlySaveLobbyVisits();
-async function sendLobbyLink(token, gid, prefix = "") {
-  let msg = prefix ? `${prefix}\n` : '';
-  
-  const groupGames = Object.values(games).filter(g => (g.gid === gid || (g.targetGids && g.targetGids.includes(gid))) && g.active && !g.isManualEnded);
-  if (groupGames.length === 0) {
-    msg += '目前沒有進行中的場次喔！請輸入「接龍開始」來建立。';
-  } else {
-    msg += `目前共有 ${groupGames.length} 個場次開放報名中 🏸\n`;
-  }
-  
-  if (process.env.LIFF_ID) {
-    msg += `\n👇 點擊下方連結進入報名大廳\nhttps://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`;
-  }
-  
-  const message = { type: 'text', text: msg.trim() };
-  if (token) {
-    return await client.replyMessage(token, message);
-  }
-  try {
-    return await pushToAdmins(gid, message);
-  } catch (e) {
-    console.error(`pushToAdmins failed for ${gid}:`, e);
-    throw e;
-  }
-}
-
-function getLobbyCard(gid) {
-  if (!process.env.LIFF_ID) return null;
-  return {
-    type: 'flex',
-    altText: '點我進大廳',
-    contents: {
-      type: 'bubble',
-      size: 'kilo',
-      body: {
-        type: 'box',
-        layout: 'vertical',
-        contents: [
-          {
-            type: 'button',
-            style: 'primary',
-            height: 'sm',
-            action: {
-              type: 'uri',
-              label: '進入大廳',
-              uri: `https://liff.line.me/${process.env.LIFF_ID}?gid=${gid}`
-            }
-          }
-        ]
-      }
-    }
-  };
-}
+runTest();
