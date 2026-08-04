@@ -3824,12 +3824,33 @@ if (btnLobbyStats) {
         `;
         
         if (data.allUsersStats && data.allUsersStats.length > 0) {
+            const titleContainer = document.createElement('div');
+            titleContainer.style.display = 'flex';
+            titleContainer.style.justifyContent = 'space-between';
+            titleContainer.style.alignItems = 'center';
+            titleContainer.style.cursor = 'pointer';
+            titleContainer.style.padding = '5px 0';
+            titleContainer.style.borderTop = '1px solid #ffe0b2';
+            titleContainer.style.marginTop = '10px';
+
             const allUsersTitle = document.createElement('h4');
-            allUsersTitle.style.margin = '10px 0 5px 0';
+            allUsersTitle.style.margin = '0';
             allUsersTitle.style.fontSize = '14px';
             allUsersTitle.style.color = '#FF9800';
             allUsersTitle.innerText = '📊 目前所有人的點擊狀況';
-            summaryCard.appendChild(allUsersTitle);
+            
+            const toggleIcon = document.createElement('span');
+            toggleIcon.innerText = '▼';
+            toggleIcon.style.color = '#FF9800';
+            toggleIcon.style.fontSize = '12px';
+            toggleIcon.style.transition = 'transform 0.3s ease';
+
+            titleContainer.appendChild(allUsersTitle);
+            titleContainer.appendChild(toggleIcon);
+            summaryCard.appendChild(titleContainer);
+
+            const tableContainer = document.createElement('div');
+            tableContainer.style.display = 'none';
 
             const table = document.createElement('table');
             table.style.width = '100%';
@@ -3855,7 +3876,18 @@ if (btnLobbyStats) {
                 `).join('')}
               </tbody>
             `;
-            summaryCard.appendChild(table);
+            tableContainer.appendChild(table);
+            summaryCard.appendChild(tableContainer);
+
+            titleContainer.onclick = () => {
+              if (tableContainer.style.display === 'none') {
+                tableContainer.style.display = 'block';
+                toggleIcon.style.transform = 'rotate(180deg)';
+              } else {
+                tableContainer.style.display = 'none';
+                toggleIcon.style.transform = 'rotate(0deg)';
+              }
+            };
         }
         statsGroupsContainer.appendChild(summaryCard);
 
@@ -5246,24 +5278,8 @@ function renderLobbyGroupBuyBanners(list) {
     activeGroupBuys = activeGroupBuys.filter(gb => !gb.hiddenFromLobby);
   }
   if (activeGroupBuys.length === 0) {
-    if (isUserAdmin) {
-      bannerBox.classList.remove('hidden');
-      container.innerHTML = `
-        <button class="btn btn-primary" onclick="openGroupBuyPage('default')" style="width: 100%; background: linear-gradient(135deg, #334155 0%, #1e293b 100%); font-weight: bold; border-radius: 14px; font-size: 15px; padding: 14px 18px; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; text-align: left; box-sizing: border-box; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:22px;">🛒</span>
-            <div>
-              <div style="font-size:15px; font-weight:bold;">⚙️ 團購專區 (活動未開啟 - 管理員專用)</div>
-              <div style="font-size:12px; font-weight:normal; opacity:0.9;">點擊進入管理介面、設定商品與開啟團購活動</div>
-            </div>
-          </div>
-          <span style="font-size:13px; font-weight:bold; background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:20px; white-space:nowrap;">進入管理 ⚙️</span>
-        </button>
-      `;
-    } else {
-      bannerBox.classList.add('hidden');
-      container.innerHTML = '';
-    }
+    bannerBox.classList.add('hidden');
+    container.innerHTML = '';
     return;
   }
 
