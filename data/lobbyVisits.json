@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2760,
+    "viewCount": 2761,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -857,8 +857,8 @@
       "U108e37bbede32b8d2bf987dae0f9c544": {
         "displayName": "凱",
         "firstVisit": 1785560274343,
-        "count": 3,
-        "lastVisit": 1785560929915
+        "count": 4,
+        "lastVisit": 1785870095026
       },
       "U2d79ed164c2f54f816c74f467908679e": {
         "displayName": "雅雯 Olivia",
@@ -904,6 +904,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1785870095026,
+        "userId": "U108e37bbede32b8d2bf987dae0f9c544",
+        "displayName": "凱",
+        "pictureUrl": "https://profile.line-scdn.net/0hajX7wHIuPkV1ThbK21hAOgUePS9WP2dXDS8hKkEaaXFNd3kTXiF4IxNLaScfdytBCS92cEBHYiJ5XUkjaxjCcXJ-Y3RIf3wbXyB0pg"
+      },
       {
         "time": 1785856857427,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
