@@ -3783,6 +3783,8 @@ if (btnLobbyStats) {
     statusMsg.innerText = '讀取分析資料中...';
     statusMsg.style.display = 'block';
     
+    const { isSuperAdmin: effIsSuperAdmin } = (typeof getEffectiveRole === 'function') ? getEffectiveRole() : { isSuperAdmin: false };
+    
     try {
       const res = await fetch(`/api/admin/all_stats?uid=${currentUser.userId}`);
       if (!res.ok) throw new Error('無法取得分析資料');
