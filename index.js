@@ -4596,19 +4596,36 @@ async function handleEvent(event) {
       if (isPlusMinus) keyword = '';
       
       const getGameTime = (g) => {
-        let t = 0;
-        if (g.date) {
-          let dStr = g.date.replace(/[\s\(（].*$/, '').trim();
-          if (dStr.match(/^\d{1,2}\/\d{1,2}$/)) {
-            dStr = new Date().getFullYear() + '/' + dStr;
-          } else if (dStr.match(/^\d{1,2}-\d{1,2}$/)) {
-            dStr = new Date().getFullYear() + '-' + dStr;
+        if (!g.date) return g.startTime || 0;
+        
+        let year = new Date().getFullYear();
+        let month = 0, day = 1;
+        
+        const matchFull = g.date.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+        if (matchFull) {
+          year = parseInt(matchFull[1]);
+          month = parseInt(matchFull[2]) - 1;
+          day = parseInt(matchFull[3]);
+        } else {
+          const matchShort = g.date.match(/(\d{1,2})[-\/](\d{1,2})/);
+          if (matchShort) {
+            month = parseInt(matchShort[1]) - 1;
+            day = parseInt(matchShort[2]);
+          } else {
+            return g.startTime || 0;
           }
-          const tStr = g.time ? g.time.replace(/[\s\(（].*$/, '').trim() : '';
-          const pd = new Date(`${dStr} ${tStr}`.trim());
-          if (!isNaN(pd.getTime())) t = pd.getTime();
         }
-        return t === 0 ? (g.startTime || 0) : t;
+
+        let hour = 23, minute = 59;
+        if (g.time) {
+           const tm = g.time.match(/([01]?[0-9]|2[0-3]):([0-5][0-9])/g);
+           if (tm && tm.length > 0) {
+              const parts = tm[tm.length - 1].split(':');
+              hour = parseInt(parts[0]);
+              minute = parseInt(parts[1]);
+           }
+        }
+        return new Date(year, month, day, hour, minute).getTime();
       };
 
       let groupGames = Object.values(games)
