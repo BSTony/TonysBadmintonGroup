@@ -3830,9 +3830,10 @@ if (btnLobbyStats) {
             titleContainer.style.alignItems = 'center';
             titleContainer.style.cursor = 'pointer';
             titleContainer.style.userSelect = 'none';
-            titleContainer.style.padding = '12px 0';
+            titleContainer.style.padding = '18px 5px';
+            titleContainer.style.margin = '10px -5px 0 -5px';
             titleContainer.style.borderTop = '1px solid #ffe0b2';
-            titleContainer.style.marginTop = '10px';
+            titleContainer.style.borderRadius = '8px';
 
             const allUsersTitle = document.createElement('h4');
             allUsersTitle.style.margin = '0';
@@ -3862,9 +3863,9 @@ if (btnLobbyStats) {
             table.innerHTML = `
               <thead>
                 <tr style="background: rgba(0,0,0,0.05); text-align: left;">
-                  <th style="padding: 10px 5px; border-bottom: 1px solid #ccc;">名稱</th>
-                  <th id="sort-count" style="padding: 10px 5px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">總點擊 ▼</th>
-                  <th id="sort-time" style="padding: 10px 5px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">最後點擊</th>
+                  <th style="padding: 16px 10px; border-bottom: 1px solid #ccc;">名稱</th>
+                  <th id="sort-count" style="padding: 16px 10px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">總點擊 ▼</th>
+                  <th id="sort-time" style="padding: 16px 10px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">最後點擊</th>
                 </tr>
               </thead>
               <tbody>
@@ -4006,8 +4007,9 @@ if (btnLobbyStats) {
             titleContainer.style.alignItems = 'center';
             titleContainer.style.cursor = 'pointer';
             titleContainer.style.userSelect = 'none';
-            titleContainer.style.padding = '12px 0';
-            titleContainer.style.marginTop = '10px';
+            titleContainer.style.padding = '18px 5px';
+            titleContainer.style.margin = '10px -5px 0 -5px';
+            titleContainer.style.borderRadius = '8px';
 
             const dailyTitle = document.createElement('h4');
             dailyTitle.style.margin = '0';
