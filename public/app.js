@@ -3873,7 +3873,7 @@ if (btnLobbyStats) {
             `;
             tableContainer.appendChild(table);
 
-            let currentSort = 'count';
+            let currentSort = 'lastVisit';
             let sortDesc = true;
 
             const renderTbody = () => {
@@ -3889,13 +3889,21 @@ if (btnLobbyStats) {
                 return 0;
               });
 
-              tbody.innerHTML = sortedData.map(u => `
-                  <tr style="border-bottom: 1px solid #eee;">
+              const todayStr = new Date().toLocaleDateString('zh-TW');
+
+              tbody.innerHTML = sortedData.map(u => {
+                  const visitDate = new Date(u.lastVisit);
+                  const isToday = visitDate.toLocaleDateString('zh-TW') === todayStr;
+                  const bgStyle = isToday ? 'background: #fff8e1;' : '';
+                  
+                  return `
+                  <tr style="border-bottom: 1px solid #eee; ${bgStyle}">
                     <td style="padding: 5px; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${u.displayName}">${u.displayName}</td>
                     <td style="padding: 5px;">${u.count}</td>
-                    <td style="padding: 5px;">${new Date(u.lastVisit).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}</td>
+                    <td style="padding: 5px;">${visitDate.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}</td>
                   </tr>
-                `).join('');
+                  `;
+              }).join('');
               
               table.querySelector('#sort-count').innerText = currentSort === 'count' ? (sortDesc ? '總點擊 ▼' : '總點擊 ▲') : '總點擊';
               table.querySelector('#sort-time').innerText = currentSort === 'lastVisit' ? (sortDesc ? '最後點擊 ▼' : '最後點擊 ▲') : '最後點擊';
