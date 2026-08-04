@@ -2231,7 +2231,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 135,
+    "viewCount": 136,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -2266,8 +2266,8 @@
       "Uf339b049e09a02f0796afb22f5de2e7e": {
         "displayName": "憲(派瑞-Perry)",
         "firstVisit": 1783347502915,
-        "count": 8,
-        "lastVisit": 1785838032662
+        "count": 9,
+        "lastVisit": 1785881964223
       },
       "U360d596a5111c676ab153457ce851c03": {
         "displayName": "振喬 Joe",
@@ -2385,6 +2385,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1785881964223,
+        "userId": "Uf339b049e09a02f0796afb22f5de2e7e",
+        "displayName": "憲(派瑞-Perry)",
+        "pictureUrl": "https://profile.line-scdn.net/0hHI9bs3QKF2YUGwnTv-ZpWGRLFAw3ak50On0LCHVLQVB5LAQ0OngKBydLQAMhLVBgMC1cBSITGgE2aAwxaz0ACVtmVT16KxNmSD1bcl5LFD9KSDdWYjk_bmVcMzVfK0xpThgmW1NTEz9zeRBXTTsZa0VtKTJKbFlSYkx7MBEpeeV7GWAzOX1ZBSkdQVOs"
+      },
       {
         "time": 1785858784846,
         "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
