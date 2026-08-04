@@ -1552,21 +1552,28 @@ function renderLobby() {
     }
 
     const btnGbNav = document.getElementById('btn-group-buy-nav');
-    const gbBanner = document.getElementById('group-buy-banner');
-    const isGbActive = currentGroupBuyData && currentGroupBuyData.active;
-
+    
+    if (typeof renderLobbyGroupBuyBanners === 'function' && typeof allGroupBuysList !== 'undefined') {
+      renderLobbyGroupBuyBanners(allGroupBuysList);
+    }
+    
     if (btnGbNav) {
-      if (isGbActive || effIsAdmin || effIsSuperAdmin) {
+      let userHasAccessToAnyGb = false;
+      if (typeof allGroupBuysList !== 'undefined' && Array.isArray(allGroupBuysList)) {
+        const isUserAdmin = effIsAdmin || effIsSuperAdmin;
+        const activeGroupBuys = allGroupBuysList.filter(gb => gb.active);
+        if (isUserAdmin || activeGroupBuys.some(gb => !gb.hiddenFromLobby)) {
+          userHasAccessToAnyGb = true;
+        }
+      } else {
+        const isGbActive = currentGroupBuyData && currentGroupBuyData.active && !currentGroupBuyData.hiddenFromLobby;
+        userHasAccessToAnyGb = isGbActive || effIsAdmin || effIsSuperAdmin;
+      }
+
+      if (userHasAccessToAnyGb) {
         btnGbNav.classList.remove('hidden');
       } else {
         btnGbNav.classList.add('hidden');
-      }
-    }
-    if (gbBanner) {
-      if (isGbActive) {
-        gbBanner.classList.remove('hidden');
-      } else {
-        gbBanner.classList.add('hidden');
       }
     }
     
