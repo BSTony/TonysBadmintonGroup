@@ -3862,21 +3862,54 @@ if (btnLobbyStats) {
               <thead>
                 <tr style="background: rgba(0,0,0,0.05); text-align: left;">
                   <th style="padding: 5px; border-bottom: 1px solid #ccc;">名稱</th>
-                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">總點擊</th>
-                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">最後點擊</th>
+                  <th id="sort-count" style="padding: 5px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">總點擊 ▼</th>
+                  <th id="sort-time" style="padding: 5px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">最後點擊</th>
                 </tr>
               </thead>
               <tbody>
-                ${data.allUsersStats.map(u => `
+              </tbody>
+            `;
+            tableContainer.appendChild(table);
+
+            let currentSort = 'count';
+            let sortDesc = true;
+
+            const renderTbody = () => {
+              const tbody = table.querySelector('tbody');
+              const sortedData = [...data.allUsersStats].sort((a, b) => {
+                if (currentSort === 'count') {
+                  return sortDesc ? b.count - a.count : a.count - b.count;
+                } else if (currentSort === 'lastVisit') {
+                  return sortDesc ? b.lastVisit - a.lastVisit : a.lastVisit - b.lastVisit;
+                }
+                return 0;
+              });
+
+              tbody.innerHTML = sortedData.map(u => `
                   <tr style="border-bottom: 1px solid #eee;">
                     <td style="padding: 5px; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${u.displayName}">${u.displayName}</td>
                     <td style="padding: 5px;">${u.count}</td>
                     <td style="padding: 5px;">${new Date(u.lastVisit).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}</td>
                   </tr>
-                `).join('')}
-              </tbody>
-            `;
-            tableContainer.appendChild(table);
+                `).join('');
+              
+              table.querySelector('#sort-count').innerText = currentSort === 'count' ? (sortDesc ? '總點擊 ▼' : '總點擊 ▲') : '總點擊';
+              table.querySelector('#sort-time').innerText = currentSort === 'lastVisit' ? (sortDesc ? '最後點擊 ▼' : '最後點擊 ▲') : '最後點擊';
+            };
+
+            renderTbody();
+
+            table.querySelector('#sort-count').onclick = () => {
+              if (currentSort === 'count') sortDesc = !sortDesc;
+              else { currentSort = 'count'; sortDesc = true; }
+              renderTbody();
+            };
+
+            table.querySelector('#sort-time').onclick = () => {
+              if (currentSort === 'lastVisit') sortDesc = !sortDesc;
+              else { currentSort = 'lastVisit'; sortDesc = true; }
+              renderTbody();
+            };
             summaryCard.appendChild(tableContainer);
 
             titleContainer.onclick = () => {
@@ -3964,12 +3997,32 @@ if (btnLobbyStats) {
           
           // Daily Stats Table
           if (stat.dailyStats && stat.dailyStats.length > 0) {
+            const titleContainer = document.createElement('div');
+            titleContainer.style.display = 'flex';
+            titleContainer.style.justifyContent = 'space-between';
+            titleContainer.style.alignItems = 'center';
+            titleContainer.style.cursor = 'pointer';
+            titleContainer.style.padding = '5px 0';
+            titleContainer.style.marginTop = '10px';
+
             const dailyTitle = document.createElement('h4');
-            dailyTitle.style.margin = '10px 0 5px 0';
+            dailyTitle.style.margin = '0';
             dailyTitle.style.fontSize = '14px';
             dailyTitle.style.color = '#34495e';
             dailyTitle.innerText = '📅 每日來客狀況';
-            card.appendChild(dailyTitle);
+            
+            const toggleIcon = document.createElement('span');
+            toggleIcon.innerText = '▼';
+            toggleIcon.style.color = '#34495e';
+            toggleIcon.style.fontSize = '12px';
+            toggleIcon.style.transition = 'transform 0.3s ease';
+
+            titleContainer.appendChild(dailyTitle);
+            titleContainer.appendChild(toggleIcon);
+            card.appendChild(titleContainer);
+
+            const tableContainer = document.createElement('div');
+            tableContainer.style.display = 'none';
 
             const table = document.createElement('table');
             table.style.width = '100%';
@@ -3995,7 +4048,18 @@ if (btnLobbyStats) {
                 `).join('')}
               </tbody>
             `;
-            card.appendChild(table);
+            tableContainer.appendChild(table);
+            card.appendChild(tableContainer);
+
+            titleContainer.onclick = () => {
+              if (tableContainer.style.display === 'none') {
+                tableContainer.style.display = 'block';
+                toggleIcon.style.transform = 'rotate(180deg)';
+              } else {
+                tableContainer.style.display = 'none';
+                toggleIcon.style.transform = 'rotate(0deg)';
+              }
+            };
           }
           
           // Toggle Logs Button
