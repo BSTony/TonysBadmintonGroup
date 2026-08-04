@@ -2112,5 +2112,44 @@
       }
     ],
     "isManualEnded": false
+  },
+  "1785847950647225": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1785847950647225",
+    "title": "週二 冷氣團",
+    "date": "8/11 (二)",
+    "time": "18:00~20:00",
+    "location": "南港運動中心",
+    "fee": "280",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1785847950647,
+    "lastActiveTime": 1785847950647,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 12,
+        "backupLimit": 5,
+        "label": "",
+        "list": [],
+        "fee": "280"
+      }
+    ]
   }
 }
