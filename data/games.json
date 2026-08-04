@@ -1678,7 +1678,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785651707130,
-    "lastActiveTime": 1785651707130,
+    "lastActiveTime": 1785833400175,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1694,11 +1694,25 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": [],
+        "list": [
+          "杜威霖 Andy"
+        ],
         "fee": "999"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "uidMap": {
+      "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab"
+    },
+    "history": [
+      {
+        "time": "08/04 16:50",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
   },
   "178574316297281": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
