@@ -3802,27 +3802,52 @@ if (btnLobbyStats) {
         summaryCard.style.border = '2px solid #FF9800';
         summaryCard.innerHTML = `
           <h3 style="margin:0 0 10px 0; color:#FF9800; text-align:center;">🌟 所有群組總結</h3>
-          <div class="detail-stats" style="margin-top:0; border-bottom: 1px solid #ffe0b2; padding-bottom: 10px; margin-bottom: 10px;">
+          <div class="detail-stats" style="margin-top:0; margin-bottom: 10px;">
             <div class="stat-box" style="flex:1;">
               <span class="stat-label">總觀看次數</span>
               <span class="stat-value">${totalViews}</span>
             </div>
             <div class="stat-box" style="flex:1;">
-              <span class="stat-label">總不重複觀看 (人數)</span>
-              <span class="stat-value">${totalUniques}</span>
-            </div>
-          </div>
-          <div class="detail-stats" style="margin-top:0;">
-            <div class="stat-box" style="flex:1;">
               <span class="stat-label">本日觀看次數</span>
               <span class="stat-value" style="color:#e74c3c;">${totalTodayViews}</span>
             </div>
-            <div class="stat-box" style="flex:1;">
-              <span class="stat-label">本日不重複觀看</span>
-              <span class="stat-value" style="color:#e74c3c;">${totalTodayUniques}</span>
-            </div>
           </div>
         `;
+        
+        if (data.allUsersStats && data.allUsersStats.length > 0) {
+            const allUsersTitle = document.createElement('h4');
+            allUsersTitle.style.margin = '10px 0 5px 0';
+            allUsersTitle.style.fontSize = '14px';
+            allUsersTitle.style.color = '#FF9800';
+            allUsersTitle.innerText = '📊 目前所有人的點擊狀況';
+            summaryCard.appendChild(allUsersTitle);
+
+            const table = document.createElement('table');
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+            table.style.marginBottom = '15px';
+            table.style.fontSize = '12px';
+            
+            table.innerHTML = `
+              <thead>
+                <tr style="background: rgba(0,0,0,0.05); text-align: left;">
+                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">名稱</th>
+                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">總點擊</th>
+                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">最後點擊</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.allUsersStats.map(u => `
+                  <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 5px; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${u.displayName}">${u.displayName}</td>
+                    <td style="padding: 5px;">${u.count}</td>
+                    <td style="padding: 5px;">${new Date(u.lastVisit).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            `;
+            summaryCard.appendChild(table);
+        }
         statsGroupsContainer.appendChild(summaryCard);
 
         data.allStats.forEach(stat => {
@@ -3835,6 +3860,9 @@ if (btnLobbyStats) {
           header.style.borderBottom = '1px solid #eee';
           header.style.paddingBottom = '10px';
           header.style.marginBottom = '10px';
+          header.style.display = 'flex';
+          header.style.justifyContent = 'space-between';
+          header.style.alignItems = 'center';
           
           const title = document.createElement('h3');
           title.style.margin = '0';
@@ -3842,6 +3870,35 @@ if (btnLobbyStats) {
           title.innerText = stat.groupName || stat.gid;
           
           header.appendChild(title);
+
+          if (effIsSuperAdmin) {
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-danger btn-square';
+            delBtn.style.padding = '4px 8px';
+            delBtn.style.fontSize = '12px';
+            delBtn.innerText = '刪除資料';
+            delBtn.onclick = async () => {
+              if (confirm('確定要刪除這個群組的點擊紀錄嗎？此動作無法復原。')) {
+                try {
+                  const delRes = await fetch(`/api/admin/lobby_stats/${stat.gid}/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ uid: currentUser.userId })
+                  });
+                  if (delRes.ok) {
+                    alert('刪除成功');
+                    btnLobbyStats.click(); // Reload stats
+                  } else {
+                    alert('刪除失敗');
+                  }
+                } catch(e) {
+                  alert('刪除發生錯誤');
+                }
+              }
+            };
+            header.appendChild(delBtn);
+          }
+
           card.appendChild(header);
           
           // Stats Row

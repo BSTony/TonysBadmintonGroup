@@ -1899,6 +1899,8 @@ app.get('/api/admin/all_stats', async (req, res) => {
   todayStart.setHours(0, 0, 0, 0);
   const todayStartTime = todayStart.getTime();
 
+  let globalViewersMap = {};
+
   for (const g of adminGids) {
     await ensureGroupSettings(g);
     const gName = groupSettings[g]?.groupName || groupSettings[g]?.lobbyTitle || g;
@@ -1912,6 +1914,17 @@ app.get('/api/admin/all_stats', async (req, res) => {
       globalUniqueViewers.add(uid);
       if (uData.lastVisit && uData.lastVisit >= todayStartTime) {
         todayUniqueViewers.add(uid);
+      }
+
+      if (!globalViewersMap[uid]) {
+        globalViewersMap[uid] = { uid, displayName: uData.displayName || '未知', count: 0, lastVisit: 0 };
+      }
+      globalViewersMap[uid].count += (uData.count || 1);
+      if (uData.lastVisit > globalViewersMap[uid].lastVisit) {
+        globalViewersMap[uid].lastVisit = uData.lastVisit;
+      }
+      if (uData.displayName && uData.displayName !== '未知' && uData.displayName !== 'undefined') {
+        globalViewersMap[uid].displayName = uData.displayName;
       }
     }
     
@@ -1951,14 +1964,30 @@ app.get('/api/admin/all_stats', async (req, res) => {
     });
   }
 
+  const allUsersStats = Object.values(globalViewersMap).sort((a, b) => b.count - a.count);
+
   res.json({ 
     success: true, 
     allStats, 
     totalViews, 
     totalUniqueCount: globalUniqueViewers.size,
     todayViews: totalTodayViews,
-    todayUniqueCount: todayUniqueViewers.size
+    todayUniqueCount: todayUniqueViewers.size,
+    allUsersStats
   });
+});
+
+app.post('/api/admin/lobby_stats/:gid/delete', express.json(), async (req, res) => {
+  const uid = req.body.uid;
+  if (!uid || !isSuperAdmin(uid)) {
+    return res.status(403).json({ error: '權限不足' });
+  }
+  const gid = req.params.gid;
+  if (lobbyVisits[gid]) {
+    delete lobbyVisits[gid];
+    saveLobbyVisits();
+  }
+  res.json({ success: true });
 });
 
 app.get('/api/templates/:gid', (req, res) => {
