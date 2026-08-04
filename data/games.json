@@ -1563,7 +1563,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785833505450,
+    "lastActiveTime": 1785833527843,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1592,8 +1592,7 @@
           "楊程鈞",
           "Sammy",
           "Kevin",
-          "Mia",
-          "曾Jim凱"
+          "Mia"
         ]
       }
     ],
@@ -1609,6 +1608,13 @@
       "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11"
     },
     "history": [
+      {
+        "time": "08/04 16:52",
+        "name": "曾Jim凱",
+        "operator": "曾Jim凱",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/04 16:51",
         "name": "曾Jim凱",
