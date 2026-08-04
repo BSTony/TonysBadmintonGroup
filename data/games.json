@@ -1503,7 +1503,8 @@
           "Sean",
           "Joe",
           "Vicky"
-        ]
+        ],
+        "fee": "280"
       }
     ],
     "history": [
@@ -1543,7 +1544,8 @@
         "operator": "afrahuang",
         "action": "+1"
       }
-    ]
+    ],
+    "isManualEnded": true
   },
   "1785561068548655": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
