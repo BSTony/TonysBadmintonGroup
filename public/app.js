@@ -3880,7 +3880,9 @@ if (btnLobbyStats) {
                 if (currentSort === 'count') {
                   return sortDesc ? b.count - a.count : a.count - b.count;
                 } else if (currentSort === 'lastVisit') {
-                  return sortDesc ? b.lastVisit - a.lastVisit : a.lastVisit - b.lastVisit;
+                  const timeA = new Date(a.lastVisit).getTime();
+                  const timeB = new Date(b.lastVisit).getTime();
+                  return sortDesc ? timeB - timeA : timeA - timeB;
                 }
                 return 0;
               });
