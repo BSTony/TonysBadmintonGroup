@@ -1563,7 +1563,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785806622920,
+    "lastActiveTime": 1785806656979,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1590,7 +1590,8 @@
           "俊吉",
           "Jet",
           "楊程鈞",
-          "Sammy"
+          "Sammy",
+          "Kevin"
         ]
       }
     ],
@@ -1600,9 +1601,17 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Sammy": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Sammy": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kevin": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/04 09:24",
+        "name": "Kevin",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/04 09:23",
         "name": "Sammy",
