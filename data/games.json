@@ -1899,7 +1899,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785806679819,
+    "lastActiveTime": 1785806692117,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1922,7 +1922,8 @@
           "陳呈",
           "林煥杰",
           "Jean",
-          "AK"
+          "AK",
+          "小金"
         ]
       },
       {
@@ -1958,9 +1959,17 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Jean": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "AK": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "AK": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "小金": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/04 09:24",
+        "name": "小金",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/04 09:24",
         "name": "AK",
