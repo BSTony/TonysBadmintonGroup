@@ -3829,7 +3829,8 @@ if (btnLobbyStats) {
             titleContainer.style.justifyContent = 'space-between';
             titleContainer.style.alignItems = 'center';
             titleContainer.style.cursor = 'pointer';
-            titleContainer.style.padding = '5px 0';
+            titleContainer.style.userSelect = 'none';
+            titleContainer.style.padding = '12px 0';
             titleContainer.style.borderTop = '1px solid #ffe0b2';
             titleContainer.style.marginTop = '10px';
 
@@ -3861,9 +3862,9 @@ if (btnLobbyStats) {
             table.innerHTML = `
               <thead>
                 <tr style="background: rgba(0,0,0,0.05); text-align: left;">
-                  <th style="padding: 5px; border-bottom: 1px solid #ccc;">名稱</th>
-                  <th id="sort-count" style="padding: 5px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">總點擊 ▼</th>
-                  <th id="sort-time" style="padding: 5px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">最後點擊</th>
+                  <th style="padding: 10px 5px; border-bottom: 1px solid #ccc;">名稱</th>
+                  <th id="sort-count" style="padding: 10px 5px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">總點擊 ▼</th>
+                  <th id="sort-time" style="padding: 10px 5px; border-bottom: 1px solid #ccc; cursor: pointer; user-select: none;" title="點擊以排序">最後點擊</th>
                 </tr>
               </thead>
               <tbody>
@@ -4004,7 +4005,8 @@ if (btnLobbyStats) {
             titleContainer.style.justifyContent = 'space-between';
             titleContainer.style.alignItems = 'center';
             titleContainer.style.cursor = 'pointer';
-            titleContainer.style.padding = '5px 0';
+            titleContainer.style.userSelect = 'none';
+            titleContainer.style.padding = '12px 0';
             titleContainer.style.marginTop = '10px';
 
             const dailyTitle = document.createElement('h4');
