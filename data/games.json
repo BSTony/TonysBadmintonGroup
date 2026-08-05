@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785910386420,
+    "lastActiveTime": 1785942546197,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1599,7 +1599,8 @@
           "思翰2",
           "Andrew",
           "小可愛",
-          "徐偉強"
+          "徐偉強",
+          "蕭傑森"
         ]
       }
     ],
@@ -1617,9 +1618,17 @@
       "思翰2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
-      "徐偉強": "U037afe342197214125f95fd00ebc1f0c"
+      "徐偉強": "U037afe342197214125f95fd00ebc1f0c",
+      "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/05 23:09",
+        "name": "蕭傑森",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/05 14:13",
         "name": "徐偉強",
