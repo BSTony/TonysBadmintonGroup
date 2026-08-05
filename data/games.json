@@ -2181,7 +2181,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785848005986,
-    "lastActiveTime": 1785858793358,
+    "lastActiveTime": 1785896975525,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2216,7 +2216,8 @@
           "小周",
           "海棠",
           "afrahuang",
-          "Sean"
+          "Sean",
+          "Jet"
         ],
         "fee": "280"
       }
@@ -2224,9 +2225,17 @@
     "isManualEnded": false,
     "uidMap": {
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
-      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb"
+      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "history": [
+      {
+        "time": "08/05 10:29",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/04 23:53",
         "name": "Sean",
