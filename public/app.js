@@ -3755,6 +3755,7 @@ document.getElementById('btn-submit-edit').onclick = async () => {
   } finally {
     appDiv.className = '';
     statusMsg.style.display = 'none';
+  }
 };
 
 document.getElementById('btn-eg-end').onclick = async () => {
