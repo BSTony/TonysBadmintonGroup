@@ -1980,7 +1980,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785910583654,
+    "lastActiveTime": 1785910611578,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2019,8 +2019,7 @@
         "label": "",
         "list": [
           "周哲儁",
-          "楊程鈞",
-          "小正"
+          "楊程鈞"
         ]
       },
       {
@@ -2059,6 +2058,13 @@
       "小正": "Ucae8094c21c5ab0e32dd47bc4e52eced"
     },
     "history": [
+      {
+        "time": "08/05 14:16",
+        "name": "小正",
+        "operator": "小正",
+        "action": "-1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/05 14:16",
         "name": "小正",
