@@ -5282,9 +5282,9 @@ if (btnPinballAdminStop) {
 // ==========================================
 // 🛒 團購專區 (Group Buy Frontend Module)
 // ==========================================
-let currentGid = 'default';
-let currentGroupBuyData = null;
-let currentCart = {};
+var currentGid = 'default';
+var currentGroupBuyData = null;
+var currentCart = {};
 
 window.validateNamePhone = function() {
   const n = document.getElementById('gb-header-name');
