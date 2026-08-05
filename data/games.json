@@ -1989,7 +1989,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785942555645,
+    "lastActiveTime": 1785942794817,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2044,7 +2044,8 @@
           "Kay",
           "Gary",
           "Jet",
-          "蕭傑森"
+          "蕭傑森",
+          "羅"
         ]
       }
     ],
@@ -2069,9 +2070,17 @@
       "柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "小正": "Ucae8094c21c5ab0e32dd47bc4e52eced",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
-      "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "羅": "U6d9e099c518efa25fd881c87e6e72dd7"
     },
     "history": [
+      {
+        "time": "08/05 23:13",
+        "name": "羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/05 23:09",
         "name": "蕭傑森",
