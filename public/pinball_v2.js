@@ -124,6 +124,60 @@ function initPinballEngine() {
   pbEngine.gravity.y = 0;
   pbEngine.gravity.x = 0;
 
+  if (typeof window.pinballZoom === 'undefined') {
+    window.pinballZoom = 1.3;
+  }
+  
+  if (!document.getElementById('pinball-zoom-controls')) {
+    const zoomContainer = document.createElement('div');
+    zoomContainer.id = 'pinball-zoom-controls';
+    zoomContainer.style.position = 'absolute';
+    zoomContainer.style.right = '20px';
+    zoomContainer.style.bottom = '100px';
+    zoomContainer.style.zIndex = '1000';
+    zoomContainer.style.display = 'flex';
+    zoomContainer.style.flexDirection = 'column';
+    zoomContainer.style.alignItems = 'center';
+    zoomContainer.style.gap = '5px';
+    zoomContainer.style.background = 'rgba(255,255,255,0.85)';
+    zoomContainer.style.padding = '10px';
+    zoomContainer.style.borderRadius = '10px';
+    zoomContainer.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+    
+    const zoomLabel = document.createElement('div');
+    zoomLabel.id = 'pinball-zoom-label';
+    zoomLabel.innerText = '🔍 ' + Math.round(window.pinballZoom * 100) + '%';
+    zoomLabel.style.fontWeight = 'bold';
+    zoomLabel.style.color = '#333';
+    zoomLabel.style.fontSize = '14px';
+    
+    const zoomSlider = document.createElement('input');
+    zoomSlider.type = 'range';
+    zoomSlider.min = '0.5';
+    zoomSlider.max = '3.0';
+    zoomSlider.step = '0.1';
+    zoomSlider.value = window.pinballZoom;
+    zoomSlider.style.width = '120px';
+    zoomSlider.style.cursor = 'pointer';
+    
+    zoomSlider.oninput = (e) => { 
+      window.pinballZoom = parseFloat(e.target.value);
+      zoomLabel.innerText = '🔍 ' + Math.round(window.pinballZoom * 100) + '%';
+    };
+    
+    zoomContainer.appendChild(zoomLabel);
+    zoomContainer.appendChild(zoomSlider);
+    if(pinballContainer) pinballContainer.appendChild(zoomContainer);
+  } else {
+    const zoomLabel = document.getElementById('pinball-zoom-label');
+    const zoomSlider = document.querySelector('#pinball-zoom-controls input[type="range"]');
+    if (zoomSlider && zoomLabel) {
+      zoomSlider.value = window.pinballZoom;
+      zoomLabel.innerText = '🔍 ' + Math.round(window.pinballZoom * 100) + '%';
+    }
+  }
+
+
   pbRender = Render.create({
     element: pinballCanvasWrapper,
     engine: pbEngine,
@@ -402,7 +456,18 @@ function initPinballEngine() {
       });
     }
 
-    if (pbState.status !== 'playing') return;
+    const viewW = LOGICAL_WIDTH / window.pinballZoom;
+    const viewH = (canvasHeight * (LOGICAL_WIDTH / canvasWidth)) / window.pinballZoom;
+
+    // Apply horizontal zoom center
+    pbRender.bounds.min.x = (LOGICAL_WIDTH - viewW) / 2;
+    pbRender.bounds.max.x = pbRender.bounds.min.x + viewW;
+
+    if (pbState.status !== 'playing') {
+      pbRender.bounds.min.y = 0;
+      pbRender.bounds.max.y = viewH;
+      return;
+    }
 
     const allBalls = Object.values(pbBalls);
     if (allBalls.length === 0) return;
@@ -423,21 +488,20 @@ function initPinballEngine() {
     if (cameraMode === 'self' && myName && pbBalls[myName] && !pbState.finished.includes(myName)) {
       target = pbBalls[myName];
     } else {
-      // 'global' mode: Follow 1st place leader at the front of the race
       target = sorted[0];
     }
-    const targetY = target.position.y - canvasHeight * 0.35 * (LOGICAL_WIDTH / canvasWidth);
+    const targetY = target.position.y - viewH * 0.35;
     
     // Smooth Lerp
     cameraSmoothed += (targetY - cameraSmoothed) * 0.06;
 
     // Clamp
     const minY = 0;
-    const maxY = pbWorldHeight - (canvasHeight * (LOGICAL_WIDTH / canvasWidth)) + 100;
+    const maxY = Math.max(0, pbWorldHeight - viewH + 100);
     const clampedY = Math.max(minY, Math.min(maxY, cameraSmoothed));
 
     pbRender.bounds.min.y = clampedY;
-    pbRender.bounds.max.y = clampedY + (canvasHeight * (LOGICAL_WIDTH / canvasWidth));
+    pbRender.bounds.max.y = clampedY + viewH;
   });
 
   // Custom rendering: Road surface, arrows, billiard balls

@@ -335,18 +335,15 @@
             <input type="datetime-local" id="eg-reminder">
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group" style="display:flex; align-items:center;">
-            <input type="checkbox" id="eg-ended" style="width:auto; margin-right:8px; transform:scale(1.2);">
-            <label for="eg-ended" style="margin-bottom:0; cursor:pointer;">設定為已結束 (大廳顯示為灰色並置底)</label>
-          </div>
-        </div>
-
         <div class="form-group">
           <label>備註 (選填)</label>
           <textarea id="eg-note" rows="3" placeholder="其他注意事項..."></textarea>
         </div>
-        <button id="btn-submit-edit" class="btn-primary" style="margin-top: 15px;">儲存變更</button>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+          <button id="btn-submit-edit" class="btn-primary" style="flex: 1; margin: 0;">儲存變更</button>
+          <button id="btn-eg-end" class="btn-secondary" style="flex: 1; margin: 0; background: #6c757d; color: white; border: none;">結束場次</button>
+          <button id="btn-eg-delete" class="btn-danger" style="flex: 1; margin: 0;">刪除場次</button>
+        </div>
       </div>
     </div>
     
@@ -941,7 +938,7 @@
   </div>
 
   <div id="app-version-display" style="text-align: center; color: #999; font-size: 12px; padding: 20px 0; width: 100%; pointer-events: none; margin-top: 20px;">
-    Version: V202607301512
+    Version: V20260805_Zoom
   </div>
 
   <style>
@@ -960,7 +957,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball_v2.js?v=20260723_fix01"></script>
+  <script src="pinball_v2.js?v=20260805_zoom_01"></script>
   <script src="app.js?v=V202608041716"></script>
 
 </body>

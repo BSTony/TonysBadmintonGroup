@@ -1561,6 +1561,9 @@ function notifySSEClients(gameOrGid) {
     }
   }
   
+  // 讓所有的變更都觸發全域大廳更新
+  gidsToNotify.add('default');
+  
   for (const gid of gidsToNotify) {
     if (sseClients.has(gid)) {
       sseClients.get(gid).forEach(res => {
@@ -3573,6 +3576,20 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       return res.json({ success: true });
+    }
+    
+    if (action === 'deleteGame') {
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能刪除場次' });
+      }
+      if (!gameId || !games[gameId]) {
+        return res.status(404).json({ error: '找不到該場次' });
+      }
+      await deleteGame(gameId);
+      
+      // Notify SSE to default channel is handled by notifySSEClients(gid) in res.json interceptor,
+      // but since game is deleted, we must pass the group manually or let the client refresh.
+      return res.json({ success: true, gid: targetGameGid });
     }
     
     if (action === 'editGame') {

@@ -1424,42 +1424,7 @@ async function loadGamesLobby(silent = false) {
 
 // 判斷場次是否已過期 (根據日期與結束時間)
 function isGameExpired(game) {
-  if (game.isManualEnded) return true;
-  if (!game.date) return false;
-  const matchFull = game.date.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
-  
-  let year = new Date().getFullYear();
-  let month = 0, day = 1;
-  
-  if (matchFull) {
-    year = parseInt(matchFull[1]);
-    month = parseInt(matchFull[2]) - 1;
-    day = parseInt(matchFull[3]);
-  } else {
-    const matchShort = game.date.match(/(\d{1,2})[-\/](\d{1,2})/);
-    if (matchShort) {
-      month = parseInt(matchShort[1]) - 1;
-      day = parseInt(matchShort[2]);
-    } else {
-      return false;
-    }
-  }
-  
-  let hour = 23;
-  let minute = 59;
-  
-  if (game.time) {
-     const timeMatches = game.time.match(/([01]?[0-9]|2[0-3]):([0-5][0-9])/g);
-     if (timeMatches && timeMatches.length > 0) {
-        const lastTime = timeMatches[timeMatches.length - 1];
-        const parts = lastTime.split(':');
-        hour = parseInt(parts[0]);
-        minute = parseInt(parts[1]);
-     }
-  }
-  
-  const endTime = new Date(year, month, day, hour, minute);
-  return Date.now() > endTime.getTime();
+  return !!game.isManualEnded;
 }
 
 
@@ -3609,7 +3574,20 @@ function showEditGameForm(gameId) {
   document.getElementById('eg-limit').value = section.limit || 20;
   document.getElementById('eg-backup').value = section.backupLimit || 0;
   document.getElementById('eg-fee').value = game.fee || section.fee || '';
-  document.getElementById('eg-ended').checked = !!game.isManualEnded;
+  const btnEnd = document.getElementById('btn-eg-end');
+  if (btnEnd) {
+    if (game.isManualEnded) {
+      btnEnd.innerText = '已結束';
+      btnEnd.disabled = true;
+      btnEnd.style.opacity = '0.5';
+      btnEnd.style.cursor = 'not-allowed';
+    } else {
+      btnEnd.innerText = '結束場次';
+      btnEnd.disabled = false;
+      btnEnd.style.opacity = '1';
+      btnEnd.style.cursor = 'pointer';
+    }
+  }
   document.getElementById('eg-note').value = game.note || '';
   
   // 初始化多時段設定
@@ -3755,7 +3733,7 @@ document.getElementById('btn-submit-edit').onclick = async () => {
         backupLimit: document.getElementById('eg-backup').value,
         publish: document.getElementById('eg-publish').value,
         reminder: document.getElementById('eg-reminder').value,
-        isManualEnded: document.getElementById('eg-ended').checked,
+        isManualEnded: !!(gamesList.find(g => g.gameId === gameId) || {}).isManualEnded,
         note: document.getElementById('eg-note').value.trim(),
         sections: document.getElementById('eg-multi-section-toggle').checked ? (saveEgSectionsData(), egSections) : null
       })
@@ -3777,9 +3755,83 @@ document.getElementById('btn-submit-edit').onclick = async () => {
   } finally {
     appDiv.className = '';
     statusMsg.style.display = 'none';
+};
+
+document.getElementById('btn-eg-end').onclick = async () => {
+  if (!confirm('確定要結束此場次嗎？結束後大廳會顯示為灰色並置底。')) return;
+  const gameId = document.getElementById('eg-gameId').value;
+  try {
+    appDiv.className = 'loading';
+    statusMsg.style.display = 'block';
+    statusMsg.innerText = '結束場次中...';
+    
+    // We send editGame action with isManualEnded = true
+    const game = gamesList.find(g => g.gameId === gameId) || {};
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        gameId: gameId,
+        uid: currentUser.userId,
+        name: currentUser.displayName,
+        action: 'editGame',
+        isManualEnded: true
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) alert(result.error || '結束失敗');
+    else {
+      alert('場次已結束！');
+      editGameView.classList.add('hidden');
+      await loadGamesLobby();
+      if (currentGameDetailId === gameId) renderDetail(gameId, true);
+    }
+  } catch(e) {
+    alert('網路錯誤');
+  } finally {
+    appDiv.className = '';
+    statusMsg.style.display = 'none';
   }
 };
 
+document.getElementById('btn-eg-delete').onclick = async () => {
+  if (!confirm('確定要永久刪除此場次嗎？此操作無法還原！')) return;
+  const gameId = document.getElementById('eg-gameId').value;
+  try {
+    appDiv.className = 'loading';
+    statusMsg.style.display = 'block';
+    statusMsg.innerText = '刪除場次中...';
+    
+    const res = await fetch('/api/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        gameId: gameId,
+        uid: currentUser.userId,
+        name: currentUser.displayName,
+        action: 'deleteGame'
+      })
+    });
+    
+    const result = await res.json();
+    if (!res.ok) alert(result.error || '刪除失敗');
+    else {
+      alert('場次已刪除！');
+      editGameView.classList.add('hidden');
+      // Always go back to lobby after delete
+      currentGameDetailId = null;
+      await loadGamesLobby();
+    }
+  } catch(e) {
+    alert('網路錯誤');
+  } finally {
+    appDiv.className = '';
+    statusMsg.style.display = 'none';
+  }
+};
 
 document.addEventListener('click', (e) => { if (!e.target.closest('.btn-danger')) { document.querySelectorAll('.btn-danger').forEach(b => { if (b.dataset.dodged === 'true') { b.dataset.dodged = 'false'; b.style.transition = 'transform 1s ease'; b.style.transform = 'translate(0px, 0px)'; } }); } });
 
