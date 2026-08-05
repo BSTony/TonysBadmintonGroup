@@ -1935,7 +1935,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785894008164,
+    "lastActiveTime": 1785897243669,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1986,7 +1986,8 @@
         "list": [
           "Tony",
           "Kay",
-          "Gary"
+          "Gary",
+          "Jet"
         ]
       }
     ],
@@ -2006,9 +2007,17 @@
       "Joe": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Gary": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Ray Hsieh": "Uf938f0344bbfe654e01bc1d893340ef8",
-      "wayne": "U1a05e97623cee1f79b0876626e88f0ab"
+      "wayne": "U1a05e97623cee1f79b0876626e88f0ab",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "history": [
+      {
+        "time": "08/05 10:34",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/05 09:40",
         "name": "wayne",
