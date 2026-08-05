@@ -2208,7 +2208,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785848005986,
-    "lastActiveTime": 1785896975525,
+    "lastActiveTime": 1785898487482,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2244,7 +2244,8 @@
           "海棠",
           "afrahuang",
           "Sean",
-          "Jet"
+          "Jet",
+          "張建發"
         ],
         "fee": "280"
       }
@@ -2253,9 +2254,17 @@
     "uidMap": {
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
       "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
-      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7",
+      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9"
     },
     "history": [
+      {
+        "time": "08/05 10:54",
+        "name": "張建發",
+        "operator": "張建發",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/05 10:29",
         "name": "Jet",
