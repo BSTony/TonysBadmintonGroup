@@ -1995,6 +1995,7 @@ function renderDetail(gameId, preserveScroll = false) {
   else detailTitle.style.display = 'block';
   
   const btnCloseGame = document.getElementById('btn-close-game');
+  const btnDeleteGame = document.getElementById('btn-delete-game');
   const btnEditGame = document.getElementById('btn-edit-game');
   const btnCopyList = document.getElementById('btn-copy-list');
   if (btnCopyList) {
@@ -2011,13 +2012,28 @@ function renderDetail(gameId, preserveScroll = false) {
   }
 
   if (effIsAdmin) {
-    if (btnCloseGame) btnCloseGame.classList.remove('hidden');
+    if (btnCloseGame) {
+      btnCloseGame.classList.remove('hidden');
+      if (game.isManualEnded) {
+        btnCloseGame.innerText = '已結束';
+        btnCloseGame.disabled = true;
+        btnCloseGame.style.opacity = '0.5';
+        btnCloseGame.style.cursor = 'not-allowed';
+      } else {
+        btnCloseGame.innerText = '結束';
+        btnCloseGame.disabled = false;
+        btnCloseGame.style.opacity = '1';
+        btnCloseGame.style.cursor = 'pointer';
+      }
+    }
+    if (btnDeleteGame) btnDeleteGame.classList.remove('hidden');
     if (btnEditGame) {
       btnEditGame.classList.remove('hidden');
       btnEditGame.onclick = () => showEditGameForm(gameId);
     }
   } else {
     if (btnCloseGame) btnCloseGame.classList.add('hidden');
+    if (btnDeleteGame) btnDeleteGame.classList.add('hidden');
     if (btnEditGame) btnEditGame.classList.add('hidden');
   }
   
@@ -2304,7 +2320,7 @@ const btnCloseGame = document.getElementById('btn-close-game');
 if (btnCloseGame) {
   btnCloseGame.addEventListener('click', async () => {
     if (!currentGameDetailId) return;
-    if (!confirm('確定要結束/關閉此場次嗎？\n關閉後將無法再報名，並且會從大廳隱藏。')) return;
+    if (!confirm('確定要結束此場次嗎？\n結束後大廳會顯示為灰色並置底。')) return;
     
     try {
       appDiv.className = 'loading';
@@ -2316,17 +2332,54 @@ if (btnCloseGame) {
           gameId: currentGameDetailId,
           uid: currentUser.userId,
           name: currentUser.displayName,
-          action: 'closeGame'
+          action: 'editGame',
+          isManualEnded: true
         })
       });
       const result = await res.json();
       if (!res.ok) alert(result.error || '操作失敗');
-      else alert('場次已關閉！');
-      
-      currentGameDetailId = null;
-      await loadGamesLobby();
+      else {
+        alert('場次已結束！');
+        currentGameDetailId = null;
+        await loadGamesLobby();
+      }
     } catch (e) {
       alert('網路錯誤');
+    } finally {
+      appDiv.className = '';
+    }
+  });
+}
+
+const btnDeleteGame = document.getElementById('btn-delete-game');
+if (btnDeleteGame) {
+  btnDeleteGame.addEventListener('click', async () => {
+    if (!currentGameDetailId) return;
+    if (!confirm('確定要永久刪除此場次嗎？此操作無法還原！')) return;
+    
+    try {
+      appDiv.className = 'loading';
+      const res = await fetch('/api/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gid: currentGroupId,
+          gameId: currentGameDetailId,
+          uid: currentUser.userId,
+          name: currentUser.displayName,
+          action: 'deleteGame'
+        })
+      });
+      const result = await res.json();
+      if (!res.ok) alert(result.error || '刪除失敗');
+      else {
+        alert('場次已刪除！');
+        currentGameDetailId = null;
+        await loadGamesLobby();
+      }
+    } catch (e) {
+      alert('網路錯誤');
+    } finally {
       appDiv.className = '';
     }
   });
