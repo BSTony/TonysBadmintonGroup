@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785908725524,
+    "lastActiveTime": 1785909556009,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1597,7 +1597,8 @@
           "Mia",
           "思翰1",
           "思翰2",
-          "Andrew"
+          "Andrew",
+          "小可愛"
         ]
       }
     ],
@@ -1613,9 +1614,17 @@
       "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
       "思翰1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "思翰2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1"
+      "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1",
+      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a"
     },
     "history": [
+      {
+        "time": "08/05 13:59",
+        "name": "小可愛",
+        "operator": "林俊佑",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/05 13:45",
         "name": "Andrew",
