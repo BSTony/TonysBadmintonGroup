@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785833527843,
+    "lastActiveTime": 1785897644594,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1594,7 +1594,8 @@
           "楊程鈞",
           "Sammy",
           "Kevin",
-          "Mia"
+          "Mia",
+          "思翰1"
         ]
       }
     ],
@@ -1607,9 +1608,17 @@
       "Sammy": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kevin": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Mia": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11"
+      "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
+      "思翰1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/05 10:40",
+        "name": "思翰1",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/04 16:52",
         "name": "曾Jim凱",
