@@ -1953,7 +1953,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785907142685,
+    "lastActiveTime": 1785907324882,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1992,8 +1992,7 @@
         "label": "",
         "list": [
           "周哲儁",
-          "楊程鈞",
-          "柏宏"
+          "楊程鈞"
         ]
       },
       {
@@ -2031,6 +2030,13 @@
       "柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
     },
     "history": [
+      {
+        "time": "08/05 13:22",
+        "name": "柏宏",
+        "operator": "Sean柏宏",
+        "action": "-1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/05 13:19",
         "name": "柏宏",
