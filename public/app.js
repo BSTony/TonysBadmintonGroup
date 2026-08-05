@@ -5422,7 +5422,7 @@ const btnGbClearOrders = document.getElementById('btn-gb-clear-orders');
 let activeCategoryFilter = '全部';
 let currentSearchQuery = '';
 
-let allGroupBuysList = [];
+var allGroupBuysList = [];
 
 async function fetchGroupBuyData() {
   try {
