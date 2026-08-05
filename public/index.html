@@ -223,7 +223,8 @@
         <div style="display:flex; gap: 5px;">
           <button id="btn-copy-list" class="btn-secondary hidden" style="padding: 5px 10px; font-size: 12px; margin: 0; background-color: #4CAF50; color: white; border: none; border-radius: 20px;">複製名單</button>
           <button id="btn-edit-game" class="btn-primary hidden" style="padding: 5px 10px; font-size: 12px; margin: 0; background-color: #2196F3;">編輯</button>
-          <button id="btn-close-game" class="btn-danger hidden" style="padding: 5px 10px; font-size: 12px; margin: 0;">結束</button>
+          <button id="btn-close-game" class="btn-secondary hidden" style="padding: 5px 10px; font-size: 12px; margin: 0; background-color: #f8f9fa; color: #475569; border: 1px solid #cbd5e1; border-radius: 8px;">結束</button>
+          <button id="btn-delete-game" class="btn-danger hidden" style="padding: 5px 10px; font-size: 12px; margin: 0; border-radius: 8px;">刪除</button>
         </div>
       </header>
       
@@ -339,11 +340,7 @@
           <label>備註 (選填)</label>
           <textarea id="eg-note" rows="3" placeholder="其他注意事項..."></textarea>
         </div>
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-          <button id="btn-submit-edit" class="btn-primary" style="flex: 1; margin: 0;">儲存變更</button>
-          <button id="btn-eg-end" class="btn-secondary" style="flex: 1; margin: 0; background: #6c757d; color: white; border: none;">結束場次</button>
-          <button id="btn-eg-delete" class="btn-danger" style="flex: 1; margin: 0;">刪除場次</button>
-        </div>
+        <button id="btn-submit-edit" class="btn-primary" style="margin-top: 15px;">儲存變更</button>
       </div>
     </div>
     
@@ -958,7 +955,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
   <script src="pinball_v2.js?v=20260805_zoom_01"></script>
-  <script src="app.js?v=V202608041716"></script>
+  <script src="app.js?v=V202608051609"></script>
 
 </body>
 </html>
