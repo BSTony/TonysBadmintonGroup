@@ -1935,7 +1935,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785833941885,
+    "lastActiveTime": 1785894008164,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1962,7 +1962,8 @@
           "小金",
           "俊吉",
           "Joe",
-          "Ray Hsieh"
+          "Ray Hsieh",
+          "wayne"
         ]
       },
       {
@@ -2004,9 +2005,17 @@
       "俊吉": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Joe": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Gary": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Ray Hsieh": "Uf938f0344bbfe654e01bc1d893340ef8"
+      "Ray Hsieh": "Uf938f0344bbfe654e01bc1d893340ef8",
+      "wayne": "U1a05e97623cee1f79b0876626e88f0ab"
     },
     "history": [
+      {
+        "time": "08/05 09:40",
+        "name": "wayne",
+        "operator": "Wayne",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/04 16:59",
         "name": "Ray Hsieh",
