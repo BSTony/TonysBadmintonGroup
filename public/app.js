@@ -3275,11 +3275,21 @@ async function loadTemplates() {
   }
   
   cgTemplateSelect.innerHTML = '<option value="">-- 選擇群組範本 --</option>';
+  const taTemplateSelect = document.getElementById('ta-template-select');
+  if (taTemplateSelect) taTemplateSelect.innerHTML = '<option value="">-- 新增範本 --</option>';
+
   for (const name in currentGroupTemplates) {
     const opt = document.createElement('option');
     opt.value = name;
     opt.innerText = name;
     cgTemplateSelect.appendChild(opt);
+    
+    if (taTemplateSelect) {
+      const opt2 = document.createElement('option');
+      opt2.value = name;
+      opt2.innerText = name;
+      taTemplateSelect.appendChild(opt2);
+    }
   }
 }
 
