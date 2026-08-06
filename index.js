@@ -2004,7 +2004,7 @@ app.post('/api/templates/:gid', express.json(), async (req, res) => {
   const gid = req.params.gid;
   const { action, name, content, uid } = req.body;
   
-  const isAdmin = uid && Object.values(groupAdmins).some(admins => admins.has(uid));
+  const isAdmin = uid && (isSuperAdmin(uid) || isGroupAdmin(uid, gid));
   if (!isAdmin) {
     return res.status(403).json({ error: '只有管理員能修改預設名單' });
   }
