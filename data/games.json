@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785987402802,
+    "lastActiveTime": 1785992751978,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1602,7 +1602,8 @@
           "徐偉強",
           "蕭傑森",
           "錢小肚",
-          "昆泰"
+          "昆泰",
+          "Dawson1"
         ]
       }
     ],
@@ -1624,9 +1625,17 @@
       "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "錢小肚": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "KY": "U4a000207c2cd7539924a5c19b7506bba",
-      "昆泰": "U4a000207c2cd7539924a5c19b7506bba"
+      "昆泰": "U4a000207c2cd7539924a5c19b7506bba",
+      "Dawson1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/06 13:05",
+        "name": "Dawson1",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 11:36",
         "name": "昆泰",
