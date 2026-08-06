@@ -2342,7 +2342,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785848005986,
-    "lastActiveTime": 1785987387554,
+    "lastActiveTime": 1785988559982,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2377,7 +2377,8 @@
           "afrahuang",
           "Sean",
           "Jet",
-          "張建發"
+          "張建發",
+          "Yoshi(王安迪)"
         ],
         "fee": "280"
       }
@@ -2388,9 +2389,17 @@
       "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "張建發": "U17eaf2f1e1b41288876d992044d9bdf9",
-      "昆泰": "U4a000207c2cd7539924a5c19b7506bba"
+      "昆泰": "U4a000207c2cd7539924a5c19b7506bba",
+      "Yoshi(王安迪)": "Ufe0fe514d1b7b112a3f6910485ae1ce8"
     },
     "history": [
+      {
+        "time": "08/06 11:55",
+        "name": "Yoshi(王安迪)",
+        "operator": "Yoshi(王安迪)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 11:36",
         "name": "昆泰",
