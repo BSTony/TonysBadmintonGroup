@@ -2049,7 +2049,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785942794817,
+    "lastActiveTime": 1785999294025,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2105,7 +2105,8 @@
           "Gary",
           "Jet",
           "蕭傑森",
-          "羅"
+          "羅",
+          "Hsin"
         ]
       }
     ],
@@ -2131,9 +2132,17 @@
       "小正": "Ucae8094c21c5ab0e32dd47bc4e52eced",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "羅": "U6d9e099c518efa25fd881c87e6e72dd7"
+      "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d"
     },
     "history": [
+      {
+        "time": "08/06 14:54",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/05 23:13",
         "name": "羅",
