@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2818,
+    "viewCount": 2827,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -11,8 +11,8 @@
       "U3c633bac1ead8ca7a7def805e6f58248": {
         "displayName": "小蔡",
         "firstVisit": 1783184578849,
-        "count": 23,
-        "lastVisit": 1785837845213
+        "count": 24,
+        "lastVisit": 1785987791554
       },
       "U8ecbb1daa2fcb8fb206b82c29052da1e": {
         "displayName": "謝弘傑",
@@ -59,8 +59,8 @@
       "U169c089d184f3be52ae8124893db17c1": {
         "displayName": "Rebecca",
         "firstVisit": 1783211413161,
-        "count": 21,
-        "lastVisit": 1785545123862
+        "count": 22,
+        "lastVisit": 1785988579149
       },
       "Uc608f165fc93c9affa9b9d721d6d0efd": {
         "displayName": "YANG 阿傑",
@@ -119,8 +119,8 @@
       "Ua698eb94f633310ce3b6cf6f34265adb": {
         "displayName": "煜翔Sean",
         "firstVisit": 1783229120228,
-        "count": 92,
-        "lastVisit": 1785896992941
+        "count": 93,
+        "lastVisit": 1785988698899
       },
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
@@ -179,8 +179,8 @@
       "U203b76fe44ff1d74c53c21e5547aea27": {
         "displayName": "登登登登～",
         "firstVisit": 1783233886945,
-        "count": 59,
-        "lastVisit": 1785942658405
+        "count": 60,
+        "lastVisit": 1785987523557
       },
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
         "displayName": "郭岳翰John",
@@ -683,8 +683,8 @@
       "U935093aaf7acba2a7f7a333f4c2fa183": {
         "displayName": "秭旭Archie",
         "firstVisit": 1784362990880,
-        "count": 6,
-        "lastVisit": 1785649653920
+        "count": 7,
+        "lastVisit": 1785988667004
       },
       "Ufb12bb922c93c69d206c9a6fc3b07510": {
         "displayName": "卡比",
@@ -815,8 +815,8 @@
       "Ufe0fe514d1b7b112a3f6910485ae1ce8": {
         "displayName": "Yoshi(王安迪)",
         "firstVisit": 1785232561177,
-        "count": 21,
-        "lastVisit": 1785935832851
+        "count": 22,
+        "lastVisit": 1785988550830
       },
       "Uc92b4c526f0fbbbd95ccd456657f4956": {
         "displayName": "Irene",
@@ -911,11 +911,64 @@
       "U4a000207c2cd7539924a5c19b7506bba": {
         "displayName": "昆泰",
         "firstVisit": 1785949576262,
-        "count": 1,
-        "lastVisit": 1785949576262
+        "count": 4,
+        "lastVisit": 1785987392583
       }
     },
     "logs": [
+      {
+        "time": 1785988698899,
+        "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
+        "displayName": "煜翔Sean",
+        "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
+      },
+      {
+        "time": 1785988667004,
+        "userId": "U935093aaf7acba2a7f7a333f4c2fa183",
+        "displayName": "秭旭Archie",
+        "pictureUrl": "https://profile.line-scdn.net/0htaaxQKijK05MATgRxRRVMTxRKCRvcHJcZmVhKy4Bdyx1OG0bYGMxeypVdix3OW0YMmRgeH8CJ3xAElwoUlfXeksxdn9xMGkQZm9hrQ"
+      },
+      {
+        "time": 1785988579149,
+        "userId": "U169c089d184f3be52ae8124893db17c1",
+        "displayName": "Rebecca",
+        "pictureUrl": "https://profile.line-scdn.net/0h8gosV8eeZ0hCCnhDoiwZdjJaZCJhez5aaG8ue38KbXsoOiFMamt4KSQJaX94P3AdZm18fiUDai1gaCNYaQdwfiNuZT82WGVVLx5wcS9wZB0oX0hMPRBxbS5JWH8DblRgDWhqZyxtMB80RUd4CCdQdXFrWiYhRGB3OF0LHkc4CcstCBAdb2wpK38MMX36"
+      },
+      {
+        "time": 1785988550830,
+        "userId": "Ufe0fe514d1b7b112a3f6910485ae1ce8",
+        "displayName": "Yoshi(王安迪)",
+        "pictureUrl": "https://profile.line-scdn.net/0hon9xA1NOMEEUAS--En5Of2RRMys3cGlTaGB2LnYHO3EpNX9APjd2JiADbHEgNn8QbDMoIiVWanI2bXF_X24LREl-HTJdcncXU2MqJSQAZw5VRwJJOjkNQGhkaHdbWj8RZCYqbiQDMAU1VC5OZxUXO1JxBQlZWApSX1ZcFxEzXsJ7A0cUOWd-IikHZnSs"
+      },
+      {
+        "time": 1785987791554,
+        "userId": "U3c633bac1ead8ca7a7def805e6f58248",
+        "displayName": "小蔡"
+      },
+      {
+        "time": 1785987523557,
+        "userId": "U203b76fe44ff1d74c53c21e5547aea27",
+        "displayName": "登登登登～",
+        "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
+      },
+      {
+        "time": 1785987392583,
+        "userId": "U4a000207c2cd7539924a5c19b7506bba",
+        "displayName": "昆泰",
+        "pictureUrl": "https://profile.line-scdn.net/0hoqcH7F2wMF5OMSOil0BOIT5hMzRtQGlMMVMoaChkPmtyAnAINQJ2PHxlOW51A3VfZ18sP3o5bGpCIkc4UGfMakkBbW9zAHIAZF96vQ"
+      },
+      {
+        "time": 1785987296033,
+        "userId": "U4a000207c2cd7539924a5c19b7506bba",
+        "displayName": "昆泰",
+        "pictureUrl": "https://profile.line-scdn.net/0hoqcH7F2wMF5OMSOil0BOIT5hMzRtQGlMMVMoaChkPmtyAnAINQJ2PHxlOW51A3VfZ18sP3o5bGpCIkc4UGfMakkBbW9zAHIAZF96vQ"
+      },
+      {
+        "time": 1785987227247,
+        "userId": "U4a000207c2cd7539924a5c19b7506bba",
+        "displayName": "昆泰",
+        "pictureUrl": "https://profile.line-scdn.net/0hoqcH7F2wMF5OMSOil0BOIT5hMzRtQGlMMVMoaChkPmtyAnAINQJ2PHxlOW51A3VfZ18sP3o5bGpCIkc4UGfMakkBbW9zAHIAZF96vQ"
+      },
       {
         "time": 1785981476661,
         "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
