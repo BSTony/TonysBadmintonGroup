@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2837,
+    "viewCount": 2838,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -257,8 +257,8 @@
       "U2ea89b78f1546c61adda03c7dd8704d5": {
         "displayName": "賴柚子",
         "firstVisit": 1783341633415,
-        "count": 27,
-        "lastVisit": 1785634543025
+        "count": 28,
+        "lastVisit": 1786000895454
       },
       "Uc8b0e0ef7ca58b387136a28642742b7d": {
         "displayName": "沂 Lexie🐷",
@@ -916,6 +916,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1786000895454,
+        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
+        "displayName": "賴柚子",
+        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
+      },
       {
         "time": 1785999332218,
         "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
@@ -3733,6 +3739,25 @@
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
         "displayName": "謝東霖 Tony",
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      }
+    ]
+  },
+  "34182ee2-3025-469f-a20e-8fc20eb06bf9": {
+    "viewCount": 1,
+    "uniqueViewers": {
+      "U2ea89b78f1546c61adda03c7dd8704d5": {
+        "displayName": "賴柚子",
+        "firstVisit": 1786000879508,
+        "count": 1,
+        "lastVisit": 1786000879508
+      }
+    },
+    "logs": [
+      {
+        "time": 1786000879508,
+        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
+        "displayName": "賴柚子",
+        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
       }
     ]
   }
