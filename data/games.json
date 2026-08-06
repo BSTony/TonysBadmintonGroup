@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785992758404,
+    "lastActiveTime": 1785994490084,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1604,7 +1604,8 @@
           "錢小肚",
           "昆泰",
           "Dawson1",
-          "Dawson2"
+          "Dawson2",
+          "Gary"
         ]
       }
     ],
@@ -1628,9 +1629,17 @@
       "KY": "U4a000207c2cd7539924a5c19b7506bba",
       "昆泰": "U4a000207c2cd7539924a5c19b7506bba",
       "Dawson1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Dawson2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Dawson2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "history": [
+      {
+        "time": "08/06 13:34",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 13:05",
         "name": "Dawson2",
