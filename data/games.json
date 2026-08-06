@@ -2333,7 +2333,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785848005986,
-    "lastActiveTime": 1785987372937,
+    "lastActiveTime": 1785987387554,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2368,8 +2368,7 @@
           "afrahuang",
           "Sean",
           "Jet",
-          "張建發",
-          "昆泰"
+          "張建發"
         ],
         "fee": "280"
       }
@@ -2383,6 +2382,13 @@
       "昆泰": "U4a000207c2cd7539924a5c19b7506bba"
     },
     "history": [
+      {
+        "time": "08/06 11:36",
+        "name": "昆泰",
+        "operator": "昆泰",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 11:36",
         "name": "昆泰",
