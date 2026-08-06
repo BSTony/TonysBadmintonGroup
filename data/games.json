@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785994490084,
+    "lastActiveTime": 1786007121642,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1605,7 +1605,8 @@
           "昆泰",
           "Dawson1",
           "Dawson2",
-          "Gary"
+          "Gary",
+          "Harry"
         ]
       }
     ],
@@ -1630,9 +1631,17 @@
       "昆泰": "U4a000207c2cd7539924a5c19b7506bba",
       "Dawson1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Dawson2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "Harry": "U4a000207c2cd7539924a5c19b7506bba"
     },
     "history": [
+      {
+        "time": "08/06 17:05",
+        "name": "Harry",
+        "operator": "昆泰",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 13:34",
         "name": "Gary",
