@@ -7191,11 +7191,48 @@ function showTemplateAdminView() {
   document.getElementById('template-admin-view').classList.remove('hidden');
   loadTemplates();
   document.getElementById('ta-template-name').value = '';
-  document.getElementById('ta-template-content').value = '';
+  document.getElementById('ta-list-container').innerHTML = '';
+  addTaListRow('');
   document.getElementById('btn-ta-delete').style.display = 'none';
 }
-
 window.showTemplateAdminView = showTemplateAdminView;
+
+function addTaListRow(name = '') {
+  const container = document.getElementById('ta-list-container');
+  const row = document.createElement('div');
+  row.className = 'ta-list-row';
+  row.style.display = 'flex';
+  row.style.gap = '5px';
+  row.style.marginBottom = '5px';
+  row.style.alignItems = 'center';
+  
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.className = 'ta-list-name';
+  nameInput.placeholder = '姓名 (留空則為空位)';
+  nameInput.value = name;
+  nameInput.style.flex = '1';
+  nameInput.style.margin = '0';
+  nameInput.style.minWidth = '0';
+  
+  const delBtn = document.createElement('button');
+  delBtn.type = 'button';
+  delBtn.className = 'btn-danger btn-ta-remove-row';
+  delBtn.style.padding = '5px 8px';
+  delBtn.style.fontSize = '12px';
+  delBtn.style.margin = '0';
+  delBtn.innerText = '❌';
+  delBtn.onclick = () => row.remove();
+  
+  row.appendChild(nameInput);
+  row.appendChild(delBtn);
+  
+  container.appendChild(row);
+}
+
+if (document.getElementById('btn-ta-add-row')) {
+  document.getElementById('btn-ta-add-row').onclick = () => addTaListRow('');
+}
 
 const btnBackTemplateAdmin = document.getElementById('btn-back-template-admin');
 if (btnBackTemplateAdmin) {
@@ -7210,16 +7247,23 @@ if (taTemplateSelect) {
   taTemplateSelect.onchange = (e) => {
     const name = e.target.value;
     const nameInput = document.getElementById('ta-template-name');
-    const contentInput = document.getElementById('ta-template-content');
+    const container = document.getElementById('ta-list-container');
     const deleteBtn = document.getElementById('btn-ta-delete');
     
     if (name && currentGroupTemplates[name]) {
       nameInput.value = name;
-      contentInput.value = currentGroupTemplates[name];
+      container.innerHTML = '';
+      const lines = currentGroupTemplates[name].split('\n');
+      lines.forEach(line => {
+        let n = line.trim();
+        if (n === '__ANON__') n = '';
+        addTaListRow(n);
+      });
       deleteBtn.style.display = 'block';
     } else {
       nameInput.value = '';
-      contentInput.value = '';
+      container.innerHTML = '';
+      addTaListRow('');
       deleteBtn.style.display = 'none';
     }
   };
@@ -7229,9 +7273,12 @@ const btnTaSave = document.getElementById('btn-ta-save');
 if (btnTaSave) {
   btnTaSave.onclick = async () => {
     const name = document.getElementById('ta-template-name').value.trim();
-    const content = document.getElementById('ta-template-content').value.trim();
-    
     if (!name) return alert('請輸入範本名稱');
+    
+    const inputs = document.querySelectorAll('.ta-list-name');
+    const names = Array.from(inputs).map(inp => inp.value.trim() || '__ANON__');
+    const content = names.join('\n');
+    
     if (!content) return alert('請輸入名單內容');
     
     appDiv.className = 'loading';
@@ -7251,7 +7298,7 @@ if (btnTaSave) {
         await loadTemplates();
         document.getElementById('ta-template-select').value = name;
         document.getElementById('ta-template-select').dispatchEvent(new Event('change'));
-        alert('儲存成功！');
+        alert('範本已儲存');
       } else {
         alert(data.error || '儲存失敗');
       }
@@ -7268,7 +7315,7 @@ if (btnTaDelete) {
   btnTaDelete.onclick = async () => {
     const name = document.getElementById('ta-template-name').value.trim();
     if (!name) return;
-    if (!confirm(`確定要刪除範本「${name}」嗎？`)) return;
+    if (!confirm(`確定要刪除範本 ${name} 嗎？`)) return;
     
     appDiv.className = 'loading';
     try {
@@ -7286,17 +7333,18 @@ if (btnTaDelete) {
         await loadTemplates();
         document.getElementById('ta-template-select').value = '';
         document.getElementById('ta-template-select').dispatchEvent(new Event('change'));
-        alert('刪除成功！');
+        alert('範本已刪除');
       } else {
         alert(data.error || '刪除失敗');
       }
     } catch (e) {
-      alert('網路錯誤，無法連線伺服器');
+      alert('網路錯誤，無法刪除');
     } finally {
       appDiv.className = '';
     }
   };
 }
+
 
 // 畫面讀取完畢初始化
 
