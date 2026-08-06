@@ -7199,6 +7199,7 @@ function openCheckoutModal() {
 function showTemplateAdminView() {
   document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
   document.getElementById('template-admin-view').classList.remove('hidden');
+  window.scrollTo(0, 0);
   loadTemplates();
   document.getElementById('ta-template-name').value = '';
   document.getElementById('ta-list-container').innerHTML = '';
