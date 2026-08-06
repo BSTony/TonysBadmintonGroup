@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785987318184,
+    "lastActiveTime": 1785987365278,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1601,8 +1601,7 @@
           "小可愛",
           "徐偉強",
           "蕭傑森",
-          "錢小肚",
-          "KY"
+          "錢小肚"
         ]
       }
     ],
@@ -1626,6 +1625,13 @@
       "KY": "U4a000207c2cd7539924a5c19b7506bba"
     },
     "history": [
+      {
+        "time": "08/06 11:36",
+        "name": "KY",
+        "operator": "昆泰",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 11:35",
         "name": "KY",
