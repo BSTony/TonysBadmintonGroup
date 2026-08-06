@@ -2333,7 +2333,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785848005986,
-    "lastActiveTime": 1785979460965,
+    "lastActiveTime": 1785987372937,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2368,7 +2368,8 @@
           "afrahuang",
           "Sean",
           "Jet",
-          "張建發"
+          "張建發",
+          "昆泰"
         ],
         "fee": "280"
       }
@@ -2378,9 +2379,17 @@
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
       "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9"
+      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9",
+      "昆泰": "U4a000207c2cd7539924a5c19b7506bba"
     },
     "history": [
+      {
+        "time": "08/06 11:36",
+        "name": "昆泰",
+        "operator": "昆泰",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 09:24",
         "name": "海棠",
