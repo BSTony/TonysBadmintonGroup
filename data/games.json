@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1785975062802,
+    "lastActiveTime": 1785987318184,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1601,7 +1601,8 @@
           "小可愛",
           "徐偉強",
           "蕭傑森",
-          "錢小肚"
+          "錢小肚",
+          "KY"
         ]
       }
     ],
@@ -1621,9 +1622,17 @@
       "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
       "徐偉強": "U037afe342197214125f95fd00ebc1f0c",
       "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "錢小肚": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "錢小肚": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "KY": "U4a000207c2cd7539924a5c19b7506bba"
     },
     "history": [
+      {
+        "time": "08/06 11:35",
+        "name": "KY",
+        "operator": "昆泰",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 08:11",
         "name": "錢小肚",
