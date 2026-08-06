@@ -1,3 +1,22 @@
+async function loadLobbyUsers() {
+  if (!currentGroupId) return;
+  try {
+    const res = await fetch(`/api/users/${currentGroupId}`);
+    const data = await res.json();
+    if (res.ok && data.success) {
+      const datalist = document.getElementById('lobby-users');
+      datalist.innerHTML = '';
+      data.users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.displayName;
+        datalist.appendChild(option);
+      });
+    }
+  } catch(e) {
+    console.error('Failed to load lobby users:', e);
+  }
+}
+
 const imageCache = {};
 
 function getTransparentImage(src, callback) {
@@ -3208,6 +3227,7 @@ function addCgListRow(name = '', level = '', isPaid = false) {
   nameInput.className = 'cg-list-name';
   nameInput.placeholder = '姓名';
   nameInput.value = name;
+  nameInput.setAttribute('list', 'lobby-users');
   nameInput.style.flex = '2';
   nameInput.style.margin = '0';
   nameInput.style.minWidth = '0';
@@ -3314,6 +3334,7 @@ document.getElementById('btn-save-template').onclick = async () => {
     const data = await res.json();
     if (res.ok && data.success) {
       await loadTemplates();
+      await loadLobbyUsers();
       cgTemplateSelect.value = name;
       alert('儲存成功且已同步至 Git！');
     } else {
@@ -7208,7 +7229,7 @@ function showTemplateAdminView() {
 }
 window.showTemplateAdminView = showTemplateAdminView;
 
-function addTaListRow(name = '') {
+function addTaListRow(name = '', level = '', isPaid = false) {
   const container = document.getElementById('ta-list-container');
   const row = document.createElement('div');
   row.className = 'ta-list-row';
@@ -7222,9 +7243,39 @@ function addTaListRow(name = '') {
   nameInput.className = 'ta-list-name';
   nameInput.placeholder = '姓名 (留空則為空位)';
   nameInput.value = name;
-  nameInput.style.flex = '1';
+  nameInput.setAttribute('list', 'lobby-users');
+  nameInput.style.flex = '2';
   nameInput.style.margin = '0';
   nameInput.style.minWidth = '0';
+
+  const levelInput = document.createElement('input');
+  levelInput.type = 'text';
+  levelInput.className = 'ta-list-level';
+  levelInput.placeholder = '備註(選填)';
+  levelInput.value = level;
+  levelInput.style.flex = '1';
+  levelInput.style.margin = '0';
+  levelInput.style.minWidth = '0';
+  
+  const paidLabel = document.createElement('label');
+  paidLabel.style.display = 'flex';
+  paidLabel.style.alignItems = 'center';
+  paidLabel.style.gap = '3px';
+  paidLabel.style.marginBottom = '0';
+  paidLabel.style.fontSize = '12px';
+  paidLabel.style.whiteSpace = 'nowrap';
+  paidLabel.style.cursor = 'pointer';
+  paidLabel.style.padding = '4px';
+  
+  const paidCheck = document.createElement('input');
+  paidCheck.type = 'checkbox';
+  paidCheck.className = 'ta-list-paid';
+  paidCheck.checked = isPaid;
+  paidCheck.style.margin = '0 3px 0 0';
+  paidCheck.style.transform = 'scale(1.3)';
+  
+  paidLabel.appendChild(paidCheck);
+  paidLabel.appendChild(document.createTextNode('繳費'));
   
   const delBtn = document.createElement('button');
   delBtn.type = 'button';
@@ -7236,6 +7287,8 @@ function addTaListRow(name = '') {
   delBtn.onclick = () => row.remove();
   
   row.appendChild(nameInput);
+  row.appendChild(levelInput);
+  row.appendChild(paidLabel);
   row.appendChild(delBtn);
   
   container.appendChild(row);
@@ -7286,9 +7339,18 @@ if (btnTaSave) {
     const name = document.getElementById('ta-template-name').value.trim();
     if (!name) return alert('請輸入範本名稱');
     
-    const inputs = document.querySelectorAll('.ta-list-name');
-    const names = Array.from(inputs).map(inp => inp.value.trim() || '__ANON__');
-    const content = names.join('\n');
+    const rows = document.querySelectorAll('#ta-list-container .ta-list-row');
+    const lines = [];
+    rows.forEach(row => {
+      let n = row.querySelector('.ta-list-name').value.trim() || '__ANON__';
+      const l = row.querySelector('.ta-list-level').value.trim();
+      const p = row.querySelector('.ta-list-paid').checked;
+      let line = n;
+      if (l) line += `(${l})`;
+      if (p) line += `(已繳費)`;
+      lines.push(line);
+    });
+    const content = lines.join('\n');
     
     if (!content) return alert('請輸入名單內容');
     

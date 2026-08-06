@@ -1993,6 +1993,36 @@ app.post('/api/admin/lobby_stats/:gid/delete', express.json(), async (req, res) 
   res.json({ success: true });
 });
 
+
+app.get('/api/users/:gid', (req, res) => {
+    const gid = req.params.gid;
+    try {
+        if (!fs.existsSync(lobbyVisitsFile)) return res.json({ success: true, users: [] });
+        const data = JSON.parse(fs.readFileSync(lobbyVisitsFile, 'utf8'));
+        if (!data[gid] || !data[gid].visits) return res.json({ success: true, users: [] });
+        
+        const userMap = new Map();
+        data[gid].visits.forEach(v => {
+            if (v.displayName && v.displayName.trim()) {
+                if (!userMap.has(v.displayName)) {
+                    userMap.set(v.displayName, v.lastVisit);
+                } else if (v.lastVisit > userMap.get(v.displayName)) {
+                    userMap.set(v.displayName, v.lastVisit);
+                }
+            }
+        });
+        
+        const sortedUsers = Array.from(userMap.entries())
+            .sort((a, b) => b[1] - a[1])
+            .map(e => ({ displayName: e[0] }));
+            
+        res.json({ success: true, users: sortedUsers });
+    } catch (e) {
+        console.error('Error fetching users:', e);
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 app.get('/api/templates/:gid', (req, res) => {
   const gid = req.params.gid;
   const templates = rosterTemplates[gid] || {};
