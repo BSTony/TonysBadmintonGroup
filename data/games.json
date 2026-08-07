@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786007121642,
+    "lastActiveTime": 1786011320663,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1606,7 +1606,9 @@
           "Dawson1",
           "Dawson2",
           "Gary",
-          "Harry"
+          "Harry",
+          "濰杰1",
+          "濰杰2"
         ]
       }
     ],
@@ -1632,9 +1634,25 @@
       "Dawson1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Dawson2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
-      "Harry": "U4a000207c2cd7539924a5c19b7506bba"
+      "Harry": "U4a000207c2cd7539924a5c19b7506bba",
+      "濰杰1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "濰杰2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/06 18:15",
+        "name": "濰杰2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/06 18:15",
+        "name": "濰杰1",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 17:05",
         "name": "Harry",
@@ -2044,9 +2062,9 @@
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
       "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C73ead06e46f4c3a00a3f87d946c7d18a",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-      "C073dd061239f9bc2df13af0a1ecb4bdb"
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1785744594526643",
     "title": "週日 港中團 (3時段可選)",
@@ -2058,7 +2076,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1785999294025,
+    "lastActiveTime": 1786035062834,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2071,7 +2089,7 @@
     "sections": [
       {
         "title": "8:00-10:00",
-        "limit": 19,
+        "limit": 16,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
@@ -2087,24 +2105,27 @@
           "Joe",
           "Ray Hsieh",
           "wayne",
-          "Sean柏宏"
+          "Sean柏宏",
+          "兔兔(玉儒)"
         ]
       },
       {
         "title": "10:00-12:00 (10-11開冷氣)",
-        "limit": 12,
+        "limit": 9,
         "backupLimit": 5,
         "fee": "210",
         "label": "",
         "list": [
           "周哲儁",
           "楊程鈞",
-          "小正"
+          "小正",
+          "Kevin",
+          "Mia"
         ]
       },
       {
         "title": "8:00-12:00 (10-11開冷氣)",
-        "limit": 10,
+        "limit": 13,
         "backupLimit": 5,
         "fee": "320",
         "label": "",
@@ -2115,7 +2136,11 @@
           "Jet",
           "蕭傑森",
           "羅",
-          "Hsin"
+          "Hsin",
+          "林立峰",
+          "Fb-阿倫",
+          "FB-祺緯",
+          "腳皮"
         ]
       }
     ],
@@ -2142,9 +2167,79 @@
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
-      "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d"
+      "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
+      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
+      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
+      "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
+      "Fb-阿倫": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "FB-祺緯": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a"
     },
     "history": [
+      {
+        "time": "08/07 00:51",
+        "name": "兔兔(玉儒)",
+        "operator": "兔兔(玉儒)",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/06 22:39",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/06 22:39",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/06 22:38",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/06 22:34",
+        "name": "FB-祺緯",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/06 22:32",
+        "name": "Fb-阿倫",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/06 20:50",
+        "name": "Mia",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/06 20:50",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/06 18:03",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/06 14:54",
         "name": "Hsin",
