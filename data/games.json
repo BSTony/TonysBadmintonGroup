@@ -2130,7 +2130,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786076631619,
+    "lastActiveTime": 1786111931177,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2178,7 +2178,8 @@
           "楊程鈞",
           "小正",
           "Kevin",
-          "Mia"
+          "Mia",
+          "Pu"
         ]
       },
       {
@@ -2239,9 +2240,17 @@
       "胞弟": "U09e4f0126678f203e0b139a474c17637",
       "Shawn1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Shawn2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
+      "Pu": "Ufc4b20dff9b2270f6e4ea5a3c5eb0d0b"
     },
     "history": [
+      {
+        "time": "08/07 22:12",
+        "name": "Pu",
+        "operator": "Pu",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/07 12:23",
         "name": "JoeLin",
