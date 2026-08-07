@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786073518596,
+    "lastActiveTime": 1786085236354,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1605,7 +1605,6 @@
           "昆泰",
           "Dawson1",
           "Dawson2",
-          "Gary",
           "Harry",
           "濰杰1",
           "濰杰2",
@@ -1641,6 +1640,13 @@
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "history": [
+      {
+        "time": "08/07 14:47",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/07 11:31",
         "name": "郭岳翰John",
