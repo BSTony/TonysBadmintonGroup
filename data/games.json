@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786087450136,
+    "lastActiveTime": 1786106555619,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1608,7 +1608,8 @@
           "濰杰2",
           "郭岳翰John",
           "Man cool1",
-          "Man cool2"
+          "Man cool2",
+          "小羅"
         ]
       }
     ],
@@ -1639,9 +1640,17 @@
       "濰杰2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Man cool1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Man cool2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Man cool2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "小羅": "U6d9e099c518efa25fd881c87e6e72dd7"
     },
     "history": [
+      {
+        "time": "08/07 20:42",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/07 15:24",
         "name": "Man cool2",
