@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786114087594,
+    "lastActiveTime": 1786114521092,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1607,7 +1607,8 @@
           "郭岳翰John",
           "Man cool1",
           "Man cool2",
-          "小羅"
+          "小羅",
+          "江こう 洋々"
         ]
       }
     ],
@@ -1639,9 +1640,17 @@
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Man cool1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Man cool2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "小羅": "U6d9e099c518efa25fd881c87e6e72dd7"
+      "小羅": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
     },
     "history": [
+      {
+        "time": "08/07 22:55",
+        "name": "江こう 洋々",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/07 22:48",
         "name": "濰杰2",
