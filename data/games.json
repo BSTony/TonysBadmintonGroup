@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786085236354,
+    "lastActiveTime": 1786085892655,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1595,7 +1595,6 @@
           "Sammy",
           "Kevin",
           "Mia",
-          "思翰1",
           "思翰2",
           "Andrew",
           "小可愛",
@@ -1640,6 +1639,13 @@
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "history": [
+      {
+        "time": "08/07 14:58",
+        "name": "思翰1",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/07 14:47",
         "name": "Gary",
