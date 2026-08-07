@@ -1,0 +1,3304 @@
+﻿diff --git a/public/app.js b/public/app.js
+index 7ceff0ec..edf42e77 100644
+--- a/public/app.js
++++ b/public/app.js
+@@ -1,6 +1,3216 @@
++
++async function loadLobbyUsers() {
++  if (!currentGroupId) return;
++  try {
++    const res = await fetch(`/api/users/${currentGroupId}`);
++    const data = await res.json();
++    if (res.ok && data.success) {
++      const datalist = document.getElementById('lobby-users');
++      datalist.innerHTML = '';
++      data.users.forEach(user => {
++        const option = document.createElement('option');
++        option.value = user.displayName;
++        datalist.appendChild(option);
++      });
++    }
++  } catch(e) {
++    console.error('Failed to load lobby users:', e);
++  }
++}
+ const imageCache = {};
+ 
+-function getTransparentImage(src, callback) {
++function getTransparentImage(src, callback) {
++  if (imageCache[src]) {
++    callback(imageCache[src]);
++    return;
++  }
++  const img = new Image();
++  img.crossOrigin = 'Anonymous';
++  img.onload = () => {
++    const canvas = document.createElement('canvas');
++    canvas.width = img.width;
++    canvas.height = img.height;
++    const ctx = canvas.getContext('2d');
++    ctx.drawImage(img, 0, 0);
++    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
++    const data = imageData.data;
++    for (let i = 0; i < data.length; i += 4) {
++      if (data[i] > 230 && data[i+1] > 230 && data[i+2] > 230) {
++        data[i+3] = 0;
++      }
++    }
++    ctx.putImageData(imageData, 0, 0);
++    imageCache[src] = canvas.toDataURL('image/png');
++    callback(imageCache[src]);
++  };
++  img.src = src;
++}
++
++function showFloatingEmoji(e, emoji) {
++  if (!e) return;
++  
++  // Inject keyframes for wiggling animation if not already present
++  if (!document.getElementById('floating-anim-style')) {
++    const style = document.createElement('style');
++    style.id = 'floating-anim-style';
++    style.innerHTML = `
++      @keyframes danceWiggle {
++        0% { transform: rotate(-15deg) translateY(0); }
++        25% { transform: rotate(15deg) translateY(-10px); }
++        50% { transform: rotate(-15deg) translateY(0); }
++        75% { transform: rotate(15deg) translateY(-10px); }
++        100% { transform: rotate(-15deg) translateY(0); }
++      }
++      @keyframes cryShake {
++        0% { transform: translateX(0); }
++        25% { transform: translateX(-3px) translateY(2px); }
++        50% { transform: translateX(3px) translateY(-2px); }
++        75% { transform: translateX(-3px) translateY(2px); }
++        100% { transform: translateX(0); }
++      }
++      @keyframes popNote {
++        0% { transform: translate(0, 0) scale(0); opacity: 0; }
++        20% { transform: translate(var(--dx), var(--dy)) scale(1.5); opacity: 1; }
++        80% { transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) * 2)) scale(1); opacity: 1; }
++        100% { transform: translate(calc(var(--dx) * 2), calc(var(--dy) * 3)) scale(0); opacity: 0; }
++      }
++    `;
++    document.head.appendChild(style);
++  }
++  
++  const isImage = emoji.endsWith('.png') || emoji.endsWith('.jpg') || emoji.endsWith('.gif');
++  
++  const createWrapper = (elContent) => {
++    const wrapper = document.createElement('div');
++    wrapper.style.position = 'fixed';
++    wrapper.style.left = (e.clientX - (isImage ? 35 : 20)) + 'px';
++    wrapper.style.top = (e.clientY - (isImage ? 35 : 25)) + 'px';
++    wrapper.style.pointerEvents = 'none';
++    wrapper.style.zIndex = '9999';
++    if (!isImage) {
++      wrapper.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.3))';
++    }
++    wrapper.style.transform = 'translateY(0) scale(0.3)';
++    wrapper.style.opacity = '1';
++    // Increased duration to 2s
++    wrapper.style.transition = 'transform 2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 2s ease-in-out';
++    
++    wrapper.appendChild(elContent);
++    document.body.appendChild(wrapper);
++    
++    void wrapper.offsetHeight;
++    
++    const randomX = (Math.random() * 60 - 30);
++    wrapper.style.transform = `translate(${randomX}px, -200px) scale(1.5)`;
++    wrapper.style.opacity = '0';
++    
++    setTimeout(() => wrapper.remove(), 2000);
++    return wrapper;
++  };
++
++  if (isImage) {
++    getTransparentImage(emoji, (transparentSrc) => {
++      const el = document.createElement('img');
++      el.src = transparentSrc;
++      el.style.width = '70px';
++      el.style.height = 'auto';
++      // Removed mixBlendMode because background is now truly transparent
++      
++      const isDance = emoji.includes('dance.png');
++      const isCry = emoji.includes('cry.png');
++      
++      if (isDance) {
++        el.style.animation = 'danceWiggle 0.6s ease-in-out infinite';
++      } else if (isCry) {
++        el.style.animation = 'cryShake 0.3s ease-in-out infinite';
++      }
++      
++      const wrapper = createWrapper(el);
++      
++      // Spawn independent music notes or tears
++      const symbols = isDance ? ['?', '?', '??] : ['?', '?', '?'];
++      for (let i = 0; i < 3; i++) {
++        const sym = document.createElement('div');
++        sym.innerText = symbols[i];
++        sym.style.position = 'absolute';
++        sym.style.fontSize = '24px';
++        sym.style.left = '20px';
++        sym.style.top = '20px';
++        sym.style.opacity = '0';
++        
++        // Random trajectory
++        const dx = (Math.random() - 0.5) * 80 + 'px';
++        const dy = (Math.random() * -60 - 20) + 'px';
++        sym.style.setProperty('--dx', dx);
++        sym.style.setProperty('--dy', dy);
++        
++        sym.style.animation = `popNote 1.5s ease-out ${Math.random() * 0.3}s forwards`;
++        wrapper.appendChild(sym);
++      }
++    });
++  } else {
++    const el = document.createElement('div');
++    el.innerText = emoji;
++    el.style.fontSize = '40px';
++    createWrapper(el);
++  }
++}
++
++// === ?典????===
++let currentUser = null;
++let currentGroupId = null;
++let currentDetailGame = null;
++let gamesList = [];
++let globalIsAdmin = false;
++let globalIsSuperAdmin = false;
++let easterEggEnabled = false;
++let easterEggActiveGame = 'piggy_run';
++let piggyClicks = 0;
++let piggyRunning = false;
++let piggyBaseSpeed = 3;
++let globalManagedGroups = [];
++let globalLobbyTitle = '蝢賜??仿?憭批輒';
++let currentGameDetailId = null;
++let lastGamesJson = '';
++let currentSimulatedRole = sessionStorage.getItem('simulatedRole') || 'superAdmin';
++
++function getEffectiveRole() {
++  if (!globalIsSuperAdmin) {
++    return {
++      isAdmin: globalIsAdmin,
++      isSuperAdmin: false
++    };
++  }
++  const role = currentSimulatedRole || 'superAdmin';
++  if (role === 'user') {
++    return { isAdmin: false, isSuperAdmin: false };
++  } else if (role === 'groupAdmin') {
++    return { isAdmin: true, isSuperAdmin: false };
++  } else {
++    return { isAdmin: true, isSuperAdmin: true };
++  }
++}
++
++function handleRoleSwitch(role) {
++  currentSimulatedRole = role;
++  sessionStorage.setItem('simulatedRole', role);
++  if (currentGameDetailId && typeof detailView !== 'undefined' && detailView && !detailView.classList.contains('hidden')) {
++    renderDetail(currentGameDetailId, true);
++  } else {
++    renderLobby();
++  }
++  if (typeof fetchGroupBuyData === 'function') fetchGroupBuyData();
++}
++window.handleRoleSwitch = handleRoleSwitch;
++
++// DOM ??
++const appDiv = document.getElementById('app');
++const statusMsg = document.getElementById('status-msg');
++const lobbyView = document.getElementById('lobby-view');
++const detailView = document.getElementById('detail-view');
++const gamesContainer = document.getElementById('games-container');
++const noGamesMsg = document.getElementById('no-games-msg');
++
++const btnBack = document.getElementById('btn-back');
++const detailTitle = document.getElementById('detail-title');
++const detailCount = document.getElementById('detail-count');
++const detailList = document.getElementById('detail-list');
++
++const statsView = document.getElementById('stats-view');
++const btnLobbyStats = document.getElementById('btn-lobby-stats');
++const btnSystemLogs = document.getElementById('btn-system-logs');
++const systemLogsView = document.getElementById('system-logs-view');
++const btnPartyAdmin = document.getElementById('btn-party-admin');
++const partyAdminView = document.getElementById('party-admin-view');
++const btnBackParty = document.getElementById('btn-back-party');
++const btnBackLogs = document.getElementById('btn-back-logs');
++const systemLogsContainer = document.getElementById('system-logs-container');
++const btnBackStats = document.getElementById('btn-back-stats');
++const statsGroupsContainer = document.getElementById('stats-groups-container');
++
++// Easter Egg DOM
++const btnEasterEgg = document.getElementById('btn-easter-egg');
++const easterEggSettingsView = document.getElementById('easter-egg-settings-view');
++const btnBackEasterEgg = document.getElementById('btn-back-easter-egg');
++const btnSaveEasterEgg = document.getElementById('btn-save-easter-egg');
++const btnClearWinners = document.getElementById('btn-clear-winners');
++const eeEnabledCheckbox = document.getElementById('ee-enabled');
++const eeMessageInput = document.getElementById('ee-message');
++const eeQuotaInput = document.getElementById('ee-quota');
++const eeWinnersCount = document.getElementById('ee-winners-count');
++const eeWinnersList = document.getElementById('ee-winners-list');
++const piggyIcon = document.querySelector('.header-icon');
++const confettiContainer = document.getElementById('confetti-container');
++const easterEggModal = document.getElementById('easter-egg-modal');
++const easterEggMsg = document.getElementById('easter-egg-msg');
++const eeActiveGameSelect = document.getElementById('ee-active-game');
++const bhContainer = document.getElementById('bh-container');
++const bhTimer = document.getElementById('bh-timer');
++const bhEntities = document.getElementById('bh-entities');
++const bhGameoverModal = document.getElementById('bh-gameover-modal');
++const bhFinalTime = document.getElementById('bh-final-time');
++const bhLeaderboardList = document.getElementById('bh-leaderboard-list');
++const btnBhRestart = document.getElementById('btn-bh-restart');
++const btnBhClose = document.getElementById('btn-bh-close');
++
++// --- Unified Room Admin DOM ---
++const roomGameType = document.getElementById('room-game-type');
++const btnOpenRoom = document.getElementById('btn-open-room');
++// unifiedRoomOverlay, btnCloseRoom, btnJoinRoom, lotteryCanvasContainer, roomPoolDisplayList
++// are already declared in lottery.js (loaded first)
++const btnToggleAdminPanel = document.getElementById('btn-toggle-admin-panel');
++const roomAdminPanel = document.getElementById('room-admin-panel');
++const roomAdminHeader = document.getElementById('room-admin-header');
++const btnMinimizeAdminPanel = document.getElementById('btn-minimize-admin-panel');
++const adminLotteryControls = document.getElementById('admin-lottery-controls');
++const adminSurvivalControls = document.getElementById('admin-survival-controls');
++const adminPinballControls = document.getElementById('admin-pinball-controls');
++var pinballContainer = pinballContainer || document.getElementById('pinball-container');
++
++const partyWinType = document.getElementById('party-win-type');
++const partyWinValue = document.getElementById('party-win-value');
++const partyAdminStatus = document.getElementById('party-admin-status');
++const partyJoinContainer = document.getElementById('party-join-container');
++const btnJoinParty = document.getElementById('btn-join-party');
++
++// --- Lottery Admin DOM ---
++const btnImportLobbyUsers = document.getElementById('btn-import-lobby-users');
++const lotteryManualName = document.getElementById('lottery-manual-name');
++const btnAddManualName = document.getElementById('btn-add-manual-name');
++const lotteryPoolCount = document.getElementById('lottery-pool-count');
++const lotteryPoolList = document.getElementById('lottery-pool-list');
++const btnResetLottery = document.getElementById('btn-reset-lottery');
++const lotteryDrawCount = document.getElementById('lottery-draw-count');
++const lotteryAssigneeSelect = document.getElementById('lottery-assignee-select');
++const btnAssignDraw = document.getElementById('btn-assign-draw');
++
++let lotteryAdminPool = [];
++
++let currentPartyStatus = 'idle';
++let partyLobbyNames = [];
++
++function updateAdminLobbyStatus() {
++  if (!partyAdminStatus) return;
++  const namesStr = partyLobbyNames.length > 0 ? partyLobbyNames.join(', ') : '??;
++  partyAdminStatus.innerHTML = `??? ${currentPartyStatus} (鈭箸: ${partyLobbyNames.length})<br><span style="font-size: 13px; color: #555; font-weight: normal;">撌脣??? ${namesStr}</span>`;
++}
++
++let socket = null;
++let partyOthers = {};
++let currentGlobalRoomState = null;
++let hasEnteredParty = false;
++const partyActiveBanner = document.getElementById('party-active-banner');
++const btnEnterParty = document.getElementById('btn-enter-party');
++
++if (btnEnterParty) {
++  btnEnterParty.addEventListener('click', () => {
++    hasEnteredParty = true;
++    updateUnifiedRoomUI();
++  });
++}
++
++function updateUnifiedRoomUI() {
++  if (!currentGlobalRoomState) return;
++  if (currentGlobalRoomState.status === 'open') {
++    if (partyActiveBanner) partyActiveBanner.classList.remove('hidden');
++    
++    if (hasEnteredParty) {
++      if (partyActiveBanner) partyActiveBanner.classList.add('hidden');
++      unifiedRoomOverlay.classList.remove('hidden');
++      if (globalIsSuperAdmin) {
++        btnToggleAdminPanel.classList.remove('hidden');
++        roomAdminPanel.classList.remove('hidden');
++      } else {
++        btnToggleAdminPanel.classList.add('hidden');
++        roomAdminPanel.classList.add('hidden');
++      }
++      
++      if (currentGlobalRoomState.activeGame === 'lottery') {
++        lotteryCanvasContainer.classList.remove('hidden');
++        bhContainer.classList.add('hidden'); // HIDE bh-container so it doesn't cover lottery
++        const bhScore = document.getElementById('bh-score');
++        if (bhScore) bhScore.classList.add('hidden');
++        const bhWaitText = document.getElementById('bh-waiting-text');
++        if (bhWaitText) bhWaitText.classList.add('hidden');
++        adminLotteryControls.classList.remove('hidden');
++        adminSurvivalControls.classList.add('hidden');
++        if (adminPinballControls) adminPinballControls.classList.add('hidden');
++        if (pinballContainer) pinballContainer.classList.add('hidden');
++      } else if (currentGlobalRoomState.activeGame === 'survival') {
++        // Restore overlay styles
++        unifiedRoomOverlay.style.background = 'rgba(0,0,0,0.9)';
++        unifiedRoomOverlay.style.pointerEvents = 'auto';
++        
++        lotteryCanvasContainer.classList.add('hidden');
++        bhContainer.classList.remove('hidden');
++        bhContainer.style.pointerEvents = 'auto';
++        const bhScore = document.getElementById('bh-score');
++        if (bhScore) bhScore.classList.remove('hidden');
++        const bhWaitText = document.getElementById('bh-waiting-text');
++        if (bhWaitText && !bhIsPlaying) bhWaitText.classList.remove('hidden');
++        adminLotteryControls.classList.add('hidden');
++        adminSurvivalControls.classList.remove('hidden');
++        if (adminPinballControls) adminPinballControls.classList.add('hidden');
++        if (pinballContainer) pinballContainer.classList.add('hidden');
++      } else if (currentGlobalRoomState.activeGame === 'pinball') {
++        lotteryCanvasContainer.classList.add('hidden');
++        bhContainer.classList.add('hidden');
++        if (pinballContainer) pinballContainer.classList.remove('hidden');
++        adminLotteryControls.classList.add('hidden');
++        adminSurvivalControls.classList.add('hidden');
++        if (adminPinballControls) adminPinballControls.classList.remove('hidden');
++        
++        // Keep overlay blocking so users cannot click background UI, but can click pinball canvas
++        unifiedRoomOverlay.style.background = 'rgba(0,0,0,0.9)';
++        unifiedRoomOverlay.style.pointerEvents = 'auto';
++        
++        // Ensure child panels remain clickable
++        document.getElementById('room-admin-panel').style.pointerEvents = 'auto';
++        const topButtons = document.querySelector('#unified-room-overlay > div:first-child');
++        if (topButtons) topButtons.style.pointerEvents = 'auto';
++        const pPanel = document.getElementById('room-participants-panel');
++        if (pPanel) pPanel.style.pointerEvents = 'auto';
++        
++        // Ensure pinball canvas catches clicks
++        if (pinballContainer) pinballContainer.style.pointerEvents = 'auto';
++      }
++    } else {
++      unifiedRoomOverlay.classList.add('hidden');
++    }
++  } else {
++    hasEnteredParty = false;
++    if (partyActiveBanner) partyActiveBanner.classList.add('hidden');
++    unifiedRoomOverlay.classList.add('hidden');
++    bhContainer.classList.add('hidden');
++    if (typeof bhGameoverModal !== 'undefined' && bhGameoverModal) {
++      bhGameoverModal.classList.add('hidden');
++    }
++    lotteryCanvasContainer.classList.add('hidden');
++    if (pinballContainer) pinballContainer.classList.add('hidden');
++    if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
++    if (bhEntities) bhEntities.innerHTML = '';
++    bhIsPlaying = false;
++  }
++}
++
++function initSocket() {
++  if (socket) return;
++  socket = io();
++  
++  if (typeof bindLotteryAdminSocket === 'function') {
++    bindLotteryAdminSocket(socket);
++  }
++  if (typeof bindLotterySocket === 'function') {
++    bindLotterySocket(socket);
++  }
++  if (typeof bindPinballSocket === 'function') {
++    bindPinballSocket(socket);
++  }
++  
++  socket.on('group_buy_state_updated', (res) => {
++    fetchGroupBuyData();
++  });
++  
++  socket.on('global_room_state', (state) => {
++    window.globalRoomState = state;
++    currentGlobalRoomState = state;
++    updateUnifiedRoomUI();
++  });
++  
++  socket.on('party_state', (state) => {
++    currentPartyStatus = state.status;
++    partyLobbyNames = state.players ? Object.values(state.players).map(p => p.name) : [];
++    
++    const adminPlayBtn = document.getElementById('btn-bh-admin-play');
++    
++    if (state.status === 'lobby') {
++      if (adminPlayBtn) adminPlayBtn.classList.remove('hidden');
++      const hasJoined = state.players && socket && state.players[socket.id];
++      if (currentGlobalRoomState && !hasJoined) {
++        btnJoinRoom.classList.remove('hidden');
++      } else {
++        btnJoinRoom.classList.add('hidden');
++      }
++      
++      const waitingText = document.getElementById('bh-waiting-text');
++      if (waitingText) {
++        if (hasJoined) {
++          waitingText.classList.remove('hidden');
++          if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
++            waitingText.innerText = '隢??喳?批?Ｘ???';
++          } else {
++            waitingText.innerText = '蝑?蝞∠???憪???..';
++          }
++        } else {
++          waitingText.classList.add('hidden');
++        }
++      }
++    } else if (state.status === 'playing') {
++      if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
++      btnJoinRoom.classList.add('hidden');
++      const waitingText = document.getElementById('bh-waiting-text');
++      if (waitingText) waitingText.classList.add('hidden');
++    } else {
++      if (adminPlayBtn) adminPlayBtn.classList.add('hidden');
++      btnJoinRoom.classList.add('hidden');
++    }
++    
++    // Update right-side participants list for survival
++    if (currentGlobalRoomState && currentGlobalRoomState.activeGame === 'survival') {
++      roomPoolDisplayList.innerHTML = '';
++      if (state.players) {
++        Object.values(state.players).forEach(p => {
++          const li = document.createElement('li');
++          li.innerText = p.name;
++          if (!p.alive) li.style.textDecoration = 'line-through';
++          roomPoolDisplayList.appendChild(li);
++        });
++      }
++    }
++    
++    // Render existing players if we are in the lobby or playing
++    if (state.status === 'lobby' || state.status === 'playing') {
++      if (state.players) {
++        Object.values(state.players).forEach(p => {
++          if (p.id !== socket.id) {
++            createOtherPlayer(p);
++          }
++        });
++      }
++    }
++  });
++  
++  socket.on('player_joined', (p) => {
++    if (!partyLobbyNames.includes(p.name)) {
++      partyLobbyNames.push(p.name);
++      updateAdminLobbyStatus();
++    }
++    createOtherPlayer(p);
++  });
++  
++  socket.on('player_left', (p) => {
++    partyLobbyNames = partyLobbyNames.filter(n => n !== p.name);
++    updateAdminLobbyStatus();
++    if (partyOthers[p.id]) {
++      partyOthers[p.id].remove();
++      delete partyOthers[p.id];
++    }
++  });
++  
++  socket.on('player_moved', (data) => {
++    if (partyOthers[data.id]) {
++      partyOthers[data.id].style.left = (data.x * window.innerWidth) + 'px';
++      partyOthers[data.id].style.top = (data.y * window.innerHeight) + 'px';
++    }
++  });
++  
++  socket.on('player_died', (data) => {
++    if (partyOthers[data.id]) {
++      const iconEl = partyOthers[data.id].querySelector('.bh-icon');
++      if (iconEl) iconEl.innerText = '??';
++    }
++    if (data.id === socket.id && bhPlayer) {
++      const iconEl = bhPlayer.querySelector('.bh-icon');
++      if (iconEl) iconEl.innerText = '??';
++    }
++  });
++  
++  socket.on('party_play', (data) => {
++    bhIsPlaying = true;
++    bhStartTime = performance.now(); // Ignore data.startTime to align with requestAnimationFrame's timestamp
++    if (partyJoinContainer) partyJoinContainer.classList.add('hidden');
++    if (btnJoinRoom) btnJoinRoom.classList.add('hidden');
++    if (roomAdminPanel) roomAdminPanel.classList.add('hidden');
++    if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
++    if (bhContainer) bhContainer.classList.remove('hidden');
++    
++    const waitingText = document.getElementById('bh-waiting-text');
++    if (waitingText) waitingText.classList.add('hidden');
++    
++    // Auto-minimize participant panel to prevent covering the screen
++    const pPanel = document.getElementById('room-participants-panel');
++    if (pPanel) {
++      pPanel.classList.add('hidden');
++    }
++    
++    // Clear old entities
++    bhBullets.forEach(b => b.el.remove());
++    bhBullets = [];
++    bhWalls.forEach(w => w.el.remove());
++    bhWalls = [];
++    bhItems.forEach(i => i.el.remove());
++    bhItems = [];
++    
++    // Reset players
++    if (bhPlayer) {
++      const iconEl = bhPlayer.querySelector('.bh-icon');
++      if (iconEl) iconEl.innerText = selectedCharacterIcon;
++      bhPlayer.classList.remove('bh-invincible');
++      updateLives(3);
++    }
++    Object.values(partyOthers).forEach(el => {
++      const iconEl = el.querySelector('.bh-icon');
++      if (iconEl && el._originalIcon) iconEl.innerText = el._originalIcon;
++      el.classList.remove('bh-invincible');
++    });
++    
++    // ?芸?蝮桀??銝?敶梢?恍
++    if (typeof btnToggleParticipants !== 'undefined' && btnToggleParticipants) {
++      if (typeof isPanelMinimized !== 'undefined' && !isPanelMinimized) {
++        btnToggleParticipants.click();
++      }
++    }
++    
++    requestAnimationFrame(bhPartyLoop);
++  });
++  
++  socket.on('spawn_bullet', (b) => {
++    if (bhIsPlaying) spawnServerBullet(b);
++  });
++  
++  socket.on('spawn_wall', (w) => {
++    if (bhIsPlaying) spawnServerWall(w);
++  });
++  
++  socket.on('spawn_item', (item) => {
++    if (bhIsPlaying) spawnServerItem(item);
++  });
++  
++  socket.on('player_damaged', (data) => {
++    if (partyOthers[data.id]) {
++      // visual feedback?
++    }
++    if (data.id === socket.id && bhPlayer) {
++      updateLives(data.lives);
++      bhPlayer.classList.add('bh-invincible'); // reuse rainbow or just blink
++      setTimeout(() => bhPlayer.classList.remove('bh-invincible'), 2000);
++    }
++  });
++  
++  socket.on('player_healed', (data) => {
++    removeItem(data.itemId);
++    if (data.id === socket.id) updateLives(data.lives);
++  });
++  
++  socket.on('player_invincible', (data) => {
++    removeItem(data.itemId);
++    if (partyOthers[data.id]) partyOthers[data.id].classList.add('bh-invincible');
++    if (data.id === socket.id && bhPlayer) {
++      bhPlayer.classList.add('bh-invincible');
++      setTimeout(() => bhPlayer.classList.remove('bh-invincible'), 5000);
++    }
++  });
++  
++  socket.on('wall_destroyed', (data) => {
++    removeWall(data.wallId);
++  });
++  
++  socket.on('party_ended', (data) => {
++    bhIsPlaying = false;
++    bhGameoverModal.classList.remove('hidden');
++    document.getElementById('bh-gameover-title').innerText = '瘣曉?蝯?嚗?;
++    bhFinalTime.innerText = data.elapsed.toFixed(2);
++    renderBhLeaderboard(data.leaderboard);
++    
++    const isWinner = data.winners.some(w => w.uid === currentUser.userId);
++    if (isWinner && bhPlayer) bhPlayer.innerHTML = '??';
++    
++    // 頞恣憿舐內??靘???/ 蝯?瘥魚????嚗??祉摰園＊蝷箇?敺?摮?+    const bhSuperadminActions = document.getElementById('bh-superadmin-actions');
++    const waitingText = document.getElementById('bh-waiting-admin-text');
++    if (typeof globalIsSuperAdmin !== 'undefined' && globalIsSuperAdmin) {
++      if (bhSuperadminActions) bhSuperadminActions.classList.remove('hidden');
++      if (waitingText) waitingText.classList.add('hidden');
++      if (btnBhRestart) {
++        btnBhRestart.innerText = '???輸?(銝?祈?蝒?';
++        btnBhRestart.classList.add('hidden'); // We use superadmin actions instead
++      }
++    } else {
++      if (bhSuperadminActions) bhSuperadminActions.classList.add('hidden');
++      if (waitingText) waitingText.classList.remove('hidden');
++      if (btnBhRestart) {
++        btnBhRestart.classList.add('hidden');
++      }
++    }
++  });
++}
++
++function createOtherPlayer(p) {
++  if (partyOthers[p.id] || p.id === (socket ? socket.id : '')) return;
++  const el = document.createElement('div');
++  el.className = 'bh-player';
++  el.style.opacity = '0.5'; // Ghost appearance for others
++  el.innerHTML = `
++    <div class="bh-icon">${p.alive ? (p.icon || '?') : '??'}</div>
++    <div class="bh-player-name">${p.name}</div>
++  `;
++  el._originalIcon = p.icon || '?';
++  el.style.left = (p.x * window.innerWidth) + 'px';
++  el.style.top = (p.y * window.innerHeight) + 'px';
++  bhEntities.appendChild(el);
++  partyOthers[p.id] = el;
++}
++
++let selectedCharacterIcon = '?';
++
++function joinPartyLobby() {
++  initSocket();
++  if (typeof btnJoinRoom !== 'undefined' && btnJoinRoom) {
++    btnJoinRoom.classList.add('hidden');
++  }
++  bhContainer.classList.remove('hidden');
++  bhGameoverModal.classList.add('hidden');
++  bhEntities.innerHTML = '';
++  partyOthers = {};
++  bhBullets = [];
++  bhWalls = [];
++  bhItems = [];
++  bhIsPlaying = false; // waiting for party_play
++  
++  if (globalIsSuperAdmin) {
++    const adminControls = document.getElementById('bh-admin-controls');
++    if (adminControls) adminControls.classList.remove('hidden');
++    const modeContainer = document.getElementById('admin-mode-container');
++    if (modeContainer) modeContainer.classList.remove('hidden');
++  }
++  
++  bhPlayer = document.createElement('div');
++  bhPlayer.className = 'bh-player';
++  bhPlayer.innerHTML = `
++    <div class="bh-icon">${selectedCharacterIcon}</div>
++    <div class="bh-player-name">${currentUser.displayName}</div>
++  `;
++  
++  const livesEl = document.createElement('div');
++  livesEl.className = 'bh-lives';
++  livesEl.id = 'bh-lives-display';
++  livesEl.innerText = '?歹??歹??歹?';
++  bhPlayer.appendChild(livesEl);
++  
++  const initialX = window.innerWidth / 2 - 15;
++  const initialY = window.innerHeight - 100;
++  bhPlayer.style.left = initialX + 'px';
++  bhPlayer.style.top = initialY + 'px';
++  bhEntities.appendChild(bhPlayer);
++  
++  const pctX = initialX / window.innerWidth;
++  const pctY = initialY / window.innerHeight;
++  socket.emit('join_party', { uid: currentUser.userId, name: currentUser.displayName, icon: selectedCharacterIcon, x: pctX, y: pctY });
++  
++  // Request fresh state after a short delay to ensure we have all players
++  setTimeout(() => {
++    if (socket) socket.emit('request_party_state');
++  }, 500);
++  
++  // Smooth movement system
++  let targetX = initialX;
++  let targetY = initialY;
++  let currentX = initialX;
++  let currentY = initialY;
++  const MOVE_SPEED = 6; // pixels per frame
++  let isDragging = false;
++  let lastSentX = initialX;
++  let lastSentY = initialY;
++  
++  const onPointerDown = (e) => { isDragging = true; setTarget(e); };
++  const onPointerMove = (e) => { if (isDragging) setTarget(e); };
++  const onPointerUp = (e) => { isDragging = false; };
++  
++  function setTarget(e) {
++    const touch = e.touches ? e.touches[0] : e;
++    targetX = Math.max(0, Math.min(window.innerWidth - 30, touch.clientX - 15));
++    targetY = Math.max(0, Math.min(window.innerHeight - 30, touch.clientY - 15));
++  }
++  
++  // Store movement update function on bhContainer so bhPartyLoop can call it
++  bhContainer._updateMovement = function() {
++    const dx = targetX - currentX;
++    const dy = targetY - currentY;
++    const dist = Math.sqrt(dx * dx + dy * dy);
++    
++    if (dist < 1) return; // Already at target
++    
++    const step = Math.min(MOVE_SPEED, dist);
++    let newX = currentX + (dx / dist) * step;
++    let newY = currentY + (dy / dist) * step;
++    newX = Math.max(0, Math.min(window.innerWidth - 30, newX));
++    newY = Math.max(0, Math.min(window.innerHeight - 30, newY));
++    
++    // Wall collision
++    const isInvincible = bhPlayer.classList.contains('bh-invincible');
++    let hitWall = null;
++    for (let w of bhWalls) {
++      if (newX + 30 > w.left && newX < w.right && newY + 30 > w.top && newY < w.bottom) {
++        hitWall = w;
++        break;
++      }
++    }
++    
++    if (hitWall) {
++      if (isInvincible) {
++        socket.emit('destroy_wall', { wallId: hitWall.id });
++      } else {
++        return; // Blocked by wall
++      }
++    }
++    
++    currentX = newX;
++    currentY = newY;
++    bhPlayer.style.left = newX + 'px';
++    bhPlayer.style.top = newY + 'px';
++    
++    // Only emit position if moved enough to reduce network traffic
++    if (Math.abs(newX - lastSentX) > 2 || Math.abs(newY - lastSentY) > 2) {
++      socket.emit('player_move', { x: newX / window.innerWidth, y: newY / window.innerHeight });
++      lastSentX = newX;
++      lastSentY = newY;
++    }
++  };
++  
++  bhContainer.addEventListener('pointerdown', onPointerDown);
++  bhContainer.addEventListener('pointermove', onPointerMove);
++  window.addEventListener('pointerup', onPointerUp);
++  
++  // Lobby movement loop (runs before game starts)
++  function lobbyMoveLoop() {
++    if (bhIsPlaying) return; // bhPartyLoop takes over
++    if (bhContainer._updateMovement) bhContainer._updateMovement();
++    requestAnimationFrame(lobbyMoveLoop);
++  }
++  requestAnimationFrame(lobbyMoveLoop);
++  
++  bhContainer._cleanupEvents = () => {
++    bhContainer.removeEventListener('pointerdown', onPointerDown);
++    bhContainer.removeEventListener('pointermove', onPointerMove);
++    window.removeEventListener('pointerup', onPointerUp);
++    bhContainer._updateMovement = null;
++  };
++}
++
++function spawnServerBullet(b) {
++  const el = document.createElement('div');
++  el.className = 'bh-bullet';
++  el.innerHTML = '?';
++  
++  const startX = b.startX * window.innerWidth;
++  const targetX = b.targetX * window.innerWidth;
++  const startY = b.startY * window.innerHeight;
++  const targetY = b.targetY * window.innerHeight;
++  
++  const angle = Math.atan2(targetY - startY, targetX - startX);
++  const speed = 4; // Constant base speed for sync
++  
++  const vx = Math.cos(angle) * speed;
++  const vy = Math.sin(angle) * speed;
++  
++  bhEntities.appendChild(el);
++  bhBullets.push({ el, x: startX, y: startY, vx, vy, speedMultiplier: b.speedMultiplier });
++}
++
++function spawnServerWall(w) {
++  const el = document.createElement('div');
++  el.className = 'bh-wall';
++  const width = w.width * window.innerWidth;
++  const height = w.height * window.innerHeight;
++  const x = w.x * window.innerWidth;
++  const y = w.y * window.innerHeight;
++  
++  el.style.width = width + 'px';
++  el.style.height = height + 'px';
++  el.style.left = x + 'px';
++  el.style.top = y + 'px';
++  
++  bhEntities.appendChild(el);
++  bhWalls.push({ id: w.id, el, left: x, right: x + width, top: y, bottom: y + height });
++}
++
++function spawnServerItem(item) {
++  const el = document.createElement('div');
++  el.className = item.type === 'heart' ? 'bh-heart' : 'bh-star';
++  el.innerHTML = item.type === 'heart' ? '?歹?' : '潃?;
++  const x = item.x * window.innerWidth;
++  const y = item.y * window.innerHeight;
++  
++  el.style.left = x + 'px';
++  el.style.top = y + 'px';
++  
++  bhEntities.appendChild(el);
++  bhItems.push({ id: item.id, type: item.type, el, x, y });
++}
++
++function removeWall(id) {
++  const idx = bhWalls.findIndex(w => w.id === id);
++  if (idx !== -1) {
++    bhWalls[idx].el.remove();
++    bhWalls.splice(idx, 1);
++  }
++}
++
++function removeItem(id) {
++  const idx = bhItems.findIndex(i => i.id === id);
++  if (idx !== -1) {
++    bhItems[idx].el.remove();
++    bhItems.splice(idx, 1);
++  }
++}
++
++function updateLives(lives) {
++  const display = document.getElementById('bh-lives-display');
++  if (display) {
++    display.innerText = '?歹?'.repeat(lives);
++  }
++}
++
++function bhPartyLoop(timestamp) {
++  if (!bhIsPlaying) return;
++  
++  // Update smooth player movement
++  if (bhContainer._updateMovement) bhContainer._updateMovement();
++  
++  const elapsed = timestamp - bhStartTime; 
++  bhTimer.innerText = (elapsed / 1000).toFixed(2);
++  
++  const pRect = bhPlayer.getBoundingClientRect();
++  const px = pRect.left + pRect.width / 2;
++  const py = pRect.top + pRect.height / 2;
++  const playerHitbox = { left: pRect.left + 10, right: pRect.right - 10, top: pRect.top + 10, bottom: pRect.bottom - 10 };
++
++  for (let i = bhBullets.length - 1; i >= 0; i--) {
++    let b = bhBullets[i];
++    
++    b.y += b.vy * b.speedMultiplier;
++    b.x += b.vx * b.speedMultiplier;
++    
++    b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
++    
++    if (b.y > window.innerHeight + 100 || b.y < -100 || b.x < -100 || b.x > window.innerWidth + 100) {
++      b.el.remove();
++      bhBullets.splice(i, 1);
++      continue;
++    }
++    
++    if (bhPlayer.innerHTML !== '??' &&
++      b.x + 20 > playerHitbox.left && b.x + 10 < playerHitbox.right &&
++      b.y + 20 > playerHitbox.top && b.y + 10 < playerHitbox.bottom
++    ) {
++      if (!bhPlayer.classList.contains('bh-invincible')) {
++        socket.emit('player_hit');
++        // Player visual updates are handled by server events now
++      }
++    }
++  }
++  
++  // Item collisions
++  for (let i = bhItems.length - 1; i >= 0; i--) {
++    let item = bhItems[i];
++    if (bhPlayer.innerHTML !== '??' &&
++      item.x + 20 > playerHitbox.left && item.x + 10 < playerHitbox.right &&
++      item.y + 20 > playerHitbox.top && item.y + 10 < playerHitbox.bottom
++    ) {
++      socket.emit('player_collect', { type: item.type, itemId: item.id });
++      // Predictively remove from view
++      item.el.remove();
++      bhItems.splice(i, 1);
++    }
++  }
++  requestAnimationFrame(bhPartyLoop);
++}
++
++if (btnJoinParty) {
++  btnJoinParty.addEventListener('click', () => {
++    const modal = document.getElementById('character-select-modal');
++    const grid = document.getElementById('character-grid');
++    const btnConfirm = document.getElementById('btn-confirm-character');
++    const btnCancel = document.getElementById('btn-cancel-character');
++    
++    if (modal && grid) {
++      grid.innerHTML = '';
++      const chars = ['?', '?', '?', '?', '??', '?', '?', '?', '??', '?'];
++      chars.forEach(c => {
++        const btn = document.createElement('button');
++        btn.className = 'char-btn';
++        btn.innerText = c;
++        btn.onclick = () => {
++          document.querySelectorAll('.char-btn').forEach(b => b.classList.remove('selected'));
++          btn.classList.add('selected');
++          selectedCharacterIcon = c;
++          btnConfirm.disabled = false;
++        };
++        grid.appendChild(btn);
++      });
++      
++      btnConfirm.onclick = () => {
++        modal.classList.add('hidden');
++        joinPartyLobby();
++        partyJoinContainer.classList.add('hidden');
++      };
++      
++      btnCancel.onclick = () => {
++        modal.classList.add('hidden');
++      };
++      
++      modal.classList.remove('hidden');
++    } else {
++      // Fallback
++      joinPartyLobby();
++      partyJoinContainer.classList.add('hidden');
++    }
++  });
++}
++
++
++// --- Bullet Hell Game Logic ---
++let bhStartTime = 0;
++let bhPlayer = null;
++let bhBullets = [];
++let bhWalls = [];
++let bhItems = [];
++let bhIsPlaying = false;
++let bhSpawnRate = 1000;
++let bhLastSpawn = 0;
++
++function startBulletHell() {
++  bhContainer.classList.remove('hidden');
++  bhGameoverModal.classList.add('hidden');
++  bhEntities.innerHTML = '';
++  bhBullets = [];
++  bhWalls = [];
++  bhItems = [];
++  bhStartTime = performance.now();
++  bhIsPlaying = true;
++  bhSpawnRate = 1000;
++  
++  bhPlayer = document.createElement('div');
++  bhPlayer.className = 'bh-player';
++  bhPlayer.innerHTML = `
++    <div class="bh-icon">?</div>
++    <div class="bh-player-name">${currentUser.displayName}</div>
++  `;
++  
++  const livesEl = document.createElement('div');
++  livesEl.className = 'bh-lives';
++  livesEl.id = 'bh-lives-display';
++  livesEl.innerText = '?歹??歹??歹?';
++  bhPlayer.appendChild(livesEl);
++  
++  bhPlayer.style.left = (window.innerWidth / 2 - 15) + 'px';
++  bhPlayer.style.top = (window.innerHeight - 100) + 'px';
++  bhEntities.appendChild(bhPlayer);
++  
++  let isDragging = false;
++  
++  const onPointerDown = (e) => {
++    isDragging = true;
++    updatePlayerPos(e);
++  };
++  const onPointerMove = (e) => {
++    if (!isDragging || !bhIsPlaying) return;
++    updatePlayerPos(e);
++  };
++  const onPointerUp = (e) => {
++    isDragging = false;
++  };
++  
++  function updatePlayerPos(e) {
++    const touch = e.touches ? e.touches[0] : e;
++    let newX = touch.clientX - 15;
++    let newY = touch.clientY - 15;
++    newX = Math.max(0, Math.min(window.innerWidth - 30, newX));
++    newY = Math.max(0, Math.min(window.innerHeight - 30, newY));
++    
++    // Wall collision
++    const isInvincible = bhPlayer.classList.contains('bh-invincible');
++    let hitWall = null;
++    for (let w of bhWalls) {
++      if (newX + 30 > w.left && newX < w.right && newY + 30 > w.top && newY < w.bottom) {
++        hitWall = w;
++        break;
++      }
++    }
++    
++    if (hitWall) {
++      if (!isInvincible) {
++        return; // Prevent movement
++      }
++    }
++    
++    bhPlayer.style.left = newX + 'px';
++    bhPlayer.style.top = newY + 'px';
++  }
++  
++  bhContainer.addEventListener('pointerdown', onPointerDown);
++  bhContainer.addEventListener('pointermove', onPointerMove);
++  window.addEventListener('pointerup', onPointerUp);
++  
++  bhContainer._cleanupEvents = () => {
++    bhContainer.removeEventListener('pointerdown', onPointerDown);
++    bhContainer.removeEventListener('pointermove', onPointerMove);
++    window.removeEventListener('pointerup', onPointerUp);
++  };
++
++  requestAnimationFrame(bhGameLoop);
++}
++
++function bhGameLoop(timestamp) {
++  if (!bhIsPlaying) return;
++  
++  const elapsed = timestamp - bhStartTime;
++  bhTimer.innerText = (elapsed / 1000).toFixed(2);
++  
++  bhSpawnRate = Math.max(200, 1000 - (elapsed / 1000) * 20);
++  
++  if (timestamp - bhLastSpawn > bhSpawnRate) {
++    spawnBullet();
++    bhLastSpawn = timestamp;
++  }
++  
++  const pRect = bhPlayer.getBoundingClientRect();
++  const playerHitbox = {
++    left: pRect.left + 10,
++    right: pRect.right - 10,
++    top: pRect.top + 10,
++    bottom: pRect.bottom - 10
++  };
++
++  let speedMultiplier = 1 + (elapsed / 1000) * 0.05;
++
++  for (let i = bhBullets.length - 1; i >= 0; i--) {
++    let b = bhBullets[i];
++    b.y += b.vy * speedMultiplier;
++    b.x += b.vx * speedMultiplier;
++    
++    b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
++    
++    if (b.y > window.innerHeight + 50 || b.x < -50 || b.x > window.innerWidth + 50) {
++      b.el.remove();
++      bhBullets.splice(i, 1);
++      continue;
++    }
++    
++    if (
++      b.x + 20 > playerHitbox.left &&
++      b.x + 10 < playerHitbox.right &&
++      b.y + 20 > playerHitbox.top &&
++      b.y + 10 < playerHitbox.bottom
++    ) {
++      endBulletHell(elapsed);
++      return;
++    }
++  }
++  
++  requestAnimationFrame(bhGameLoop);
++}
++
++function spawnBullet() {
++  const el = document.createElement('div');
++  el.className = 'bh-bullet';
++  el.innerHTML = '?';
++  
++  const startX = Math.random() * window.innerWidth;
++  const startY = -30;
++  
++  const targetX = Math.random() * window.innerWidth;
++  const targetY = window.innerHeight;
++  
++  const angle = Math.atan2(targetY - startY, targetX - startX);
++  const speed = 3 + Math.random() * 2;
++  
++  const vx = Math.cos(angle) * speed;
++  const vy = Math.sin(angle) * speed;
++  
++  bhEntities.appendChild(el);
++  bhBullets.push({ el, x: startX, y: startY, vx, vy });
++}
++
++async function endBulletHell(elapsedMs) {
++  bhIsPlaying = false;
++  if (bhContainer._cleanupEvents) bhContainer._cleanupEvents();
++  
++  const iconEl = bhPlayer.querySelector('.bh-icon');
++  if (iconEl) iconEl.innerText = '??';
++  
++  const survivalTime = parseFloat((elapsedMs / 1000).toFixed(2));
++  bhFinalTime.innerText = survivalTime.toFixed(2);
++  
++  bhGameoverModal.classList.remove('hidden');
++  if (btnBhRestart) {
++    btnBhRestart.innerText = '?銝甈?;
++    btnBhRestart.disabled = false;
++  }
++  
++  try {
++    const res = await fetch('/api/easter_egg/claim', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({ uid: currentUser.userId, name: currentUser.displayName, survivalTime })
++    });
++    const data = await res.json();
++    if (data.success && data.leaderboard) {
++      renderBhLeaderboard(data.leaderboard);
++      
++      if (data.leaderboard[0] && data.leaderboard[0].uid === currentUser.userId) {
++        const winIconEl = bhPlayer.querySelector('.bh-icon');
++        if (winIconEl) winIconEl.innerText = '??';
++      }
++    }
++  } catch(e) {}
++}
++
++function renderBhLeaderboard(list) {
++  bhLeaderboardList.innerHTML = '';
++  list.forEach((w, index) => {
++    const li = document.createElement('li');
++    li.style.padding = '4px 0';
++    li.style.borderBottom = '1px solid #eee';
++    let rank = index === 0 ? '??' : index === 1 ? '??' : index === 2 ? '??' : `${index+1}.`;
++    li.innerHTML = `<strong>${rank}</strong> ${w.name} - <span style="color:#e91e63">${w.survivalTime}</span> 蝘;
++    bhLeaderboardList.appendChild(li);
++  });
++}
++
++if (btnBhRestart) {
++  btnBhRestart.addEventListener('click', async () => {
++    const isMultiplayerContext = (window.currentGlobalRoomState && window.currentGlobalRoomState.activeGame === 'survival') || (typeof hasEnteredParty !== 'undefined' && hasEnteredParty);
++    if (isMultiplayerContext) {
++      // 憭犖璅∪?嚗??祉摰園????啣之撱喋?舫???modal
++      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
++      const pPanel = document.getElementById('room-participants-panel');
++      if (pPanel) {
++        pPanel.classList.remove('hidden');
++      }
++      return;
++    }
++    startBulletHell();
++  });
++}
++
++// 頞恣嚗urvival??靘??氬???+const btnBhPlayAgain = document.getElementById('btn-bh-play-again');
++if (btnBhPlayAgain) {
++  btnBhPlayAgain.addEventListener('click', async () => {
++    btnBhPlayAgain.disabled = true;
++    try {
++      // ?蔭憭折捏???靽??拙振
++      await fetch('/api/admin/party/next-round', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({ uid: currentUser.userId })
++      });
++      // ?芸??亥????
++      await fetch('/api/admin/party/play', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({ uid: currentUser.userId })
++      });
++      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
++      const bhSuperadminActions = document.getElementById('bh-superadmin-actions');
++      if (bhSuperadminActions) bhSuperadminActions.classList.add('hidden');
++    } catch(e) {
++      console.error(e);
++    } finally {
++      btnBhPlayAgain.disabled = false;
++    }
++  });
++}
++
++// 頞恣嚗urvival????鞈賬???+const btnBhEndRoom = document.getElementById('btn-bh-end-room');
++if (btnBhEndRoom) {
++  btnBhEndRoom.addEventListener('click', async () => {
++    btnBhEndRoom.disabled = true;
++    try {
++      await fetch('/api/admin/room/close', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({ uid: currentUser.userId })
++      });
++      if (bhGameoverModal) bhGameoverModal.classList.add('hidden');
++    } catch(e) {
++      console.error(e);
++      btnBhEndRoom.disabled = false;
++    }
++  });
++}
++
++
++// ????LIFF
++async function initializeLiff() {
++  try {
++    // 0. ?祆?皜祈岫璅∪? (Local Test Mode)
++    const testParams = new URLSearchParams(window.location.search);
++    const testRole = testParams.get('testRole');
++    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
++
++    if (testRole || isLocalhost) {
++      console.log('Running in Local Test Mode:', testRole || 'localhost');
++      let randomSuffix = Math.random().toString(36).substr(2, 5);
++      let mockUid = 'U_SUPER_ADMIN_TEST_ID_' + randomSuffix;
++      let mockName = testParams.get('name') || '頞?蝞∠???(Local Test)';
++      
++      if (testRole === 'user') {
++        mockUid = 'U_TEST_PLAYER_' + randomSuffix;
++        mockName = testParams.get('name') || ('Test Player ' + randomSuffix);
++      } else if (testRole === 'admin') {
++        mockUid = 'U_GROUP_ADMIN_TEST_ID_' + randomSuffix;
++        mockName = testParams.get('name') || 'Group Admin';
++      }
++      
++      currentUser = { userId: mockUid, displayName: mockName };
++      const urlBuyGid = testParams.get('buy');
++      if (urlBuyGid && !testRole) {
++        globalIsSuperAdmin = false;
++        globalIsAdmin = false;
++        currentUser.displayName = '銝?祈赤摰?(Local Test)';
++      } else {
++        globalIsSuperAdmin = (testRole !== 'user');
++        globalIsAdmin = (testRole !== 'user');
++      }
++
++      if (typeof initLottery === 'function') {
++        initLottery(currentUser.userId);
++      }
++      
++      currentGroupId = testParams.get('gid') || 'TEST_GROUP_1234';
++      const h3 = document.getElementById('group-id-display');
++      if (h3) h3.innerText = '蝢斤?ID: ' + currentGroupId;
++      
++      const buyGid = testParams.get('buy');
++      if (buyGid) {
++        if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
++        openGroupBuyPage(buyGid);
++      } else {
++        await loadGamesLobby();
++      }
++      initSocket();
++      
++      const appDivEl = document.getElementById('app');
++      if (appDivEl) appDivEl.className = '';
++      const statusMsgEl = document.getElementById('status-msg');
++      if (statusMsgEl) statusMsgEl.style.display = 'none';
++      
++      return; // Skip LIFF initialization completely
++    }
++
++    // 1. ??敺垢蝟餌絞閮剖?
++    const configRes = await fetch(`/api/config?_t=${Date.now()}`);
++    if (!configRes.ok) throw new Error('?⊥???蝟餌絞閮剖?');
++    const config = await configRes.json();
++    
++    if (!config.liffId) {
++      throw new Error('蝟餌絞?芾身摰?LIFF ID');
++    }
++
++    // 2. ????LIFF SDK
++    await liff.init({ liffId: config.liffId });
++
++    // 3. 蝣箔?雿輻?歇?餃
++    if (!liff.isLoggedIn()) {
++      liff.login({ redirectUri: window.location.href });
++      return;
++    }
++
++    // ??雿輻????+    const profile = await liff.getProfile();
++    currentUser = profile;
++    if (typeof initLottery === 'function') {
++      initLottery(currentUser.userId);
++    }
++
++    // 4. ??蝢斤? Context
++    const urlParams = new URLSearchParams(window.location.search);
++    const gidFromUrl = urlParams.get('gid');
++    const buyFromUrl = urlParams.get('buy');
++    const context = liff.getContext();
++    
++    if (gidFromUrl) {
++      currentGroupId = gidFromUrl;
++    } else if (context && (context.type === 'group' || context.type === 'room')) {
++      currentGroupId = context.groupId || context.roomId;
++    } else if (context && context.type === 'utou') {
++      currentGroupId = currentUser.userId;
++    } else {
++      currentGroupId = currentUser.userId;
++    }
++
++    // 蝝?赤
++    if (currentGroupId && currentUser) {
++      fetch('/api/lobby_visit', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({
++          gid: currentGroupId,
++          userId: currentUser.userId,
++          displayName: currentUser.displayName,
++          pictureUrl: currentUser.pictureUrl
++        })
++      }).catch(e => console.error('Failed to log visit', e));
++    }
++
++    // 5. 頛憭批輒鞈?
++    document.getElementById('create-game-view').classList.add('hidden');
++    await loadGamesLobby();
++    
++    // 6. ???晷撠?Socket (????嚗誑靘踵?嗅誨??
++    initSocket();
++
++  } catch (err) {
++    console.error('LIFF Init Error:', err);
++    try {
++      currentUser = currentUser || { userId: 'U_LOCAL_TEST', displayName: '銝?祈赤摰? };
++      globalIsSuperAdmin = false;
++      globalIsAdmin = false;
++      
++      const urlParams = new URLSearchParams(window.location.search);
++      const buyFromUrl = urlParams.get('buy');
++      
++      if (buyFromUrl) {
++        if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
++        openGroupBuyPage(buyFromUrl);
++      } else {
++        await loadGamesLobby();
++      }
++      initSocket();
++    } catch(e) {}
++    const appDivEl = document.getElementById('app');
++    if (appDivEl) appDivEl.className = '';
++    const statusMsgEl = document.getElementById('status-msg');
++    if (statusMsgEl) statusMsgEl.style.display = 'none';
++  }
++}
++
++// 頛憭甈∪之撱唾???+async function loadGamesLobby(silent = false) {
++  try {
++    if (!silent) {
++      appDiv.className = 'loading';
++      statusMsg.innerText = '頛銝?..';
++      statusMsg.style.display = 'block';
++    }
++    
++    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
++    if (!res.ok) {
++      if (res.status === 404) {
++        gamesList = [];
++      } else {
++        throw new Error('?⊥????湔活鞈?');
++      }
++    } else {
++      const data = await res.json();
++      gamesList = data.games || [];
++      lastGamesJson = JSON.stringify(gamesList);
++      globalIsAdmin = !!data.isAdmin;
++      globalIsSuperAdmin = !!data.isSuperAdmin;
++      globalManagedGroups = data.managedGroups || [];
++      globalLobbyTitle = data.lobbyTitle || '蝢賜??仿?憭批輒';
++      globalLobbyDesc = data.lobbyDesc || '?祇梯??憿???頞翰?嗡?嚗???鞊砌?韏瑕翰璅?嚗?;
++      try {
++        if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
++      } catch(gbErr) { console.error('Fetch group buy error:', gbErr); }
++    }
++
++    try {
++      const eeRes = await fetch('/api/easter_egg/status');
++      if (eeRes.ok) {
++        const eeData = await eeRes.json();
++        easterEggEnabled = !!eeData.enabled;
++      }
++    } catch(e) {}
++
++    const urlParams = new URLSearchParams(window.location.search);
++    const urlGameId = urlParams.get('gameId');
++    const urlBuy = urlParams.get('buy');
++    
++    // ?亦?活頛銝雯???摰?buy嚗??湔?脣?頃?
++    if (!silent && urlBuy) {
++      if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
++      openGroupBuyPage(urlBuy);
++    }
++    // ?亦?活頛銝雯???摰?gameId嚗??湔?脣閰脣甈∴??血??擐?
++    else if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
++      renderDetail(urlGameId);
++    } else if (!currentGameDetailId) {
++      renderLobby();
++    } else {
++      renderDetail(currentGameDetailId);
++    }
++  } catch (err) {
++    console.error(err);
++    appDiv.className = ''; // 蝣箔??潛??航炊????頧???+    statusMsg.innerText = err.message;
++    statusMsg.style.display = 'block';
++  }
++}
++
++// ?斗?湔活?臬撌脤???(?寞??交???????
++function isGameExpired(game) {
++  return !!game.isManualEnded;
++}
++
++
++
++document.addEventListener('click', (e) => {
++  if (!e.target.closest('.btn-danger')) {
++    document.querySelectorAll('.btn-danger').forEach(b => {
++      if (b.dataset.dodged === 'true') {
++        b.dataset.dodged = 'false';
++        b.style.transition = 'transform 1s ease';
++        b.style.transform = 'translate(0px, 0px)';
++      }
++    });
++  }
++});
++
++// 皜脫?憭批輒?恍
++function renderLobby() {
++    appDiv.className = '';
++    if (statusMsg) statusMsg.style.display = 'none';
++    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
++    lobbyView.classList.remove('hidden');
++    
++    const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = getEffectiveRole();
++
++    let roleSwitcherContainer = document.getElementById('super-admin-role-switcher');
++    if (globalIsSuperAdmin) {
++      if (!roleSwitcherContainer) {
++        roleSwitcherContainer = document.createElement('div');
++        roleSwitcherContainer.id = 'super-admin-role-switcher';
++        lobbyView.insertBefore(roleSwitcherContainer, lobbyView.firstChild);
++      }
++      roleSwitcherContainer.style.display = 'block';
++      roleSwitcherContainer.innerHTML = `
++        <div style="margin: 10px 0 15px 0; padding: 10px 14px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
++          <div style="font-size: 13px; font-weight: bold; color: #e65100; display: flex; align-items: center; gap: 6px;">
++            <span>? 閬??? (頞恣?)</span>
++          </div>
++          <select onchange="handleRoleSwitch(this.value)" style="padding: 5px 10px; font-size: 12px; font-weight: bold; border-radius: 6px; border: 1px solid #ffb74d; background-color: #ffffff; color: #333; cursor: pointer;">
++            <option value="superAdmin" ${currentSimulatedRole === 'superAdmin' ? 'selected' : ''}>?? 頞?蝞∠???/option>
++            <option value="groupAdmin" ${currentSimulatedRole === 'groupAdmin' ? 'selected' : ''}>?儭?蝢斤?蝞∠???/option>
++            <option value="user" ${currentSimulatedRole === 'user' ? 'selected' : ''}>? 銝?砌蝙?刻?/option>
++          </select>
++        </div>
++      `;
++    } else if (roleSwitcherContainer) {
++      roleSwitcherContainer.style.display = 'none';
++    }
++    
++    document.getElementById('lobby-title-text').innerText = globalLobbyTitle || '蝢賜??仿?憭批輒';
++    const btnEditTitle = document.getElementById('btn-edit-title');
++    if (effIsSuperAdmin && btnEditTitle) {
++      btnEditTitle.classList.remove('hidden');
++      btnEditTitle.onclick = handleEditLobbyTitle;
++    } else if (btnEditTitle) {
++      btnEditTitle.classList.add('hidden');
++    }
++    
++    document.getElementById('lobby-desc-text').innerText = globalLobbyDesc || '?祇梯??憿???頞翰?嗡?嚗???鞊砌?韏瑕翰璅?嚗?;
++    const btnEditDesc = document.getElementById('btn-edit-desc');
++    if (effIsSuperAdmin && btnEditDesc) {
++      btnEditDesc.classList.remove('hidden');
++      btnEditDesc.onclick = handleEditLobbyDesc;
++    } else if (btnEditDesc) {
++      btnEditDesc.classList.add('hidden');
++    }
++
++    if (effIsSuperAdmin && btnLobbyStats) {
++      btnLobbyStats.classList.remove('hidden');
++    } else if (btnLobbyStats) {
++      btnLobbyStats.classList.add('hidden');
++    }
++
++    if (effIsSuperAdmin && btnSystemLogs) {
++      btnSystemLogs.classList.remove('hidden');
++    } else if (btnSystemLogs) {
++      btnSystemLogs.classList.add('hidden');
++    }
++
++    if (effIsSuperAdmin && btnEasterEgg) {
++      btnEasterEgg.classList.remove('hidden');
++    } else if (btnEasterEgg) {
++      btnEasterEgg.classList.add('hidden');
++    }
++
++    if (effIsSuperAdmin && btnPartyAdmin) {
++      btnPartyAdmin.classList.remove('hidden');
++    } else if (btnPartyAdmin) {
++      btnPartyAdmin.classList.add('hidden');
++    }
++
++    const btnGbNav = document.getElementById('btn-group-buy-nav');
++    
++    if (typeof renderLobbyGroupBuyBanners === 'function' && typeof allGroupBuysList !== 'undefined') {
++      renderLobbyGroupBuyBanners(allGroupBuysList);
++    }
++    
++    if (btnGbNav) {
++      let userHasAccessToAnyGb = false;
++      if (typeof allGroupBuysList !== 'undefined' && Array.isArray(allGroupBuysList)) {
++        const isUserAdmin = effIsAdmin || effIsSuperAdmin;
++        const activeGroupBuys = allGroupBuysList.filter(gb => gb.active);
++        if (isUserAdmin || activeGroupBuys.some(gb => !gb.hiddenFromLobby)) {
++          userHasAccessToAnyGb = true;
++        }
++      } else {
++        const isGbActive = currentGroupBuyData && currentGroupBuyData.active && !currentGroupBuyData.hiddenFromLobby;
++        userHasAccessToAnyGb = isGbActive || effIsAdmin || effIsSuperAdmin;
++      }
++
++      if (userHasAccessToAnyGb) {
++        btnGbNav.classList.remove('hidden');
++      } else {
++        btnGbNav.classList.add('hidden');
++      }
++    }
++    
++    const createContainer = document.getElementById('admin-create-game-container');
++    if (createContainer) {
++      if (effIsSuperAdmin) {
++        createContainer.classList.remove('hidden');
++      } else {
++        createContainer.classList.add('hidden');
++      }
++    }
++    
++    gamesContainer.innerHTML = '';
++    
++    if (gamesList.length === 0) {
++      noGamesMsg.classList.remove('hidden');
++      return;
++    }
++    
++    noGamesMsg.classList.add('hidden');
++    
++    const activeGames = [];
++    const endedGames = [];
++    
++    gamesList.forEach(game => {
++      if (isGameExpired(game)) endedGames.push(game);
++      else activeGames.push(game);
++    });
++
++    const getGameTime = (g) => {
++      if (g.isManualEnded && g.manualEndTime) return g.manualEndTime;
++      if (!g.date) return g.startTime || 0;
++      
++      let year = new Date().getFullYear();
++      let month = 0, day = 1;
++      
++      const matchFull = g.date.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
++      if (matchFull) {
++        year = parseInt(matchFull[1]);
++        month = parseInt(matchFull[2]) - 1;
++        day = parseInt(matchFull[3]);
++      } else {
++        const matchShort = g.date.match(/(\d{1,2})[-\/](\d{1,2})/);
++        if (matchShort) {
++          month = parseInt(matchShort[1]) - 1;
++          day = parseInt(matchShort[2]);
++        } else {
++          return g.startTime || 0;
++        }
++      }
++
++      let hour = 23, minute = 59;
++      if (g.time) {
++         const tm = g.time.match(/([01]?[0-9]|2[0-3]):([0-5][0-9])/g);
++         if (tm && tm.length > 0) {
++            const parts = tm[tm.length - 1].split(':');
++            hour = parseInt(parts[0]);
++            minute = parseInt(parts[1]);
++         }
++      }
++      return new Date(year, month, day, hour, minute).getTime();
++    };
++
++    activeGames.sort((a, b) => getGameTime(a) - getGameTime(b));
++
++    
++    const renderCard = (game) => {
++      let count = 0;
++      let limit = 0;
++      let totalLimit = 0;
++      let isMultiSection = game.sections && game.sections.length > 1;
++
++      if (isMultiSection) {
++          game.sections.forEach(s => {
++              count += (s.list || []).length;
++              limit += (s.limit || 0);
++              totalLimit += (s.limit || 0) + (s.backupLimit || 0);
++          });
++      } else {
++          const section = game.sections[0] || { list: [], limit: 20 };
++          count = section.list.length;
++          limit = section.limit;
++          totalLimit = limit + (section.backupLimit || 0);
++      }
++      
++      let displayFee = formatFee(game.fee) || '?芾身摰?;
++      if (isMultiSection) {
++          const uniqueFees = Array.from(new Set(game.sections.map(s => s.fee ? s.fee.toString().trim() : '').filter(Boolean)));
++          if (uniqueFees.length > 1) {
++              const numericFees = uniqueFees.map(f => parseInt(f.replace(/[^\d]/g, ''), 10)).filter(n => !isNaN(n));
++              if (numericFees.length === uniqueFees.length && numericFees.length > 0) {
++                  const min = Math.min(...numericFees);
++                  const max = Math.max(...numericFees);
++                  displayFee = `${min}~${max}?;
++              } else {
++                  displayFee = uniqueFees.map(f => formatFee(f)).join(' / ');
++              }
++          } else if (uniqueFees.length === 1) {
++              displayFee = formatFee(uniqueFees[0]);
++          }
++      }
++      
++      const isExpired = isGameExpired(game);
++      const isFull = count >= totalLimit;
++      const isWaitlist = count >= limit && count < totalLimit;
++      
++      const isMeRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
++      
++      let badgeStyle = '';
++      let badgeText = '';
++      
++      if (isExpired) {
++         badgeStyle = 'background-color: #666; color: #FFF;';
++         badgeText = '撌脩???;
++      } else if (isFull) {
++         badgeStyle = 'background-color: #E0E0E0; color: #888888;';
++         badgeText = '撌脤?皛?;
++      } else if (isWaitlist) {
++         badgeStyle = 'background-color: #FFF3E0; color: #E65100;';
++         badgeText = '????銝?;
++      } else {
++         badgeText = '????勗?';
++      }
++      
++      let customTagsHtml = '';
++      if (game.tag) {
++         const tagArr = game.tag.split(/[,??]/).map(t => t.trim()).filter(Boolean);
++         customTagsHtml = tagArr.map(t => `<div class="badge default">${escapeHTML(t)}</div>`).join('');
++      }
++      
++      const card = document.createElement('div');
++      const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
++      const progressColor = count > limit ? 'var(--danger-color)' : 'var(--primary-color)';
++      
++      card.className = 'game-card';
++      if (isExpired) {
++         card.style.opacity = '0.6';
++         card.style.filter = 'grayscale(1)';
++      }
++
++      
++      card.innerHTML = `
++        <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer; flex-wrap: wrap;">
++          <div class="badge ${isFull || isExpired ? 'full' : 'open'}" style="${badgeStyle}">
++            ${badgeText}
++          </div>
++          ${customTagsHtml}
++          ${isMeRegistered ? '<div class="badge open" style="background-color: var(--primary-color); color: white;">撌脣??/div>' : ''}
++        </div>
++        
++        <div class="card-title" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
++          ${escapeHTML(game.title || '蝢賜??仿?')}
++        </div>
++        
++        <div class="info-grid" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
++          <div class="info-item">
++            <span class="info-icon">??</span>
++            <span>${escapeHTML(game.date || '?芾身摰?)}</span>
++          </div>
++          <div class="info-item">
++            <span class="info-icon">??/span>
++            <span>${escapeHTML(game.time || '?芾身摰?)}</span>
++          </div>
++          <div class="info-item">
++            <span class="info-icon">??</span>
++            <span>${escapeHTML(game.location || '?芾身摰?)}</span>
++          </div>
++          <div class="info-item">
++            <span class="info-icon">?</span>
++            <span>${escapeHTML(displayFee)}</span>
++          </div>
++        </div>
++        
++        ${game.note ? `<div class="game-note" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">${escapeHTML(game.note)}</div>` : ''}
++        
++        ${(() => {
++          if (!isMultiSection) {
++            const section = game.sections[0] || { list: [], limit: 20 };
++            const limit = section.limit || 0;
++            const count = (section.list || []).length;
++            const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
++            const progressColor = count > limit ? 'var(--danger-color)' : 'var(--primary-color)';
++            return `
++              <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer;">
++                <div class="progress-header">
++                  <span>???脣漲</span>
++                  <span class="progress-value" style="color: ${count > limit ? 'var(--danger-color)' : 'var(--text-main)'}">${count} / ${limit} 鈭?/span>
++                </div>
++                <div class="progress-bar-bg">
++                  <div class="progress-bar-fill" style="width: ${progressPercent}%; background-color: ${progressColor};"></div>
++                </div>
++              </div>
++            `;
++          } else {
++            return game.sections.map(sec => {
++              const secLimit = sec.limit || 0;
++              const secCount = (sec.list || []).length;
++              const secProgressPercent = secLimit > 0 ? Math.min(100, (secCount / secLimit) * 100) : 0;
++              const secProgressColor = secCount > secLimit ? 'var(--danger-color)' : '#007BFF'; // Using blue color for multi-sections as seen in the screenshot for active section, but let's stick to theme primary unless active. Actually, the screenshot showed a blue selected state maybe? I'll use primary color.
++              return `
++                <div class="progress-container" onclick="showDetail('${game.gameId}')" style="cursor: pointer; margin-bottom: 8px;">
++                  <div class="progress-header">
++                    <span>${escapeHTML(sec.title || '?挾')}</span>
++                    <span class="progress-value" style="color: ${secCount > secLimit ? 'var(--danger-color)' : 'var(--text-main)'}">${secCount} / ${secLimit} 鈭?/span>
++                  </div>
++                  <div class="progress-bar-bg">
++                    <div class="progress-bar-fill" style="width: ${secProgressPercent}%; background-color: ${secCount > secLimit ? 'var(--danger-color)' : 'var(--primary-color)'};"></div>
++                  </div>
++                </div>
++              `;
++            }).join('');
++          }
++        })()}
++      `;
++        
++      let actionRowHtml = '';
++        if (isMultiSection) {
++            actionRowHtml = `
++              <div class="action-row" style="margin-top: 10px;">
++                  <button class="btn btn-primary" style="width: 100%; border-radius: 8px; padding: 12px; font-size: 16px; background-color: #03c75a; border: none; box-shadow: 0 2px 4px rgba(3,199,90,0.3);" onclick="showDetail('${game.gameId}')">
++                     ?? 甇文甈∪??怠??挾嚗??脣?勗?
++                  </button>
++              </div>
++            `;
++        } else {
++            actionRowHtml = `
++              <div class="action-row" style="flex-wrap: wrap;">
++                <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
++                <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
++                <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="隢撓?交蝔? ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
++                <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="?酉" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
++              </div>
++              <div id="error-msg-${game.gameId}" class="error-msg"></div>
++            `;
++        }
++        
++        card.innerHTML += actionRowHtml;
++      return card;
++    };
++    
++    activeGames.forEach(game => gamesContainer.appendChild(renderCard(game)));
++    
++    if (globalIsAdmin && endedGames.length > 0) {
++      const detailsEl = document.createElement('details');
++      detailsEl.style.marginTop = '20px';
++      detailsEl.style.padding = '10px';
++      detailsEl.style.backgroundColor = '#f9f9f9';
++      detailsEl.style.borderRadius = '8px';
++      detailsEl.style.border = '1px solid #ddd';
++      
++      const summaryEl = document.createElement('summary');
++      summaryEl.style.fontWeight = 'bold';
++      summaryEl.style.cursor = 'pointer';
++      summaryEl.style.color = '#666';
++      summaryEl.innerText = `撌脩?????(${endedGames.length})`;
++      
++      const contentEl = document.createElement('div');
++      contentEl.style.marginTop = '15px';
++      
++      endedGames.sort((a, b) => getGameTime(b) - getGameTime(a));
++      
++      endedGames.forEach(game => contentEl.appendChild(renderCard(game)));
++      
++      detailsEl.appendChild(summaryEl);
++      detailsEl.appendChild(contentEl);
++      gamesContainer.appendChild(detailsEl);
++    }
++  
++  // ?湔???摮?(??航???嚗?典???appDiv.className='' ?隞亙???憭梧???唳?摮?
++  const headerP = document.querySelector('.lobby-header p');
++  if (headerP) headerP.innerText = '暺璅??脣敺??舀??瘨???;
++  const statusEl = document.getElementById('status-msg');
++  if (statusEl) statusEl.style.display = 'none';
++}
++
++async function handleEditLobbyTitle() {
++  const newTitle = prompt('隢撓?交?之撱單?憿?', globalLobbyTitle || '');
++  if (newTitle === null) return;
++  try {
++    appDiv.className = 'loading';
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        uid: currentUser.userId,
++        action: 'updateLobbyTitle',
++        text: newTitle
++      })
++    });
++    if (res.ok) {
++      const data = await res.json();
++      if (data.lobbyTitle) {
++        globalLobbyTitle = data.lobbyTitle;
++        renderLobby();
++      }
++    } else {
++      alert('靽格憭望?');
++    }
++  } catch(e) {
++    alert('蝬脰楝?航炊');
++  } finally {
++    appDiv.className = '';
++  }
++}
++
++async function handleEditLobbyDesc() {
++  const newDesc = prompt('隢撓?交?之撱單?餈堆?', globalLobbyDesc || '');
++  if (newDesc === null) return;
++  try {
++    appDiv.className = 'loading';
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        uid: currentUser.userId,
++        action: 'updateLobbyDesc',
++        text: newDesc
++      })
++    });
++    if (res.ok) {
++      const data = await res.json();
++      if (data.lobbyDesc !== undefined) {
++        globalLobbyDesc = data.lobbyDesc;
++        renderLobby();
++      }
++    } else {
++      alert('靽格憭望?');
++    }
++  } catch (err) {
++    alert('蝬脰楝?航炊');
++  } finally {
++    appDiv.className = '';
++  }
++}
++
++// ??銝?砍????
++async function handleAction(gameId, action) {
++  try {
++    appDiv.className = 'loading';
++    statusMsg.innerText = '??銝?..';
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        gameId: gameId,
++        uid: currentUser.userId,
++        name: currentUser.displayName,
++        operatorName: currentUser.displayName,
++        action: action
++      })
++    });
++    
++    const result = await res.json();
++    if (!res.ok) {
++      alert(result.error || '?潛??航炊');
++      await loadGamesLobby();
++      return;
++    }
++    
++    // ??敺?啗??澈???銝阡??唳葡??+    const idx = gamesList.findIndex(g => g.gameId === gameId);
++    if (idx !== -1) gamesList[idx] = result.game;
++    
++    if (currentGameDetailId) {
++      renderDetail(gameId, true);
++    } else {
++      renderLobby();
++    }
++  } catch (err) {
++    console.error(err);
++    alert('蝬脰楝?航炊嚗?蝔??岫');
++    await loadGamesLobby();
++  }
++}
++
++// ??隞???+async function handleProxyRegister(gameId) {
++  const input = document.getElementById(`proxy-name-${gameId}`);
++  if (!input) return;
++  const name = input.value.trim();
++  if (!name) {
++    alert('隢撓?乩誨?勗??迂');
++    return;
++  }
++  
++  try {
++    appDiv.className = 'loading';
++    statusMsg.innerText = '隞????葉...';
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        gameId: gameId,
++        uid: currentUser.userId,
++        name: name,
++        operatorName: currentUser.displayName,
++        action: 'register'
++      })
++    });
++    
++    const result = await res.json();
++    if (!res.ok) {
++      alert(result.error || '?潛??航炊');
++      await loadGamesLobby();
++      return;
++    }
++    
++    input.value = '';
++    const idx = gamesList.findIndex(g => g.gameId === gameId);
++    if (idx !== -1) gamesList[idx] = result.game;
++    renderLobby();
++    
++  } catch (err) {
++    console.error(err);
++    alert('蝬脰楝?航炊嚗?蝔??岫');
++    await loadGamesLobby();
++  }
++}
++// ???單?蝝啁??+window.showDetail = function(gameId) {
++  currentGameDetailId = gameId;
++  renderDetail(gameId);
++};
++
++// 皜脫??敦?恍
++function renderDetail(gameId, preserveScroll = false) {
++  const game = gamesList.find(g => g.gameId === gameId);
++  if (!game) return;
++  
++  appDiv.className = '';
++  const statusMsgEl = document.getElementById('status-msg');
++  if (statusMsgEl) statusMsgEl.style.display = 'none';
++  lobbyView.classList.add('hidden');
++  detailView.classList.remove('hidden');
++  
++  if (!preserveScroll) {
++    window.scrollTo(0, 0);
++  }
++  
++  const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = getEffectiveRole();
++
++  const normalize = s => (s||'').replace(/\s+/g, '');
++  const autoStr = normalize([game.date, game.time, game.location].filter(Boolean).join(''));
++  const isAutoTitle = normalize(game.title) === autoStr || game.title === '蝢賜??仿?';
++  const showTitle = game.title && !isAutoTitle;
++  detailTitle.innerText = showTitle ? game.title : '?湔活?敦';
++  if (!showTitle) detailTitle.style.display = 'none';
++  else detailTitle.style.display = 'block';
++  
++  const btnCloseGame = document.getElementById('btn-close-game');
++  const btnDeleteGame = document.getElementById('btn-delete-game');
++  const btnEditGame = document.getElementById('btn-edit-game');
++  const btnCopyList = document.getElementById('btn-copy-list');
++  if (btnCopyList) {
++    btnCopyList.classList.remove('hidden');
++    btnCopyList.onclick = () => {
++      const list = game.sections[0]?.list || [];
++      const text = list.map(n => n === '__ANON__' ? '?踹???' : n).join('\n');
++      navigator.clipboard.writeText(text).then(() => {
++        alert('?撌脫???鋆踝?\n\n' + text);
++      }).catch(() => {
++        prompt('隢?鋆賭誑銝??殷?', text);
++      });
++    };
++  }
++
++  if (effIsAdmin) {
++    if (btnCloseGame) {
++      btnCloseGame.classList.remove('hidden');
++      if (game.isManualEnded) {
++        btnCloseGame.innerText = '撌脩???;
++        btnCloseGame.disabled = true;
++        btnCloseGame.style.opacity = '0.5';
++        btnCloseGame.style.cursor = 'not-allowed';
++      } else {
++        btnCloseGame.innerText = '蝯?';
++        btnCloseGame.disabled = false;
++        btnCloseGame.style.opacity = '1';
++        btnCloseGame.style.cursor = 'pointer';
++      }
++    }
++    if (btnDeleteGame) btnDeleteGame.classList.remove('hidden');
++    if (btnEditGame) {
++      btnEditGame.classList.remove('hidden');
++      btnEditGame.onclick = () => showEditGameForm(gameId);
++    }
++  } else {
++    if (btnCloseGame) btnCloseGame.classList.add('hidden');
++    if (btnDeleteGame) btnDeleteGame.classList.add('hidden');
++    if (btnEditGame) btnEditGame.classList.add('hidden');
++  }
++  
++  const section = game.sections[0] || { list: [], limit: 20 };
++  const isRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
++  
++  let isMultiSection = game.sections && game.sections.length > 1;
++  let totalListLen = 0;
++  let totalLimit = 0;
++  if (game.sections) {
++      game.sections.forEach(s => {
++          totalListLen += (s.list || []).length;
++          totalLimit += (s.limit || 0);
++      });
++  }
++  
++  detailCount.innerText = `${isRegistered ? '(撌脣?? ' : ''}${isMultiSection ? totalListLen : section.list.length} / ${isMultiSection ? totalLimit : section.limit}`;
++  const isExpired = isGameExpired(game);
++  
++  // NOTE: When multi-section, the +1 button should not be disabled strictly based on total isFull, 
++  // because users could still +1 to a section that isn't full, or we just let them try and server rejects it.
++  // We'll leave it enabled unless expired, and server will validate.
++  const isFullSingle = !isMultiSection && section.list.length >= (section.limit + (section.backupLimit || 0));
++
++  let actionRowHtml = '';
++  if (isMultiSection) {
++      actionRowHtml += '<div class="section-options" style="margin-top: 15px; margin-bottom: 10px;">';
++      game.sections.forEach((sec, idx) => {
++          const secIsFull = sec.list.length >= sec.limit;
++          const progress = Math.min(100, Math.round((sec.list.length / sec.limit) * 100));
++          
++          actionRowHtml += `
++            <label class="section-option ${secIsFull ? 'full' : ''}" style="display: block; border: 2px solid ${secIsFull ? '#ffebee' : '#e8f5e9'}; border-radius: 8px; padding: 10px; margin-bottom: 8px; cursor: pointer; position: relative; background: ${secIsFull ? '#fffafa' : '#fcfdfc'};">
++                <input type="radio" name="sectionIdx-${game.gameId}-detail" value="${idx}" ${idx === 0 ? 'checked' : ''} style="position: absolute; right: 15px; top: 20px; transform: scale(1.5);">
++                <div style="padding-right: 30px;">
++                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px; margin-bottom: 8px;">
++                        <span style="color: #333;">${escapeHTML(sec.title)}</span>
++                        ${sec.fee ? `<span style="color: var(--primary-color); font-size: 14px;">? ${escapeHTML(formatFee(sec.fee))}</span>` : ''}
++                    </div>
++                    <div style="background-color: #eee; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 5px;">
++                        <div style="background-color: ${secIsFull ? '#F44336' : '#4CAF50'}; height: 100%; width: ${progress}%;"></div>
++                    </div>
++                    <div style="text-align: right; font-size: 13px; color: ${secIsFull ? '#F44336' : '#666'};">
++                        ${sec.list.length} / ${sec.limit} 鈭?${secIsFull ? '(撌脫遛憿?' : ''}
++                    </div>
++                </div>
++            </label>
++          `;
++      });
++      actionRowHtml += '</div>';
++  }
++
++  actionRowHtml += `
++    <div class="action-row" style="flex-wrap: wrap; margin-top: ${isMultiSection ? '5px' : '15px'}; margin-bottom: 10px;">
++      <button class="btn btn-primary btn-square" ${(isFullSingle || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
++      <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
++      <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="隢撓?交蝔? ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
++      <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="?酉" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
++    </div>
++    <div id="error-msg-${game.gameId}-detail" class="error-msg"></div>
++  `;
++  
++  detailList.innerHTML = actionRowHtml;
++  
++  if (effIsSuperAdmin) {
++    let pushListBtn = document.getElementById('admin-push-list-btn');
++    if (!pushListBtn) {
++      pushListBtn = document.createElement('button');
++      pushListBtn.id = 'admin-push-list-btn';
++      pushListBtn.className = 'btn btn-primary';
++      pushListBtn.style.marginTop = '10px';
++      pushListBtn.style.marginBottom = '15px';
++      pushListBtn.style.width = '100%';
++      pushListBtn.style.backgroundColor = '#FF9800';
++      pushListBtn.innerText = '? ?冽?桀?閰喟敦?';
++      detailView.insertBefore(pushListBtn, detailList);
++    }
++    pushListBtn.onclick = () => handlePushList(gameId);
++    pushListBtn.style.display = 'block';
++  } else {
++    const pushListBtn = document.getElementById('admin-push-list-btn');
++    if (pushListBtn) pushListBtn.style.display = 'none';
++  }
++  
++  const hasTags = game.date || game.time || game.location || game.fee;
++  if (hasTags) {
++     let tagsHtml = '<div class="info-tags" style="margin-top: 0;">';
++     tagsHtml += '<div class="info-row">';
++     if (game.date) tagsHtml += `<span class="info-tag">?? ${escapeHTML(game.date)}</span>`;
++     if (game.time) tagsHtml += `<span class="info-tag">??${escapeHTML(game.time)}</span>`;
++     tagsHtml += '</div>';
++     tagsHtml += '<div class="info-row" style="margin-top: 4px;">';
++     if (game.location) tagsHtml += `<span class="info-tag">?? ${escapeHTML(game.location)}</span>`;
++     if (game.fee) tagsHtml += `<span class="info-tag">? ${escapeHTML(formatFee(game.fee))}</span>`;
++     tagsHtml += '</div>';
++     tagsHtml += '</div>';
++     detailList.innerHTML += tagsHtml;
++  }
++  if (game.note) {
++     detailList.innerHTML += `<div class="game-note">${escapeHTML(game.note)}</div>`;
++  }
++  
++
++  
++  let historyHtml = '<div class="history-section" style="margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #fafafa; border-radius: 8px; border-left: 4px solid #90caf9;">';
++  historyHtml += '<h4 style="margin: 0 0 8px 0; color: #333; font-size: 14px;">甇瑕蝝??/h4>';
++  historyHtml += '<div style="font-size: 13px; color: #555;">';
++  if (game.history && game.history.length > 0) {
++    const top2 = game.history.slice(0, 2);
++    const rest = game.history.slice(2);
++    
++    top2.forEach(h => {
++       let displayText = '';
++       if (h.action === '?航炊') {
++         historyHtml += `<div style="margin-bottom: 4px; color: #F44336; font-size: 12px;">${escapeHTML(h.time)} <strong>[蝟餌絞?航炊]</strong> ${escapeHTML(h.errorMsg || '')}</div>`;
++         return;
++       }
++       if (h.operator && h.operator !== h.name) {
++         displayText = `${escapeHTML(h.operator)} 撟?${escapeHTML(h.name)}`;
++       } else if (h.operator) {
++         displayText = escapeHTML(h.operator);
++       } else {
++         displayText = escapeHTML(h.name);
++       }
++       historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${displayText}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
++    });
++    
++    if (rest.length > 0) {
++       historyHtml += `<details style="margin-top: 8px;">
++           <summary style="cursor: pointer; color: #1976d2; font-weight: bold; outline: none;">憿舐內?游? (${rest.length})</summary>
++           <div style="max-height: 120px; overflow-y: auto; margin-top: 6px; padding-left: 8px; border-left: 2px solid #ddd;">`;
++       rest.forEach(h => {
++           let displayText = '';
++           if (h.action === '?航炊') {
++             historyHtml += `<div style="margin-bottom: 4px; color: #F44336; font-size: 12px;">${escapeHTML(h.time)} <strong>[蝟餌絞?航炊]</strong> ${escapeHTML(h.errorMsg || '')}</div>`;
++             return;
++           }
++           if (h.operator && h.operator !== h.name) {
++             displayText = `${escapeHTML(h.operator)} 撟?${escapeHTML(h.name)}`;
++           } else if (h.operator) {
++             displayText = escapeHTML(h.operator);
++           } else {
++             displayText = escapeHTML(h.name);
++           }
++           historyHtml += `<div style="margin-bottom: 4px;">${escapeHTML(h.time)} <strong>${displayText}</strong> <span style="color: ${h.action === '+1' ? '#4CAF50' : '#F44336'}; font-weight: bold;">${escapeHTML(h.action)}</span></div>`;
++       });
++       historyHtml += `</div></details>`;
++    }
++  } else {
++    historyHtml += '<div style="color: #999; font-style: italic;">?桀?撠甇瑕蝝??/div>';
++  }
++  historyHtml += '</div></div>';
++  detailList.innerHTML += historyHtml;
++  
++  // 憿舐內???畾?(?怠?)
++  game.sections.forEach((sec, sIdx) => {
++    const secDiv = document.createElement('div');
++    secDiv.className = 'list-section';
++    secDiv.innerHTML = `<h3>${escapeHTML(sec.title)} (?? ${sec.limit})</h3>`;
++    
++    for (let i = 0; i < sec.limit; i++) {
++      if (i < sec.list.length) {
++        const name = sec.list[i];
++        const displayName = (name === '__ANON__') ? '***' : name;
++        const isMe = (game.myRegisteredNames && game.myRegisteredNames.includes(name)) || (currentUser && (currentUser.displayName === name || currentUser.displayName === displayName));
++        const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
++        
++        const canCancel = name !== '__ANON__';
++        
++        const isPaid = game.paidMap && game.paidMap[name];
++        let paidHtml = '';
++        if (canCancel) {
++          if (effIsAdmin) {
++            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '? 撌脩像鞎? : '漎??芰像鞎?}</button>`;
++          } else if (isPaid) {
++            paidHtml = `<span class="paid-badge">? 撌脩像鞎?/span>`;
++          }
++        }
++
++        const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
++        const canEditNote = true;
++        let noteHtml = '';
++        if (canCancel) {
++          if (canEditNote) {
++            noteHtml = `<button class="note-btn ${noteVal ? 'has-note' : ''}" onclick="handleEditNote('${game.gameId}', '${escapeHTML(name)}')">${noteVal ? escapeHTML(noteVal) : '?? ?酉'}</button>`;
++          } else if (noteVal) {
++            noteHtml = `<span class="note-badge">${escapeHTML(noteVal)}</span>`;
++          }
++        }
++        
++        let moveHtml = '';
++        if (effIsAdmin) {
++          const canMoveUp = i > 0;
++          const canMoveDown = i < sec.list.length - 1;
++          moveHtml = `
++            <div style="display:flex; flex-direction:column; margin-right: 5px; min-width: 20px;">
++              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1}, ${sIdx})"` : 'disabled'}>?</button>
++              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1}, ${sIdx})"` : 'disabled'}>?</button>
++            </div>
++          `;
++        }
++        
++        secDiv.innerHTML += `
++          <div class="list-item">
++            ${moveHtml}
++            <div class="list-num">${i + 1}.</div>
++            <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
++            ${paidHtml}
++            ${noteHtml}
++            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">??/button>` : ''}
++          </div>
++        `;
++      }
++    }
++    
++    // ???
++    if (sec.list.length > sec.limit) {
++      secDiv.innerHTML += `<h3 style="margin-top:20px; color:#ff9800">???</h3>`;
++      for (let i = sec.limit; i < sec.list.length; i++) {
++        const name = sec.list[i];
++        const displayName = (name === '__ANON__') ? '***' : name;
++        const isMe = (game.myRegisteredNames && game.myRegisteredNames.includes(name)) || (currentUser && (currentUser.displayName === name || currentUser.displayName === displayName));
++        const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
++        
++        const canCancel = name !== '__ANON__';
++        
++        const isPaid = game.paidMap && game.paidMap[name];
++        let paidHtml = '';
++        if (canCancel) {
++          if (effIsAdmin) {
++            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '? 撌脩像鞎? : '漎??芰像鞎?}</button>`;
++          } else if (isPaid) {
++            paidHtml = `<span class="paid-badge">? 撌脩像鞎?/span>`;
++          }
++        }
++        
++        const noteVal = (game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
++        const canEditNote = true;
++        let noteHtml = '';
++        if (canCancel) {
++          if (canEditNote) {
++            noteHtml = `<button class="note-btn ${noteVal ? 'has-note' : ''}" onclick="handleEditNote('${game.gameId}', '${escapeHTML(name)}')">${noteVal ? escapeHTML(noteVal) : '?? ?酉'}</button>`;
++          } else if (noteVal) {
++            noteHtml = `<span class="note-badge">${escapeHTML(noteVal)}</span>`;
++          }
++        }
++
++        let moveHtml = '';
++        if (effIsAdmin) {
++          const canMoveUp = i > 0;
++          const canMoveDown = i < sec.list.length - 1;
++          moveHtml = `
++            <div style="display:flex; flex-direction:column; margin-right: 5px; min-width: 20px;">
++              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveUp ? 1 : 0.2}" ${canMoveUp ? `onclick="handleReorder('${game.gameId}', ${i}, ${i-1}, ${sIdx})"` : 'disabled'}>?</button>
++              <button class="btn-icon" style="padding:0; font-size: 12px; margin:0; line-height: 1; opacity: ${canMoveDown ? 1 : 0.2}" ${canMoveDown ? `onclick="handleReorder('${game.gameId}', ${i}, ${i+1}, ${sIdx})"` : 'disabled'}>?</button>
++            </div>
++          `;
++        }
++        
++        secDiv.innerHTML += `
++          <div class="list-item" style="opacity: 0.8; background-color: #f9f9f9;">
++            ${moveHtml}
++            <div class="list-num" style="color: #666; font-size: 12px;">??${i - sec.limit + 1}.</div>
++            <div class="list-name ${isMe ? 'me' : ''}" style="color: #666;">${escapeHTML(displayName)}${levelStr}</div>
++            ${paidHtml}
++            ${noteHtml}
++            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">??/button>` : ''}
++          </div>
++        `;
++      }
++    }
++    
++    detailList.appendChild(secDiv);
++  });
++}
++
++// 餈?憭批輒
++btnBack.addEventListener('click', () => {
++  currentGameDetailId = null;
++  renderLobby();
++});
++
++const btnCloseGame = document.getElementById('btn-close-game');
++if (btnCloseGame) {
++  btnCloseGame.addEventListener('click', async () => {
++    if (!currentGameDetailId) return;
++    if (!confirm('蝣箏?閬??迨?湔活??\n蝯?敺之撱單?憿舐內?箇?脖蒂蝵桀???)) return;
++    
++    try {
++      appDiv.className = 'loading';
++      const res = await fetch('/api/action', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({
++          gid: currentGroupId,
++          gameId: currentGameDetailId,
++          uid: currentUser.userId,
++          name: currentUser.displayName,
++          action: 'editGame',
++          isManualEnded: true
++        })
++      });
++      const result = await res.json();
++      if (!res.ok) alert(result.error || '??憭望?');
++      else {
++        alert('?湔活撌脩???');
++        currentGameDetailId = null;
++        await loadGamesLobby();
++      }
++    } catch (e) {
++      alert('蝬脰楝?航炊');
++    } finally {
++      appDiv.className = '';
++    }
++  });
++}
++
++const btnDeleteGame = document.getElementById('btn-delete-game');
++if (btnDeleteGame) {
++  btnDeleteGame.addEventListener('click', async () => {
++    if (!currentGameDetailId) return;
++    if (!confirm('蝣箏?閬偶銋?斗迨?湔活??甇斗?雿瘜???')) return;
++    
++    try {
++      appDiv.className = 'loading';
++      const res = await fetch('/api/action', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({
++          gid: currentGroupId,
++          gameId: currentGameDetailId,
++          uid: currentUser.userId,
++          name: currentUser.displayName,
++          action: 'deleteGame'
++        })
++      });
++      const result = await res.json();
++      if (!res.ok) alert(result.error || '?芷憭望?');
++      else {
++        alert('?湔活撌脣?歹?');
++        currentGameDetailId = null;
++        await loadGamesLobby();
++      }
++    } catch (e) {
++      alert('蝬脰楝?航炊');
++    } finally {
++      appDiv.className = '';
++    }
++  });
++}
++
++// ?澆??祥?剁??亦????鋆?
++function formatFee(fee) {
++  if (!fee || fee === '?芾身摰? || fee === '?芰' || fee === '?? || fee === '0') return fee || '';
++  let str = fee.toString().trim();
++  if (str && !str.endsWith('??)) {
++    return str + '??;
++  }
++  return str;
++}
++
++// HTML ??賣??XSS
++function escapeHTML(str) {
++  if (!str) return '';
++  return str.replace(/[&<>'"]/g, 
++    tag => ({
++      '&': '&amp;',
++      '<': '&lt;',
++      '>': '&gt;',
++      "'": '&#39;',
++      '"': '&quot;'
++    }[tag] || tag)
++  );
++}
++
++// ????渡?鞈? (銝＊蝷?loading)
++let refreshPending = false;
++
++async function silentRefreshGames() {
++  if (!currentGroupId || !currentUser) return;
++  
++  // ?乩蝙?刻迤?刻撓?伐??怠??湔隞亙??頛詨
++  const activeTag = document.activeElement ? document.activeElement.tagName : '';
++  if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') {
++    if (!refreshPending) {
++      refreshPending = true;
++      setTimeout(() => {
++        refreshPending = false;
++        silentRefreshGames();
++      }, 1500); // 1.5 蝘??岫
++    }
++    return;
++  }
++  
++  try {
++    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
++    if (res.ok) {
++      const data = await res.json();
++      const newGamesJson = JSON.stringify(data.games || []);
++      
++      if (newGamesJson !== lastGamesJson) {
++        lastGamesJson = newGamesJson;
++        gamesList = data.games || [];
++        globalIsAdmin = !!data.isAdmin;
++        globalManagedGroups = data.managedGroups || [];
++        globalLobbyTitle = data.lobbyTitle || '蝢賜??仿?憭批輒';
++        globalLobbyDesc = data.lobbyDesc || '?祇梯??憿???頞翰?嗡?嚗???鞊砌?韏瑕翰璅?嚗?;
++        
++        // ?寞??桀???函?ａ??唳葡??+        if (currentGameDetailId && !detailView.classList.contains('hidden')) {
++          renderDetail(currentGameDetailId, true);
++        } else {
++          renderLobby();
++        }
++      }
++    }
++  } catch (err) {
++    // ??憭望?銝?蝷?+  }
++}
++
++// --- SSE 銝餃??冽璈 ---
++let eventSource = null;
++
++function setupSSE() {
++  if (!currentGroupId) return;
++  if (eventSource) {
++    eventSource.close();
++  }
++  
++  eventSource = new EventSource(`/api/events/${currentGroupId}`);
++  
++  eventSource.onmessage = (e) => {
++    if (e.data === 'refresh') {
++      silentRefreshGames();
++    }
++  };
++  
++  eventSource.onerror = () => {
++    // ?潛??航炊?蝺?嚗??蒂?典嗾蝘??岫??+    eventSource.close();
++    eventSource = null;
++    setTimeout(setupSSE, 5000);
++  };
++}
++
++// ??
++initializeLiff().then(() => {
++  setupSSE();
++});
++
++// ???迂???勗?
++window.handleCancelByName = async function(gameId, name) {
++  if (!confirm(`蝣箏?閬?瘨?{name}???勗???`)) return;
++  try {
++    appDiv.className = 'loading';
++    statusMsg.innerText = '??銝?..';
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        gameId: gameId,
++        uid: currentUser.userId,
++        name: name,
++        operatorName: currentUser.displayName,
++        action: 'cancel'
++      })
++    });
++    
++    const result = await res.json();
++    if (!res.ok) {
++      alert(result.error || '?潛??航炊');
++      await loadGamesLobby();
++      return;
++    }
++    
++    const idx = gamesList.findIndex(g => g.gameId === gameId);
++    if (idx !== -1) gamesList[idx] = result.game;
++    renderDetail(gameId, true);
++    
++  } catch (err) {
++    console.error(err);
++    alert('蝬脰楝?航炊嚗?蝔??岫');
++    await loadGamesLobby();
++  }
++};
++
++// --- Quokka ??摩 ---
++function getButtonCenter(btn) {
++  const rect = btn.getBoundingClientRect();
++  return {
++    x: rect.left + rect.width / 2,
++    y: rect.top + rect.height / 2
++  };
++}
++
++let currentPlusOneAnim = null;
++
++function playPlusOneAnimation(btn) {
++  if (currentPlusOneAnim) currentPlusOneAnim();
++  
++  btn.classList.add('glowing-prize');
++  
++  const container = document.createElement('div');
++  container.style.position = 'fixed';
++  container.style.pointerEvents = 'none';
++  container.style.zIndex = '9999';
++  
++  const updatePosition = () => {
++    container.style.left = '50%';
++    container.style.top = '50%';
++  };
++  updatePosition();
++  document.body.appendChild(container);
++  
++  const scrollListener = () => updatePosition();
++  window.addEventListener('scroll', scrollListener, true);
++  
++  const quokka = document.createElement('img');
++  getTransparentImage('images/quokka_dance.png', (src) => {
++    quokka.src = src;
++  });
++  quokka.style.position = 'absolute';
++  quokka.style.width = '240px';
++  quokka.style.height = 'auto';
++  quokka.style.marginTop = '-120px';
++  quokka.style.marginLeft = '-120px';
++  quokka.style.animation = 'quokkaJump 0.5s ease-in-out infinite alternate';
++  container.appendChild(quokka);
++  
++  const cleanup = () => {
++    btn.classList.remove('glowing-prize');
++    container.remove();
++    window.removeEventListener('scroll', scrollListener, true);
++    document.removeEventListener('click', outsideClickListener, true);
++    currentPlusOneAnim = null;
++  };
++  
++  const outsideClickListener = (e) => {
++    if (!btn.contains(e.target)) {
++      cleanup();
++    }
++  };
++  
++  currentPlusOneAnim = cleanup;
++  document.addEventListener('click', outsideClickListener, true);
++  
++  setTimeout(() => {
++    if (currentPlusOneAnim === cleanup) cleanup();
++  }, 3000);
++}
++
++function playMinusOneDodgeAnimation(btn) {
++  btn.dataset.dodged = 'true';
++  btn.style.visibility = 'hidden';
++  
++  const startPos = getButtonCenter(btn);
++  
++  const floatingQuokka = document.createElement('div');
++  floatingQuokka.className = 'floating-quokka-carry';
++  floatingQuokka.style.position = 'fixed';
++  floatingQuokka.style.zIndex = '9999';
++  floatingQuokka.style.cursor = 'pointer';
++  floatingQuokka.style.transition = 'transform 2s ease-in-out';
++  floatingQuokka.style.left = (startPos.x - 120) + 'px';
++  floatingQuokka.style.top = (startPos.y - 120) + 'px';
++  
++  const img = document.createElement('img');
++  getTransparentImage('images/quokka_carry_1.png', (src) => {
++    img.src = src;
++  });
++  img.style.width = '240px';
++  img.style.height = 'auto';
++  img.style.pointerEvents = 'none'; // clicks go to the wrapper
++  floatingQuokka.appendChild(img);
++  
++  document.body.appendChild(floatingQuokka);
++  
++  const moveRandomly = () => {
++    const maxX = window.innerWidth - 240;
++    const maxY = window.innerHeight - 240;
++    const rx = Math.random() * maxX - (startPos.x - 120);
++    const ry = Math.random() * maxY - (startPos.y - 120);
++    floatingQuokka.style.transform = `translate(${rx}px, ${ry}px)`;
++  };
++  
++  setTimeout(moveRandomly, 100);
++  const moveInterval = setInterval(moveRandomly, 2000);
++  
++  floatingQuokka._moveInterval = moveInterval;
++  floatingQuokka._img = img;
++  floatingQuokka._startPos = startPos;
++  
++  floatingQuokka.addEventListener('click', (e) => {
++    e.stopPropagation();
++    btn._floatingQuokka = floatingQuokka;
++    btn.click();
++  });
++}
++
++function playMinusOneCancelAnimation(btn) {
++  btn.dataset.dodged = 'false';
++  
++  const floatingQuokka = btn._floatingQuokka;
++  if (!floatingQuokka) {
++    btn.style.visibility = 'visible';
++    return;
++  }
++  
++  clearInterval(floatingQuokka._moveInterval);
++  
++  // ??
++  getTransparentImage('images/quokka_carry_2.png', (src) => {
++    floatingQuokka._img.src = src;
++  });
++  
++  // ?飛??
++  floatingQuokka.style.transition = 'transform 1s ease-in-out';
++  floatingQuokka.style.transform = 'translate(0px, 0px)';
++  
++  setTimeout(() => {
++    // ???餌???
++    floatingQuokka.style.transition = 'transform 0.2s';
++    floatingQuokka.style.transform = 'translate(0px, 10px)';
++    
++    setTimeout(() => {
++      floatingQuokka.style.transform = 'translate(0px, 0px)';
++      
++      // 憿舐內?迤????+      btn.style.visibility = 'visible';
++      
++      // ?? ?格??剜都
++      getTransparentImage('images/quokka_cry.png', (src) => {
++        floatingQuokka._img.src = src;
++      });
++      
++      floatingQuokka.style.animation = 'quokkaLeave 4s forwards';
++      
++      setTimeout(() => {
++        floatingQuokka.remove();
++      }, 4000);
++      
++    }, 200);
++  }, 1000);
++  
++  btn._floatingQuokka = null;
++}
++
++// ???啁?頛詨獢???脣?
++async function handleActionWithInput(event, gameId, action, suffix = '') {
++  const btn = event.currentTarget || event.target;
++  
++  if (action === 'cancel' && btn) {
++    if (btn.dataset.dodged !== 'true') {
++      playMinusOneDodgeAnimation(btn);
++      return; // Stop actual cancellation
++    } else {
++      // Second click
++      playMinusOneCancelAnimation(btn);
++    }
++  } else if (action === 'register') {
++    if (btn) playPlusOneAnimation(btn);
++    // Reset all dodged buttons when +1 is clicked
++    document.querySelectorAll('button.btn-danger').forEach(b => {
++      if (b.dataset.dodged === 'true') {
++        b.dataset.dodged = 'false';
++        b.style.visibility = 'visible';
++        if (b._floatingQuokka) {
++          clearInterval(b._floatingQuokka._moveInterval);
++          b._floatingQuokka.remove();
++          b._floatingQuokka = null;
++        }
++      }
++    });
++  }
++
++  const inputEl = document.getElementById(`name-input-${gameId}${suffix}`);
++  const levelEl = document.getElementById(`level-input-${gameId}${suffix}`);
++  const errorEl = document.getElementById(`error-msg-${gameId}${suffix}`);
++  
++  let name = currentUser.displayName;
++  if (inputEl && inputEl.value.trim()) {
++    name = inputEl.value.trim();
++  }
++  
++  let level = '';
++  if (levelEl && levelEl.value.trim()) {
++    level = levelEl.value.trim();
++  }
++  
++  errorEl.style.display = 'none';
++  errorEl.innerText = '';
++  
++  const game = gamesList.find(g => g.gameId === gameId);
++  if (!game) return;
++  
++  // Find selected section
++  let sectionIdx = 0;
++  const radioGroup = document.querySelector(`input[name="sectionIdx-${gameId}${suffix}"]:checked`);
++  if (radioGroup) {
++      sectionIdx = parseInt(radioGroup.value, 10);
++  } else {
++      // If there's a multiple section layout but nothing is checked (should have default checked though)
++      const anyRadio = document.querySelector(`input[name="sectionIdx-${gameId}${suffix}"]`);
++      if (anyRadio) sectionIdx = parseInt(anyRadio.value, 10);
++  }
++  
++  const section = game.sections[sectionIdx] || { list: [] };
++  
++  let existsAnywhere = false;
++  game.sections.forEach(s => {
++      if (s.list.includes(name)) existsAnywhere = true;
++  });
++  
++  if (action === 'register' && existsAnywhere) {
++    errorEl.innerText = '?典歇蝬??鈭?瘥犖?銝?挾嚗?;
++    errorEl.style.display = 'block';
++    return;
++  }
++  
++  if (action === 'cancel' && !existsAnywhere) {
++    errorEl.innerText = '?曆??唳迨?迂';
++    errorEl.style.display = 'block';
++    return;
++  }
++  
++  // btn already declared at top of function ??just use it
++  try {
++    if (btn) {
++      btn.disabled = true;
++      btn.dataset.originalText = btn.innerText;
++      btn.innerText = '...';
++    }
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        gameId: gameId,
++        uid: currentUser.userId,
++        name: name,
++        operatorName: currentUser.displayName,
++        level: level,
++        action: action,
++        sectionIdx: sectionIdx,
++        clientSupportsLiffSendMessage: typeof liff !== 'undefined' && liff.isInClient()
++      })
++    });
++    
++    const data = await res.json();
++    if (!res.ok) {
++      throw new Error(data.error || '??憭望?');
++    }
++
++    // ?芸??冽?璈嚗?蝙??liff.sendMessages
++    if (data.triggerBumpMsg) {
++      // ?岫??liff.sendMessages嚗???LINE ???撱箇汗?其葉????
++      if (typeof liff !== 'undefined' && liff.isInClient()) {
++        try {
++          await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg + '\n\n[蝟餌絞隞?]' }]);
++          console.log('?芸??潸店??');
++        } catch (e) {
++          console.error('liff.sendMessages 憭望?:', e);
++          fetch('/api/action', {
++            method: 'POST',
++            headers: { 'Content-Type': 'application/json' },
++            body: JSON.stringify({
++              gid: currentGroupId, gameId: gameId, uid: currentUser.userId, name: name, operatorName: currentUser.displayName, action: 'logError', text: '隞?憭望?: ' + e.message
++            })
++          }).catch(console.error);
++        }
++      }
++    }
++    
++    // +1/-1 摰?敺?皜征?梁迂??閮餉撓?交?
++    if (inputEl) {
++      inputEl.value = '';
++    }
++    if (levelEl) {
++      levelEl.value = '';
++    }
++    
++    await loadGamesLobby(true); // 雿輻????嚗?頧????脫迫皛曉?璇?蝵?+  } catch (err) {
++    console.error(err);
++    errorEl.innerText = err.message;
++    errorEl.style.display = 'block';
++  } finally {
++    if (btn) {
++      btn.disabled = false;
++      btn.innerText = btn.dataset.originalText || btn.innerText;
++    }
++  }
++}
++
++
++async function handleTogglePaid(gameId, name) {
++  try {
++    appDiv.className = 'loading';
++    statusMsg.style.display = 'block';
++    statusMsg.innerText = '?湔銝?..';
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        gameId: gameId,
++        uid: currentUser.userId,
++        name: name,
++        action: 'togglePaid'
++      })
++    });
++    
++    const result = await res.json();
++    if (!res.ok) {
++      alert(result.error || '?潛??航炊');
++      await loadGamesLobby();
++      return;
++    }
++    
++    const idx = gamesList.findIndex(g => g.gameId === gameId);
++    if (idx !== -1) gamesList[idx] = result.game;
++    renderDetail(gameId, true);
++    
++  } catch (err) {
++    console.error(err);
++    alert('蝬脰楝?航炊嚗?蝔??岫');
++    await loadGamesLobby();
++  }
++}
++
++window.handleTogglePaid = handleTogglePaid;
++
++async function handleEditNote(gameId, name) {
++  try {
++    const game = gamesList.find(g => g.gameId === gameId);
++    const currentNote = (game && game.noteMap && game.noteMap[name]) ? game.noteMap[name] : '';
++    const newNote = prompt(`隢撓?乓?{name}???酉嚗, currentNote);
++    if (newNote === null) return;
++    
++    appDiv.className = 'loading';
++    if (statusMsg) {
++      statusMsg.style.display = 'block';
++      statusMsg.innerText = '?湔?酉銝?..';
++    }
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        gameId: gameId,
++        uid: currentUser.userId,
++        name: name,
++        action: 'updateNote',
++        note: newNote.trim()
++      })
++    });
++    
++    const result = await res.json();
++    if (!res.ok) {
++      alert(result.error || '?潛??航炊');
++      await loadGamesLobby();
++      return;
++    }
++    
++    const idx = gamesList.findIndex(g => g.gameId === gameId);
++    if (idx !== -1) gamesList[idx] = result.game;
++    renderDetail(gameId, true);
++  } catch (err) {
++    console.error(err);
++    alert('蝬脰楝?航炊嚗?蝔??岫');
++    await loadGamesLobby();
++  }
++}
++
++window.handleEditNote = handleEditNote;
++
++
++
++window.handleReorder = async function(gameId, fromIdx, toIdx, sectionIdx = 0) {
++  try {
++    appDiv.className = 'loading';
++    statusMsg.style.display = 'block';
++    statusMsg.innerText = '?湔??銝?..';
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        gameId: gameId,
++        uid: currentUser.userId,
++        name: currentUser.displayName,
++        action: 'reorder',
++        fromIdx: fromIdx,
++        toIdx: toIdx,
++        sectionIdx: sectionIdx
++      })
++    });
++    
++    const result = await res.json();
++    if (!res.ok) {
++      alert(result.error || '?潛??航炊');
++      await loadGamesLobby();
++      return;
++    }
++    
++    const idx = gamesList.findIndex(g => g.gameId === gameId);
++    if (idx !== -1) gamesList[idx] = result.game;
++    renderDetail(gameId, true);
++  } catch (err) {
++    console.error(err);
++    alert('蝬脰楝?航炊嚗?蝔??岫');
++    await loadGamesLobby();
++  } finally {
++    appDiv.className = '';
++    const statusMsgEl = document.getElementById('status-msg');
++    if (statusMsgEl) statusMsgEl.style.display = 'none';
++  }
++};
++
++window.handleCustomPush = async function() {
++  const text = prompt('隢撓?亥??冽???臬摰對?\n(蝟餌絞????銝??憭批輒???)');
++  if (!text) return;
++  
++  const pushToAll = confirm('隢??臬閬???准?冽?蝞∠????黎蝯?\n(?仿??嚗??芣?剖?嗅?蝢斤?)');
++  
++  try {
++    appDiv.className = 'loading';
++    if (statusMsg) {
++      statusMsg.style.display = 'block';
++      statusMsg.innerText = '?冽?潮葉...';
++    }
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify({
++        gid: currentGroupId,
++        gameId: 'dummy',
++        uid: currentUser.userId,
++        name: currentUser.displayName,
++        action: 'customPush',
++        text: text,
++        pushToAll: pushToAll
++      })
++    });
++    
++    const result = await res.json();
++    if (!res.ok) {
++      alert(result.error || '?潮仃??);
++    } else {
++      alert(`?冽??嚗歇?潮 ${result.count} ?黎蝯);
++    }
++  } catch(e) {
++    alert('蝬脰楝?航炊');
++  } finally {
++    appDiv.className = '';
++    const statusMsg = document.getElementById('status-msg');
++    if (statusMsg) statusMsg.style.display = 'none';
++  }
++};
++
++window.handlePushList = async function(gameId) {
++  let groupsText = '';
++  if (typeof globalManagedGroups !== 'undefined' && globalManagedGroups.length > 0) {
++    groupsText = '\n\n?舐?黎蝯?\n' + globalManagedGroups.map(g => `${g.code} - ${g.groupName}`).join('\n');
++  } else {
++    const savedCg = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
++    if (savedCg.length > 0) {
++      groupsText = '\n\n?舐?黎蝯?\n' + savedCg.map(g => `${g.code} - ${g.groupName}`).join('\n');
++    }
++  }
++
++  const targetCode = prompt(`隢撓?亥??冽??璅黎蝯誨蝣潦?\n(?交炬?潮?函???函?蝢斤?嚗??湔?銝行?蝣箏?)${groupsText}`);
++  if (targetCode === null) return;
++  
++  if (!confirm('蝣箏?閬?准?底蝝啣??柴?嚗n(??????犖??摮?予摰支葉)')) return;
++  
++  try {
++    appDiv.className = 'loading';
++    const statusMsg = document.getElementById('status-msg');
++    if (statusMsg) {
++      statusMsg.style.display = 'block';
++      statusMsg.innerText = '?冽?銝?..';
++    }
++    
++    // 憒??臭誑?芸??潸店嚗?瘝????孵?蝢斤?隞?Ⅳ嚗?乩誨?蹂蝙?刻??剜???隞?+    if (!targetCode && typeof liff !== 'undefined' && liff.isInClient()) {
++      try {
++        await liff.sendMessages([{ type: 'text', text: `?冽??\n\n[蝟餌絞隞?]` }]);
++        alert('????冽??嚗歇?芸??刻?憭拙恕?澆璈鈭箝?);
++        return;
++      } catch (e) {
++        console.error('?芸??潸店憭望?:', e);
++        // Fallback to backend API
++      }
++    }
++    
++    // ??敺垢?冽 (??蝢斤?隞?Ⅳ?瘜?閰?
++    const reqBody = {
++      gid: currentGroupId,
++      gameId: gameId,
++      uid: currentUser.userId,
++      name: currentUser.displayName,
++      action: 'pushList',
++      clientSupportsLiffSendMessage: false
++    };
++    if (targetCode) reqBody.targetCode = targetCode.trim();
++    
++    const res = await fetch('/api/action', {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/json' },
++      body: JSON.stringify(reqBody)
++    });
++    
++    const result = await res.json();
++    if (!res.ok) {
++      alert(result.error || '?潮仃??);
++      return;
++    }
++    
++    if (result.partialError) {
++      alert('璈鈭箸?剝?仃?? ' + result.errors.join(', '));
++    } else {
++      alert('????冽?誘撌脤嚗??單??閮??);
++    }
++  } catch(e) {
++    alert('蝬脰楝?航炊');
++  } finally {
++    appDiv.className = '';
++    const statusMsg = document.getElementById('status-msg');
++    if (statusMsg) statusMsg.style.display = 'none';
++  }
++};
++
++// ================= Target Groups UI Helpers =================
++function createTargetGroupCheckbox(container, gid, code, groupName, isChecked) {
++  if (container.querySelector(`input[value="${gid}"]`)) return;
++  
++  const lbl = document.createElement('label');
++  lbl.style.display = 'flex';
++  lbl.style.alignItems = 'center';
++  lbl.style.gap = '8px';
++  lbl.style.cursor = 'pointer';
++  
++  const chk = document.createElement('input');
++  chk.type = 'checkbox';
++  chk.name = 'targetGids';
++  chk.value = gid;
++  chk.checked = isChecked;
++  
++  const span = document.createElement('span');
++  span.innerText = code === '?桀?蝢斤?' ? `${groupName} (?桀?蝢斤?)` : `${groupName} (${code})`;
++  span.style.flex = '1';
++  
++  lbl.appendChild(chk);
++  lbl.appendChild(span);
++  
++  const delBtn = document.createElement('span');
++  delBtn.innerText = '??;
++  delBtn.style.cursor = 'pointer';
++  delBtn.style.padding = '0 5px';
++  delBtn.onclick = (e) => {
++    e.preventDefault();
++    lbl.remove();
++    let saved = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
++    saved = saved.filter(g => g.gid !== gid);
++    localStorage.setItem('savedTargetGroups', JSON.stringify(saved));
++  };
++  lbl.appendChild(delBtn);
++  
++  container.appendChild(lbl);
++}
++
++async function handleAddGroupCode(inputId, containerId) {
++  const inputEl = document.getElementById(inputId);
++  const code = inputEl.value.trim();
++  if (!code) return alert('隢撓?亦黎蝯誨??);
++  
++  appDiv.className = 'loading';
++  try {
++    const res = await fetch(`/api/group/code/${code}?_t=${Date.now()}`);
++    const data = await res.json();
++    appDiv.className = '';
++    if (res.ok && data.success) {
++      const container = document.getElementById(containerId);
++      if (container.innerHTML.includes('<p>')) container.innerHTML = '';
++      createTargetGroupCheckbox(container, data.gid, code, data.groupName, true);
++      inputEl.value = '';
++      
++      let saved = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
++      if (!saved.some(g => g.gid === data.gid)) {
++        saved.push({ gid: data.gid, code: code, groupName: data.groupName });
++        localStorage.setItem('savedTargetGroups', JSON.stringify(saved));
++      }
++    } else {
++      setTimeout(() => alert(data.error || '?曆??啗府蝢斤?'), 10);
++    }
++  } catch(e) {
++    appDiv.className = '';
++    setTimeout(() => alert('蝬脰楝?航炊'), 10);
++  }
++}
++
++document.getElementById('btn-cg-add-group').onclick = () => handleAddGroupCode('cg-new-group-code', 'cg-target-gids-container');
++if (document.getElementById('btn-eg-add-group')) {
++  document.getElementById('btn-eg-add-group').onclick = () => handleAddGroupCode('eg-new-group-code', 'eg-target-gids-container');
++}
++
++// ================= Create Game UI & Templates =================
++const createGameView = document.getElementById('create-game-view');
++const cgTemplateSelect = document.getElementById('cg-template-select');
++
++let currentGroupTemplates = {};
++
++// === ?身??? UI ===
++function getCgListString() {
++  const rows = document.querySelectorAll('#cg-initial-list-container .cg-list-row');
++  let lines = [];
++  rows.forEach(row => {
++     const n = row.querySelector('.cg-list-name').value.trim();
++     const l = row.querySelector('.cg-list-level').value.trim();
++     const p = row.querySelector('.cg-list-paid').checked;
++     if (!n) return;
++     let line = n;
++     if (l) line += `(${l})`;
++     if (p) line += `(撌脩像鞎?`;
++     lines.push(line);
++  });
++  return lines.join('\n');
++}
++
++function parseAndRenderCgList(text) {
++  const container = document.getElementById('cg-initial-list-container');
++  container.innerHTML = '';
++  if (!text) return;
++  const lines = text.split(/[\n??,]+/).map(n => n.trim()).filter(Boolean);
++      lines.forEach(line => {
++        let isPaid = false;
++        let name = line;
++        if (name.endsWith('$') || name.endsWith('嚗?) || name.endsWith('(撌脩像鞎?') || name.endsWith('嚗歇蝜唾祥嚗?)) {
++            isPaid = true;
++            name = name.replace(/[\$嚗$/, '').replace(/\(撌脩像鞎蓋)$/, '').replace(/嚗歇蝜唾祥嚗?/, '');
++        }
++        let level = '';
++        const match = name.match(/^(.*?)(?:[\(\[嚗(.*?)[\)\]嚗|-(.*?))$/);
++        if (match) {
++            name = match[1].trim();
++            level = (match[2] || match[3]).trim();
++        }
++        addTaListRow(name, level, isPaid);
++      });nsparentImage(src, callback) {
+   if (imageCache[src]) {
+     callback(imageCache[src]);
+     return;
+@@ -3208,6 +6418,7 @@ function addCgListRow(name = '', level = '', isPaid = false) {
+   nameInput.className = 'cg-list-name';
+   nameInput.placeholder = '憪?';
+   nameInput.value = name;
++  nameInput.setAttribute('list', 'lobby-users');
+   nameInput.style.flex = '2';
+   nameInput.style.margin = '0';
+   nameInput.style.minWidth = '0';
+@@ -3314,6 +6525,7 @@ document.getElementById('btn-save-template').onclick = async () => {
+     const data = await res.json();
+     if (res.ok && data.success) {
+       await loadTemplates();
++      await loadLobbyUsers();
+       cgTemplateSelect.value = name;
+       alert('?脣???銝歇?郊??Git嚗?);
+     } else {
+@@ -7208,7 +10420,7 @@ function showTemplateAdminView() {
+ }
+ window.showTemplateAdminView = showTemplateAdminView;
+ 
+-function addTaListRow(name = '') {
++function addTaListRow(name = '', level = '', isPaid = false) {
+   const container = document.getElementById('ta-list-container');
+   const row = document.createElement('div');
+   row.className = 'ta-list-row';
+@@ -7222,9 +10434,39 @@ function addTaListRow(name = '') {
+   nameInput.className = 'ta-list-name';
+   nameInput.placeholder = '憪? (?征?蝛箔?)';
+   nameInput.value = name;
+-  nameInput.style.flex = '1';
++  nameInput.setAttribute('list', 'lobby-users');
++  nameInput.style.flex = '2';
+   nameInput.style.margin = '0';
+   nameInput.style.minWidth = '0';
++
++  const levelInput = document.createElement('input');
++  levelInput.type = 'text';
++  levelInput.className = 'ta-list-level';
++  levelInput.placeholder = '?酉(?詨‵)';
++  levelInput.value = level;
++  levelInput.style.flex = '1';
++  levelInput.style.margin = '0';
++  levelInput.style.minWidth = '0';
++  
++  const paidLabel = document.createElement('label');
++  paidLabel.style.display = 'flex';
++  paidLabel.style.alignItems = 'center';
++  paidLabel.style.gap = '3px';
++  paidLabel.style.marginBottom = '0';
++  paidLabel.style.fontSize = '12px';
++  paidLabel.style.whiteSpace = 'nowrap';
++  paidLabel.style.cursor = 'pointer';
++  paidLabel.style.padding = '4px';
++  
++  const paidCheck = document.createElement('input');
++  paidCheck.type = 'checkbox';
++  paidCheck.className = 'ta-list-paid';
++  paidCheck.checked = isPaid;
++  paidCheck.style.margin = '0 3px 0 0';
++  paidCheck.style.transform = 'scale(1.3)';
++  
++  paidLabel.appendChild(paidCheck);
++  paidLabel.appendChild(document.createTextNode('蝜唾祥'));
+   
+   const delBtn = document.createElement('button');
+   delBtn.type = 'button';
+@@ -7236,6 +10478,8 @@ function addTaListRow(name = '') {
+   delBtn.onclick = () => row.remove();
+   
+   row.appendChild(nameInput);
++  row.appendChild(levelInput);
++  row.appendChild(paidLabel);
+   row.appendChild(delBtn);
+   
+   container.appendChild(row);
+@@ -7286,9 +10530,18 @@ if (btnTaSave) {
+     const name = document.getElementById('ta-template-name').value.trim();
+     if (!name) return alert('隢撓?亦??砍?蝔?);
+     
+-    const inputs = document.querySelectorAll('.ta-list-name');
+-    const names = Array.from(inputs).map(inp => inp.value.trim() || '__ANON__');
+-    const content = names.join('\n');
++    const rows = document.querySelectorAll('#ta-list-container .ta-list-row');
++    const lines = [];
++    rows.forEach(row => {
++      let n = row.querySelector('.ta-list-name').value.trim() || '__ANON__';
++      const l = row.querySelector('.ta-list-level').value.trim();
++      const p = row.querySelector('.ta-list-paid').checked;
++      let line = n;
++      if (l) line += `(${l})`;
++      if (p) line += `(撌脩像鞎?`;
++      lines.push(line);
++    });
++    const content = lines.join('\n');
+     
+     if (!content) return alert('隢撓?亙??桀摰?);
+     
