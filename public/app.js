@@ -55,7 +55,13 @@ function setupAutocomplete(inputElement) {
     
     const matches = globalLobbyUsers.filter(u => u.displayName && u.displayName.toLowerCase().includes(val));
     if (matches.length === 0) {
-      dropdown.style.display = 'none';
+      const item = document.createElement('div');
+      item.style.padding = '5px 10px';
+      item.style.color = '#999';
+      item.style.fontSize = '14px';
+      item.innerText = '無符合名單';
+      dropdown.appendChild(item);
+      dropdown.style.display = 'block';
       return;
     }
     
