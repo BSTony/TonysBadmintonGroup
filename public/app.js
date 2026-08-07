@@ -13,7 +13,7 @@ async function loadLobbyUsers() {
   }
 }
 
-function setupAutocomplete(inputElement) {
+function setupAutocomplete(inputElement, avatarImg) {
   inputElement.setAttribute('autocomplete', 'new-password');
   
   let dropdown = document.createElement('div');
@@ -73,13 +73,18 @@ function setupAutocomplete(inputElement) {
       item.style.cursor = 'pointer';
       item.style.borderBottom = '1px solid #eee';
       item.style.fontSize = '14px';
-      item.innerText = user.displayName;
+      
+      const imgHtml = user.pictureUrl ? `<img src="${user.pictureUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 8px;">` : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #eee; margin-right: 8px; display: inline-block;"></div>`;
+      item.innerHTML = `<div style="display: flex; align-items: center;">${imgHtml}<span>${user.displayName}</span></div>`;
       
       item.addEventListener('mousedown', (e) => {
         // use mousedown to fire before input blur
         e.preventDefault();
         inputElement.value = user.displayName;
         inputElement.dataset.uuid = user.userId;
+        if (avatarImg) {
+          avatarImg.src = user.pictureUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        }
         dropdown.style.display = 'none';
       });
       
@@ -100,11 +105,17 @@ function setupAutocomplete(inputElement) {
         item.style.cursor = 'pointer';
         item.style.borderBottom = '1px solid #eee';
         item.style.fontSize = '14px';
-        item.innerText = user.displayName;
+        
+        const imgHtml = user.pictureUrl ? `<img src="${user.pictureUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 8px;">` : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #eee; margin-right: 8px; display: inline-block;"></div>`;
+        item.innerHTML = `<div style="display: flex; align-items: center;">${imgHtml}<span>${user.displayName}</span></div>`;
+        
         item.addEventListener('mousedown', (e) => {
           e.preventDefault();
           inputElement.value = user.displayName;
           inputElement.dataset.uuid = user.userId;
+          if (avatarImg) {
+            avatarImg.src = user.pictureUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+          }
           dropdown.style.display = 'none';
         });
         dropdown.appendChild(item);
@@ -3350,6 +3361,21 @@ function addCgListRow(name = '', level = '', isPaid = false, uuid = '') {
   nameInput.style.margin = '0';
   nameInput.style.minWidth = '0';
   
+  const avatarImg = document.createElement('img');
+  avatarImg.style.width = '24px';
+  avatarImg.style.height = '24px';
+  avatarImg.style.borderRadius = '50%';
+  avatarImg.style.objectFit = 'cover';
+  avatarImg.style.backgroundColor = '#eee';
+  avatarImg.style.flexShrink = '0';
+  avatarImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  if (uuid && typeof globalLobbyUsers !== 'undefined') {
+    const matchUser = globalLobbyUsers.find(u => u.userId === uuid);
+    if (matchUser && matchUser.pictureUrl) {
+      avatarImg.src = matchUser.pictureUrl;
+    }
+  }
+  
   const levelInput = document.createElement('input');
   levelInput.type = 'text';
   levelInput.className = 'cg-list-level';
@@ -3388,8 +3414,9 @@ function addCgListRow(name = '', level = '', isPaid = false, uuid = '') {
   delBtn.innerText = '❌';
   delBtn.onclick = () => row.remove();
   
+  row.appendChild(avatarImg);
   row.appendChild(nameInput);
-  setupAutocomplete(nameInput);
+  setupAutocomplete(nameInput, avatarImg);
   row.appendChild(levelInput);
   row.appendChild(paidLabel);
   row.appendChild(delBtn);
@@ -7369,6 +7396,21 @@ function addTaListRow(name = '', level = '', isPaid = false, uuid = '') {
   nameInput.style.margin = '0';
   nameInput.style.minWidth = '0';
 
+  const avatarImg = document.createElement('img');
+  avatarImg.style.width = '24px';
+  avatarImg.style.height = '24px';
+  avatarImg.style.borderRadius = '50%';
+  avatarImg.style.objectFit = 'cover';
+  avatarImg.style.backgroundColor = '#eee';
+  avatarImg.style.flexShrink = '0';
+  avatarImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  if (uuid && typeof globalLobbyUsers !== 'undefined') {
+    const matchUser = globalLobbyUsers.find(u => u.userId === uuid);
+    if (matchUser && matchUser.pictureUrl) {
+      avatarImg.src = matchUser.pictureUrl;
+    }
+  }
+
   const levelInput = document.createElement('input');
   levelInput.type = 'text';
   levelInput.className = 'ta-list-level';
@@ -7407,8 +7449,9 @@ function addTaListRow(name = '', level = '', isPaid = false, uuid = '') {
   delBtn.innerText = '❌';
   delBtn.onclick = () => row.remove();
   
+  row.appendChild(avatarImg);
   row.appendChild(nameInput);
-  setupAutocomplete(nameInput);
+  setupAutocomplete(nameInput, avatarImg);
   row.appendChild(levelInput);
   row.appendChild(paidLabel);
   row.appendChild(delBtn);

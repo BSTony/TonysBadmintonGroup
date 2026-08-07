@@ -1840,6 +1840,7 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
   groupStats.viewCount = (groupStats.viewCount || 0) + 1;
   
   groupStats.uniqueViewers[userId].displayName = displayName; // update latest name
+  if (pictureUrl) groupStats.uniqueViewers[userId].pictureUrl = pictureUrl;
   groupStats.uniqueViewers[userId].lastVisit = now;
   groupStats.uniqueViewers[userId].count++;
 
@@ -2004,7 +2005,8 @@ app.get('/api/users/:gid', (req, res) => {
             .sort((a, b) => b[1].lastVisit - a[1].lastVisit)
             .map(([userId, info]) => ({ 
                 displayName: info.displayName, 
-                userId: userId 
+                userId: userId,
+                pictureUrl: info.pictureUrl || ''
             }));
         res.json({ success: true, users: sortedUsers });
     } catch (e) {
