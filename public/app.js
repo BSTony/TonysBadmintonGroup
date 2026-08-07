@@ -14,7 +14,7 @@ async function loadLobbyUsers() {
 }
 
 function setupAutocomplete(inputElement) {
-  inputElement.setAttribute('autocomplete', 'off');
+  inputElement.setAttribute('autocomplete', 'new-password');
   
   let dropdown = document.createElement('div');
   dropdown.className = 'autocomplete-dropdown';
@@ -26,6 +26,8 @@ function setupAutocomplete(inputElement) {
   dropdown.style.zIndex = '1000';
   dropdown.style.display = 'none';
   dropdown.style.width = inputElement.offsetWidth ? inputElement.offsetWidth + 'px' : '100%';
+  dropdown.style.top = '100%';
+  dropdown.style.left = '0';
   
   // Wrapper to position dropdown correctly
   const wrapper = document.createElement('div');

@@ -1997,12 +1997,10 @@ app.post('/api/admin/lobby_stats/:gid/delete', express.json(), async (req, res) 
 app.get('/api/users/:gid', (req, res) => {
     const gid = req.params.gid;
     try {
-        if (!fs.existsSync(lobbyVisitsFile)) return res.json({ success: true, users: [] });
-        const data = JSON.parse(fs.readFileSync(lobbyVisitsFile, 'utf8'));
-        const uniqueViewers = data[gid].uniqueViewers;
-        if (!uniqueViewers) return res.json({ success: true, users: [] });
+        const groupStats = lobbyVisits[gid];
+        if (!groupStats || !groupStats.uniqueViewers) return res.json({ success: true, users: [] });
         
-        const sortedUsers = Object.entries(uniqueViewers)
+        const sortedUsers = Object.entries(groupStats.uniqueViewers)
             .sort((a, b) => b[1].lastVisit - a[1].lastVisit)
             .map(([userId, info]) => ({ 
                 displayName: info.displayName, 
