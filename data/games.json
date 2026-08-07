@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786085895639,
+    "lastActiveTime": 1786087434607,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1606,7 +1606,8 @@
           "Harry",
           "濰杰1",
           "濰杰2",
-          "郭岳翰John"
+          "郭岳翰John",
+          "Man cool1"
         ]
       }
     ],
@@ -1635,9 +1636,17 @@
       "Harry": "U4a000207c2cd7539924a5c19b7506bba",
       "濰杰1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "濰杰2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "Man cool1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/07 15:23",
+        "name": "Man cool1",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/07 14:58",
         "name": "思翰2",
