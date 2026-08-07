@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786011320663,
+    "lastActiveTime": 1786073518596,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1608,7 +1608,8 @@
           "Gary",
           "Harry",
           "濰杰1",
-          "濰杰2"
+          "濰杰2",
+          "郭岳翰John"
         ]
       }
     ],
@@ -1636,9 +1637,17 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "Harry": "U4a000207c2cd7539924a5c19b7506bba",
       "濰杰1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "濰杰2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "濰杰2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "history": [
+      {
+        "time": "08/07 11:31",
+        "name": "郭岳翰John",
+        "operator": "郭岳翰John",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 18:15",
         "name": "濰杰2",
@@ -2076,20 +2085,23 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786035062834,
+    "lastActiveTime": 1786076631619,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {},
-    "paidMap": {},
+    "paidMap": {
+      "Tony": true,
+      "Kay": true
+    },
     "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
       {
         "title": "8:00-10:00",
-        "limit": 16,
+        "limit": 15,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
@@ -2106,12 +2118,13 @@
           "Ray Hsieh",
           "wayne",
           "Sean柏宏",
-          "兔兔(玉儒)"
+          "兔兔(玉儒)",
+          "JoeLin"
         ]
       },
       {
         "title": "10:00-12:00 (10-11開冷氣)",
-        "limit": 9,
+        "limit": 8,
         "backupLimit": 5,
         "fee": "210",
         "label": "",
@@ -2125,7 +2138,7 @@
       },
       {
         "title": "8:00-12:00 (10-11開冷氣)",
-        "limit": 13,
+        "limit": 14,
         "backupLimit": 5,
         "fee": "320",
         "label": "",
@@ -2140,7 +2153,10 @@
           "林立峰",
           "Fb-阿倫",
           "FB-祺緯",
-          "腳皮"
+          "腳皮",
+          "胞弟",
+          "Shawn1",
+          "Shawn2"
         ]
       }
     ],
@@ -2174,9 +2190,41 @@
       "Fb-阿倫": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "FB-祺緯": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-      "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a"
+      "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a",
+      "胞弟": "U09e4f0126678f203e0b139a474c17637",
+      "Shawn1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Shawn2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
     },
     "history": [
+      {
+        "time": "08/07 12:23",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/07 12:00",
+        "name": "Shawn2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/07 12:00",
+        "name": "Shawn1",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/07 11:45",
+        "name": "胞弟",
+        "operator": "詹敬智(胞弟)",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/07 00:51",
         "name": "兔兔(玉儒)",
@@ -2482,7 +2530,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785848005986,
-    "lastActiveTime": 1785988559982,
+    "lastActiveTime": 1786067090266,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2515,7 +2563,6 @@
           "偉舫",
           "小周",
           "afrahuang",
-          "Sean",
           "Jet",
           "張建發",
           "Yoshi(王安迪)"
@@ -2533,6 +2580,13 @@
       "Yoshi(王安迪)": "Ufe0fe514d1b7b112a3f6910485ae1ce8"
     },
     "history": [
+      {
+        "time": "08/07 09:44",
+        "name": "Sean",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/06 11:55",
         "name": "Yoshi(王安迪)",
