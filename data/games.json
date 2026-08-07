@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786106555619,
+    "lastActiveTime": 1786114084993,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1604,7 +1604,6 @@
           "Dawson1",
           "Dawson2",
           "Harry",
-          "濰杰1",
           "濰杰2",
           "郭岳翰John",
           "Man cool1",
@@ -1644,6 +1643,13 @@
       "小羅": "U6d9e099c518efa25fd881c87e6e72dd7"
     },
     "history": [
+      {
+        "time": "08/07 22:48",
+        "name": "濰杰1",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/07 20:42",
         "name": "小羅",
