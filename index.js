@@ -3910,12 +3910,6 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       affectedSectionName = game.sections[foundInSecIdx].title;
       
-      const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
-      // 允許使用者取消與自己 LINE 名稱完全相符的名單，即使該名單當初是由管理員代報（UUID 不符）
-      if (!isAdmin && registeredUid && registeredUid !== uid && name !== operatorName) {
-        return res.status(403).json({ error: '只能取消自己或自己代報的名單' });
-      }
-      
       // Capture lists before removal for bump logic
       const listsBefore = game.sections.map(s => s.list.slice(0, s.limit));
       
