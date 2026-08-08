@@ -2160,7 +2160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786118610199,
+    "lastActiveTime": 1786147474420,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2194,7 +2194,8 @@
           "wayne",
           "Sean柏宏",
           "兔兔(玉儒)",
-          "JoeLin"
+          "JoeLin",
+          "(AK) Seth Hu"
         ]
       },
       {
@@ -2273,9 +2274,17 @@
       "Shawn2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
       "Pu": "Ufc4b20dff9b2270f6e4ea5a3c5eb0d0b",
-      "雅0🐱": "U70293580bf944ee91dff2fdea1b5ec16"
+      "雅0🐱": "U70293580bf944ee91dff2fdea1b5ec16",
+      "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
     },
     "history": [
+      {
+        "time": "08/08 08:04",
+        "name": "(AK) Seth Hu",
+        "operator": "(AK) Seth Hu",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/08 00:03",
         "name": "雅0🐱",
