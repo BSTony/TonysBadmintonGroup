@@ -2308,26 +2308,31 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
 
           // Format names for two columns
           const listBoxes = [];
-          if (isMultiSection) {
-              listBoxes.push({
-                  type: "box",
-                  layout: "horizontal",
-                  contents: [
-                      { type: "text", text: "👉 此場次包含多個時段與分區", size: "sm", color: "#333333", flex: 1, wrap: true }
-                  ]
-              });
-              listBoxes.push({
-                  type: "box",
-                  layout: "horizontal",
-                  margin: "sm",
-                  contents: [
-                      { type: "text", text: "請點擊下方「報名/名單」查看各區詳情", size: "sm", color: "#666666", flex: 1, wrap: true }
-                  ]
-              });
-          } else {
-              for (let i = 0; i < list.length && i < limit; i += 2) {
-                  const name1 = list[i] === '__ANON__' ? '匿名' : list[i];
-                  const name2 = (i + 1 < list.length && i + 1 < limit) ? (list[i+1] === '__ANON__' ? '匿名' : list[i+1]) : '';
+          const sectionsToRender = (g.sections && g.sections.length > 0) ? g.sections : [{ list: list, limit: limit, title: '名單' }];
+          
+          sectionsToRender.forEach((sec, sIdx) => {
+              if (isMultiSection) {
+                  if (sIdx > 0) {
+                      listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
+                  }
+                  listBoxes.push({
+                      type: "box",
+                      layout: "horizontal",
+                      margin: "sm",
+                      contents: [
+                          { type: "text", text: `📍 ${sec.title || '分區'}`, size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
+                          { type: "text", text: `${(sec.list||[]).length}/${sec.limit||0}`, size: "xs", color: "#666666", align: "end", flex: 0 }
+                      ]
+                  });
+              }
+              
+              const secList = sec.list || [];
+              const secLimit = sec.limit || 20;
+              
+              // 正取名單
+              for (let i = 0; i < secList.length && i < secLimit; i += 2) {
+                  const name1 = secList[i] === '__ANON__' ? '匿名' : secList[i];
+                  const name2 = (i + 1 < secList.length && i + 1 < secLimit) ? (secList[i+1] === '__ANON__' ? '匿名' : secList[i+1]) : '';
                   
                   const formatName = (idx, name) => {
                       if (!name) return "";
@@ -2348,20 +2353,56 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   });
               }
               
-              if (list.length < limit) {
-                  // Add an empty spot indicator for the next available spot
+              if (secList.length < secLimit) {
                   listBoxes.push({
                       type: "box",
                       layout: "horizontal",
                       paddingTop: "2px",
                       paddingBottom: "2px",
                       contents: [
-                          { type: "text", text: `${list.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
+                          { type: "text", text: `${secList.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
                           { type: "filler", flex: 1 }
                       ]
                   });
               }
-          }
+              
+              // 候補名單
+              if (secList.length > secLimit) {
+                  listBoxes.push({
+                      type: "box",
+                      layout: "horizontal",
+                      margin: "sm",
+                      contents: [
+                          { type: "text", text: "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }
+                      ]
+                  });
+                  
+                  let backupCount = 0;
+                  for (let i = secLimit; i < secList.length; i += 2) {
+                      const name1 = secList[i] === '__ANON__' ? '匿名' : secList[i];
+                      const name2 = (i + 1 < secList.length) ? (secList[i+1] === '__ANON__' ? '匿名' : secList[i+1]) : '';
+                      
+                      const formatBackup = (idx, name, bc) => {
+                          if (!name) return "";
+                          const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
+                          const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
+                          return `補${bc+1}. ${name}${levelStr}${paidStr}`;
+                      };
+
+                      listBoxes.push({
+                          type: "box",
+                          layout: "horizontal",
+                          paddingTop: "2px",
+                          paddingBottom: "2px",
+                          contents: [
+                              { type: "text", text: formatBackup(i, name1, backupCount), size: "xs", color: "#555555", flex: 1, wrap: false },
+                              name2 ? { type: "text", text: formatBackup(i+1, name2, backupCount+1), size: "xs", color: "#555555", flex: 1, wrap: false } : { type: "filler", flex: 1 }
+                          ]
+                      });
+                      backupCount += name2 ? 2 : 1;
+                  }
+              }
+          });
 
           let progressPercent = 0;
           if (totalLimit > 0) {
@@ -2423,51 +2464,6 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                 contents: listBoxes
               }
           ];
-
-          // Backups
-          if (!isMultiSection && list.length > limit) {
-              bodyContents.push({ type: "separator", margin: "md", color: "#eeeeee" });
-              bodyContents.push({
-                  type: "box",
-                  layout: "horizontal",
-                  margin: "md",
-                  contents: [
-                    { type: "text", text: "⌛ 候補名單", size: "sm", color: "#FF9800", weight: "bold", flex: 1 }
-                  ]
-              });
-              
-              const backupBoxes = [];
-              let backupCount = 0;
-              for (let i = limit; i < list.length; i += 2) {
-                  const name1 = list[i] === '__ANON__' ? '匿名' : list[i];
-                  const name2 = (i + 1 < list.length) ? (list[i+1] === '__ANON__' ? '匿名' : list[i+1]) : '';
-                  
-                  const formatBackup = (idx, name, bc) => {
-                      if (!name) return "";
-                      const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                      const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
-                      return `補${bc+1}. ${name}${levelStr}${paidStr}`;
-                  };
-
-                  backupBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      paddingTop: "2px",
-                      paddingBottom: "2px",
-                      contents: [
-                          { type: "text", text: formatBackup(i, name1, backupCount), size: "xs", color: "#555555", flex: 1, wrap: false },
-                          name2 ? { type: "text", text: formatBackup(i+1, name2, backupCount+1), size: "xs", color: "#555555", flex: 1, wrap: false } : { type: "filler", flex: 1 }
-                      ]
-                  });
-                  backupCount += name2 ? 2 : 1;
-              }
-              bodyContents.push({
-                  type: "box",
-                  layout: "vertical",
-                  margin: "sm",
-                  contents: backupBoxes
-              });
-          }
 
           const liffMainUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : null;
           const liffGameUrl = process.env.LIFF_ID ? `${liffMainUrl}&gameId=${g.gameId}` : null;
