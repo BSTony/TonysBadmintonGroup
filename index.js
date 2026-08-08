@@ -1998,10 +1998,27 @@ app.post('/api/admin/lobby_stats/:gid/delete', express.json(), async (req, res) 
 app.get('/api/users/:gid', (req, res) => {
     const gid = req.params.gid;
     try {
-        const groupStats = lobbyVisits[gid];
-        if (!groupStats || !groupStats.uniqueViewers) return res.json({ success: true, users: [] });
+        let aggregatedUsers = {};
         
-        const sortedUsers = Object.entries(groupStats.uniqueViewers)
+        if (gid === 'all') {
+            for (const groupGid in lobbyVisits) {
+                const stats = lobbyVisits[groupGid];
+                if (stats && stats.uniqueViewers) {
+                    for (const [userId, info] of Object.entries(stats.uniqueViewers)) {
+                        if (!aggregatedUsers[userId] || aggregatedUsers[userId].lastVisit < info.lastVisit) {
+                            aggregatedUsers[userId] = info;
+                        }
+                    }
+                }
+            }
+        } else {
+            const groupStats = lobbyVisits[gid];
+            if (groupStats && groupStats.uniqueViewers) {
+                aggregatedUsers = groupStats.uniqueViewers;
+            }
+        }
+        
+        const sortedUsers = Object.entries(aggregatedUsers)
             .sort((a, b) => b[1].lastVisit - a[1].lastVisit)
             .map(([userId, info]) => ({ 
                 displayName: info.displayName, 

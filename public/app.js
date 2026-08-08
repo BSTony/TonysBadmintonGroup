@@ -3,7 +3,8 @@ let globalLobbyUsers = [];
 async function loadLobbyUsers() {
   if (!currentGroupId) return;
   try {
-    const res = await fetch(`/api/users/${currentGroupId}`);
+    const fetchGid = globalIsSuperAdmin ? 'all' : currentGroupId;
+    const res = await fetch(`/api/users/${fetchGid}`);
     const data = await res.json();
     if (res.ok && data.success) {
       globalLobbyUsers = data.users || [];
