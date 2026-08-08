@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786183791926,
+    "lastActiveTime": 1786198194218,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2234,7 +2234,8 @@
           "小正",
           "Kevin",
           "Mia",
-          "Hsin"
+          "Hsin",
+          "李詩晴"
         ]
       },
       {
@@ -2295,9 +2296,17 @@
       "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
       "Pu": "Ufc4b20dff9b2270f6e4ea5a3c5eb0d0b",
       "雅0🐱": "U70293580bf944ee91dff2fdea1b5ec16",
-      "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
+      "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7",
+      "李詩晴": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/08 22:09",
+        "name": "李詩晴",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/08 18:09",
         "name": "Sean柏宏",
