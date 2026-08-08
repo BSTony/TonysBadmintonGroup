@@ -1556,7 +1556,7 @@
       "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1785561068548655",
-    "title": "週六 港中 打三小",
+    "title": "羽球接龍",
     "date": "8/8 (六)",
     "time": "09:00~12:00",
     "location": "南港高中",
@@ -1602,7 +1602,7 @@
       {
         "title": "報名名單",
         "limit": 23,
-        "backupLimit": 5,
+        "backupLimit": 0,
         "label": "",
         "list": [
           "Tony",
@@ -1632,7 +1632,7 @@
         "fee": "250"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "uidMap": {
       "俊吉": "U9a1ff0a8477529c49db5bca1e7313bd0",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786161624716,
+    "lastActiveTime": 1786178948621,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2233,7 +2233,8 @@
           "楊程鈞",
           "小正",
           "Kevin",
-          "Mia"
+          "Mia",
+          "Hsin"
         ]
       },
       {
@@ -2249,7 +2250,6 @@
           "Jet",
           "蕭傑森",
           "羅",
-          "Hsin",
           "林立峰",
           "Fb-阿倫",
           "FB-祺緯",
@@ -2300,6 +2300,20 @@
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
     },
     "history": [
+      {
+        "time": "08/08 16:49",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/08 16:48",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "-1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/08 12:00",
         "name": "雅0🐱",
