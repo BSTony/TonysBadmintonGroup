@@ -2041,6 +2041,8 @@ async function handleAction(gameId, action) {
     const idx = gamesList.findIndex(g => g.gameId === gameId);
     if (idx !== -1) gamesList[idx] = result.game;
     
+    await triggerLiffNotification(result.triggerBumpMsg);
+    
     if (currentGameDetailId) {
       renderDetail(gameId, true);
     } else {
@@ -2090,6 +2092,9 @@ async function handleProxyRegister(gameId) {
     input.value = '';
     const idx = gamesList.findIndex(g => g.gameId === gameId);
     if (idx !== -1) gamesList[idx] = result.game;
+    
+    await triggerLiffNotification(result.triggerBumpMsg);
+    
     renderLobby();
     
   } catch (err) {
@@ -2649,6 +2654,9 @@ window.handleCancelByName = async function(gameId, name) {
     
     const idx = gamesList.findIndex(g => g.gameId === gameId);
     if (idx !== -1) gamesList[idx] = result.game;
+    
+    await triggerLiffNotification(result.triggerBumpMsg);
+    
     renderDetail(gameId, true);
     
   } catch (err) {
@@ -2819,6 +2827,25 @@ function playMinusOneCancelAnimation(btn) {
   btn._floatingQuokka = null;
 }
 
+// 發送 LIFF 通知
+async function triggerLiffNotification(msg) {
+  if (msg && typeof liff !== 'undefined' && liff.isInClient()) {
+    try {
+      await liff.sendMessages([{ type: 'text', text: msg + '\n\n[系統代發]' }]);
+      console.log('自動發話成功');
+    } catch (e) {
+      console.error('liff.sendMessages 失敗:', e);
+      fetch('/api/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gid: currentGroupId, uid: currentUser.userId, name: currentUser.displayName, operatorName: currentUser.displayName, action: 'logError', text: '代發失敗: ' + e.message
+        })
+      }).catch(console.error);
+    }
+  }
+}
+
 // 處理新的輸入框報名與防呆
 async function handleActionWithInput(event, gameId, action, suffix = '') {
   const btn = event.currentTarget || event.target;
@@ -2926,25 +2953,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       throw new Error(data.error || '操作失敗');
     }
 
-    // 自動推播名單機制：優先使用 liff.sendMessages
-    if (data.triggerBumpMsg) {
-      // 嘗試用 liff.sendMessages（僅在 LINE 手機版內建瀏覽器中才有效）
-      if (typeof liff !== 'undefined' && liff.isInClient()) {
-        try {
-          await liff.sendMessages([{ type: 'text', text: data.triggerBumpMsg + '\n\n[系統代發]' }]);
-          console.log('自動發話成功');
-        } catch (e) {
-          console.error('liff.sendMessages 失敗:', e);
-          fetch('/api/action', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              gid: currentGroupId, gameId: gameId, uid: currentUser.userId, name: name, operatorName: currentUser.displayName, action: 'logError', text: '代發失敗: ' + e.message
-            })
-          }).catch(console.error);
-        }
-      }
-    }
+    await triggerLiffNotification(data.triggerBumpMsg);
     
     // +1/-1 完成後，清空暱稱與備註輸入框
     if (inputEl) {
