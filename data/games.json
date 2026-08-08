@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786205603416,
+    "lastActiveTime": 1786205610488,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2218,8 +2218,7 @@
           "兔兔(玉儒)",
           "JoeLin",
           "Shawn1",
-          "Shawn2",
-          "grant"
+          "Shawn2"
         ]
       },
       {
@@ -2305,6 +2304,13 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 00:13",
+        "name": "grant",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/09 00:13",
         "name": "grant",
