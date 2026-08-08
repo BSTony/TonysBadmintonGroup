@@ -2160,7 +2160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786147496214,
+    "lastActiveTime": 1786148807414,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2209,7 +2209,6 @@
           "小正",
           "Kevin",
           "Mia",
-          "Pu",
           "雅0🐱"
         ]
       },
@@ -2277,6 +2276,13 @@
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
     },
     "history": [
+      {
+        "time": "08/08 08:26",
+        "name": "Pu",
+        "operator": "Pu",
+        "action": "-1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/08 08:04",
         "name": "(AK) Seth Hu",
