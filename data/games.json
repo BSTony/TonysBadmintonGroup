@@ -1557,10 +1557,10 @@
     ],
     "gameId": "1785561068548655",
     "title": "羽球接龍",
-    "date": "",
-    "time": "",
-    "location": "",
-    "fee": "",
+    "date": "8/8 (六)",
+    "time": "09:00~12:00",
+    "location": "南港高中",
+    "fee": "250",
     "note": "",
     "tag": "",
     "active": true,
@@ -1601,7 +1601,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 20,
+        "limit": 23,
         "backupLimit": 0,
         "label": "",
         "list": [
@@ -1629,7 +1629,7 @@
           "小羅",
           "江こう 洋々"
         ],
-        "fee": ""
+        "fee": "250"
       }
     ],
     "isManualEnded": true,
