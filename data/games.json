@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786205610488,
+    "lastActiveTime": 1786205618165,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2234,7 +2234,8 @@
           "Kevin",
           "Mia",
           "Hsin",
-          "李詩晴"
+          "李詩晴",
+          "grant"
         ]
       },
       {
@@ -2304,6 +2305,13 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 00:13",
+        "name": "grant",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/09 00:13",
         "name": "grant",
