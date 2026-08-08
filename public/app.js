@@ -1500,10 +1500,6 @@ async function loadGamesLobby(silent = false) {
       statusMsg.style.display = 'block';
     }
     
-    if (globalLobbyUsers.length === 0) {
-      await loadLobbyUsers();
-    }
-    
     const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
     if (!res.ok) {
       if (res.status === 404) {
@@ -1520,6 +1516,11 @@ async function loadGamesLobby(silent = false) {
       globalManagedGroups = data.managedGroups || [];
       globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
       globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+      
+      if (globalLobbyUsers.length === 0) {
+        await loadLobbyUsers();
+      }
+      
       try {
         if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
       } catch(gbErr) { console.error('Fetch group buy error:', gbErr); }
