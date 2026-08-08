@@ -2855,7 +2855,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786168248614,
-    "lastActiveTime": 1786168283711,
+    "lastActiveTime": 1786168507313,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2874,7 +2874,8 @@
         "list": [
           "Tony",
           "Kay",
-          "陳呈"
+          "陳呈",
+          "楊程鈞"
         ],
         "fee": "250"
       }
@@ -2882,9 +2883,17 @@
     "uidMap": {
       "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "陳呈": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "陳呈": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "history": [
+      {
+        "time": "08/08 13:55",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/08 13:51",
         "name": "陳呈",
