@@ -2138,7 +2138,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
           paddingStart: isTarget ? "14px" : "8px",
           paddingEnd: "22px",
           alignItems: "center",
-          backgroundColor: sIsSectionTarget ? "#FFF3CD" : "transparent",
+          backgroundColor: sIsSectionTarget ? "#FFF3CD" : "#00000000",
           cornerRadius: "sm",
           contents: [
             { type: "text", text: `🔹 ${s.title || '時段'}`, size: "xxs", color: "#888888", flex: 4, wrap: false },
@@ -2343,7 +2343,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                       paddingBottom: "2px",
                       contents: [
                           { type: "text", text: formatName(i, name1), size: "xs", color: "#333333", flex: 1, wrap: false },
-                          { type: "text", text: name2 ? formatName(i+1, name2) : " ", size: "xs", color: "#333333", flex: 1, wrap: false }
+                          name2 ? { type: "text", text: formatName(i+1, name2), size: "xs", color: "#333333", flex: 1, wrap: false } : { type: "filler", flex: 1 }
                       ]
                   });
               }
@@ -2357,7 +2357,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                       paddingBottom: "2px",
                       contents: [
                           { type: "text", text: `${list.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
-                          { type: "text", text: " ", size: "xs", color: "#333333", flex: 1, wrap: false }
+                          { type: "filler", flex: 1 }
                       ]
                   });
               }
@@ -2428,7 +2428,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                       paddingBottom: "2px",
                       contents: [
                           { type: "text", text: formatBackup(i, name1, backupCount), size: "xs", color: "#555555", flex: 1, wrap: false },
-                          { type: "text", text: name2 ? formatBackup(i+1, name2, backupCount+1) : " ", size: "xs", color: "#555555", flex: 1, wrap: false }
+                          name2 ? { type: "text", text: formatBackup(i+1, name2, backupCount+1), size: "xs", color: "#555555", flex: 1, wrap: false } : { type: "filler", flex: 1 }
                       ]
                   });
                   backupCount += name2 ? 2 : 1;
@@ -4883,19 +4883,32 @@ async function handleEvent(event) {
           };
 
           const fallback = async (errDetail) => {
+              const errDetailStr = JSON.stringify(errDetail).substring(0, 300);
               const fallbackMessages = messagesToSend.map(m => {
                   if (m.type === 'text' && m.mention) {
                       const plainText = m.text;
                       return { type: 'text', text: plainText + '\n(標記全數失敗，已轉換為純文字)' };
                   }
+                  if (m.type === 'flex') {
+                      // Flex message failed - convert to plain text summary
+                      const games = groupGames.map(g => {
+                          let totalLen = 0;
+                          let totalLimit = 0;
+                          if (g.sections) g.sections.forEach(s => { totalLen += (s.list||[]).length; totalLimit += (s.limit||0); });
+                          return `🏸 ${g.title}：${totalLen}${totalLimit > 0 ? '/'+totalLimit : ''}人`;
+                      });
+                      return { type: 'text', text: '📋 接龍狀況（字卡顯示失敗，改以純文字）\n' + games.join('\n') };
+                  }
                   return m;
               });
+              console.log(`[ERROR] 字卡/標記發送異常。\n除錯資訊: ${errDetailStr}\nWebhook UID: ${event.source.userId}`);
               try {
                   await client.pushMessage(gid, getCleanMessages(fallbackMessages));
-                  // Silently log error, do not notify user in chat as requested
-                  console.log(`[ERROR] 標記發送嚴重異常。\n除錯資訊: ${JSON.stringify(errDetail)}\nWebhook UID: ${event.source.userId}`);
               } catch (e2) {
-                  console.log(`[ERROR] fallback push failed: ${e2.message}`);
+                  console.log(`[ERROR] fallback push failed: ${e2.message}\nerrDetail: ${errDetailStr}`);
+                  const timeStr = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+                  systemLogs.unshift({ time: timeStr, gameTitle: '系統錯誤', operator: '系統', errorMsg: `字卡發送失敗: ${e2.message}` });
+                  if (systemLogs.length > 500) systemLogs.pop();
               }
           };
 
