@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786202683992,
+    "lastActiveTime": 1786205603212,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2255,7 +2255,8 @@
           "FB-祺緯",
           "腳皮",
           "胞弟",
-          "John"
+          "John",
+          "Chen H.R."
         ]
       }
     ],
@@ -2298,9 +2299,17 @@
       "雅0🐱": "U70293580bf944ee91dff2fdea1b5ec16",
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7",
       "李詩晴": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
     },
     "history": [
+      {
+        "time": "08/09 00:13",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/08 23:24",
         "name": "John",
