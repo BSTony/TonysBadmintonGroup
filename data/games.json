@@ -2160,7 +2160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786148807414,
+    "lastActiveTime": 1786148846808,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2186,7 +2186,6 @@
           "陳呈",
           "林煥杰",
           "Jean",
-          "AK",
           "小金",
           "俊吉",
           "Joe",
@@ -2276,6 +2275,13 @@
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
     },
     "history": [
+      {
+        "time": "08/08 08:27",
+        "name": "AK",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/08 08:26",
         "name": "Pu",
