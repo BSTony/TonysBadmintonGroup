@@ -2387,7 +2387,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               }
           });
 
-          const MAX_ROWS = 12;
+          const MAX_ROWS = 7;
           const chunks = [];
           let currentChunk = [];
           let rowCount = 0;
