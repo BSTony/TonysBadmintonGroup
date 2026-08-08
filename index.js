@@ -2070,7 +2070,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       });
     }
     const isFull = limit > 0 && count >= limit;
-    const statusText = isFull ? '滿團' : (limit > 0 ? `${count}/${limit}` : `${count}人`);
+    const statusText = isFull ? (limit > 0 ? `滿團(${limit})` : '滿團') : (limit > 0 ? `${count}/${limit}` : `${count}人`);
     const titleText = g.title || g.date || '場次';
     
     let combinedTitle = titleText;
@@ -2105,7 +2105,10 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
         const sCount = (s.list || []).length;
         const sLimit = s.limit || 0;
         const sIsFull = sLimit > 0 && sCount >= sLimit;
-        const sStatusText = sIsFull ? '滿' : (sLimit > 0 ? `${sCount}/${sLimit}` : `${sCount}`);
+        const sStatusText = sIsFull ? (sLimit > 0 ? `滿(${sLimit})` : '滿') : (sLimit > 0 ? `${sCount}/${sLimit}` : `${sCount}`);
+        
+        const sIsSectionTarget = isTarget && cleanText.includes(`(${s.title})`);
+        
         return {
           type: "box",
           layout: "horizontal",
@@ -2114,6 +2117,8 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
           paddingStart: isTarget ? "14px" : "8px",
           paddingEnd: "22px",
           alignItems: "center",
+          backgroundColor: sIsSectionTarget ? "#FFF3CD" : "transparent",
+          cornerRadius: "sm",
           contents: [
             { type: "text", text: `🔹 ${s.title || '時段'}`, size: "xxs", color: "#888888", flex: 4, wrap: false },
             {
@@ -2121,7 +2126,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
               layout: "horizontal",
               flex: 0,
               height: "18px",
-              width: sIsFull ? "28px" : "36px",
+              width: sIsFull ? (sLimit > 0 ? "46px" : "28px") : "36px",
               cornerRadius: "sm",
               backgroundColor: sIsFull ? "#ffebee" : "#e8f5e9",
               justifyContent: "center",
@@ -2148,7 +2153,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
           layout: "horizontal",
           flex: 0,
           height: "22px",
-          width: isFull ? "36px" : "48px",
+          width: isFull ? (limit > 0 ? "56px" : "36px") : "48px",
           cornerRadius: "sm",
           backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
           justifyContent: "center",
@@ -2274,7 +2279,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
           }
           
           const isFull = totalLimit > 0 && totalListLen >= totalLimit;
-          const statusText = isFull ? '滿團' : (totalLimit > 0 ? `${totalListLen}/${totalLimit}` : `${totalListLen}人`);
+          const statusText = isFull ? (totalLimit > 0 ? `滿團(${totalLimit})` : '滿團') : (totalLimit > 0 ? `${totalListLen}/${totalLimit}` : `${totalListLen}人`);
 
           // Date and location
           let infoLine = `🕒 ${g.date || ''} ${g.time || ''}`.trim();
@@ -2350,7 +2355,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                     layout: "horizontal",
                     flex: 0,
                     height: "22px",
-                    width: isFull ? "36px" : "48px",
+                    width: isFull ? (totalLimit > 0 ? "56px" : "36px") : "48px",
                     cornerRadius: "sm",
                     backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
                     justifyContent: "center",
@@ -2502,37 +2507,46 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
 
           const uidArray = Array.from(uidsToMention.entries());
           if (uidArray.length > 0) {
-              const chunk = uidArray.slice(0, 50);
               const gameTitles = groupGames.map(g => g.title).filter(Boolean).join('、');
-              const prefix = gameTitles ? `[${gameTitles}] 已報名成功，記得來打球：` : '報名成功提醒：';
               
-              let textStr = prefix + "\n";
-              const mentionees = [];
-              const _names = {};
-              
-              for (let j = 0; j < chunk.length; j++) {
-                  const [uid, name] = chunk[j];
-                  const mentionText = `@${name} `;
-                  const startIndex = textStr.length;
-                  textStr += mentionText;
-                  
-                  mentionees.push({
-                      index: startIndex,
-                      length: mentionText.length - 1,
-                      type: "user",
-                      userId: uid
-                  });
-                  _names[`user${j}`] = { uid, name };
+              const mentionChunks = [];
+              for (let i = 0; i < uidArray.length; i += 20) {
+                  mentionChunks.push(uidArray.slice(i, i + 20));
               }
-              
-              messagesToSend.push({
-                  type: "text",
-                  text: textStr.trim(),
-                  mention: {
-                      mentionees: mentionees
-                  },
-                  _names: _names
-              });
+
+              for (let i = 0; i < mentionChunks.length; i++) {
+                  const chunk = mentionChunks[i];
+                  const isFirst = (i === 0);
+                  const prefix = isFirst ? (gameTitles ? `[${gameTitles}] 已報名成功，記得來打球：` : '報名成功提醒：') : '(續)：';
+                  
+                  let textStr = prefix + "\n";
+                  const mentionees = [];
+                  const _names = {};
+                  
+                  for (let j = 0; j < chunk.length; j++) {
+                      const [uid, name] = chunk[j];
+                      const mentionText = `@${name} `;
+                      const startIndex = textStr.length;
+                      textStr += mentionText;
+                      
+                      mentionees.push({
+                          index: startIndex,
+                          length: mentionText.length - 1,
+                          type: "user",
+                          userId: uid
+                      });
+                      _names[`user${j}`] = { uid, name };
+                  }
+                  
+                  messagesToSend.push({
+                      type: "text",
+                      text: textStr, // Do not trim to preserve exact indices
+                      mention: {
+                          mentionees: mentionees
+                      },
+                      _names: _names
+                  });
+              }
           } else {
               messagesToSend.push({
                   type: "text",
@@ -3802,12 +3816,16 @@ app.post('/api/action', express.json(), async (req, res) => {
       return res.status(400).json({ error: '接龍不存在或已結束' });
     }
     
+    let affectedSectionName = '';
+    
     const currentList = game.sections[0].list;
     const c = count || 1;
     
     if (action === 'register') {
       const targetSecIdx = (typeof req.body.sectionIdx === 'number' && req.body.sectionIdx < game.sections.length) ? req.body.sectionIdx : 0;
       const targetSection = game.sections[targetSecIdx];
+      affectedSectionName = targetSection.title;
+      
       const namesToAdd = [name];
       for(let i=1; i<c; i++) namesToAdd.push('__ANON__');
       
@@ -3839,9 +3857,21 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能修改繳費狀態' });
       }
+      for (let i = 0; i < game.sections.length; i++) {
+          if (game.sections[i].list.includes(name)) {
+              affectedSectionName = game.sections[i].title;
+              break;
+          }
+      }
       game.paidMap = game.paidMap || {};
       game.paidMap[name] = !game.paidMap[name];
     } else if (action === 'updateNote' || action === 'setNote') {
+      for (let i = 0; i < game.sections.length; i++) {
+          if (game.sections[i].list.includes(name)) {
+              affectedSectionName = game.sections[i].title;
+              break;
+          }
+      }
       game.noteMap = game.noteMap || {};
       const noteStr = typeof req.body.note === 'string' ? req.body.note.trim() : '';
       if (noteStr) {
@@ -3861,6 +3891,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (foundInSecIdx === -1) {
         return res.status(400).json({ error: '找不到此名稱' });
       }
+      affectedSectionName = game.sections[foundInSecIdx].title;
       
       const registeredUid = nameToUidMap.get(`${gameId}_${name}`);
       if (!isAdmin && registeredUid && registeredUid !== uid) {
@@ -3972,11 +4003,17 @@ app.post('/api/action', express.json(), async (req, res) => {
           opPart = ` ${name}`;
         }
 
-        if (action === 'register') msg += `${g.title}${opPart} +1`;
-        else if (action === 'cancel') msg += `${g.title}${opPart} -1`;
-        else if (action === 'reorder') msg += `${g.title} 🔄順序更新`;
-        else if (action === 'togglePaid') msg += `${g.title}${opPart} 💰繳費更新`;
-        else if (action === 'updateNote' || action === 'setNote') msg += `${g.title}${opPart} 📝備註更新`;
+        const isMultiSection = g.sections && g.sections.length > 1;
+        let titlePart = g.title;
+        if (isMultiSection && affectedSectionName) {
+            titlePart += ` (${affectedSectionName})`;
+        }
+
+        if (action === 'register') msg += `${titlePart}${opPart} +1`;
+        else if (action === 'cancel') msg += `${titlePart}${opPart} -1`;
+        else if (action === 'reorder') msg += `${titlePart} 🔄順序更新`;
+        else if (action === 'togglePaid') msg += `${titlePart}${opPart} 💰繳費更新`;
+        else if (action === 'updateNote' || action === 'setNote') msg += `${titlePart}${opPart} 📝備註更新`;
 
         if (triggerBumpMsg) {
            msg += `\n🎉 【遞補通知】\n${triggerBumpMsg}`;
@@ -4762,27 +4799,51 @@ async function handleEvent(event) {
                   if (errData && errData.details) {
                       errData.details.forEach(d => {
                           if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                              const match = d.property.match(/mentionees\[(\d+)\]/);
-                              if (match && match[1]) {
-                                  badKey = parseInt(match[1], 10);
+                              const match = d.property.match(/messages\[(\d+)\]\.mention\.mentionees\[(\d+)\]/);
+                              if (match && match[1] && match[2]) {
+                                  if (!badKey || typeof badKey !== 'object') badKey = [];
+                                  badKey.push({ msgIdx: parseInt(match[1], 10), mIdx: parseInt(match[2], 10) });
                                   hasMentionError = true;
+                              } else {
+                                  // Fallback regex if LINE SDK changes format
+                                  const fallbackMatch = d.property.match(/mentionees\[(\d+)\]/);
+                                  if (fallbackMatch && fallbackMatch[1]) {
+                                      if (!badKey || typeof badKey !== 'object') badKey = [];
+                                      badKey.push({ msgIdx: -1, mIdx: parseInt(fallbackMatch[1], 10) });
+                                      hasMentionError = true;
+                                  }
                               }
                           }
                       });
                   }
                   
-                  if (hasMentionError && badKey !== null) {
+                  if (hasMentionError && badKey && badKey.length > 0) {
                       const retryMessages = JSON.parse(JSON.stringify(messages));
+                      
+                      // Sort descending by mIdx so splicing doesn't mess up indices
+                      badKey.sort((a, b) => b.mIdx - a.mIdx);
+                      
+                      badKey.forEach(({ msgIdx, mIdx }) => {
+                          if (msgIdx === -1) {
+                              // Apply to all text messages (less accurate but safe)
+                              for (let m of retryMessages) {
+                                  if (m.type === 'text' && m.mention && m.mention.mentionees && m.mention.mentionees[mIdx]) {
+                                      m.mention.mentionees.splice(mIdx, 1);
+                                  }
+                              }
+                          } else {
+                              // Apply to specific message
+                              const m = retryMessages[msgIdx];
+                              if (m && m.type === 'text' && m.mention && m.mention.mentionees && m.mention.mentionees[mIdx]) {
+                                  m.mention.mentionees.splice(mIdx, 1);
+                              }
+                          }
+                      });
+                      
+                      // Cleanup empty mentions
                       for (let m of retryMessages) {
-                          if (m.type === 'text' && m.mention && m.mention.mentionees) {
-                              if (m.mention.mentionees[badKey]) {
-                                  // Find the uid to reconstruct name if needed, but since it's plain text fallback,
-                                  // we just drop the mention object. Actually for mentions, we can just remove the specific bad mentionee
-                                  m.mention.mentionees.splice(badKey, 1);
-                              }
-                              if (m.mention.mentionees.length === 0) {
-                                  delete m.mention;
-                              }
+                          if (m.type === 'text' && m.mention && m.mention.mentionees && m.mention.mentionees.length === 0) {
+                              delete m.mention;
                           }
                       }
                       
@@ -4791,37 +4852,12 @@ async function handleEvent(event) {
                       } catch (retryErr) {
                           const retryErrData = retryErr.originalError?.response?.data;
                           if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
-                              const pushWithRetry = async (msgs) => {
-                                  try {
-                                      await client.pushMessage(gid, getCleanMessages(msgs));
-                                  } catch (e3) {
-                                      const e3Data = e3.originalError?.response?.data;
-                                      let e3BadKey = null;
-                                      if (e3Data && e3Data.details) {
-                                          e3Data.details.forEach(d => {
-                                              if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                                                  const match = d.property.match(/mentionees\[(\d+)\]/);
-                                                  if (match && match[1]) e3BadKey = parseInt(match[1], 10);
-                                              }
-                                          });
-                                      }
-                                      if (e3BadKey !== null) {
-                                          const nextMsgs = JSON.parse(JSON.stringify(msgs));
-                                          for (let m of nextMsgs) {
-                                              if (m.type === 'text' && m.mention && m.mention.mentionees) {
-                                                  m.mention.mentionees.splice(e3BadKey, 1);
-                                                  if (m.mention.mentionees.length === 0) delete m.mention;
-                                              }
-                                          }
-                                          await pushWithRetry(nextMsgs);
-                                      } else {
-                                          throw e3;
-                                      }
-                                  }
-                              };
-                              await pushWithRetry(retryMessages).catch(() => fallback(errData));
+                              // Instead of infinite recursion, we just fallback if it STILL fails after one targeted splice batch
+                              // Or we could let it loop by re-throwing and letting the outer try/catch handle it?
+                              // Actually, recursively calling sendWithRetry is cleaner.
+                              await sendWithRetry(retryMessages);
                           } else {
-                              fallback(errData);
+                              fallback(retryErrData);
                           }
                       }
                   } else {
