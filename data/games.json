@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786149984211,
+    "lastActiveTime": 1786150672821,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1578,7 +1578,8 @@
       "陳呈": true,
       "蕭傑森": true,
       "Man cool1": true,
-      "Man cool2": true
+      "Man cool2": true,
+      "俊吉": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
