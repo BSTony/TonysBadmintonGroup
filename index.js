@@ -2532,22 +2532,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               });
 
               const bodyContents = [];
-              if (chunkIdx === 0) {
-                  bodyContents.push({ type: "text", text: infoLine, size: "xs", color: "#666666", wrap: true });
-                  bodyContents.push({
-                    type: "box", layout: "horizontal", margin: "md",
-                    contents: [
-                      { type: "text", text: "📝 報名狀況", size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
-                      {
-                        type: "box", layout: "horizontal", flex: 0, height: "22px", width: isFull ? (totalLimit > 0 ? "56px" : "36px") : "48px",
-                        cornerRadius: "sm", backgroundColor: isFull ? "#ffebee" : "#e8f5e9", justifyContent: "center", alignItems: "center",
-                        contents: [{ type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }]
-                      }
-                    ]
-                  });
-                  bodyContents.push(progressBar);
-                  bodyContents.push({ type: "separator", margin: "sm", color: "#eeeeee" });
-              }
+              // Removed infoLine (date, time, location) to save space as requested
               bodyContents.push({ type: "box", layout: "vertical", margin: "md", contents: listBoxes });
 
               const bubble = {
