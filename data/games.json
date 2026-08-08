@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786153633609,
+    "lastActiveTime": 1786153645112,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1583,7 +1583,8 @@
       "Jet": true,
       "江こう 洋々": true,
       "小羅": true,
-      "Andrew": true
+      "Andrew": true,
+      "昆泰": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
