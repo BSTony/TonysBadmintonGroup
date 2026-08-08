@@ -2502,33 +2502,35 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
 
           const uidArray = Array.from(uidsToMention.entries());
           if (uidArray.length > 0) {
-              // Use LINE textV2 format which is the ONLY way to send mentions from a bot
-              // textV2 uses {placeholder} substitution syntax
               const chunk = uidArray.slice(0, 50);
               const gameTitles = groupGames.map(g => g.title).filter(Boolean).join('、');
               const prefix = gameTitles ? `[${gameTitles}] 已報名成功，記得來打球：` : '報名成功提醒：';
-              let textParts = [prefix];
-              const substitution = {};
+              
+              let textStr = prefix + "\n";
+              const mentionees = [];
               const _names = {};
               
               for (let j = 0; j < chunk.length; j++) {
                   const [uid, name] = chunk[j];
-                  const key = `user${j}`;
-                  textParts.push(`{${key}}`);
-                  substitution[key] = {
-                      type: "mention",
-                      mentionee: {
-                          type: "user",
-                          userId: uid
-                      }
-                  };
-                  _names[key] = name;
+                  const mentionText = `@${name} `;
+                  const startIndex = textStr.length;
+                  textStr += mentionText;
+                  
+                  mentionees.push({
+                      index: startIndex,
+                      length: mentionText.length - 1,
+                      type: "user",
+                      userId: uid
+                  });
+                  _names[`user${j}`] = { uid, name };
               }
               
               messagesToSend.push({
-                  type: "textV2",
-                  text: textParts.join(' '),
-                  substitution: substitution,
+                  type: "text",
+                  text: textStr.trim(),
+                  mention: {
+                      mentionees: mentionees
+                  },
                   _names: _names
               });
           } else {
@@ -4720,11 +4722,20 @@ async function handleEvent(event) {
       // Generate the full carousel (Status Bubble + Detail Bubbles + Mentions)
       const messagesToSend = generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble);
       
+      // Helper function to strip internal properties
+      const getCleanMessages = (msgs) => {
+          return msgs.map(m => {
+              const copy = { ...m };
+              if (copy._names) delete copy._names;
+              return copy;
+          });
+      };
+
       // We NEVER consume quota for standard replies!
       // Only when explicitly pushing to a DIFFERENT group do we use pushMessage.
       if (targetGid !== gid) {
           try {
-              await client.pushMessage(targetGid, messagesToSend);
+              await client.pushMessage(targetGid, getCleanMessages(messagesToSend));
               const successMsg = isMentionPush ? '場次名單及提醒' : '場次名單';
               return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
           } catch (e) {
@@ -4736,13 +4747,13 @@ async function handleEvent(event) {
           // Helper function for recursive retry
           const sendWithRetry = async (messages) => {
               try {
-                  await client.replyMessage(event.replyToken, messages);
+                  await client.replyMessage(event.replyToken, getCleanMessages(messages));
               } catch (e) {
                   const errData = e.originalError?.response?.data;
                   
                   // If replyToken is consumed or we need to push, use pushMessage
                   const tryPush = async (msgs) => {
-                      await client.pushMessage(gid, msgs);
+                      await client.pushMessage(gid, getCleanMessages(msgs));
                   };
 
                   let hasMentionError = false;
@@ -4751,70 +4762,60 @@ async function handleEvent(event) {
                   if (errData && errData.details) {
                       errData.details.forEach(d => {
                           if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                              const match = d.property.match(/substitution\["?([^"]+)"?\]/);
+                              const match = d.property.match(/mentionees\[(\d+)\]/);
                               if (match && match[1]) {
-                                  badKey = match[1];
+                                  badKey = parseInt(match[1], 10);
                                   hasMentionError = true;
                               }
                           }
                       });
                   }
                   
-                  if (hasMentionError && badKey) {
+                  if (hasMentionError && badKey !== null) {
                       const retryMessages = JSON.parse(JSON.stringify(messages));
                       for (let m of retryMessages) {
-                          if (m.type === 'textV2' && m.substitution && m.substitution[badKey]) {
-                              const userName = (m._names && m._names[badKey]) ? m._names[badKey] : 'User';
-                              m.text = m.text.replace(`{${badKey}}`, `@${userName}`);
-                              delete m.substitution[badKey];
-                              // Removed fallbackNotice push
-                              
-                              // Check if there are no more substitutions left
-                              if (Object.keys(m.substitution).length === 0) {
-                                  m.type = 'text';
-                                  delete m.substitution;
+                          if (m.type === 'text' && m.mention && m.mention.mentionees) {
+                              if (m.mention.mentionees[badKey]) {
+                                  // Find the uid to reconstruct name if needed, but since it's plain text fallback,
+                                  // we just drop the mention object. Actually for mentions, we can just remove the specific bad mentionee
+                                  m.mention.mentionees.splice(badKey, 1);
+                              }
+                              if (m.mention.mentionees.length === 0) {
+                                  delete m.mention;
                               }
                           }
                       }
                       
                       try {
-                          // Try sending again with pushMessage (since replyToken might be dead)
                           await tryPush(retryMessages);
                       } catch (retryErr) {
                           const retryErrData = retryErr.originalError?.response?.data;
-                          // If it fails again with mention error, recurse!
                           if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
-                              // Recursively call a push-only version
                               const pushWithRetry = async (msgs) => {
                                   try {
-                                      await client.pushMessage(gid, msgs);
+                                      await client.pushMessage(gid, getCleanMessages(msgs));
                                   } catch (e3) {
                                       const e3Data = e3.originalError?.response?.data;
                                       let e3BadKey = null;
                                       if (e3Data && e3Data.details) {
                                           e3Data.details.forEach(d => {
                                               if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                                                  const match = d.property.match(/substitution\["?([^"]+)"?\]/);
-                                                  if (match && match[1]) e3BadKey = match[1];
+                                                  const match = d.property.match(/mentionees\[(\d+)\]/);
+                                                  if (match && match[1]) e3BadKey = parseInt(match[1], 10);
                                               }
                                           });
                                       }
-                                      if (e3BadKey) {
+                                      if (e3BadKey !== null) {
                                           const nextMsgs = JSON.parse(JSON.stringify(msgs));
                                           for (let m of nextMsgs) {
-                                              if (m.type === 'textV2' && m.substitution && m.substitution[e3BadKey]) {
-                                                  const uName = (m._names && m._names[e3BadKey]) ? m._names[e3BadKey] : 'User';
-                                                  m.text = m.text.replace(`{${e3BadKey}}`, `@${uName}`);
-                                                  delete m.substitution[e3BadKey];
-                                                  if (Object.keys(m.substitution).length === 0) {
-                                                      m.type = 'text';
-                                                      delete m.substitution;
-                                                  }
+                                              if (m.type === 'text' && m.mention && m.mention.mentionees) {
+                                                  m.mention.mentionees.splice(e3BadKey, 1);
+                                                  if (m.mention.mentionees.length === 0) delete m.mention;
                                               }
                                           }
                                           await pushWithRetry(nextMsgs);
                                       } else {
-                                          throw e3; // Unhandled error
+                                          throw e3;
                                       }
                                   }
                               };
@@ -4831,21 +4832,19 @@ async function handleEvent(event) {
 
           const fallback = async (errDetail) => {
               const fallbackMessages = messagesToSend.map(m => {
-                  if (m.type === 'textV2') {
-                      let plainText = m.text;
-                      if (m._names) {
-                          for (const k in m._names) plainText = plainText.replace(`{${k}}`, `@${m._names[k]}`);
-                      } else {
-                          plainText = plainText.replace(/\{user\d+\}/g, '').trim();
-                      }
+                  if (m.type === 'text' && m.mention) {
+                      const plainText = m.text;
                       return { type: 'text', text: plainText + '\n(標記全數失敗，已轉換為純文字)' };
                   }
                   return m;
               });
               try {
-                  await client.pushMessage(gid, fallbackMessages);
-                  await client.pushMessage(gid, { type: 'text', text: `⚠️ 標記發送嚴重異常。\n除錯資訊: ${JSON.stringify(errDetail)}\nWebhook UID: ${event.source.userId}` });
-              } catch (e2) {}
+                  await client.pushMessage(gid, getCleanMessages(fallbackMessages));
+                  // Silently log error, do not notify user in chat as requested
+                  console.log(`[ERROR] 標記發送嚴重異常。\n除錯資訊: ${JSON.stringify(errDetail)}\nWebhook UID: ${event.source.userId}`);
+              } catch (e2) {
+                  console.log(`[ERROR] fallback push failed: ${e2.message}`);
+              }
           };
 
           await sendWithRetry(messagesToSend);

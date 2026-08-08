@@ -1556,7 +1556,7 @@
       "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1785561068548655",
-    "title": "羽球接龍",
+    "title": "週六 港中 打三小",
     "date": "8/8 (六)",
     "time": "09:00~12:00",
     "location": "南港高中",
@@ -1602,7 +1602,7 @@
       {
         "title": "報名名單",
         "limit": 23,
-        "backupLimit": 0,
+        "backupLimit": 5,
         "label": "",
         "list": [
           "Tony",
@@ -1632,7 +1632,7 @@
         "fee": "250"
       }
     ],
-    "isManualEnded": true,
+    "isManualEnded": false,
     "uidMap": {
       "俊吉": "U9a1ff0a8477529c49db5bca1e7313bd0",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
