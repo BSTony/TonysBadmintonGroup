@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786146110077,
+    "lastActiveTime": 1786149758408,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1575,7 +1575,8 @@
     "paidMap": {
       "Tony": true,
       "Kay": true,
-      "陳呈": true
+      "陳呈": true,
+      "蕭傑森": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
