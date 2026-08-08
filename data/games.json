@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786154327112,
+    "lastActiveTime": 1786154492611,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1586,7 +1586,8 @@
       "Andrew": true,
       "昆泰": true,
       "Harry": true,
-      "徐偉強": true
+      "徐偉強": true,
+      "錢小肚": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
