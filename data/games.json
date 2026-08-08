@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786149758408,
+    "lastActiveTime": 1786149982619,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1576,7 +1576,8 @@
       "Tony": true,
       "Kay": true,
       "陳呈": true,
-      "蕭傑森": true
+      "蕭傑森": true,
+      "Man cool1": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
