@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786178948621,
+    "lastActiveTime": 1786179595329,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2215,7 +2215,6 @@
           "小金",
           "俊吉",
           "Joe",
-          "Ray Hsieh",
           "wayne",
           "Sean柏宏",
           "兔兔(玉儒)",
@@ -2300,6 +2299,13 @@
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
     },
     "history": [
+      {
+        "time": "08/08 16:59",
+        "name": "Ray Hsieh",
+        "operator": "Ray Hsieh",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/08 16:49",
         "name": "Hsin",
