@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2986,
+    "viewCount": 2994,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -23,8 +23,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 606,
-        "lastVisit": 1786153545509
+        "count": 608,
+        "lastVisit": 1786155785933
       },
       "U092196c10fe7e15591482c6b7942a147": {
         "displayName": "Sammy Su",
@@ -41,8 +41,8 @@
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
         "firstVisit": 1783209148916,
-        "count": 205,
-        "lastVisit": 1786153624932
+        "count": 206,
+        "lastVisit": 1786154542809
       },
       "U532d12783f207181c2d0f9d9ecc8724a": {
         "displayName": "林俊佑",
@@ -401,8 +401,8 @@
       "U70293580bf944ee91dff2fdea1b5ec16": {
         "displayName": "雅0🐱",
         "firstVisit": 1783562549114,
-        "count": 28,
-        "lastVisit": 1786154346742
+        "count": 31,
+        "lastVisit": 1786154749009
       },
       "Ubf312b4cd3bdb90efe9e5e8ec6c86f10": {
         "displayName": "吳冠宏",
@@ -545,8 +545,8 @@
       "Ua4c9b87ae0f49f0e264f14642944a52e": {
         "displayName": "Chen H.R.",
         "firstVisit": 1783822652122,
-        "count": 80,
-        "lastVisit": 1786139487590
+        "count": 81,
+        "lastVisit": 1786156641211
       },
       "U3d8fd8b2d2271e0f6f2f4f50e1475c12": {
         "displayName": "Sean柏宏",
@@ -925,9 +925,63 @@
         "firstVisit": 1786027310497,
         "count": 1,
         "lastVisit": 1786027310497
+      },
+      "Uf51778566761fb87bb828171d9148e46": {
+        "displayName": "Kai Chi",
+        "firstVisit": 1786155951821,
+        "count": 1,
+        "lastVisit": 1786155951821
       }
     },
     "logs": [
+      {
+        "time": 1786156641211,
+        "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
+        "displayName": "Chen H.R.",
+        "pictureUrl": "https://profile.line-scdn.net/0ht-ExTO7jKwJoATcw3mhVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
+      },
+      {
+        "time": 1786155951821,
+        "userId": "Uf51778566761fb87bb828171d9148e46",
+        "displayName": "Kai Chi",
+        "pictureUrl": "https://profile.line-scdn.net/0hBMxEC_xFHWJVPAqO-whjHSVsHgh2TURwKllVDWlvQAc6WVw2K14ADWA6S1tvCVlmf1JbVGZuSlVZL2oES2rhVlIMQFNoDV88f1JXgQ"
+      },
+      {
+        "time": 1786155785933,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
+      {
+        "time": 1786154749009,
+        "userId": "U70293580bf944ee91dff2fdea1b5ec16",
+        "displayName": "雅0🐱",
+        "pictureUrl": "https://profile.line-scdn.net/0h8ZNN_70TZ3VjN3nA1E0ZSxNnZB9ARj5nTgEpEQM2PENcVSglT1R_QAYyaUcNAXVwT1ErFVdiMUFBb05bLgIgZQ1eOisXT0QmRiFXFS1kPDwbB2ElCQhQdx5xfxxfZCRFB1JOYRdXR0EuQSQiGCtLFRNjMB0CdyJKDWALI2YFCfYMNRAgTlEpFl4xMUDb"
+      },
+      {
+        "time": 1786154628612,
+        "userId": "U70293580bf944ee91dff2fdea1b5ec16",
+        "displayName": "雅0🐱",
+        "pictureUrl": "https://profile.line-scdn.net/0h8ZNN_70TZ3VjN3nA1E0ZSxNnZB9ARj5nTgEpEQM2PENcVSglT1R_QAYyaUcNAXVwT1ErFVdiMUFBb05bLgIgZQ1eOisXT0QmRiFXFS1kPDwbB2ElCQhQdx5xfxxfZCRFB1JOYRdXR0EuQSQiGCtLFRNjMB0CdyJKDWALI2YFCfYMNRAgTlEpFl4xMUDb"
+      },
+      {
+        "time": 1786154542809,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
+      {
+        "time": 1786154487210,
+        "userId": "U70293580bf944ee91dff2fdea1b5ec16",
+        "displayName": "雅0🐱",
+        "pictureUrl": "https://profile.line-scdn.net/0h8ZNN_70TZ3VjN3nA1E0ZSxNnZB9ARj5nTgEpEQM2PENcVSglT1R_QAYyaUcNAXVwT1ErFVdiMUFBb05bLgIgZQ1eOisXT0QmRiFXFS1kPDwbB2ElCQhQdx5xfxxfZCRFB1JOYRdXR0EuQSQiGCtLFRNjMB0CdyJKDWALI2YFCfYMNRAgTlEpFl4xMUDb"
+      },
+      {
+        "time": 1786154477908,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1786154346742,
         "userId": "U70293580bf944ee91dff2fdea1b5ec16",
