@@ -996,6 +996,52 @@ app.use((req, res, next) => {
 // 全域存儲：支援多群組、多區段
 let games = {};
 let systemLogs = [];
+
+const SYSTEM_LOGS_FILE = path.join(__dirname, 'data', 'systemLogs.json');
+
+function loadSystemLogs() {
+  try {
+    if (fs.existsSync(SYSTEM_LOGS_FILE)) {
+      const data = fs.readFileSync(SYSTEM_LOGS_FILE, 'utf8');
+      systemLogs = JSON.parse(data);
+    }
+  } catch (e) {
+    console.error('載入 systemLogs.json 失敗:', e.message);
+  }
+}
+
+function saveSystemLogs() {
+  try {
+    fs.writeFileSync(SYSTEM_LOGS_FILE, JSON.stringify(systemLogs, null, 2));
+  } catch (e) {
+    console.error('儲存 systemLogs.json 失敗:', e.message);
+  }
+}
+
+function recordSystemLog(title, operator, msg, errObj) {
+  try {
+    let errDetailStr = '';
+    if (errObj) {
+        if (errObj.originalError && errObj.originalError.response) {
+             errDetailStr = JSON.stringify(errObj.originalError.response.data).substring(0, 500);
+        } else if (errObj.message) {
+             errDetailStr = errObj.message;
+        } else {
+             errDetailStr = String(errObj).substring(0, 500);
+        }
+    }
+    const timeStr = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+    const finalMsg = errDetailStr ? `${msg} | ${errDetailStr}` : msg;
+    systemLogs.unshift({ time: timeStr, gameTitle: title || '系統', operator: operator || '系統', errorMsg: finalMsg });
+    if (systemLogs.length > 500) systemLogs.pop();
+    saveSystemLogs();
+  } catch(e) {
+    console.error('recordSystemLog 失敗:', e);
+  }
+}
+
+loadSystemLogs();
+
 const nameToUidMap = new Map();
 // 從環境變數讀取管理員密碼，如果未設定則使用預設值（不建議）
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '鈞鈞是豬豬';
@@ -4093,6 +4139,7 @@ app.post('/webhook', middleware(config), (req, res) => {
     .then(() => res.sendStatus(200))
     .catch((err) => {
       console.error('Webhook Error:', err);
+      recordSystemLog('系統', 'Webhook', '收到無效或發生錯誤的 Webhook 請求', err);
       res.sendStatus(200); // 即使出錯也回 200，避免 LINE 停用 Webhook
     });
 });
@@ -4123,7 +4170,7 @@ async function handleEvent(event) {
       return null;
     } catch (e) {
       console.error('Failed to respond to follow event:', e);
-      logToFile(`[ERROR] Failed to respond to follow event: ${e.message}`);
+      recordSystemLog('系統', 'follow事件', '回應失敗', e);
       return null;
     }
   }
@@ -4930,9 +4977,7 @@ async function handleEvent(event) {
                   await client.pushMessage(gid, getCleanMessages(fallbackMessages));
               } catch (e2) {
                   console.log(`[ERROR] fallback push failed: ${e2.message}\nerrDetail: ${errDetailStr}`);
-                  const timeStr = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
-                  systemLogs.unshift({ time: timeStr, gameTitle: '系統錯誤', operator: '系統', errorMsg: `字卡發送失敗: ${e2.message}` });
-                  if (systemLogs.length > 500) systemLogs.pop();
+                  recordSystemLog('系統', 'Webhook', '字卡發送失敗', e2);
               }
           };
 
@@ -5097,6 +5142,7 @@ async function handleEvent(event) {
 
   } catch (e) {
     console.error('Logic Error:', e);
+    recordSystemLog('系統', 'Logic', '處理訊息事件時發生未預期錯誤', e);
     const errorMsg = e.originalError?.response?.data 
                    ? JSON.stringify(e.originalError.response.data) 
                    : String(e);
