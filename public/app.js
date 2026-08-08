@@ -1947,6 +1947,14 @@ function renderLobby() {
   if (headerP) headerP.innerText = '點選標題進入後，可查看、取消名單';
   const statusEl = document.getElementById('status-msg');
   if (statusEl) statusEl.style.display = 'none';
+
+  // 替管理員代報的輸入框加上自動完成下拉選單功能
+  document.querySelectorAll('.name-input[id^="name-input-"]').forEach(input => {
+    if (!input.id.includes('level-input') && !input.dataset.autocompleteSetup) {
+      setupAutocomplete(input);
+      input.dataset.autocompleteSetup = 'true';
+    }
+  });
 }
 
 async function handleEditLobbyTitle() {
@@ -2448,6 +2456,14 @@ function renderDetail(gameId, preserveScroll = false) {
     
     detailList.appendChild(secDiv);
   });
+
+  // 替管理員代報的輸入框加上自動完成下拉選單功能 (在詳細頁)
+  document.querySelectorAll('.name-input[id^="name-input-"]').forEach(input => {
+    if (!input.id.includes('level-input') && !input.dataset.autocompleteSetup) {
+      setupAutocomplete(input);
+      input.dataset.autocompleteSetup = 'true';
+    }
+  });
 }
 
 // 返回大廳
@@ -2938,7 +2954,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       body: JSON.stringify({
         gid: currentGroupId,
         gameId: gameId,
-        uid: currentUser.userId,
+        uid: (inputEl && inputEl.dataset.uuid) ? inputEl.dataset.uuid : currentUser.userId,
         name: name,
         operatorName: currentUser.displayName,
         level: level,
@@ -7604,6 +7620,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeLiff();
   initGroupBuyEvents();
   fetchGroupBuyData();
+  
+  // 替各種管理員手動新增輸入框加上自動完成下拉選單功能
+  if (typeof lotteryManualName !== 'undefined' && lotteryManualName) setupAutocomplete(lotteryManualName);
+  if (typeof inputPinballName !== 'undefined' && inputPinballName) setupAutocomplete(inputPinballName);
 });
 
 
