@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786165087911,
+    "lastActiveTime": 1786165089308,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1593,7 +1593,8 @@
       "Sammy": true,
       "楊程鈞": true,
       "小可愛": true,
-      "Kevin": true
+      "Kevin": true,
+      "Mia": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
