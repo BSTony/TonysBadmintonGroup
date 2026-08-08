@@ -2869,7 +2869,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786168248614,
-    "lastActiveTime": 1786176988280,
+    "lastActiveTime": 1786179257023,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2892,7 +2892,8 @@
           "楊程鈞",
           "Jet",
           "俊吉",
-          "Ong"
+          "Ong",
+          "AddieWang"
         ],
         "fee": "250"
       }
@@ -2904,9 +2905,17 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "俊吉": "U9a1ff0a8477529c49db5bca1e7313bd0",
-      "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb"
+      "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
     },
     "history": [
+      {
+        "time": "08/08 16:54",
+        "name": "AddieWang",
+        "operator": "AddieWang",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/08 16:16",
         "name": "Ong",
