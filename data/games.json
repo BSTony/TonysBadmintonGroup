@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786182235234,
+    "lastActiveTime": 1786182241750,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2218,7 +2218,8 @@
           "wayne",
           "Sean柏宏",
           "兔兔(玉儒)",
-          "JoeLin"
+          "JoeLin",
+          "Shawn1"
         ]
       },
       {
@@ -2297,6 +2298,13 @@
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
     },
     "history": [
+      {
+        "time": "08/08 17:44",
+        "name": "Shawn1",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/08 17:43",
         "name": "Shawn2",
