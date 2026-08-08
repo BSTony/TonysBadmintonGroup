@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786161669908,
+    "lastActiveTime": 1786163095407,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1590,7 +1590,8 @@
       "錢小肚": true,
       "Dawson1": true,
       "Dawson2": true,
-      "Sammy": true
+      "Sammy": true,
+      "楊程鈞": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
