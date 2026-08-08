@@ -2869,7 +2869,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786113246040,
-    "lastActiveTime": 1786113246040,
+    "lastActiveTime": 1786194736688,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2885,11 +2885,25 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": [],
+        "list": [
+          "test"
+        ],
         "fee": ""
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "uidMap": {
+      "test": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+    },
+    "history": [
+      {
+        "time": "08/08 21:12",
+        "name": "test",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
   },
   "1786168248614320": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
