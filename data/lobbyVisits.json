@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3073,
+    "viewCount": 3075,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -99,8 +99,8 @@
       "Ue1d19fdc4f72d6fc04484fdc8c32b189": {
         "displayName": "小金(Chen Pei Hung)",
         "firstVisit": 1783225954849,
-        "count": 109,
-        "lastVisit": 1786201069738,
+        "count": 110,
+        "lastVisit": 1786212447905,
         "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
       },
       "Ub2e84850d9446141bcb1ae89ec450821": {
@@ -736,8 +736,8 @@
       "U0d5cd265fe89cec2cca1c78bbc237321": {
         "displayName": "張嘉舜",
         "firstVisit": 1784395407362,
-        "count": 20,
-        "lastVisit": 1786193893129,
+        "count": 21,
+        "lastVisit": 1786212762632,
         "pictureUrl": "https://profile.line-scdn.net/0hyrcnkSUeJl1OFw83GjJYIj5HJTdtZn9PYHFtbi8Xf2p7IzJfMiVsOHoVL210d2UKZSFhbn4RLGlCBFE7UEHaaUkne2xzJmQDZHlsvg"
       },
       "U6d9e099c518efa25fd881c87e6e72dd7": {
@@ -973,6 +973,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1786212762632,
+        "userId": "U0d5cd265fe89cec2cca1c78bbc237321",
+        "displayName": "張嘉舜",
+        "pictureUrl": "https://profile.line-scdn.net/0hyrcnkSUeJl1OFw83GjJYIj5HJTdtZn9PYHFtbi8Xf2p7IzJfMiVsOHoVL210d2UKZSFhbn4RLGlCBFE7UEHaaUkne2xzJmQDZHlsvg"
+      },
+      {
+        "time": 1786212447905,
+        "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
+        "displayName": "小金(Chen Pei Hung)",
+        "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
+      },
       {
         "time": 1786208521517,
         "userId": "U09dc6234acf423e3dcac7842dd890939",
