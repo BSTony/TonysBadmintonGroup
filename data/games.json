@@ -2855,7 +2855,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786168248614,
-    "lastActiveTime": 1786168270616,
+    "lastActiveTime": 1786168277511,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2872,15 +2872,24 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "Tony"
+          "Tony",
+          "Kay"
         ],
         "fee": "250"
       }
     ],
     "uidMap": {
-      "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/08 13:51",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/08 13:51",
         "name": "Tony",
