@@ -2001,6 +2001,10 @@ app.get('/api/users/:gid', (req, res) => {
         let aggregatedUsers = {};
         
         if (gid === 'all') {
+            const reqUid = req.query.uid;
+            if (!isSuperAdmin(reqUid)) {
+                return res.status(403).json({ success: false, error: 'Unauthorized' });
+            }
             for (const groupGid in lobbyVisits) {
                 const stats = lobbyVisits[groupGid];
                 if (stats && stats.uniqueViewers) {

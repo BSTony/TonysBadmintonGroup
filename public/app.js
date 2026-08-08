@@ -4,7 +4,7 @@ async function loadLobbyUsers() {
   if (!currentGroupId) return;
   try {
     const fetchGid = globalIsSuperAdmin ? 'all' : currentGroupId;
-    const res = await fetch(`/api/users/${fetchGid}`);
+    const res = await fetch(`/api/users/${fetchGid}?uid=${currentUser.userId}`);
     const data = await res.json();
     if (res.ok && data.success) {
       globalLobbyUsers = data.users || [];
