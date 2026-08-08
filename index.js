@@ -2281,7 +2281,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
 }
 
 function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble) {
-      const flexBubbles = statusBubble ? [statusBubble] : [];
+      const flexBubbles = (statusBubble && !isMentionPush) ? [statusBubble] : [];
       for (const g of groupGames) {
           if (flexBubbles.length >= 12) break; // LINE Carousel maximum is 12 bubbles
 
@@ -2363,6 +2363,33 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               }
           }
 
+          let progressPercent = 0;
+          if (totalLimit > 0) {
+              progressPercent = Math.min(100, Math.round((totalListLen / totalLimit) * 100));
+          } else if (totalListLen > 0) {
+              progressPercent = 100;
+          }
+
+          const progressBar = {
+              type: "box",
+              layout: "vertical",
+              margin: "md",
+              height: "6px",
+              backgroundColor: "#EEEEEE",
+              cornerRadius: "lg",
+              contents: progressPercent > 0 ? [
+                  {
+                      type: "box",
+                      layout: "vertical",
+                      width: `${progressPercent}%`,
+                      height: "6px",
+                      backgroundColor: isFull ? "#ff4c4c" : "#1DB446",
+                      cornerRadius: "lg",
+                      contents: []
+                  }
+              ] : []
+          };
+
           const bodyContents = [
               { type: "text", text: infoLine, size: "xs", color: "#666666", wrap: true },
               {
@@ -2387,6 +2414,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   }
                 ]
               },
+              progressBar,
               { type: "separator", margin: "sm", color: "#eeeeee" },
               {
                 type: "box",
