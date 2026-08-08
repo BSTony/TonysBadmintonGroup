@@ -2855,7 +2855,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786168248614,
-    "lastActiveTime": 1786168507313,
+    "lastActiveTime": 1786168952614,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2875,7 +2875,8 @@
           "Tony",
           "Kay",
           "陳呈",
-          "楊程鈞"
+          "楊程鈞",
+          "Jet"
         ],
         "fee": "250"
       }
@@ -2884,9 +2885,17 @@
       "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "陳呈": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "history": [
+      {
+        "time": "08/08 14:02",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/08 13:55",
         "name": "楊程鈞",
