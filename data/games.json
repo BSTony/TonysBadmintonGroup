@@ -2160,7 +2160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786147474420,
+    "lastActiveTime": 1786147496214,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2194,8 +2194,7 @@
           "wayne",
           "Sean柏宏",
           "兔兔(玉儒)",
-          "JoeLin",
-          "(AK) Seth Hu"
+          "JoeLin"
         ]
       },
       {
@@ -2278,6 +2277,13 @@
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
     },
     "history": [
+      {
+        "time": "08/08 08:04",
+        "name": "(AK) Seth Hu",
+        "operator": "(AK) Seth Hu",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/08 08:04",
         "name": "(AK) Seth Hu",
