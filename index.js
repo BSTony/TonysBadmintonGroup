@@ -2381,7 +2381,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   const nameRaw = secList[i] === '__ANON__' ? '匿名' : secList[i];
                   const levelStr = (g.levelMap && g.levelMap[nameRaw]) ? ` (${g.levelMap[nameRaw]})` : '';
                   const paidStr = (g.paidMap && g.paidMap[nameRaw]) ? '💰' : '';
-                  const fullText = `${i + 1}.${nameRaw}${levelStr}${paidStr}`;
+                  const fullText = `${nameRaw}${levelStr}${paidStr}`;
                   
                   const itemLen = getStrLen(fullText);
                   if (currentRow.length > 0 && currentLen + itemLen > MAX_ROW_LEN) {
@@ -2396,9 +2396,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   allRows.push({ type: 'main_dyn', items: currentRow });
               }
               
-              if (secList.length < secLimit) {
-                  allRows.push({ type: 'empty', index: secList.length + 1 });
-              }
+              // Empty row placeholder removed to save space
               
               // 候補名單
               if (secList.length > secLimit) {
@@ -2411,7 +2409,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                       const bc = backupCount++;
                       const levelStr = (g.levelMap && g.levelMap[nameRaw]) ? ` (${g.levelMap[nameRaw]})` : '';
                       const paidStr = (g.paidMap && g.paidMap[nameRaw]) ? '💰' : '';
-                      const fullText = `補${bc + 1}.${nameRaw}${levelStr}${paidStr}`;
+                      const fullText = `補-${nameRaw}${levelStr}${paidStr}`;
                       
                       const itemLen = getStrLen(fullText);
                       if (currBkupRow.length > 0 && currBkupLen + itemLen > MAX_ROW_LEN) {
