@@ -2363,11 +2363,17 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               const secList = sec.list || [];
               const secLimit = sec.limit || 20;
               
-              // 正取名單
-              for (let i = 0; i < secList.length && i < secLimit; i += 2) {
-                  const name1 = secList[i] === '__ANON__' ? '匿名' : secList[i];
-                  const name2 = (i + 1 < secList.length && i + 1 < secLimit) ? (secList[i+1] === '__ANON__' ? '匿名' : secList[i+1]) : '';
-                  allRows.push({ type: 'main', i, name1, name2, g });
+              // 正取名單 (3-column grid with chips)
+              for (let i = 0; i < secList.length && i < secLimit; i += 3) {
+                  const names = [];
+                  for(let j=0; j<3; j++) {
+                      if (i + j < secList.length && i + j < secLimit) {
+                          names.push(secList[i+j] === '__ANON__' ? '匿名' : secList[i+j]);
+                      } else {
+                          names.push('');
+                      }
+                  }
+                  allRows.push({ type: 'main_3col', i, names, g });
               }
               
               if (secList.length < secLimit) {
@@ -2378,11 +2384,19 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               if (secList.length > secLimit) {
                   allRows.push({ type: 'backupHeader' });
                   let backupCount = 0;
-                  for (let i = secLimit; i < secList.length; i += 2) {
-                      const name1 = secList[i] === '__ANON__' ? '匿名' : secList[i];
-                      const name2 = (i + 1 < secList.length) ? (secList[i+1] === '__ANON__' ? '匿名' : secList[i+1]) : '';
-                      allRows.push({ type: 'backup', i, name1, name2, backupCount, g });
-                      backupCount += name2 ? 2 : 1;
+                  for (let i = secLimit; i < secList.length; i += 3) {
+                      const names = [];
+                      const bCounts = [];
+                      for(let j=0; j<3; j++) {
+                          if (i + j < secList.length) {
+                              names.push(secList[i+j] === '__ANON__' ? '匿名' : secList[i+j]);
+                              bCounts.push(backupCount++);
+                          } else {
+                              names.push('');
+                              bCounts.push(-1);
+                          }
+                      }
+                      allRows.push({ type: 'backup_3col', i, names, bCounts, g });
                   }
               }
           });
@@ -2399,7 +2413,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   rowCount = 0;
               }
               currentChunk.push(row);
-              if (row.type === 'main' || row.type === 'backup' || row.type === 'empty') rowCount++;
+              if (row.type === 'main_3col' || row.type === 'backup_3col' || row.type === 'empty') rowCount++;
           });
           if (currentChunk.length > 0) chunks.push(currentChunk);
 
@@ -2437,33 +2451,66 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                           type: "box", layout: "horizontal", margin: "sm",
                           contents: [{ type: "text", text: "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }]
                       });
-                  } else if (row.type === 'main') {
-                      const formatName = (idx, name, gm) => {
-                          if (!name) return "";
-                          const levelStr = (gm.levelMap && gm.levelMap[name]) ? ` (${gm.levelMap[name]})` : '';
-                          const paidStr = (gm.paidMap && gm.paidMap[name]) ? '💰' : '';
-                          return `${idx+1}. ${name}${levelStr}${paidStr}`;
-                      };
+                  } else if (row.type === 'main_3col') {
+                      const boxes = [];
+                      for (let k = 0; k < 3; k++) {
+                          if (row.names[k]) {
+                              const gm = row.g;
+                              const name = row.names[k];
+                              const levelStr = (gm.levelMap && gm.levelMap[name]) ? ` (${gm.levelMap[name]})` : '';
+                              const paidStr = (gm.paidMap && gm.paidMap[name]) ? '💰' : '';
+                              const fullText = `${row.i + k + 1}.${name}${levelStr}${paidStr}`;
+                              
+                              boxes.push({
+                                  type: "box",
+                                  layout: "vertical",
+                                  flex: 1,
+                                  backgroundColor: "#f2f8f2",
+                                  cornerRadius: "md",
+                                  paddingAll: "4px",
+                                  margin: "2px",
+                                  contents: [
+                                      { type: "text", text: fullText, size: "xxs", color: "#333333", align: "center", wrap: false, maxLines: 1 }
+                                  ]
+                              });
+                          } else {
+                              boxes.push({ type: "box", layout: "vertical", flex: 1, margin: "2px", contents: [] }); // empty filler box
+                          }
+                      }
                       listBoxes.push({
                           type: "box", layout: "horizontal", margin: "none",
-                          contents: [
-                              { type: "text", text: formatName(row.i, row.name1, row.g), size: "xs", color: "#333333", flex: 1, wrap: false },
-                              row.name2 ? { type: "text", text: formatName(row.i+1, row.name2, row.g), size: "xs", color: "#333333", flex: 1, wrap: false } : { type: "filler", flex: 1 }
-                          ]
+                          contents: boxes
                       });
-                  } else if (row.type === 'backup') {
-                      const formatBackup = (idx, name, bc, gm) => {
-                          if (!name) return "";
-                          const levelStr = (gm.levelMap && gm.levelMap[name]) ? ` (${gm.levelMap[name]})` : '';
-                          const paidStr = (gm.paidMap && gm.paidMap[name]) ? '💰' : '';
-                          return `補${bc+1}. ${name}${levelStr}${paidStr}`;
-                      };
+                  } else if (row.type === 'backup_3col') {
+                      const boxes = [];
+                      for (let k = 0; k < 3; k++) {
+                          if (row.names[k]) {
+                              const gm = row.g;
+                              const name = row.names[k];
+                              const bc = row.bCounts[k];
+                              const levelStr = (gm.levelMap && gm.levelMap[name]) ? ` (${gm.levelMap[name]})` : '';
+                              const paidStr = (gm.paidMap && gm.paidMap[name]) ? '💰' : '';
+                              const fullText = `補${bc + 1}.${name}${levelStr}${paidStr}`;
+                              
+                              boxes.push({
+                                  type: "box",
+                                  layout: "vertical",
+                                  flex: 1,
+                                  backgroundColor: "#fff8e1",
+                                  cornerRadius: "md",
+                                  paddingAll: "4px",
+                                  margin: "2px",
+                                  contents: [
+                                      { type: "text", text: fullText, size: "xxs", color: "#555555", align: "center", wrap: false, maxLines: 1 }
+                                  ]
+                              });
+                          } else {
+                              boxes.push({ type: "box", layout: "vertical", flex: 1, margin: "2px", contents: [] }); // empty filler box
+                          }
+                      }
                       listBoxes.push({
                           type: "box", layout: "horizontal", margin: "none",
-                          contents: [
-                              { type: "text", text: formatBackup(row.i, row.name1, row.backupCount, row.g), size: "xs", color: "#555555", flex: 1, wrap: false },
-                              row.name2 ? { type: "text", text: formatBackup(row.i+1, row.name2, row.backupCount+1, row.g), size: "xs", color: "#555555", flex: 1, wrap: false } : { type: "filler", flex: 1 }
-                          ]
+                          contents: boxes
                       });
                   } else if (row.type === 'empty') {
                       listBoxes.push({
@@ -2506,7 +2553,6 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   body: { type: "box", layout: "vertical", paddingAll: "16px", contents: bodyContents }
               };
 
-              // User requested: footer buttons only on the FIRST page of a chunked game
               if (false && chunkIdx === 0 && liffMainUrl && liffGameUrl) { // Buttons removed per user request
                   bubble.footer = {
                       type: "box", layout: "horizontal", spacing: "sm",
