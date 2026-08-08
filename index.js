@@ -2372,7 +2372,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               const secList = sec.list || [];
               const secLimit = sec.limit || 20;
               
-              const MAX_ROW_LEN = 36;
+              const MAX_ROW_LEN = 55;
               
               // 正取名單 (Dynamic wrapping)
               let currentRow = [];
