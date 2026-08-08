@@ -2355,6 +2355,15 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
           const sectionsToRender = (g.sections && g.sections.length > 0) ? g.sections : [{ list: list, limit: limit, title: '名單' }];
           const allRows = [];
           
+          const getStrLen = (str) => {
+              let len = 0;
+              for (let i = 0; i < str.length; i++) {
+                  len += (str.charCodeAt(i) > 255) ? 2.2 : 1.2; // Slightly overestimate to be safe
+              }
+              // Add some padding weight for the chip's margin/padding
+              return len + 3;
+          };
+
           sectionsToRender.forEach((sec, sIdx) => {
               if (isMultiSection) {
                   allRows.push({ type: 'header', text: `📍 ${sec.title || '分區'}`, rightText: `${(sec.list||[]).length}/${sec.limit||0}` });
@@ -2363,17 +2372,28 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               const secList = sec.list || [];
               const secLimit = sec.limit || 20;
               
-              // 正取名單 (3-column grid with chips)
-              for (let i = 0; i < secList.length && i < secLimit; i += 3) {
-                  const names = [];
-                  for(let j=0; j<3; j++) {
-                      if (i + j < secList.length && i + j < secLimit) {
-                          names.push(secList[i+j] === '__ANON__' ? '匿名' : secList[i+j]);
-                      } else {
-                          names.push('');
-                      }
+              const MAX_ROW_LEN = 36;
+              
+              // 正取名單 (Dynamic wrapping)
+              let currentRow = [];
+              let currentLen = 0;
+              for (let i = 0; i < secList.length && i < secLimit; i++) {
+                  const nameRaw = secList[i] === '__ANON__' ? '匿名' : secList[i];
+                  const levelStr = (g.levelMap && g.levelMap[nameRaw]) ? ` (${g.levelMap[nameRaw]})` : '';
+                  const paidStr = (g.paidMap && g.paidMap[nameRaw]) ? '💰' : '';
+                  const fullText = `${i + 1}.${nameRaw}${levelStr}${paidStr}`;
+                  
+                  const itemLen = getStrLen(fullText);
+                  if (currentRow.length > 0 && currentLen + itemLen > MAX_ROW_LEN) {
+                      allRows.push({ type: 'main_dyn', items: currentRow });
+                      currentRow = [];
+                      currentLen = 0;
                   }
-                  allRows.push({ type: 'main_3col', i, names, g });
+                  currentRow.push({ text: fullText });
+                  currentLen += itemLen;
+              }
+              if (currentRow.length > 0) {
+                  allRows.push({ type: 'main_dyn', items: currentRow });
               }
               
               if (secList.length < secLimit) {
@@ -2384,24 +2404,31 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               if (secList.length > secLimit) {
                   allRows.push({ type: 'backupHeader' });
                   let backupCount = 0;
-                  for (let i = secLimit; i < secList.length; i += 3) {
-                      const names = [];
-                      const bCounts = [];
-                      for(let j=0; j<3; j++) {
-                          if (i + j < secList.length) {
-                              names.push(secList[i+j] === '__ANON__' ? '匿名' : secList[i+j]);
-                              bCounts.push(backupCount++);
-                          } else {
-                              names.push('');
-                              bCounts.push(-1);
-                          }
+                  let currBkupRow = [];
+                  let currBkupLen = 0;
+                  for (let i = secLimit; i < secList.length; i++) {
+                      const nameRaw = secList[i] === '__ANON__' ? '匿名' : secList[i];
+                      const bc = backupCount++;
+                      const levelStr = (g.levelMap && g.levelMap[nameRaw]) ? ` (${g.levelMap[nameRaw]})` : '';
+                      const paidStr = (g.paidMap && g.paidMap[nameRaw]) ? '💰' : '';
+                      const fullText = `補${bc + 1}.${nameRaw}${levelStr}${paidStr}`;
+                      
+                      const itemLen = getStrLen(fullText);
+                      if (currBkupRow.length > 0 && currBkupLen + itemLen > MAX_ROW_LEN) {
+                          allRows.push({ type: 'backup_dyn', items: currBkupRow });
+                          currBkupRow = [];
+                          currBkupLen = 0;
                       }
-                      allRows.push({ type: 'backup_3col', i, names, bCounts, g });
+                      currBkupRow.push({ text: fullText });
+                      currBkupLen += itemLen;
+                  }
+                  if (currBkupRow.length > 0) {
+                      allRows.push({ type: 'backup_dyn', items: currBkupRow });
                   }
               }
           });
 
-          const MAX_ROWS = 7;
+          const MAX_ROWS = 8;
           const chunks = [];
           let currentChunk = [];
           let rowCount = 0;
@@ -2413,7 +2440,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   rowCount = 0;
               }
               currentChunk.push(row);
-              if (row.type === 'main_3col' || row.type === 'backup_3col' || row.type === 'empty') rowCount++;
+              if (row.type === 'main_dyn' || row.type === 'backup_dyn' || row.type === 'empty') rowCount++;
           });
           if (currentChunk.length > 0) chunks.push(currentChunk);
 
@@ -2433,7 +2460,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
           const liffGameUrl = process.env.LIFF_ID ? `${liffMainUrl}&gameId=${g.gameId}` : null;
 
           chunks.forEach((chunk, chunkIdx) => {
-              if (flexBubbles.length >= 12) return; // Ignore if overall limit reached
+              if (flexBubbles.length >= 12) return;
 
               const listBoxes = [];
               chunk.forEach((row, rIdx) => {
@@ -2451,63 +2478,46 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                           type: "box", layout: "horizontal", margin: "sm",
                           contents: [{ type: "text", text: "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }]
                       });
-                  } else if (row.type === 'main_3col') {
-                      const boxes = [];
-                      for (let k = 0; k < 3; k++) {
-                          if (row.names[k]) {
-                              const gm = row.g;
-                              const name = row.names[k];
-                              const levelStr = (gm.levelMap && gm.levelMap[name]) ? ` (${gm.levelMap[name]})` : '';
-                              const paidStr = (gm.paidMap && gm.paidMap[name]) ? '💰' : '';
-                              const fullText = `${row.i + k + 1}.${name}${levelStr}${paidStr}`;
-                              
-                              boxes.push({
-                                  type: "box",
-                                  layout: "vertical",
-                                  flex: 1,
-                                  backgroundColor: "#f2f8f2",
-                                  cornerRadius: "md",
-                                  paddingAll: "4px",
-                                  margin: "2px",
-                                  contents: [
-                                      { type: "text", text: fullText, size: "xxs", color: "#333333", align: "center", wrap: false, maxLines: 1 }
-                                  ]
-                              });
-                          } else {
-                              boxes.push({ type: "box", layout: "vertical", flex: 1, margin: "2px", contents: [] }); // empty filler box
-                          }
-                      }
+                  } else if (row.type === 'main_dyn') {
+                      const boxes = row.items.map(item => ({
+                          type: "box",
+                          layout: "vertical",
+                          flex: 0,
+                          backgroundColor: "#f2f8f2",
+                          cornerRadius: "md",
+                          paddingStart: "6px",
+                          paddingEnd: "6px",
+                          paddingTop: "4px",
+                          paddingBottom: "4px",
+                          margin: "3px",
+                          contents: [
+                              { type: "text", text: item.text, size: "xxs", color: "#333333", align: "center", wrap: false }
+                          ]
+                      }));
+                      boxes.push({ type: "filler", flex: 1 });
+                      
                       listBoxes.push({
                           type: "box", layout: "horizontal", margin: "none",
                           contents: boxes
                       });
-                  } else if (row.type === 'backup_3col') {
-                      const boxes = [];
-                      for (let k = 0; k < 3; k++) {
-                          if (row.names[k]) {
-                              const gm = row.g;
-                              const name = row.names[k];
-                              const bc = row.bCounts[k];
-                              const levelStr = (gm.levelMap && gm.levelMap[name]) ? ` (${gm.levelMap[name]})` : '';
-                              const paidStr = (gm.paidMap && gm.paidMap[name]) ? '💰' : '';
-                              const fullText = `補${bc + 1}.${name}${levelStr}${paidStr}`;
-                              
-                              boxes.push({
-                                  type: "box",
-                                  layout: "vertical",
-                                  flex: 1,
-                                  backgroundColor: "#fff8e1",
-                                  cornerRadius: "md",
-                                  paddingAll: "4px",
-                                  margin: "2px",
-                                  contents: [
-                                      { type: "text", text: fullText, size: "xxs", color: "#555555", align: "center", wrap: false, maxLines: 1 }
-                                  ]
-                              });
-                          } else {
-                              boxes.push({ type: "box", layout: "vertical", flex: 1, margin: "2px", contents: [] }); // empty filler box
-                          }
-                      }
+                  } else if (row.type === 'backup_dyn') {
+                      const boxes = row.items.map(item => ({
+                          type: "box",
+                          layout: "vertical",
+                          flex: 0,
+                          backgroundColor: "#fff8e1",
+                          cornerRadius: "md",
+                          paddingStart: "6px",
+                          paddingEnd: "6px",
+                          paddingTop: "4px",
+                          paddingBottom: "4px",
+                          margin: "3px",
+                          contents: [
+                              { type: "text", text: item.text, size: "xxs", color: "#555555", align: "center", wrap: false }
+                          ]
+                      }));
+                      boxes.push({ type: "filler", flex: 1 });
+                      
                       listBoxes.push({
                           type: "box", layout: "horizontal", margin: "none",
                           contents: boxes
@@ -2553,7 +2563,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   body: { type: "box", layout: "vertical", paddingAll: "16px", contents: bodyContents }
               };
 
-              if (false && chunkIdx === 0 && liffMainUrl && liffGameUrl) { // Buttons removed per user request
+              if (false && chunkIdx === 0 && liffMainUrl && liffGameUrl) {
                   bubble.footer = {
                       type: "box", layout: "horizontal", spacing: "sm",
                       contents: [
