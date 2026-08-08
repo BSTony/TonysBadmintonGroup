@@ -2507,7 +2507,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               };
 
               // User requested: footer buttons only on the FIRST page of a chunked game
-              if (chunkIdx === 0 && liffMainUrl && liffGameUrl) {
+              if (false && chunkIdx === 0 && liffMainUrl && liffGameUrl) { // Buttons removed per user request
                   bubble.footer = {
                       type: "box", layout: "horizontal", spacing: "sm",
                       contents: [
