@@ -1565,7 +1565,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785561068549,
-    "lastActiveTime": 1786159376012,
+    "lastActiveTime": 1786161669908,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -1623,8 +1623,7 @@
           "Man cool1",
           "Man cool2",
           "小羅",
-          "江こう 洋々",
-          "雅0🐱"
+          "江こう 洋々"
         ]
       }
     ],
@@ -1661,6 +1660,13 @@
       "雅0🐱": "U70293580bf944ee91dff2fdea1b5ec16"
     },
     "history": [
+      {
+        "time": "08/08 12:01",
+        "name": "雅0🐱",
+        "operator": "雅0🐱",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/08 00:03",
         "name": "雅0🐱",
