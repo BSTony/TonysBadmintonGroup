@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3077,
+    "viewCount": 3079,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -23,8 +23,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 627,
-        "lastVisit": 1786204743859,
+        "count": 628,
+        "lastVisit": 1786230382229,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -164,8 +164,9 @@
       "U9d06cac35df59cb7e460b83e88d303cf": {
         "displayName": "ALAN LIU",
         "firstVisit": 1783233473481,
-        "count": 7,
-        "lastVisit": 1785050720507
+        "count": 8,
+        "lastVisit": 1786230385567,
+        "pictureUrl": "https://profile.line-scdn.net/0haxDLakDfPldpNSFnCTlAaRllPT1KRGdFRAAkZQhnaTNQUH0FRQd1ZF5iY2JQUH0ITVQlOFwzNG9LbCB5GVMiQTR3aQcPYwVdOgQjalxnOBwrQRwCRSklZjcxIBpIDA52MDstSg5oPhcSWg9JMQM4aBtLACMAVxpyHmJSAWwHUNQGN0kCRFNwNFQzaGLR"
       },
       "U799d4a509b3c76b76c249151f5a3f690": {
         "displayName": "瑋",
@@ -973,6 +974,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1786230385567,
+        "userId": "U9d06cac35df59cb7e460b83e88d303cf",
+        "displayName": "ALAN LIU",
+        "pictureUrl": "https://profile.line-scdn.net/0haxDLakDfPldpNSFnCTlAaRllPT1KRGdFRAAkZQhnaTNQUH0FRQd1ZF5iY2JQUH0ITVQlOFwzNG9LbCB5GVMiQTR3aQcPYwVdOgQjalxnOBwrQRwCRSklZjcxIBpIDA52MDstSg5oPhcSWg9JMQM4aBtLACMAVxpyHmJSAWwHUNQGN0kCRFNwNFQzaGLR"
+      },
+      {
+        "time": 1786230382229,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1786228648802,
         "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
@@ -5276,26 +5289,6 @@
       },
       {
         "time": 1783233676150,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      }
-    ]
-  },
-  "C73ead06e46f4c3a00a3f87d946c7d18a": {
-    "viewCount": 1,
-    "uniqueViewers": {
-      "U9dc6c7ab7d49487c4dcb70caf20195b0": {
-        "displayName": "謝東霖 Tony",
-        "firstVisit": 1786207883454,
-        "count": 1,
-        "lastVisit": 1786207883454,
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      }
-    },
-    "logs": [
-      {
-        "time": 1786207883454,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
         "displayName": "謝東霖 Tony",
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
