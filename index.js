@@ -2352,24 +2352,12 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
           let infoLine = `🕒 ${g.date || ''} ${g.time || ''}`.trim();
           if (g.location) infoLine += `\n📍 ${g.location}`;
 
-          // Format names for two columns
-          const listBoxes = [];
           const sectionsToRender = (g.sections && g.sections.length > 0) ? g.sections : [{ list: list, limit: limit, title: '名單' }];
+          const allRows = [];
           
           sectionsToRender.forEach((sec, sIdx) => {
               if (isMultiSection) {
-                  if (sIdx > 0) {
-                      listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
-                  }
-                  listBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      margin: "sm",
-                      contents: [
-                          { type: "text", text: `📍 ${sec.title || '分區'}`, size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
-                          { type: "text", text: `${(sec.list||[]).length}/${sec.limit||0}`, size: "xs", color: "#666666", align: "end", flex: 0 }
-                      ]
-                  });
+                  allRows.push({ type: 'header', text: `📍 ${sec.title || '分區'}`, rightText: `${(sec.list||[]).length}/${sec.limit||0}` });
               }
               
               const secList = sec.list || [];
@@ -2379,76 +2367,41 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               for (let i = 0; i < secList.length && i < secLimit; i += 2) {
                   const name1 = secList[i] === '__ANON__' ? '匿名' : secList[i];
                   const name2 = (i + 1 < secList.length && i + 1 < secLimit) ? (secList[i+1] === '__ANON__' ? '匿名' : secList[i+1]) : '';
-                  
-                  const formatName = (idx, name) => {
-                      if (!name) return "";
-                      const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                      const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
-                      return `${idx+1}. ${name}${levelStr}${paidStr}`;
-                  };
-
-                  listBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      paddingTop: "2px",
-                      paddingBottom: "2px",
-                      contents: [
-                          { type: "text", text: formatName(i, name1), size: "xs", color: "#333333", flex: 1, wrap: false },
-                          name2 ? { type: "text", text: formatName(i+1, name2), size: "xs", color: "#333333", flex: 1, wrap: false } : { type: "filler", flex: 1 }
-                      ]
-                  });
+                  allRows.push({ type: 'main', i, name1, name2, g });
               }
               
               if (secList.length < secLimit) {
-                  listBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      paddingTop: "2px",
-                      paddingBottom: "2px",
-                      contents: [
-                          { type: "text", text: `${secList.length + 1}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
-                          { type: "filler", flex: 1 }
-                      ]
-                  });
+                  allRows.push({ type: 'empty', index: secList.length + 1 });
               }
               
               // 候補名單
               if (secList.length > secLimit) {
-                  listBoxes.push({
-                      type: "box",
-                      layout: "horizontal",
-                      margin: "sm",
-                      contents: [
-                          { type: "text", text: "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }
-                      ]
-                  });
-                  
+                  allRows.push({ type: 'backupHeader' });
                   let backupCount = 0;
                   for (let i = secLimit; i < secList.length; i += 2) {
                       const name1 = secList[i] === '__ANON__' ? '匿名' : secList[i];
                       const name2 = (i + 1 < secList.length) ? (secList[i+1] === '__ANON__' ? '匿名' : secList[i+1]) : '';
-                      
-                      const formatBackup = (idx, name, bc) => {
-                          if (!name) return "";
-                          const levelStr = (g.levelMap && g.levelMap[name]) ? ` (${g.levelMap[name]})` : '';
-                          const paidStr = (g.paidMap && g.paidMap[name]) ? '💰' : '';
-                          return `補${bc+1}. ${name}${levelStr}${paidStr}`;
-                      };
-
-                      listBoxes.push({
-                          type: "box",
-                          layout: "horizontal",
-                          paddingTop: "2px",
-                          paddingBottom: "2px",
-                          contents: [
-                              { type: "text", text: formatBackup(i, name1, backupCount), size: "xs", color: "#555555", flex: 1, wrap: false },
-                              name2 ? { type: "text", text: formatBackup(i+1, name2, backupCount+1), size: "xs", color: "#555555", flex: 1, wrap: false } : { type: "filler", flex: 1 }
-                          ]
-                      });
+                      allRows.push({ type: 'backup', i, name1, name2, backupCount, g });
                       backupCount += name2 ? 2 : 1;
                   }
               }
           });
+
+          const MAX_ROWS = 12;
+          const chunks = [];
+          let currentChunk = [];
+          let rowCount = 0;
+
+          allRows.forEach(row => {
+              if (rowCount >= MAX_ROWS && row.type !== 'header' && row.type !== 'backupHeader') {
+                  chunks.push(currentChunk);
+                  currentChunk = [];
+                  rowCount = 0;
+              }
+              currentChunk.push(row);
+              if (row.type === 'main' || row.type === 'backup' || row.type === 'empty') rowCount++;
+          });
+          if (currentChunk.length > 0) chunks.push(currentChunk);
 
           let progressPercent = 0;
           if (totalLimit > 0) {
@@ -2458,108 +2411,113 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
           }
 
           const progressBar = {
-              type: "box",
-              layout: "vertical",
-              margin: "md",
-              height: "6px",
-              backgroundColor: "#EEEEEE",
-              cornerRadius: "lg",
-              contents: progressPercent > 0 ? [
-                  {
-                      type: "box",
-                      layout: "vertical",
-                      width: `${progressPercent}%`,
-                      height: "6px",
-                      backgroundColor: isFull ? "#ff4c4c" : "#1DB446",
-                      cornerRadius: "lg",
-                      contents: []
-                  }
-              ] : []
+              type: "box", layout: "vertical", margin: "md", height: "6px", backgroundColor: "#EEEEEE", cornerRadius: "lg",
+              contents: progressPercent > 0 ? [{ type: "box", layout: "vertical", width: `${progressPercent}%`, height: "6px", backgroundColor: isFull ? "#ff4c4c" : "#1DB446", cornerRadius: "lg", contents: [] }] : []
           };
-
-          const bodyContents = [
-              { type: "text", text: infoLine, size: "xs", color: "#666666", wrap: true },
-              {
-                type: "box",
-                layout: "horizontal",
-                margin: "md",
-                contents: [
-                  { type: "text", text: "📝 報名狀況", size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
-                  {
-                    type: "box",
-                    layout: "horizontal",
-                    flex: 0,
-                    height: "22px",
-                    width: isFull ? (totalLimit > 0 ? "56px" : "36px") : "48px",
-                    cornerRadius: "sm",
-                    backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    contents: [
-                      { type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }
-                    ]
-                  }
-                ]
-              },
-              progressBar,
-              { type: "separator", margin: "sm", color: "#eeeeee" },
-              {
-                type: "box",
-                layout: "vertical",
-                margin: "md",
-                contents: listBoxes
-              }
-          ];
 
           const liffMainUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : null;
           const liffGameUrl = process.env.LIFF_ID ? `${liffMainUrl}&gameId=${g.gameId}` : null;
 
-          const bubble = {
-              type: "bubble",
-              size: "mega",
-              header: {
-                  type: "box",
-                  layout: "vertical",
-                  paddingBottom: "none",
-                  contents: [
-                      { type: "text", text: `🏸 ${g.title}`, weight: "bold", size: "md", color: "#1DB446", wrap: true }
-                  ]
-              },
-              body: {
-                  type: "box",
-                  layout: "vertical",
-                  paddingAll: "16px",
-                  contents: bodyContents
-              }
-          };
+          chunks.forEach((chunk, chunkIdx) => {
+              if (flexBubbles.length >= 12) return; // Ignore if overall limit reached
 
-          if (liffMainUrl && liffGameUrl) {
-              bubble.footer = {
-                  type: "box",
-                  layout: "horizontal",
-                  spacing: "sm",
-                  contents: [
+              const listBoxes = [];
+              chunk.forEach((row, rIdx) => {
+                  if (row.type === 'header') {
+                      if (rIdx > 0) listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
+                      listBoxes.push({
+                          type: "box", layout: "horizontal", margin: "sm",
+                          contents: [
+                              { type: "text", text: row.text, size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
+                              { type: "text", text: row.rightText, size: "xs", color: "#666666", align: "end", flex: 0 }
+                          ]
+                      });
+                  } else if (row.type === 'backupHeader') {
+                      listBoxes.push({
+                          type: "box", layout: "horizontal", margin: "sm",
+                          contents: [{ type: "text", text: "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }]
+                      });
+                  } else if (row.type === 'main') {
+                      const formatName = (idx, name, gm) => {
+                          if (!name) return "";
+                          const levelStr = (gm.levelMap && gm.levelMap[name]) ? ` (${gm.levelMap[name]})` : '';
+                          const paidStr = (gm.paidMap && gm.paidMap[name]) ? '💰' : '';
+                          return `${idx+1}. ${name}${levelStr}${paidStr}`;
+                      };
+                      listBoxes.push({
+                          type: "box", layout: "horizontal", margin: "none",
+                          contents: [
+                              { type: "text", text: formatName(row.i, row.name1, row.g), size: "xs", color: "#333333", flex: 1, wrap: false },
+                              row.name2 ? { type: "text", text: formatName(row.i+1, row.name2, row.g), size: "xs", color: "#333333", flex: 1, wrap: false } : { type: "filler", flex: 1 }
+                          ]
+                      });
+                  } else if (row.type === 'backup') {
+                      const formatBackup = (idx, name, bc, gm) => {
+                          if (!name) return "";
+                          const levelStr = (gm.levelMap && gm.levelMap[name]) ? ` (${gm.levelMap[name]})` : '';
+                          const paidStr = (gm.paidMap && gm.paidMap[name]) ? '💰' : '';
+                          return `補${bc+1}. ${name}${levelStr}${paidStr}`;
+                      };
+                      listBoxes.push({
+                          type: "box", layout: "horizontal", margin: "none",
+                          contents: [
+                              { type: "text", text: formatBackup(row.i, row.name1, row.backupCount, row.g), size: "xs", color: "#555555", flex: 1, wrap: false },
+                              row.name2 ? { type: "text", text: formatBackup(row.i+1, row.name2, row.backupCount+1, row.g), size: "xs", color: "#555555", flex: 1, wrap: false } : { type: "filler", flex: 1 }
+                          ]
+                      });
+                  } else if (row.type === 'empty') {
+                      listBoxes.push({
+                          type: "box", layout: "horizontal", margin: "none",
+                          contents: [
+                              { type: "text", text: `${row.index}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
+                              { type: "filler", flex: 1 }
+                          ]
+                      });
+                  }
+              });
+
+              const bodyContents = [];
+              if (chunkIdx === 0) {
+                  bodyContents.push({ type: "text", text: infoLine, size: "xs", color: "#666666", wrap: true });
+                  bodyContents.push({
+                    type: "box", layout: "horizontal", margin: "md",
+                    contents: [
+                      { type: "text", text: "📝 報名狀況", size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
                       {
-                          type: "button",
-                          style: "primary",
-                          color: "#1DB446",
-                          height: "sm",
-                          flex: 1,
-                          action: { type: "uri", label: "本次報名", uri: liffGameUrl }
-                      },
-                      {
-                          type: "button",
-                          style: "secondary",
-                          color: "#eeeeee",
-                          height: "sm",
-                          flex: 1,
-                          action: { type: "uri", label: "大廳首頁", uri: liffMainUrl }
+                        type: "box", layout: "horizontal", flex: 0, height: "22px", width: isFull ? (totalLimit > 0 ? "56px" : "36px") : "48px",
+                        cornerRadius: "sm", backgroundColor: isFull ? "#ffebee" : "#e8f5e9", justifyContent: "center", alignItems: "center",
+                        contents: [{ type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }]
                       }
-                  ]
-              };
-          }
+                    ]
+                  });
+                  bodyContents.push(progressBar);
+                  bodyContents.push({ type: "separator", margin: "sm", color: "#eeeeee" });
+              }
+              bodyContents.push({ type: "box", layout: "vertical", margin: "md", contents: listBoxes });
 
-          flexBubbles.push(bubble);
+              const bubble = {
+                  type: "bubble", size: "mega",
+                  header: {
+                      type: "box", layout: "vertical", paddingBottom: "none",
+                      contents: [
+                          { type: "text", text: `🏸 ${g.title}${chunks.length > 1 ? ` (${chunkIdx + 1}/${chunks.length})` : ''}`, weight: "bold", size: "md", color: "#1DB446", wrap: true }
+                      ]
+                  },
+                  body: { type: "box", layout: "vertical", paddingAll: "16px", contents: bodyContents }
+              };
+
+              // User requested: footer buttons only on the FIRST page of a chunked game
+              if (chunkIdx === 0 && liffMainUrl && liffGameUrl) {
+                  bubble.footer = {
+                      type: "box", layout: "horizontal", spacing: "sm",
+                      contents: [
+                          { type: "button", style: "primary", color: "#1DB446", height: "sm", flex: 1, action: { type: "uri", label: "本次報名", uri: liffGameUrl } },
+                          { type: "button", style: "secondary", color: "#eeeeee", height: "sm", flex: 1, action: { type: "uri", label: "大廳首頁", uri: liffMainUrl } }
+                      ]
+                  };
+              }
+              flexBubbles.push(bubble);
+          });
       }
 
       const carouselMsg = {
