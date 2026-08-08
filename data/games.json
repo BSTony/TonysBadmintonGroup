@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786198194218,
+    "lastActiveTime": 1786198675254,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2215,7 +2215,6 @@
           "小金",
           "俊吉",
           "Joe",
-          "wayne",
           "兔兔(玉儒)",
           "JoeLin",
           "Shawn1",
@@ -2300,6 +2299,13 @@
       "李詩晴": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/08 22:17",
+        "name": "wayne",
+        "operator": "Wayne",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/08 22:09",
         "name": "李詩晴",
