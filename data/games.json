@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786268206588,
+    "lastActiveTime": 1786268336949,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2198,23 +2198,12 @@
       "Kay": true,
       "ALAN LIU": true,
       "小金": true,
-      "蕭傑森": true,
       "俊吉": true,
-      "Chen H.R.": true,
       "杜威霖 Andy": true,
       "JoeLin": true,
-      "羅": true,
       "Jean": true,
       "兔兔(玉儒)": true,
-      "腳皮": true,
-      "grant": true,
-      "李詩晴": true,
-      "陳呈": true,
-      "Fb-阿倫": true,
-      "FB-祺緯": true,
-      "Gary": true,
-      "Kevin": true,
-      "Mia": true
+      "陳呈": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -2233,11 +2222,29 @@
           "小金",
           "俊吉",
           "兔兔(玉儒)",
-          "JoeLin",
+          "JoeLin"
+        ]
+      },
+      {
+        "title": "10:00-12:00 (10-11開冷氣)",
+        "limit": 8,
+        "backupLimit": 5,
+        "fee": "210",
+        "label": "",
+        "list": [
           "Kevin",
           "Mia",
           "李詩晴",
-          "grant",
+          "grant"
+        ]
+      },
+      {
+        "title": "8:00-12:00 (10-11開冷氣)",
+        "limit": 14,
+        "backupLimit": 5,
+        "fee": "320",
+        "label": "",
+        "list": [
           "Gary",
           "蕭傑森",
           "羅",
@@ -2249,22 +2256,6 @@
           "John",
           "Chen H.R."
         ]
-      },
-      {
-        "title": "10:00-12:00 (10-11開冷氣)",
-        "limit": 8,
-        "backupLimit": 5,
-        "fee": "210",
-        "label": "",
-        "list": []
-      },
-      {
-        "title": "8:00-12:00 (10-11開冷氣)",
-        "limit": 14,
-        "backupLimit": 5,
-        "fee": "320",
-        "label": "",
-        "list": []
       }
     ],
     "uidMap": {
@@ -2311,6 +2302,202 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 17:38",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "John",
+        "operator": "John",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "John",
+        "operator": "John",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "胞弟",
+        "operator": "胞弟",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "胞弟",
+        "operator": "胞弟",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "FB-祺緯",
+        "operator": "FB-祺緯",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "FB-祺緯",
+        "operator": "FB-祺緯",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Fb-阿倫",
+        "operator": "Fb-阿倫",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Fb-阿倫",
+        "operator": "Fb-阿倫",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "羅",
+        "operator": "羅",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "羅",
+        "operator": "羅",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "蕭傑森",
+        "operator": "蕭傑森",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "蕭傑森",
+        "operator": "蕭傑森",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "grant",
+        "operator": "grant",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "grant",
+        "operator": "grant",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "李詩晴",
+        "operator": "李詩晴",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "李詩晴",
+        "operator": "李詩晴",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Mia",
+        "operator": "Mia",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Mia",
+        "operator": "Mia",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Kevin",
+        "operator": "Kevin",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Kevin",
+        "operator": "Kevin",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/09 17:36",
         "name": "Chen H.R.",
