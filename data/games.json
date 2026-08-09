@@ -2177,11 +2177,11 @@
       "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1785744594526643",
-    "title": "羽球接龍",
-    "date": "",
-    "time": "",
-    "location": "",
-    "fee": "",
+    "title": "週日 港中團 (3時段可選)",
+    "date": "8/9 (日)",
+    "time": "08:00~12:00",
+    "location": "南港高中",
+    "fee": "150",
     "note": "",
     "tag": "",
     "active": true,
@@ -2221,9 +2221,9 @@
     "sections": [
       {
         "title": "8:00-10:00",
-        "limit": 20,
-        "backupLimit": 0,
-        "fee": "",
+        "limit": 15,
+        "backupLimit": 5,
+        "fee": "150",
         "label": "",
         "list": [
           "ALAN LIU",
@@ -2235,6 +2235,22 @@
           "兔兔(玉儒)",
           "JoeLin"
         ]
+      },
+      {
+        "title": "10:00-12:00 (10-11開冷氣)",
+        "limit": 8,
+        "backupLimit": 5,
+        "fee": "210",
+        "label": "",
+        "list": []
+      },
+      {
+        "title": "8:00-12:00 (10-11開冷氣)",
+        "limit": 14,
+        "backupLimit": 5,
+        "fee": "320",
+        "label": "",
+        "list": []
       }
     ],
     "uidMap": {
