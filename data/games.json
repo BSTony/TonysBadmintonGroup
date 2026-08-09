@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786268204224,
+    "lastActiveTime": 1786268204754,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2239,7 +2239,9 @@
           "李詩晴",
           "grant",
           "Gary",
-          "蕭傑森"
+          "蕭傑森",
+          "羅",
+          "林立峰"
         ]
       },
       {
@@ -2281,9 +2283,9 @@
       "小正": "Ucae8094c21c5ab0e32dd47bc4e52eced",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "羅": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
-      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
+      "林立峰": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kevin": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Mia": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Fb-阿倫": "Ua5ba1a0ad7f4687b4075563e722331c5",
@@ -2303,6 +2305,20 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 17:36",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "羅",
+        "operator": "羅",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/09 17:36",
         "name": "蕭傑森",
