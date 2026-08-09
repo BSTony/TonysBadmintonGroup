@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786268336949,
+    "lastActiveTime": 1786289244534,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2235,7 +2235,9 @@
           "Kevin",
           "Mia",
           "李詩晴",
-          "grant"
+          "grant",
+          "周哲儁",
+          "楊程鈞"
         ]
       },
       {
@@ -2261,8 +2263,8 @@
     "uidMap": {
       "Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "周哲儁": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "楊程鈞": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
@@ -2302,6 +2304,20 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 23:27",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 23:27",
+        "name": "周哲儁",
+        "operator": "周哲儁",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/09 17:38",
         "name": "Chen H.R.",
