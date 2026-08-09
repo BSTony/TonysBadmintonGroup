@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786268204754,
+    "lastActiveTime": 1786268204995,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2241,7 +2241,8 @@
           "Gary",
           "蕭傑森",
           "羅",
-          "林立峰"
+          "林立峰",
+          "Fb-阿倫"
         ]
       },
       {
@@ -2288,7 +2289,7 @@
       "林立峰": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kevin": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Mia": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Fb-阿倫": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "Fb-阿倫": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB-祺緯": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a",
@@ -2305,6 +2306,13 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 17:36",
+        "name": "Fb-阿倫",
+        "operator": "Fb-阿倫",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/09 17:36",
         "name": "林立峰",
