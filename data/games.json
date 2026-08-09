@@ -3154,7 +3154,7 @@
         "title": "8-10",
         "limit": 19,
         "backupLimit": 5,
-        "fee": "",
+        "fee": "150",
         "label": "",
         "list": []
       },
@@ -3162,7 +3162,7 @@
         "title": "10-12",
         "limit": 12,
         "backupLimit": 5,
-        "fee": "",
+        "fee": "210",
         "label": "",
         "list": []
       },
@@ -3170,10 +3170,11 @@
         "title": "8-12",
         "limit": 12,
         "backupLimit": 5,
-        "fee": "",
+        "fee": "320",
         "label": "",
         "list": []
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
