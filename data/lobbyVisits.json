@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3116,
+    "viewCount": 3118,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -324,8 +324,8 @@
       "U1a05e97623cee1f79b0876626e88f0ab": {
         "displayName": "Wayne",
         "firstVisit": 1783407532808,
-        "count": 39,
-        "lastVisit": 1786198654007,
+        "count": 40,
+        "lastVisit": 1786265996533,
         "pictureUrl": "https://profile.line-scdn.net/0hOz6QC2p6EFUbKA6J6vZua2t4Ez84WUlHNU9XNX4sRmJyS1YLYBxZMy0tTmcjTwVXZE1fNisqTzU5eQUKQhkle0luDQZ8fQwDQSgjdkAqOh0ncCFHSBQ5dDJVGTNgTEt-VEc2YS1NSjBneyloYCs-SHpVBQBuBCwfd398Ax4aftZ0KmcANk5eNiYuRmCj"
       },
       "U7691f78ef6e34371e591dc7b0c57ce9a": {
@@ -992,9 +992,28 @@
         "count": 1,
         "lastVisit": 1786243506042,
         "pictureUrl": "https://profile.line-scdn.net/0hcAF4oEyAPG5rTSAq4jhCUBsdPwRIPGV8Ri91W19LZQteKig4Ei16WFZNNl9XLyg4Tyh2WwwdYFhJAxptQnswci0oEiozHBNZOXQdbCYwCi0rKX5oGGgUSS0IagcmK3h5LHMnQAobCx4JCjgwPEkUUQ4ECR0GLhM6PhpQOG5_Uu0ET0s7RityDVZLalvT"
+      },
+      "U8b2ddb76903e38662609d33192015c24": {
+        "displayName": "雅文",
+        "firstVisit": 1786265949711,
+        "count": 1,
+        "lastVisit": 1786265949711,
+        "pictureUrl": "https://profile.line-scdn.net/0hkuLIMUPdNFphMChly9ZKZBFgNzBCQW1IH1MpaQQ1ampVAHdcGVd4OFI1PmhbBiNYTAZzOFNgbG1DVQx7Sg4DfSN1KgosVgUKNj4VaQE0DzkCUA0KJBYjWD9ybRIffQl3OSR6NFdmPRUCejR5HipzdDowCiEoZDBlI2dYDGQCWtkOMkMPTFZ6OVw2Ym_Z"
       }
     },
     "logs": [
+      {
+        "time": 1786265996533,
+        "userId": "U1a05e97623cee1f79b0876626e88f0ab",
+        "displayName": "Wayne",
+        "pictureUrl": "https://profile.line-scdn.net/0hOz6QC2p6EFUbKA6J6vZua2t4Ez84WUlHNU9XNX4sRmJyS1YLYBxZMy0tTmcjTwVXZE1fNisqTzU5eQUKQhkle0luDQZ8fQwDQSgjdkAqOh0ncCFHSBQ5dDJVGTNgTEt-VEc2YS1NSjBneyloYCs-SHpVBQBuBCwfd398Ax4aftZ0KmcANk5eNiYuRmCj"
+      },
+      {
+        "time": 1786265949711,
+        "userId": "U8b2ddb76903e38662609d33192015c24",
+        "displayName": "雅文",
+        "pictureUrl": "https://profile.line-scdn.net/0hkuLIMUPdNFphMChly9ZKZBFgNzBCQW1IH1MpaQQ1ampVAHdcGVd4OFI1PmhbBiNYTAZzOFNgbG1DVQx7Sg4DfSN1KgosVgUKNj4VaQE0DzkCUA0KJBYjWD9ybRIffQl3OSR6NFdmPRUCejR5HipzdDowCiEoZDBlI2dYDGQCWtkOMkMPTFZ6OVw2Ym_Z"
+      },
       {
         "time": 1786255265140,
         "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
