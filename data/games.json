@@ -2177,11 +2177,11 @@
       "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1785744594526643",
-    "title": "週日 港中團 (3時段可選)",
-    "date": "8/9 (日)",
-    "time": "08:00~12:00",
-    "location": "南港高中",
-    "fee": "150",
+    "title": "羽球接龍",
+    "date": "",
+    "time": "",
+    "location": "",
+    "fee": "",
     "note": "",
     "tag": "",
     "active": true,
@@ -2221,9 +2221,9 @@
     "sections": [
       {
         "title": "8:00-10:00",
-        "limit": 15,
-        "backupLimit": 5,
-        "fee": "150",
+        "limit": 20,
+        "backupLimit": 0,
+        "fee": "",
         "label": "",
         "list": [
           "ALAN LIU",
@@ -2234,42 +2234,6 @@
           "俊吉",
           "兔兔(玉儒)",
           "JoeLin"
-        ]
-      },
-      {
-        "title": "10:00-12:00 (10-11開冷氣)",
-        "limit": 8,
-        "backupLimit": 5,
-        "fee": "210",
-        "label": "",
-        "list": [
-          "周哲儁",
-          "楊程鈞",
-          "Kevin",
-          "Mia",
-          "李詩晴",
-          "grant"
-        ]
-      },
-      {
-        "title": "8:00-12:00 (10-11開冷氣)",
-        "limit": 14,
-        "backupLimit": 5,
-        "fee": "320",
-        "label": "",
-        "list": [
-          "Tony",
-          "Kay",
-          "Gary",
-          "蕭傑森",
-          "羅",
-          "林立峰",
-          "Fb-阿倫",
-          "FB-祺緯",
-          "腳皮",
-          "胞弟",
-          "John",
-          "Chen H.R."
         ]
       }
     ],
@@ -2794,7 +2758,7 @@
         "section": "8:00-12:00"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": true
   },
   "1785847950647225": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
