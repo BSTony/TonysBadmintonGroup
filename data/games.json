@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786245830744,
+    "lastActiveTime": 1786245835480,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2211,7 +2211,8 @@
       "李詩晴": true,
       "陳呈": true,
       "Fb-阿倫": true,
-      "FB-祺緯": true
+      "FB-祺緯": true,
+      "Gary": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
