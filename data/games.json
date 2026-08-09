@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786234299303,
+    "lastActiveTime": 1786234377864,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2198,7 +2198,6 @@
       "Kay": true,
       "ALAN LIU": true,
       "小金": true,
-      "Joe": true,
       "蕭傑森": true,
       "俊吉": true,
       "Chen H.R.": true,
@@ -2220,7 +2219,6 @@
           "Jean",
           "小金",
           "俊吉",
-          "Joe",
           "兔兔(玉儒)",
           "JoeLin",
           "Shawn1",
@@ -2309,6 +2307,13 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 08:12",
+        "name": "Joe",
+        "operator": "Kay",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/09 07:34",
         "name": "Hsin",
