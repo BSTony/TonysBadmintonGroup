@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786234379993,
+    "lastActiveTime": 1786234825764,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2202,7 +2202,8 @@
       "俊吉": true,
       "Chen H.R.": true,
       "杜威霖 Andy": true,
-      "JoeLin": true
+      "JoeLin": true,
+      "羅": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
