@@ -2817,7 +2817,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785848005986,
-    "lastActiveTime": 1786265970489,
+    "lastActiveTime": 1786265972627,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2852,8 +2852,7 @@
           "afrahuang",
           "Jet",
           "張建發",
-          "Yoshi(王安迪)",
-          "雅文"
+          "Yoshi(王安迪)"
         ],
         "fee": "280"
       }
@@ -2869,6 +2868,13 @@
       "雅文": "U8b2ddb76903e38662609d33192015c24"
     },
     "history": [
+      {
+        "time": "08/09 16:59",
+        "name": "雅文",
+        "operator": "雅文",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/09 16:59",
         "name": "雅文",
