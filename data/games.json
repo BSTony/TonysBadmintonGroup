@@ -3469,7 +3469,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786252348013,
-    "lastActiveTime": 1786268941516,
+    "lastActiveTime": 1786269221443,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3507,7 +3507,8 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "Gary"
+          "Gary",
+          "Jet"
         ]
       }
     ],
@@ -3516,9 +3517,17 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "云": "U433bba23fffec0bbdba4f408822eb6ec",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "history": [
+      {
+        "time": "08/09 17:53",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/09 17:49",
         "name": "Gary",
