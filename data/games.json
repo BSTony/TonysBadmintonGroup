@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786249544860,
+    "lastActiveTime": 1786268203005,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2233,7 +2233,8 @@
           "小金",
           "俊吉",
           "兔兔(玉儒)",
-          "JoeLin"
+          "JoeLin",
+          "Kevin"
         ]
       },
       {
@@ -2278,7 +2279,7 @@
       "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
       "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
       "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
-      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
+      "Kevin": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
       "Fb-阿倫": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "FB-祺緯": "Ua5ba1a0ad7f4687b4075563e722331c5",
@@ -2297,6 +2298,13 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 17:36",
+        "name": "Kevin",
+        "operator": "Kevin",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/09 12:01",
         "name": "小正",
