@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786268204995,
+    "lastActiveTime": 1786268205869,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2242,7 +2242,9 @@
           "蕭傑森",
           "羅",
           "林立峰",
-          "Fb-阿倫"
+          "Fb-阿倫",
+          "FB-祺緯",
+          "腳皮"
         ]
       },
       {
@@ -2290,8 +2292,8 @@
       "Kevin": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Mia": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Fb-阿倫": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "FB-祺緯": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "FB-祺緯": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "腳皮": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a",
       "胞弟": "U09e4f0126678f203e0b139a474c17637",
       "Shawn1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -2306,6 +2308,20 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 17:36",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "FB-祺緯",
+        "operator": "FB-祺緯",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/09 17:36",
         "name": "Fb-阿倫",
