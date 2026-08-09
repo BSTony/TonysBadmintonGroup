@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786232042782,
+    "lastActiveTime": 1786233896581,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2195,7 +2195,8 @@
     "levelMap": {},
     "paidMap": {
       "Tony": true,
-      "Kay": true
+      "Kay": true,
+      "ALAN LIU": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
