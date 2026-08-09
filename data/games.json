@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786245835480,
+    "lastActiveTime": 1786248085533,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2243,7 +2243,6 @@
         "list": [
           "周哲儁",
           "楊程鈞",
-          "小正",
           "Kevin",
           "Mia",
           "李詩晴",
@@ -2316,6 +2315,13 @@
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 12:01",
+        "name": "小正",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
       {
         "time": "08/09 09:46",
         "name": "Shawn2",
