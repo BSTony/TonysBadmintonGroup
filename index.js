@@ -3704,6 +3704,18 @@ app.post('/api/action', express.json(), async (req, res) => {
       return res.json({ success: true });
     }
     
+    if (action === 'endGame') {
+      if (!isAdmin) {
+        return res.status(403).json({ error: '只有管理員能結束場次' });
+      }
+      if (!gameId || !games[gameId]) {
+        return res.status(404).json({ error: '找不到該場次' });
+      }
+      games[gameId].isManualEnded = true;
+      await saveGame(gameId, true);
+      return res.json({ success: true, gid: targetGameGid });
+    }
+    
     if (action === 'deleteGame') {
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能刪除場次' });

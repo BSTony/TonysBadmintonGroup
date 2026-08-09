@@ -1,3 +1,11 @@
 node_modules
 .env
-buffer/
+buffer/
+# Temporary scripts and data
+*.txt
+*restore*.js
+update_*.js
+prod_*.json
+restore_payload.json
+data/games_old.json
+data/systemLogs.json

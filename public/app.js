@@ -2494,8 +2494,7 @@ if (btnCloseGame) {
           gameId: currentGameDetailId,
           uid: currentUser.userId,
           name: currentUser.displayName,
-          action: 'editGame',
-          isManualEnded: true
+          action: 'endGame'
         })
       });
       const result = await res.json();
