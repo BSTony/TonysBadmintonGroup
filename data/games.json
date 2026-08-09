@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786240856413,
+    "lastActiveTime": 1786240864100,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2207,7 +2207,7 @@
       "Jean": true,
       "兔兔(玉儒)": true,
       "腳皮": true,
-      "grant": false,
+      "grant": true,
       "李詩晴": true
     },
     "noteMap": {},
