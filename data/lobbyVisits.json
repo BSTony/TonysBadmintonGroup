@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3127,
+    "viewCount": 3128,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -519,8 +519,9 @@
       "U98e70298aa928f28a3cbf5daa199273f": {
         "displayName": "Evan",
         "firstVisit": 1783661329295,
-        "count": 2,
-        "lastVisit": 1784951165490
+        "count": 3,
+        "lastVisit": 1786271436899,
+        "pictureUrl": "https://profile.line-scdn.net/0h6vW1CCrfaVl6SHdmfqUXJgoYajNZOTBLBScvO09LMWlOKyYJBiYhPkpOMWoUfiZdBichOh8aNDx2Wx4_ZB6VbX14NGhHeSsHUCYjug"
       },
       "U56cdc57d716e6130e50fc29a02347ca9": {
         "displayName": "TU",
@@ -1012,6 +1013,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1786271436899,
+        "userId": "U98e70298aa928f28a3cbf5daa199273f",
+        "displayName": "Evan",
+        "pictureUrl": "https://profile.line-scdn.net/0h6vW1CCrfaVl6SHdmfqUXJgoYajNZOTBLBScvO09LMWlOKyYJBiYhPkpOMWoUfiZdBichOh8aNDx2Wx4_ZB6VbX14NGhHeSsHUCYjug"
+      },
       {
         "time": 1786269552235,
         "userId": "U4f877c526e048afcda3730edce9ba746",
