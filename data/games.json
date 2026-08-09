@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786233901691,
+    "lastActiveTime": 1786233908785,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2198,7 +2198,8 @@
       "Kay": true,
       "ALAN LIU": true,
       "小金": true,
-      "Joe": true
+      "Joe": true,
+      "蕭傑森": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
