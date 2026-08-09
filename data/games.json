@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786239053076,
+    "lastActiveTime": 1786239966353,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2205,7 +2205,8 @@
       "JoeLin": true,
       "羅": true,
       "Jean": true,
-      "兔兔(玉儒)": true
+      "兔兔(玉儒)": true,
+      "腳皮": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
