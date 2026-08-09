@@ -3469,7 +3469,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786252348013,
-    "lastActiveTime": 1786278436563,
+    "lastActiveTime": 1786284970672,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3488,7 +3488,8 @@
         "label": "",
         "list": [
           "云",
-          "林煥杰"
+          "林煥杰",
+          "JoeLin"
         ]
       },
       {
@@ -3523,9 +3524,17 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
-      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
     },
     "history": [
+      {
+        "time": "08/09 22:16",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/09 20:27",
         "name": "林煥杰",
