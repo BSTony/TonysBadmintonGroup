@@ -2186,7 +2186,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785744594526,
-    "lastActiveTime": 1786205618165,
+    "lastActiveTime": 1786268336949,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2195,7 +2195,15 @@
     "levelMap": {},
     "paidMap": {
       "Tony": true,
-      "Kay": true
+      "Kay": true,
+      "ALAN LIU": true,
+      "小金": true,
+      "俊吉": true,
+      "杜威霖 Andy": true,
+      "JoeLin": true,
+      "Jean": true,
+      "兔兔(玉儒)": true,
+      "陳呈": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -2210,15 +2218,11 @@
           "ALAN LIU",
           "杜威霖 Andy",
           "陳呈",
-          "林煥杰",
           "Jean",
           "小金",
           "俊吉",
-          "Joe",
           "兔兔(玉儒)",
-          "JoeLin",
-          "Shawn1",
-          "Shawn2"
+          "JoeLin"
         ]
       },
       {
@@ -2228,12 +2232,8 @@
         "fee": "210",
         "label": "",
         "list": [
-          "周哲儁",
-          "楊程鈞",
-          "小正",
           "Kevin",
           "Mia",
-          "Hsin",
           "李詩晴",
           "grant"
         ]
@@ -2245,10 +2245,7 @@
         "fee": "320",
         "label": "",
         "list": [
-          "Tony",
-          "Kay",
           "Gary",
-          "Jet",
           "蕭傑森",
           "羅",
           "林立峰",
@@ -2283,16 +2280,16 @@
       "小正": "Ucae8094c21c5ab0e32dd47bc4e52eced",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "蕭傑森": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "羅": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
-      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
-      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
-      "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
-      "Fb-阿倫": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "FB-祺緯": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "林立峰": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kevin": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Mia": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Fb-阿倫": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB-祺緯": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "腳皮": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a",
-      "胞弟": "U09e4f0126678f203e0b139a474c17637",
+      "胞弟": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Shawn1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Shawn2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
@@ -2300,11 +2297,354 @@
       "雅0🐱": "U70293580bf944ee91dff2fdea1b5ec16",
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7",
       "李詩晴": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
-      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
+      "John": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Chen H.R.": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "grant": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/09 17:38",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "John",
+        "operator": "John",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "John",
+        "operator": "John",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "胞弟",
+        "operator": "胞弟",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "胞弟",
+        "operator": "胞弟",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "FB-祺緯",
+        "operator": "FB-祺緯",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "FB-祺緯",
+        "operator": "FB-祺緯",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Fb-阿倫",
+        "operator": "Fb-阿倫",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Fb-阿倫",
+        "operator": "Fb-阿倫",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "羅",
+        "operator": "羅",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "羅",
+        "operator": "羅",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "蕭傑森",
+        "operator": "蕭傑森",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "蕭傑森",
+        "operator": "蕭傑森",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "grant",
+        "operator": "grant",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "grant",
+        "operator": "grant",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "李詩晴",
+        "operator": "李詩晴",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "李詩晴",
+        "operator": "李詩晴",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Mia",
+        "operator": "Mia",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Mia",
+        "operator": "Mia",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Kevin",
+        "operator": "Kevin",
+        "action": "+1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 17:38",
+        "name": "Kevin",
+        "operator": "Kevin",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "John",
+        "operator": "John",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "胞弟",
+        "operator": "胞弟",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "FB-祺緯",
+        "operator": "FB-祺緯",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "Fb-阿倫",
+        "operator": "Fb-阿倫",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "羅",
+        "operator": "羅",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "蕭傑森",
+        "operator": "蕭傑森",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "grant",
+        "operator": "grant",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "李詩晴",
+        "operator": "李詩晴",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "Mia",
+        "operator": "Mia",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 17:36",
+        "name": "Kevin",
+        "operator": "Kevin",
+        "action": "+1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 12:01",
+        "name": "小正",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 09:46",
+        "name": "Shawn2",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 09:46",
+        "name": "Shawn1",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 08:12",
+        "name": "Joe",
+        "operator": "Kay",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
+      {
+        "time": "08/09 07:34",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "-1",
+        "section": "10:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 07:17",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "-1",
+        "section": "8:00-12:00 (10-11開冷氣)"
+      },
+      {
+        "time": "08/09 06:33",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "-1",
+        "section": "8:00-10:00"
+      },
       {
         "time": "08/09 00:13",
         "name": "grant",
@@ -2733,7 +3073,7 @@
         "section": "8:00-12:00"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": true
   },
   "1785847950647225": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
@@ -2792,7 +3132,7 @@
     "tag": "",
     "active": true,
     "startTime": 1785848005986,
-    "lastActiveTime": 1786067090266,
+    "lastActiveTime": 1786265972627,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -2839,9 +3179,24 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "張建發": "U17eaf2f1e1b41288876d992044d9bdf9",
       "昆泰": "U4a000207c2cd7539924a5c19b7506bba",
-      "Yoshi(王安迪)": "Ufe0fe514d1b7b112a3f6910485ae1ce8"
+      "Yoshi(王安迪)": "Ufe0fe514d1b7b112a3f6910485ae1ce8",
+      "雅文": "U8b2ddb76903e38662609d33192015c24"
     },
     "history": [
+      {
+        "time": "08/09 16:59",
+        "name": "雅文",
+        "operator": "雅文",
+        "action": "-1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/09 16:59",
+        "name": "雅文",
+        "operator": "雅文",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/07 09:44",
         "name": "Sean",
@@ -3093,6 +3448,141 @@
         "operator": "謝東霖 Tony",
         "action": "+1",
         "section": "報名名單"
+      }
+    ]
+  },
+  "178625234801334": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "178625234801334",
+    "title": "週日 港中 早上",
+    "date": "8/16 (日)",
+    "time": "08:00~12:00",
+    "location": "南港高中",
+    "fee": "150",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1786252348013,
+    "lastActiveTime": 1786284970672,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "8-10",
+        "limit": 19,
+        "backupLimit": 5,
+        "fee": "150",
+        "label": "",
+        "list": [
+          "云",
+          "林煥杰",
+          "JoeLin"
+        ]
+      },
+      {
+        "title": "10-12",
+        "limit": 12,
+        "backupLimit": 5,
+        "fee": "210",
+        "label": "",
+        "list": [
+          "楊程鈞"
+        ]
+      },
+      {
+        "title": "8-12",
+        "limit": 12,
+        "backupLimit": 5,
+        "fee": "320",
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay",
+          "Gary",
+          "Jet"
+        ]
+      }
+    ],
+    "isManualEnded": false,
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "云": "U433bba23fffec0bbdba4f408822eb6ec",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
+    },
+    "history": [
+      {
+        "time": "08/09 22:16",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/09 20:27",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/09 17:59",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/09 17:53",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "8-12"
+      },
+      {
+        "time": "08/09 17:49",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8-12"
+      },
+      {
+        "time": "08/09 17:14",
+        "name": "云",
+        "operator": "鄭人云",
+        "action": "+1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/09 16:33",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
+      {
+        "time": "08/09 16:32",
+        "name": "謝東霖 Tony",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
       }
     ]
   }
