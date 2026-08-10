@@ -2264,15 +2264,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     }
   });
 
-  flexContents.push({
-    type: "box",
-    layout: "horizontal",
-    margin: "lg",
-    justifyContent: "center",
-    contents: [
-      { type: "text", text: "點選上方場次查看詳細名單 👆", size: "xs", color: "#888888", align: "center" }
-    ]
-  });
+
 
   if (isPlusMinus && cleanText !== '+1' && cleanText !== '-1') {
     flexContents.push({
