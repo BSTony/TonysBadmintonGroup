@@ -6270,14 +6270,17 @@ function updateCartBar() {
 
   const headerTotal = document.getElementById('gb-header-total');
   const headerSum = document.getElementById('gb-header-sum');
+  const cartJumpBtn = document.getElementById('btn-cart-jump');
 
   if (headerSum) headerSum.innerText = sum;
 
   if (headerTotal) {
     if (count > 0 && groupBuyView && !groupBuyView.classList.contains('hidden')) {
       headerTotal.classList.remove('hidden');
+      if (cartJumpBtn) cartJumpBtn.classList.remove('hidden');
     } else {
       headerTotal.classList.add('hidden');
+      if (cartJumpBtn) cartJumpBtn.classList.add('hidden');
     }
   }
 }
@@ -6477,6 +6480,7 @@ function renderSummaryTab() {
       orderList.forEach(ord => {
         const card = document.createElement('div');
         card.className = 'gb-order-card';
+        card.id = `gb-order-card-${ord.orderKey}`;
 
         const isPaid = ord.paymentStatus === 'paid';
 
@@ -6562,6 +6566,16 @@ function renderSummaryTab() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ targetUid: ord.orderKey })
                   });
+                  
+                  const gbUserName = document.getElementById('gb-header-name');
+                  const gbUserPhone = document.getElementById('gb-header-phone');
+                  const n = (gbUserName && gbUserName.value.trim().toLowerCase()) || '';
+                  const p = (gbUserPhone && gbUserPhone.value.trim()) || '';
+                  const myKey = (currentUser && currentUser.userId) ? currentUser.userId : (p ? `${n}_${p}` : n);
+                  if (ord.orderKey === myKey) {
+                    currentCart = {};
+                  }
+                  
                   if (typeof fetchGroupBuyData === 'function') fetchGroupBuyData(currentGid);
                 } catch(e) { console.error(e); }
               }
@@ -6809,6 +6823,39 @@ function initGroupBuyEvents() {
   }
 
 
+
+  const btnCartJump = document.getElementById('btn-cart-jump');
+  if (btnCartJump) {
+    btnCartJump.onclick = () => {
+      if (gbTabSummary) gbTabSummary.click();
+      setTimeout(() => {
+        const gbUserName = document.getElementById('gb-header-name');
+        const gbUserPhone = document.getElementById('gb-header-phone');
+        const n = (gbUserName && gbUserName.value.trim().toLowerCase()) || '';
+        const p = (gbUserPhone && gbUserPhone.value.trim()) || '';
+        
+        let foundKey = null;
+        if (currentGroupBuyData && currentGroupBuyData.orders) {
+          if (currentUser && currentUser.userId && currentGroupBuyData.orders[currentUser.userId]) {
+            foundKey = currentUser.userId;
+          } else if (n) {
+            const key1 = p ? `${n}_${p}` : n;
+            if (currentGroupBuyData.orders[key1]) foundKey = key1;
+          }
+        }
+        
+        if (foundKey) {
+          const card = document.getElementById(`gb-order-card-${foundKey}`);
+          if (card) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.style.transition = 'box-shadow 0.3s';
+            card.style.boxShadow = '0 0 15px rgba(37,99,235,0.6)';
+            setTimeout(() => card.style.boxShadow = '', 2000);
+          }
+        }
+      }, 100);
+    };
+  }
 
   // 詳情 Modal 事件
   const btnCloseItemDetailBottom = document.getElementById('btn-close-item-detail-bottom');
@@ -7301,6 +7348,7 @@ function initGroupBuyEvents() {
         const data = await res.json();
         if (data.success) {
           alert('🗑️ 已清空所有訂單！');
+          currentCart = {};
           fetchGroupBuyData();
         } else alert('清空失敗：' + data.error);
       } catch(e) { alert('清空失敗：' + e.message); }
