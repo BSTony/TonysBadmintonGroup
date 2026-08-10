@@ -2320,39 +2320,86 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
 
 function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble) {
       const flexBubbles = (statusBubble && !isMentionPush) ? [statusBubble] : [];
+      
+      const MAX_ROWS = 8;
+      let currentBubbleRows = [];
+      let currentBubbleRowCount = 0;
+
+      const createBubbleFromRows = (rows) => {
+          const listBoxes = [];
+          rows.forEach((row, rIdx) => {
+              if (row.type === 'gameHeader') {
+                  if (rIdx > 0) listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
+                  listBoxes.push({
+                      type: "box", layout: "vertical", margin: "sm",
+                      contents: [
+                          { type: "text", text: row.text, weight: "bold", size: "md", color: "#1DB446", wrap: true }
+                      ]
+                  });
+              } else if (row.type === 'header') {
+                  if (rIdx > 0 && rows[rIdx-1].type !== 'gameHeader') listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
+                  listBoxes.push({
+                      type: "box", layout: "horizontal", margin: "sm",
+                      contents: [
+                          { type: "text", text: row.text, size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
+                          { type: "text", text: row.rightText, size: "xs", color: "#666666", align: "end", flex: 0 }
+                      ]
+                  });
+              } else if (row.type === 'backupHeader') {
+                  listBoxes.push({
+                      type: "box", layout: "horizontal", margin: "sm",
+                      contents: [{ type: "text", text: "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }]
+                  });
+              } else if (row.type === 'main_dyn') {
+                  const boxes = row.items.map(item => ({
+                      type: "box", layout: "vertical", flex: 0, backgroundColor: "#f2f8f2", cornerRadius: "md",
+                      paddingStart: "6px", paddingEnd: "6px", paddingTop: "4px", paddingBottom: "4px", margin: "3px",
+                      contents: [{ type: "text", text: item.text, size: "xxs", color: "#333333", align: "center", wrap: false }]
+                  }));
+                  boxes.push({ type: "filler", flex: 1 });
+                  listBoxes.push({ type: "box", layout: "horizontal", margin: "none", contents: boxes });
+              } else if (row.type === 'backup_dyn') {
+                  const boxes = row.items.map(item => ({
+                      type: "box", layout: "vertical", flex: 0, backgroundColor: "#fff8e1", cornerRadius: "md",
+                      paddingStart: "6px", paddingEnd: "6px", paddingTop: "4px", paddingBottom: "4px", margin: "3px",
+                      contents: [{ type: "text", text: item.text, size: "xxs", color: "#555555", align: "center", wrap: false }]
+                  }));
+                  boxes.push({ type: "filler", flex: 1 });
+                  listBoxes.push({ type: "box", layout: "horizontal", margin: "none", contents: boxes });
+              } else if (row.type === 'empty') {
+                  listBoxes.push({
+                      type: "box", layout: "horizontal", margin: "none",
+                      contents: [
+                          { type: "text", text: `${row.index}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
+                          { type: "filler", flex: 1 }
+                      ]
+                  });
+              }
+          });
+          return {
+              type: "bubble", size: "mega",
+              body: { type: "box", layout: "vertical", paddingAll: "16px", contents: [{ type: "box", layout: "vertical", margin: "md", contents: listBoxes }] }
+          };
+      };
+
       for (const g of groupGames) {
           if (flexBubbles.length >= 12) break; // LINE Carousel maximum is 12 bubbles
-
+          
           const isMultiSection = g.sections && g.sections.length > 1;
           const section = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 20 };
           const list = section.list || [];
           const limit = section.limit || 20;
           
-          let totalListLen = 0;
-          let totalLimit = 0;
-          if (g.sections) {
-              g.sections.forEach(s => {
-                  totalListLen += (s.list || []).length;
-                  totalLimit += (s.limit || 0);
-              });
-          }
-          
-          const isFull = totalLimit > 0 && totalListLen >= totalLimit;
-          const statusText = isFull ? (totalLimit > 0 ? `滿團(${totalLimit})` : '滿團') : (totalLimit > 0 ? `${totalListLen}/${totalLimit}` : `${totalListLen}人`);
-
-          // Date and location
-          let infoLine = `🕒 ${g.date || ''} ${g.time || ''}`.trim();
-          if (g.location) infoLine += `\n📍 ${g.location}`;
-
           const sectionsToRender = (g.sections && g.sections.length > 0) ? g.sections : [{ list: list, limit: limit, title: '名單' }];
           const allRows = [];
+          
+          allRows.push({ type: 'gameHeader', text: `🏸 ${g.title}` });
           
           const getStrLen = (str) => {
               let len = 0;
               for (let i = 0; i < str.length; i++) {
-                  len += (str.charCodeAt(i) > 255) ? 2.2 : 1.2; // Slightly overestimate to be safe
+                  len += (str.charCodeAt(i) > 255) ? 2.2 : 1.2;
               }
-              // Add some padding weight for the chip's margin/padding
               return len + 3;
           };
 
@@ -2363,7 +2410,6 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               
               const secList = sec.list || [];
               const secLimit = sec.limit || 20;
-              
               const MAX_ROW_LEN = 55;
               
               // 正取名單 (Dynamic wrapping)
@@ -2388,17 +2434,13 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   allRows.push({ type: 'main_dyn', items: currentRow });
               }
               
-              // Empty row placeholder removed to save space
-              
               // 候補名單
               if (secList.length > secLimit) {
                   allRows.push({ type: 'backupHeader' });
-                  let backupCount = 0;
                   let currBkupRow = [];
                   let currBkupLen = 0;
                   for (let i = secLimit; i < secList.length; i++) {
                       const nameRaw = secList[i] === '__ANON__' ? '匿名' : secList[i];
-                      const bc = backupCount++;
                       const levelStr = (g.levelMap && g.levelMap[nameRaw]) ? ` (${g.levelMap[nameRaw]})` : '';
                       const paidStr = (g.paidMap && g.paidMap[nameRaw]) ? '💰' : '';
                       const fullText = `補-${nameRaw}${levelStr}${paidStr}`;
@@ -2418,137 +2460,63 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               }
           });
 
-          const MAX_ROWS = 8;
-          const chunks = [];
-          let currentChunk = [];
-          let rowCount = 0;
-
+          let gameRowCount = 0;
           allRows.forEach(row => {
-              if (rowCount >= MAX_ROWS && row.type !== 'header' && row.type !== 'backupHeader') {
-                  chunks.push(currentChunk);
-                  currentChunk = [];
-                  rowCount = 0;
+              if (row.type === 'main_dyn' || row.type === 'backup_dyn' || row.type === 'empty' || row.type === 'gameHeader') {
+                  gameRowCount++;
               }
-              currentChunk.push(row);
-              if (row.type === 'main_dyn' || row.type === 'backup_dyn' || row.type === 'empty') rowCount++;
           });
-          if (currentChunk.length > 0) chunks.push(currentChunk);
 
-          let progressPercent = 0;
-          if (totalLimit > 0) {
-              progressPercent = Math.min(100, Math.round((totalListLen / totalLimit) * 100));
-          } else if (totalListLen > 0) {
-              progressPercent = 100;
+          if (currentBubbleRowCount > 0 && (currentBubbleRowCount + gameRowCount > MAX_ROWS)) {
+              if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(currentBubbleRows));
+              currentBubbleRows = [];
+              currentBubbleRowCount = 0;
           }
 
-          const progressBar = {
-              type: "box", layout: "vertical", margin: "md", height: "6px", backgroundColor: "#EEEEEE", cornerRadius: "lg",
-              contents: progressPercent > 0 ? [{ type: "box", layout: "vertical", width: `${progressPercent}%`, height: "6px", backgroundColor: isFull ? "#ff4c4c" : "#1DB446", cornerRadius: "lg", contents: [] }] : []
-          };
-
-          const liffMainUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : null;
-          const liffGameUrl = process.env.LIFF_ID ? `${liffMainUrl}&gameId=${g.gameId}` : null;
-
-          chunks.forEach((chunk, chunkIdx) => {
-              if (flexBubbles.length >= 12) return;
-
-              const listBoxes = [];
-              chunk.forEach((row, rIdx) => {
-                  if (row.type === 'header') {
-                      if (rIdx > 0) listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
-                      listBoxes.push({
-                          type: "box", layout: "horizontal", margin: "sm",
-                          contents: [
-                              { type: "text", text: row.text, size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
-                              { type: "text", text: row.rightText, size: "xs", color: "#666666", align: "end", flex: 0 }
-                          ]
-                      });
-                  } else if (row.type === 'backupHeader') {
-                      listBoxes.push({
-                          type: "box", layout: "horizontal", margin: "sm",
-                          contents: [{ type: "text", text: "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }]
-                      });
-                  } else if (row.type === 'main_dyn') {
-                      const boxes = row.items.map(item => ({
-                          type: "box",
-                          layout: "vertical",
-                          flex: 0,
-                          backgroundColor: "#f2f8f2",
-                          cornerRadius: "md",
-                          paddingStart: "6px",
-                          paddingEnd: "6px",
-                          paddingTop: "4px",
-                          paddingBottom: "4px",
-                          margin: "3px",
-                          contents: [
-                              { type: "text", text: item.text, size: "xxs", color: "#333333", align: "center", wrap: false }
-                          ]
-                      }));
-                      boxes.push({ type: "filler", flex: 1 });
-                      
-                      listBoxes.push({
-                          type: "box", layout: "horizontal", margin: "none",
-                          contents: boxes
-                      });
-                  } else if (row.type === 'backup_dyn') {
-                      const boxes = row.items.map(item => ({
-                          type: "box",
-                          layout: "vertical",
-                          flex: 0,
-                          backgroundColor: "#fff8e1",
-                          cornerRadius: "md",
-                          paddingStart: "6px",
-                          paddingEnd: "6px",
-                          paddingTop: "4px",
-                          paddingBottom: "4px",
-                          margin: "3px",
-                          contents: [
-                              { type: "text", text: item.text, size: "xxs", color: "#555555", align: "center", wrap: false }
-                          ]
-                      }));
-                      boxes.push({ type: "filler", flex: 1 });
-                      
-                      listBoxes.push({
-                          type: "box", layout: "horizontal", margin: "none",
-                          contents: boxes
-                      });
-                  } else if (row.type === 'empty') {
-                      listBoxes.push({
-                          type: "box", layout: "horizontal", margin: "none",
-                          contents: [
-                              { type: "text", text: `${row.index}. `, size: "xs", color: "#aaaaaa", flex: 1, wrap: false },
-                              { type: "filler", flex: 1 }
-                          ]
-                      });
-                  }
-              });
-
-              const bodyContents = [];
-              // Removed infoLine (date, time, location) to save space as requested
-              bodyContents.push({ type: "box", layout: "vertical", margin: "md", contents: listBoxes });
-
-              const bubble = {
-                  type: "bubble", size: "mega",
-                  header: {
-                      type: "box", layout: "vertical", paddingBottom: "none",
-                      contents: [
-                          { type: "text", text: `🏸 ${g.title}${chunks.length > 1 ? ` (${chunkIdx + 1}/${chunks.length})` : ''}`, weight: "bold", size: "md", color: "#1DB446", wrap: true }
-                      ]
-                  },
-                  body: { type: "box", layout: "vertical", paddingAll: "16px", contents: bodyContents }
-              };
-
-              if (false && chunkIdx === 0 && liffMainUrl && liffGameUrl) {
-                  bubble.footer = {
-                      type: "box", layout: "horizontal", spacing: "sm",
-                      contents: [
-                          { type: "button", style: "primary", color: "#1DB446", height: "sm", flex: 1, action: { type: "uri", label: "本次報名", uri: liffGameUrl } },
-                          { type: "button", style: "secondary", color: "#eeeeee", height: "sm", flex: 1, action: { type: "uri", label: "大廳首頁", uri: liffMainUrl } }
-                      ]
-                  };
+          if (gameRowCount > MAX_ROWS) {
+              if (currentBubbleRows.length > 0) {
+                  if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(currentBubbleRows));
+                  currentBubbleRows = [];
+                  currentBubbleRowCount = 0;
               }
-              flexBubbles.push(bubble);
-          });
+              let chunk = [];
+              let chunkRowCount = 0;
+              let titleAdded = false;
+              for (let i = 0; i < allRows.length; i++) {
+                  const row = allRows[i];
+                  if (chunkRowCount >= MAX_ROWS && row.type !== 'header' && row.type !== 'backupHeader' && row.type !== 'gameHeader') {
+                      if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(chunk));
+                      chunk = [];
+                      chunkRowCount = 0;
+                      titleAdded = false;
+                  }
+                  
+                  // Re-inject gameHeader if we chunked
+                  if (!titleAdded && row.type !== 'gameHeader') {
+                      chunk.push({ type: 'gameHeader', text: `🏸 ${g.title} (續)` });
+                      chunkRowCount++;
+                      titleAdded = true;
+                  }
+                  
+                  if (row.type === 'gameHeader') {
+                      titleAdded = true;
+                  }
+                  
+                  chunk.push(row);
+                  if (row.type === 'main_dyn' || row.type === 'backup_dyn' || row.type === 'empty' || row.type === 'gameHeader') {
+                      chunkRowCount++;
+                  }
+              }
+              currentBubbleRows = chunk;
+              currentBubbleRowCount = chunkRowCount;
+          } else {
+              currentBubbleRows.push(...allRows);
+              currentBubbleRowCount += gameRowCount;
+          }
+      }
+      
+      if (currentBubbleRows.length > 0 && flexBubbles.length < 12) {
+          flexBubbles.push(createBubbleFromRows(currentBubbleRows));
       }
 
       const carouselMsg = {
@@ -2559,7 +2527,6 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
               contents: flexBubbles
           }
       };
-
       const messagesToSend = [carouselMsg];
       
       if (isMentionPush) {
