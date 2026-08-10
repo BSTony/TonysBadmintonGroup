@@ -5813,8 +5813,24 @@ function renderGroupBuyUI(data) {
   }
 
   // 自動復原個人歷史填寫過的的訂單內容/姓名電話
-  if (data.orders && currentUser?.userId && data.orders[currentUser.userId]) {
-    const myOrder = data.orders[currentUser.userId];
+  let myOrder = null;
+  const gbUserNameInput = document.getElementById('gb-header-name');
+  const gbUserPhoneInput = document.getElementById('gb-header-phone');
+  const nVal = (gbUserNameInput && gbUserNameInput.value.trim().toLowerCase()) || '';
+  const pVal = (gbUserPhoneInput && gbUserPhoneInput.value.trim()) || '';
+  const phoneKey = (nVal && pVal) ? `${nVal}_${pVal}` : null;
+  
+  if (data.orders) {
+    if (currentUser?.userId && data.orders[currentUser.userId]) {
+      myOrder = data.orders[currentUser.userId];
+    } else if (phoneKey && data.orders[phoneKey]) {
+      myOrder = data.orders[phoneKey];
+    } else if (nVal && data.orders[nVal]) {
+      myOrder = data.orders[nVal];
+    }
+  }
+
+  if (myOrder) {
     if (gbUserName && !gbUserName.value) gbUserName.value = myOrder.userName || '';
     if (gbUserPhone && !gbUserPhone.value) gbUserPhone.value = myOrder.userPhone || '';
     // 如果購物車是空的，帶入上次訂單
@@ -6571,8 +6587,9 @@ function renderSummaryTab() {
                   const gbUserPhone = document.getElementById('gb-header-phone');
                   const n = (gbUserName && gbUserName.value.trim().toLowerCase()) || '';
                   const p = (gbUserPhone && gbUserPhone.value.trim()) || '';
-                  const myKey = (currentUser && currentUser.userId) ? currentUser.userId : (p ? `${n}_${p}` : n);
-                  if (ord.orderKey === myKey) {
+                  const keyPhone = (n && p) ? `${n}_${p}` : n;
+                  const keyUid = (currentUser && currentUser.userId) ? currentUser.userId : null;
+                  if (ord.orderKey === keyUid || ord.orderKey === keyPhone) {
                     currentCart = {};
                   }
                   
