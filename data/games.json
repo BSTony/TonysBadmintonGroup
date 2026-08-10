@@ -3519,7 +3519,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786252348013,
-    "lastActiveTime": 1786289308024,
+    "lastActiveTime": 1786383691731,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3540,7 +3540,8 @@
           "云",
           "林煥杰",
           "JoeLin",
-          "ALAN LIU"
+          "ALAN LIU",
+          "鈞"
         ]
       },
       {
@@ -3577,9 +3578,17 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
-      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf"
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
+      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38"
     },
     "history": [
+      {
+        "time": "08/11 01:41",
+        "name": "鈞",
+        "operator": "鈞",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/09 23:28",
         "name": "ALAN LIU",
