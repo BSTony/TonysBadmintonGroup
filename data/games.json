@@ -3531,7 +3531,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786453662486,
+    "lastActiveTime": 1786453724243,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3570,9 +3570,22 @@
           "wayne",
           "ong",
           "iven",
-          "mina"
+          "mina",
+          "陳呈"
         ],
         "fee": "230"
+      }
+    ],
+    "uidMap": {
+      "陳呈": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+    },
+    "history": [
+      {
+        "time": "08/11 21:08",
+        "name": "陳呈",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
