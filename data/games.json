@@ -3385,7 +3385,7 @@
       "C073dd061239f9bc2df13af0a1ecb4bdb"
     ],
     "gameId": "1786415176706194",
-    "title": "週六 暫停一次",
+    "title": "週六 港中 暫停一次",
     "date": "8/15 (六)",
     "time": "09:00~00:00",
     "location": "南港高中",
@@ -3413,7 +3413,8 @@
         "list": [],
         "fee": ""
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1786415210095339": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
