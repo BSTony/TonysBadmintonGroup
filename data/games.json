@@ -3400,7 +3400,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453443791,
-    "lastActiveTime": 1786453443791,
+    "lastActiveTime": 1786454551980,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3433,12 +3433,25 @@
           "海棠",
           "小周",
           "偉舫",
-          "ong"
+          "ong",
+          "afrahuang"
         ],
         "fee": "280"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "uidMap": {
+      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
+    },
+    "history": [
+      {
+        "time": "08/11 21:22",
+        "name": "afrahuang",
+        "operator": "afrahuang",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
   },
   "1786453662486816": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
