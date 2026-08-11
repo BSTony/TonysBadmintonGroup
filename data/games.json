@@ -3514,7 +3514,7 @@
     "tag": "1面,6人",
     "active": true,
     "startTime": 1786455234104,
-    "lastActiveTime": 1786455234104,
+    "lastActiveTime": 1786490210272,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3532,11 +3532,24 @@
         "label": "",
         "list": [
           "tony",
-          "kay"
+          "kay",
+          "楊程鈞"
         ],
         "fee": "250"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "uidMap": {
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+    },
+    "history": [
+      {
+        "time": "08/12 07:16",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
   }
 }
