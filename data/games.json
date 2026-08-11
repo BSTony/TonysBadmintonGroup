@@ -3531,7 +3531,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786453724243,
+    "lastActiveTime": 1786453727784,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3549,7 +3549,8 @@
       "wayne": true,
       "ong": true,
       "iven": true,
-      "mina": true
+      "mina": true,
+      "陳呈": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
