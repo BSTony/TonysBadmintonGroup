@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2905,
+    "viewCount": 2906,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -934,9 +934,22 @@
         "firstVisit": 1786027310497,
         "count": 1,
         "lastVisit": 1786027310497
+      },
+      "Uf51778566761fb87bb828171d9148e46": {
+        "displayName": "Kai Chi",
+        "firstVisit": 1786404626681,
+        "count": 1,
+        "lastVisit": 1786404626681,
+        "pictureUrl": "https://profile.line-scdn.net/0hBMxEC_xFHWJVPAqO-whjHSVsHgh2TURwKllVDWlvQAc6WVw2K14ADWA6S1tvCVlmf1JbVGZuSlVZL2oES2rhVlIMQFNoDV88f1JXgQ"
       }
     },
     "logs": [
+      {
+        "time": 1786404626681,
+        "userId": "Uf51778566761fb87bb828171d9148e46",
+        "displayName": "Kai Chi",
+        "pictureUrl": "https://profile.line-scdn.net/0hBMxEC_xFHWJVPAqO-whjHSVsHgh2TURwKllVDWlvQAc6WVw2K14ADWA6S1tvCVlmf1JbVGZuSlVZL2oES2rhVlIMQFNoDV88f1JXgQ"
+      },
       {
         "time": 1786387590627,
         "userId": "U94d0fd3752c6d2521d871658f63822b7",
