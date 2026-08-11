@@ -3410,7 +3410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786459281483,
+    "lastActiveTime": 1786460102300,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3453,7 +3453,8 @@
           "mina",
           "陳呈",
           "Jet",
-          "江こう 洋々"
+          "江こう 洋々",
+          "陳品婕"
         ],
         "fee": "230"
       }
@@ -3461,9 +3462,17 @@
     "uidMap": {
       "陳呈": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "陳品婕": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "history": [
+      {
+        "time": "08/11 22:55",
+        "name": "陳品婕",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/11 22:41",
         "name": "江こう 洋々",
