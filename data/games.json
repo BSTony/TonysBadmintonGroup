@@ -3489,7 +3489,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786458182553,
+    "lastActiveTime": 1786459281483,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3531,16 +3531,25 @@
           "iven",
           "mina",
           "陳呈",
-          "Jet"
+          "Jet",
+          "江こう 洋々"
         ],
         "fee": "230"
       }
     ],
     "uidMap": {
       "陳呈": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7",
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
     },
     "history": [
+      {
+        "time": "08/11 22:41",
+        "name": "江こう 洋々",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/11 22:23",
         "name": "Jet",
