@@ -3529,5 +3529,47 @@
         "section": "報名名單"
       }
     ]
+  },
+  "1786455234104806": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1786455234104806",
+    "title": "週日 中崙 9-11",
+    "date": "8/16 (日)",
+    "time": "09:00~11:00",
+    "location": "中崙高中",
+    "fee": "",
+    "note": "",
+    "tag": "1面,6人",
+    "active": true,
+    "startTime": 1786455234104,
+    "lastActiveTime": 1786455234104,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 6,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "tony",
+          "kay"
+        ],
+        "fee": ""
+      }
+    ]
   }
 }
