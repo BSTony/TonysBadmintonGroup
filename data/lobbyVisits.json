@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2910,
+    "viewCount": 2911,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -42,8 +42,8 @@
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
         "firstVisit": 1783209148916,
-        "count": 198,
-        "lastVisit": 1786359953086,
+        "count": 199,
+        "lastVisit": 1786441508605,
         "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
       },
       "U532d12783f207181c2d0f9d9ecc8724a": {
@@ -945,6 +945,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1786441508605,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
       {
         "time": 1786418639537,
         "userId": "U037afe342197214125f95fd00ebc1f0c",
@@ -3165,7 +3171,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 156,
+    "viewCount": 157,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -3286,8 +3292,9 @@
       "Uf2f63c157d1e4f7e5d289d377c568582": {
         "displayName": "周則鼎",
         "firstVisit": 1784810352260,
-        "count": 2,
-        "lastVisit": 1785934670816
+        "count": 3,
+        "lastVisit": 1786442254605,
+        "pictureUrl": "https://profile.line-scdn.net/0htTLFn-M9K3thPzdm68VVRRFvKBFCTnJpTl5kTgM8J0wMDDkpTlg3HAY6Jx5VX24kTV1kGVY6IR9DVQVqJgYSYA94DE41dgR_GyQ-WQ1ZPC48RwxlLC0TQSQ9FBsJfGtVGUUgbgxKLwoeXARTNFwgajA3NEMydh5eFmhHLWQNRfgOPVwuTFllGFw5fU7Z"
       },
       "U84c4d04ffd16e306f6e4065b33c628d5": {
         "displayName": "蔡富任",
@@ -3322,6 +3329,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1786442254605,
+        "userId": "Uf2f63c157d1e4f7e5d289d377c568582",
+        "displayName": "周則鼎",
+        "pictureUrl": "https://profile.line-scdn.net/0htTLFn-M9K3thPzdm68VVRRFvKBFCTnJpTl5kTgM8J0wMDDkpTlg3HAY6Jx5VX24kTV1kGVY6IR9DVQVqJgYSYA94DE41dgR_GyQ-WQ1ZPC48RwxlLC0TQSQ9FBsJfGtVGUUgbgxKLwoeXARTNFwgajA3NEMydh5eFmhHLWQNRfgOPVwuTFllGFw5fU7Z"
+      },
       {
         "time": 1786433314107,
         "userId": "Ua871dc0011b1e136c14173739cf88645",
