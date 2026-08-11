@@ -3543,7 +3543,7 @@
     "date": "8/16 (日)",
     "time": "09:00~11:00",
     "location": "中崙高中",
-    "fee": "",
+    "fee": "240",
     "note": "",
     "tag": "1面,6人",
     "active": true,
@@ -3568,8 +3568,9 @@
           "tony",
           "kay"
         ],
-        "fee": ""
+        "fee": "240"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
