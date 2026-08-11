@@ -3205,7 +3205,7 @@
         "fee": "280"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "uidMap": {
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
       "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
