@@ -3666,7 +3666,7 @@
     "tag": "10-11開冷氣",
     "active": true,
     "startTime": 1786521232242,
-    "lastActiveTime": 1786521258202,
+    "lastActiveTime": 1786578397796,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3676,7 +3676,8 @@
     "paidMap": {},
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Kay": "U49e2484c80056990b759e9039a74e1a6"
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3705,11 +3706,19 @@
         "label": "",
         "list": [
           "謝東霖 Tony",
-          "Kay"
+          "Kay",
+          "Jet"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/13 07:46",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/12 15:54",
         "name": "Kay",
