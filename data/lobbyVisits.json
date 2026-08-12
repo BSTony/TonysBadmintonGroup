@@ -3104,7 +3104,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 155,
+    "viewCount": 157,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -3206,8 +3206,9 @@
       "U07681bd7cc8c5262b1d67edc7535152b": {
         "displayName": "Vincent 吳政諺 KPMG",
         "firstVisit": 1783987135241,
-        "count": 1,
-        "lastVisit": 1783987135241
+        "count": 3,
+        "lastVisit": 1786537872955,
+        "pictureUrl": "https://profile.line-scdn.net/0hZ66HT4ArBRkbMRH7s757ZmthBnM4QFwLP1cfKipiDnkvAERHZFcZfn40CX0kVEMcMARJfy9hCy8XInJ_BWf5LRwBWCgmAEdHMV9P-g"
       },
       "U9904ed725b1f420b8718791594e3756b": {
         "displayName": "偉舫",
@@ -3259,6 +3260,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1786537872955,
+        "userId": "U07681bd7cc8c5262b1d67edc7535152b",
+        "displayName": "Vincent 吳政諺 KPMG",
+        "pictureUrl": "https://profile.line-scdn.net/0hZ66HT4ArBRkbMRH7s757ZmthBnM4QFwLP1cfKipiDnkvAERHZFcZfn40CX0kVEMcMARJfy9hCy8XInJ_BWf5LRwBWCgmAEdHMV9P-g"
+      },
+      {
+        "time": 1786537789976,
+        "userId": "U07681bd7cc8c5262b1d67edc7535152b",
+        "displayName": "Vincent 吳政諺 KPMG",
+        "pictureUrl": "https://profile.line-scdn.net/0hZ66HT4ArBRkbMRH7s757ZmthBnM4QFwLP1cfKipiDnkvAERHZFcZfn40CX0kVEMcMARJfy9hCy8XInJ_BWf5LRwBWCgmAEdHMV9P-g"
+      },
       {
         "time": 1786505078746,
         "userId": "Uf35f2dc9288c3434a5a19186f900402a",
