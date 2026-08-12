@@ -3561,28 +3561,42 @@ app.post('/api/action', express.json(), async (req, res) => {
       let initialList = [];
       let initialLevelMap = {};
       let initialPaidMap = {};
+      let initialUidMap = {};
       
       if (initialListStr) {
-          const rawList = initialListStr.split(/[\s,、，\n]+/).map(n => n.trim()).filter(Boolean);
-          rawList.forEach(n => {
+          // Split by newlines only (names may contain spaces)
+          const rawList = initialListStr.split(/\n/).map(n => n.trim()).filter(Boolean);
+          rawList.forEach(orig => {
+            let n = orig;
             let isPaid = false;
-            if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
+            // Strip paid suffix
+            if (n.endsWith('$') || n.endsWith('\uFF04') || n.endsWith('(\u5DF2\u7E73\u8CBB)') || n.endsWith('\uff08\u5DF2\u7E73\u8CBB\uff09')) {
                 isPaid = true;
-                n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+                n = n.replace(/[$\uFF04]$/, '').replace(/\(\u5DF2\u7E73\u8CBB\)$/, '').replace(/\uff08\u5DF2\u7E73\u8CBB\uff09$/, '');
             }
-            const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
-            if (match) {
-              const trueName = match[1].trim();
-              const lvl = (match[2] || match[3]).trim();
-              initialList.push(trueName);
-              initialLevelMap[trueName] = lvl;
-              if (isPaid) initialPaidMap[trueName] = true;
-            } else {
+            // Extract UUID from [Uxxxxx] brackets first
+            let uuid = '';
+            const uuidMatch = n.match(/\[([A-Za-z0-9]+)\]/);
+            if (uuidMatch) {
+                uuid = uuidMatch[1];
+                n = n.replace(/\[[A-Za-z0-9]+\]/, '').trim();
+            }
+            // Extract level/note from (...) parens
+            let lvl = '';
+            const lvlMatch = n.match(/^(.*?)[\uff08(](.*?)[)\uff09]$/);
+            if (lvlMatch) {
+                n = lvlMatch[1].trim();
+                lvl = lvlMatch[2].trim();
+            }
+            if (n) {
               initialList.push(n);
+              if (lvl) initialLevelMap[n] = lvl;
               if (isPaid) initialPaidMap[n] = true;
+              if (uuid) initialUidMap[n] = uuid;
             }
           });
       }
+      
       
       games[newGameId] = {
         gid: actualGid,
@@ -3605,6 +3619,7 @@ app.post('/api/action', express.json(), async (req, res) => {
         anonymousCount: 0,
         levelMap: initialLevelMap,
         paidMap: initialPaidMap,
+        uidMap: initialUidMap,
         noteMap: {},
         allowUserNoteEdit: req.body.allowUserNoteEdit !== false,
         sections: (req.body.sections && Array.isArray(req.body.sections) && req.body.sections.length > 0) ? req.body.sections.map((s, idx) => ({
