@@ -3514,7 +3514,7 @@
     "tag": "1面,6人",
     "active": true,
     "startTime": 1786455234104,
-    "lastActiveTime": 1786490210272,
+    "lastActiveTime": 1786492887112,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3533,16 +3533,25 @@
         "list": [
           "tony",
           "kay",
-          "楊程鈞"
+          "楊程鈞",
+          "Robert"
         ],
         "fee": "250"
       }
     ],
     "isManualEnded": false,
     "uidMap": {
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "Robert": "Uf35f2dc9288c3434a5a19186f900402a"
     },
     "history": [
+      {
+        "time": "08/12 08:01",
+        "name": "Robert",
+        "operator": "Robert",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/12 07:16",
         "name": "楊程鈞",
