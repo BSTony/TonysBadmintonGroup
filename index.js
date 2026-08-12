@@ -2566,32 +2566,28 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   const isFirst = (i === 0);
                   const prefix = isFirst ? (gameTitles ? `[${gameTitles}] 已報名成功，記得來打球：` : '報名成功提醒：') : '(續)：';
                   
-                  let textStr = prefix + "\n";
-                  const mentionees = [];
+                  let textParts = [prefix];
+                  const substitution = {};
                   const _names = {};
                   
                   for (let j = 0; j < chunk.length; j++) {
                       const [uid, name] = chunk[j];
-                      const cleanMentionName = name.replace(/\s+/g, '');
-                      const mentionText = `@${cleanMentionName} `;
-                      const startIndex = textStr.length;
-                      textStr += mentionText;
-                      
-                      mentionees.push({
-                          index: startIndex,
-                          length: mentionText.length - 1,
-                          type: "user",
-                          userId: uid
-                      });
-                      _names[`user${j}`] = { uid, name: cleanMentionName };
+                      const key = `user${j}`;
+                      textParts.push(`{${key}}`);
+                      substitution[key] = {
+                          type: "mention",
+                          mentionee: {
+                              type: "user",
+                              userId: uid
+                          }
+                      };
+                      _names[key] = name;
                   }
                   
                   messagesToSend.push({
-                      type: "text",
-                      text: textStr, // Do not trim to preserve exact indices
-                      mention: {
-                          mentionees: mentionees
-                      },
+                      type: "textV2",
+                      text: textParts.join(" "),
+                      substitution: substitution,
                       _names: _names
                   });
               }
@@ -4870,17 +4866,17 @@ async function handleEvent(event) {
                   if (errData && errData.details) {
                       errData.details.forEach(d => {
                           if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                              const match = d.property.match(/messages\[(\d+)\]\.mention\.mentionees\[(\d+)\]/);
+                              const match = d.property.match(/messages\[(\d+)\]\.substitution\.([^.]+)\.mentionee/);
                               if (match && match[1] && match[2]) {
                                   if (!badKey || typeof badKey !== 'object') badKey = [];
-                                  badKey.push({ msgIdx: parseInt(match[1], 10), mIdx: parseInt(match[2], 10) });
+                                  badKey.push({ msgIdx: parseInt(match[1], 10), subKey: match[2] });
                                   hasMentionError = true;
                               } else {
-                                  // Fallback regex if LINE SDK changes format
-                                  const fallbackMatch = d.property.match(/mentionees\[(\d+)\]/);
+                                  // Fallback regex
+                                  const fallbackMatch = d.property.match(/substitution\.([^.]+)\.mentionee/);
                                   if (fallbackMatch && fallbackMatch[1]) {
                                       if (!badKey || typeof badKey !== 'object') badKey = [];
-                                      badKey.push({ msgIdx: -1, mIdx: parseInt(fallbackMatch[1], 10) });
+                                      badKey.push({ msgIdx: -1, subKey: fallbackMatch[1] });
                                       hasMentionError = true;
                                   }
                               }
@@ -4891,30 +4887,29 @@ async function handleEvent(event) {
                   if (hasMentionError && badKey && badKey.length > 0) {
                       const retryMessages = JSON.parse(JSON.stringify(messages));
                       
-                      // Sort descending by mIdx so splicing doesn't mess up indices
-                      badKey.sort((a, b) => b.mIdx - a.mIdx);
-                      
-                      badKey.forEach(({ msgIdx, mIdx }) => {
+                      badKey.forEach(({ msgIdx, subKey }) => {
                           if (msgIdx === -1) {
-                              // Apply to all text messages (less accurate but safe)
                               for (let m of retryMessages) {
-                                  if (m.type === 'text' && m.mention && m.mention.mentionees && m.mention.mentionees[mIdx]) {
-                                      m.mention.mentionees.splice(mIdx, 1);
+                                  if (m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
+                                      const uName = (m._names && m._names[subKey]) ? m._names[subKey] : 'User';
+                                      m.text = m.text.replace(`{${subKey}}`, `@${uName}`);
+                                      delete m.substitution[subKey];
                                   }
                               }
                           } else {
-                              // Apply to specific message
                               const m = retryMessages[msgIdx];
-                              if (m && m.type === 'text' && m.mention && m.mention.mentionees && m.mention.mentionees[mIdx]) {
-                                  m.mention.mentionees.splice(mIdx, 1);
+                              if (m && m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
+                                  const uName = (m._names && m._names[subKey]) ? m._names[subKey] : 'User';
+                                  m.text = m.text.replace(`{${subKey}}`, `@${uName}`);
+                                  delete m.substitution[subKey];
                               }
                           }
                       });
                       
-                      // Cleanup empty mentions
                       for (let m of retryMessages) {
-                          if (m.type === 'text' && m.mention && m.mention.mentionees && m.mention.mentionees.length === 0) {
-                              delete m.mention;
+                          if (m.type === 'textV2' && m.substitution && Object.keys(m.substitution).length === 0) {
+                              m.type = 'text'; // Downgrade to standard text if no mentions left
+                              delete m.substitution;
                           }
                       }
                       
