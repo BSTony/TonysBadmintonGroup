@@ -3410,7 +3410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786499779974,
+    "lastActiveTime": 1786576046424,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3455,7 +3455,8 @@
           "Jet",
           "江こう 洋々",
           "陳品婕",
-          "Jenny"
+          "Jenny",
+          "陳俊傑 (Jeremy)"
         ],
         "fee": "230"
       }
@@ -3465,9 +3466,17 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "陳品婕": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Jenny": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "Jenny": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8"
     },
     "history": [
+      {
+        "time": "08/13 07:07",
+        "name": "陳俊傑 (Jeremy)",
+        "operator": "陳俊傑 (Jeremy)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/12 09:56",
         "name": "Jenny",
