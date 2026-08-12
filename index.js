@@ -2573,12 +2573,12 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   for (let j = 0; j < chunk.length; j++) {
                       const [uid, name] = chunk[j];
                       const mentionText = `@${name} `;
-                      const startIndex = textStr.length;
+                      const startIndex = Array.from(textStr).length;
                       textStr += mentionText;
                       
                       mentionees.push({
                           index: startIndex,
-                          length: mentionText.length - 1,
+                          length: Array.from(mentionText).length - 1,
                           type: "user",
                           userId: uid
                       });
