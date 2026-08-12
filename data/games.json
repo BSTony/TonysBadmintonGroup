@@ -3560,5 +3560,54 @@
         "section": "報名名單"
       }
     ]
+  },
+  "1786498163231722": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C073dd061239f9bc2df13af0a1ecb4bdb"
+    ],
+    "gameId": "1786498163231722",
+    "title": "週六 港中 打3小",
+    "date": "8/22 (六)",
+    "time": "09:00~12:00",
+    "location": "南港高中",
+    "fee": "230",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1786498163231,
+    "lastActiveTime": 1786498163231,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "謝東霖 Tony": true,
+      "Kay": true
+    },
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 23,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay"
+        ],
+        "fee": "230"
+      }
+    ]
   }
 }
