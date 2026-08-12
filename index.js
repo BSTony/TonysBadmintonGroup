@@ -4835,104 +4835,107 @@ async function handleEvent(event) {
           });
       };
 
-      // We NEVER consume quota for standard replies!
-      // Only when explicitly pushing to a DIFFERENT group do we use pushMessage.
-      if (targetGid !== gid) {
+      // Helper function for recursive retry
+      const sendWithRetry = async (messages, usePush = false, currentTargetGid = gid) => {
           try {
-              await client.pushMessage(targetGid, getCleanMessages(messagesToSend));
-              const successMsg = isMentionPush ? '場次名單及提醒' : '場次名單';
-              return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 已將${successMsg}推播至群組 ${groupMatch ? groupMatch[1].trim() : targetGid}` });
-          } catch (e) {
-              console.error('Push message failed:', e.originalError?.response?.data || e);
-              const errDetail = JSON.stringify(e.originalError?.response?.data || e.message);
-              return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(()=>null);
-          }
-      } else {
-          // Helper function for recursive retry
-          const sendWithRetry = async (messages) => {
-              try {
+              if (usePush) {
+                  await client.pushMessage(currentTargetGid, getCleanMessages(messages));
+              } else {
                   await client.replyMessage(event.replyToken, getCleanMessages(messages));
-              } catch (e) {
-                  const errData = e.originalError?.response?.data;
-                  
-                  // If replyToken is consumed or we need to push, use pushMessage
-                  const tryPush = async (msgs) => {
-                      await client.pushMessage(gid, getCleanMessages(msgs));
-                  };
+              }
+          } catch (e) {
+              const errData = e.originalError?.response?.data;
+              
+              // If replyToken is consumed and we need to retry, we MUST use pushMessage
+              const tryPush = async (msgs) => {
+                  await client.pushMessage(currentTargetGid, getCleanMessages(msgs));
+              };
 
-                  let hasMentionError = false;
-                  let badKey = null;
-                  
-                  if (errData && errData.details) {
-                      errData.details.forEach(d => {
-                          if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                              const match = d.property.match(/messages\[(\d+)\]\.substitution\.([^.]+)\.mentionee/);
-                              if (match && match[1] && match[2]) {
+              let hasMentionError = false;
+              let badKey = null;
+              
+              if (errData && errData.details) {
+                  // LINE error message often contains the message index: "A message (messages[1]) in the request body is invalid"
+                  let fallbackMsgIdx = -1;
+                  const msgMatch = (errData.message || '').match(/messages\[(\d+)\]/);
+                  if (msgMatch && msgMatch[1]) {
+                      fallbackMsgIdx = parseInt(msgMatch[1], 10);
+                  }
+
+                  errData.details.forEach(d => {
+                      if (d.message === 'The mentioned user is not found in the group.' && d.property) {
+                          // Try full path first: messages[1].substitution["user1"].mentionee
+                          const match = d.property.match(/messages\[(\d+)\]\.substitution\["([^"]+)"\]\.mentionee/) || d.property.match(/messages\[(\d+)\]\.substitution\.([^.]+)\.mentionee/);
+                          if (match && match[1] && match[2]) {
+                              if (!badKey || typeof badKey !== 'object') badKey = [];
+                              badKey.push({ msgIdx: parseInt(match[1], 10), subKey: match[2] });
+                              hasMentionError = true;
+                          } else {
+                              // If property only contains substitution["user1"].mentionee, use fallbackMsgIdx
+                              const fallbackMatch = d.property.match(/substitution\.([^.]+)\.mentionee/) || d.property.match(/substitution\["([^"]+)"\]\.mentionee/);
+                              if (fallbackMatch && fallbackMatch[1]) {
                                   if (!badKey || typeof badKey !== 'object') badKey = [];
-                                  badKey.push({ msgIdx: parseInt(match[1], 10), subKey: match[2] });
+                                  badKey.push({ msgIdx: fallbackMsgIdx, subKey: fallbackMatch[1] });
                                   hasMentionError = true;
-                              } else {
-                                  // Fallback regex
-                                  const fallbackMatch = d.property.match(/substitution\.([^.]+)\.mentionee/);
-                                  if (fallbackMatch && fallbackMatch[1]) {
-                                      if (!badKey || typeof badKey !== 'object') badKey = [];
-                                      badKey.push({ msgIdx: -1, subKey: fallbackMatch[1] });
-                                      hasMentionError = true;
-                                  }
                               }
                           }
-                      });
-                  }
+                      }
+                  });
+              }
+              
+              if (hasMentionError && badKey && badKey.length > 0) {
+                  const retryMessages = JSON.parse(JSON.stringify(messages));
                   
-                  if (hasMentionError && badKey && badKey.length > 0) {
-                      const retryMessages = JSON.parse(JSON.stringify(messages));
-                      
-                      badKey.forEach(({ msgIdx, subKey }) => {
-                          if (msgIdx === -1) {
-                              for (let m of retryMessages) {
-                                  if (m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
-                                      const uName = (m._names && m._names[subKey]) ? m._names[subKey] : 'User';
-                                      m.text = m.text.replace(`{${subKey}}`, `@${uName}`);
-                                      delete m.substitution[subKey];
-                                  }
-                              }
-                          } else {
-                              const m = retryMessages[msgIdx];
-                              if (m && m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
+                  badKey.forEach(({ msgIdx, subKey }) => {
+                      if (msgIdx === -1) {
+                          for (let m of retryMessages) {
+                              if (m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
                                   const uName = (m._names && m._names[subKey]) ? m._names[subKey] : 'User';
                                   m.text = m.text.replace(`{${subKey}}`, `@${uName}`);
                                   delete m.substitution[subKey];
                               }
                           }
-                      });
-                      
-                      for (let m of retryMessages) {
-                          if (m.type === 'textV2' && m.substitution && Object.keys(m.substitution).length === 0) {
-                              m.type = 'text'; // Downgrade to standard text if no mentions left
-                              delete m.substitution;
+                      } else {
+                          const m = retryMessages[msgIdx];
+                          if (m && m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
+                              const uName = (m._names && m._names[subKey]) ? m._names[subKey] : 'User';
+                              m.text = m.text.replace(`{${subKey}}`, `@${uName}`);
+                              delete m.substitution[subKey];
                           }
                       }
-                      
-                      try {
-                          await tryPush(retryMessages);
-                      } catch (retryErr) {
-                          const retryErrData = retryErr.originalError?.response?.data;
-                          if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
-                              // Instead of infinite recursion, we just fallback if it STILL fails after one targeted splice batch
-                              // Or we could let it loop by re-throwing and letting the outer try/catch handle it?
-                              // Actually, recursively calling sendWithRetry is cleaner.
-                              await sendWithRetry(retryMessages);
-                          } else {
-                              fallback(retryErrData);
-                          }
+                  });
+                  
+                  for (let m of retryMessages) {
+                      if (m.type === 'textV2' && m.substitution && Object.keys(m.substitution).length === 0) {
+                          m.type = 'text'; // Downgrade to standard text if no mentions left
+                          delete m.substitution;
                       }
+                  }
+                  
+                  try {
+                      await tryPush(retryMessages);
+                  } catch (retryErr) {
+                      const retryErrData = retryErr.originalError?.response?.data;
+                      if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
+                          // Recursive retry, but MUST use pushMessage since replyToken is likely consumed/expired
+                          await sendWithRetry(retryMessages, true, currentTargetGid);
+                      } else {
+                          fallback(retryErrData);
+                      }
+                  }
+              } else {
+                  // If it's a cross-group push, we should notify the admin in the current group
+                  if (currentTargetGid !== gid) {
+                      const errDetail = JSON.stringify(errData || e.message);
+                      client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(()=>null);
                   } else {
                       fallback(errData || e.message);
                   }
               }
-          };
+          }
+      };
 
-          const fallback = async (errDetail) => {
+      const fallback = async (errDetail) => {
               const errDetailStr = JSON.stringify(errDetail).substring(0, 300);
               const fallbackMessages = messagesToSend.map(m => {
                   if (m.type === 'text' && m.mention) {
@@ -4960,8 +4963,7 @@ async function handleEvent(event) {
               }
           };
 
-          await sendWithRetry(messagesToSend);
-      }
+          await sendWithRetry(messagesToSend, targetGid !== gid, targetGid);
     }
     
     if (text === '超級清空') {
