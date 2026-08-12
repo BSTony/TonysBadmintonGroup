@@ -3627,5 +3627,61 @@
         "fee": "230"
       }
     ]
+  },
+  "1786521232242532": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C073dd061239f9bc2df13af0a1ecb4bdb"
+    ],
+    "gameId": "1786521232242532",
+    "title": "週日 港中 早上",
+    "date": "8/23 (日)",
+    "time": "08:00~12:00",
+    "location": "南港高中",
+    "fee": "",
+    "note": "",
+    "tag": "10-11開冷氣",
+    "active": true,
+    "startTime": 1786521232242,
+    "lastActiveTime": 1786521232242,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "uidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "8-10",
+        "limit": 19,
+        "backupLimit": 5,
+        "fee": "150",
+        "label": "",
+        "list": []
+      },
+      {
+        "title": "10-12",
+        "limit": 12,
+        "backupLimit": 5,
+        "fee": "210",
+        "label": "",
+        "list": []
+      },
+      {
+        "title": "8-12",
+        "limit": 12,
+        "backupLimit": 5,
+        "fee": "320",
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
