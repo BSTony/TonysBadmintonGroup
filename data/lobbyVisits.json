@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2903,
+    "viewCount": 2904,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -11,8 +11,8 @@
       "U3c633bac1ead8ca7a7def805e6f58248": {
         "displayName": "小蔡",
         "firstVisit": 1783184578849,
-        "count": 24,
-        "lastVisit": 1785987791554
+        "count": 25,
+        "lastVisit": 1786550453064
       },
       "U8ecbb1daa2fcb8fb206b82c29052da1e": {
         "displayName": "謝弘傑",
@@ -944,6 +944,11 @@
       }
     },
     "logs": [
+      {
+        "time": 1786550453064,
+        "userId": "U3c633bac1ead8ca7a7def805e6f58248",
+        "displayName": "小蔡"
+      },
       {
         "time": 1786547686618,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
