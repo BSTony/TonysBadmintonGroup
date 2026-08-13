@@ -3606,7 +3606,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1786579466639,
+    "lastActiveTime": 1786581013290,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3621,7 +3621,8 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3635,12 +3636,20 @@
           "謝東霖 Tony",
           "Kay",
           "Jet",
-          "AddieWang"
+          "AddieWang",
+          "楊程鈞"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "08/13 08:30",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/13 08:04",
         "name": "AddieWang",
