@@ -3410,7 +3410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786576046424,
+    "lastActiveTime": 1786588877197,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3456,7 +3456,8 @@
           "江こう 洋々",
           "陳品婕",
           "Jenny",
-          "陳俊傑 (Jeremy)"
+          "陳俊傑 (Jeremy)",
+          "Feng"
         ],
         "fee": "230"
       }
@@ -3467,9 +3468,17 @@
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "陳品婕": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Jenny": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
-      "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8"
+      "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8",
+      "Feng": "Udb7524f513b2d13dd6dfdf56ac134eab"
     },
     "history": [
+      {
+        "time": "08/13 10:41",
+        "name": "Feng",
+        "operator": "Tony Wu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/13 07:07",
         "name": "陳俊傑 (Jeremy)",
