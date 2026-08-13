@@ -3410,7 +3410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786588877197,
+    "lastActiveTime": 1786614346372,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3457,7 +3457,8 @@
           "陳品婕",
           "Jenny",
           "陳俊傑 (Jeremy)",
-          "Feng"
+          "Feng",
+          "Jeff"
         ],
         "fee": "230"
       }
@@ -3469,9 +3470,17 @@
       "陳品婕": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Jenny": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8",
-      "Feng": "Udb7524f513b2d13dd6dfdf56ac134eab"
+      "Feng": "Udb7524f513b2d13dd6dfdf56ac134eab",
+      "Jeff": "U84c4d04ffd16e306f6e4065b33c628d5"
     },
     "history": [
+      {
+        "time": "08/13 17:45",
+        "name": "Jeff",
+        "operator": "蔡富任",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/13 10:41",
         "name": "Feng",
