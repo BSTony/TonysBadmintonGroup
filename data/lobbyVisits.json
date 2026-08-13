@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2931,
+    "viewCount": 2932,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -833,8 +833,9 @@
       "U1902d5e6d155f6dcf1f365f8494d557f": {
         "displayName": "紀霆(Jimmy)",
         "firstVisit": 1785228334684,
-        "count": 1,
-        "lastVisit": 1785228334684
+        "count": 2,
+        "lastVisit": 1786599543678,
+        "pictureUrl": "https://profile.line-scdn.net/0hx3Ff6hgzJxxrHza1s3NZYxtPJHZIbn4OEytqLgsZLHsEf2IaQXBhcl4fKSVRe2JJQnpqLl4acXxnDFB6dUnbKGwvei1WLmVCQXFt_w"
       },
       "Ufe0fe514d1b7b112a3f6910485ae1ce8": {
         "displayName": "Yoshi(王安迪)",
@@ -975,6 +976,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1786599543678,
+        "userId": "U1902d5e6d155f6dcf1f365f8494d557f",
+        "displayName": "紀霆(Jimmy)",
+        "pictureUrl": "https://profile.line-scdn.net/0hx3Ff6hgzJxxrHza1s3NZYxtPJHZIbn4OEytqLgsZLHsEf2IaQXBhcl4fKSVRe2JJQnpqLl4acXxnDFB6dUnbKGwvei1WLmVCQXFt_w"
+      },
       {
         "time": 1786594189447,
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
