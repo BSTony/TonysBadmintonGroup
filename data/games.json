@@ -3633,7 +3633,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1786581013290,
+    "lastActiveTime": 1786631934209,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3649,7 +3649,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "陳沛君": "Uf3a2215c0fc68cd05d651ac0dddf1f27"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3664,12 +3665,20 @@
           "Kay",
           "Jet",
           "AddieWang",
-          "楊程鈞"
+          "楊程鈞",
+          "陳沛君"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "08/13 22:38",
+        "name": "陳沛君",
+        "operator": "陳沛君",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/13 08:30",
         "name": "楊程鈞",
