@@ -3684,7 +3684,7 @@
     "tag": "10-11開冷氣",
     "active": true,
     "startTime": 1786521232242,
-    "lastActiveTime": 1786578397796,
+    "lastActiveTime": 1786581030690,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3695,7 +3695,8 @@
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
-      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3714,7 +3715,9 @@
         "backupLimit": 5,
         "fee": "210",
         "label": "",
-        "list": []
+        "list": [
+          "楊程鈞"
+        ]
       },
       {
         "title": "8-12",
@@ -3730,6 +3733,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/13 08:30",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "08/13 07:46",
         "name": "Jet",
