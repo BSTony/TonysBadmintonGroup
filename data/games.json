@@ -3693,7 +3693,7 @@
     "tag": "10-11開冷氣",
     "active": true,
     "startTime": 1786521232242,
-    "lastActiveTime": 1786583288557,
+    "lastActiveTime": 1786583643791,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3706,7 +3706,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
-      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3740,11 +3741,19 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "Jet"
+          "Jet",
+          "Gary"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/13 09:14",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/13 09:08",
         "name": "林煥杰",
