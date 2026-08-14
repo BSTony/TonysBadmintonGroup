@@ -3735,7 +3735,7 @@
     "tag": "10-11開冷氣",
     "active": true,
     "startTime": 1786521232242,
-    "lastActiveTime": 1786583643791,
+    "lastActiveTime": 1786713086242,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3749,7 +3749,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3784,11 +3785,19 @@
           "謝東霖 Tony",
           "Kay",
           "Jet",
-          "Gary"
+          "Gary",
+          "Chris Chen"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/14 21:11",
+        "name": "Chris Chen",
+        "operator": "Chris Chen",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/13 09:14",
         "name": "Gary",
