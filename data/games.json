@@ -3839,7 +3839,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786694204575,
-    "lastActiveTime": 1786694204575,
+    "lastActiveTime": 1786694743031,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3847,7 +3847,9 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {},
-    "uidMap": {},
+    "uidMap": {
+      "Wayne 吳瑋翔 위상": "U3c44f145460b5671baec6a3f62309c23"
+    },
     "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
@@ -3856,8 +3858,19 @@
         "limit": 20,
         "backupLimit": 5,
         "label": "",
-        "list": [],
+        "list": [
+          "Wayne 吳瑋翔 위상"
+        ],
         "fee": ""
+      }
+    ],
+    "history": [
+      {
+        "time": "08/14 16:05",
+        "name": "Wayne 吳瑋翔 위상",
+        "operator": "Wayne 吳瑋翔 위상",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
