@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2966,
+    "viewCount": 2967,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -23,8 +23,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 598,
-        "lastVisit": 1786703392037,
+        "count": 599,
+        "lastVisit": 1786705992130,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -998,6 +998,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1786705992130,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1786703392037,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -4735,26 +4741,6 @@
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
         "displayName": "謝東霖 Tony",
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      }
-    ]
-  },
-  "7935a5c8-2640-46c9-8248-a33f20982fcd": {
-    "viewCount": 1,
-    "uniqueViewers": {
-      "U84c4d04ffd16e306f6e4065b33c628d5": {
-        "displayName": "蔡富任",
-        "firstVisit": 1786632946626,
-        "count": 1,
-        "lastVisit": 1786632946626,
-        "pictureUrl": "https://profile.line-scdn.net/0hUszqaSkwClxXCBYQiVF0YidYCTZ0eVNOe20RO2ENXTtoPEkDfmwSPmAMUm05MRkKez5Mb2NcVGh1XExvOAYCXwtuCQsTJEtPDS4reT9oKBsVOk1ZOScSW2pUFXA3axEKZy0ZTWFLIi8vVhpyFWxHOiBYJgUxRE5hC19mClI6ZN84Cn0Jem5EP2oOXGnv"
-      }
-    },
-    "logs": [
-      {
-        "time": 1786632946626,
-        "userId": "U84c4d04ffd16e306f6e4065b33c628d5",
-        "displayName": "蔡富任",
-        "pictureUrl": "https://profile.line-scdn.net/0hUszqaSkwClxXCBYQiVF0YidYCTZ0eVNOe20RO2ENXTtoPEkDfmwSPmAMUm05MRkKez5Mb2NcVGh1XExvOAYCXwtuCQsTJEtPDS4reT9oKBsVOk1ZOScSW2pUFXA3axEKZy0ZTWFLIi8vVhpyFWxHOiBYJgUxRE5hC19mClI6ZN84Cn0Jem5EP2oOXGnv"
       }
     ]
   },
