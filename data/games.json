@@ -3551,9 +3551,9 @@
     "date": "8/16 (日)",
     "time": "08:40~11:00",
     "location": "中崙高中",
-    "fee": "250",
+    "fee": "220",
     "note": "",
-    "tag": "1面,6人",
+    "tag": "1面",
     "active": true,
     "startTime": 1786455234104,
     "lastActiveTime": 1786583467918,
@@ -3569,7 +3569,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 6,
+        "limit": 7,
         "backupLimit": 5,
         "label": "",
         "list": [
@@ -3580,7 +3580,7 @@
           "陳呈",
           "徐偉強"
         ],
-        "fee": "250"
+        "fee": "220"
       }
     ],
     "isManualEnded": false,
