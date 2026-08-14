@@ -3839,7 +3839,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786694204575,
-    "lastActiveTime": 1786694774530,
+    "lastActiveTime": 1786694780781,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3861,12 +3861,20 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "jo-ling"
+          "jo-ling",
+          "Buffy"
         ],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "08/14 16:06",
+        "name": "Buffy",
+        "operator": "Buffy",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/14 16:06",
         "name": "Buffy",
