@@ -3823,5 +3823,42 @@
         "section": "8-12"
       }
     ]
+  },
+  "1786694204575710": {
+    "gid": "C62ecad4d0b2baedbaa086555b593b9e9",
+    "targetGids": [
+      "C62ecad4d0b2baedbaa086555b593b9e9"
+    ],
+    "gameId": "1786694204575710",
+    "title": "Test",
+    "date": "8/15 (六)",
+    "time": "18:00~20:00",
+    "location": "南港運動中心",
+    "fee": "",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1786694204575,
+    "lastActiveTime": 1786694204575,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "uidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 20,
+        "backupLimit": 5,
+        "label": "",
+        "list": [],
+        "fee": ""
+      }
+    ]
   }
 }
