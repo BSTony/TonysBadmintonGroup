@@ -3839,7 +3839,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786683420707,
-    "lastActiveTime": 1786683420707,
+    "lastActiveTime": 1786683458962,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3847,7 +3847,9 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {},
-    "uidMap": {},
+    "uidMap": {
+      "jo-ling": "U4c803b98450e7d4ecbabe22a1990e55e"
+    },
     "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
@@ -3856,8 +3858,19 @@
         "limit": 20,
         "backupLimit": 5,
         "label": "",
-        "list": [],
+        "list": [
+          "jo-ling"
+        ],
         "fee": ""
+      }
+    ],
+    "history": [
+      {
+        "time": "08/14 12:57",
+        "name": "jo-ling",
+        "operator": "jo-ling",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
