@@ -3839,7 +3839,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786694204575,
-    "lastActiveTime": 1786694759849,
+    "lastActiveTime": 1786694762637,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3849,7 +3849,8 @@
     "paidMap": {},
     "uidMap": {
       "Wayne 吳瑋翔 위상": "U3c44f145460b5671baec6a3f62309c23",
-      "jo-ling": "U4c803b98450e7d4ecbabe22a1990e55e"
+      "jo-ling": "U4c803b98450e7d4ecbabe22a1990e55e",
+      "Buffy": "U2dbb95e75cba905a0fc98dac27a26211"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3860,12 +3861,20 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "jo-ling"
+          "jo-ling",
+          "Buffy"
         ],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "08/14 16:06",
+        "name": "Buffy",
+        "operator": "Buffy",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/14 16:05",
         "name": "Wayne 吳瑋翔 위상",
