@@ -3556,7 +3556,7 @@
     "tag": "1面",
     "active": true,
     "startTime": 1786455234104,
-    "lastActiveTime": 1786583467918,
+    "lastActiveTime": 1786701840632,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3578,7 +3578,8 @@
           "楊程鈞",
           "Robert",
           "陳呈",
-          "徐偉強"
+          "徐偉強",
+          "Andrew"
         ],
         "fee": "220"
       }
@@ -3588,9 +3589,17 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "Robert": "Uf35f2dc9288c3434a5a19186f900402a",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "徐偉強": "U037afe342197214125f95fd00ebc1f0c"
+      "徐偉強": "U037afe342197214125f95fd00ebc1f0c",
+      "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "history": [
+      {
+        "time": "08/14 18:04",
+        "name": "Andrew",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/13 09:11",
         "name": "徐偉強",
