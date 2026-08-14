@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2977,
+    "viewCount": 2978,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -734,8 +734,9 @@
       "Uf6cc1a1c99610cf704ba970b8959d22c": {
         "displayName": "肉肉",
         "firstVisit": 1784385381907,
-        "count": 3,
-        "lastVisit": 1785560742000
+        "count": 4,
+        "lastVisit": 1786747630547,
+        "pictureUrl": "https://profile.line-scdn.net/0hmMp899V_MmJdQS3uV7pMXC0RMQh-MGtwcyd5BToROFQ3dnc0dCN8BmkUOAdjIyI1I3V_AzpEPlJ_NHdDOFUFRm4Wbi9hEA1vKzsFdDMmBQkwLBVVFCAkUgogPxYILzRpEloABRAjCE4hIhUyFSQTe2ACDA1pIgZ1MRZeNFhzXOEyQ0U3cCd8AWBHZFfl"
       },
       "Ub3fbddfc79aa3e5533b06da553d5bdce": {
         "displayName": "政達",
@@ -1000,6 +1001,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1786747630547,
+        "userId": "Uf6cc1a1c99610cf704ba970b8959d22c",
+        "displayName": "肉肉",
+        "pictureUrl": "https://profile.line-scdn.net/0hmMp899V_MmJdQS3uV7pMXC0RMQh-MGtwcyd5BToROFQ3dnc0dCN8BmkUOAdjIyI1I3V_AzpEPlJ_NHdDOFUFRm4Wbi9hEA1vKzsFdDMmBQkwLBVVFCAkUgogPxYILzRpEloABRAjCE4hIhUyFSQTe2ACDA1pIgZ1MRZeNFhzXOEyQ0U3cCd8AWBHZFfl"
+      },
       {
         "time": 1786723294938,
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
