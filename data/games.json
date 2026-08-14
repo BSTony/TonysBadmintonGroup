@@ -3839,7 +3839,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786694204575,
-    "lastActiveTime": 1786694751141,
+    "lastActiveTime": 1786694759849,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3860,13 +3860,19 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "Wayne 吳瑋翔 위상",
           "jo-ling"
         ],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "08/14 16:05",
+        "name": "Wayne 吳瑋翔 위상",
+        "operator": "Wayne 吳瑋翔 위상",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/14 16:05",
         "name": "jo-ling",
