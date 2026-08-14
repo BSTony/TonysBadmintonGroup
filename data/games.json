@@ -3823,55 +3823,5 @@
         "section": "8-12"
       }
     ]
-  },
-  "1786683420707586": {
-    "gid": "Cbcdb6f157efe79e2aabbdeee09650089",
-    "targetGids": [
-      "Cbcdb6f157efe79e2aabbdeee09650089"
-    ],
-    "gameId": "1786683420707586",
-    "title": "Test",
-    "date": "8/15 (六)",
-    "time": "18:00~20:00",
-    "location": "南港運動中心",
-    "fee": "",
-    "note": "",
-    "tag": "",
-    "active": true,
-    "startTime": 1786683420707,
-    "lastActiveTime": 1786683458962,
-    "scheduleTime": null,
-    "reminderTime": null,
-    "scheduleInput": null,
-    "anonymous": [],
-    "anonymousCount": 0,
-    "levelMap": {},
-    "paidMap": {},
-    "uidMap": {
-      "jo-ling": "U4c803b98450e7d4ecbabe22a1990e55e"
-    },
-    "noteMap": {},
-    "allowUserNoteEdit": true,
-    "sections": [
-      {
-        "title": "報名名單",
-        "limit": 20,
-        "backupLimit": 5,
-        "label": "",
-        "list": [
-          "jo-ling"
-        ],
-        "fee": ""
-      }
-    ],
-    "history": [
-      {
-        "time": "08/14 12:57",
-        "name": "jo-ling",
-        "operator": "jo-ling",
-        "action": "+1",
-        "section": "報名名單"
-      }
-    ]
   }
 }
