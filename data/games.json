@@ -3744,7 +3744,7 @@
     "tag": "10-11開冷氣",
     "active": true,
     "startTime": 1786521232242,
-    "lastActiveTime": 1786713086242,
+    "lastActiveTime": 1786838302509,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3759,7 +3759,8 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
-      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1"
+      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3771,7 +3772,8 @@
         "fee": "150",
         "label": "",
         "list": [
-          "林煥杰"
+          "林煥杰",
+          "ALAN LIU"
         ]
       },
       {
@@ -3800,6 +3802,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/16 07:58",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/14 21:11",
         "name": "Chris Chen",
