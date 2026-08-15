@@ -974,6 +974,36 @@ if (!process.env.LINE_CHANNEL_ACCESS_TOKEN || !process.env.LINE_CHANNEL_SECRET) 
 }
 
 const client = new Client(config);
+const groupMemberCache = new Map(); // `${gid}_${uid}` => { inGroup: boolean, time: number }
+
+async function isUserInTargetGroup(targetGid, uid) {
+  if (!targetGid || !uid) return false;
+  if (targetGid.startsWith('U')) return targetGid === uid; // 1-on-1 chat
+  
+  const cacheKey = `${targetGid}_${uid}`;
+  const cached = groupMemberCache.get(cacheKey);
+  const now = Date.now();
+  if (cached && (now - cached.time < 30 * 60 * 1000)) {
+    return cached.inGroup;
+  }
+
+  try {
+    if (targetGid.startsWith('C')) {
+      await client.getGroupMemberProfile(targetGid, uid);
+      groupMemberCache.set(cacheKey, { inGroup: true, time: now });
+      return true;
+    } else if (targetGid.startsWith('R')) {
+      await client.getRoomMemberProfile(targetGid, uid);
+      groupMemberCache.set(cacheKey, { inGroup: true, time: now });
+      return true;
+    }
+  } catch (err) {
+    groupMemberCache.set(cacheKey, { inGroup: false, time: now });
+    return false;
+  }
+  return false;
+}
+
 const app = express();
 const server = http.createServer(app);
 const { Server } = require('socket.io');
@@ -2318,7 +2348,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
   };
 }
 
-function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble) {
+async function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble) {
       const flexBubbles = (statusBubble && !isMentionPush) ? [statusBubble] : [];
       
       const MAX_ROWS = 8;
@@ -2530,7 +2560,7 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
       const messagesToSend = [carouselMsg];
       
       if (isMentionPush) {
-          const uidsToMention = new Map();
+          const registeredUsers = [];
           for (const g of groupGames) {
               const sections = g.sections && g.sections.length > 0 ? g.sections : [{ list: [] }];
               for (const section of sections) {
@@ -2544,21 +2574,38 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                           if (!uid) {
                               uid = nameToUidMap.get(`${targetGid}_${name}`);
                           }
-                          if (uid) {
-                              uidsToMention.set(uid, name);
-                          }
+                          registeredUsers.push({ uid: uid || null, name });
                       }
                   }
               }
           }
 
-          const uidArray = Array.from(uidsToMention.entries());
-          if (uidArray.length > 0) {
+          // Deduplicate by uid or name
+          const uniquePlayers = [];
+          const seen = new Set();
+          for (const item of registeredUsers) {
+              const key = item.uid ? `uid_${item.uid}` : `name_${item.name}`;
+              if (!seen.has(key)) {
+                  seen.add(key);
+                  uniquePlayers.push(item);
+              }
+          }
+
+          if (uniquePlayers.length > 0) {
+              // Pre-verify which users are active in the target group
+              const verificationResults = await Promise.all(
+                  uniquePlayers.map(async (player) => {
+                      if (!player.uid) return { ...player, inGroup: false };
+                      const inGroup = await isUserInTargetGroup(targetGid, player.uid);
+                      return { ...player, inGroup };
+                  })
+              );
+
               const gameTitles = groupGames.map(g => g.title).filter(Boolean).join('、');
               
               const mentionChunks = [];
-              for (let i = 0; i < uidArray.length; i += 20) {
-                  mentionChunks.push(uidArray.slice(i, i + 20));
+              for (let i = 0; i < verificationResults.length; i += 20) {
+                  mentionChunks.push(verificationResults.slice(i, i + 20));
               }
 
               for (let i = 0; i < mentionChunks.length; i++) {
@@ -2569,32 +2616,47 @@ function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameT
                   let textParts = [prefix];
                   const substitution = {};
                   const _names = {};
+                  let hasAnyMention = false;
+                  let subCounter = 0;
                   
                   for (let j = 0; j < chunk.length; j++) {
-                      const [uid, name] = chunk[j];
-                      const key = `user${j}`;
-                      textParts.push(`{${key}}`);
-                      substitution[key] = {
-                          type: "mention",
-                          mentionee: {
-                              type: "user",
-                              userId: uid
-                          }
-                      };
-                      _names[key] = name;
+                      const player = chunk[j];
+                      if (player.inGroup && player.uid) {
+                          const key = `user${subCounter++}`;
+                          textParts.push(`{${key}}`);
+                          substitution[key] = {
+                              type: "mention",
+                              mentionee: {
+                                  type: "user",
+                                  userId: player.uid
+                              }
+                          };
+                          _names[key] = player.name;
+                          hasAnyMention = true;
+                      } else {
+                          // Not in group or no UID -> output plain text @Name
+                          textParts.push(`@${player.name}`);
+                      }
                   }
                   
-                  messagesToSend.push({
-                      type: "textV2",
-                      text: textParts.join(" "),
-                      substitution: substitution,
-                      _names: _names
-                  });
+                  if (hasAnyMention) {
+                      messagesToSend.push({
+                          type: "textV2",
+                          text: textParts.join(" "),
+                          substitution: substitution,
+                          _names: _names
+                      });
+                  } else {
+                      messagesToSend.push({
+                          type: "text",
+                          text: textParts.join(" ")
+                      });
+                  }
               }
           } else {
               messagesToSend.push({
                   type: "text",
-                  text: "\u26a0\ufe0f \u63a8\u64ad\u63d0\u9192\uff1a\n\u76ee\u524d\u5c1a\u672a\u8a18\u9304\u5230\u4efb\u4f55\u53ef\u6a19\u8a18\u7684\u5831\u540d\u8005 UID\u3002\n\u5efa\u8b70\u8acb\u5831\u540d\u8005\u9700\u7d93\u7531 LIFF \u5927\u5ef3\u5831\u540d\uff0c\u7cfb\u7d71\u624d\u80fd\u8a18\u9304\u5176 LINE ID\u3002"
+                  text: "⚠️ 推播提醒：目前尚無任何報名者名單。"
               });
           }
       }
@@ -4829,7 +4891,7 @@ async function handleEvent(event) {
       const statusBubble = generateStatusBubble(groupGames, liffBaseUrl, cleanText, isPlusMinus);
 
       // Generate the full carousel (Status Bubble + Detail Bubbles + Mentions)
-      const messagesToSend = generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble);
+      const messagesToSend = await generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble);
       
       // Helper function to strip internal properties
       const getCleanMessages = (msgs) => {
