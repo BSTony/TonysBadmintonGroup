@@ -4683,13 +4683,13 @@ async function handleEvent(event) {
           try {
               await client.replyMessage(event.replyToken, msgs);
           } catch (e) {
-              const errData = e.originalError?.response?.data;
+              const errData = e.originalError?.response?.data || e.response?.data || e.data;
               let badKey = null;
-              if (errData && errData.details) {
+              if (errData && errData.details && Array.isArray(errData.details)) {
                   errData.details.forEach(d => {
-                      if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                          const match = d.property.match(/substitution\["?([^"]+)"?\]/);
-                          if (match && match[1]) badKey = match[1];
+                      if (d.property) {
+                          const match = d.property.match(/substitution(?:\[["']?([^"'\]]+)["']?\]|\.([^.\[\]]+))/);
+                          if (match) badKey = match[1] || match[2];
                       }
                   });
               }
@@ -4697,7 +4697,8 @@ async function handleEvent(event) {
                   const retryMsgs = JSON.parse(JSON.stringify(msgs));
                   for (let m of retryMsgs) {
                       if (m.type === 'textV2' && m.substitution && m.substitution[badKey]) {
-                          m.text = m.text.replace(`{${badKey}}`, `@${m._names[badKey]}`);
+                          const uName = (m._names && m._names[badKey]) ? m._names[badKey] : 'User';
+                          m.text = m.text.replace(new RegExp(`\\{${badKey}\\}`, 'g'), `@${uName}`);
                           delete m.substitution[badKey];
                           if (Object.keys(m.substitution).length === 0) {
                               m.type = 'text';
@@ -4835,8 +4836,21 @@ async function handleEvent(event) {
           });
       };
 
+      // Helper function to convert textV2 with substitution to standard text
+      const convertTextV2ToPlainText = (msg) => {
+          if (!msg || msg.type !== 'textV2') return msg;
+          let plainText = msg.text || '';
+          if (msg.substitution) {
+              Object.keys(msg.substitution).forEach(key => {
+                  const uName = (msg._names && msg._names[key]) ? msg._names[key] : 'User';
+                  plainText = plainText.replace(new RegExp(`\\{${key}\\}`, 'g'), `@${uName}`);
+              });
+          }
+          return { type: 'text', text: plainText };
+      };
+
       // Helper function for recursive retry
-      const sendWithRetry = async (messages, usePush = false, currentTargetGid = gid) => {
+      const sendWithRetry = async (messages, usePush = false, currentTargetGid = gid, retryCount = 0) => {
           try {
               if (usePush) {
                   await client.pushMessage(currentTargetGid, getCleanMessages(messages));
@@ -4844,18 +4858,12 @@ async function handleEvent(event) {
                   await client.replyMessage(event.replyToken, getCleanMessages(messages));
               }
           } catch (e) {
-              const errData = e.originalError?.response?.data;
+              const errData = e.originalError?.response?.data || e.response?.data || e.data;
               
-              // If replyToken is consumed and we need to retry, we MUST use pushMessage
-              const tryPush = async (msgs) => {
-                  await client.pushMessage(currentTargetGid, getCleanMessages(msgs));
-              };
-
               let hasMentionError = false;
-              let badKey = null;
+              const badKeys = [];
               
-              if (errData && errData.details) {
-                  // LINE error message often contains the message index: "A message (messages[1]) in the request body is invalid"
+              if (errData && errData.details && Array.isArray(errData.details)) {
                   let fallbackMsgIdx = -1;
                   const msgMatch = (errData.message || '').match(/messages\[(\d+)\]/);
                   if (msgMatch && msgMatch[1]) {
@@ -4863,107 +4871,122 @@ async function handleEvent(event) {
                   }
 
                   errData.details.forEach(d => {
-                      if (d.message === 'The mentioned user is not found in the group.' && d.property) {
-                          // Try full path first: messages[1].substitution["user1"].mentionee
-                          const match = d.property.match(/messages\[(\d+)\]\.substitution\["([^"]+)"\]\.mentionee/) || d.property.match(/messages\[(\d+)\]\.substitution\.([^.]+)\.mentionee/);
-                          if (match && match[1] && match[2]) {
-                              if (!badKey || typeof badKey !== 'object') badKey = [];
-                              badKey.push({ msgIdx: parseInt(match[1], 10), subKey: match[2] });
-                              hasMentionError = true;
-                          } else {
-                              // If property only contains substitution["user1"].mentionee, use fallbackMsgIdx
-                              const fallbackMatch = d.property.match(/substitution\.([^.]+)\.mentionee/) || d.property.match(/substitution\["([^"]+)"\]\.mentionee/);
-                              if (fallbackMatch && fallbackMatch[1]) {
-                                  if (!badKey || typeof badKey !== 'object') badKey = [];
-                                  badKey.push({ msgIdx: fallbackMsgIdx, subKey: fallbackMatch[1] });
-                                  hasMentionError = true;
+                      const isMentionIssue = (d.message && (
+                          d.message.toLowerCase().includes('mention') ||
+                          d.message.toLowerCase().includes('not found') ||
+                          d.message.toLowerCase().includes('invalid') ||
+                          d.message.toLowerCase().includes('user')
+                      )) || (d.property && (
+                          d.property.includes('substitution') ||
+                          d.property.includes('mention')
+                      ));
+
+                      if (isMentionIssue && d.property) {
+                          hasMentionError = true;
+                          let msgIdx = fallbackMsgIdx;
+                          const msgIdxMatch = d.property.match(/messages\[(\d+)\]/);
+                          if (msgIdxMatch && msgIdxMatch[1]) {
+                              msgIdx = parseInt(msgIdxMatch[1], 10);
+                          }
+                          
+                          const subKeyMatch = d.property.match(/substitution(?:\[["']?([^"'\]]+)["']?\]|\.([^.\[\]]+))/);
+                          if (subKeyMatch) {
+                              const subKey = subKeyMatch[1] || subKeyMatch[2];
+                              if (subKey) {
+                                  badKeys.push({ msgIdx, subKey });
                               }
                           }
                       }
                   });
               }
               
-              if (hasMentionError && badKey && badKey.length > 0) {
+              if (!hasMentionError && errData && typeof errData.message === 'string' && (errData.message.includes('substitution') || errData.message.includes('mention'))) {
+                  hasMentionError = true;
+              }
+
+              // Retry limit to avoid infinite loop (max 30 retries)
+              if (hasMentionError && retryCount < 30) {
                   const retryMessages = JSON.parse(JSON.stringify(messages));
                   
-                  badKey.forEach(({ msgIdx, subKey }) => {
-                      if (msgIdx === -1) {
-                          for (let m of retryMessages) {
-                              if (m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
+                  if (badKeys.length > 0) {
+                      badKeys.forEach(({ msgIdx, subKey }) => {
+                          if (msgIdx === -1) {
+                              for (let m of retryMessages) {
+                                  if (m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
+                                      const uName = (m._names && m._names[subKey]) ? m._names[subKey] : 'User';
+                                      m.text = m.text.replace(new RegExp(`\\{${subKey}\\}`, 'g'), `@${uName}`);
+                                      delete m.substitution[subKey];
+                                  }
+                              }
+                          } else {
+                              const m = retryMessages[msgIdx];
+                              if (m && m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
                                   const uName = (m._names && m._names[subKey]) ? m._names[subKey] : 'User';
-                                  m.text = m.text.replace(`{${subKey}}`, `@${uName}`);
+                                  m.text = m.text.replace(new RegExp(`\\{${subKey}\\}`, 'g'), `@${uName}`);
                                   delete m.substitution[subKey];
                               }
                           }
-                      } else {
-                          const m = retryMessages[msgIdx];
-                          if (m && m.type === 'textV2' && m.substitution && m.substitution[subKey]) {
-                              const uName = (m._names && m._names[subKey]) ? m._names[subKey] : 'User';
-                              m.text = m.text.replace(`{${subKey}}`, `@${uName}`);
-                              delete m.substitution[subKey];
+                      });
+                  } else {
+                      for (let i = 0; i < retryMessages.length; i++) {
+                          if (retryMessages[i].type === 'textV2') {
+                              retryMessages[i] = convertTextV2ToPlainText(retryMessages[i]);
                           }
                       }
-                  });
+                  }
                   
                   for (let m of retryMessages) {
-                      if (m.type === 'textV2' && m.substitution && Object.keys(m.substitution).length === 0) {
-                          m.type = 'text'; // Downgrade to standard text if no mentions left
+                      if (m.type === 'textV2' && (!m.substitution || Object.keys(m.substitution).length === 0)) {
+                          m.type = 'text';
                           delete m.substitution;
                       }
                   }
                   
-                  try {
-                      await tryPush(retryMessages);
-                  } catch (retryErr) {
-                      const retryErrData = retryErr.originalError?.response?.data;
-                      if (retryErrData && retryErrData.details && retryErrData.details.some(d => d.message === 'The mentioned user is not found in the group.')) {
-                          // Recursive retry, but MUST use pushMessage since replyToken is likely consumed/expired
-                          await sendWithRetry(retryMessages, true, currentTargetGid);
-                      } else {
-                          fallback(retryErrData);
-                      }
-                  }
+                  return await sendWithRetry(retryMessages, true, currentTargetGid, retryCount + 1);
+              }
+
+              if (currentTargetGid !== gid) {
+                  const errDetail = JSON.stringify(errData || e.message);
+                  client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(() => null);
               } else {
-                  // If it's a cross-group push, we should notify the admin in the current group
-                  if (currentTargetGid !== gid) {
-                      const errDetail = JSON.stringify(errData || e.message);
-                      client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(()=>null);
-                  } else {
-                      fallback(errData || e.message);
-                  }
+                  await fallback(errData || e.message);
               }
           }
       };
 
       const fallback = async (errDetail) => {
-              const errDetailStr = JSON.stringify(errDetail).substring(0, 300);
-              const fallbackMessages = messagesToSend.map(m => {
-                  if (m.type === 'text' && m.mention) {
-                      const plainText = m.text;
-                      return { type: 'text', text: plainText + '\n(標記全數失敗，已轉換為純文字)' };
-                  }
-                  if (m.type === 'flex') {
-                      // Flex message failed - convert to plain text summary
-                      const games = groupGames.map(g => {
-                          let totalLen = 0;
-                          let totalLimit = 0;
-                          if (g.sections) g.sections.forEach(s => { totalLen += (s.list||[]).length; totalLimit += (s.limit||0); });
-                          return `🏸 ${g.title}：${totalLen}${totalLimit > 0 ? '/'+totalLimit : ''}人`;
-                      });
-                      return { type: 'text', text: '📋 接龍狀況（字卡顯示失敗，改以純文字）\n' + games.join('\n') };
-                  }
-                  return m;
-              });
-              console.log(`[ERROR] 字卡/標記發送異常。\n除錯資訊: ${errDetailStr}\nWebhook UID: ${event.source.userId}`);
-              try {
-                  await client.pushMessage(gid, getCleanMessages(fallbackMessages));
-              } catch (e2) {
-                  console.log(`[ERROR] fallback push failed: ${e2.message}\nerrDetail: ${errDetailStr}`);
-                  recordSystemLog('系統', 'Webhook', '字卡發送失敗', e2);
+          const errDetailStr = JSON.stringify(errDetail).substring(0, 300);
+          const fallbackMessages = messagesToSend.map(m => {
+              if (m.type === 'textV2') {
+                  return convertTextV2ToPlainText(m);
               }
-          };
+              if (m.type === 'text' && m.mention) {
+                  const copy = { ...m };
+                  delete copy.mention;
+                  return copy;
+              }
+              if (m.type === 'flex') {
+                  // Flex message failed - convert to plain text summary
+                  const games = groupGames.map(g => {
+                      let totalLen = 0;
+                      let totalLimit = 0;
+                      if (g.sections) g.sections.forEach(s => { totalLen += (s.list||[]).length; totalLimit += (s.limit||0); });
+                      return `🏸 ${g.title}：${totalLen}${totalLimit > 0 ? '/'+totalLimit : ''}人`;
+                  });
+                  return { type: 'text', text: '📋 接龍狀況（字卡顯示失敗，改以純文字）\n' + games.join('\n') };
+              }
+              return m;
+          });
+          console.log(`[ERROR] 字卡/標記發送異常。\n除錯資訊: ${errDetailStr}\nWebhook UID: ${event.source.userId}`);
+          try {
+              await client.pushMessage(gid, getCleanMessages(fallbackMessages));
+          } catch (e2) {
+              console.log(`[ERROR] fallback push failed: ${e2.message}\nerrDetail: ${errDetailStr}`);
+              recordSystemLog('系統', 'Webhook', '字卡發送失敗', e2);
+          }
+      };
 
-          await sendWithRetry(messagesToSend, targetGid !== gid, targetGid);
+      await sendWithRetry(messagesToSend, targetGid !== gid, targetGid);
     }
     
     if (text === '超級清空') {

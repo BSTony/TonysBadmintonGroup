@@ -9,3 +9,5 @@ prod_*.json
 restore_payload.json
 data/games_old.json
 data/systemLogs.json
+check_history.js
+find_commit.js
