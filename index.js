@@ -4742,6 +4742,10 @@ async function handleEvent(event) {
           return client.replyMessage(event.replyToken, { type: 'text', text: `✅ 廣播已成功發送至群組 ${code}！` });
         }
       } catch (err) {
+        const errData = err.originalError?.response?.data || err.response?.data || err.data;
+        if (errData && typeof errData.message === 'string' && errData.message.toLowerCase().includes('monthly limit')) {
+          return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 廣播發送失敗：您的 LINE 官方帳號本月免費主動推播額度（Push Message）已達上限！請至 LINE Official Account Manager 後台升級方案。` });
+        }
         return client.replyMessage(event.replyToken, { type: 'text', text: `❌ 廣播發送失敗，可能是機器人不在目標群組中，或是無權限發言。` });
       }
       return null;
@@ -4945,6 +4949,19 @@ async function handleEvent(event) {
                   return await sendWithRetry(retryMessages, true, currentTargetGid, retryCount + 1);
               }
 
+              const isMonthlyLimit = errData && (
+                  (typeof errData.message === 'string' && errData.message.toLowerCase().includes('monthly limit')) ||
+                  (Array.isArray(errData.details) && errData.details.some(d => (d.message || '').toLowerCase().includes('monthly limit')))
+              );
+
+              if (isMonthlyLimit) {
+                  recordSystemLog('系統', 'LINE API 額度', 'LINE 官方帳號本月主動推播額度 (Push Message) 已用盡', errData);
+                  if (currentTargetGid !== gid || usePush) {
+                      client.replyMessage(event.replyToken, { type: 'text', text: `⚠️ 發送失敗：LINE 官方帳號本月免費主動推播額度（Push Message）已達上限！請至 LINE Official Account Manager 後台升級方案，或待下個月初重置。` }).catch(() => null);
+                  }
+                  return;
+              }
+
               if (currentTargetGid !== gid) {
                   const errDetail = JSON.stringify(errData || e.message);
                   client.replyMessage(event.replyToken, { type: 'text', text: `❌ 推播失敗，錯誤內容：\n${errDetail}` }).catch(() => null);
@@ -4956,6 +4973,12 @@ async function handleEvent(event) {
 
       const fallback = async (errDetail) => {
           const errDetailStr = JSON.stringify(errDetail).substring(0, 300);
+          
+          if (errDetailStr.toLowerCase().includes('monthly limit')) {
+              recordSystemLog('系統', 'LINE API 額度', 'LINE 官方帳號本月主動推播額度 (Push Message) 已用盡', errDetail);
+              return;
+          }
+
           const fallbackMessages = messagesToSend.map(m => {
               if (m.type === 'textV2') {
                   return convertTextV2ToPlainText(m);
@@ -4981,8 +5004,14 @@ async function handleEvent(event) {
           try {
               await client.pushMessage(gid, getCleanMessages(fallbackMessages));
           } catch (e2) {
-              console.log(`[ERROR] fallback push failed: ${e2.message}\nerrDetail: ${errDetailStr}`);
-              recordSystemLog('系統', 'Webhook', '字卡發送失敗', e2);
+              const e2Data = e2.originalError?.response?.data || e2.response?.data || e2.data;
+              const isE2Limit = e2Data && typeof e2Data.message === 'string' && e2Data.message.toLowerCase().includes('monthly limit');
+              if (isE2Limit) {
+                  recordSystemLog('系統', 'LINE API 額度', 'LINE 官方帳號本月主動推播額度 (Push Message) 已用盡', e2Data);
+              } else {
+                  console.log(`[ERROR] fallback push failed: ${e2.message}\nerrDetail: ${errDetailStr}`);
+                  recordSystemLog('系統', 'Webhook', '字卡發送失敗', e2);
+              }
           }
       };
 
