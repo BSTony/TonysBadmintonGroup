@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 2995,
+    "viewCount": 2997,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -433,8 +433,9 @@
       "Ubf312b4cd3bdb90efe9e5e8ec6c86f10": {
         "displayName": "吳冠宏",
         "firstVisit": 1783563633169,
-        "count": 5,
-        "lastVisit": 1784088820148
+        "count": 6,
+        "lastVisit": 1786804462457,
+        "pictureUrl": "https://profile.line-scdn.net/0hD5tfMQg4GxpZHwTiTSxlJClPGHB6bkIIfCxWfDlPTSw0L1tNcy1Tej9MQCljKAscd3oDdGVLQy17Wh8FDg4odTtPOmINLRgzJQ0DPRAXOFU0VlsMHhxQLitHR2gdfTUUDh46CQJMQnc4bwMZPisoHR9HK286SRo0Jkh3TFwtdZk2HWxPdHlVeWQZTS_h"
       },
       "U9904ed725b1f420b8718791594e3756b": {
         "displayName": "偉舫",
@@ -738,8 +739,8 @@
       "Uf6cc1a1c99610cf704ba970b8959d22c": {
         "displayName": "肉肉",
         "firstVisit": 1784385381907,
-        "count": 4,
-        "lastVisit": 1786747630547,
+        "count": 5,
+        "lastVisit": 1786804809800,
         "pictureUrl": "https://profile.line-scdn.net/0hmMp899V_MmJdQS3uV7pMXC0RMQh-MGtwcyd5BToROFQ3dnc0dCN8BmkUOAdjIyI1I3V_AzpEPlJ_NHdDOFUFRm4Wbi9hEA1vKzsFdDMmBQkwLBVVFCAkUgogPxYILzRpEloABRAjCE4hIhUyFSQTe2ACDA1pIgZ1MRZeNFhzXOEyQ0U3cCd8AWBHZFfl"
       },
       "Ub3fbddfc79aa3e5533b06da553d5bdce": {
@@ -1007,6 +1008,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1786804809800,
+        "userId": "Uf6cc1a1c99610cf704ba970b8959d22c",
+        "displayName": "肉肉",
+        "pictureUrl": "https://profile.line-scdn.net/0hmMp899V_MmJdQS3uV7pMXC0RMQh-MGtwcyd5BToROFQ3dnc0dCN8BmkUOAdjIyI1I3V_AzpEPlJ_NHdDOFUFRm4Wbi9hEA1vKzsFdDMmBQkwLBVVFCAkUgogPxYILzRpEloABRAjCE4hIhUyFSQTe2ACDA1pIgZ1MRZeNFhzXOEyQ0U3cCd8AWBHZFfl"
+      },
+      {
+        "time": 1786804462457,
+        "userId": "Ubf312b4cd3bdb90efe9e5e8ec6c86f10",
+        "displayName": "吳冠宏",
+        "pictureUrl": "https://profile.line-scdn.net/0hD5tfMQg4GxpZHwTiTSxlJClPGHB6bkIIfCxWfDlPTSw0L1tNcy1Tej9MQCljKAscd3oDdGVLQy17Wh8FDg4odTtPOmINLRgzJQ0DPRAXOFU0VlsMHhxQLitHR2gdfTUUDh46CQJMQnc4bwMZPisoHR9HK286SRo0Jkh3TFwtdZk2HWxPdHlVeWQZTS_h"
+      },
       {
         "time": 1786783125160,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
