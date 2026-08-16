@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3012,
+    "viewCount": 3015,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -108,8 +108,8 @@
       "Ub2e84850d9446141bcb1ae89ec450821": {
         "displayName": "林煥杰",
         "firstVisit": 1783228203505,
-        "count": 38,
-        "lastVisit": 1786838308174,
+        "count": 39,
+        "lastVisit": 1786845909249,
         "pictureUrl": "https://profile.line-scdn.net/0hxdPS2trOJ0t9KjRJ6D1ZNA16JCFeW35ZUE9oLEAocHIVSmdKBR87K08icX8TSjceUklrJU8if35xOVAtY3zbf3oaenpAG2UVV0RtqA"
       },
       "U7977ee57751b21a1fb17ddbb180444b3": {
@@ -128,8 +128,9 @@
       "Ua698eb94f633310ce3b6cf6f34265adb": {
         "displayName": "煜翔Sean",
         "firstVisit": 1783229120228,
-        "count": 96,
-        "lastVisit": 1786027268020
+        "count": 97,
+        "lastVisit": 1786846289594,
+        "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
       },
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
@@ -167,8 +168,8 @@
       "U9d06cac35df59cb7e460b83e88d303cf": {
         "displayName": "ALAN LIU",
         "firstVisit": 1783233473481,
-        "count": 12,
-        "lastVisit": 1786838279273,
+        "count": 13,
+        "lastVisit": 1786846080263,
         "pictureUrl": "https://profile.line-scdn.net/0haxDLakDfPldpNSFnCTlAaRllPT1KRGdFRAAkZQhnaTNQUH0FRQd1ZF5iY2JQUH0ITVQlOFwzNG9LbCB5GVMiQTR3aQcPYwVdOgQjalxnOBwrQRwCRSklZjcxIBpIDA52MDstSg5oPhcSWg9JMQM4aBtLACMAVxpyHmJSAWwHUNQGN0kCRFNwNFQzaGLR"
       },
       "U799d4a509b3c76b76c249151f5a3f690": {
@@ -1016,6 +1017,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1786846289594,
+        "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
+        "displayName": "煜翔Sean",
+        "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
+      },
+      {
+        "time": 1786846080263,
+        "userId": "U9d06cac35df59cb7e460b83e88d303cf",
+        "displayName": "ALAN LIU",
+        "pictureUrl": "https://profile.line-scdn.net/0haxDLakDfPldpNSFnCTlAaRllPT1KRGdFRAAkZQhnaTNQUH0FRQd1ZF5iY2JQUH0ITVQlOFwzNG9LbCB5GVMiQTR3aQcPYwVdOgQjalxnOBwrQRwCRSklZjcxIBpIDA52MDstSg5oPhcSWg9JMQM4aBtLACMAVxpyHmJSAWwHUNQGN0kCRFNwNFQzaGLR"
+      },
+      {
+        "time": 1786845909249,
+        "userId": "Ub2e84850d9446141bcb1ae89ec450821",
+        "displayName": "林煥杰",
+        "pictureUrl": "https://profile.line-scdn.net/0hxdPS2trOJ0t9KjRJ6D1ZNA16JCFeW35ZUE9oLEAocHIVSmdKBR87K08icX8TSjceUklrJU8if35xOVAtY3zbf3oaenpAG2UVV0RtqA"
+      },
       {
         "time": 1786845599642,
         "userId": "U487e8a8976a1c65af4311f4b3f842a9c",
