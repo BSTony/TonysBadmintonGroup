@@ -3410,7 +3410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786843922492,
+    "lastActiveTime": 1786881885426,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3458,7 +3458,8 @@
           "Jenny",
           "陳俊傑 (Jeremy)",
           "Feng",
-          "wei"
+          "wei",
+          "Matt孟錡"
         ],
         "fee": "230"
       }
@@ -3472,9 +3473,17 @@
       "陳俊傑 (Jeremy)": "Ub88763e6825e6fb9bdd1db3e80f2c7e8",
       "Feng": "Udb7524f513b2d13dd6dfdf56ac134eab",
       "Jeff": "U84c4d04ffd16e306f6e4065b33c628d5",
-      "wei": "Ubbef4e0a6cc32f9629b0d1adde897b9e"
+      "wei": "Ubbef4e0a6cc32f9629b0d1adde897b9e",
+      "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205"
     },
     "history": [
+      {
+        "time": "08/16 20:04",
+        "name": "Matt孟錡",
+        "operator": "Matt孟錡",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/16 09:32",
         "name": "wei",
