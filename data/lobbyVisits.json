@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3032,
+    "viewCount": 3035,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -23,15 +23,16 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 608,
-        "lastVisit": 1786885182546,
+        "count": 609,
+        "lastVisit": 1786885242681,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
         "displayName": "Sammy Su",
         "firstVisit": 1783207176980,
-        "count": 9,
-        "lastVisit": 1786027644205
+        "count": 10,
+        "lastVisit": 1786888095787,
+        "pictureUrl": "https://profile.line-scdn.net/0hLDaGz3uSE2tMPgxb931tFDxuEAFvT0p5aVhYD3A7H192WlI6YFtZCHFrSll2XF1qZFBdCX4_RAhALWQNUmjvX0sOTlpxD1E1ZlBZiA"
       },
       "Uec617dedcd37cd4c4e1d6afb526819d1": {
         "displayName": "Chris Chen",
@@ -800,8 +801,8 @@
       "U037afe342197214125f95fd00ebc1f0c": {
         "displayName": "徐偉強",
         "firstVisit": 1784857660176,
-        "count": 5,
-        "lastVisit": 1786838244642,
+        "count": 6,
+        "lastVisit": 1786885955427,
         "pictureUrl": "https://profile.line-scdn.net/0huMoSsYw0KmJCKjtzyt9UHTJ6KQhhW3Nwak1tAnB-fQEoTj1nPEhnVyd-J1B5TWtgOU1kVyV_J1FOOV0EXHzWVkUad1N_G2g8aERggQ"
       },
       "U284a88542d312030d1a8b8479ef7ca53": {
@@ -1029,6 +1030,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1786888095787,
+        "userId": "U092196c10fe7e15591482c6b7942a147",
+        "displayName": "Sammy Su",
+        "pictureUrl": "https://profile.line-scdn.net/0hLDaGz3uSE2tMPgxb931tFDxuEAFvT0p5aVhYD3A7H192WlI6YFtZCHFrSll2XF1qZFBdCX4_RAhALWQNUmjvX0sOTlpxD1E1ZlBZiA"
+      },
+      {
+        "time": 1786885955427,
+        "userId": "U037afe342197214125f95fd00ebc1f0c",
+        "displayName": "徐偉強",
+        "pictureUrl": "https://profile.line-scdn.net/0huMoSsYw0KmJCKjtzyt9UHTJ6KQhhW3Nwak1tAnB-fQEoTj1nPEhnVyd-J1B5TWtgOU1kVyV_J1FOOV0EXHzWVkUad1N_G2g8aERggQ"
+      },
+      {
+        "time": 1786885242681,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1786885182546,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -5207,6 +5226,26 @@
         "userId": "U2dbb95e75cba905a0fc98dac27a26211",
         "displayName": "Buffy",
         "pictureUrl": "https://profile.line-scdn.net/0hzj7JKTA2JUUaMwzFDfdbOmpjJi85QnxXP1duJS82KXEiBmobNAFpdi1me3IvVjdEZVBvJH1gLnwWIFIjBGXZcR0DeHQnAmcbMF1vpg"
+      }
+    ]
+  },
+  "497b5c9a-1c62-4f30-b829-f3c13f52aab9": {
+    "viewCount": 1,
+    "uniqueViewers": {
+      "U092196c10fe7e15591482c6b7942a147": {
+        "displayName": "Sammy Su",
+        "firstVisit": 1786888084004,
+        "count": 1,
+        "lastVisit": 1786888084004,
+        "pictureUrl": "https://profile.line-scdn.net/0hLDaGz3uSE2tMPgxb931tFDxuEAFvT0p5aVhYD3A7H192WlI6YFtZCHFrSll2XF1qZFBdCX4_RAhALWQNUmjvX0sOTlpxD1E1ZlBZiA"
+      }
+    },
+    "logs": [
+      {
+        "time": 1786888084004,
+        "userId": "U092196c10fe7e15591482c6b7942a147",
+        "displayName": "Sammy Su",
+        "pictureUrl": "https://profile.line-scdn.net/0hLDaGz3uSE2tMPgxb931tFDxuEAFvT0p5aVhYD3A7H192WlI6YFtZCHFrSll2XF1qZFBdCX4_RAhALWQNUmjvX0sOTlpxD1E1ZlBZiA"
       }
     ]
   }
