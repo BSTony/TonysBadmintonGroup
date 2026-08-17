@@ -3645,7 +3645,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1786946263329,
+    "lastActiveTime": 1786946406684,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3664,7 +3664,8 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "陳沛君": "Uf3a2215c0fc68cd05d651ac0dddf1f27",
       "俊吉": "U9a1ff0a8477529c49db5bca1e7313bd0",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "登": "U203b76fe44ff1d74c53c21e5547aea27"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3682,12 +3683,20 @@
           "楊程鈞",
           "陳沛君",
           "俊吉",
-          "陳呈"
+          "陳呈",
+          "登"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/17 14:00",
+        "name": "登",
+        "operator": "登登登登～",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/17 13:57",
         "name": "陳呈",
