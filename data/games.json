@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786973990152,
+    "lastActiveTime": 1786982249798,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3475,7 +3475,8 @@
           "Emily",
           "莎莎",
           "Timmon",
-          "林煥杰"
+          "林煥杰",
+          "Iven"
         ],
         "fee": "230"
       }
@@ -3497,9 +3498,17 @@
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "莎莎": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "Timmon": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "Iven": "U7e762af3061a46f6a7e212cfc0afcb8f"
     },
     "history": [
+      {
+        "time": "08/17 23:57",
+        "name": "Iven",
+        "operator": "Iven",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/17 21:39",
         "name": "林煥杰",
