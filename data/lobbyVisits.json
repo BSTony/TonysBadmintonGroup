@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3065,
+    "viewCount": 3067,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -522,8 +522,8 @@
       "Uf3a2215c0fc68cd05d651ac0dddf1f27": {
         "displayName": "陳沛君",
         "firstVisit": 1783660394217,
-        "count": 13,
-        "lastVisit": 1786631913189,
+        "count": 14,
+        "lastVisit": 1786939324397,
         "pictureUrl": "https://profile.line-scdn.net/0hndhUf6BQMUtFLBvqkHlPNDV8MiFmXWhZOUN4KXl5PHxwT3caO00qfnIkaykvTCUUax56fnl4Oy9JP0YtW3rNf0IcbHp4HXMVb0J7qA"
       },
       "U98e70298aa928f28a3cbf5daa199273f": {
@@ -584,8 +584,8 @@
       "Ua4c9b87ae0f49f0e264f14642944a52e": {
         "displayName": "Chen H.R.",
         "firstVisit": 1783822652122,
-        "count": 83,
-        "lastVisit": 1786926890316,
+        "count": 84,
+        "lastVisit": 1786939355962,
         "pictureUrl": "https://profile.line-scdn.net/0ht-ExTO7jKwJoATcw3mhVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
       },
       "U3d8fd8b2d2271e0f6f2f4f50e1475c12": {
@@ -1047,6 +1047,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1786939355962,
+        "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
+        "displayName": "Chen H.R.",
+        "pictureUrl": "https://profile.line-scdn.net/0ht-ExTO7jKwJoATcw3mhVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
+      },
+      {
+        "time": 1786939324397,
+        "userId": "Uf3a2215c0fc68cd05d651ac0dddf1f27",
+        "displayName": "陳沛君",
+        "pictureUrl": "https://profile.line-scdn.net/0hndhUf6BQMUtFLBvqkHlPNDV8MiFmXWhZOUN4KXl5PHxwT3caO00qfnIkaykvTCUUax56fnl4Oy9JP0YtW3rNf0IcbHp4HXMVb0J7qA"
+      },
       {
         "time": 1786936888102,
         "userId": "Ud71ec87b4fb1c0235108d7c13d175ca1",
