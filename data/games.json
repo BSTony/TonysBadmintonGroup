@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786972729385,
+    "lastActiveTime": 1786973990152,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3474,7 +3474,8 @@
           "Winnie",
           "Emily",
           "莎莎",
-          "Timmon"
+          "Timmon",
+          "林煥杰"
         ],
         "fee": "230"
       }
@@ -3495,9 +3496,17 @@
       "Emily": "U33c39e68987a32660ebf39db4534c567",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "莎莎": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "Timmon": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+      "Timmon": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
     },
     "history": [
+      {
+        "time": "08/17 21:39",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/17 21:18",
         "name": "Matt孟錡",
