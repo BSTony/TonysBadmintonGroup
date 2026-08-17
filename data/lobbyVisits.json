@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3041,
+    "viewCount": 3042,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1024,12 +1024,18 @@
       "Ufeffc5c0cae7cc79508153ae07973449": {
         "displayName": "洪邦邦",
         "firstVisit": 1786879995673,
-        "count": 1,
-        "lastVisit": 1786879995673,
+        "count": 2,
+        "lastVisit": 1786921573231,
         "pictureUrl": "https://profile.line-scdn.net/0hhShfNDH1N3xFHxptE1ZJAzVPNBZmbm5ub3h8TXZNPRxwKXJ4b3F_HnEWPkp8J3YtO398EyUYa0hJDEAaW0nLSEIvak14LnUib3F9nw"
       }
     },
     "logs": [
+      {
+        "time": 1786921573231,
+        "userId": "Ufeffc5c0cae7cc79508153ae07973449",
+        "displayName": "洪邦邦",
+        "pictureUrl": "https://profile.line-scdn.net/0hhShfNDH1N3xFHxptE1ZJAzVPNBZmbm5ub3h8TXZNPRxwKXJ4b3F_HnEWPkp8J3YtO398EyUYa0hJDEAaW0nLSEIvak14LnUib3F9nw"
+      },
       {
         "time": 1786912471363,
         "userId": "U9a1ff0a8477529c49db5bca1e7313bd0",
