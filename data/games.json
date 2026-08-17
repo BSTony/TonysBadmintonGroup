@@ -3680,7 +3680,7 @@
     "tag": "10-11開冷氣",
     "active": true,
     "startTime": 1786521232242,
-    "lastActiveTime": 1786888167419,
+    "lastActiveTime": 1786927451223,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3697,7 +3697,8 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
-      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
+      "羅": "U6d9e099c518efa25fd881c87e6e72dd7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3735,11 +3736,19 @@
           "Jet",
           "Gary",
           "Chris Chen",
-          "Sammy Su"
+          "Sammy Su",
+          "羅"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/17 08:44",
+        "name": "羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/16 21:49",
         "name": "Sammy Su",
