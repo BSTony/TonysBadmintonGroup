@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3106,
+    "viewCount": 3107,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -315,8 +315,8 @@
       "U262bec0c4b86143110a6502613fa47c5": {
         "displayName": "Timmonchen(鐵門/杰君)",
         "firstVisit": 1783392785185,
-        "count": 4,
-        "lastVisit": 1786936461027,
+        "count": 5,
+        "lastVisit": 1787006254994,
         "pictureUrl": "https://profile.line-scdn.net/0h3aSldQcZbE5-FUboU5oSMQ5FbyRdZDVcVnYqKRxCMX5BcSIeAnQqfxgWYn0TcisZWiciIUhHOytyBhsoYEOQenklMX9DJC4QVHsmrQ"
       },
       "U1cb334975d37ef2d2ef6b7598dc2ea06": {
@@ -1053,6 +1053,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1787006254994,
+        "userId": "U262bec0c4b86143110a6502613fa47c5",
+        "displayName": "Timmonchen(鐵門/杰君)",
+        "pictureUrl": "https://profile.line-scdn.net/0h3aSldQcZbE5-FUboU5oSMQ5FbyRdZDVcVnYqKRxCMX5BcSIeAnQqfxgWYn0TcisZWiciIUhHOytyBhsoYEOQenklMX9DJC4QVHsmrQ"
+      },
       {
         "time": 1786989085471,
         "userId": "Udcb17bf71291f7de03aecabb183ca598",
