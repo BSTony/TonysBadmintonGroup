@@ -3419,7 +3419,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786936193160,
+    "lastActiveTime": 1786936329993,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3472,7 +3472,8 @@
           "紀凡",
           "Winnie",
           "Emily",
-          "莎莎"
+          "莎莎",
+          "Timmon"
         ],
         "fee": "230"
       }
@@ -3492,9 +3493,17 @@
       "Winnie": "U33c39e68987a32660ebf39db4534c567",
       "Emily": "U33c39e68987a32660ebf39db4534c567",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "莎莎": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+      "莎莎": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+      "Timmon": "U1cb334975d37ef2d2ef6b7598dc2ea06"
     },
     "history": [
+      {
+        "time": "08/17 11:12",
+        "name": "Timmon",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/17 11:09",
         "name": "莎莎",
