@@ -5527,25 +5527,5 @@
         "pictureUrl": "https://profile.line-scdn.net/0hzj7JKTA2JUUaMwzFDfdbOmpjJi85QnxXP1duJS82KXEiBmobNAFpdi1me3IvVjdEZVBvJH1gLnwWIFIjBGXZcR0DeHQnAmcbMF1vpg"
       }
     ]
-  },
-  "497b5c9a-1c62-4f30-b829-f3c13f52aab9": {
-    "viewCount": 1,
-    "uniqueViewers": {
-      "U092196c10fe7e15591482c6b7942a147": {
-        "displayName": "Sammy Su",
-        "firstVisit": 1786888084004,
-        "count": 1,
-        "lastVisit": 1786888084004,
-        "pictureUrl": "https://profile.line-scdn.net/0hLDaGz3uSE2tMPgxb931tFDxuEAFvT0p5aVhYD3A7H192WlI6YFtZCHFrSll2XF1qZFBdCX4_RAhALWQNUmjvX0sOTlpxD1E1ZlBZiA"
-      }
-    },
-    "logs": [
-      {
-        "time": 1786888084004,
-        "userId": "U092196c10fe7e15591482c6b7942a147",
-        "displayName": "Sammy Su",
-        "pictureUrl": "https://profile.line-scdn.net/0hLDaGz3uSE2tMPgxb931tFDxuEAFvT0p5aVhYD3A7H192WlI6YFtZCHFrSll2XF1qZFBdCX4_RAhALWQNUmjvX0sOTlpxD1E1ZlBZiA"
-      }
-    ]
   }
 }
