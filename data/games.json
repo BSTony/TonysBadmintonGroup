@@ -3742,7 +3742,7 @@
     "tag": "10-11開冷氣",
     "active": true,
     "startTime": 1786521232242,
-    "lastActiveTime": 1786927451223,
+    "lastActiveTime": 1786945285903,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3760,7 +3760,8 @@
       "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
-      "羅": "U6d9e099c518efa25fd881c87e6e72dd7"
+      "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3773,7 +3774,8 @@
         "label": "",
         "list": [
           "林煥杰",
-          "ALAN LIU"
+          "ALAN LIU",
+          "杜威霖 Andy"
         ]
       },
       {
@@ -3804,6 +3806,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/17 13:41",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/17 08:44",
         "name": "羅",
