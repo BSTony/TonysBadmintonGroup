@@ -3419,7 +3419,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786896248717,
+    "lastActiveTime": 1786932269306,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3469,7 +3469,8 @@
           "Feng",
           "wei",
           "Matt孟錡",
-          "紀凡"
+          "紀凡",
+          "Winnie"
         ],
         "fee": "230"
       }
@@ -3485,9 +3486,17 @@
       "Jeff": "U84c4d04ffd16e306f6e4065b33c628d5",
       "wei": "Ubbef4e0a6cc32f9629b0d1adde897b9e",
       "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205",
-      "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c"
+      "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c",
+      "Winnie": "U33c39e68987a32660ebf39db4534c567"
     },
     "history": [
+      {
+        "time": "08/17 10:04",
+        "name": "Winnie",
+        "operator": "Winnie",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/17 00:04",
         "name": "紀凡",
