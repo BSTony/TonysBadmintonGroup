@@ -3419,7 +3419,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786932278670,
+    "lastActiveTime": 1786936156161,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3471,7 +3471,8 @@
           "Matt孟錡",
           "紀凡",
           "Winnie",
-          "Emily"
+          "Emily",
+          "Emily🙈🙉🙊"
         ],
         "fee": "230"
       }
@@ -3489,9 +3490,17 @@
       "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205",
       "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c",
       "Winnie": "U33c39e68987a32660ebf39db4534c567",
-      "Emily": "U33c39e68987a32660ebf39db4534c567"
+      "Emily": "U33c39e68987a32660ebf39db4534c567",
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
     },
     "history": [
+      {
+        "time": "08/17 11:09",
+        "name": "Emily🙈🙉🙊",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/17 10:04",
         "name": "Emily",
