@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3122,
+    "viewCount": 3124,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -203,8 +203,8 @@
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
         "displayName": "John",
         "firstVisit": 1783234049549,
-        "count": 20,
-        "lastVisit": 1786981922666,
+        "count": 22,
+        "lastVisit": 1787033813406,
         "pictureUrl": "https://profile.line-scdn.net/0hgE71bnyJOGoaSCnunEtGVGoYOwA5OWF4ZClyWylMZFggKis7MicjDn9PMw4kf307Ni10XClANVk4DCdaXXs1a1Q1OSp0PA9LblgqTCs3Zy9DDitCYV4lC3EjYB1BHQlsTC8VdkYsGyZFJis-dnYfWkdUOFh5GXY5QR9UPB96Vul1Sk8_Ny52CSdObl-i"
       },
       "U4f877c526e048afcda3730edce9ba746": {
@@ -1062,6 +1062,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1787033813406,
+        "userId": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+        "displayName": "John",
+        "pictureUrl": "https://profile.line-scdn.net/0hgE71bnyJOGoaSCnunEtGVGoYOwA5OWF4ZClyWylMZFggKis7MicjDn9PMw4kf307Ni10XClANVk4DCdaXXs1a1Q1OSp0PA9LblgqTCs3Zy9DDitCYV4lC3EjYB1BHQlsTC8VdkYsGyZFJis-dnYfWkdUOFh5GXY5QR9UPB96Vul1Sk8_Ny52CSdObl-i"
+      },
+      {
+        "time": 1787033738748,
+        "userId": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+        "displayName": "John",
+        "pictureUrl": "https://profile.line-scdn.net/0hgE71bnyJOGoaSCnunEtGVGoYOwA5OWF4ZClyWylMZFggKis7MicjDn9PMw4kf307Ni10XClANVk4DCdaXXs1a1Q1OSp0PA9LblgqTCs3Zy9DDitCYV4lC3EjYB1BHQlsTC8VdkYsGyZFJis-dnYfWkdUOFh5GXY5QR9UPB96Vul1Sk8_Ny52CSdObl-i"
+      },
       {
         "time": 1787029735681,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
