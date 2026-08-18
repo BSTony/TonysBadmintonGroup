@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3160,
+    "viewCount": 3161,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1063,9 +1063,22 @@
         "count": 1,
         "lastVisit": 1787019513104,
         "pictureUrl": "https://profile.line-scdn.net/0hXaDEuufdB05pPBtqkrt5cBlsBCRKTV5cQVxIKw9pXSwECRcRRggaelU_UCxcDBVIQQlAKlk8XylLdQlsTS4SdSdGKT4KDStkI1g6Xi47RQU9ZRBePgVMYw55Og1SClx8FS0AbjtEDCggSQlaAgwVQEB9Lz4AfEhNPmtrGGwOac0GPnAbRFpJLVQ6UXvR"
+      },
+      "Udab0ba220b4c3a56b9da3bb03cd82a47": {
+        "displayName": "振倫🐻",
+        "firstVisit": 1787077149621,
+        "count": 1,
+        "lastVisit": 1787077149621,
+        "pictureUrl": "https://profile.line-scdn.net/0hV6ojDJ-MCRlCEyEKgit3ZjJDCnNhYlALaSJAeCJEUSB_JRpIb3dPKiIaV3src0cbPSBGKnUaVS5OAH5_XEX1LUUjVCh_IktHaH1D-g"
       }
     },
     "logs": [
+      {
+        "time": 1787077149621,
+        "userId": "Udab0ba220b4c3a56b9da3bb03cd82a47",
+        "displayName": "振倫🐻",
+        "pictureUrl": "https://profile.line-scdn.net/0hV6ojDJ-MCRlCEyEKgit3ZjJDCnNhYlALaSJAeCJEUSB_JRpIb3dPKiIaV3src0cbPSBGKnUaVS5OAH5_XEX1LUUjVCh_IktHaH1D-g"
+      },
       {
         "time": 1787072915901,
         "userId": "U94d0fd3752c6d2521d871658f63822b7",
