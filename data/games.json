@@ -4023,7 +4023,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787058225590,
-    "lastActiveTime": 1787058791908,
+    "lastActiveTime": 1787059756647,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4052,7 +4052,8 @@
       "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
       "海棠": "Ufa8dba5febf9f719da07f7e507391a21",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
-      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb"
+      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
+      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4071,12 +4072,20 @@
           "Ong",
           "海棠",
           "偉舫",
-          "Sean"
+          "Sean",
+          "afrahuang"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "08/18 21:29",
+        "name": "afrahuang",
+        "operator": "afrahuang",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/18 21:13",
         "name": "Sean",
