@@ -4023,7 +4023,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787058225590,
-    "lastActiveTime": 1787060304888,
+    "lastActiveTime": 1787060376936,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4057,7 +4057,9 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "Jet2": "U94d0fd3752c6d2521d871658f63822b7"
     },
-    "noteMap": {},
+    "noteMap": {
+      "Jet2": "文凱"
+    },
     "allowUserNoteEdit": true,
     "sections": [
       {
