@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1786982292387,
+    "lastActiveTime": 1787019893383,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3469,7 +3469,6 @@
           "江こう 洋々",
           "陳品婕",
           "Jenny",
-          "陳俊傑 (Jeremy)",
           "Feng",
           "wei",
           "紀凡",
@@ -3504,6 +3503,13 @@
       "Iven": "U7e762af3061a46f6a7e212cfc0afcb8f"
     },
     "history": [
+      {
+        "time": "08/18 10:24",
+        "name": "陳俊傑 (Jeremy)",
+        "operator": "陳俊傑 (Jeremy)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/17 23:57",
         "name": "Iven",
