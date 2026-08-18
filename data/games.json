@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1787024537218,
+    "lastActiveTime": 1787055416754,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3437,7 +3437,6 @@
       "jim": true,
       "Ashley": true,
       "wayne": true,
-      "ong": true,
       "iven": true,
       "mina": true,
       "陳呈": true
@@ -3461,7 +3460,6 @@
           "jim",
           "Ashley",
           "wayne",
-          "ong",
           "iven",
           "mina",
           "陳呈",
@@ -3505,6 +3503,13 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "history": [
+      {
+        "time": "08/18 20:16",
+        "name": "ong",
+        "operator": "Ong",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/18 11:42",
         "name": "Gary",
