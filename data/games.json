@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1787019893383,
+    "lastActiveTime": 1787024537218,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3477,7 +3477,8 @@
           "莎莎",
           "Timmon",
           "林煥杰",
-          "Iven"
+          "Iven",
+          "Gary"
         ],
         "fee": "230"
       }
@@ -3500,9 +3501,17 @@
       "莎莎": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "Timmon": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
-      "Iven": "U7e762af3061a46f6a7e212cfc0afcb8f"
+      "Iven": "U7e762af3061a46f6a7e212cfc0afcb8f",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "history": [
+      {
+        "time": "08/18 11:42",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/18 10:24",
         "name": "陳俊傑 (Jeremy)",
