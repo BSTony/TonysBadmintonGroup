@@ -3888,7 +3888,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787058225590,
-    "lastActiveTime": 1787060376936,
+    "lastActiveTime": 1787068112046,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3905,8 +3905,7 @@
       "Robert": true,
       "周則鼎": true,
       "Ong": true,
-      "海棠": true,
-      "偉舫": true
+      "海棠": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -3940,7 +3939,6 @@
           "周則鼎",
           "Ong",
           "海棠",
-          "偉舫",
           "Sean",
           "afrahuang",
           "Jet",
@@ -3950,6 +3948,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/18 23:48",
+        "name": "偉舫",
+        "operator": "偉舫",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/18 21:38",
         "name": "Jet2",
