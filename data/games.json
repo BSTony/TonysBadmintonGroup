@@ -3691,7 +3691,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787067998032,
+    "lastActiveTime": 1787068003028,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3720,7 +3720,8 @@
       "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
       "張建發": "U17eaf2f1e1b41288876d992044d9bdf9",
-      "建發2": "U17eaf2f1e1b41288876d992044d9bdf9"
+      "建發2": "U17eaf2f1e1b41288876d992044d9bdf9",
+      "建發3": "U17eaf2f1e1b41288876d992044d9bdf9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3747,12 +3748,20 @@
           "Andrew",
           "Ong",
           "張建發",
-          "建發2"
+          "建發2",
+          "建發3"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/18 23:46",
+        "name": "建發3",
+        "operator": "張建發",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/18 23:46",
         "name": "建發2",
