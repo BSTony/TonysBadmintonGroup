@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3196,
+    "viewCount": 3199,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -197,8 +197,8 @@
       "U203b76fe44ff1d74c53c21e5547aea27": {
         "displayName": "登登登登～",
         "firstVisit": 1783233886945,
-        "count": 68,
-        "lastVisit": 1787057478237,
+        "count": 69,
+        "lastVisit": 1787152284483,
         "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
       },
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
@@ -346,8 +346,8 @@
       "U7691f78ef6e34371e591dc7b0c57ce9a": {
         "displayName": "林立峰",
         "firstVisit": 1783425021538,
-        "count": 20,
-        "lastVisit": 1786771966450,
+        "count": 21,
+        "lastVisit": 1787153650259,
         "pictureUrl": "https://profile.line-scdn.net/0hHv0xUDdSF1kdAQnFQL9pZ21RFDM-cE5LNGBfPH1THGB0ZFRcMTJfaysBTTpyNgVdYmcMbX8FQT0_UkxLUhBfd3FBAWAjWTNcbwkbdlIIOW9XSQZ9UBcjSltRISpGORFOXwc8aCp9OSAnNSxqbBE9RlVTPDMiNyt9UVZ7DxgzedpyA2AMMGdZOiAHQWyl"
       },
       "U8d28d03013fc8d69b56d79e9d0fcc33a": {
@@ -495,8 +495,9 @@
       "U6828d5fa68c1c92cf8a000b9b253a66d": {
         "displayName": "Hsin",
         "firstVisit": 1783573015272,
-        "count": 10,
-        "lastVisit": 1785999250277
+        "count": 11,
+        "lastVisit": 1787154263851,
+        "pictureUrl": "https://profile.line-scdn.net/0h_QmJQsWwAH5AMxH11GB-ATBjAxRjQllsZQYfGXU7DkZ7UUN_aVBHGXdhVk8qBEF_O1ZMHnQ3DExMIHcYXmX8SkcDXU99AkIgal1KnQ"
       },
       "U27f23a1855894c45cf1e7898369224c1": {
         "displayName": "Calvin 世豪",
@@ -1084,6 +1085,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1787154263851,
+        "userId": "U6828d5fa68c1c92cf8a000b9b253a66d",
+        "displayName": "Hsin",
+        "pictureUrl": "https://profile.line-scdn.net/0h_QmJQsWwAH5AMxH11GB-ATBjAxRjQllsZQYfGXU7DkZ7UUN_aVBHGXdhVk8qBEF_O1ZMHnQ3DExMIHcYXmX8SkcDXU99AkIgal1KnQ"
+      },
+      {
+        "time": 1787153650259,
+        "userId": "U7691f78ef6e34371e591dc7b0c57ce9a",
+        "displayName": "林立峰",
+        "pictureUrl": "https://profile.line-scdn.net/0hHv0xUDdSF1kdAQnFQL9pZ21RFDM-cE5LNGBfPH1THGB0ZFRcMTJfaysBTTpyNgVdYmcMbX8FQT0_UkxLUhBfd3FBAWAjWTNcbwkbdlIIOW9XSQZ9UBcjSltRISpGORFOXwc8aCp9OSAnNSxqbBE9RlVTPDMiNyt9UVZ7DxgzedpyA2AMMGdZOiAHQWyl"
+      },
+      {
+        "time": 1787152284483,
+        "userId": "U203b76fe44ff1d74c53c21e5547aea27",
+        "displayName": "登登登登～",
+        "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
+      },
       {
         "time": 1787150887211,
         "userId": "U04307fbd1087e54ce656086b653a60fd",
