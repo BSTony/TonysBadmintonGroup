@@ -3700,7 +3700,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787149280856,
+    "lastActiveTime": 1787183523303,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3751,7 +3751,6 @@
           "AddieWang",
           "楊程鈞",
           "陳沛君",
-          "俊吉",
           "登",
           "杜威霖 Andy",
           "黃政豪",
@@ -3770,6 +3769,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/20 07:52",
+        "name": "俊吉",
+        "operator": "Jimmy",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/19 22:21",
         "name": "ALAN LIU",
