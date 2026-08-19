@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1787055416754,
+    "lastActiveTime": 1787102878640,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3476,7 +3476,8 @@
           "Timmon",
           "林煥杰",
           "Iven",
-          "Gary"
+          "Gary",
+          "Win Shu"
         ],
         "fee": "230"
       }
@@ -3500,9 +3501,17 @@
       "Timmon": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Iven": "U7e762af3061a46f6a7e212cfc0afcb8f",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "history": [
+      {
+        "time": "08/19 09:27",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/18 20:16",
         "name": "ong",
