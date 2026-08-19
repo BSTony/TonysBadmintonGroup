@@ -3700,7 +3700,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787142417087,
+    "lastActiveTime": 1787145583399,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3731,7 +3731,8 @@
       "張建發": "U17eaf2f1e1b41288876d992044d9bdf9",
       "建發2": "U17eaf2f1e1b41288876d992044d9bdf9",
       "建發3": "U17eaf2f1e1b41288876d992044d9bdf9",
-      "Gary": "Uf3a2215c0fc68cd05d651ac0dddf1f27"
+      "Gary": "Uf3a2215c0fc68cd05d651ac0dddf1f27",
+      "羅": "U6d9e099c518efa25fd881c87e6e72dd7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3760,12 +3761,20 @@
           "張建發",
           "建發2",
           "建發3",
-          "Gary"
+          "Gary",
+          "羅"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/19 21:19",
+        "name": "羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/19 20:26",
         "name": "Gary",
