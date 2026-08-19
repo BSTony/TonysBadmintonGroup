@@ -3700,7 +3700,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787145583399,
+    "lastActiveTime": 1787149280856,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3732,7 +3732,8 @@
       "建發2": "U17eaf2f1e1b41288876d992044d9bdf9",
       "建發3": "U17eaf2f1e1b41288876d992044d9bdf9",
       "Gary": "Uf3a2215c0fc68cd05d651ac0dddf1f27",
-      "羅": "U6d9e099c518efa25fd881c87e6e72dd7"
+      "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3762,12 +3763,20 @@
           "建發2",
           "建發3",
           "Gary",
-          "羅"
+          "羅",
+          "ALAN LIU"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/19 22:21",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/19 21:19",
         "name": "羅",
