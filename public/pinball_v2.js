@@ -419,9 +419,7 @@ function initPinballEngine() {
       if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
 
       if (ball && finish) {
-        // ONLY Host screen registers official finish line crossings AFTER GO
-        const isAdmin = isPinballHost();
-        if (isAdmin && window.pinballRaceStarted && pbState && pbState.status === 'playing' && !pbState.finished.includes(ball.plugin.name)) {
+        if (window.pinballRaceStarted && pbState && pbState.status === 'playing' && !pbState.finished.includes(ball.plugin.name)) {
           fetch('/api/pinball/finish', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -527,8 +525,26 @@ function initPinballEngine() {
         });
       }
 
+      // Position-based 100% reliable finish check
+      if (window.pinballRaceStarted && pbState && pbState.status === 'playing') {
+        const isUphill = pbState && pbState.mode === 'uphill';
+        Object.values(pbBalls).forEach(ball => {
+          if (!ball || !ball.plugin || pbState.finished.includes(ball.plugin.name)) return;
+          const reachedFinish = isUphill ? (ball.position.y <= START_Y - 30) : (ball.position.y >= finalTrackY - 45);
+          if (reachedFinish) {
+            fetch('/api/pinball/finish', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: ball.plugin.name,
+                socketId: window.pinballSocket ? window.pinballSocket.id : null
+              })
+            });
+          }
+        });
+      }
+
       // Foolproof Anti-Out-Of-Bounds Containment for all balls at all times
-      const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
       Object.values(pbBalls).forEach(ball => {
         if (!ball || !ball.position) return;
         if (ball.position.x < 30) {
@@ -538,8 +554,8 @@ function initPinballEngine() {
           Matter.Body.setPosition(ball, { x: LOGICAL_WIDTH - 45, y: ball.position.y });
           Matter.Body.setVelocity(ball, { x: -Math.abs(ball.velocity.x) * 0.5, y: ball.velocity.y });
         }
-        if (ball.position.y > finalTrackY + 15) {
-          Matter.Body.setPosition(ball, { x: ball.position.x, y: finalTrackY - 10 });
+        if (ball.position.y > finalTrackY + 65) {
+          Matter.Body.setPosition(ball, { x: ball.position.x, y: finalTrackY + 40 });
           Matter.Body.setVelocity(ball, { x: ball.velocity.x, y: Math.min(-2, -Math.abs(ball.velocity.y) * 0.5) });
         }
         if (ball.position.y < 30) {
@@ -1379,9 +1395,6 @@ function syncBalls(state) {
 
   // Match server spacing
   const spacingX = 40;
-  const poolLen = state.pool.length;
-  const startXOffset = LOGICAL_WIDTH / 2 - (Math.min(poolLen, 15) * spacingX) / 2 + 20;
-  
   const poolSet = new Set(state.pool);
 
   // Remove balls not in pool anymore
@@ -1394,16 +1407,31 @@ function syncBalls(state) {
 
   // Sort pool alphabetically to guarantee 100% identical starting grid on all devices
   const sortedPool = [...state.pool].sort();
+  const isUphill = state && state.mode === 'uphill';
+  const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
   
   sortedPool.forEach((name, idx) => {
-    const isUphill = state && state.mode === 'uphill';
-    const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
+    let gridX, gridY;
+    if (isUphill) {
+      // In 220px uphill track, use 4 columns to fit comfortably within [290, 510]
+      const cols = 4;
+      const rRow = Math.floor(idx / cols);
+      const cCol = idx % cols;
+      const spacingX = 38;
+      const startXOffset = LOGICAL_WIDTH / 2 - ((cols - 1) * spacingX) / 2;
+      gridX = startXOffset + cCol * spacingX;
+      gridY = finalTrackY - 80 + (rRow * 32);
+    } else {
+      const cols = 15;
+      const rRow = Math.floor(idx / cols);
+      const cCol = idx % cols;
+      const spacingX = 40;
+      const startXOffset = LOGICAL_WIDTH / 2 - ((Math.min(sortedPool.length, cols) - 1) * spacingX) / 2;
+      gridX = startXOffset + cCol * spacingX;
+      gridY = START_Y - 25 - (rRow * 35);
+    }
+
     const color = (state.colors && state.colors[name]) ? state.colors[name] : POOL_COLORS[idx % POOL_COLORS.length];
-    const rRow = Math.floor(idx / 15);
-    const cCol = idx % 15;
-    const gridX = startXOffset + cCol * spacingX;
-    // In Uphill, position balls below the start line (finalTrackY - 120) inside the preparation pen
-    const gridY = isUphill ? (finalTrackY - 80 + (rRow * 35)) : (START_Y - 25 - (rRow * 35));
     
     if (!pbBalls[name]) {
       const num = (idx % 15) + 1;

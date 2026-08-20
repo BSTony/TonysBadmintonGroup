@@ -3366,7 +3366,23 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   pinballRoom.winnerLimit = winnerLimit || 3;
   pinballRoom.finished = [];
   pinballRoom.seed = Math.floor(Math.random() * 1000000);
-  pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, { mode: pinballRoom.mode });
+  pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, {
+    mode: pinballRoom.mode,
+    onFinish: (name) => {
+      if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(name)) {
+        pinballRoom.finished.push(name);
+        const rank = pinballRoom.finished.length;
+        let points = (rank === 1) ? 7 : (rank === 2) ? 5 : (rank === 3) ? 3 : (rank <= 10) ? 2 : 1;
+        if (!pinballRoom.scores) pinballRoom.scores = {};
+        if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
+        pinballRoom.scores[name] += points;
+        if (pinballRoom.finished.length >= pinballRoom.pool.length) {
+          pinballRoom.status = 'finished';
+        }
+        io.emit('pinball_state', pinballRoom);
+      }
+    }
+  });
 
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;

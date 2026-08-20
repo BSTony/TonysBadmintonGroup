@@ -319,13 +319,25 @@ function initServerEngine(pool, seed, optionsOrCb) {
 
   // Spawn balls
   pool.forEach((name, idx) => {
-    const rRow = Math.floor(idx / 15);
-    const cCol = idx % 15;
-    const spacingX = 40;
-    const startXOffset = PB_WIDTH / 2 - (Math.min(pool.length, 15) * spacingX) / 2 + 20;
-    const x = startXOffset + cCol * spacingX;
-    // In Uphill, spawn balls below the start line (finalY - 120) inside the preparation pen
-    const y = isUphill ? (finalY - 80 + rRow * 35) : (PB_START_Y - 30 - rRow * 35);
+    let x, y;
+    if (isUphill) {
+      // Inside 220px track, use 4 columns to fit comfortably inside [290, 510]
+      const cols = 4;
+      const rRow = Math.floor(idx / cols);
+      const cCol = idx % cols;
+      const spacingX = 38;
+      const startXOffset = PB_WIDTH / 2 - ((cols - 1) * spacingX) / 2;
+      x = startXOffset + cCol * spacingX;
+      y = finalY - 80 + (rRow * 32);
+    } else {
+      const cols = 15;
+      const rRow = Math.floor(idx / cols);
+      const cCol = idx % cols;
+      const spacingX = 40;
+      const startXOffset = PB_WIDTH / 2 - ((Math.min(pool.length, cols) - 1) * spacingX) / 2;
+      x = startXOffset + cCol * spacingX;
+      y = PB_START_Y - 30 - (rRow * 35);
+    }
 
     const ball = Bodies.circle(x, y, PB_MARBLE_RADIUS, {
       restitution: isUphill ? 0.4 : 0.6,
@@ -362,6 +374,15 @@ function initServerEngine(pool, seed, optionsOrCb) {
         if (body.position.y < 30) {
           Body.setPosition(body, { x: body.position.x, y: 45 });
           Body.setVelocity(body, { x: body.velocity.x, y: Math.abs(body.velocity.y) * 0.5 });
+        }
+
+        // Position-based 100% reliable finish check
+        if (!body.plugin.finished && pbEngine.plugin && pbEngine.plugin.raceStarted) {
+          const reachedFinish = isUphill ? (body.position.y <= PB_START_Y - 30) : (body.position.y >= finalY - 45);
+          if (reachedFinish) {
+            body.plugin.finished = true;
+            if (onFinishCallback) onFinishCallback(body.plugin.name);
+          }
         }
 
         if (!body.plugin.finished && pbEngine.plugin && pbEngine.plugin.raceStarted) {
