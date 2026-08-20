@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1787232883835,
+    "lastActiveTime": 1787232927136,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3447,7 +3447,8 @@
       "Win Shu": true,
       "陳品婕": true,
       "Jet": true,
-      "Gary": false
+      "Gary": false,
+      "Timmon": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
