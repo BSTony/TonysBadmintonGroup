@@ -3379,10 +3379,19 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
     }
     pinballRoom.status = 'playing';
     pinballRoom.statusEndTime = null;
-    pinballRoom.startTime = Date.now();
+    pinballRoom.startTime = Date.now() + 5000; // 5s track countdown
     io.emit('pinball_state', pinballRoom);
     
-    pinballPhysics.startRace();
+    // Scatter balls lightly during countdown if needed
+    if (typeof pinballPhysics.scatterBallsOnFive === 'function') {
+      pinballPhysics.scatterBallsOnFive();
+    }
+    
+    setTimeout(() => {
+      if (pinballRoom.status === 'playing') {
+        pinballPhysics.startRace();
+      }
+    }, 5000);
   }, 5000);
   
   res.json({ success: true, pinballRoom });

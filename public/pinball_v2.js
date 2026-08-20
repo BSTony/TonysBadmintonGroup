@@ -391,8 +391,8 @@ function initPinballEngine() {
   // Start Gate and Lobby Walls
   if (!window.pinballRaceStarted) {
     if (startGateBody) Matter.World.remove(pbEngine.world, startGateBody);
-    const gateY = isUphill ? (finalY + 30) : (START_Y + 95);
-    startGateBody = Bodies.rectangle(LOGICAL_WIDTH / 2, gateY, LOGICAL_WIDTH * 2, 200, {
+    const gateY = isUphill ? (finalY - 180) : (START_Y + 95);
+    startGateBody = Bodies.rectangle(LOGICAL_WIDTH / 2, gateY, LOGICAL_WIDTH * 2, 80, {
       isStatic: true,
       render: { visible: false }, // Invisible thick physical block
       plugin: { isStartGate: true }
@@ -506,7 +506,7 @@ function initPinballEngine() {
           let clamped = false;
           
           if (isUphill) {
-            if (y > finalTrackY + 20) { y = finalTrackY + 20; clamped = true; }
+            if (y > finalTrackY + 10) { y = finalTrackY + 10; clamped = true; }
             if (y < finalTrackY - 450) { y = finalTrackY - 450; clamped = true; }
           } else {
             if (y > START_Y - 20) { y = START_Y - 20; clamped = true; }
@@ -526,6 +526,27 @@ function initPinballEngine() {
           }
         });
       }
+
+      // Foolproof Anti-Out-Of-Bounds Containment for all balls at all times
+      const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
+      Object.values(pbBalls).forEach(ball => {
+        if (!ball || !ball.position) return;
+        if (ball.position.x < 30) {
+          Matter.Body.setPosition(ball, { x: 45, y: ball.position.y });
+          Matter.Body.setVelocity(ball, { x: Math.abs(ball.velocity.x) * 0.5, y: ball.velocity.y });
+        } else if (ball.position.x > LOGICAL_WIDTH - 30) {
+          Matter.Body.setPosition(ball, { x: LOGICAL_WIDTH - 45, y: ball.position.y });
+          Matter.Body.setVelocity(ball, { x: -Math.abs(ball.velocity.x) * 0.5, y: ball.velocity.y });
+        }
+        if (ball.position.y > finalTrackY + 15) {
+          Matter.Body.setPosition(ball, { x: ball.position.x, y: finalTrackY - 10 });
+          Matter.Body.setVelocity(ball, { x: ball.velocity.x, y: Math.min(-2, -Math.abs(ball.velocity.y) * 0.5) });
+        }
+        if (ball.position.y < 30) {
+          Matter.Body.setPosition(ball, { x: ball.position.x, y: 45 });
+          Matter.Body.setVelocity(ball, { x: ball.velocity.x, y: Math.abs(ball.velocity.y) * 0.5 });
+        }
+      });
     }
   });
 
@@ -725,10 +746,10 @@ function initPinballEngine() {
     const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
 
     // 2. Start Line Checkerboard (only draw when start gate exists)
-    const startYPos = isUphillMode ? finalTrackY : START_Y;
+    const startYPos = isUphillMode ? (finalTrackY - 40) : START_Y;
     const startSp = toScreen(LOGICAL_WIDTH / 2, startYPos);
     if (startGateBody && startSp.y > -100 && startSp.y < canvasHeight + 100) {
-      drawCheckerboard(ctx, startSp.x, startSp.y, LOGICAL_WIDTH, 20 * scaleY);
+      drawCheckerboard(ctx, startSp.x, startSp.y, TRACK_WIDTH * scaleX, 20 * scaleY);
       ctx.fillStyle = '#fff';
       ctx.font = `bold ${24 * scaleY}px Arial`;
       ctx.textAlign = 'center';
@@ -1224,7 +1245,19 @@ function buildTopDownTrack(W) {
     }));
   }
 
-  // Top blocking wall removed as it interfered with the open lobby
+  // Bottom closing barrier cap (so balls can never fall out of the bottom)
+  const finalP = pathPoints[pathPoints.length - 1];
+  for (let angle = 0; angle <= Math.PI; angle += Math.PI / 8) {
+    const bx = finalP.x + (TRACK_WIDTH / 2) * Math.cos(angle);
+    const by = finalP.y + (TRACK_WIDTH / 2) * Math.sin(angle) + 10;
+    bodies.push(Bodies.circle(bx, by, wallThickness / 2, {
+      isStatic: true,
+      friction: 0.0,
+      restitution: 0.4,
+      render: { visible: false }
+    }));
+  }
+
   return { bodies, pathPoints, finalY: pathPoints[pathPoints.length-1].y };
 }
 
@@ -1364,12 +1397,12 @@ function syncBalls(state) {
   sortedPool.forEach((name, idx) => {
     const isUphill = state && state.mode === 'uphill';
     const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
-    const baseStartY = isUphill ? (finalTrackY - 20) : START_Y;
+    const baseStartY = isUphill ? (finalTrackY - 40) : START_Y;
     const color = (state.colors && state.colors[name]) ? state.colors[name] : POOL_COLORS[idx % POOL_COLORS.length];
     const rRow = Math.floor(idx / 15);
     const cCol = idx % 15;
     const gridX = startXOffset + cCol * spacingX;
-    const gridY = baseStartY - 17 - (rRow * 30);
+    const gridY = baseStartY - 25 - (rRow * 35);
     
     if (!pbBalls[name]) {
       const num = (idx % 15) + 1;
@@ -1829,15 +1862,27 @@ function bindPinballSocket(s) {
       syncBalls(state);
 
       const countdownEl = document.getElementById('pinball-countdown');
-      if (countdownEl) {
+      if (countdownEl && (prevStatus === 'instruction' || prevStatus === 'lobby' || !window.pinballRaceStarted)) {
+        if (countdownEl.timer) { clearInterval(countdownEl.timer); countdownEl.timer = null; }
+        
+        let count = 5;
         countdownEl.classList.remove('hidden');
-        countdownEl.innerText = 'GO!';
+        countdownEl.innerText = count.toString();
         countdownEl.style.fontSize = 'min(240px, 48vw)';
-        setTimeout(() => {
-          countdownEl.classList.add('hidden');
-        }, 1200);
-      }
-      if (!window.pinballRaceStarted) {
+        
+        countdownEl.timer = setInterval(() => {
+          count--;
+          if (count > 0) {
+            countdownEl.innerText = count.toString();
+          } else {
+            clearInterval(countdownEl.timer);
+            countdownEl.timer = null;
+            countdownEl.innerText = 'GO!';
+            setTimeout(() => countdownEl.classList.add('hidden'), 1200);
+            if (!window.pinballRaceStarted) startRace();
+          }
+        }, 1000);
+      } else if (!window.pinballRaceStarted) {
         startRace();
       }
 
