@@ -3700,7 +3700,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787183523303,
+    "lastActiveTime": 1787198642466,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3733,7 +3733,8 @@
       "建發3": "U17eaf2f1e1b41288876d992044d9bdf9",
       "Gary": "Uf3a2215c0fc68cd05d651ac0dddf1f27",
       "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
-      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf"
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3763,12 +3764,20 @@
           "建發3",
           "Gary",
           "羅",
-          "ALAN LIU"
+          "ALAN LIU",
+          "©️張CC～©️"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/20 12:04",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/20 07:52",
         "name": "俊吉",
