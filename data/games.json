@@ -3710,13 +3710,15 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787232497036,
+    "lastActiveTime": 1787232553241,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "Jojo": "2人"
+    },
     "paidMap": {
       "謝東霖 Tony": true,
       "Kay": true,
@@ -3746,7 +3748,8 @@
       "羅": "U6d9e099c518efa25fd881c87e6e72dd7",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "JOJO👆✌️🖖🤘👐💪": "U07da54f66d0a500df5b2db748bde73a9"
+      "JOJO👆✌️🖖🤘👐💪": "U07da54f66d0a500df5b2db748bde73a9",
+      "Jojo": "U07da54f66d0a500df5b2db748bde73a9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3776,12 +3779,20 @@
           "羅",
           "ALAN LIU",
           "©️張CC～©️",
-          "JOJO👆✌️🖖🤘👐💪"
+          "JOJO👆✌️🖖🤘👐💪",
+          "Jojo"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/20 21:29",
+        "name": "Jojo",
+        "operator": "JOJO👆✌️🖖🤘👐💪",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/20 21:28",
         "name": "JOJO👆✌️🖖🤘👐💪",
