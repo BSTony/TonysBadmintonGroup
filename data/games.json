@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1787102878640,
+    "lastActiveTime": 1787224744548,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3439,7 +3439,8 @@
       "wayne": true,
       "iven": true,
       "mina": true,
-      "陳呈": true
+      "陳呈": true,
+      "wei": true
     },
     "noteMap": {
       "Iven": "朋友"
