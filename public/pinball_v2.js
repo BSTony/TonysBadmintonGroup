@@ -498,12 +498,20 @@ function initPinballEngine() {
         }
       } else {
         // In lobby/instruction, enforce boundaries so they can't drag balls beyond the gate or off-screen
+        const isUphill = pbState && pbState.mode === 'uphill';
+        const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
+
         Object.values(pbBalls).forEach(ball => {
           let { x, y } = ball.position;
           let clamped = false;
           
-          if (y > START_Y - 20) { y = START_Y - 20; clamped = true; }
-          if (y < 20) { y = 20; clamped = true; }
+          if (isUphill) {
+            if (y > finalTrackY + 20) { y = finalTrackY + 20; clamped = true; }
+            if (y < finalTrackY - 450) { y = finalTrackY - 450; clamped = true; }
+          } else {
+            if (y > START_Y - 20) { y = START_Y - 20; clamped = true; }
+            if (y < 20) { y = 20; clamped = true; }
+          }
           if (x < 20) { x = 20; clamped = true; }
           if (x > LOGICAL_WIDTH - 20) { x = LOGICAL_WIDTH - 20; clamped = true; }
           
@@ -1544,7 +1552,9 @@ function bindPinballSocket(s) {
         window.pinballSyncInterval = null;
       }
       if (pbEngine && !startGateBody && state.status !== 'finished') {
-        startGateBody = Matter.Bodies.rectangle(LOGICAL_WIDTH / 2, START_Y + 95, LOGICAL_WIDTH * 2, 200, {
+        const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
+        const gateY = (state.mode === 'uphill') ? (finalTrackY + 30) : (START_Y + 95);
+        startGateBody = Matter.Bodies.rectangle(LOGICAL_WIDTH / 2, gateY, LOGICAL_WIDTH * 2, 200, {
           isStatic: true,
           render: { visible: false },
           plugin: { isStartGate: true }
