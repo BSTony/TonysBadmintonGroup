@@ -166,7 +166,7 @@ function buildTopDownTrack(W) {
   const finalP = pathPoints[pathPoints.length - 1];
   for (let angle = 0; angle <= Math.PI; angle += Math.PI / 8) {
     const bx = finalP.x + (PB_TRACK_WIDTH / 2) * Math.cos(angle);
-    const by = finalP.y + (PB_TRACK_WIDTH / 2) * Math.sin(angle) + 10;
+    const by = finalP.y + (PB_TRACK_WIDTH / 2) * Math.sin(angle) + 40;
     bodies.push(Bodies.circle(bx, by, wallThickness / 2, {
       isStatic: true,
       friction: 0.0,
@@ -300,15 +300,15 @@ function initServerEngine(pool, seed, optionsOrCb) {
   pbEngine.plugin = { raceStarted: false, mode: isUphill ? 'uphill' : 'downhill' };
 
   // Finish Line Sensor (Top for Uphill, Bottom for Downhill)
-  const finishY = isUphill ? (PB_START_Y - 50) : (finalY + 200);
-  const finishLine = Bodies.rectangle(PB_WIDTH / 2, finishY, PB_WIDTH * 3, isUphill ? 100 : 400, {
+  const finishY = isUphill ? (PB_START_Y - 50) : (finalY - 30);
+  const finishLine = Bodies.rectangle(PB_WIDTH / 2, finishY, PB_WIDTH * 2, 80, {
     isStatic: true, isSensor: true, plugin: { isFinishLine: true }
   });
   World.add(pbEngine.world, [finishLine]);
 
   // Start Gate: in Uphill, placed above bottom spawn area; in Downhill, placed below top spawn area
-  const gateY = isUphill ? (finalY - 180) : (PB_START_Y + 95);
-  pbStartGate = Bodies.rectangle(PB_WIDTH / 2, gateY, PB_WIDTH * 2, 80, {
+  const gateY = isUphill ? (finalY - 120) : (PB_START_Y + 95);
+  pbStartGate = Bodies.rectangle(PB_WIDTH / 2, gateY, PB_WIDTH * 2, 60, {
     isStatic: true,
     plugin: { isStartGate: true }
   });
@@ -318,17 +318,17 @@ function initServerEngine(pool, seed, optionsOrCb) {
   World.add(pbEngine.world, [pbStartGate, lobbyCeiling, lobbyLeftWall, lobbyRightWall]);
 
   // Spawn balls
-  const baseStartY = isUphill ? (finalY - 40) : PB_START_Y;
   pool.forEach((name, idx) => {
     const rRow = Math.floor(idx / 15);
     const cCol = idx % 15;
     const spacingX = 40;
     const startXOffset = PB_WIDTH / 2 - (Math.min(pool.length, 15) * spacingX) / 2 + 20;
     const x = startXOffset + cCol * spacingX;
-    const y = baseStartY - 30 - (rRow * 35);
+    // In Uphill, spawn balls below the start line (finalY - 120) inside the preparation pen
+    const y = isUphill ? (finalY - 80 + rRow * 35) : (PB_START_Y - 30 - rRow * 35);
 
     const ball = Bodies.circle(x, y, PB_MARBLE_RADIUS, {
-      restitution: 0.6,
+      restitution: isUphill ? 0.4 : 0.6,
       friction: 0.005,
       density: 0.05,
       frictionAir: 0.02,
@@ -355,8 +355,8 @@ function initServerEngine(pool, seed, optionsOrCb) {
           Body.setPosition(body, { x: PB_WIDTH - 45, y: body.position.y });
           Body.setVelocity(body, { x: -Math.abs(body.velocity.x) * 0.5, y: body.velocity.y });
         }
-        if (body.position.y > finalY + 15) {
-          Body.setPosition(body, { x: body.position.x, y: finalY - 10 });
+        if (body.position.y > finalY + 65) {
+          Body.setPosition(body, { x: body.position.x, y: finalY + 40 });
           Body.setVelocity(body, { x: body.velocity.x, y: Math.min(-2, -Math.abs(body.velocity.y) * 0.5) });
         }
         if (body.position.y < 30) {
@@ -523,21 +523,21 @@ function scatterBallsOnFive() {
 
 function pushBall(name, dir) {
   if (pbEngine && pbBalls && pbBalls[name]) {
-    const forceAmount = 0.1;
+    const forceAmount = 0.08;
     let fx = 0, fy = 0;
     let vx = 0, vy = 0;
     if (dir === 'up') {
-      fy = -forceAmount * 2.5; // 2.5x upward jump force
-      vy = -16; // Strong upward leap impulse
+      fy = -forceAmount * 1.3; // 50% reduced jump force
+      vy = -8.5; // Controlled upward leap impulse (50% reduction)
     } else if (dir === 'down') {
       fy = forceAmount;
-      vy = fy * 150;
+      vy = fy * 100;
     } else if (dir === 'left') {
-      fx = -forceAmount * 1.5;
-      vx = fx * 150;
+      fx = -forceAmount * 1.2;
+      vx = fx * 100;
     } else if (dir === 'right') {
-      fx = forceAmount * 1.5;
-      vx = fx * 150;
+      fx = forceAmount * 1.2;
+      vx = fx * 100;
     }
     
     Body.applyForce(pbBalls[name], pbBalls[name].position, { x: fx, y: fy });
@@ -555,10 +555,10 @@ function applyForce(name, forceX, forceY) {
     let fx = forceX || 0;
     let fy = forceY || 0;
     
-    // If upward force is applied, double the force and apply jump impulse
+    // If upward force is applied, apply controlled jump impulse (50% reduced)
     if (fy < 0) {
-      fy = fy * 2.5;
-      Body.setVelocity(ball, { x: ball.velocity.x + fx * 100, y: Math.min(-12, ball.velocity.y - 12) });
+      fy = fy * 1.25;
+      Body.setVelocity(ball, { x: ball.velocity.x + fx * 50, y: Math.min(-6.5, ball.velocity.y - 6.5) });
     }
     Body.applyForce(ball, ball.position, { x: fx, y: fy });
   }

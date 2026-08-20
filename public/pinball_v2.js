@@ -379,8 +379,8 @@ function initPinballEngine() {
   const isUphill = pbState && pbState.mode === 'uphill';
 
   // Finish line sensor (Top for Uphill, Bottom for Downhill)
-  const finishY = isUphill ? (START_Y - 50) : (finalY + 80);
-  const finishLine = Bodies.rectangle(LOGICAL_WIDTH / 2, finishY, TRACK_WIDTH + 60, isUphill ? 60 : 40, {
+  const finishY = isUphill ? (START_Y - 50) : (finalY - 30);
+  const finishLine = Bodies.rectangle(LOGICAL_WIDTH / 2, finishY, TRACK_WIDTH + 60, isUphill ? 60 : 80, {
     isStatic: true,
     isSensor: true,
     render: { visible: false },
@@ -391,10 +391,10 @@ function initPinballEngine() {
   // Start Gate and Lobby Walls
   if (!window.pinballRaceStarted) {
     if (startGateBody) Matter.World.remove(pbEngine.world, startGateBody);
-    const gateY = isUphill ? (finalY - 180) : (START_Y + 95);
-    startGateBody = Bodies.rectangle(LOGICAL_WIDTH / 2, gateY, LOGICAL_WIDTH * 2, 80, {
+    const gateY = isUphill ? (finalY - 120) : (START_Y + 95);
+    startGateBody = Bodies.rectangle(LOGICAL_WIDTH / 2, gateY, LOGICAL_WIDTH * 2, 60, {
       isStatic: true,
-      render: { visible: false }, // Invisible thick physical block
+      render: { visible: false }, // Invisible physical block
       plugin: { isStartGate: true }
     });
     
@@ -577,7 +577,8 @@ function initPinballEngine() {
     const isUphillMode = pbState && pbState.mode === 'uphill';
 
     if (pbState.status !== 'playing') {
-      const defaultY = isUphillMode ? Math.max(0, pbWorldHeight - viewH) : 0;
+      const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
+      const defaultY = isUphillMode ? Math.max(0, finalTrackY - viewH + 120) : 0;
       cameraSmoothed = defaultY;
       pbRender.bounds.min.y = defaultY;
       pbRender.bounds.max.y = defaultY + viewH;
@@ -746,7 +747,7 @@ function initPinballEngine() {
     const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
 
     // 2. Start Line Checkerboard (only draw when start gate exists)
-    const startYPos = isUphillMode ? (finalTrackY - 40) : START_Y;
+    const startYPos = isUphillMode ? (finalTrackY - 120) : START_Y;
     const startSp = toScreen(LOGICAL_WIDTH / 2, startYPos);
     if (startGateBody && startSp.y > -100 && startSp.y < canvasHeight + 100) {
       drawCheckerboard(ctx, startSp.x, startSp.y, TRACK_WIDTH * scaleX, 20 * scaleY);
@@ -777,7 +778,7 @@ function initPinballEngine() {
 
     // 3. Finish Line Checkerboard
     if (trackPathPoints.length > 0) {
-      const finishYPos = isUphillMode ? (START_Y - 20) : (finalTrackY + 40);
+      const finishYPos = isUphillMode ? (START_Y - 20) : (finalTrackY - 30);
       const finishSp = toScreen(LOGICAL_WIDTH / 2, finishYPos);
       if (finishSp.y > -100 && finishSp.y < canvasHeight + 100) {
         drawCheckerboard(ctx, finishSp.x, finishSp.y, TRACK_WIDTH * scaleX, 30 * scaleY);
@@ -1077,18 +1078,18 @@ function initPinballEngine() {
         let fx = 0;
         let fy = 0;
         let jump = false;
-        const FORCE_AMT = isUphill ? 0.03 : 0.015;
+        const FORCE_AMT = isUphill ? 0.02 : 0.015;
         if (event.key === 'ArrowLeft' || event.key === 'KeyA') fx = -FORCE_AMT;
         else if (event.key === 'ArrowRight' || event.key === 'KeyD') fx = FORCE_AMT;
         else if (event.key === 'ArrowUp' || event.key === 'KeyW' || event.key === ' ') {
-          fy = isUphill ? -0.15 : -FORCE_AMT * 3;
+          fy = isUphill ? -0.075 : -FORCE_AMT * 3;
           jump = true;
         }
         else if (event.key === 'ArrowDown' || event.key === 'KeyS') fy = FORCE_AMT;
         
         if (fx !== 0 || fy !== 0) {
           if (isUphill && jump) {
-            Matter.Body.setVelocity(ball, { x: ball.velocity.x + fx * 150, y: Math.min(-14, ball.velocity.y - 10) });
+            Matter.Body.setVelocity(ball, { x: ball.velocity.x + fx * 75, y: Math.min(-7.5, ball.velocity.y - 5.5) });
           }
           Matter.Body.applyForce(ball, ball.position, { x: fx, y: fy });
           if (typeof pinballSocket !== 'undefined') {
@@ -1397,17 +1398,17 @@ function syncBalls(state) {
   sortedPool.forEach((name, idx) => {
     const isUphill = state && state.mode === 'uphill';
     const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
-    const baseStartY = isUphill ? (finalTrackY - 40) : START_Y;
     const color = (state.colors && state.colors[name]) ? state.colors[name] : POOL_COLORS[idx % POOL_COLORS.length];
     const rRow = Math.floor(idx / 15);
     const cCol = idx % 15;
     const gridX = startXOffset + cCol * spacingX;
-    const gridY = baseStartY - 25 - (rRow * 35);
+    // In Uphill, position balls below the start line (finalTrackY - 120) inside the preparation pen
+    const gridY = isUphill ? (finalTrackY - 80 + (rRow * 35)) : (START_Y - 25 - (rRow * 35));
     
     if (!pbBalls[name]) {
       const num = (idx % 15) + 1;
       const ball = Bodies.circle(gridX, gridY, MARBLE_RADIUS, {
-        restitution: 0.6,
+        restitution: isUphill ? 0.4 : 0.6,
         friction: 0.005,
         density: 0.05,
         render: { fillStyle: color },
@@ -2039,8 +2040,8 @@ function bindPinballSocket(s) {
                 const dir = e.currentTarget.getAttribute('data-dir');
                 let fx = 0, fy = 0;
                 let jump = false;
-                const forceAmount = isUphillMode ? 0.12 : 0.075;
-                const forceUp = isUphillMode ? (forceAmount * 5.0) : (forceAmount * 3.0); // 2.5x jump force in Uphill!
+                const forceAmount = isUphillMode ? 0.07 : 0.05;
+                const forceUp = isUphillMode ? (forceAmount * 2.5) : (forceAmount * 2.0); // 50% reduced jump force
                 if (dir === 'up') {
                   fy = -forceUp;
                   jump = true;
@@ -2052,8 +2053,8 @@ function bindPinballSocket(s) {
                 if (typeof pbBalls !== 'undefined' && pbBalls[currentName]) {
                   if (isUphillMode && jump) {
                     Matter.Body.setVelocity(pbBalls[currentName], {
-                      x: pbBalls[currentName].velocity.x + fx * 150,
-                      y: Math.min(-15, pbBalls[currentName].velocity.y - 12)
+                      x: pbBalls[currentName].velocity.x + fx * 75,
+                      y: Math.min(-7.5, pbBalls[currentName].velocity.y - 6)
                     });
                   }
                   Matter.Body.applyForce(pbBalls[currentName], pbBalls[currentName].position, { x: fx, y: fy });
