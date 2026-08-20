@@ -3269,7 +3269,9 @@ app.post('/api/admin/room/open', express.json(), (req, res) => {
     
     lotteryRoom.status = 'idle';
     pinballRoom.status = 'idle';
-  } else if (gameType === 'pinball') {
+  } else if (gameType === 'pinball' || gameType === 'pinball_uphill') {
+    globalRoom.activeGame = 'pinball';
+    pinballRoom.mode = (gameType === 'pinball_uphill' || req.body.mode === 'uphill') ? 'uphill' : 'downhill';
     pinballRoom.status = 'lobby';
     pinballRoom.pool = [];
     pinballRoom.finished = [];

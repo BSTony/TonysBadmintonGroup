@@ -4619,6 +4619,8 @@ if (btnEasterEgg) {
   if (btnOpenRoom) {
     btnOpenRoom.addEventListener('click', async () => {
       const type = roomGameType.value;
+      const gameType = (type === 'pinball_uphill') ? 'pinball' : type;
+      const mode = (type === 'pinball_uphill') ? 'uphill' : 'downhill';
       
       // If Lottery, we pre-fill the pool from our local admin pool
       if (type === 'lottery' && lotteryAdminPool.length > 0) {
@@ -4630,11 +4632,14 @@ if (btnEasterEgg) {
         const res = await fetch('/api/admin/room/open', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uid: currentUser.userId, gameType: type })
+          body: JSON.stringify({ uid: currentUser.userId, gameType: gameType, mode: mode })
         });
         const data = await res.json();
         if (!data.success) alert(data.error);
         else {
+          const modeSelect = document.getElementById('pinball-mode-select');
+          if (modeSelect) modeSelect.value = mode;
+
           if (type === 'lottery' && lotteryAdminPool.length > 0) {
             // Also hit setup to push pool
             await fetch('/api/admin/lottery/setup', {
