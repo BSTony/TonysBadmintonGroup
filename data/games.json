@@ -3709,7 +3709,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787227421930,
+    "lastActiveTime": 1787228731034,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3763,7 +3763,6 @@
           "楊程鈞",
           "陳沛君",
           "登",
-          "杜威霖 Andy",
           "黃政豪",
           "弘彬/Jason",
           "Kevin",
@@ -3780,6 +3779,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/20 20:25",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/20 18:40",
         "name": "Gary",
