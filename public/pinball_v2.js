@@ -379,8 +379,8 @@ function initPinballEngine() {
   const isUphill = pbState && pbState.mode === 'uphill';
 
   // Finish line sensor (Top for Uphill, Bottom for Downhill)
-  const finishY = isUphill ? (START_Y - 20) : (finalY + 80);
-  const finishLine = Bodies.rectangle(LOGICAL_WIDTH / 2, finishY, TRACK_WIDTH + 60, 40, {
+  const finishY = isUphill ? (START_Y - 50) : (finalY + 80);
+  const finishLine = Bodies.rectangle(LOGICAL_WIDTH / 2, finishY, TRACK_WIDTH + 60, isUphill ? 60 : 40, {
     isStatic: true,
     isSensor: true,
     render: { visible: false },
@@ -419,9 +419,9 @@ function initPinballEngine() {
       if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
 
       if (ball && finish) {
-        // ONLY Host screen registers official finish line crossings
+        // ONLY Host screen registers official finish line crossings AFTER GO
         const isAdmin = isPinballHost();
-        if (isAdmin && !pbState.finished.includes(ball.plugin.name)) {
+        if (isAdmin && window.pinballRaceStarted && pbState && pbState.status === 'playing' && !pbState.finished.includes(ball.plugin.name)) {
           fetch('/api/pinball/finish', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -545,9 +545,13 @@ function initPinballEngine() {
     pbRender.bounds.min.x = (LOGICAL_WIDTH - viewW) / 2;
     pbRender.bounds.max.x = pbRender.bounds.min.x + viewW;
 
+    const isUphillMode = pbState && pbState.mode === 'uphill';
+
     if (pbState.status !== 'playing') {
-      pbRender.bounds.min.y = 0;
-      pbRender.bounds.max.y = viewH;
+      const defaultY = isUphillMode ? Math.max(0, pbWorldHeight - viewH) : 0;
+      cameraSmoothed = defaultY;
+      pbRender.bounds.min.y = defaultY;
+      pbRender.bounds.max.y = defaultY + viewH;
       return;
     }
 
@@ -557,7 +561,6 @@ function initPinballEngine() {
     let trackBalls = allBalls.filter(b => !pbState.finished.includes(b.plugin.name));
     if (trackBalls.length === 0) trackBalls = allBalls;
 
-    const isUphillMode = pbState && pbState.mode === 'uphill';
     const sorted = [...trackBalls].sort((a, b) => isUphillMode ? (a.position.y - b.position.y) : (b.position.y - a.position.y));
     const now = Date.now();
     if (now - lastCameraSwitch > CAMERA_SWITCH_MS) {
@@ -573,7 +576,7 @@ function initPinballEngine() {
     } else {
       target = sorted[0];
     }
-    const targetY = target.position.y - viewH * 0.35;
+    const targetY = target.position.y - viewH * 0.45;
     
     // Smooth Lerp
     cameraSmoothed += (targetY - cameraSmoothed) * 0.08;
@@ -1378,6 +1381,11 @@ function syncBalls(state) {
       pbBalls[name].render.fillStyle = color;
       pbBalls[name].plugin.style = (state.styles && state.styles[name]) ? state.styles[name] : 'solid';
       pbBalls[name].render.visible = false;
+      if (!window.pinballRaceStarted || state.status !== 'playing') {
+        Matter.Body.setPosition(pbBalls[name], { x: gridX, y: gridY });
+        Matter.Body.setVelocity(pbBalls[name], { x: 0, y: 0 });
+        Matter.Body.setAngularVelocity(pbBalls[name], 0);
+      }
     }
   });
 }
@@ -1803,33 +1811,36 @@ function bindPinballSocket(s) {
       }
       syncBalls(state);
 
-      if (prevStatus === 'instruction' || prevStatus === 'lobby' || prevStatus === 'idle') {
-        const countdownEl = document.getElementById('pinball-countdown');
-        if (countdownEl) {
+      const countdownEl = document.getElementById('pinball-countdown');
+      if (countdownEl) {
+        if (countdownEl.timer) { clearInterval(countdownEl.timer); countdownEl.timer = null; }
+        
+        const now = Date.now();
+        const startTarget = state.startTime || (now + 3500);
+        
+        if (now < startTarget) {
           countdownEl.classList.remove('hidden');
-          
-          let count = 5;
-          countdownEl.innerText = count.toString();
           countdownEl.style.fontSize = 'min(240px, 48vw)';
           
-          if (countdownEl.timer) clearInterval(countdownEl.timer);
           countdownEl.timer = setInterval(() => {
-            count--;
-            if (count > 0) {
-              countdownEl.innerText = count.toString();
+            const currentNow = Date.now();
+            const remainingSec = Math.ceil((startTarget - currentNow) / 1000);
+            if (remainingSec > 0) {
+              countdownEl.innerText = remainingSec.toString();
             } else {
               clearInterval(countdownEl.timer);
               countdownEl.timer = null;
               countdownEl.innerText = 'GO!';
-              setTimeout(() => countdownEl.classList.add('hidden'), 1500);
-              startRace();
+              setTimeout(() => countdownEl.classList.add('hidden'), 1200);
+              if (!window.pinballRaceStarted) startRace();
             }
-          }, 1000);
+          }, 80);
         } else {
-          startRace();
+          countdownEl.classList.add('hidden');
+          if (!window.pinballRaceStarted) startRace();
         }
-      } else if (pbEngine && !window.pinballRaceStarted) {
-        // Keep startGate in place while waiting for countdown to finish
+      } else {
+        if (!window.pinballRaceStarted) startRace();
       }
 
       // Winner announcement ONLY when all players have finished the race
@@ -2015,12 +2026,58 @@ function bindPinballSocket(s) {
           dpad.classList.add('hidden');
         }
       }
-  
+
+      const leftPanel = document.getElementById('pinball-left-panel');
+      const leftButtons = document.getElementById('pinball-left-buttons');
+      const btnPanelToggle = document.getElementById('btn-pinball-panel-toggle');
+      const btnZoomIn = document.getElementById('btn-pinball-zoom-in');
+      const btnZoomOut = document.getElementById('btn-pinball-zoom-out');
       const cameraToggle = document.getElementById('pinball-camera-toggle');
-      if (cameraToggle) {
-        if (state.status === 'playing' || state.status === 'instruction') {
-          cameraToggle.classList.remove('hidden');
-          if (!cameraToggle.hasListener) {
+
+      if (leftPanel) {
+        if (state.status === 'playing' || state.status === 'instruction' || state.status === 'lobby') {
+          leftPanel.classList.remove('hidden');
+          
+          if (btnPanelToggle && !btnPanelToggle.hasListener) {
+            btnPanelToggle.hasListener = true;
+            let isCollapsed = false;
+            btnPanelToggle.addEventListener('click', () => {
+              isCollapsed = !isCollapsed;
+              if (isCollapsed) {
+                if (leftButtons) {
+                  leftButtons.style.transform = 'scale(0.7) translateX(-60px)';
+                  leftButtons.style.opacity = '0';
+                  leftButtons.style.pointerEvents = 'none';
+                }
+                btnPanelToggle.innerText = '▶';
+                btnPanelToggle.title = '展開面板';
+              } else {
+                if (leftButtons) {
+                  leftButtons.style.transform = 'none';
+                  leftButtons.style.opacity = '1';
+                  leftButtons.style.pointerEvents = 'auto';
+                }
+                btnPanelToggle.innerText = '◀';
+                btnPanelToggle.title = '收合面板';
+              }
+            });
+          }
+
+          if (btnZoomIn && !btnZoomIn.hasListener) {
+            btnZoomIn.hasListener = true;
+            btnZoomIn.addEventListener('click', () => {
+              window.pinballZoom = Math.min(2.5, +(window.pinballZoom + 0.2).toFixed(2));
+            });
+          }
+
+          if (btnZoomOut && !btnZoomOut.hasListener) {
+            btnZoomOut.hasListener = true;
+            btnZoomOut.addEventListener('click', () => {
+              window.pinballZoom = Math.max(0.6, +(window.pinballZoom - 0.2).toFixed(2));
+            });
+          }
+
+          if (cameraToggle && !cameraToggle.hasListener) {
             cameraToggle.hasListener = true;
             window.pinballCameraMode = 'self'; // default
             const txt = document.getElementById('pinball-camera-text');
@@ -2033,48 +2090,8 @@ function bindPinballSocket(s) {
             });
           }
         } else {
-          cameraToggle.classList.add('hidden');
+          leftPanel.classList.add('hidden');
         }
-      }
-
-      const zoomToggle = document.getElementById('pinball-zoom-toggle');
-      const zoomControls = document.getElementById('pinball-zoom-controls');
-      const zoomSlider = document.getElementById('pinball-zoom-slider');
-      const zoomLabel = document.getElementById('pinball-zoom-label');
-      const btnZoomReset = document.getElementById('btn-pinball-zoom-reset');
-
-      if (zoomToggle) {
-        if (state.status === 'playing' || state.status === 'instruction' || state.status === 'lobby') {
-          zoomToggle.classList.remove('hidden');
-          if (!zoomToggle.hasListener) {
-            zoomToggle.hasListener = true;
-            zoomToggle.addEventListener('click', () => {
-              if (zoomControls) {
-                zoomControls.classList.toggle('hidden');
-              }
-            });
-          }
-        } else {
-          zoomToggle.classList.add('hidden');
-          if (zoomControls) zoomControls.classList.add('hidden');
-        }
-      }
-
-      if (zoomSlider && !zoomSlider.hasListener) {
-        zoomSlider.hasListener = true;
-        zoomSlider.addEventListener('input', (e) => {
-          window.pinballZoom = parseFloat(e.target.value);
-          if (zoomLabel) zoomLabel.innerText = '🔍 ' + Math.round(window.pinballZoom * 100) + '%';
-        });
-      }
-
-      if (btnZoomReset && !btnZoomReset.hasListener) {
-        btnZoomReset.hasListener = true;
-        btnZoomReset.addEventListener('click', () => {
-          window.pinballZoom = 1.3;
-          if (zoomSlider) zoomSlider.value = 1.3;
-          if (zoomLabel) zoomLabel.innerText = '🔍 130%';
-        });
       }
   });
 }

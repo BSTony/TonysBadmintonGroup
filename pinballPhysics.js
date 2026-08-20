@@ -165,7 +165,16 @@ function buildTopDownTrack(W) {
   return { bodies, pathPoints, finalY: pathPoints[pathPoints.length-1].y };
 }
 
-function initServerEngine(pool, seed, onFinish) {
+function initServerEngine(pool, seed, optionsOrCb) {
+  let onFinish = null;
+  let options = {};
+  if (typeof optionsOrCb === 'function') {
+    onFinish = optionsOrCb;
+  } else if (optionsOrCb && typeof optionsOrCb === 'object') {
+    options = optionsOrCb;
+    onFinish = options.onFinish || null;
+  }
+
   if (pbEngine) {
     if (updateInterval) clearInterval(updateInterval);
     World.clear(pbEngine.world);
@@ -272,30 +281,36 @@ function initServerEngine(pool, seed, onFinish) {
 
   World.add(pbEngine.world, bodies);
 
-  // Finish Line Sensor (Made extremely thick to prevent high-speed tunneling)
-  const finishLine = Bodies.rectangle(PB_WIDTH / 2, finalY + 200, PB_WIDTH * 3, 400, {
+  const isUphill = options && options.mode === 'uphill';
+  pbEngine.plugin = { raceStarted: false, mode: isUphill ? 'uphill' : 'downhill' };
+
+  // Finish Line Sensor (Top for Uphill, Bottom for Downhill)
+  const finishY = isUphill ? (PB_START_Y - 50) : (finalY + 200);
+  const finishLine = Bodies.rectangle(PB_WIDTH / 2, finishY, PB_WIDTH * 3, isUphill ? 100 : 400, {
     isStatic: true, isSensor: true, plugin: { isFinishLine: true }
   });
   World.add(pbEngine.world, [finishLine]);
 
   // Start Gate
-  pbStartGate = Bodies.rectangle(PB_WIDTH / 2, PB_START_Y + 95, PB_WIDTH * 2, 200, {
+  const gateY = isUphill ? (finalY + 30) : (PB_START_Y + 95);
+  pbStartGate = Bodies.rectangle(PB_WIDTH / 2, gateY, PB_WIDTH * 2, 200, {
     isStatic: true,
     plugin: { isStartGate: true }
   });
   const lobbyCeiling = Bodies.rectangle(PB_WIDTH / 2, -20, PB_WIDTH * 2, 40, { isStatic: true });
-  const lobbyLeftWall = Bodies.rectangle(-20, PB_START_Y / 2, 40, PB_START_Y * 2, { isStatic: true });
-  const lobbyRightWall = Bodies.rectangle(PB_WIDTH + 20, PB_START_Y / 2, 40, PB_START_Y * 2, { isStatic: true });
+  const lobbyLeftWall = Bodies.rectangle(-20, (finalY + PB_START_Y) / 2, 40, (finalY + PB_START_Y) * 2, { isStatic: true });
+  const lobbyRightWall = Bodies.rectangle(PB_WIDTH + 20, (finalY + PB_START_Y) / 2, 40, (finalY + PB_START_Y) * 2, { isStatic: true });
   World.add(pbEngine.world, [pbStartGate, lobbyCeiling, lobbyLeftWall, lobbyRightWall]);
 
   // Spawn balls
+  const baseStartY = isUphill ? (finalY - 30) : PB_START_Y;
   pool.forEach((name, idx) => {
     const rRow = Math.floor(idx / 15);
     const cCol = idx % 15;
     const spacingX = 40;
     const startXOffset = PB_WIDTH / 2 - (Math.min(pool.length, 15) * spacingX) / 2 + 20;
     const x = startXOffset + cCol * spacingX;
-    const y = PB_START_Y - 30 - (rRow * 40);
+    const y = baseStartY - 30 - (rRow * 40);
 
     const ball = Bodies.circle(x, y, PB_MARBLE_RADIUS, {
       restitution: 0.6,
@@ -321,7 +336,7 @@ function initServerEngine(pool, seed, onFinish) {
               if (body.plugin.stuckFrames > 60) {
                 Body.setVelocity(body, {
                   x: (Math.random() - 0.5) * 10,
-                  y: -7.5
+                  y: isUphill ? -10 : -7.5
                 });
                 body.plugin.stuckFrames = 0;
               }
@@ -334,24 +349,45 @@ function initServerEngine(pool, seed, onFinish) {
         // Rubber-banding (catch-up mechanic)
         if (pbEngine.plugin && pbEngine.plugin.raceStarted) {
             const allBalls = Object.values(pbBalls).filter(b => !b.plugin.finished);
-            const lowestY = Math.max(...allBalls.map(b => b.position.y));
+            if (isUphill) {
+              const highestY = Math.min(...allBalls.map(b => b.position.y));
+              allBalls.forEach(ball => {
+                const distanceBehind = ball.position.y - highestY;
+                let multiplier = 0;
+                if (distanceBehind > 200) multiplier = 0.03;
+                if (distanceBehind > 400) multiplier = 0.06;
+                if (distanceBehind > 600) multiplier = 0.12;
+                if (distanceBehind > 1000) multiplier = 0.25;
+                
+                const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
+                let totalYForce = -baseForce * multiplier;
+                
+                Body.applyForce(ball, ball.position, { x: 0, y: totalYForce });
+              });
+            } else {
+              const lowestY = Math.max(...allBalls.map(b => b.position.y));
+              allBalls.forEach(ball => {
+                const distanceBehind = lowestY - ball.position.y;
+                let multiplier = 0;
+                if (distanceBehind > 200) multiplier = 0.05;
+                if (distanceBehind > 400) multiplier = 0.1;
+                if (distanceBehind > 600) multiplier = 0.2;
+                if (distanceBehind > 1000) multiplier = 0.35;
+                
+                const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
+                let totalYForce = baseForce * multiplier;
+                
+                Body.applyForce(ball, ball.position, { x: 0, y: totalYForce });
+              });
+            }
             
+            // Speed clamp to prevent tunneling
             allBalls.forEach(ball => {
-              const distanceBehind = lowestY - ball.position.y;
-              let multiplier = 0;
-              if (distanceBehind > 200) multiplier = 0.05;
-              if (distanceBehind > 400) multiplier = 0.1;
-              if (distanceBehind > 600) multiplier = 0.2;
-              if (distanceBehind > 1000) multiplier = 0.35;
-              
-              const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
-              let totalYForce = baseForce * multiplier;
-              
-              Body.applyForce(ball, ball.position, { x: 0, y: totalYForce });
-              
-              // Speed clamp to prevent tunneling
               if (ball.velocity.y > 25) {
                 Body.setVelocity(ball, { x: ball.velocity.x, y: 25 });
+              }
+              if (ball.velocity.y < -25) {
+                Body.setVelocity(ball, { x: ball.velocity.x, y: -25 });
               }
               if (Math.abs(ball.velocity.x) > 25) {
                 Body.setVelocity(ball, { x: Math.sign(ball.velocity.x) * 25, y: ball.velocity.y });
@@ -400,7 +436,7 @@ function initServerEngine(pool, seed, onFinish) {
       if (pair.bodyB.plugin && pair.bodyB.plugin.isFinishLine) finish = pair.bodyB;
 
       if (ball && finish) {
-        if (!ball.plugin.finished) {
+        if (!ball.plugin.finished && pbEngine.plugin && pbEngine.plugin.raceStarted) {
           ball.plugin.finished = true;
           if (onFinishCallback) onFinishCallback(ball.plugin.name);
         }
