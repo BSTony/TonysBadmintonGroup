@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1787227355933,
+    "lastActiveTime": 1787227358634,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3444,12 +3444,9 @@
       "江こう 洋々": true,
       "林煥杰": true,
       "Jenny": true,
-      "Iven": true,
       "Win Shu": true
     },
-    "noteMap": {
-      "Iven": "朋友"
-    },
+    "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
       {
@@ -3481,7 +3478,6 @@
           "莎莎",
           "Timmon",
           "林煥杰",
-          "Iven",
           "Gary",
           "Win Shu"
         ],
@@ -3511,6 +3507,13 @@
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "history": [
+      {
+        "time": "08/20 20:02",
+        "name": "Iven",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/19 09:27",
         "name": "Win Shu",
