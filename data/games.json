@@ -3421,7 +3421,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786453662486,
-    "lastActiveTime": 1787232934566,
+    "lastActiveTime": 1787232937154,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3448,7 +3448,8 @@
       "陳品婕": true,
       "Jet": true,
       "Gary": true,
-      "Timmon": true
+      "Timmon": true,
+      "紀凡": true
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
