@@ -3369,7 +3369,7 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, { mode: pinballRoom.mode });
 
   pinballRoom.status = 'instruction';
-  pinballRoom.statusEndTime = Date.now() + 4000;
+  pinballRoom.statusEndTime = Date.now() + 5000;
   io.emit('pinball_state', pinballRoom);
   
   setTimeout(() => {
@@ -3379,15 +3379,11 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
     }
     pinballRoom.status = 'playing';
     pinballRoom.statusEndTime = null;
-    pinballRoom.startTime = Date.now() + 3500;
+    pinballRoom.startTime = Date.now();
     io.emit('pinball_state', pinballRoom);
     
-    setTimeout(() => {
-      if (pinballRoom.status === 'playing') {
-        pinballPhysics.startRace();
-      }
-    }, 3500);
-  }, 4000);
+    pinballPhysics.startRace();
+  }, 5000);
   
   res.json({ success: true, pinballRoom });
 });

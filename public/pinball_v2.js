@@ -1770,10 +1770,17 @@ function bindPinballSocket(s) {
         instrOverlay.style.display = 'flex';
 
         if (window.pinballTimerInterval) clearInterval(window.pinballTimerInterval);
+        let count = 5;
+        instrTimer.innerText = '5';
         window.pinballTimerInterval = setInterval(() => {
-          let timeLeft = state.statusEndTime ? Math.max(0, Math.ceil((state.statusEndTime - Date.now()) / 1000)) : 5;
-          instrTimer.innerText = timeLeft;
-        }, 20);
+          count--;
+          if (count > 0) {
+            instrTimer.innerText = count.toString();
+          } else {
+            clearInterval(window.pinballTimerInterval);
+            window.pinballTimerInterval = null;
+          }
+        }, 1000);
       }
 
       syncBalls(state);
@@ -1823,34 +1830,15 @@ function bindPinballSocket(s) {
 
       const countdownEl = document.getElementById('pinball-countdown');
       if (countdownEl) {
-        if (countdownEl.timer) { clearInterval(countdownEl.timer); countdownEl.timer = null; }
-        
-        const now = Date.now();
-        const startTarget = state.startTime || (now + 3500);
-        
-        if (now < startTarget) {
-          countdownEl.classList.remove('hidden');
-          countdownEl.style.fontSize = 'min(240px, 48vw)';
-          
-          countdownEl.timer = setInterval(() => {
-            const currentNow = Date.now();
-            const remainingSec = Math.ceil((startTarget - currentNow) / 1000);
-            if (remainingSec > 0) {
-              countdownEl.innerText = remainingSec.toString();
-            } else {
-              clearInterval(countdownEl.timer);
-              countdownEl.timer = null;
-              countdownEl.innerText = 'GO!';
-              setTimeout(() => countdownEl.classList.add('hidden'), 1200);
-              if (!window.pinballRaceStarted) startRace();
-            }
-          }, 80);
-        } else {
+        countdownEl.classList.remove('hidden');
+        countdownEl.innerText = 'GO!';
+        countdownEl.style.fontSize = 'min(240px, 48vw)';
+        setTimeout(() => {
           countdownEl.classList.add('hidden');
-          if (!window.pinballRaceStarted) startRace();
-        }
-      } else {
-        if (!window.pinballRaceStarted) startRace();
+        }, 1200);
+      }
+      if (!window.pinballRaceStarted) {
+        startRace();
       }
 
       // Winner announcement ONLY when all players have finished the race
