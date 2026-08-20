@@ -4092,5 +4092,45 @@
         "section": "報名名單"
       }
     ]
+  },
+  "1787235694538671": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1787235694538671",
+    "title": "週四脫水團",
+    "date": "8/27 (四)",
+    "time": "19:20~21:30",
+    "location": "玉成國小",
+    "fee": "230",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1787235694538,
+    "lastActiveTime": 1787235694538,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "uidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [],
+        "fee": "230"
+      }
+    ]
   }
 }
