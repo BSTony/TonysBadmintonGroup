@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3203,
+    "viewCount": 3204,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -821,8 +821,8 @@
       "U037afe342197214125f95fd00ebc1f0c": {
         "displayName": "徐偉強",
         "firstVisit": 1784857660176,
-        "count": 6,
-        "lastVisit": 1786885955427,
+        "count": 7,
+        "lastVisit": 1787198339140,
         "pictureUrl": "https://profile.line-scdn.net/0huMoSsYw0KmJCKjtzyt9UHTJ6KQhhW3Nwak1tAnB-fQEoTj1nPEhnVyd-J1B5TWtgOU1kVyV_J1FOOV0EXHzWVkUad1N_G2g8aERggQ"
       },
       "U284a88542d312030d1a8b8479ef7ca53": {
@@ -1085,6 +1085,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1787198339140,
+        "userId": "U037afe342197214125f95fd00ebc1f0c",
+        "displayName": "徐偉強",
+        "pictureUrl": "https://profile.line-scdn.net/0huMoSsYw0KmJCKjtzyt9UHTJ6KQhhW3Nwak1tAnB-fQEoTj1nPEhnVyd-J1B5TWtgOU1kVyV_J1FOOV0EXHzWVkUad1N_G2g8aERggQ"
+      },
       {
         "time": 1787194341998,
         "userId": "U94d0fd3752c6d2521d871658f63822b7",
