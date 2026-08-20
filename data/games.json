@@ -3700,7 +3700,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787198642466,
+    "lastActiveTime": 1787222442945,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3762,7 +3762,6 @@
           "張建發",
           "建發2",
           "建發3",
-          "Gary",
           "羅",
           "ALAN LIU",
           "©️張CC～©️"
@@ -3771,6 +3770,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/20 18:40",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/20 12:04",
         "name": "©️張CC～©️",
