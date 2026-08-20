@@ -6,6 +6,116 @@ let pbBalls = {};
 let pbState = { status: 'idle', pool: [], finished: [], winnerLimit: 3 };
 let pbWorldHeight = 3500;
 
+// Snapshot Interpolator for silky-smooth 50~60 FPS multi-client rendering
+class PinballSnapshotInterpolator {
+  constructor(bufferTimeMs = 90) {
+    this.bufferTimeMs = bufferTimeMs;
+    this.snapshots = [];
+    this.maxBufferLength = 60;
+    this.serverTimeOffset = 0;
+    this.timeOffsetSampleCount = 0;
+  }
+
+  reset() {
+    this.snapshots = [];
+    this.serverTimeOffset = 0;
+    this.timeOffsetSampleCount = 0;
+  }
+
+  addSnapshot(syncData, timestamp) {
+    if (!syncData) return;
+    const now = Date.now();
+    const t = typeof timestamp === 'number' ? timestamp : now;
+    const offset = now - t;
+    if (this.timeOffsetSampleCount < 10) {
+      this.serverTimeOffset = (this.serverTimeOffset * this.timeOffsetSampleCount + offset) / (this.timeOffsetSampleCount + 1);
+      this.timeOffsetSampleCount++;
+    }
+
+    this.snapshots.push({ t, balls: syncData });
+    if (this.snapshots.length > this.maxBufferLength) {
+      this.snapshots.shift();
+    }
+  }
+
+  update(pbBalls) {
+    if (!pbBalls || this.snapshots.length === 0) return;
+
+    const now = Date.now();
+    const renderTime = (now - this.serverTimeOffset) - this.bufferTimeMs;
+
+    let s0 = null;
+    let s1 = null;
+
+    for (let i = this.snapshots.length - 1; i >= 0; i--) {
+      if (this.snapshots[i].t <= renderTime) {
+        s0 = this.snapshots[i];
+        s1 = this.snapshots[i + 1] || null;
+        break;
+      }
+    }
+
+    if (!s0) {
+      s0 = this.snapshots[0];
+      s1 = this.snapshots[1] || null;
+    }
+
+    if (!s1 || !s0) {
+      const latest = s0 || this.snapshots[this.snapshots.length - 1];
+      if (!latest || !latest.balls) return;
+      const dt = Math.min(0.3, Math.max(0, (renderTime - latest.t) / 1000));
+      for (const name in pbBalls) {
+        const ball = pbBalls[name];
+        const bData = latest.balls[name];
+        if (bData && typeof bData.x === 'number' && typeof bData.y === 'number') {
+          const vx = bData.vx || 0;
+          const vy = bData.vy || 0;
+          ball.position.x = bData.x + vx * dt * 60;
+          ball.position.y = bData.y + vy * dt * 60;
+          ball.angle = (bData.a || 0) + (bData.av || 0) * dt * 60;
+        }
+      }
+      return;
+    }
+
+    const totalDuration = s1.t - s0.t;
+    if (totalDuration <= 0) return;
+
+    const alpha = Math.max(0, Math.min(1, (renderTime - s0.t) / totalDuration));
+    const a2 = alpha * alpha;
+    const a3 = a2 * alpha;
+    const h00 = 2 * a3 - 3 * a2 + 1;
+    const h10 = a3 - 2 * a2 + alpha;
+    const h01 = -2 * a3 + 3 * a2;
+    const h11 = a3 - a2;
+    const dt = totalDuration / 1000;
+
+    for (const name in pbBalls) {
+      const ball = pbBalls[name];
+      const b0 = s0.balls[name];
+      const b1 = s1.balls[name];
+
+      if (b0 && b1) {
+        // Cubic Hermite position spline with tangent velocities
+        const v0x = (b0.vx || 0) * dt;
+        const v0y = (b0.vy || 0) * dt;
+        const v1x = (b1.vx || 0) * dt;
+        const v1y = (b1.vy || 0) * dt;
+
+        ball.position.x = h00 * b0.x + h10 * v0x + h01 * b1.x + h11 * v1x;
+        ball.position.y = h00 * b0.y + h10 * v0y + h01 * b1.y + h11 * v1y;
+        ball.angle = b0.a + (b1.a - b0.a) * alpha;
+      } else if (b1) {
+        ball.position.x = b1.x;
+        ball.position.y = b1.y;
+        ball.angle = b1.a || 0;
+      }
+    }
+  }
+}
+
+const pbInterpolator = new PinballSnapshotInterpolator(90);
+
   let currentSeed = 12345;
   function setSeed(seed) { currentSeed = seed; }
   function seededRandom() {
@@ -87,6 +197,7 @@ function destroyEngine() {
     Matter.Engine.clear(pbEngine);
   }
   if (pbRender && pbRender.canvas) pbRender.canvas.remove();
+  if (typeof pbInterpolator !== 'undefined') pbInterpolator.reset();
   pbEngine = null;
   pbRender = null;
   pbRunner = null;
@@ -128,54 +239,8 @@ function initPinballEngine() {
     window.pinballZoom = 1.3;
   }
   
-  if (!document.getElementById('pinball-zoom-controls')) {
-    const zoomContainer = document.createElement('div');
-    zoomContainer.id = 'pinball-zoom-controls';
-    zoomContainer.style.position = 'absolute';
-    zoomContainer.style.right = '20px';
-    zoomContainer.style.bottom = '100px';
-    zoomContainer.style.zIndex = '1000';
-    zoomContainer.style.display = 'flex';
-    zoomContainer.style.flexDirection = 'column';
-    zoomContainer.style.alignItems = 'center';
-    zoomContainer.style.gap = '5px';
-    zoomContainer.style.background = 'rgba(255,255,255,0.85)';
-    zoomContainer.style.padding = '10px';
-    zoomContainer.style.borderRadius = '10px';
-    zoomContainer.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
-    
-    const zoomLabel = document.createElement('div');
-    zoomLabel.id = 'pinball-zoom-label';
-    zoomLabel.innerText = '🔍 ' + Math.round(window.pinballZoom * 100) + '%';
-    zoomLabel.style.fontWeight = 'bold';
-    zoomLabel.style.color = '#333';
-    zoomLabel.style.fontSize = '14px';
-    
-    const zoomSlider = document.createElement('input');
-    zoomSlider.type = 'range';
-    zoomSlider.min = '0.5';
-    zoomSlider.max = '3.0';
-    zoomSlider.step = '0.1';
-    zoomSlider.value = window.pinballZoom;
-    zoomSlider.style.width = '120px';
-    zoomSlider.style.cursor = 'pointer';
-    
-    zoomSlider.oninput = (e) => { 
-      window.pinballZoom = parseFloat(e.target.value);
-      zoomLabel.innerText = '🔍 ' + Math.round(window.pinballZoom * 100) + '%';
-    };
-    
-    zoomContainer.appendChild(zoomLabel);
-    zoomContainer.appendChild(zoomSlider);
-    if(pinballContainer) pinballContainer.appendChild(zoomContainer);
-  } else {
-    const zoomLabel = document.getElementById('pinball-zoom-label');
-    const zoomSlider = document.querySelector('#pinball-zoom-controls input[type="range"]');
-    if (zoomSlider && zoomLabel) {
-      zoomSlider.value = window.pinballZoom;
-      zoomLabel.innerText = '🔍 ' + Math.round(window.pinballZoom * 100) + '%';
-    }
-  }
+  const existingZoom = document.getElementById('pinball-zoom-controls');
+  if (existingZoom) existingZoom.remove();
 
 
   pbRender = Render.create({
@@ -311,8 +376,11 @@ function initPinballEngine() {
   World.add(pbEngine.world, bodies);
 
 
-  // Finish line sensor
-  const finishLine = Bodies.rectangle(LOGICAL_WIDTH / 2, finalY + 80, TRACK_WIDTH + 60, 40, {
+  const isUphill = pbState && pbState.mode === 'uphill';
+
+  // Finish line sensor (Top for Uphill, Bottom for Downhill)
+  const finishY = isUphill ? (START_Y - 20) : (finalY + 80);
+  const finishLine = Bodies.rectangle(LOGICAL_WIDTH / 2, finishY, TRACK_WIDTH + 60, 40, {
     isStatic: true,
     isSensor: true,
     render: { visible: false },
@@ -323,7 +391,8 @@ function initPinballEngine() {
   // Start Gate and Lobby Walls
   if (!window.pinballRaceStarted) {
     if (startGateBody) Matter.World.remove(pbEngine.world, startGateBody);
-    startGateBody = Bodies.rectangle(LOGICAL_WIDTH / 2, START_Y + 95, LOGICAL_WIDTH * 2, 200, {
+    const gateY = isUphill ? (finalY + 30) : (START_Y + 95);
+    startGateBody = Bodies.rectangle(LOGICAL_WIDTH / 2, gateY, LOGICAL_WIDTH * 2, 200, {
       isStatic: true,
       render: { visible: false }, // Invisible thick physical block
       plugin: { isStartGate: true }
@@ -331,10 +400,11 @@ function initPinballEngine() {
     
     // Add physical walls for the lobby area
     const lobbyCeiling = Bodies.rectangle(LOGICAL_WIDTH / 2, -20, LOGICAL_WIDTH * 2, 40, { isStatic: true, render: { visible: false } });
-    const lobbyLeftWall = Bodies.rectangle(-20, START_Y / 2, 40, START_Y * 2, { isStatic: true, render: { visible: false } });
-    const lobbyRightWall = Bodies.rectangle(LOGICAL_WIDTH + 20, START_Y / 2, 40, START_Y * 2, { isStatic: true, render: { visible: false } });
+    const lobbyFloor = Bodies.rectangle(LOGICAL_WIDTH / 2, pbWorldHeight + 100, LOGICAL_WIDTH * 2, 80, { isStatic: true, render: { visible: false } });
+    const lobbyLeftWall = Bodies.rectangle(-20, pbWorldHeight / 2, 40, pbWorldHeight * 2, { isStatic: true, render: { visible: false } });
+    const lobbyRightWall = Bodies.rectangle(LOGICAL_WIDTH + 20, pbWorldHeight / 2, 40, pbWorldHeight * 2, { isStatic: true, render: { visible: false } });
 
-    World.add(pbEngine.world, [startGateBody, lobbyCeiling, lobbyLeftWall, lobbyRightWall]);
+    World.add(pbEngine.world, [startGateBody, lobbyCeiling, lobbyFloor, lobbyLeftWall, lobbyRightWall]);
   } else {
     startGateBody = null;
   }
@@ -367,86 +437,98 @@ function initPinballEngine() {
 
   // Physics updates and clamping
   Events.on(pbEngine, 'beforeUpdate', () => {
-    updateDynamicLeaderboard();
+    const isHost = isPinballHost();
     
-    // Rubber-banding (catch-up mechanic)
-    if (typeof pbState !== 'undefined' && pbState && pbState.status === 'playing' && pbEngine.gravity.y > 0) {
-      const allBalls = Object.values(pbBalls).filter(b => !pbState.finished.includes(b.plugin.name));
-      if (allBalls.length > 1) {
-        const sortedBalls = [...allBalls].sort((a, b) => b.position.y - a.position.y);
-        sortedBalls.forEach((ball, index) => {
-          let multiplier = 0;
-          if (index === 0) multiplier = 0.0; // 1st place: 100%
-          else if (index === 1) multiplier = 0.1; // 2nd place: 110%
-          else if (index === 2) multiplier = 0.2; // 3rd place: 120%
-          else if (index >= 3 && index <= 9) multiplier = 0.4; // 4th~10th: 140%
-          else if (index >= 10 && index <= 19) multiplier = 0.8; // 11th~20th: 180%
-          else multiplier = 1.0; // others: 200%
+    // In lobby/instruction, or on authoritative host: run physics routines
+    if (isHost || pbState.status !== 'playing' || !window.pinballRaceStarted) {
+      updateDynamicLeaderboard();
+      
+      // Rubber-banding (catch-up mechanic) - only on host authority
+      if (isHost && typeof pbState !== 'undefined' && pbState && pbState.status === 'playing' && pbEngine.gravity.y > 0) {
+        const allBalls = Object.values(pbBalls).filter(b => !pbState.finished.includes(b.plugin.name));
+        if (allBalls.length > 1) {
+          const sortedBalls = [...allBalls].sort((a, b) => b.position.y - a.position.y);
+          sortedBalls.forEach((ball, index) => {
+            let multiplier = 0;
+            if (index === 0) multiplier = 0.0; // 1st place: 100%
+            else if (index === 1) multiplier = 0.1; // 2nd place: 110%
+            else if (index === 2) multiplier = 0.2; // 3rd place: 120%
+            else if (index >= 3 && index <= 9) multiplier = 0.4; // 4th~10th: 140%
+            else if (index >= 10 && index <= 19) multiplier = 0.8; // 11th~20th: 180%
+            else multiplier = 1.0; // others: 200%
+            
+            if (multiplier > 0) {
+              const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
+              Matter.Body.applyForce(ball, ball.position, { x: 0, y: baseForce * multiplier });
+            }
+          });
+        }
+      }
+      
+      // Rotary plates
+      if (pbEngine && pbEngine.world) {
+        pbEngine.world.bodies.forEach(b => {
+          if (b.plugin && b.plugin.isRotary) {
+            Matter.Body.setAngle(b, b.angle + 0.05);
+          }
+        });
+      }
+      
+      if (pbState.status === 'playing' && window.pinballRaceStarted) {
+        if (isHost) {
+          // Only check stuck balls during actual race on host
+          Object.values(pbBalls).forEach(ball => {
+            // Apply constant downward push to simulate steep track (+30% speed)
+            Matter.Body.applyForce(ball, ball.position, { x: 0, y: 0.0006 });
+            
+            if (ball.speed < 0.5) {
+              ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
+              if (ball.plugin.stuckFrames > 40) {
+                const nudgeX = ((ball.plugin.num || 1) % 2 === 0) ? 3.0 : -3.0;
+                Matter.Body.setVelocity(ball, {
+                  x: nudgeX,
+                  y: -2.0
+                });
+                ball.plugin.stuckFrames = 0;
+              }
+            } else {
+              ball.plugin.stuckFrames = 0;
+            }
+          });
+        }
+      } else {
+        // In lobby/instruction, enforce boundaries so they can't drag balls beyond the gate or off-screen
+        Object.values(pbBalls).forEach(ball => {
+          let { x, y } = ball.position;
+          let clamped = false;
           
-          if (multiplier > 0) {
-            const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
-            Matter.Body.applyForce(ball, ball.position, { x: 0, y: baseForce * multiplier });
+          if (y > START_Y - 20) { y = START_Y - 20; clamped = true; }
+          if (y < 20) { y = 20; clamped = true; }
+          if (x < 20) { x = 20; clamped = true; }
+          if (x > LOGICAL_WIDTH - 20) { x = LOGICAL_WIDTH - 20; clamped = true; }
+          
+          if (clamped) {
+            Matter.Body.setPosition(ball, { x, y });
+            Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+            // Prevent players from overpowering the clamp by holding the mouse: drop the ball!
+            if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body === ball) {
+              pbMouseConstraint.body = null;
+              if (pbMouseConstraint.constraint) pbMouseConstraint.constraint.bodyB = null;
+            }
           }
         });
       }
     }
-    
-    // Rotary plates
-    if (pbEngine && pbEngine.world) {
-      pbEngine.world.bodies.forEach(b => {
-        if (b.plugin && b.plugin.isRotary) {
-          Matter.Body.setAngle(b, b.angle + 0.05);
-        }
-      });
-    }
-    
-    if (pbState.status === 'playing' && window.pinballRaceStarted) {
-      // Only check stuck balls during actual race
-      Object.values(pbBalls).forEach(ball => {
-        // Apply constant downward push to simulate steep track (+30% speed)
-        Matter.Body.applyForce(ball, ball.position, { x: 0, y: 0.0006 });
-        
-        if (ball.speed < 0.5) {
-          ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
-          if (ball.plugin.stuckFrames > 40) {
-            const nudgeX = ((ball.plugin.num || 1) % 2 === 0) ? 3.0 : -3.0;
-            Matter.Body.setVelocity(ball, {
-              x: nudgeX,
-              y: -2.0
-            });
-            ball.plugin.stuckFrames = 0;
-          }
-        } else {
-          ball.plugin.stuckFrames = 0;
-        }
-      });
-    } else {
-      // In lobby/instruction, enforce boundaries so they can't drag balls beyond the gate or off-screen
-      Object.values(pbBalls).forEach(ball => {
-        let { x, y } = ball.position;
-        let clamped = false;
-        
-        if (y > START_Y - 20) { y = START_Y - 20; clamped = true; }
-        if (y < 20) { y = 20; clamped = true; }
-        if (x < 20) { x = 20; clamped = true; }
-        if (x > LOGICAL_WIDTH - 20) { x = LOGICAL_WIDTH - 20; clamped = true; }
-        
-        if (clamped) {
-          Matter.Body.setPosition(ball, { x, y });
-          Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-          // Prevent players from overpowering the clamp by holding the mouse: drop the ball!
-          if (typeof pbMouseConstraint !== 'undefined' && pbMouseConstraint && pbMouseConstraint.body === ball) {
-            pbMouseConstraint.body = null;
-            if (pbMouseConstraint.constraint) pbMouseConstraint.constraint.bodyB = null;
-          }
-        }
-      });
-    }
   });
 
-  // Camera tracking
+  // Camera tracking and smooth 50~60 FPS snapshot interpolation
   Events.on(pbRender, 'beforeRender', () => {
-    // Windmill rotation and leaderboard update (since we have no local physics runner)
+    // Non-host updates ball positions using smooth snapshot interpolator
+    if (!isPinballHost() && pbState.status === 'playing' && window.pinballRaceStarted) {
+      pbInterpolator.update(pbBalls);
+    }
+
+    // Windmill rotation and leaderboard update
     updateDynamicLeaderboard();
     if (pbEngine && pbEngine.world) {
       pbEngine.world.bodies.forEach(b => {
@@ -475,7 +557,8 @@ function initPinballEngine() {
     let trackBalls = allBalls.filter(b => !pbState.finished.includes(b.plugin.name));
     if (trackBalls.length === 0) trackBalls = allBalls;
 
-    const sorted = [...trackBalls].sort((a, b) => b.position.y - a.position.y);
+    const isUphillMode = pbState && pbState.mode === 'uphill';
+    const sorted = [...trackBalls].sort((a, b) => isUphillMode ? (a.position.y - b.position.y) : (b.position.y - a.position.y));
     const now = Date.now();
     if (now - lastCameraSwitch > CAMERA_SWITCH_MS) {
       cameraTargetIdx = (cameraTargetIdx + 1) % Math.min(2, sorted.length);
@@ -493,7 +576,7 @@ function initPinballEngine() {
     const targetY = target.position.y - viewH * 0.35;
     
     // Smooth Lerp
-    cameraSmoothed += (targetY - cameraSmoothed) * 0.06;
+    cameraSmoothed += (targetY - cameraSmoothed) * 0.08;
 
     // Clamp
     const minY = 0;
@@ -608,6 +691,8 @@ function initPinballEngine() {
       ctx.font = 'bold 30px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
+      const isUphillMode = pbState && pbState.mode === 'uphill';
+      const arrowSymbol = isUphillMode ? '«' : '»';
       for(let i = 10; i < trackPathPoints.length; i += 20) {
         const p = trackPathPoints[i];
         const pNext = trackPathPoints[i+1];
@@ -618,55 +703,57 @@ function initPinballEngine() {
           ctx.save();
           ctx.translate(sp.x, sp.y);
           ctx.rotate(angle);
-          ctx.fillText('»', 0, -20);
-          ctx.fillText('»', 0, 20);
+          ctx.fillText(arrowSymbol, 0, -20);
+          ctx.fillText(arrowSymbol, 0, 20);
           ctx.restore();
         }
       }
     }
 
+    const isUphillMode = pbState && pbState.mode === 'uphill';
+    const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
+
     // 2. Start Line Checkerboard (only draw when start gate exists)
-    const startSp = toScreen(LOGICAL_WIDTH / 2, START_Y);
+    const startYPos = isUphillMode ? finalTrackY : START_Y;
+    const startSp = toScreen(LOGICAL_WIDTH / 2, startYPos);
     if (startGateBody && startSp.y > -100 && startSp.y < canvasHeight + 100) {
       drawCheckerboard(ctx, startSp.x, startSp.y, LOGICAL_WIDTH, 20 * scaleY);
       ctx.fillStyle = '#fff';
       ctx.font = `bold ${24 * scaleY}px Arial`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('START', startSp.x, startSp.y + 25 * scaleY); // Draw below the gate so balls don't cover it
+      ctx.fillText('START', startSp.x, isUphillMode ? (startSp.y - 25 * scaleY) : (startSp.y + 25 * scaleY));
       ctx.shadowBlur = 0;
     }
 
-    
-      // Draw Obstacles (on top of the road)
-      trackObstacles.forEach(body => {
-        if (!body.vertices || body.vertices.length === 0) return;
-        ctx.beginPath();
-        body.vertices.forEach((v, idx) => {
-          const sp = toScreen(v.x, v.y);
-          if (idx === 0) ctx.moveTo(sp.x, sp.y);
-          else ctx.lineTo(sp.x, sp.y);
-        });
-        ctx.closePath();
-        ctx.fillStyle = body.render.fillStyle;
-        ctx.strokeStyle = body.render.strokeStyle;
-        ctx.lineWidth = (body.render.lineWidth || 2) * scaleX;
-        ctx.fill();
-        if (body.render.strokeStyle) ctx.stroke();
+    // Draw Obstacles (on top of the road)
+    trackObstacles.forEach(body => {
+      if (!body.vertices || body.vertices.length === 0) return;
+      ctx.beginPath();
+      body.vertices.forEach((v, idx) => {
+        const sp = toScreen(v.x, v.y);
+        if (idx === 0) ctx.moveTo(sp.x, sp.y);
+        else ctx.lineTo(sp.x, sp.y);
       });
+      ctx.closePath();
+      ctx.fillStyle = body.render.fillStyle;
+      ctx.strokeStyle = body.render.strokeStyle;
+      ctx.lineWidth = (body.render.lineWidth || 2) * scaleX;
+      ctx.fill();
+      if (body.render.strokeStyle) ctx.stroke();
+    });
 
-      // 3. Finish Line Checkerboard
-
+    // 3. Finish Line Checkerboard
     if (trackPathPoints.length > 0) {
-      const finalY = trackPathPoints[trackPathPoints.length - 1].y;
-      const finishSp = toScreen(LOGICAL_WIDTH / 2, finalY + 40);
+      const finishYPos = isUphillMode ? (START_Y - 20) : (finalTrackY + 40);
+      const finishSp = toScreen(LOGICAL_WIDTH / 2, finishYPos);
       if (finishSp.y > -100 && finishSp.y < canvasHeight + 100) {
         drawCheckerboard(ctx, finishSp.x, finishSp.y, TRACK_WIDTH * scaleX, 30 * scaleY);
         ctx.fillStyle = '#f1c40f';
         ctx.font = 'bold 28px Arial';
         ctx.shadowColor = '#000';
         ctx.shadowBlur = 4;
-        ctx.fillText('🏆 FINISH', finishSp.x, finishSp.y + 40);
+        ctx.fillText('🏆 FINISH', finishSp.x, isUphillMode ? (finishSp.y - 25 * scaleY) : (finishSp.y + 40));
         ctx.shadowBlur = 0;
       }
     }
@@ -951,17 +1038,26 @@ function initPinballEngine() {
       if (typeof pbState !== 'undefined' && pbState.status === 'playing') {
         const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
         if (!myName || typeof pbBalls === 'undefined' || !pbBalls[myName]) return;
+        if (pbState.finished && pbState.finished.includes(myName)) return;
         
         const ball = pbBalls[myName];
+        const isUphill = pbState && pbState.mode === 'uphill';
         let fx = 0;
         let fy = 0;
-        const FORCE_AMT = 0.015;
-        if (event.key === 'ArrowLeft') fx = -FORCE_AMT;
-        else if (event.key === 'ArrowRight') fx = FORCE_AMT;
-        else if (event.key === 'ArrowUp') fy = -FORCE_AMT;
-        else if (event.key === 'ArrowDown') fy = FORCE_AMT;
+        let jump = false;
+        const FORCE_AMT = isUphill ? 0.03 : 0.015;
+        if (event.key === 'ArrowLeft' || event.key === 'KeyA') fx = -FORCE_AMT;
+        else if (event.key === 'ArrowRight' || event.key === 'KeyD') fx = FORCE_AMT;
+        else if (event.key === 'ArrowUp' || event.key === 'KeyW' || event.key === ' ') {
+          fy = isUphill ? -0.15 : -FORCE_AMT * 3;
+          jump = true;
+        }
+        else if (event.key === 'ArrowDown' || event.key === 'KeyS') fy = FORCE_AMT;
         
         if (fx !== 0 || fy !== 0) {
+          if (isUphill && jump) {
+            Matter.Body.setVelocity(ball, { x: ball.velocity.x + fx * 150, y: Math.min(-14, ball.velocity.y - 10) });
+          }
           Matter.Body.applyForce(ball, ball.position, { x: fx, y: fy });
           if (typeof pinballSocket !== 'undefined') {
             pinballSocket.emit('pinball_apply_force', { name: myName, fx: fx, fy: fy });
@@ -1162,7 +1258,8 @@ function updateDynamicLeaderboard() {
     if (idxA !== -1) return -1; // A finished, B not: A comes first
     if (idxB !== -1) return 1;  // B finished, A not: B comes first
     
-    return b.position.y - a.position.y; // Neither finished: sort by Y position (furthest down)
+    const isUphill = pbState && pbState.mode === 'uphill';
+    return isUphill ? (a.position.y - b.position.y) : (b.position.y - a.position.y); // Uphill: smallest Y is leading; Downhill: largest Y is leading
   });
   
   // Find current user's rank
@@ -1254,11 +1351,14 @@ function syncBalls(state) {
   const sortedPool = [...state.pool].sort();
   
   sortedPool.forEach((name, idx) => {
+    const isUphill = state && state.mode === 'uphill';
+    const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
+    const baseStartY = isUphill ? (finalTrackY - 20) : START_Y;
     const color = (state.colors && state.colors[name]) ? state.colors[name] : POOL_COLORS[idx % POOL_COLORS.length];
     const rRow = Math.floor(idx / 15);
     const cCol = idx % 15;
     const gridX = startXOffset + cCol * spacingX;
-    const gridY = START_Y - 17 - (rRow * 30);
+    const gridY = baseStartY - 17 - (rRow * 30);
     
     if (!pbBalls[name]) {
       const num = (idx % 15) + 1;
@@ -1285,6 +1385,11 @@ function syncBalls(state) {
 function startRace() {
   window.pinballRaceStarted = true;
   if (!pbEngine) return;
+  
+  if (typeof pbInterpolator !== 'undefined') {
+    pbInterpolator.reset();
+  }
+
   pbEngine.gravity.y = 0.88; // Reduced by 20% for smooth readable race speed
   
   if (startGateBody) {
@@ -1296,14 +1401,18 @@ function startRace() {
     Matter.World.remove(pbEngine.world, pbMouseConstraint);
   }
 
-  cameraSmoothed = 0;
+  const isUphill = pbState && pbState.mode === 'uphill';
+  cameraSmoothed = isUphill ? Math.max(0, pbWorldHeight - pbRender.options.height) : 0;
   cameraTargetIdx = 0;
   lastCameraSwitch = Date.now();
-  pbRender.bounds.min.y = 0;
-  pbRender.bounds.max.y = pbRender.options.height;
+  pbRender.bounds.min.y = cameraSmoothed;
+  pbRender.bounds.max.y = cameraSmoothed + pbRender.options.height;
 
-  // Host emits high-frequency position sync to all player screens
+  // Host emits high-frequency position snapshots to all player screens
   if (isPinballHost()) {
+    if (pbBalls) {
+      Object.values(pbBalls).forEach(b => Matter.Body.setStatic(b, false));
+    }
     if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
     window.pinballSyncInterval = setInterval(() => {
       if (pbState && pbState.status === 'playing' && window.pinballRaceStarted && pbBalls && window.pinballSocket) {
@@ -1317,58 +1426,38 @@ function startRace() {
               y: Math.round(b.position.y * 10) / 10,
               vx: Math.round(b.velocity.x * 100) / 100,
               vy: Math.round(b.velocity.y * 100) / 100,
-              a: Math.round(b.angle * 100) / 100,
-              av: Math.round(b.angularVelocity * 100) / 100
+              a: Math.round(b.angle * 1000) / 1000,
+              av: Math.round(b.angularVelocity * 1000) / 1000
             };
             hasBalls = true;
           }
         }
         if (hasBalls) {
-          window.pinballSocket.emit('pinball_host_sync', syncData);
+          window.pinballSocket.emit('pinball_host_sync', { t: Date.now(), syncData });
         }
       }
-    }, 50); // 20 updates per second
+    }, 35); // ~28 snapshot updates per second for smooth 50-60 FPS interpolation
+  } else {
+    // Non-host: disable local physics collision solver interference during race
+    if (pbBalls) {
+      Object.values(pbBalls).forEach(b => {
+        Matter.Body.setStatic(b, true);
+      });
+    }
   }
 }
 
 function bindPinballSocket(s) {
   window.pinballSocket = s;
-  s.on('pinball_host_sync', (syncData) => {
+  s.on('pinball_host_sync', (data) => {
     if (!pbBalls || !pbState || pbState.status === 'idle') return;
     
-    // Host calculates authoritative physics; non-host clients smoothly sync to host positions
+    // Host calculates authoritative physics; non-host clients smoothly sync via snapshot interpolator
     if (isPinballHost()) return;
 
-    Object.keys(syncData).forEach(name => {
-      if (pbBalls[name]) {
-        const sd = syncData[name];
-        if (sd && typeof sd.x === 'number' && typeof sd.y === 'number') {
-          const b = pbBalls[name];
-          const dx = sd.x - b.position.x;
-          const dy = sd.y - b.position.y;
-          const distSq = dx * dx + dy * dy;
-          if (distSq > 4000) {
-            // Teleport if huge displacement
-            Matter.Body.setPosition(b, { x: sd.x, y: sd.y });
-          } else if (distSq > 0.01) {
-            // Smooth 35% LERP interpolation
-            Matter.Body.setPosition(b, {
-              x: b.position.x + dx * 0.35,
-              y: b.position.y + dy * 0.35
-            });
-          }
-          if (typeof sd.vx === 'number' && typeof sd.vy === 'number') {
-            Matter.Body.setVelocity(b, { x: sd.vx, y: sd.vy });
-          }
-          if (typeof sd.a === 'number') {
-            Matter.Body.setAngle(b, sd.a);
-          }
-          if (typeof sd.av === 'number') {
-            Matter.Body.setAngularVelocity(b, sd.av);
-          }
-        }
-      }
-    });
+    const syncData = data.syncData || data;
+    const t = typeof data.t === 'number' ? data.t : Date.now();
+    pbInterpolator.addSnapshot(syncData, t);
   });
 
   s.on('pinball_ball_moved', (data) => {
@@ -1384,8 +1473,8 @@ function bindPinballSocket(s) {
 
   s.on('pinball_apply_force', (data) => {
     const { name, fx, fy } = data;
-    const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-    if (name !== myName && pbBalls && pbBalls[name]) {
+    // Host authority applies forces to dynamic ball bodies
+    if (isPinballHost() && pbBalls && pbBalls[name]) {
       Matter.Body.applyForce(pbBalls[name], pbBalls[name].position, { x: fx || 0, y: fy || 0 });
     }
   });
@@ -1537,10 +1626,17 @@ function bindPinballSocket(s) {
       initPinballEngine();
     }
 
-    if (state.status === 'idle') { window.pinballRaceStarted = false; hasSelectedPinballColor = false; }
+    if (state.status === 'idle') {
+      window.pinballRaceStarted = false;
+      hasSelectedPinballColor = false;
+      if (typeof pbInterpolator !== 'undefined') pbInterpolator.reset();
+      if (pbBalls) Object.values(pbBalls).forEach(b => Matter.Body.setStatic(b, false));
+    }
 
     if (state.status === 'lobby') {
       window.pinballRaceStarted = false;
+      if (typeof pbInterpolator !== 'undefined') pbInterpolator.reset();
+      if (pbBalls) Object.values(pbBalls).forEach(b => Matter.Body.setStatic(b, false));
       if (roomAdminPanel) roomAdminPanel.style.display = '';
       if (dynBoard) dynBoard.classList.add('hidden');
       const countdownEl = document.getElementById('pinball-countdown');
@@ -1632,6 +1728,26 @@ function bindPinballSocket(s) {
       const instrOverlay = document.getElementById('pinball-instruction-overlay');
       const instrTimer = document.getElementById('pinball-instruction-timer');
       if (instrOverlay && instrTimer) {
+        const isUphill = state.mode === 'uphill';
+        const titleEl = instrOverlay.querySelector('h2');
+        const listEl = instrOverlay.querySelector('ul');
+        if (titleEl) {
+          titleEl.innerHTML = isUphill ? '🧗 彈珠上坡跳跳賽' : '🏁 彈珠競速賽';
+        }
+        if (listEl) {
+          listEl.innerHTML = isUphill ? `
+            <li>🔴 專屬彈珠從山腳起跑</li>
+            <li>🚀 狂按「⬆️ 跳躍」或空白鍵克服重力</li>
+            <li>💨 移動與跳躍力道加倍提升</li>
+            <li>🏆 最先跳回山頂起點就是冠軍！</li>
+          ` : `
+            <li>🔴 每位參賽者有一顆專屬彈珠</li>
+            <li>🏎️ 彈珠沿著 S 型賽道競速</li>
+            <li>👆 利用右下角的方向鍵推擠別人</li>
+            <li>🏆 最先抵達終點的就是冠軍！</li>
+          `;
+        }
+
         instrOverlay.classList.remove('hidden');
         instrOverlay.style.display = 'flex';
 
@@ -1847,36 +1963,50 @@ function bindPinballSocket(s) {
       if (dpad) {
         if ((state.status === 'instruction' || (state.status === 'playing' && state.allowControls)) && dpadName && state.pool.includes(dpadName)) {
           dpad.classList.remove('hidden');
+          const isUphill = state.mode === 'uphill';
+          const btnUp = dpad.querySelector('.btn-dpad[data-dir="up"]');
+          if (btnUp) {
+            btnUp.innerHTML = isUphill ? '🚀<br><span style="font-size:10px; font-weight:bold;">跳躍</span>' : '⬆️';
+            btnUp.style.background = isUphill ? 'linear-gradient(135deg, #e74c3c, #c0392b)' : '#e67e22';
+            btnUp.style.border = isUphill ? '3px solid #f1c40f' : '2px solid #f1c40f';
+            btnUp.style.transform = isUphill ? 'scale(1.15)' : 'scale(1)';
+          }
+
           if (!dpad.hasListener) {
             dpad.hasListener = true;
             dpad.querySelectorAll('.btn-dpad').forEach(btn => {
               btn.addEventListener('pointerdown', (e) => {
                 e.preventDefault();
                 const currentName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-                // Only players in the pool can push (check at click-time to avoid stale closure)
                 if (!currentName || typeof pbState === 'undefined' || !pbState || !pbState.pool.includes(currentName)) return;
-                // If the player has already finished the race, lock their controls
                 if (pbState.finished && pbState.finished.includes(currentName)) return;
 
+                const isUphillMode = pbState && pbState.mode === 'uphill';
                 const dir = e.currentTarget.getAttribute('data-dir');
                 let fx = 0, fy = 0;
-                const forceAmount = 0.075;
-                const forceUp = forceAmount * 3.0; // Upward force +200% compared to base
-                if (dir === 'up') fy = -forceUp;
+                let jump = false;
+                const forceAmount = isUphillMode ? 0.12 : 0.075;
+                const forceUp = isUphillMode ? (forceAmount * 5.0) : (forceAmount * 3.0); // 2.5x jump force in Uphill!
+                if (dir === 'up') {
+                  fy = -forceUp;
+                  jump = true;
+                }
                 if (dir === 'down') fy = forceAmount;
                 if (dir === 'left') fx = -forceAmount;
                 if (dir === 'right') fx = forceAmount;
                 
-                console.log('[DPAD] pressed', dir, 'name=', currentName, 'ball=', pbBalls ? !!pbBalls[currentName] : 'pbBalls null');
-
                 if (typeof pbBalls !== 'undefined' && pbBalls[currentName]) {
+                  if (isUphillMode && jump) {
+                    Matter.Body.setVelocity(pbBalls[currentName], {
+                      x: pbBalls[currentName].velocity.x + fx * 150,
+                      y: Math.min(-15, pbBalls[currentName].velocity.y - 12)
+                    });
+                  }
                   Matter.Body.applyForce(pbBalls[currentName], pbBalls[currentName].position, { x: fx, y: fy });
-                  console.log('[DPAD] force applied locally');
                 }
                 
                 if (window.pinballSocket) {
                   window.pinballSocket.emit('pinball_apply_force', { name: currentName, fx: fx, fy: fy });
-                  console.log('[DPAD] socket emitted');
                 }
               });
             });
@@ -1905,6 +2035,46 @@ function bindPinballSocket(s) {
         } else {
           cameraToggle.classList.add('hidden');
         }
+      }
+
+      const zoomToggle = document.getElementById('pinball-zoom-toggle');
+      const zoomControls = document.getElementById('pinball-zoom-controls');
+      const zoomSlider = document.getElementById('pinball-zoom-slider');
+      const zoomLabel = document.getElementById('pinball-zoom-label');
+      const btnZoomReset = document.getElementById('btn-pinball-zoom-reset');
+
+      if (zoomToggle) {
+        if (state.status === 'playing' || state.status === 'instruction' || state.status === 'lobby') {
+          zoomToggle.classList.remove('hidden');
+          if (!zoomToggle.hasListener) {
+            zoomToggle.hasListener = true;
+            zoomToggle.addEventListener('click', () => {
+              if (zoomControls) {
+                zoomControls.classList.toggle('hidden');
+              }
+            });
+          }
+        } else {
+          zoomToggle.classList.add('hidden');
+          if (zoomControls) zoomControls.classList.add('hidden');
+        }
+      }
+
+      if (zoomSlider && !zoomSlider.hasListener) {
+        zoomSlider.hasListener = true;
+        zoomSlider.addEventListener('input', (e) => {
+          window.pinballZoom = parseFloat(e.target.value);
+          if (zoomLabel) zoomLabel.innerText = '🔍 ' + Math.round(window.pinballZoom * 100) + '%';
+        });
+      }
+
+      if (btnZoomReset && !btnZoomReset.hasListener) {
+        btnZoomReset.hasListener = true;
+        btnZoomReset.addEventListener('click', () => {
+          window.pinballZoom = 1.3;
+          if (zoomSlider) zoomSlider.value = 1.3;
+          if (zoomLabel) zoomLabel.innerText = '🔍 130%';
+        });
       }
   });
 }

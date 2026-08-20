@@ -1950,6 +1950,36 @@ app.get('/api/lobby_stats/:gid', (req, res) => {
   }});
 });
 
+app.get('/api/admin/backfill_avatars', async (req, res) => {
+  const uid = req.query.uid;
+  if (!isSuperAdmin(uid)) return res.status(403).json({ error: 'Unauthorized' });
+
+  let updatedCount = 0;
+  for (const gid in lobbyVisits) {
+    const stats = lobbyVisits[gid];
+    if (stats && stats.uniqueViewers) {
+      for (const [userId, info] of Object.entries(stats.uniqueViewers)) {
+        if (!info.pictureUrl) {
+          try {
+            const profile = await client.getProfile(userId);
+            if (profile && profile.pictureUrl) {
+              info.pictureUrl = profile.pictureUrl;
+              updatedCount++;
+            }
+          } catch (err) {
+            console.error('Failed to get profile for', userId, err.message);
+          }
+        }
+      }
+    }
+  }
+  if (updatedCount > 0) {
+    scheduleFileSave();
+    saveLobbyVisits().catch(console.error);
+  }
+  res.json({ success: true, updatedCount });
+});
+
 app.get('/api/admin/all_stats', async (req, res) => {
   const uid = req.query.uid;
   if (!uid) return res.status(403).json({ error: '需要 uid' });
@@ -2665,6 +2695,114 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
     return messagesToSend;
 }
 
+async function buildBumpMentionMessage(text, groupGames, targetGid, gid) {
+  if (!text || (!text.includes('遞補通知') && !text.includes('候補上') && !text.includes('後補上'))) {
+    return null;
+  }
+
+  const bumpItems = [];
+  const lines = text.split('\n');
+  let inBumpSection = false;
+
+  for (const line of lines) {
+    if (line.includes('遞補通知')) {
+      inBumpSection = true;
+      continue;
+    }
+    if (inBumpSection) {
+      if (line.includes('[系統代發]')) break;
+      const match = line.match(/(?:\[(.*?)\]\s*)?『(.*?)』\s*(?:後補上|候補上)/);
+      if (match) {
+        const secTitle = match[1] || '';
+        const names = match[2].split(/[、,]/).map(n => n.trim()).filter(Boolean);
+        names.forEach(name => {
+          bumpItems.push({ section: secTitle, name });
+        });
+      }
+    }
+  }
+
+  if (bumpItems.length === 0) {
+    const globalMatches = [...text.matchAll(/(?:\[(.*?)\]\s*)?『(.*?)』\s*(?:後補上|候補上)/g)];
+    for (const match of globalMatches) {
+      const secTitle = match[1] || '';
+      const names = match[2].split(/[、,]/).map(n => n.trim()).filter(Boolean);
+      names.forEach(name => {
+        bumpItems.push({ section: secTitle, name });
+      });
+    }
+  }
+
+  if (bumpItems.length === 0) return null;
+
+  const uniqueItems = [];
+  const seen = new Set();
+  for (const item of bumpItems) {
+    const key = `${item.section}_${item.name}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueItems.push(item);
+    }
+  }
+
+  const resolvedItems = await Promise.all(
+    uniqueItems.map(async (item) => {
+      let uid = null;
+      for (const g of groupGames) {
+        uid = nameToUidMap.get(`${g.gameId}_${item.name}`) || (g.uidMap && g.uidMap[item.name]);
+        if (uid) break;
+      }
+      if (!uid) {
+        uid = nameToUidMap.get(`${targetGid}_${item.name}`) || nameToUidMap.get(`${gid}_${item.name}`);
+      }
+      let inGroup = false;
+      if (uid) {
+        inGroup = await isUserInTargetGroup(targetGid, uid);
+      }
+      return { ...item, uid, inGroup };
+    })
+  );
+
+  const substitution = {};
+  const _names = {};
+  let hasAnyMention = false;
+  let subCounter = 0;
+  const linesOutput = ['🎉 【遞補通知】'];
+
+  for (const item of resolvedItems) {
+    const secStr = item.section ? `[${item.section}] ` : '';
+    if (item.uid && item.inGroup) {
+      const key = `bumpUser${subCounter++}`;
+      substitution[key] = {
+        type: "mention",
+        mentionee: {
+          type: "user",
+          userId: item.uid
+        }
+      };
+      _names[key] = item.name;
+      hasAnyMention = true;
+      linesOutput.push(`${secStr}{${key}} 候補上，請注意活動訊息！`);
+    } else {
+      linesOutput.push(`${secStr}@${item.name} 候補上，請注意活動訊息！`);
+    }
+  }
+
+  if (hasAnyMention) {
+    return {
+      type: "textV2",
+      text: linesOutput.join('\n'),
+      substitution: substitution,
+      _names: _names
+    };
+  } else {
+    return {
+      type: "text",
+      text: linesOutput.join('\n')
+    };
+  }
+}
+
 function generateListMessage(g, customTitle = null) {
   let msg = `📢 ${customTitle || '名單更新通知'}\n\n🏸 ${g.title}\n`;
   if (g.date) msg += `📅 ${g.date}\n`;
@@ -3215,8 +3353,9 @@ app.post('/api/admin/pinball/add-player', express.json(), (req, res) => {
 });
 
 app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
-  const { uid, winnerLimit, allowControls, socketId } = req.body;
-  pinballRoom.allowControls = allowControls !== false;
+  const { uid, winnerLimit, allowControls, socketId, mode } = req.body;
+  pinballRoom.mode = mode || 'downhill';
+  pinballRoom.allowControls = (pinballRoom.mode === 'uphill') ? true : (allowControls !== false);
   pinballRoom.hostSocketId = socketId || null;
   pinballRoom.hostUid = uid || null;
 
@@ -3225,7 +3364,7 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   pinballRoom.winnerLimit = winnerLimit || 3;
   pinballRoom.finished = [];
   pinballRoom.seed = Math.floor(Math.random() * 1000000);
-  pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, null);
+  pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, { mode: pinballRoom.mode });
 
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
@@ -3617,7 +3756,8 @@ app.post('/api/action', express.json(), async (req, res) => {
          if (!isNaN(dt.getTime())) pReminder = dt.getTime();
       }
       
-      let initialList = [];
+      let initialLists = [];
+      let currentInitialList = [];
       let initialLevelMap = {};
       let initialPaidMap = {};
       let initialUidMap = {};
@@ -3626,12 +3766,17 @@ app.post('/api/action', express.json(), async (req, res) => {
           // Split by newlines only (names may contain spaces)
           const rawList = initialListStr.split(/\n/).map(n => n.trim()).filter(Boolean);
           rawList.forEach(orig => {
+            if (orig === '---SEPARATOR---') {
+              initialLists.push(currentInitialList);
+              currentInitialList = [];
+              return;
+            }
             let n = orig;
             let isPaid = false;
             // Strip paid suffix
-            if (n.endsWith('$') || n.endsWith('\uFF04') || n.endsWith('(\u5DF2\u7E73\u8CBB)') || n.endsWith('\uff08\u5DF2\u7E73\u8CBB\uff09')) {
+            if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
                 isPaid = true;
-                n = n.replace(/[$\uFF04]$/, '').replace(/\(\u5DF2\u7E73\u8CBB\)$/, '').replace(/\uff08\u5DF2\u7E73\u8CBB\uff09$/, '');
+                n = n.replace(/[$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
             }
             // Extract UUID from [Uxxxxx] brackets first
             let uuid = '';
@@ -3648,14 +3793,14 @@ app.post('/api/action', express.json(), async (req, res) => {
                 lvl = lvlMatch[2].trim();
             }
             if (n) {
-              initialList.push(n);
+              currentInitialList.push(n);
               if (lvl) initialLevelMap[n] = lvl;
               if (isPaid) initialPaidMap[n] = true;
               if (uuid) initialUidMap[n] = uuid;
             }
           });
+          initialLists.push(currentInitialList);
       }
-      
       
       games[newGameId] = {
         gid: actualGid,
@@ -3687,9 +3832,9 @@ app.post('/api/action', express.json(), async (req, res) => {
           backupLimit: parseInt(backupLimit, 10) || 5,
           fee: s.fee || '',
           label: '',
-          list: idx === 0 ? initialList : []
+          list: initialLists.length > 0 ? (initialLists[idx] || []) : []
         })) : [
-          { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialList, fee: fee || '' }
+          { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialLists.flat(), fee: fee || '' }
         ]
       };
       
@@ -4053,7 +4198,7 @@ app.post('/api/action', express.json(), async (req, res) => {
           const bumpedNames = listsAfter[i].filter(n => !listsBefore[i].includes(n) && n !== '__ANON__');
           if (bumpedNames.length > 0) {
               const secPrefix = game.sections.length > 1 ? `[${game.sections[i].title}] ` : '';
-              allBumpedMsgs.push(`${secPrefix}『${bumpedNames.join('、')}』後補上 請注意訊息`);
+              allBumpedMsgs.push(`${secPrefix}『${bumpedNames.join('、')}』候補上 請注意訊息`);
           }
       }
       
@@ -4892,6 +5037,14 @@ async function handleEvent(event) {
 
       // Generate the full carousel (Status Bubble + Detail Bubbles + Mentions)
       const messagesToSend = await generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble);
+      
+      // If the incoming event is a bump notification and not already a full mention push, append the bump mention message
+      if (!isMentionPush) {
+        const bumpMentionMsg = await buildBumpMentionMessage(cleanText, groupGames, targetGid, gid);
+        if (bumpMentionMsg) {
+          messagesToSend.push(bumpMentionMsg);
+        }
+      }
       
       // Helper function to strip internal properties
       const getCleanMessages = (msgs) => {

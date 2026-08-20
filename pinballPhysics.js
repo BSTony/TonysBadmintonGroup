@@ -456,19 +456,25 @@ function scatterBallsOnFive() {
 
 function pushBall(name, dir) {
   if (pbEngine && pbBalls && pbBalls[name]) {
-    const forceAmount = 0.1; // Increased force significantly
+    const forceAmount = 0.1;
     let fx = 0, fy = 0;
-    if (dir === 'up') { fy -= forceAmount; }
-    else if (dir === 'down') { fy += forceAmount; }
-    else if (dir === 'left') { fx -= forceAmount; }
-    else if (dir === 'right') { fx += forceAmount; }
-    
-    // Also set velocity directly for snappier response
-    let vx = fx * 150;
-    let vy = fy * 150;
+    let vx = 0, vy = 0;
+    if (dir === 'up') {
+      fy = -forceAmount * 2.5; // 2.5x upward jump force
+      vy = -16; // Strong upward leap impulse
+    } else if (dir === 'down') {
+      fy = forceAmount;
+      vy = fy * 150;
+    } else if (dir === 'left') {
+      fx = -forceAmount * 1.5;
+      vx = fx * 150;
+    } else if (dir === 'right') {
+      fx = forceAmount * 1.5;
+      vx = fx * 150;
+    }
     
     Body.applyForce(pbBalls[name], pbBalls[name].position, { x: fx, y: fy });
-    Body.setVelocity(pbBalls[name], { x: pbBalls[name].velocity.x + vx, y: pbBalls[name].velocity.y + vy });
+    Body.setVelocity(pbBalls[name], { x: pbBalls[name].velocity.x + vx, y: vy !== 0 ? vy : pbBalls[name].velocity.y });
     
     pbBalls[name].plugin.pushed = true;
     setTimeout(() => { if (pbBalls && pbBalls[name]) pbBalls[name].plugin.pushed = false; }, 800);
@@ -479,7 +485,15 @@ function applyForce(name, forceX, forceY) {
   if (pbEngine && pbBalls && pbBalls[name]) {
     const ball = pbBalls[name];
     if (ball.plugin && ball.plugin.finished) return; // Don't push finished balls
-    Body.applyForce(ball, ball.position, { x: forceX || 0, y: forceY || 0 });
+    let fx = forceX || 0;
+    let fy = forceY || 0;
+    
+    // If upward force is applied, double the force and apply jump impulse
+    if (fy < 0) {
+      fy = fy * 2.5;
+      Body.setVelocity(ball, { x: ball.velocity.x + fx * 100, y: Math.min(-12, ball.velocity.y - 12) });
+    }
+    Body.applyForce(ball, ball.position, { x: fx, y: fy });
   }
 }
 

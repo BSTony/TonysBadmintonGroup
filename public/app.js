@@ -5365,6 +5365,8 @@ if (btnPinballAdminStart) {
     const limitInput = document.getElementById('pinball-winner-limit');
     let limit = 3;
     if (limitInput) limit = parseInt(limitInput.value) || 3;
+    const modeSelect = document.getElementById('pinball-mode-select');
+    const mode = modeSelect ? modeSelect.value : 'downhill';
     
     try {
       const res = await fetch('/api/admin/pinball/start-sequence', {
@@ -5373,6 +5375,7 @@ if (btnPinballAdminStart) {
         body: JSON.stringify({
           uid: currentUser.userId,
           winnerLimit: limit,
+          mode: mode,
           allowControls: document.getElementById('pinball-allow-controls') ? document.getElementById('pinball-allow-controls').checked : true,
           socketId: window.pinballSocket ? window.pinballSocket.id : null
         })
@@ -7482,6 +7485,34 @@ function addTaListRow(name = '', level = '', isPaid = false, uuid = '') {
   row.style.marginBottom = '5px';
   row.style.alignItems = 'center';
   
+  if (name === '---SEPARATOR---') {
+    row.dataset.isDivider = 'true';
+    row.style.background = '#e2e8f0';
+    row.style.padding = '8px';
+    row.style.borderRadius = '5px';
+    row.style.justifyContent = 'space-between';
+    
+    const label = document.createElement('span');
+    label.innerText = '--- 以下為下一個時段 ---';
+    label.style.fontWeight = 'bold';
+    label.style.fontSize = '12px';
+    label.style.color = '#475569';
+    
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'btn-danger btn-ta-remove-row';
+    delBtn.style.padding = '3px 6px';
+    delBtn.style.fontSize = '12px';
+    delBtn.style.margin = '0';
+    delBtn.innerText = '刪除';
+    delBtn.onclick = () => row.remove();
+    
+    row.appendChild(label);
+    row.appendChild(delBtn);
+    container.appendChild(row);
+    return;
+  }
+  
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.className = 'ta-list-name';
@@ -7557,6 +7588,9 @@ function addTaListRow(name = '', level = '', isPaid = false, uuid = '') {
 if (document.getElementById('btn-ta-add-row')) {
   document.getElementById('btn-ta-add-row').onclick = () => addTaListRow('');
 }
+if (document.getElementById('btn-ta-add-divider')) {
+  document.getElementById('btn-ta-add-divider').onclick = () => addTaListRow('---SEPARATOR---');
+}
 
 const btnBackTemplateAdmin = document.getElementById('btn-back-template-admin');
 if (btnBackTemplateAdmin) {
@@ -7581,8 +7615,12 @@ if (taTemplateSelect) {
       lines.forEach(line => {
         let n = line.trim();
         if (n === '__ANON__') n = '';
-        const parsed = parseTemplateLine(n);
-        addTaListRow(parsed.name, parsed.level, parsed.isPaid, parsed.uuid);
+        if (n === '---SEPARATOR---') {
+          addTaListRow('---SEPARATOR---');
+        } else {
+          const parsed = parseTemplateLine(n);
+          addTaListRow(parsed.name, parsed.level, parsed.isPaid, parsed.uuid);
+        }
       });
       deleteBtn.style.display = 'block';
     } else {
@@ -7603,6 +7641,10 @@ if (btnTaSave) {
     const rows = document.querySelectorAll('#ta-list-container .ta-list-row');
     const lines = [];
     rows.forEach(row => {
+      if (row.dataset.isDivider === 'true') {
+        lines.push('---SEPARATOR---');
+        return;
+      }
       const nameInput = row.querySelector('.ta-list-name');
       let n = nameInput.value.trim() || '__ANON__';
       const u = nameInput.dataset.uuid || '';

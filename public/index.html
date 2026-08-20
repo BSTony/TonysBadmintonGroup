@@ -453,7 +453,10 @@
           <div id="ta-list-container" style="display:flex; flex-direction:column; gap:5px; margin-bottom:5px;">
             <!-- 動態加入的格子 -->
           </div>
-          <button type="button" id="btn-ta-add-row" class="btn-secondary" style="width:100%; margin-top:5px; padding:8px; font-weight:bold;">➕ 新增一格</button>
+          <div style="display: flex; gap: 5px; margin-top: 5px;">
+            <button type="button" id="btn-ta-add-row" class="btn-secondary" style="flex: 1; padding:8px; font-weight:bold;">➕ 新增一格</button>
+            <button type="button" id="btn-ta-add-divider" class="btn-secondary" style="flex: 1; padding:8px; font-weight:bold;">➖ 新增時段分隔線</button>
+          </div>
           <div style="font-size: 12px; color: #666; margin-top: 5px;">* 若要產生空位請直接新增一格並留空即可。</div>
         </div>
 
@@ -555,6 +558,13 @@
             <button id="btn-add-pinball-self" class="btn-secondary" style="padding:5px 10px; font-size: 12px;">加入自己</button>
           </div>
           <div style="display:flex; gap: 5px; margin-bottom: 5px; align-items: center;">
+            <label style="font-size:12px; color: black; white-space: nowrap;">賽制模式:</label>
+            <select id="pinball-mode-select" style="flex:1; padding:5px; font-size: 12px; border:1px solid #ccc; border-radius: 4px; font-weight: bold; background: #fff;">
+              <option value="downhill">🏎️ 下坡競速賽 (一般)</option>
+              <option value="uphill">🧗 上坡障礙跳跳賽 (向上爬)</option>
+            </select>
+          </div>
+          <div style="display:flex; gap: 5px; margin-bottom: 5px; align-items: center;">
             <label style="font-size:12px; color: black; white-space: nowrap;">錄取名額:</label>
             <input type="number" id="pinball-winner-limit" value="3" min="1" style="flex:1; padding:5px; font-size: 12px; border:1px solid #ccc;">
           </div>
@@ -652,6 +662,20 @@
             </div>
             <p id="pinball-waiting-admin-text" class="hidden" style="color: #ccc; font-size: 14px; margin-bottom: 10px; animation: pulse 2s infinite;">⏳ 等待管理員操作...</p>
             <button id="btn-pinball-close-popup" class="hidden btn-primary" style="padding: 10px; border-radius: 8px;">關閉視窗</button>
+          </div>
+
+          <!-- Zoom Toggle Button & Panel on the Left -->
+          <button id="pinball-zoom-toggle" class="hidden" style="position: absolute; left: 20px; bottom: 90px; width: 60px; height: 60px; border-radius: 50%; background: rgba(0,0,0,0.6); color: white; border: 2px solid white; font-size: 22px; z-index: 125; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-direction: column; line-height: 1;">
+            🔍<br><span style="font-size:11px; font-weight:bold;">縮放</span>
+          </button>
+
+          <!-- Zoom Slider Panel (Collapsible Popup next to button) -->
+          <div id="pinball-zoom-controls" class="hidden" style="position: absolute; left: 90px; bottom: 85px; background: rgba(20, 20, 40, 0.9); border: 2px solid #3498db; padding: 10px 15px; border-radius: 12px; z-index: 126; box-shadow: 0 4px 15px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; gap: 8px; backdrop-filter: blur(8px);">
+            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+              <span id="pinball-zoom-label" style="color: #f1c40f; font-weight: bold; font-size: 13px;">🔍 130%</span>
+              <button id="btn-pinball-zoom-reset" style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 2px 8px; font-size: 11px; cursor: pointer;">預設</button>
+            </div>
+            <input id="pinball-zoom-slider" type="range" min="0.5" max="3.0" step="0.1" value="1.3" style="width: 140px; cursor: pointer; accent-color: #3498db;">
           </div>
 
           <!-- Camera Toggle Button -->
