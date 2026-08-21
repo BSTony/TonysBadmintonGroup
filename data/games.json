@@ -3715,7 +3715,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787301654446,
+    "lastActiveTime": 1787302154126,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3779,7 +3779,6 @@
           "弘彬/Jason",
           "Kevin",
           "Andrew",
-          "Ong",
           "張建發",
           "建發2",
           "建發3",
@@ -3795,6 +3794,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/21 16:49",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/21 16:40",
         "name": "FB阿軒",
