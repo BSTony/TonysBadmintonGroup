@@ -3715,7 +3715,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787302154126,
+    "lastActiveTime": 1787307519470,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3756,7 +3756,8 @@
       "JOJO👆✌️🖖🤘👐💪": "U07da54f66d0a500df5b2db748bde73a9",
       "Jojo": "U07da54f66d0a500df5b2db748bde73a9",
       "徐偉強": "U037afe342197214125f95fd00ebc1f0c",
-      "FB阿軒": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB阿軒": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -3788,12 +3789,20 @@
           "JOJO👆✌️🖖🤘👐💪",
           "Jojo",
           "徐偉強",
-          "FB阿軒"
+          "FB阿軒",
+          "Hsin"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/21 18:18",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/21 16:49",
         "name": "Ong",
