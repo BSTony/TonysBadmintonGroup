@@ -2380,12 +2380,14 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
 
 async function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble) {
       const flexBubbles = (statusBubble && !isMentionPush) ? [statusBubble] : [];
+      const liffBaseUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : '';
       
       const MAX_ROWS = 8;
       let currentBubbleRows = [];
       let currentBubbleRowCount = 0;
+      let currentBubbleGameUris = new Set();
 
-      const createBubbleFromRows = (rows) => {
+      const createBubbleFromRows = (rows, gameUri) => {
           const listBoxes = [];
           rows.forEach((row, rIdx) => {
               if (row.type === 'gameHeader') {
@@ -2396,19 +2398,27 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
                   if (row.rightText) {
                       headerContents.push({ type: "text", text: row.rightText, size: "sm", color: "#666666", align: "end", flex: 0, weight: "bold" });
                   }
-                  listBoxes.push({
+                  const headerBox = {
                       type: "box", layout: "horizontal", margin: "sm", alignItems: "center",
                       contents: headerContents
-                  });
+                  };
+                  if (row.gameUri) {
+                      headerBox.action = { type: "uri", label: "報名頁面", uri: row.gameUri };
+                  }
+                  listBoxes.push(headerBox);
               } else if (row.type === 'header') {
                   if (rIdx > 0 && rows[rIdx-1].type !== 'gameHeader') listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
-                  listBoxes.push({
+                  const secBox = {
                       type: "box", layout: "horizontal", margin: "sm",
                       contents: [
                           { type: "text", text: row.text, size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
                           { type: "text", text: row.rightText, size: "xs", color: "#666666", align: "end", flex: 0 }
                       ]
-                  });
+                  };
+                  if (row.gameUri) {
+                      secBox.action = { type: "uri", label: "報名頁面", uri: row.gameUri };
+                  }
+                  listBoxes.push(secBox);
               } else if (row.type === 'backupHeader') {
                   listBoxes.push({
                       type: "box", layout: "horizontal", margin: "sm",
@@ -2440,15 +2450,20 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
                   });
               }
           });
-          return {
+          const bubble = {
               type: "bubble", size: "mega",
               body: { type: "box", layout: "vertical", paddingAll: "16px", contents: [{ type: "box", layout: "vertical", margin: "md", contents: listBoxes }] }
           };
+          if (gameUri) {
+              bubble.action = { type: "uri", label: "報名頁面", uri: gameUri };
+          }
+          return bubble;
       };
 
       for (const g of groupGames) {
           if (flexBubbles.length >= 12) break; // LINE Carousel maximum is 12 bubbles
           
+          const gameUri = liffBaseUrl ? `${liffBaseUrl}&gameId=${g.gameId}` : null;
           const isMultiSection = g.sections && g.sections.length > 1;
           const section = g.sections && g.sections[0] ? g.sections[0] : { list: [], limit: 20 };
           const list = section.list || [];
@@ -2471,7 +2486,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
 
           const allRows = [];
           
-          allRows.push({ type: 'gameHeader', text: `🏸 ${g.title}`, rightText: countText });
+          allRows.push({ type: 'gameHeader', text: `🏸 ${g.title}`, rightText: countText, gameUri });
           
           const getStrLen = (str) => {
               let len = 0;
@@ -2483,7 +2498,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
 
           sectionsToRender.forEach((sec, sIdx) => {
               if (isMultiSection) {
-                  allRows.push({ type: 'header', text: `📍 ${sec.title || '分區'}`, rightText: `${(sec.list||[]).length}/${sec.limit||0}` });
+                  allRows.push({ type: 'header', text: `📍 ${sec.title || '分區'}`, rightText: `${(sec.list||[]).length}/${sec.limit||0}`, gameUri });
               }
               
               const secList = sec.list || [];
@@ -2546,16 +2561,20 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
           });
 
           if (currentBubbleRowCount > 0 && (currentBubbleRowCount + gameRowCount > MAX_ROWS)) {
-              if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(currentBubbleRows));
+              const bUri = currentBubbleGameUris.size > 0 ? Array.from(currentBubbleGameUris)[0] : null;
+              if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(currentBubbleRows, bUri));
               currentBubbleRows = [];
               currentBubbleRowCount = 0;
+              currentBubbleGameUris.clear();
           }
 
           if (gameRowCount > MAX_ROWS) {
               if (currentBubbleRows.length > 0) {
-                  if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(currentBubbleRows));
+                  const bUri = currentBubbleGameUris.size > 0 ? Array.from(currentBubbleGameUris)[0] : null;
+                  if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(currentBubbleRows, bUri));
                   currentBubbleRows = [];
                   currentBubbleRowCount = 0;
+                  currentBubbleGameUris.clear();
               }
               let chunk = [];
               let chunkRowCount = 0;
@@ -2563,7 +2582,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               for (let i = 0; i < allRows.length; i++) {
                   const row = allRows[i];
                   if (chunkRowCount >= MAX_ROWS && row.type !== 'header' && row.type !== 'backupHeader' && row.type !== 'gameHeader') {
-                      if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(chunk));
+                      if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(chunk, gameUri));
                       chunk = [];
                       chunkRowCount = 0;
                       titleAdded = false;
@@ -2571,7 +2590,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
                   
                   // Re-inject gameHeader if we chunked
                   if (!titleAdded && row.type !== 'gameHeader') {
-                      chunk.push({ type: 'gameHeader', text: `🏸 ${g.title} (續)`, rightText: countText });
+                      chunk.push({ type: 'gameHeader', text: `🏸 ${g.title} (續)`, rightText: countText, gameUri });
                       chunkRowCount++;
                       titleAdded = true;
                   }
@@ -2587,14 +2606,17 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               }
               currentBubbleRows = chunk;
               currentBubbleRowCount = chunkRowCount;
+              if (gameUri) currentBubbleGameUris.add(gameUri);
           } else {
               currentBubbleRows.push(...allRows);
               currentBubbleRowCount += gameRowCount;
+              if (gameUri) currentBubbleGameUris.add(gameUri);
           }
       }
       
       if (currentBubbleRows.length > 0 && flexBubbles.length < 12) {
-          flexBubbles.push(createBubbleFromRows(currentBubbleRows));
+          const bUri = currentBubbleGameUris.size > 0 ? Array.from(currentBubbleGameUris)[0] : null;
+          flexBubbles.push(createBubbleFromRows(currentBubbleRows, bUri));
       }
 
       const carouselMsg = {
