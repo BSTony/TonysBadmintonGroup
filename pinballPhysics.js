@@ -73,7 +73,7 @@ function buildTopDownTrack(W) {
     isStatic: true, friction: 0.05, restitution: 0.2
   }));
   
-  for(let y = currentY; y < currentY + 100; y += 20) {
+  for(let y = PB_START_Y; y < currentY + 100; y += 20) {
     pathPoints.push({ x: W/2, y: y });
   }
   currentY += 100;
@@ -523,7 +523,8 @@ function initServerEngine(pool, seed, optionsOrCb) {
 
 function startRace() {
   if (pbEngine) {
-    pbEngine.gravity.y = PB_GRAVITY_Y;
+    const isUphill = pbEngine.plugin && pbEngine.plugin.mode === 'uphill';
+    pbEngine.gravity.y = isUphill ? 0.4 : PB_GRAVITY_Y;
     if (pbEngine.plugin) pbEngine.plugin.raceStarted = true;
     if (pbStartGate) {
       World.remove(pbEngine.world, pbStartGate);
@@ -531,8 +532,8 @@ function startRace() {
     }
     Object.values(pbBalls).forEach(ball => {
       Body.setVelocity(ball, {
-        x: (Math.random() - 0.5) * 4,
-        y: -(4 + Math.random() * 4)
+        x: (Math.random() - 0.5) * 3,
+        y: isUphill ? -(2 + Math.random() * 2) : (2 + Math.random() * 2)
       });
     });
   }
@@ -542,14 +543,28 @@ function scatterBallsOnFive() {
   // Deliberately do nothing. Balls should not jump before GO.
 }
 
+function getTargetBall(name) {
+  if (!pbBalls) return null;
+  if (name && pbBalls[name]) return pbBalls[name];
+  if (name) {
+    const clean = name.replace(/\s*\(Local Test\)/i, '').trim();
+    const matchKey = Object.keys(pbBalls).find(k => k === clean || k.includes(clean) || clean.includes(k));
+    if (matchKey) return pbBalls[matchKey];
+  }
+  const all = Object.values(pbBalls);
+  if (all.length === 1) return all[0];
+  return null;
+}
+
 function pushBall(name, dir) {
-  if (pbEngine && pbBalls && pbBalls[name]) {
+  const ball = getTargetBall(name);
+  if (pbEngine && ball) {
     const forceAmount = 0.08;
     let fx = 0, fy = 0;
     let vx = 0, vy = 0;
     if (dir === 'up') {
-      fy = -forceAmount * 1.3; // 50% reduced jump force
-      vy = -8.5; // Controlled upward leap impulse (50% reduction)
+      fy = -forceAmount * 1.3;
+      vy = -8.5;
     } else if (dir === 'down') {
       fy = forceAmount;
       vy = fy * 100;
@@ -561,25 +576,24 @@ function pushBall(name, dir) {
       vx = fx * 100;
     }
     
-    Body.applyForce(pbBalls[name], pbBalls[name].position, { x: fx, y: fy });
-    Body.setVelocity(pbBalls[name], { x: pbBalls[name].velocity.x + vx, y: vy !== 0 ? vy : pbBalls[name].velocity.y });
+    Body.applyForce(ball, ball.position, { x: fx, y: fy });
+    Body.setVelocity(ball, { x: ball.velocity.x + vx, y: vy !== 0 ? vy : ball.velocity.y });
     
-    pbBalls[name].plugin.pushed = true;
-    setTimeout(() => { if (pbBalls && pbBalls[name]) pbBalls[name].plugin.pushed = false; }, 800);
+    ball.plugin.pushed = true;
+    setTimeout(() => { if (ball) ball.plugin.pushed = false; }, 800);
   }
 }
 
 function applyForce(name, forceX, forceY) {
-  if (pbEngine && pbBalls && pbBalls[name]) {
-    const ball = pbBalls[name];
-    if (ball.plugin && ball.plugin.finished) return; // Don't push finished balls
+  const ball = getTargetBall(name);
+  if (pbEngine && ball) {
+    if (ball.plugin && ball.plugin.finished) return;
     let fx = forceX || 0;
     let fy = forceY || 0;
     
-    // If upward force is applied, apply controlled jump impulse (50% reduced)
     if (fy < 0) {
       fy = fy * 1.25;
-      Body.setVelocity(ball, { x: ball.velocity.x + fx * 50, y: Math.min(-6.5, ball.velocity.y - 6.5) });
+      Body.setVelocity(ball, { x: ball.velocity.x + fx * 75, y: Math.min(-8.5, ball.velocity.y - 6.5) });
     }
     Body.applyForce(ball, ball.position, { x: fx, y: fy });
   }

@@ -157,6 +157,21 @@ function isPinballHost() {
   return true;
 }
 
+function getMyPinballName(state) {
+  if (!state || !state.pool || state.pool.length === 0) return null;
+  const currentName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+  if (currentName && state.pool.includes(currentName)) return currentName;
+  if (currentName) {
+    const clean = currentName.replace(/\s*\(Local Test\)/i, '').trim();
+    if (state.pool.includes(clean)) return clean;
+    const found = state.pool.find(p => p.includes(clean) || clean.includes(p));
+    if (found) return found;
+  }
+  if (state.pool.length === 1) return state.pool[0];
+  if (isPinballHostRole()) return state.pool[0];
+  return null;
+}
+
 // Track Constants
 const TRACK_WIDTH = 200;
 // Logical start Y fixed to match server (1000 * 0.65 = 650)
@@ -1085,7 +1100,7 @@ function initPinballEngine() {
     window._pbKeydownBound = true;
     document.addEventListener('keydown', (event) => {
       if (typeof pbState !== 'undefined' && pbState.status === 'playing') {
-        const myName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+        const myName = getMyPinballName(pbState);
         if (!myName || typeof pbBalls === 'undefined' || !pbBalls[myName]) return;
         if (pbState.finished && pbState.finished.includes(myName)) return;
         
@@ -1164,8 +1179,8 @@ function buildTopDownTrack(W) {
 
   currentY += funnelHeight;
   
-  // Start track points exactly at funnel exit
-  for(let y = currentY; y < currentY + 100; y += 20) {
+  // Start track points exactly at START_Y to draw road through the funnel
+  for(let y = START_Y; y < currentY + 100; y += 20) {
     pathPoints.push({ x: W/2, y: y });
   }
   currentY += 100;
@@ -1468,7 +1483,8 @@ function startRace() {
     pbInterpolator.reset();
   }
 
-  pbEngine.gravity.y = 0.88; // Reduced by 20% for smooth readable race speed
+  const isUphill = pbState && pbState.mode === 'uphill';
+  pbEngine.gravity.y = isUphill ? 0.4 : 0.88;
   
   if (startGateBody) {
     Matter.World.remove(pbEngine.world, startGateBody);
@@ -1479,7 +1495,6 @@ function startRace() {
     Matter.World.remove(pbEngine.world, pbMouseConstraint);
   }
 
-  const isUphill = pbState && pbState.mode === 'uphill';
   cameraSmoothed = isUphill ? Math.max(0, pbWorldHeight - pbRender.options.height) : 0;
   cameraTargetIdx = 0;
   lastCameraSwitch = Date.now();
@@ -1489,7 +1504,13 @@ function startRace() {
   // Host emits high-frequency position snapshots to all player screens
   if (isPinballHost()) {
     if (pbBalls) {
-      Object.values(pbBalls).forEach(b => Matter.Body.setStatic(b, false));
+      Object.values(pbBalls).forEach(b => {
+        Matter.Body.setStatic(b, false);
+        Matter.Body.setVelocity(b, {
+          x: (Math.random() - 0.5) * 3,
+          y: isUphill ? -(2 + Math.random() * 2) : (2 + Math.random() * 2)
+        });
+      });
     }
     if (window.pinballSyncInterval) clearInterval(window.pinballSyncInterval);
     window.pinballSyncInterval = setInterval(() => {
@@ -2042,14 +2063,14 @@ function bindPinballSocket(s) {
       }
       
       const dpad = document.getElementById('pinball-dpad');
-      const dpadName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
+      const dpadName = getMyPinballName(state);
       if (dpad) {
-        if ((state.status === 'instruction' || (state.status === 'playing' && state.allowControls)) && dpadName && state.pool.includes(dpadName)) {
+        if ((state.status === 'instruction' || (state.status === 'playing' && state.allowControls)) && dpadName) {
           dpad.classList.remove('hidden');
           const isUphill = state.mode === 'uphill';
           const btnUp = dpad.querySelector('.btn-dpad[data-dir="up"]');
           if (btnUp) {
-            btnUp.innerHTML = isUphill ? '🚀<br><span style="font-size:10px; font-weight:bold;">跳躍</span>' : '⬆️';
+            btnUp.innerHTML = isUphill ? '🚀' : '⬆️';
             btnUp.style.background = isUphill ? 'linear-gradient(135deg, #e74c3c, #c0392b)' : '#e67e22';
             btnUp.style.border = isUphill ? '3px solid #f1c40f' : '2px solid #f1c40f';
             btnUp.style.transform = isUphill ? 'scale(1.15)' : 'scale(1)';
@@ -2058,18 +2079,19 @@ function bindPinballSocket(s) {
           if (!dpad.hasListener) {
             dpad.hasListener = true;
             dpad.querySelectorAll('.btn-dpad').forEach(btn => {
-              btn.addEventListener('pointerdown', (e) => {
+              const handlePress = (e) => {
                 e.preventDefault();
-                const currentName = (typeof currentUser !== 'undefined' && currentUser) ? currentUser.displayName : null;
-                if (!currentName || typeof pbState === 'undefined' || !pbState || !pbState.pool.includes(currentName)) return;
+                e.stopPropagation();
+                const currentName = getMyPinballName(pbState);
+                if (!currentName || typeof pbState === 'undefined' || !pbState) return;
                 if (pbState.finished && pbState.finished.includes(currentName)) return;
 
                 const isUphillMode = pbState && pbState.mode === 'uphill';
                 const dir = e.currentTarget.getAttribute('data-dir');
                 let fx = 0, fy = 0;
                 let jump = false;
-                const forceAmount = isUphillMode ? 0.07 : 0.05;
-                const forceUp = isUphillMode ? (forceAmount * 2.5) : (forceAmount * 2.0); // 50% reduced jump force
+                const forceAmount = isUphillMode ? 0.08 : 0.05;
+                const forceUp = isUphillMode ? (forceAmount * 2.5) : (forceAmount * 2.0);
                 if (dir === 'up') {
                   fy = -forceUp;
                   jump = true;
@@ -2082,7 +2104,7 @@ function bindPinballSocket(s) {
                   if (isUphillMode && jump) {
                     Matter.Body.setVelocity(pbBalls[currentName], {
                       x: pbBalls[currentName].velocity.x + fx * 75,
-                      y: Math.min(-7.5, pbBalls[currentName].velocity.y - 6)
+                      y: Math.min(-8.5, pbBalls[currentName].velocity.y - 6.5)
                     });
                   }
                   Matter.Body.applyForce(pbBalls[currentName], pbBalls[currentName].position, { x: fx, y: fy });
@@ -2091,7 +2113,11 @@ function bindPinballSocket(s) {
                 if (window.pinballSocket) {
                   window.pinballSocket.emit('pinball_apply_force', { name: currentName, fx: fx, fy: fy });
                 }
-              });
+              };
+              
+              btn.addEventListener('pointerdown', handlePress);
+              btn.addEventListener('mousedown', handlePress);
+              btn.addEventListener('touchstart', handlePress, { passive: false });
             });
           }
         } else {
