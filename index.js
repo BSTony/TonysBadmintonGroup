@@ -2390,11 +2390,15 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
           rows.forEach((row, rIdx) => {
               if (row.type === 'gameHeader') {
                   if (rIdx > 0) listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
+                  const headerContents = [
+                      { type: "text", text: row.text, weight: "bold", size: "md", color: "#1DB446", wrap: true, flex: 1 }
+                  ];
+                  if (row.rightText) {
+                      headerContents.push({ type: "text", text: row.rightText, size: "sm", color: "#666666", align: "end", flex: 0, weight: "bold" });
+                  }
                   listBoxes.push({
-                      type: "box", layout: "vertical", margin: "sm",
-                      contents: [
-                          { type: "text", text: row.text, weight: "bold", size: "md", color: "#1DB446", wrap: true }
-                      ]
+                      type: "box", layout: "horizontal", margin: "sm", alignItems: "center",
+                      contents: headerContents
                   });
               } else if (row.type === 'header') {
                   if (rIdx > 0 && rows[rIdx-1].type !== 'gameHeader') listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
@@ -2451,9 +2455,23 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
           const limit = section.limit || 20;
           
           const sectionsToRender = (g.sections && g.sections.length > 0) ? g.sections : [{ list: list, limit: limit, title: '名單' }];
+          
+          let totalCount = 0;
+          let totalLimit = 0;
+          if (g.sections && g.sections.length > 0) {
+              g.sections.forEach(s => {
+                  totalCount += (s.list || []).length;
+                  totalLimit += (s.limit || 0);
+              });
+          } else {
+              totalCount = list.length;
+              totalLimit = limit;
+          }
+          const countText = totalLimit > 0 ? `${totalCount}/${totalLimit}` : `${totalCount}人`;
+
           const allRows = [];
           
-          allRows.push({ type: 'gameHeader', text: `🏸 ${g.title}` });
+          allRows.push({ type: 'gameHeader', text: `🏸 ${g.title}`, rightText: countText });
           
           const getStrLen = (str) => {
               let len = 0;
@@ -2553,7 +2571,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
                   
                   // Re-inject gameHeader if we chunked
                   if (!titleAdded && row.type !== 'gameHeader') {
-                      chunk.push({ type: 'gameHeader', text: `🏸 ${g.title} (續)` });
+                      chunk.push({ type: 'gameHeader', text: `🏸 ${g.title} (續)`, rightText: countText });
                       chunkRowCount++;
                       titleAdded = true;
                   }
