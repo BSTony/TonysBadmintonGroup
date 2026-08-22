@@ -3715,7 +3715,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787373335176,
+    "lastActiveTime": 1787373336411,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3745,7 +3745,8 @@
       "徐偉強": true,
       "Kevin": true,
       "張建發": true,
-      "建發2": true
+      "建發2": true,
+      "建發3": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
