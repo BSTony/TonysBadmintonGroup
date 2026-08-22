@@ -4302,7 +4302,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787379191737,
+    "lastActiveTime": 1787397107545,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4313,7 +4313,8 @@
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
-      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4344,11 +4345,19 @@
         "label": "",
         "list": [
           "謝東霖 Tony",
-          "Kay"
+          "Kay",
+          "Gary"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/22 19:11",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/22 14:13",
         "name": "林煥杰",
