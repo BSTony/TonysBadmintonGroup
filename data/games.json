@@ -4302,7 +4302,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787377164509,
+    "lastActiveTime": 1787379191737,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4312,7 +4312,8 @@
     "paidMap": {},
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Kay": "U49e2484c80056990b759e9039a74e1a6"
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4323,7 +4324,9 @@
         "backupLimit": 5,
         "fee": "150",
         "label": "",
-        "list": []
+        "list": [
+          "林煥杰"
+        ]
       },
       {
         "title": "10-12",
@@ -4346,6 +4349,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/22 14:13",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/22 13:39",
         "name": "Kay",
