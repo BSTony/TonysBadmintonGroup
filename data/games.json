@@ -3715,7 +3715,7 @@
     "tag": "",
     "active": true,
     "startTime": 1786498163231,
-    "lastActiveTime": 1787307519470,
+    "lastActiveTime": 1787358190416,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -3785,7 +3785,6 @@
           "建發3",
           "羅",
           "ALAN LIU",
-          "©️張CC～©️",
           "JOJO👆✌️🖖🤘👐💪",
           "Jojo",
           "徐偉強",
@@ -3796,6 +3795,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/22 08:23",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/21 18:18",
         "name": "Hsin",
