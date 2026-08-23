@@ -4333,7 +4333,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787444076928,
+    "lastActiveTime": 1787484552733,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4347,7 +4347,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "云": "U433bba23fffec0bbdba4f408822eb6ec",
-      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf"
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
+      "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4361,7 +4362,8 @@
         "list": [
           "林煥杰",
           "云",
-          "ALAN LIU"
+          "ALAN LIU",
+          "杜威霖 Andy"
         ]
       },
       {
@@ -4386,6 +4388,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/23 19:29",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/23 08:14",
         "name": "ALAN LIU",
