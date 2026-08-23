@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3379,
+    "viewCount": 3383,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -23,8 +23,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 649,
-        "lastVisit": 1787404865929,
+        "count": 650,
+        "lastVisit": 1787487597326,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -44,8 +44,8 @@
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
         "firstVisit": 1783209148916,
-        "count": 220,
-        "lastVisit": 1787445087423,
+        "count": 221,
+        "lastVisit": 1787489208337,
         "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
       },
       "U532d12783f207181c2d0f9d9ecc8724a": {
@@ -99,8 +99,8 @@
       "U47573cf563cc67d5fc00dbb48a51092a": {
         "displayName": "兔兔(玉儒)",
         "firstVisit": 1783218812060,
-        "count": 34,
-        "lastVisit": 1787394467616,
+        "count": 35,
+        "lastVisit": 1787487097325,
         "pictureUrl": "https://profile.line-scdn.net/0hwOdjz548KGBJEzcDixVWXjlDKwpqYnFyYnxlUXUUJVN0JmdiZyEwVngRcVcjd28yYCFjUi5BcwBrcDFqbB0xZX50dRt1fg81OwUzZDl0FVISRBJOPDI1QQRbMjYKdxpdGRdhWSlhPTYsYhZ9BgknZgdbEAgkfyp1JERENkwhRuMmEV81ZHVmA3QVflXx"
       },
       "Ue1d19fdc4f72d6fc04484fdc8c32b189": {
@@ -140,8 +140,8 @@
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
         "firstVisit": 1783229231612,
-        "count": 83,
-        "lastVisit": 1787414699423,
+        "count": 84,
+        "lastVisit": 1787489262825,
         "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
       },
       "U9a1ff0a8477529c49db5bca1e7313bd0": {
@@ -1139,6 +1139,30 @@
       }
     },
     "logs": [
+      {
+        "time": 1787489262825,
+        "userId": "U04307fbd1087e54ce656086b653a60fd",
+        "displayName": "黃政豪",
+        "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
+      },
+      {
+        "time": 1787489208337,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
+      {
+        "time": 1787487597326,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
+      {
+        "time": 1787487097325,
+        "userId": "U47573cf563cc67d5fc00dbb48a51092a",
+        "displayName": "兔兔(玉儒)",
+        "pictureUrl": "https://profile.line-scdn.net/0hwOdjz548KGBJEzcDixVWXjlDKwpqYnFyYnxlUXUUJVN0JmdiZyEwVngRcVcjd28yYCFjUi5BcwBrcDFqbB0xZX50dRt1fg81OwUzZDl0FVISRBJOPDI1QQRbMjYKdxpdGRdhWSlhPTYsYhZ9BgknZgdbEAgkfyp1JERENkwhRuMmEV81ZHVmA3QVflXx"
+      },
       {
         "time": 1787486019627,
         "userId": "U33ec3d57827236fa5ed0f2da4c6e8205",
@@ -6167,7 +6191,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 183,
+    "viewCount": 184,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -6276,8 +6300,8 @@
       "U07681bd7cc8c5262b1d67edc7535152b": {
         "displayName": "Vincent 吳政諺 KPMG",
         "firstVisit": 1783987135241,
-        "count": 3,
-        "lastVisit": 1786537872955,
+        "count": 4,
+        "lastVisit": 1787489418423,
         "pictureUrl": "https://profile.line-scdn.net/0hZ66HT4ArBRkbMRH7s757ZmthBnM4QFwLP1cfKipiDnkvAERHZFcZfn40CX0kVEMcMARJfy9hCy8XInJ_BWf5LRwBWCgmAEdHMV9P-g"
       },
       "U9904ed725b1f420b8718791594e3756b": {
@@ -6340,6 +6364,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1787489418423,
+        "userId": "U07681bd7cc8c5262b1d67edc7535152b",
+        "displayName": "Vincent 吳政諺 KPMG",
+        "pictureUrl": "https://profile.line-scdn.net/0hZ66HT4ArBRkbMRH7s757ZmthBnM4QFwLP1cfKipiDnkvAERHZFcZfn40CX0kVEMcMARJfy9hCy8XInJ_BWf5LRwBWCgmAEdHMV9P-g"
+      },
       {
         "time": 1787194279639,
         "userId": "Ufa8dba5febf9f719da07f7e507391a21",
