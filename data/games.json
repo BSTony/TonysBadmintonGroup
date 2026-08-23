@@ -4168,7 +4168,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787235896535,
+    "lastActiveTime": 1787483773531,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4200,7 +4200,8 @@
       "Iven": "U7e762af3061a46f6a7e212cfc0afcb8f",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
-      "Wayne": "U1a05e97623cee1f79b0876626e88f0ab"
+      "Wayne": "U1a05e97623cee1f79b0876626e88f0ab",
+      "Matt": "U33ec3d57827236fa5ed0f2da4c6e8205"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4222,12 +4223,22 @@
           "Iven",
           "陳呈",
           "John",
-          "Wayne"
+          "Wayne",
+          "Matt"
         ],
         "fee": "230"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "history": [
+      {
+        "time": "08/23 19:16",
+        "name": "Matt",
+        "operator": "Matt孟錡",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
   },
   "1787376761749504": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
