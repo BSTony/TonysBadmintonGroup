@@ -4168,7 +4168,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787484242129,
+    "lastActiveTime": 1787496895630,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4202,7 +4202,8 @@
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Wayne": "U1a05e97623cee1f79b0876626e88f0ab",
       "Matt": "U33ec3d57827236fa5ed0f2da4c6e8205",
-      "小周": "Uf2f63c157d1e4f7e5d289d377c568582"
+      "小周": "Uf2f63c157d1e4f7e5d289d377c568582",
+      "小黑": "U7c381eceb3dee900bbd30b986a0f8357"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4226,13 +4227,21 @@
           "John",
           "Wayne",
           "Matt",
-          "小周"
+          "小周",
+          "小黑"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/23 22:54",
+        "name": "小黑",
+        "operator": "陳宜蓁",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/23 19:24",
         "name": "小周",
