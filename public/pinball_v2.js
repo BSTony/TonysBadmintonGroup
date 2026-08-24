@@ -670,6 +670,25 @@ function initPinballEngine() {
     if (trackPathPoints.length > 0) {
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
+
+      // Funnel asphalt surface
+      const isUphillMode = pbState && pbState.mode === 'uphill';
+      if (!isUphillMode) {
+        const topY = START_Y;
+        const botY = trackPathPoints[0].y;
+        const pTopL = toScreen(-150, topY);
+        const pTopR = toScreen(LOGICAL_WIDTH + 150, topY);
+        const pBotL = toScreen(LOGICAL_WIDTH / 2 - TRACK_WIDTH / 2, botY);
+        const pBotR = toScreen(LOGICAL_WIDTH / 2 + TRACK_WIDTH / 2, botY);
+        ctx.beginPath();
+        ctx.moveTo(pTopL.x, pTopL.y);
+        ctx.lineTo(pTopR.x, pTopR.y);
+        ctx.lineTo(pBotR.x, pBotR.y);
+        ctx.lineTo(pBotL.x, pBotL.y);
+        ctx.closePath();
+        ctx.fillStyle = '#4a4a4a';
+        ctx.fill();
+      }
       
       // Outer Guardrail / Track Outer Border (Smooth continuous outer margin)
       ctx.beginPath();
@@ -1158,8 +1177,8 @@ function buildTopDownTrack(W) {
   let currentY = START_Y + 10; // Track generation starts below the gate
   
   // Create Smooth Wide Y-Shape Funnel to guide all balls effortlessly into track
-  const funnelHeight = 350;
-  const funnelSteps = 35;
+  const funnelHeight = 250;
+  const funnelSteps = 25;
   const topLeftX = -150; // Spans far beyond screen left
   const topRightX = W + 150; // Spans far beyond screen right
   const targetLeftX = W / 2 - TRACK_WIDTH / 2;
@@ -1179,8 +1198,8 @@ function buildTopDownTrack(W) {
 
   currentY += funnelHeight;
   
-  // Start track points exactly at START_Y to draw road through the funnel
-  for(let y = START_Y; y < currentY + 100; y += 20) {
+  // Start track points exactly at funnel exit
+  for(let y = currentY; y < currentY + 100; y += 20) {
     pathPoints.push({ x: W/2, y: y });
   }
   currentY += 100;

@@ -35,45 +35,30 @@ function buildTopDownTrack(W) {
   let currentY = PB_START_Y + 10;
   
   const funnelHeight = 250;
-  const trackLeftX = W / 2 - PB_TRACK_WIDTH / 2;
-  const trackRightX = W / 2 + PB_TRACK_WIDTH / 2;
-  
+  const funnelSteps = 25;
+  const topLeftX = -150;
+  const topRightX = W + 150;
+  const targetLeftX = W / 2 - PB_TRACK_WIDTH / 2;
+  const targetRightX = W / 2 + PB_TRACK_WIDTH / 2;
+
   // Ceiling to prevent flying too high
   bodies.push(Bodies.rectangle(W/2, -500, W * 10, 1000, { isStatic: true }));
 
-  const lStartX = -1000;
-  const lStartY = currentY;
-  const lEndX = trackLeftX;
-  const lEndY = currentY + funnelHeight;
-  const lLen = Math.hypot(lEndX - lStartX, lEndY - lStartY);
-  const lAngle = Math.atan2(lEndY - lStartY, lEndX - lStartX);
-  
-  bodies.push(Bodies.rectangle((lStartX + lEndX)/2, (lStartY + lEndY)/2, lLen, 150, {
-    isStatic: true, angle: lAngle
-  }));
-  
-  const rStartX = trackRightX;
-  const rStartY = currentY + funnelHeight;
-  const rEndX = W + 1000;
-  const rEndY = currentY;
-  const rLen = Math.hypot(rEndX - rStartX, rEndY - rStartY);
-  const rAngle = Math.atan2(rEndY - rStartY, rEndX - rStartX);
-  
-  bodies.push(Bodies.rectangle((rStartX + rEndX)/2, (rStartY + rEndY)/2, rLen, 150, {
-    isStatic: true, angle: rAngle
-  }));
+  for (let i = 0; i <= funnelSteps; i++) {
+    const t = i / funnelSteps;
+    // Smooth quadratic curve for natural Y-funnel slope (\  /)
+    const easeT = Math.pow(t, 1.3);
+    const fy = currentY + t * funnelHeight;
+    const flX = topLeftX + easeT * (targetLeftX - topLeftX);
+    const frX = topRightX + easeT * (targetRightX - topRightX);
+    
+    bodies.push(Bodies.circle(flX - 30, fy, 40, { isStatic: true, friction: 0.0, restitution: 0.2 }));
+    bodies.push(Bodies.circle(frX + 30, fy, 40, { isStatic: true, friction: 0.0, restitution: 0.2 }));
+  }
 
   currentY += funnelHeight;
   
-  const bumperRadius = 40;
-  bodies.push(Bodies.circle(trackLeftX - bumperRadius + 15, currentY, bumperRadius, {
-    isStatic: true, friction: 0.05, restitution: 0.2
-  }));
-  bodies.push(Bodies.circle(trackRightX + bumperRadius - 15, currentY, bumperRadius, {
-    isStatic: true, friction: 0.05, restitution: 0.2
-  }));
-  
-  for(let y = PB_START_Y; y < currentY + 100; y += 20) {
+  for(let y = currentY; y < currentY + 100; y += 20) {
     pathPoints.push({ x: W/2, y: y });
   }
   currentY += 100;
@@ -277,11 +262,10 @@ function initServerEngine(pool, seed, optionsOrCb) {
       let ny = dx / len;
 
       let offsets = [];
-      if (rowNum % 2 === 0) {
-        offsets = [-75, -25, 25, 75];
-      } else {
-        offsets = [-50, 0, 50];
-      }
+      const pattern = rowNum % 3;
+      if (pattern === 0) offsets = [-45, 45];
+      else if (pattern === 1) offsets = [-35, 35];
+      else offsets = [0];
 
       for (let offsetAmt of offsets) {
         const cx = p.x + nx * offsetAmt;
@@ -457,7 +441,7 @@ function initServerEngine(pool, seed, optionsOrCb) {
         
         if (ball.position.y > serverPathPoints[serverPathPoints.length - 1].y) return;
 
-        if (ball.position.y > PB_START_Y) {
+        if (ball.position.y > serverPathPoints[0].y) {
           let closest = serverPathPoints[0];
           let minDist = Math.abs(ball.position.y - closest.y);
           for (let j = 1; j < serverPathPoints.length; j++) {
