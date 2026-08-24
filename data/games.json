@@ -4410,7 +4410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787552877343,
+    "lastActiveTime": 1787588075269,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4428,7 +4428,8 @@
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
-      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a"
+      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4443,7 +4444,8 @@
           "林煥杰",
           "云",
           "ALAN LIU",
-          "杜威霖 Andy"
+          "杜威霖 Andy",
+          "JoeLin"
         ]
       },
       {
@@ -4470,6 +4472,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/25 00:14",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/24 14:27",
         "name": "林立峰",
