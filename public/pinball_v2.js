@@ -1115,6 +1115,33 @@ function initPinballEngine() {
 
   pbRender.mouse = mouse;
   
+function applyPinballControl(ball, fx, fy, isUphill) {
+  if (!ball || !ball.velocity) return;
+  const vx = ball.velocity.x;
+  const vy = ball.velocity.y;
+  
+  let newVx = vx;
+  let newVy = vy;
+  
+  if (fx !== 0) {
+    const impulseX = Math.sign(fx) * Math.max(3.8, Math.abs(fx) * 80);
+    newVx = Math.max(-14, Math.min(14, vx + impulseX));
+  }
+  
+  if (fy < 0) {
+    if (isUphill) {
+      newVy = Math.min(-8.5, vy - 6.5);
+    } else {
+      newVy = Math.max(-3.0, vy - 4.5);
+    }
+  } else if (fy > 0) {
+    newVy = Math.min(22, vy + 4.5);
+  }
+  
+  Matter.Body.setVelocity(ball, { x: newVx, y: newVy });
+  Matter.Body.applyForce(ball, ball.position, { x: (fx || 0) * 0.05, y: (fy || 0) * 0.05 });
+}
+
   if (!window._pbKeydownBound) {
     window._pbKeydownBound = true;
     document.addEventListener('keydown', (event) => {
@@ -1127,21 +1154,16 @@ function initPinballEngine() {
         const isUphill = pbState && pbState.mode === 'uphill';
         let fx = 0;
         let fy = 0;
-        let jump = false;
-        const FORCE_AMT = isUphill ? 0.02 : 0.015;
+        const FORCE_AMT = isUphill ? 0.08 : 0.05;
         if (event.key === 'ArrowLeft' || event.key === 'KeyA') fx = -FORCE_AMT;
         else if (event.key === 'ArrowRight' || event.key === 'KeyD') fx = FORCE_AMT;
         else if (event.key === 'ArrowUp' || event.key === 'KeyW' || event.key === ' ') {
-          fy = isUphill ? -0.075 : -FORCE_AMT * 3;
-          jump = true;
+          fy = isUphill ? -0.2 : -0.1;
         }
-        else if (event.key === 'ArrowDown' || event.key === 'KeyS') fy = FORCE_AMT;
+        else if (event.key === 'ArrowDown' || event.key === 'KeyS') fy = 0.08;
         
         if (fx !== 0 || fy !== 0) {
-          if (isUphill && jump) {
-            Matter.Body.setVelocity(ball, { x: ball.velocity.x + fx * 75, y: Math.min(-7.5, ball.velocity.y - 5.5) });
-          }
-          Matter.Body.applyForce(ball, ball.position, { x: fx, y: fy });
+          applyPinballControl(ball, fx, fy, isUphill);
           if (typeof pinballSocket !== 'undefined') {
             pinballSocket.emit('pinball_apply_force', { name: myName, fx: fx, fy: fy });
           }
@@ -1593,7 +1615,8 @@ function bindPinballSocket(s) {
     const { name, fx, fy } = data;
     // Host authority applies forces to dynamic ball bodies
     if (isPinballHost() && pbBalls && pbBalls[name]) {
-      Matter.Body.applyForce(pbBalls[name], pbBalls[name].position, { x: fx || 0, y: fy || 0 });
+      const isUphill = pbState && pbState.mode === 'uphill';
+      applyPinballControl(pbBalls[name], fx || 0, fy || 0, isUphill);
     }
   });
 
@@ -2088,11 +2111,15 @@ function bindPinballSocket(s) {
           dpad.classList.remove('hidden');
           const isUphill = state.mode === 'uphill';
           const btnUp = dpad.querySelector('.btn-dpad[data-dir="up"]');
+          const btnDown = dpad.querySelector('.btn-dpad[data-dir="down"]');
           if (btnUp) {
             btnUp.innerHTML = isUphill ? '🚀' : '⬆️';
             btnUp.style.background = isUphill ? 'linear-gradient(135deg, #e74c3c, #c0392b)' : '#e67e22';
             btnUp.style.border = isUphill ? '3px solid #f1c40f' : '2px solid #f1c40f';
             btnUp.style.transform = isUphill ? 'scale(1.15)' : 'scale(1)';
+          }
+          if (btnDown) {
+            btnDown.style.display = isUphill ? 'none' : 'flex';
           }
 
           if (!dpad.hasListener) {
@@ -2108,25 +2135,14 @@ function bindPinballSocket(s) {
                 const isUphillMode = pbState && pbState.mode === 'uphill';
                 const dir = e.currentTarget.getAttribute('data-dir');
                 let fx = 0, fy = 0;
-                let jump = false;
                 const forceAmount = isUphillMode ? 0.08 : 0.05;
-                const forceUp = isUphillMode ? (forceAmount * 2.5) : (forceAmount * 2.0);
-                if (dir === 'up') {
-                  fy = -forceUp;
-                  jump = true;
-                }
-                if (dir === 'down') fy = forceAmount;
+                if (dir === 'up') fy = isUphillMode ? -0.2 : -0.1;
+                if (dir === 'down') fy = 0.08;
                 if (dir === 'left') fx = -forceAmount;
                 if (dir === 'right') fx = forceAmount;
                 
                 if (typeof pbBalls !== 'undefined' && pbBalls[currentName]) {
-                  if (isUphillMode && jump) {
-                    Matter.Body.setVelocity(pbBalls[currentName], {
-                      x: pbBalls[currentName].velocity.x + fx * 75,
-                      y: Math.min(-8.5, pbBalls[currentName].velocity.y - 6.5)
-                    });
-                  }
-                  Matter.Body.applyForce(pbBalls[currentName], pbBalls[currentName].position, { x: fx, y: fy });
+                  applyPinballControl(pbBalls[currentName], fx, fy, isUphillMode);
                 }
                 
                 if (window.pinballSocket) {

@@ -572,14 +572,30 @@ function applyForce(name, forceX, forceY) {
   const ball = getTargetBall(name);
   if (pbEngine && ball) {
     if (ball.plugin && ball.plugin.finished) return;
+    const isUphill = pbEngine.plugin && pbEngine.plugin.mode === 'uphill';
     let fx = forceX || 0;
     let fy = forceY || 0;
     
-    if (fy < 0) {
-      fy = fy * 1.25;
-      Body.setVelocity(ball, { x: ball.velocity.x + fx * 75, y: Math.min(-8.5, ball.velocity.y - 6.5) });
+    let newVx = ball.velocity.x;
+    let newVy = ball.velocity.y;
+    
+    if (fx !== 0) {
+      const impulseX = Math.sign(fx) * Math.max(3.8, Math.abs(fx) * 80);
+      newVx = Math.max(-14, Math.min(14, ball.velocity.x + impulseX));
     }
-    Body.applyForce(ball, ball.position, { x: fx, y: fy });
+    
+    if (fy < 0) {
+      if (isUphill) {
+        newVy = Math.min(-8.5, ball.velocity.y - 6.5);
+      } else {
+        newVy = Math.max(-3.0, ball.velocity.y - 4.5);
+      }
+    } else if (fy > 0) {
+      newVy = Math.min(22, ball.velocity.y + 4.5);
+    }
+    
+    Body.setVelocity(ball, { x: newVx, y: newVy });
+    Body.applyForce(ball, ball.position, { x: (fx || 0) * 0.05, y: (fy || 0) * 0.05 });
   }
 }
 
