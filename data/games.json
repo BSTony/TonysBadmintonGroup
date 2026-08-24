@@ -4410,7 +4410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787545374213,
+    "lastActiveTime": 1787552862751,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4427,7 +4427,8 @@
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
-      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a"
+      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
+      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4442,7 +4443,8 @@
           "林煥杰",
           "云",
           "ALAN LIU",
-          "杜威霖 Andy"
+          "杜威霖 Andy",
+          "林立峰"
         ]
       },
       {
@@ -4468,6 +4470,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/24 14:27",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/24 12:22",
         "name": "小可愛",
