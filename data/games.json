@@ -4396,7 +4396,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787539999234,
+    "lastActiveTime": 1787540024133,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4436,9 +4436,7 @@
         "backupLimit": 5,
         "fee": "210",
         "label": "",
-        "list": [
-          "周哲儁"
-        ]
+        "list": []
       },
       {
         "title": "8-12",
@@ -4454,6 +4452,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/24 10:53",
+        "name": "周哲儁",
+        "operator": "周哲儁",
+        "action": "-1",
+        "section": "10-12"
+      },
       {
         "time": "08/24 10:53",
         "name": "周哲儁",
