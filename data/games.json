@@ -4492,42 +4492,5 @@
         "section": "8-12"
       }
     ]
-  },
-  "1787404194976143": {
-    "gid": "C7189704ba7750055f05f533d3a93abf6",
-    "targetGids": [
-      "C7189704ba7750055f05f533d3a93abf6"
-    ],
-    "gameId": "1787404194976143",
-    "title": "Teat",
-    "date": "8/23 (日)",
-    "time": "18:00~20:00",
-    "location": "南港運動中心",
-    "fee": "",
-    "note": "",
-    "tag": "",
-    "active": true,
-    "startTime": 1787404194976,
-    "lastActiveTime": 1787404194976,
-    "scheduleTime": null,
-    "reminderTime": null,
-    "scheduleInput": null,
-    "anonymous": [],
-    "anonymousCount": 0,
-    "levelMap": {},
-    "paidMap": {},
-    "uidMap": {},
-    "noteMap": {},
-    "allowUserNoteEdit": true,
-    "sections": [
-      {
-        "title": "報名名單",
-        "limit": 20,
-        "backupLimit": 5,
-        "label": "",
-        "list": [],
-        "fee": ""
-      }
-    ]
   }
 }
