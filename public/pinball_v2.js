@@ -2128,15 +2128,11 @@ function bindPinballSocket(s) {
           dpad.classList.remove('hidden');
           const isUphill = state.mode === 'uphill';
           const btnUp = dpad.querySelector('.btn-dpad[data-dir="up"]');
-          const btnDown = dpad.querySelector('.btn-dpad[data-dir="down"]');
           if (btnUp) {
             btnUp.innerHTML = isUphill ? '🚀' : '⬆️';
             btnUp.style.background = isUphill ? 'linear-gradient(135deg, #e74c3c, #c0392b)' : '#e67e22';
             btnUp.style.border = isUphill ? '3px solid #f1c40f' : '2px solid #f1c40f';
             btnUp.style.transform = isUphill ? 'scale(1.15)' : 'scale(1)';
-          }
-          if (btnDown) {
-            btnDown.style.display = isUphill ? 'none' : 'flex';
           }
 
           if (!dpad.hasListener) {
@@ -2154,7 +2150,6 @@ function bindPinballSocket(s) {
                 let fx = 0, fy = 0;
                 const forceAmount = isUphillMode ? 0.08 : 0.05;
                 if (dir === 'up') fy = isUphillMode ? -0.2 : -0.1;
-                if (dir === 'down') fy = 0.08;
                 if (dir === 'left') fx = -forceAmount;
                 if (dir === 'right') fx = forceAmount;
                 
