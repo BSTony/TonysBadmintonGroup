@@ -457,24 +457,43 @@ function initPinballEngine() {
       updateDynamicLeaderboard();
       
       // Rubber-banding (catch-up mechanic) - only on host authority
-      if (isHost && typeof pbState !== 'undefined' && pbState && pbState.status === 'playing' && pbEngine.gravity.y > 0) {
+      if (isHost && typeof pbState !== 'undefined' && pbState && pbState.status === 'playing' && Math.abs(pbEngine.gravity.y) > 0) {
+        const isUphillMode = pbState && pbState.mode === 'uphill';
         const allBalls = Object.values(pbBalls).filter(b => !pbState.finished.includes(b.plugin.name));
         if (allBalls.length > 1) {
-          const sortedBalls = [...allBalls].sort((a, b) => b.position.y - a.position.y);
-          sortedBalls.forEach((ball, index) => {
-            let multiplier = 0;
-            if (index === 0) multiplier = 0.0; // 1st place: 100%
-            else if (index === 1) multiplier = 0.1; // 2nd place: 110%
-            else if (index === 2) multiplier = 0.2; // 3rd place: 120%
-            else if (index >= 3 && index <= 9) multiplier = 0.4; // 4th~10th: 140%
-            else if (index >= 10 && index <= 19) multiplier = 0.8; // 11th~20th: 180%
-            else multiplier = 1.0; // others: 200%
-            
-            if (multiplier > 0) {
-              const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
-              Matter.Body.applyForce(ball, ball.position, { x: 0, y: baseForce * multiplier });
-            }
-          });
+          if (isUphillMode) {
+            const sortedBalls = [...allBalls].sort((a, b) => a.position.y - b.position.y); // smallest Y (top) is 1st
+            sortedBalls.forEach((ball, index) => {
+              let multiplier = 0;
+              if (index === 0) multiplier = 0.0;
+              else if (index === 1) multiplier = 0.1;
+              else if (index === 2) multiplier = 0.2;
+              else if (index >= 3 && index <= 9) multiplier = 0.4;
+              else if (index >= 10 && index <= 19) multiplier = 0.8;
+              else multiplier = 1.0;
+              
+              if (multiplier > 0) {
+                const baseForce = ball.mass * Math.abs(pbEngine.gravity.y) * pbEngine.gravity.scale;
+                Matter.Body.applyForce(ball, ball.position, { x: 0, y: -baseForce * multiplier }); // push UP
+              }
+            });
+          } else {
+            const sortedBalls = [...allBalls].sort((a, b) => b.position.y - a.position.y); // largest Y (bottom) is 1st
+            sortedBalls.forEach((ball, index) => {
+              let multiplier = 0;
+              if (index === 0) multiplier = 0.0;
+              else if (index === 1) multiplier = 0.1;
+              else if (index === 2) multiplier = 0.2;
+              else if (index >= 3 && index <= 9) multiplier = 0.4;
+              else if (index >= 10 && index <= 19) multiplier = 0.8;
+              else multiplier = 1.0;
+              
+              if (multiplier > 0) {
+                const baseForce = ball.mass * Math.abs(pbEngine.gravity.y) * pbEngine.gravity.scale;
+                Matter.Body.applyForce(ball, ball.position, { x: 0, y: baseForce * multiplier }); // push DOWN
+              }
+            });
+          }
         }
       }
       
@@ -487,12 +506,15 @@ function initPinballEngine() {
         });
       }
       
+      const isUphillMode = pbState && pbState.mode === 'uphill';
+      const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
+
       if (pbState.status === 'playing' && window.pinballRaceStarted) {
         if (isHost) {
           // Only check stuck balls during actual race on host
           Object.values(pbBalls).forEach(ball => {
-            // Apply constant downward push to simulate steep track (+30% speed)
-            Matter.Body.applyForce(ball, ball.position, { x: 0, y: 0.0006 });
+            // Apply gentle downward/upward push along track
+            Matter.Body.applyForce(ball, ball.position, { x: 0, y: isUphillMode ? -0.0006 : 0.0006 });
             
             if (ball.speed < 0.5) {
               ball.plugin.stuckFrames = (ball.plugin.stuckFrames || 0) + 1;
@@ -500,7 +522,7 @@ function initPinballEngine() {
                 const nudgeX = ((ball.plugin.num || 1) % 2 === 0) ? 3.0 : -3.0;
                 Matter.Body.setVelocity(ball, {
                   x: nudgeX,
-                  y: -2.0
+                  y: isUphillMode ? -8.0 : 6.0
                 });
                 ball.plugin.stuckFrames = 0;
               }
@@ -511,14 +533,11 @@ function initPinballEngine() {
         }
       } else {
         // In lobby/instruction, enforce boundaries so they can't drag balls beyond the gate or off-screen
-        const isUphill = pbState && pbState.mode === 'uphill';
-        const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
-
         Object.values(pbBalls).forEach(ball => {
           let { x, y } = ball.position;
           let clamped = false;
           
-          if (isUphill) {
+          if (isUphillMode) {
             if (y > finalTrackY + 10) { y = finalTrackY + 10; clamped = true; }
             if (y < finalTrackY - 450) { y = finalTrackY - 450; clamped = true; }
           } else {
@@ -542,10 +561,9 @@ function initPinballEngine() {
 
       // Position-based 100% reliable finish check
       if (window.pinballRaceStarted && pbState && pbState.status === 'playing') {
-        const isUphill = pbState && pbState.mode === 'uphill';
         Object.values(pbBalls).forEach(ball => {
           if (!ball || !ball.plugin || pbState.finished.includes(ball.plugin.name)) return;
-          const reachedFinish = isUphill ? (ball.position.y <= START_Y - 30) : (ball.position.y >= finalTrackY - 45);
+          const reachedFinish = isUphillMode ? (ball.position.y <= START_Y - 30) : (ball.position.y >= finalTrackY - 45);
           if (reachedFinish) {
             fetch('/api/pinball/finish', {
               method: 'POST',
@@ -666,13 +684,14 @@ function initPinballEngine() {
       return { x: (wx - bMinX) * scaleX, y: (wy - bMinY) * scaleY };
     }
 
+    const isUphillMode = pbState && pbState.mode === 'uphill';
+
     // 1. Draw the road surface underneath
     if (trackPathPoints.length > 0) {
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
 
       // Funnel asphalt surface
-      const isUphillMode = pbState && pbState.mode === 'uphill';
       if (!isUphillMode) {
         const topY = START_Y;
         const botY = trackPathPoints[0].y;
@@ -774,7 +793,6 @@ function initPinballEngine() {
       ctx.font = 'bold 30px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const isUphillMode = pbState && pbState.mode === 'uphill';
       const arrowSymbol = isUphillMode ? '«' : '»';
       for(let i = 10; i < trackPathPoints.length; i += 20) {
         const p = trackPathPoints[i];
@@ -793,7 +811,6 @@ function initPinballEngine() {
       }
     }
 
-    const isUphillMode = pbState && pbState.mode === 'uphill';
     const finalTrackY = (trackPathPoints.length > 0) ? trackPathPoints[trackPathPoints.length - 1].y : (pbWorldHeight - 400);
 
     // 2. Start Line Checkerboard (only draw when start gate exists)
@@ -1525,7 +1542,7 @@ function startRace() {
   }
 
   const isUphill = pbState && pbState.mode === 'uphill';
-  pbEngine.gravity.y = isUphill ? 0.4 : 0.88;
+  pbEngine.gravity.y = isUphill ? -0.88 : 0.88;
   
   if (startGateBody) {
     Matter.World.remove(pbEngine.world, startGateBody);

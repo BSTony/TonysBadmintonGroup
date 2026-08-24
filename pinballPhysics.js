@@ -375,7 +375,7 @@ function initServerEngine(pool, seed, optionsOrCb) {
             if (body.plugin.stuckFrames > 60) {
               Body.setVelocity(body, {
                 x: (Math.random() - 0.5) * 10,
-                y: isUphill ? -10 : -7.5
+                y: isUphill ? -10 : 8
               });
               body.plugin.stuckFrames = 0;
             }
@@ -394,12 +394,12 @@ function initServerEngine(pool, seed, optionsOrCb) {
         allBalls.forEach(ball => {
           const distanceBehind = ball.position.y - highestY;
           let multiplier = 0;
-          if (distanceBehind > 200) multiplier = 0.03;
-          if (distanceBehind > 400) multiplier = 0.06;
-          if (distanceBehind > 600) multiplier = 0.12;
-          if (distanceBehind > 1000) multiplier = 0.25;
+          if (distanceBehind > 200) multiplier = 0.05;
+          if (distanceBehind > 400) multiplier = 0.10;
+          if (distanceBehind > 600) multiplier = 0.20;
+          if (distanceBehind > 1000) multiplier = 0.35;
           
-          const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
+          const baseForce = ball.mass * Math.abs(pbEngine.gravity.y) * pbEngine.gravity.scale;
           let totalYForce = -baseForce * multiplier;
           
           Body.applyForce(ball, ball.position, { x: 0, y: totalYForce });
@@ -414,7 +414,7 @@ function initServerEngine(pool, seed, optionsOrCb) {
           if (distanceBehind > 600) multiplier = 0.2;
           if (distanceBehind > 1000) multiplier = 0.35;
           
-          const baseForce = ball.mass * pbEngine.gravity.y * pbEngine.gravity.scale;
+          const baseForce = ball.mass * Math.abs(pbEngine.gravity.y) * pbEngine.gravity.scale;
           let totalYForce = baseForce * multiplier;
           
           Body.applyForce(ball, ball.position, { x: 0, y: totalYForce });
@@ -508,7 +508,7 @@ function initServerEngine(pool, seed, optionsOrCb) {
 function startRace() {
   if (pbEngine) {
     const isUphill = pbEngine.plugin && pbEngine.plugin.mode === 'uphill';
-    pbEngine.gravity.y = isUphill ? 0.4 : PB_GRAVITY_Y;
+    pbEngine.gravity.y = isUphill ? -PB_GRAVITY_Y : PB_GRAVITY_Y;
     if (pbEngine.plugin) pbEngine.plugin.raceStarted = true;
     if (pbStartGate) {
       World.remove(pbEngine.world, pbStartGate);
