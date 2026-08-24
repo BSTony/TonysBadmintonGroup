@@ -4396,16 +4396,16 @@
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
       "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-      "C73ead06e46f4c3a00a3f87d946c7d18a"
+      "C073dd061239f9bc2df13af0a1ecb4bdb"
     ],
     "gameId": "1787377137303928",
     "title": "週日 港中 早上",
     "date": "8/30 (日)",
-    "time": "20:00~12:00",
+    "time": "08:00~12:00",
     "location": "南港高中",
-    "fee": "",
+    "fee": "150",
     "note": "",
     "tag": "",
     "active": true,
@@ -4561,6 +4561,7 @@
         "action": "+1",
         "section": "8-12"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
