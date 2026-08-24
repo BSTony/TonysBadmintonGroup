@@ -4410,7 +4410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787552873142,
+    "lastActiveTime": 1787552877343,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4464,11 +4464,19 @@
           "謝東霖 Tony",
           "Kay",
           "Gary",
-          "小可愛"
+          "小可愛",
+          "林立峰"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/24 14:27",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/24 14:27",
         "name": "林立峰",
