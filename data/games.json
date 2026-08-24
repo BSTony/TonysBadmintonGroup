@@ -4168,7 +4168,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787537168840,
+    "lastActiveTime": 1787537183232,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4207,7 +4207,8 @@
       "凱文": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "Jack": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "小白": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-      "蘑菇": "U911c6faae5ae99cb4c24cbe5c22ac5e7"
+      "蘑菇": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
+      "心平": "U911c6faae5ae99cb4c24cbe5c22ac5e7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4236,13 +4237,21 @@
           "凱文",
           "Jack",
           "小白",
-          "蘑菇"
+          "蘑菇",
+          "心平"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/24 10:06",
+        "name": "心平",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/24 10:06",
         "name": "蘑菇",
