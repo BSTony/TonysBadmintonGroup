@@ -4168,7 +4168,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787496895630,
+    "lastActiveTime": 1787537065928,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4203,7 +4203,8 @@
       "Wayne": "U1a05e97623cee1f79b0876626e88f0ab",
       "Matt": "U33ec3d57827236fa5ed0f2da4c6e8205",
       "小周": "Uf2f63c157d1e4f7e5d289d377c568582",
-      "小黑": "U7c381eceb3dee900bbd30b986a0f8357"
+      "小黑": "U7c381eceb3dee900bbd30b986a0f8357",
+      "凱文": "U911c6faae5ae99cb4c24cbe5c22ac5e7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4228,13 +4229,21 @@
           "Wayne",
           "Matt",
           "小周",
-          "小黑"
+          "小黑",
+          "凱文"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/24 10:04",
+        "name": "凱文",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/23 22:54",
         "name": "小黑",
