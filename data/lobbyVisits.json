@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3398,
+    "viewCount": 3401,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -92,8 +92,8 @@
       "Ua5ba1a0ad7f4687b4075563e722331c5": {
         "displayName": "©️張CC～©️",
         "firstVisit": 1783217875055,
-        "count": 16,
-        "lastVisit": 1787358146153,
+        "count": 17,
+        "lastVisit": 1787543145036,
         "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
       },
       "U47573cf563cc67d5fc00dbb48a51092a": {
@@ -288,8 +288,8 @@
       "U2ea89b78f1546c61adda03c7dd8704d5": {
         "displayName": "賴柚子",
         "firstVisit": 1783341633415,
-        "count": 38,
-        "lastVisit": 1787366685090,
+        "count": 39,
+        "lastVisit": 1787542081796,
         "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
       },
       "Uc8b0e0ef7ca58b387136a28642742b7d": {
@@ -527,8 +527,8 @@
       "U7c381eceb3dee900bbd30b986a0f8357": {
         "displayName": "陳宜蓁",
         "firstVisit": 1783609656924,
-        "count": 75,
-        "lastVisit": 1787539889526,
+        "count": 76,
+        "lastVisit": 1787543290490,
         "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
       },
       "U522577348e19db90574e8dd6b95de386": {
@@ -1140,6 +1140,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1787543290490,
+        "userId": "U7c381eceb3dee900bbd30b986a0f8357",
+        "displayName": "陳宜蓁",
+        "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
+      },
+      {
+        "time": 1787543145036,
+        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
+        "displayName": "©️張CC～©️",
+        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
+      },
+      {
+        "time": 1787542081796,
+        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
+        "displayName": "賴柚子",
+        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
+      },
       {
         "time": 1787540032125,
         "userId": "Ud9c980235866b4402d34cdfa250b9aed",
