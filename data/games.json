@@ -4410,7 +4410,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787552862751,
+    "lastActiveTime": 1787552873142,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4443,8 +4443,7 @@
           "林煥杰",
           "云",
           "ALAN LIU",
-          "杜威霖 Andy",
-          "林立峰"
+          "杜威霖 Andy"
         ]
       },
       {
@@ -4470,6 +4469,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/24 14:27",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "08/24 14:27",
         "name": "林立峰",
