@@ -4044,7 +4044,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787058225590,
-    "lastActiveTime": 1787068480139,
+    "lastActiveTime": 1787545649663,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4076,7 +4076,8 @@
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "Jet2": "U94d0fd3752c6d2521d871658f63822b7",
-      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9"
+      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9",
+      "Yoshi(王安迪)": "Ufe0fe514d1b7b112a3f6910485ae1ce8"
     },
     "noteMap": {
       "Jet2": "文凱"
@@ -4100,12 +4101,20 @@
           "afrahuang",
           "Jet",
           "Jet2",
-          "張建發"
+          "張建發",
+          "Yoshi(王安迪)"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "08/24 12:27",
+        "name": "Yoshi(王安迪)",
+        "operator": "Yoshi(王安迪)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/18 23:54",
         "name": "張建發",
