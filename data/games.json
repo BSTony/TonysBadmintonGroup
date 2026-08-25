@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787642400168,
+    "lastActiveTime": 1787665812991,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4191,7 +4191,6 @@
       "曾Jim凱": true,
       "Ashley": true,
       "周則鼎": true,
-      "Ong": true,
       "Mina": true,
       "Iven": true,
       "陳呈": true,
@@ -4235,7 +4234,6 @@
           "曾Jim凱",
           "Ashley",
           "周則鼎",
-          "Ong",
           "Mina",
           "Iven",
           "陳呈",
@@ -4257,6 +4255,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/25 21:50",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/25 15:20",
         "name": "江こう 洋々",
