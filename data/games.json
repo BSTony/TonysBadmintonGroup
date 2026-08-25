@@ -4601,7 +4601,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787661738788,
-    "lastActiveTime": 1787661954107,
+    "lastActiveTime": 1787662013078,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4630,7 +4630,8 @@
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb"
+      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4650,12 +4651,20 @@
           "周則鼎",
           "偉舫",
           "陳呈",
-          "Sean"
+          "Sean",
+          "Jet"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "08/25 20:46",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/25 20:45",
         "name": "Sean",
