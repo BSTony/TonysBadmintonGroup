@@ -4354,7 +4354,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787376761752,
-    "lastActiveTime": 1787484443030,
+    "lastActiveTime": 1787662227170,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4372,7 +4372,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
+      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4387,12 +4388,20 @@
           "Kay",
           "陳呈",
           "Jet",
-          "AddieWang"
+          "AddieWang",
+          "Kevin"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/25 20:50",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/23 19:27",
         "name": "AddieWang",
