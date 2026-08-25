@@ -7759,25 +7759,5 @@
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       }
     ]
-  },
-  "C62ecad4d0b2baedbaa086555b593b9e9": {
-    "viewCount": 1,
-    "uniqueViewers": {
-      "U2dbb95e75cba905a0fc98dac27a26211": {
-        "displayName": "Buffy",
-        "firstVisit": 1786879865913,
-        "count": 1,
-        "lastVisit": 1786879865913,
-        "pictureUrl": "https://profile.line-scdn.net/0hzj7JKTA2JUUaMwzFDfdbOmpjJi85QnxXP1duJS82KXEiBmobNAFpdi1me3IvVjdEZVBvJH1gLnwWIFIjBGXZcR0DeHQnAmcbMF1vpg"
-      }
-    },
-    "logs": [
-      {
-        "time": 1786879865913,
-        "userId": "U2dbb95e75cba905a0fc98dac27a26211",
-        "displayName": "Buffy",
-        "pictureUrl": "https://profile.line-scdn.net/0hzj7JKTA2JUUaMwzFDfdbOmpjJi85QnxXP1duJS82KXEiBmobNAFpdi1me3IvVjdEZVBvJH1gLnwWIFIjBGXZcR0DeHQnAmcbMF1vpg"
-      }
-    ]
   }
 }
