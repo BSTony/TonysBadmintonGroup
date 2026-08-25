@@ -4582,5 +4582,76 @@
       }
     ],
     "isManualEnded": false
+  },
+  "1787661738786702": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1787661738786702",
+    "title": "週二冷氣團",
+    "date": "9/1 (二)",
+    "time": "18:00~20:00",
+    "location": "南港運動中心",
+    "fee": "280",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1787661738788,
+    "lastActiveTime": 1787661738788,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {
+      "憲": "派瑞-Perry"
+    },
+    "paidMap": {
+      "謝東霖 Tony": true,
+      "Kay": true,
+      "Ong": true,
+      "Robert": true,
+      "憲": true,
+      "海棠": true,
+      "周則鼎": true,
+      "偉舫": true
+    },
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
+      "Robert": "Uf35f2dc9288c3434a5a19186f900402a",
+      "憲": "Uf339b049e09a02f0796afb22f5de2e7e",
+      "海棠": "Ufa8dba5febf9f719da07f7e507391a21",
+      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
+      "偉舫": "U9904ed725b1f420b8718791594e3756b",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 12,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay",
+          "Ong",
+          "Robert",
+          "憲",
+          "海棠",
+          "周則鼎",
+          "偉舫",
+          "陳呈"
+        ],
+        "fee": "280"
+      }
+    ]
   }
 }
