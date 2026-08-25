@@ -4177,7 +4177,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787543157644,
+    "lastActiveTime": 1787642400168,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4217,7 +4217,8 @@
       "小白": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "蘑菇": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "心平": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4247,13 +4248,21 @@
           "小白",
           "蘑菇",
           "心平",
-          "Sean柏宏"
+          "Sean柏宏",
+          "江こう 洋々"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/25 15:20",
+        "name": "江こう 洋々",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/24 11:45",
         "name": "©️張CC～©️",
