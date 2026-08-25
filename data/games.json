@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787665812991,
+    "lastActiveTime": 1787667763215,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4218,7 +4218,8 @@
       "蘑菇": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "心平": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4248,13 +4249,21 @@
           "蘑菇",
           "心平",
           "Sean柏宏",
-          "江こう 洋々"
+          "江こう 洋々",
+          "紀凡"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/25 22:22",
+        "name": "紀凡",
+        "operator": "紀凡",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/25 21:50",
         "name": "Ong",
