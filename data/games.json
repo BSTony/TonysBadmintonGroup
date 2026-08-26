@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787667763215,
+    "lastActiveTime": 1787714148076,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4219,7 +4219,8 @@
       "心平": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
-      "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c"
+      "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c",
+      "阿豪": "U1a05e97623cee1f79b0876626e88f0ab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4250,13 +4251,21 @@
           "心平",
           "Sean柏宏",
           "江こう 洋々",
-          "紀凡"
+          "紀凡",
+          "阿豪"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/26 11:15",
+        "name": "阿豪",
+        "operator": "Wayne",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/25 22:22",
         "name": "紀凡",
