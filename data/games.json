@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787758937670,
+    "lastActiveTime": 1787759063222,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4227,7 +4227,9 @@
       "雲": "U9189a06112f6a2a13fdacb08a190c60b",
       "Fb Ruby": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
-    "noteMap": {},
+    "noteMap": {
+      "Hsiu": "FB"
+    },
     "allowUserNoteEdit": true,
     "sections": [
       {
