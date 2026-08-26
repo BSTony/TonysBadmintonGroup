@@ -4436,7 +4436,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787376761752,
-    "lastActiveTime": 1787746684220,
+    "lastActiveTime": 1787759401312,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4462,7 +4462,8 @@
       "JOJO": "U07da54f66d0a500df5b2db748bde73a9",
       "JOJO👆✌️🖖🤘👐💪": "U07da54f66d0a500df5b2db748bde73a9",
       "豪": "U04307fbd1087e54ce656086b653a60fd",
-      "奶瓶": "U04307fbd1087e54ce656086b653a60fd"
+      "奶瓶": "U04307fbd1087e54ce656086b653a60fd",
+      "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4483,12 +4484,20 @@
           "JOJO",
           "JOJO👆✌️🖖🤘👐💪",
           "豪",
-          "奶瓶"
+          "奶瓶",
+          "Andrew"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/26 23:50",
+        "name": "Andrew",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 20:18",
         "name": "奶瓶",
