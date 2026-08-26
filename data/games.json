@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787723834934,
+    "lastActiveTime": 1787735908128,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4222,7 +4222,8 @@
       "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c",
       "阿豪": "U1a05e97623cee1f79b0876626e88f0ab",
       "古書羽": "U515f3eafb608f3aada94b73067dcc156",
-      "FB-Danny": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB-Danny": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Hsiu": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4256,13 +4257,21 @@
           "紀凡",
           "阿豪",
           "古書羽",
-          "FB-Danny"
+          "FB-Danny",
+          "Hsiu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/26 17:18",
+        "name": "Hsiu",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 13:57",
         "name": "FB-Danny",
