@@ -4419,7 +4419,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787376761752,
-    "lastActiveTime": 1787745540698,
+    "lastActiveTime": 1787746551556,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4442,7 +4442,8 @@
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
-      "JOJO": "U07da54f66d0a500df5b2db748bde73a9"
+      "JOJO": "U07da54f66d0a500df5b2db748bde73a9",
+      "JOJO👆✌️🖖🤘👐💪": "U07da54f66d0a500df5b2db748bde73a9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4460,12 +4461,20 @@
           "AddieWang",
           "Kevin",
           "弘彬/Jason",
-          "JOJO"
+          "JOJO",
+          "JOJO👆✌️🖖🤘👐💪"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/26 20:15",
+        "name": "JOJO👆✌️🖖🤘👐💪",
+        "operator": "JOJO👆✌️🖖🤘👐💪",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 19:59",
         "name": "JOJO",
