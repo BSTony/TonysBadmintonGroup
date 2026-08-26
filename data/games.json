@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787756732825,
+    "lastActiveTime": 1787758937670,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4224,7 +4224,8 @@
       "古書羽": "U515f3eafb608f3aada94b73067dcc156",
       "FB-Danny": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Hsiu": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "雲": "U9189a06112f6a2a13fdacb08a190c60b"
+      "雲": "U9189a06112f6a2a13fdacb08a190c60b",
+      "Fb Ruby": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4258,13 +4259,21 @@
           "阿豪",
           "古書羽",
           "FB-Danny",
-          "Hsiu"
+          "Hsiu",
+          "Fb Ruby"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/26 23:42",
+        "name": "Fb Ruby",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 23:05",
         "name": "雲",
