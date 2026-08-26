@@ -67,7 +67,7 @@
         "price": 195,
         "unit": "份",
         "description": "",
-        "contents": "180g罐"
+        "contents": ""
       },
       {
         "id": "zr_0006",
@@ -112,7 +112,7 @@
         "price": 360,
         "unit": "份",
         "description": "",
-        "contents": "400g"
+        "contents": ""
       },
       {
         "id": "zr_0011",
@@ -940,7 +940,7 @@
         "price": 125,
         "unit": "份",
         "description": "",
-        "contents": "15g×10包"
+        "contents": ""
       },
       {
         "id": "zr_0103",
@@ -1471,7 +1471,7 @@
         "price": 320,
         "unit": "份",
         "description": "",
-        "contents": "300g"
+        "contents": ""
       },
       {
         "id": "zr_0162",
