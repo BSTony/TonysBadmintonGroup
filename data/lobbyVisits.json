@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3467,
+    "viewCount": 3472,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -133,8 +133,8 @@
       "Ua698eb94f633310ce3b6cf6f34265adb": {
         "displayName": "煜翔Sean",
         "firstVisit": 1783229120228,
-        "count": 111,
-        "lastVisit": 1787670108667,
+        "count": 112,
+        "lastVisit": 1787719946979,
         "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
       },
       "U04307fbd1087e54ce656086b653a60fd": {
@@ -460,8 +460,8 @@
       "U9904ed725b1f420b8718791594e3756b": {
         "displayName": "偉舫",
         "firstVisit": 1783565275973,
-        "count": 14,
-        "lastVisit": 1787274202666,
+        "count": 16,
+        "lastVisit": 1787719967509,
         "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
       },
       "Uef488c50ca6ba6bd1d36dc30086b92b1": {
@@ -663,8 +663,8 @@
       "U515f3eafb608f3aada94b73067dcc156": {
         "displayName": "古書羽",
         "firstVisit": 1784000136057,
-        "count": 16,
-        "lastVisit": 1786957600525,
+        "count": 17,
+        "lastVisit": 1787719845779,
         "pictureUrl": "https://profile.line-scdn.net/0hdIE3m2LrO2ZoShL9UARFGRgaOAxLO2J0TCRwBAlCN1FReHViTXwgBg9MZV9cci85F3h1BF1MZQFkWUwAdhzHUm96ZldVe3k4QiRxhQ"
       },
       "U46f13b9a4833cb5c866e5b8d76bc6a3f": {
@@ -839,8 +839,9 @@
       "U284a88542d312030d1a8b8479ef7ca53": {
         "displayName": "鐘順立",
         "firstVisit": 1784942442055,
-        "count": 2,
-        "lastVisit": 1784988017377
+        "count": 3,
+        "lastVisit": 1787717795640,
+        "pictureUrl": "https://profile.line-scdn.net/0hUA7cWV46Cm4aGhXiLHt0UGpKCQQ5a1N8MilHDn8fVgwvLU44MHwRACtOAwsuI09oP3xNXCZKVF84eBVOTgI1TW1YFhcjQzJkVGAzc3FiAD5uVj0kbB0ZXnt_Ijtvfil_Ng4yd1BaLzYkKAhPMnQHX3VOUTxYay9aNE1mOB8oZO11GH07N3xEDSccXFui"
       },
       "U0a63b95fe390d52b309759ef5ed4a6fe": {
         "displayName": "Charles Cheng 鄭嘉禾",
@@ -1141,6 +1142,36 @@
       }
     },
     "logs": [
+      {
+        "time": 1787719967509,
+        "userId": "U9904ed725b1f420b8718791594e3756b",
+        "displayName": "偉舫",
+        "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
+      },
+      {
+        "time": 1787719946979,
+        "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
+        "displayName": "煜翔Sean",
+        "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
+      },
+      {
+        "time": 1787719887330,
+        "userId": "U9904ed725b1f420b8718791594e3756b",
+        "displayName": "偉舫",
+        "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
+      },
+      {
+        "time": 1787719845779,
+        "userId": "U515f3eafb608f3aada94b73067dcc156",
+        "displayName": "古書羽",
+        "pictureUrl": "https://profile.line-scdn.net/0hdIE3m2LrO2ZoShL9UARFGRgaOAxLO2J0TCRwBAlCN1FReHViTXwgBg9MZV9cci85F3h1BF1MZQFkWUwAdhzHUm96ZldVe3k4QiRxhQ"
+      },
+      {
+        "time": 1787717795640,
+        "userId": "U284a88542d312030d1a8b8479ef7ca53",
+        "displayName": "鐘順立",
+        "pictureUrl": "https://profile.line-scdn.net/0hUA7cWV46Cm4aGhXiLHt0UGpKCQQ5a1N8MilHDn8fVgwvLU44MHwRACtOAwsuI09oP3xNXCZKVF84eBVOTgI1TW1YFhcjQzJkVGAzc3FiAD5uVj0kbB0ZXnt_Ijtvfil_Ng4yd1BaLzYkKAhPMnQHX3VOUTxYay9aNE1mOB8oZO11GH07N3xEDSccXFui"
+      },
       {
         "time": 1787708570171,
         "userId": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
