@@ -4731,7 +4731,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787661738788,
-    "lastActiveTime": 1787719937822,
+    "lastActiveTime": 1787754378417,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4761,7 +4761,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "Kevin": "U94d0fd3752c6d2521d871658f63822b7"
+      "Kevin": "U94d0fd3752c6d2521d871658f63822b7",
+      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4782,12 +4783,20 @@
           "陳呈",
           "Sean",
           "Jet",
-          "Kevin"
+          "Kevin",
+          "afrahuang"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "08/26 22:26",
+        "name": "afrahuang",
+        "operator": "afrahuang",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 12:52",
         "name": "偉舫",
