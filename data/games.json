@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787735908128,
+    "lastActiveTime": 1787739687113,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4252,7 +4252,6 @@
           "小白",
           "蘑菇",
           "心平",
-          "Sean柏宏",
           "江こう 洋々",
           "紀凡",
           "阿豪",
@@ -4265,6 +4264,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/26 18:21",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 17:18",
         "name": "Hsiu",
