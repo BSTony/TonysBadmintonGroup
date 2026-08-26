@@ -1,3 +1,8 @@
+/**
+ * Author: Tony Hsieh
+ * Date: 2026-08-26
+ * Version: 1.2.2
+ */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
 const { Client, middleware } = require('@line/bot-sdk');
@@ -15,7 +20,7 @@ let groupAdmins = {}; // { gid: Set<uid> }
 let superAdmins = new Set(); // Set<uid>
 let groupCodes = {}; // { '1234': 'Cxxxx' }
 let groupSettings = {}; // { gid: { lobbyTitle, groupName } }
-let rosterTemplates = {}; // { gid: { templateName: text } }
+let rosterTemplates = {}; // { gid|uid: { templateName: text } } — 同一帳號跨裝置以 uid 為主鍵互通
 
 const DATA_DIR = path.join(__dirname, 'data');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
@@ -80,6 +85,7 @@ function loadGroupBuyStorage() {
     };
     saveGroupBuyStorage();
   }
+  getGroupBuyProfiles();
 }
 
 let groupBuySaveChain = Promise.resolve();
@@ -110,8 +116,76 @@ function saveGroupBuyStorage() {
   return groupBuySaveChain;
 }
 
+const GROUPBUY_PROFILES_KEY = '__profiles';
+
+function getGroupBuyProfiles() {
+  const profiles = groupBuyData[GROUPBUY_PROFILES_KEY];
+  if (!profiles || typeof profiles !== 'object' || Array.isArray(profiles) || profiles.items) {
+    groupBuyData[GROUPBUY_PROFILES_KEY] = {};
+  }
+  return groupBuyData[GROUPBUY_PROFILES_KEY];
+}
+
+function upsertGroupBuyBuyerProfile(uid, userName, userPhone) {
+  if (!uid) return null;
+  const profiles = getGroupBuyProfiles();
+  profiles[uid] = {
+    userName: (userName || '').trim(),
+    userPhone: (userPhone || '').trim(),
+    updatedAt: Date.now()
+  };
+  return profiles[uid];
+}
+
+function findGroupBuyOrderKey(orders, uid, userName, userPhone) {
+  if (!orders || typeof orders !== 'object') return null;
+  if (uid && orders[uid]) return uid;
+  const name = (userName || '').trim().toLowerCase();
+  const phone = (userPhone || '').trim();
+  const phoneKey = (name && phone) ? `${name}_${phone}` : null;
+  if (phoneKey && orders[phoneKey]) return phoneKey;
+  if (uid) {
+    for (const [key, order] of Object.entries(orders)) {
+      if (order && order.userId === uid) return key;
+    }
+  }
+  return null;
+}
+
+function overlayItemContentsFromCatalog(items) {
+  if (!Array.isArray(items) || items.length === 0) return false;
+  let catalog = (groupBuyData.default && Array.isArray(groupBuyData.default.items))
+    ? groupBuyData.default.items
+    : [];
+  try {
+    if (fs.existsSync(GROUP_BUY_FILE)) {
+      const disk = JSON.parse(fs.readFileSync(GROUP_BUY_FILE, 'utf8'));
+      if (disk.default && Array.isArray(disk.default.items) && disk.default.items.length > 0) {
+        catalog = disk.default.items;
+      }
+    }
+  } catch (e) {}
+  const byId = new Map();
+  const byKey = new Map();
+  for (const src of catalog) {
+    if (!src) continue;
+    if (src.id) byId.set(src.id, src);
+    if (src.name) byKey.set(`${src.category || ''}|${src.name}`, src);
+  }
+  let changed = false;
+  for (const item of items) {
+    if (!item || (item.contents && String(item.contents).trim())) continue;
+    const src = (item.id && byId.get(item.id)) || byKey.get(`${item.category || ''}|${item.name}`);
+    if (src && src.contents && String(src.contents).trim()) {
+      item.contents = src.contents;
+      changed = true;
+    }
+  }
+  return changed;
+}
+
 function getGroupBuyInfo(gid) {
-  if (!gid) gid = 'default';
+  if (!gid || gid === GROUPBUY_PROFILES_KEY) gid = 'default';
   if (!groupBuyData[gid] || !Array.isArray(groupBuyData[gid].items) || groupBuyData[gid].items.length === 0) {
     const defaultData = groupBuyData['default'] || {};
     groupBuyData[gid] = {
@@ -132,6 +206,9 @@ function getGroupBuyInfo(gid) {
         : getZhanRongDefaultItems(),
       orders: groupBuyData[gid]?.orders || {}
     };
+    overlayItemContentsFromCatalog(groupBuyData[gid].items);
+    saveGroupBuyStorage();
+  } else if (overlayItemContentsFromCatalog(groupBuyData[gid].items)) {
     saveGroupBuyStorage();
   }
   return groupBuyData[gid];
@@ -1125,6 +1202,66 @@ function isGroupAdmin(uid, gid) {
   return !!(groupAdmins[gid] && groupAdmins[gid].has(uid));
 }
 
+function getAdminGroupIds(uid) {
+  if (!uid) return [];
+  return Object.keys(groupAdmins).filter(g => groupAdmins[g] && groupAdmins[g].has(uid));
+}
+
+function canManageRosterTemplates(uid, gid) {
+  if (!uid) return false;
+  if (isTrueSuperAdmin(uid)) return true;
+  if (gid && isGroupAdmin(uid, gid)) return true;
+  if (gid && gid === uid && getAdminGroupIds(uid).length > 0) return true;
+  return false;
+}
+
+function getRosterTemplateStorageKeys(uid, gid) {
+  const keys = [];
+  if (uid) keys.push(uid);
+  if (gid && gid !== uid) keys.push(gid);
+  return keys;
+}
+
+function collectRosterTemplateSourceKeys(uid, gid) {
+  const keys = [];
+  if (!uid) {
+    if (gid) keys.push(gid);
+    return keys;
+  }
+  const adminGids = new Set(getAdminGroupIds(uid));
+  const includeAll = isTrueSuperAdmin(uid);
+  Object.keys(rosterTemplates)
+    .filter(k => k !== uid)
+    .sort()
+    .forEach(k => {
+      if (includeAll || k === gid || adminGids.has(k)) {
+        keys.push(k);
+      }
+    });
+  if (gid && gid !== uid && !keys.includes(gid)) keys.push(gid);
+  keys.push(uid);
+  return keys;
+}
+
+function collectRosterTemplates(uid, gid) {
+  const templates = {};
+  const seenKeys = new Set();
+  for (const key of collectRosterTemplateSourceKeys(uid, gid)) {
+    if (!key || seenKeys.has(key)) continue;
+    seenKeys.add(key);
+    const map = rosterTemplates[key];
+    if (!map) continue;
+    for (const [name, content] of Object.entries(map)) {
+      if (uid && key === uid) {
+        templates[name] = content;
+      } else if (templates[name] === undefined) {
+        templates[name] = content;
+      }
+    }
+  }
+  return templates;
+}
+
 // PostgreSQL 連線設定（已停用，改用 CSV 檔案儲存）
 // 如果不需要 PostgreSQL，可以移除或註解掉以下程式碼
 // 目前強制使用檔案模式，避免連線錯誤訊息
@@ -1703,6 +1840,43 @@ app.post('/api/groupbuy/:gid/settings', async (req, res) => {
   res.json({ success: true, data: info });
 });
 
+app.get('/api/groupbuy_profile', (req, res) => {
+  const uid = req.query.uid;
+  const name = (req.query.name || '').trim().toLowerCase();
+  if (!uid && !name) return res.status(400).json({ success: false, error: '缺少 uid' });
+  const profiles = getGroupBuyProfiles();
+  let profile = uid ? (profiles[uid] || null) : null;
+  if ((!profile || !profile.userPhone) && uid) {
+    for (const [id, gb] of Object.entries(groupBuyData)) {
+      if (id === GROUPBUY_PROFILES_KEY || !gb || !gb.orders) continue;
+      const order = gb.orders[uid] || Object.values(gb.orders).find(o => o && o.userId === uid);
+      if (order && order.userPhone) {
+        profile = { userName: order.userName || '', userPhone: order.userPhone, updatedAt: order.updatedAt || 0 };
+        break;
+      }
+    }
+  }
+  if ((!profile || !profile.userPhone) && name) {
+    for (const [id, gb] of Object.entries(groupBuyData)) {
+      if (id === GROUPBUY_PROFILES_KEY || !gb || !gb.orders) continue;
+      const order = Object.values(gb.orders).find(o => o && o.userName && o.userName.trim().toLowerCase() === name && o.userPhone);
+      if (order) {
+        profile = { userName: order.userName || '', userPhone: order.userPhone, updatedAt: order.updatedAt || 0 };
+        break;
+      }
+    }
+  }
+  res.json({ success: true, profile });
+});
+
+app.post('/api/groupbuy_profile', async (req, res) => {
+  const { uid, userName, userPhone } = req.body || {};
+  if (!uid) return res.status(400).json({ success: false, error: '缺少 uid' });
+  const profile = upsertGroupBuyBuyerProfile(uid, userName, userPhone);
+  await saveGroupBuyStorage();
+  res.json({ success: true, profile });
+});
+
 app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid;
   const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note, anonymous } = req.body || {};
@@ -1713,6 +1887,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   if (!info.active) {
     return res.status(400).json({ error: '目前團購未開放' });
   }
+  if (!info.orders) info.orders = {};
   let totalAmount = 0;
   if (items && typeof items === 'object') {
     for (const [itemId, qty] of Object.entries(items)) {
@@ -1722,8 +1897,9 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
       }
     }
   }
-  const orderKey = (userName && userPhone) ? `${userName.trim().toLowerCase()}_${userPhone.trim()}` : uid;
-  const existingOrder = info.orders[orderKey] || {};
+  const orderKey = uid;
+  const oldKey = findGroupBuyOrderKey(info.orders, uid, userName, userPhone);
+  const existingOrder = (oldKey && info.orders[oldKey]) || {};
   info.orders[orderKey] = {
     userId: uid,
     userName: userName.trim(),
@@ -1732,14 +1908,18 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     items: items || {},
     totalAmount,
     paymentMethod: paymentMethod || 'p2p_linepay',
-    paymentStatus: 'unverified',
-    orderStatus: 'unconfirmed',
+    paymentStatus: existingOrder.paymentStatus || 'unverified',
+    orderStatus: existingOrder.orderStatus || 'unconfirmed',
     paymentNote: paymentNote || '',
     note: note || '',
     anonymous: !!anonymous,
     updatedAt: Date.now(),
     lastConfirmedItems: existingOrder.lastConfirmedItems
   };
+  if (oldKey && oldKey !== orderKey) {
+    delete info.orders[oldKey];
+  }
+  upsertGroupBuyBuyerProfile(uid, userName, userPhone);
   await saveGroupBuyStorage();
   io.emit('group_buy_state_updated', { gid, data: info });
   notifySSEClients(gid);
@@ -2144,39 +2324,46 @@ app.get('/api/users/:gid', (req, res) => {
 
 app.get('/api/templates/:gid', (req, res) => {
   const gid = req.params.gid;
-  const templates = rosterTemplates[gid] || {};
-  res.json({ success: true, templates });
+  const uid = req.query.uid;
+  res.json({ success: true, templates: collectRosterTemplates(uid, gid) });
 });
 
-// 儲存/刪除特定群組的預設名單範本
+// 儲存/刪除名單範本：以 uid 為主鍵，讓同一帳號在手機／電腦互通
 app.post('/api/templates/:gid', express.json(), async (req, res) => {
   const gid = req.params.gid;
   const { action, name, content, uid } = req.body;
   
-  const isAdmin = uid && (isSuperAdmin(uid) || isGroupAdmin(uid, gid));
-  if (!isAdmin) {
+  if (!canManageRosterTemplates(uid, gid)) {
     return res.status(403).json({ error: '只有管理員能修改預設名單' });
   }
-  
-  if (!rosterTemplates[gid]) rosterTemplates[gid] = {};
   
   if (action === 'save') {
     if (!name || !content) {
       return res.status(400).json({ error: '名稱與內容不可為空' });
     }
-    rosterTemplates[gid][name] = content;
+    for (const key of getRosterTemplateStorageKeys(uid, gid)) {
+      if (!rosterTemplates[key]) rosterTemplates[key] = {};
+      rosterTemplates[key][name] = content;
+    }
   } else if (action === 'delete') {
     if (!name) {
       return res.status(400).json({ error: '未指定要刪除的範本名稱' });
     }
-    delete rosterTemplates[gid][name];
+    const seenKeys = new Set();
+    for (const key of collectRosterTemplateSourceKeys(uid, gid)) {
+      if (!key || seenKeys.has(key)) continue;
+      seenKeys.add(key);
+      if (rosterTemplates[key] && rosterTemplates[key][name] !== undefined) {
+        delete rosterTemplates[key][name];
+      }
+    }
   } else {
     return res.status(400).json({ error: '無效的 action' });
   }
   
   try {
     await saveRosterTemplates();
-    res.json({ success: true, templates: rosterTemplates[gid] });
+    res.json({ success: true, templates: collectRosterTemplates(uid, gid) });
   } catch (e) {
     console.error('儲存範本失敗:', e);
     res.status(500).json({ error: '伺服器儲存錯誤' });
@@ -2510,7 +2697,9 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               let currentLen = 0;
               for (let i = 0; i < secList.length && i < secLimit; i++) {
                   const nameRaw = secList[i] === '__ANON__' ? '匿名' : secList[i];
-                  const levelStr = (g.levelMap && g.levelMap[nameRaw]) ? ` (${g.levelMap[nameRaw]})` : '';
+                  const rawLvl = (g.levelMap && g.levelMap[nameRaw]) ? g.levelMap[nameRaw] : '';
+                  const isUidLvl = /^U[a-zA-Z0-9]{32}$/.test(rawLvl);
+                  const levelStr = (rawLvl && !isUidLvl) ? ` (${rawLvl})` : '';
                   const paidStr = (g.paidMap && g.paidMap[nameRaw]) ? '💰' : '';
                   const fullText = `${nameRaw}${levelStr}${paidStr}`;
                   
@@ -2534,7 +2723,9 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
                   let currBkupLen = 0;
                   for (let i = secLimit; i < secList.length; i++) {
                       const nameRaw = secList[i] === '__ANON__' ? '匿名' : secList[i];
-                      const levelStr = (g.levelMap && g.levelMap[nameRaw]) ? ` (${g.levelMap[nameRaw]})` : '';
+                      const rawLvl = (g.levelMap && g.levelMap[nameRaw]) ? g.levelMap[nameRaw] : '';
+                      const isUidLvl = /^U[a-zA-Z0-9]{32}$/.test(rawLvl);
+                      const levelStr = (rawLvl && !isUidLvl) ? ` (${rawLvl})` : '';
                       const paidStr = (g.paidMap && g.paidMap[nameRaw]) ? '💰' : '';
                       const fullText = `補-${nameRaw}${levelStr}${paidStr}`;
                       
@@ -2856,7 +3047,9 @@ function generateListMessage(g, customTitle = null) {
     for (let i = 0; i < count; i++) {
       const n = sec.list[i];
       const name = n === '__ANON__' ? '***' : n;
-      const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+      const rawLvl = g.levelMap && g.levelMap[n] ? g.levelMap[n] : '';
+      const isUid = /^U[a-zA-Z0-9]{32}$/.test(rawLvl);
+      const level = (rawLvl && !isUid) ? `(${rawLvl})` : '';
       const noteStr = g.noteMap && g.noteMap[n] ? ` [${g.noteMap[n]}]` : '';
       const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
       msg += `${i+1}. ${name} ${level}${noteStr}${paidStr}\n`.trim() + '\n';
@@ -2872,7 +3065,9 @@ function generateListMessage(g, customTitle = null) {
       for (let i = sec.limit; i < sec.list.length; i++) {
         const n = sec.list[i];
         const name = n === '__ANON__' ? '***' : n;
-        const level = g.levelMap && g.levelMap[n] ? `(${g.levelMap[n]})` : '';
+        const rawLvl = g.levelMap && g.levelMap[n] ? g.levelMap[n] : '';
+        const isUid = /^U[a-zA-Z0-9]{32}$/.test(rawLvl);
+        const level = (rawLvl && !isUid) ? `(${rawLvl})` : '';
         const noteStr = g.noteMap && g.noteMap[n] ? ` [${g.noteMap[n]}]` : '';
         const paidStr = g.paidMap && g.paidMap[n] ? ' (已繳費)' : '';
         msg += `候${i - sec.limit + 1}. ${name} ${level}${noteStr}${paidStr}\n`.trim() + '\n';
@@ -3839,12 +4034,12 @@ app.post('/api/action', express.json(), async (req, res) => {
                 isPaid = true;
                 n = n.replace(/[$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
             }
-            // Extract UUID from [Uxxxxx] brackets first
+            // Extract UUID from [Uxxxxx] or (Uxxxxx) brackets first
             let uuid = '';
-            const uuidMatch = n.match(/\[([A-Za-z0-9]+)\]/);
+            const uuidMatch = n.match(/\[([A-Za-z0-9]+)\]/) || n.match(/[\uff08(](U[A-Za-z0-9]{32})[)\uff09]/);
             if (uuidMatch) {
                 uuid = uuidMatch[1];
-                n = n.replace(/\[[A-Za-z0-9]+\]/, '').trim();
+                n = n.replace(/\[[A-Za-z0-9]+\]/, '').replace(/[\uff08(]U[A-Za-z0-9]{32}[)\uff09]/, '').trim();
             }
             // Extract level/note from (...) parens
             let lvl = '';
@@ -3852,6 +4047,11 @@ app.post('/api/action', express.json(), async (req, res) => {
             if (lvlMatch) {
                 n = lvlMatch[1].trim();
                 lvl = lvlMatch[2].trim();
+            }
+            // Discard level if it is a UID
+            if (/^U[A-Za-z0-9]{32}$/.test(lvl)) {
+                if (!uuid) uuid = lvl;
+                lvl = '';
             }
             if (n) {
               currentInitialList.push(n);
@@ -4737,6 +4937,7 @@ async function handleEvent(event) {
       let initialList = [];
       let initialLevelMap = {};
       let initialPaidMap = {};
+      let initialUidMap = {};
       if (listMatch) {
          const listStr = (listMatch[1] || listMatch[2]).trim();
          const rawList = listStr.split(/[\s,、，]+/).map(n => n.trim()).filter(Boolean);
@@ -4744,18 +4945,30 @@ async function handleEvent(event) {
            let isPaid = false;
            if (n.endsWith('$') || n.endsWith('＄') || n.endsWith('(已繳費)') || n.endsWith('（已繳費）')) {
                isPaid = true;
-               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+               n = n.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '').trim();
+           }
+           let uuid = '';
+           const uuidMatch = n.match(/\[([A-Za-z0-9]+)\]/) || n.match(/[\uff08(](U[A-Za-z0-9]{32})[)\uff09]/);
+           if (uuidMatch) {
+               uuid = uuidMatch[1];
+               n = n.replace(/\[[A-Za-z0-9]+\]/, '').replace(/[\uff08(]U[A-Za-z0-9]{32}[)\uff09]/, '').trim();
            }
            const match = n.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
            if (match) {
              const trueName = match[1].trim();
-             const lvl = (match[2] || match[3]).trim();
+             let lvl = (match[2] || match[3]).trim();
+             if (/^U[a-zA-Z0-9]{32}$/.test(lvl)) {
+               if (!uuid) uuid = lvl;
+               lvl = '';
+             }
              initialList.push(trueName);
-             initialLevelMap[trueName] = lvl;
+             if (lvl) initialLevelMap[trueName] = lvl;
              if (isPaid) initialPaidMap[trueName] = true;
+             if (uuid) initialUidMap[trueName] = uuid;
            } else {
              initialList.push(n);
              if (isPaid) initialPaidMap[n] = true;
+             if (uuid) initialUidMap[n] = uuid;
            }
          });
       }
@@ -4843,12 +5056,16 @@ async function handleEvent(event) {
         anonymousCount: 0,
         levelMap: initialLevelMap,
         paidMap: initialPaidMap,
+        uidMap: initialUidMap,
         noteMap: {},
         allowUserNoteEdit: true,
         sections: pSections
       };
       
-      // Setup uid mapping if admin creates the list with themselves in it
+      // Setup uid mapping
+      Object.entries(initialUidMap).forEach(([n, u]) => {
+        if (u) nameToUidMap.set(`${gameId}_${n}`, u);
+      });
       initialList.forEach(n => {
         if (n === uidToNameMap.get(uid)) {
             nameToUidMap.set(`${gameId}_${n}`, uid);
@@ -5726,7 +5943,9 @@ app.use(express.json());
 
 // 取得所有團購列表 (支援多團購活動同時呈現於大廳)
 app.get('/api/groupbuy_list', (req, res) => {
-  const list = Object.entries(groupBuyData).map(([id, gb]) => ({
+  const list = Object.entries(groupBuyData)
+    .filter(([id, gb]) => id !== GROUPBUY_PROFILES_KEY && gb && typeof gb === 'object' && !Array.isArray(gb))
+    .map(([id, gb]) => ({
     id,
     active: !!gb.active,
     title: gb.title || '團購專區',
@@ -5897,9 +6116,10 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   if (!uid || !userName) {
     return res.status(400).json({ success: false, error: '缺少使用者資訊' });
   }
-  const orderKey = (userName && userPhone) ? `${userName.trim().toLowerCase()}_${userPhone.trim()}` : uid;
   const gb = getGroupBuyInfo(gid);
   if (!gb.orders) gb.orders = {};
+  const orderKey = uid;
+  const oldKey = findGroupBuyOrderKey(gb.orders, uid, userName, userPhone);
 
   let totalAmount = 0;
   if (items && gb.items) {
@@ -5911,6 +6131,7 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     }
   }
 
+  const existingOrder = (oldKey && gb.orders[oldKey]) || {};
   gb.orders[orderKey] = {
     userId: uid,
     userName,
@@ -5919,11 +6140,15 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     totalAmount,
     paymentMethod: paymentMethod || 'p2p_linepay',
     paymentNote: paymentNote || '',
-    paymentStatus: 'unverified',
+    paymentStatus: existingOrder.paymentStatus || 'unverified',
     note: note || '',
     anonymous: !!anonymous,
     updatedAt: new Date().toISOString()
   };
+  if (oldKey && oldKey !== orderKey) {
+    delete gb.orders[oldKey];
+  }
+  upsertGroupBuyBuyerProfile(uid, userName, userPhone);
 
   await saveGroupBuyStorage();
   if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });

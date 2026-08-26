@@ -1,3 +1,8 @@
+/**
+ * Author: Tony Hsieh
+ * Date: 2026-08-26
+ * Version: 1.2.2
+ */
 let globalLobbyUsers = [];
 
 async function loadLobbyUsers() {
@@ -1356,19 +1361,22 @@ async function initializeLiff() {
 
     if (testRole || isLocalhost) {
       console.log('Running in Local Test Mode:', testRole || 'localhost');
-      let randomSuffix = Math.random().toString(36).substr(2, 5);
-      let mockUid = 'U_SUPER_ADMIN_TEST_ID_' + randomSuffix;
+      const testUidKey = 'gb_stable_test_uid_' + (testRole || 'localhost');
+      let mockUid = localStorage.getItem(testUidKey);
+      if (!mockUid) {
+        mockUid = (testRole === 'user' ? 'U_TEST_PLAYER_' : testRole === 'admin' ? 'U_GROUP_ADMIN_TEST_ID_' : 'U_SUPER_ADMIN_TEST_ID_') + Math.random().toString(36).substr(2, 5);
+        localStorage.setItem(testUidKey, mockUid);
+      }
       let mockName = testParams.get('name') || '超級管理員 (Local Test)';
       
       if (testRole === 'user') {
-        mockUid = 'U_TEST_PLAYER_' + randomSuffix;
-        mockName = testParams.get('name') || ('Test Player ' + randomSuffix);
+        mockName = testParams.get('name') || 'Test Player';
       } else if (testRole === 'admin') {
-        mockUid = 'U_GROUP_ADMIN_TEST_ID_' + randomSuffix;
         mockName = testParams.get('name') || 'Group Admin';
       }
       
       currentUser = { userId: mockUid, displayName: mockName };
+      if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
       const urlBuyGid = testParams.get('buy');
       if (urlBuyGid && !testRole) {
         globalIsSuperAdmin = false;
@@ -1425,9 +1433,15 @@ async function initializeLiff() {
     // 取得使用者資料
     const profile = await liff.getProfile();
     currentUser = profile;
+    try {
+      const idToken = (typeof liff.getDecodedIDToken === 'function') ? liff.getDecodedIDToken() : null;
+      const tokenPhone = idToken && (idToken.phone_number || idToken.phoneNumber);
+      if (tokenPhone) currentUser.phoneNumber = tokenPhone;
+    } catch (e) {}
     if (typeof initLottery === 'function') {
       initLottery(currentUser.userId);
     }
+    if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
 
     // 4. 取得群組 Context
     const urlParams = new URLSearchParams(window.location.search);
@@ -2351,7 +2365,9 @@ function renderDetail(gameId, preserveScroll = false) {
         const name = sec.list[i];
         const displayName = (name === '__ANON__') ? '***' : name;
         const isMe = (game.myRegisteredNames && game.myRegisteredNames.includes(name)) || (currentUser && (currentUser.displayName === name || currentUser.displayName === displayName));
-        const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
+        const rawLvl = (game.levelMap && game.levelMap[name]) ? game.levelMap[name] : '';
+        const isUidLvl = /^U[a-zA-Z0-9]{32}$/.test(rawLvl);
+        const levelStr = (rawLvl && !isUidLvl) ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(rawLvl)})</span>` : '';
         
         const canCancel = name !== '__ANON__';
         
@@ -2408,7 +2424,9 @@ function renderDetail(gameId, preserveScroll = false) {
         const name = sec.list[i];
         const displayName = (name === '__ANON__') ? '***' : name;
         const isMe = (game.myRegisteredNames && game.myRegisteredNames.includes(name)) || (currentUser && (currentUser.displayName === name || currentUser.displayName === displayName));
-        const levelStr = game.levelMap && game.levelMap[name] ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(game.levelMap[name])})</span>` : '';
+        const rawLvl = (game.levelMap && game.levelMap[name]) ? game.levelMap[name] : '';
+        const isUidLvl = /^U[a-zA-Z0-9]{32}$/.test(rawLvl);
+        const levelStr = (rawLvl && !isUidLvl) ? `<span style="font-size: 12px; color: #888; margin-left: 8px;">(${escapeHTML(rawLvl)})</span>` : '';
         
         const canCancel = name !== '__ANON__';
         
@@ -3345,19 +3363,25 @@ function parseTemplateLine(line) {
     let name = line.trim();
     if (name.endsWith('$') || name.endsWith('＄') || name.endsWith('(已繳費)') || name.endsWith('（已繳費）')) {
         isPaid = true;
-        name = name.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '');
+        name = name.replace(/[\$＄]$/, '').replace(/\(已繳費\)$/, '').replace(/（已繳費）$/, '').trim();
     }
+    let uuid = '';
+    const matchUuid = name.match(/\[(U[a-zA-Z0-9]+)\]/) || name.match(/[\(\[（](U[a-zA-Z0-9]{32})[\)\]）]/);
+    if (matchUuid) {
+        uuid = matchUuid[1].trim();
+        name = name.replace(/\[U[a-zA-Z0-9]+\]/g, '').replace(/[\(\[（]U[a-zA-Z0-9]{32}[\)\]）]/g, '').trim();
+    }
+
     let level = '';
     const matchLevel = name.match(/^(.*?)(?:[\(\[（](.*?)[\)\]）]|-(.*?))$/);
     if (matchLevel) {
         name = matchLevel[1].trim();
         level = (matchLevel[2] || matchLevel[3]).trim();
     }
-    let uuid = '';
-    const matchUuid = name.match(/^(.*?)\[(U[a-zA-Z0-9]+)\]$/);
-    if (matchUuid) {
-        name = matchUuid[1].trim();
-        uuid = matchUuid[2].trim();
+    // Discard level if it matches UID format
+    if (/^U[a-zA-Z0-9]{32}$/.test(level)) {
+        if (!uuid) uuid = level;
+        level = '';
     }
     return { name, level, isPaid, uuid };
 }
@@ -3458,12 +3482,19 @@ document.getElementById('btn-cg-add-row').onclick = () => addCgListRow();
 
 async function loadTemplates() {
   try {
-    const res = await fetch(`/api/templates/${currentGroupId}?_t=${Date.now()}`);
-    if (res.ok) {
-      const data = await res.json();
-      currentGroupTemplates = data.templates || {};
-    } else {
+    const uid = currentUser && currentUser.userId;
+    const gid = currentGroupId || uid;
+    if (!gid) {
       currentGroupTemplates = {};
+    } else {
+      const uidParam = uid ? `uid=${encodeURIComponent(uid)}&` : '';
+      const res = await fetch(`/api/templates/${encodeURIComponent(gid)}?${uidParam}_t=${Date.now()}`);
+      if (res.ok) {
+        const data = await res.json();
+        currentGroupTemplates = data.templates || {};
+      } else {
+        currentGroupTemplates = {};
+      }
     }
   } catch (e) {
     console.error('載入範本失敗:', e);
@@ -3497,7 +3528,7 @@ document.getElementById('btn-save-template').onclick = async () => {
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/templates/${currentGroupId}`, {
+    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -3530,7 +3561,7 @@ document.getElementById('btn-delete-template').onclick = async () => {
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/templates/`, {
+    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5425,6 +5456,167 @@ if (btnPinballAdminStop) {
 var currentGid = 'default';
 var currentGroupBuyData = null;
 var currentCart = {};
+var gbIdentityListenersBound = false;
+var gbProfileSaveTimer = null;
+
+function getGbBuyerUid() {
+  return (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) ? currentUser.userId : '';
+}
+
+function normalizeTwPhone(raw) {
+  if (!raw) return '';
+  let s = String(raw).replace(/[\s\-()]/g, '');
+  if (s.startsWith('+886')) s = '0' + s.slice(4);
+  else if (s.startsWith('886')) s = '0' + s.slice(3);
+  return /^09\d{8}$/.test(s) ? s : '';
+}
+
+function getDeviceSavedPhone() {
+  try {
+    return normalizeTwPhone(localStorage.getItem('gb_saved_phone') || localStorage.getItem('gb_last_phone') || '');
+  } catch (e) {
+    return '';
+  }
+}
+
+function getLocalGbBuyerProfile() {
+  const uid = getGbBuyerUid();
+  let parsed = null;
+  if (uid) {
+    try {
+      const raw = localStorage.getItem('gb_profile_' + uid);
+      if (raw) parsed = JSON.parse(raw);
+    } catch (e) {}
+  }
+  const legacyName = (parsed && parsed.userName) || localStorage.getItem('gb_last_name') || '';
+  const legacyPhone = normalizeTwPhone((parsed && parsed.userPhone) || '') || getDeviceSavedPhone();
+  if (legacyName || legacyPhone) {
+    return {
+      userName: legacyName,
+      userPhone: legacyPhone,
+      updatedAt: (parsed && parsed.updatedAt) || 0
+    };
+  }
+  return null;
+}
+
+function persistGbBuyerProfile(syncServer) {
+  const nameEl = document.getElementById('gb-header-name');
+  const phoneEl = document.getElementById('gb-header-phone');
+  const uid = getGbBuyerUid();
+  if (!nameEl || !phoneEl) return;
+  const userName = nameEl.value.trim();
+  const typedPhone = normalizeTwPhone(phoneEl.value);
+  const prev = getLocalGbBuyerProfile() || {};
+  const userPhone = typedPhone || normalizeTwPhone(prev.userPhone) || getDeviceSavedPhone();
+  const profile = { userName, userPhone, updatedAt: Date.now() };
+  try {
+    if (uid && (userName || userPhone)) localStorage.setItem('gb_profile_' + uid, JSON.stringify(profile));
+    if (userName) localStorage.setItem('gb_last_name', userName);
+    if (userPhone) {
+      localStorage.setItem('gb_last_phone', userPhone);
+      localStorage.setItem('gb_saved_phone', userPhone);
+    }
+  } catch (e) {}
+  if (syncServer && uid && userPhone) {
+    fetch('/api/groupbuy_profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid, userName, userPhone })
+    }).catch(() => {});
+  }
+}
+
+async function fetchGbBuyerProfile() {
+  const uid = getGbBuyerUid();
+  const name = (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) ? currentUser.displayName : '';
+  if (!uid && !name) return null;
+  try {
+    const qs = new URLSearchParams();
+    if (uid) qs.set('uid', uid);
+    if (name) qs.set('name', name);
+    const res = await fetch('/api/groupbuy_profile?' + qs.toString());
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.profile) return data.profile;
+    }
+  } catch (e) {}
+  return null;
+}
+
+function pickNewerGbProfile(localProfile, serverProfile) {
+  if (!localProfile) return serverProfile || null;
+  if (!serverProfile) return localProfile;
+  return (serverProfile.updatedAt || 0) >= (localProfile.updatedAt || 0) ? serverProfile : localProfile;
+}
+
+function findMyGroupBuyOrder(orders) {
+  if (!orders) return null;
+  const uid = getGbBuyerUid();
+  if (uid && orders[uid]) return orders[uid];
+  if (uid) {
+    const byUid = Object.values(orders).find(order => order && order.userId === uid);
+    if (byUid) return byUid;
+  }
+  const local = getLocalGbBuyerProfile();
+  if (local && local.userName && local.userPhone) {
+    const key = `${local.userName.trim().toLowerCase()}_${local.userPhone.trim()}`;
+    if (orders[key]) return orders[key];
+  }
+  return null;
+}
+
+function applyGbBuyerProfile(serverProfile, myOrder) {
+  const nameEl = document.getElementById('gb-header-name');
+  const phoneEl = document.getElementById('gb-header-phone');
+  const checkoutName = document.getElementById('gb-user-name');
+  const checkoutPhone = document.getElementById('gb-user-phone');
+  const picked = pickNewerGbProfile(getLocalGbBuyerProfile(), serverProfile);
+  const lineName = (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) ? currentUser.displayName : '';
+  const tokenPhone = (typeof currentUser !== 'undefined' && currentUser) ? normalizeTwPhone(currentUser.phoneNumber) : '';
+  const userName = (picked && picked.userName) || (myOrder && myOrder.userName) || lineName;
+  const userPhone = normalizeTwPhone((picked && picked.userPhone) || (myOrder && myOrder.userPhone) || tokenPhone || getDeviceSavedPhone());
+  if (nameEl && userName && document.activeElement !== nameEl) nameEl.value = userName;
+  if (phoneEl && userPhone) {
+    const typingDifferent = document.activeElement === phoneEl && phoneEl.value.trim() !== '' && normalizeTwPhone(phoneEl.value) !== userPhone;
+    if (!typingDifferent) phoneEl.value = userPhone;
+  }
+  if (checkoutName && userName && !checkoutName.value) checkoutName.value = userName;
+  if (checkoutPhone && userPhone && !checkoutPhone.value) checkoutPhone.value = userPhone;
+}
+
+async function hydrateGbBuyerFields() {
+  bindGbIdentityListeners();
+  const serverProfile = await fetchGbBuyerProfile();
+  const myOrder = findMyGroupBuyOrder(currentGroupBuyData && currentGroupBuyData.orders);
+  applyGbBuyerProfile(serverProfile, myOrder);
+}
+
+function bindGbIdentityListeners() {
+  if (gbIdentityListenersBound) return;
+  const nameEl = document.getElementById('gb-header-name');
+  const phoneEl = document.getElementById('gb-header-phone');
+  if (!nameEl && !phoneEl) return;
+  gbIdentityListenersBound = true;
+  const persistSoon = () => {
+    persistGbBuyerProfile(false);
+    clearTimeout(gbProfileSaveTimer);
+    gbProfileSaveTimer = setTimeout(() => persistGbBuyerProfile(true), 400);
+  };
+  if (nameEl) {
+    nameEl.addEventListener('input', persistSoon);
+    nameEl.addEventListener('change', () => persistGbBuyerProfile(true));
+    nameEl.addEventListener('blur', () => persistGbBuyerProfile(true));
+  }
+  if (phoneEl) {
+    phoneEl.addEventListener('input', () => {
+      persistSoon();
+      if (normalizeTwPhone(phoneEl.value)) persistGbBuyerProfile(true);
+    });
+    phoneEl.addEventListener('change', () => persistGbBuyerProfile(true));
+    phoneEl.addEventListener('blur', () => persistGbBuyerProfile(true));
+  }
+}
 
 window.validateNamePhone = function() {
   const n = document.getElementById('gb-header-name');
@@ -5466,8 +5658,7 @@ window.validateNamePhone = function() {
     return false;
   }
   
-  localStorage.setItem('gb_last_name', nv);
-  localStorage.setItem('gb_last_phone', pv);
+  persistGbBuyerProfile(true);
   return true;
 };
  // { [itemId]: quantity }
@@ -5582,6 +5773,7 @@ async function fetchGroupBuyData() {
       const result = await res.json();
       if (result.success) {
         renderGroupBuyUI(result.data);
+        await hydrateGbBuyerFields();
       }
     }
   } catch(e) {
@@ -5662,7 +5854,17 @@ function openGroupBuyPage(gid = null) {
   // 強制切換回選購品項頁籤，解決初次開啟時畫面空白問題
   if (gbTabItems) gbTabItems.click();
 
-  fetchGroupBuyData();
+  hydrateGbBuyerFields();
+
+  fetchGroupBuyData().then(async () => {
+    await hydrateGbBuyerFields();
+    const myOrder = findMyGroupBuyOrder(currentGroupBuyData && currentGroupBuyData.orders);
+    if (myOrder && myOrder.items && Object.keys(currentCart).length === 0) {
+      currentCart = { ...myOrder.items };
+    }
+    renderItemsGrid();
+    updateCartBar();
+  });
 }
 
 function checkIsAdmin() {
@@ -5820,28 +6022,11 @@ function renderGroupBuyUI(data) {
     else btnGbCopySummary.classList.add('hidden');
   }
 
-  // 自動復原個人歷史填寫過的的訂單內容/姓名電話
-  let myOrder = null;
-  const gbUserNameInput = document.getElementById('gb-header-name');
-  const gbUserPhoneInput = document.getElementById('gb-header-phone');
-  const nVal = (gbUserNameInput && gbUserNameInput.value.trim().toLowerCase()) || '';
-  const pVal = (gbUserPhoneInput && gbUserPhoneInput.value.trim()) || '';
-  const phoneKey = (nVal && pVal) ? `${nVal}_${pVal}` : null;
-  
-  if (data.orders) {
-    if (currentUser?.userId && data.orders[currentUser.userId]) {
-      myOrder = data.orders[currentUser.userId];
-    } else if (phoneKey && data.orders[phoneKey]) {
-      myOrder = data.orders[phoneKey];
-    } else if (nVal && data.orders[nVal]) {
-      myOrder = data.orders[nVal];
-    }
-  }
-
+  // 依 LINE UID 復原個人訂單與購物車；姓名/電話由 applyGbBuyerProfile 帶入
+  const myOrder = findMyGroupBuyOrder(data.orders);
   if (myOrder) {
     if (gbUserName && !gbUserName.value) gbUserName.value = myOrder.userName || '';
     if (gbUserPhone && !gbUserPhone.value) gbUserPhone.value = myOrder.userPhone || '';
-    // 如果購物車是空的，帶入上次訂單
     if (Object.keys(currentCart).length === 0 && myOrder.items) {
       currentCart = { ...myOrder.items };
     }
@@ -5959,7 +6144,8 @@ function renderItemsGrid() {
     filtered = filtered.filter(i => 
       (i.name && i.name.toLowerCase().includes(q)) ||
       (i.category && i.category.toLowerCase().includes(q)) ||
-      (i.description && i.description.toLowerCase().includes(q))
+      (i.description && i.description.toLowerCase().includes(q)) ||
+      (i.contents && i.contents.toLowerCase().includes(q))
     );
   }
 
@@ -5977,14 +6163,18 @@ function renderItemsGrid() {
     
     const qty = currentCart[item.id] || 0;
     const isExpanded = (window.activeExpandedItemId === item.id);
+    const noteText = (item.contents || '').trim();
     
     card.style.cssText = `background:white; border:1px solid ${qty > 0 ? '#10b981' : '#e2e8f0'}; border-radius:8px; overflow:hidden; transition:all 0.2s ease; ${qty > 0 && !isExpanded ? 'background:#ecfdf5;' : ''}`;
 
     // 主要列
     const rowHtml = `
-      <div class="gb-list-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px; cursor:pointer;">
-        <div style="flex:1; font-weight:bold; color:#2563eb; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-          ${item.name}
+      <div class="gb-list-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px; cursor:pointer; gap:8px;">
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:bold; color:#2563eb; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${item.name}
+          </div>
+          ${noteText ? `<div style="font-size:12px; color:#64748b; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${typeof escapeHTML === 'function' ? escapeHTML(noteText) : noteText}</div>` : ''}
         </div>
         <div style="flex:0 0 auto; display:flex; align-items:center;">
           ${qty > 0 ? `<span style="background:#10b981; color:white; font-size:11px; padding:2px 6px; border-radius:10px; margin-right:6px; font-weight:bold;">已選: ${qty}</span>` : ''}
@@ -6001,9 +6191,9 @@ function renderItemsGrid() {
       expandedHtml = `
         <div class="gb-accordion-body" style="padding:12px 16px; background:#f8fafc; border-top:1px solid #e2e8f0;">
           
-          ${item.contents ? `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          ${noteText ? `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <div style="font-size:13px; color:#334155; text-align:left; flex:1;">
-              <strong>備註：</strong>${item.contents}
+              <strong>備註：</strong>${typeof escapeHTML === 'function' ? escapeHTML(noteText) : noteText}
             </div>
           </div>` : ''}
           
@@ -6248,21 +6438,21 @@ async function saveCartToBackend() {
   
   const gbHeaderNameInput = document.getElementById('gb-header-name');
   const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
-  
-  const oldOrder = currentGroupBuyData.orders && currentGroupBuyData.orders[currentUser.userId];
+  const oldOrder = findMyGroupBuyOrder(currentGroupBuyData.orders);
   const defaultName = (oldOrder && oldOrder.userName) ? oldOrder.userName : (currentUser.displayName || '未命名');
   const defaultPhone = (oldOrder && oldOrder.userPhone) ? oldOrder.userPhone : '';
   
   const name = gbHeaderNameInput && gbHeaderNameInput.value.trim() ? gbHeaderNameInput.value.trim() : defaultName;
   const phone = gbHeaderPhoneInput ? gbHeaderPhoneInput.value.trim() : defaultPhone;
   const note = (oldOrder && oldOrder.note) ? oldOrder.note : '';
+  persistGbBuyerProfile(true);
   
   try {
     const res = await fetch(`/api/groupbuy/${currentGid}/order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: phone, userName: name, userPhone: phone, userPictureUrl: currentUser.pictureUrl || '',
+        uid: currentUser.userId, userName: name, userPhone: phone, userPictureUrl: currentUser.pictureUrl || '',
         items: currentCart,
         paymentMethod: 'none',
         paymentNote: '',
@@ -6307,54 +6497,6 @@ function updateCartBar() {
       if (cartJumpBtn) cartJumpBtn.classList.add('hidden');
     }
   }
-}
-
-function openGroupBuyPage() {
-  fetchGroupBuyData().then(() => {
-    const gbHeaderNameInput = document.getElementById('gb-header-name');
-    const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
-    
-    if (gbHeaderPhoneInput) {
-      
-      const reloadCart = () => {
-        const n = (gbHeaderNameInput && gbHeaderNameInput.value.trim().toLowerCase()) || '';
-        const p = (gbHeaderPhoneInput && gbHeaderPhoneInput.value.trim()) || '';
-        const key = (n && p) ? `${n}_${p}` : '';
-        
-        if (key && currentGroupBuyData && currentGroupBuyData.orders && currentGroupBuyData.orders[key]) {
-          currentCart = { ...currentGroupBuyData.orders[key].items };
-        } else if (p || n) {
-          currentCart = {};
-        }
-        renderItemsGrid();
-        updateCartBar();
-      };
-      
-      gbHeaderPhoneInput.addEventListener('input', () => {
-        const p = gbHeaderPhoneInput.value.trim();
-        if (p === '' || /^09\d{8}$/.test(p)) reloadCart();
-      });
-      if (gbHeaderNameInput) {
-        gbHeaderNameInput.addEventListener('input', () => {
-          const p = gbHeaderPhoneInput ? gbHeaderPhoneInput.value.trim() : '';
-          if (p === '' || /^09\d{8}$/.test(p)) reloadCart();
-        });
-      }
-
-    }
-    if (currentUser && currentGroupBuyData) {
-      const oldOrder = currentGroupBuyData.orders && currentGroupBuyData.orders[currentUser.userId];
-      if (gbHeaderNameInput) {
-        gbHeaderNameInput.value = (oldOrder && oldOrder.userName) ? oldOrder.userName : (currentUser.displayName || '');
-      }
-      if (gbHeaderPhoneInput) {
-        gbHeaderPhoneInput.value = (oldOrder && oldOrder.userPhone) ? oldOrder.userPhone : '';
-      }
-    }
-  });
-  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-  if (groupBuyView) groupBuyView.classList.remove('hidden');
-  updateCartBar();
 }
 
 function renderSummaryTab() {
@@ -6861,9 +7003,13 @@ function initGroupBuyEvents() {
         
         let foundKey = null;
         if (currentGroupBuyData && currentGroupBuyData.orders) {
-          if (currentUser && currentUser.userId && currentGroupBuyData.orders[currentUser.userId]) {
-            foundKey = currentUser.userId;
-          } else if (n) {
+          const uid = currentUser && currentUser.userId;
+          if (uid && currentGroupBuyData.orders[uid]) {
+            foundKey = uid;
+          } else if (uid) {
+            foundKey = Object.keys(currentGroupBuyData.orders).find(k => currentGroupBuyData.orders[k] && currentGroupBuyData.orders[k].userId === uid) || null;
+          }
+          if (!foundKey && n) {
             const key1 = p ? `${n}_${p}` : n;
             if (currentGroupBuyData.orders[key1]) foundKey = key1;
           }
@@ -6943,6 +7089,11 @@ function initGroupBuyEvents() {
         alert('請填寫姓名與聯絡電話！');
         return;
       }
+      const headerName = document.getElementById('gb-header-name');
+      const headerPhone = document.getElementById('gb-header-phone');
+      if (headerName) headerName.value = name;
+      if (headerPhone) headerPhone.value = phone;
+      persistGbBuyerProfile(true);
 
 
 
@@ -6951,7 +7102,7 @@ function initGroupBuyEvents() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            uid: phone, userName: name, userPhone: phone, items: currentCart,
+            uid: (currentUser && currentUser.userId) ? currentUser.userId : phone, userName: name, userPhone: phone, items: currentCart,
             paymentMethod: 'none',
             paymentNote: '',
             note: gbOrderNote ? gbOrderNote.value.trim() : ''
@@ -7667,7 +7818,7 @@ if (btnTaSave) {
     
     appDiv.className = 'loading';
     try {
-      const res = await fetch(`/api/templates/${currentGroupId}`, {
+      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -7703,7 +7854,7 @@ if (btnTaDelete) {
     
     appDiv.className = 'loading';
     try {
-      const res = await fetch(`/api/templates/${currentGroupId}`, {
+      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
