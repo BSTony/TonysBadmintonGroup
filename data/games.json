@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787740008652,
+    "lastActiveTime": 1787756732825,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4258,14 +4258,20 @@
           "阿豪",
           "古書羽",
           "FB-Danny",
-          "Hsiu",
-          "雲"
+          "Hsiu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/26 23:05",
+        "name": "雲",
+        "operator": "雲",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 18:26",
         "name": "雲",
