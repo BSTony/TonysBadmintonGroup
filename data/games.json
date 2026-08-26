@@ -4470,7 +4470,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787588075269,
+    "lastActiveTime": 1787723116046,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4489,7 +4489,8 @@
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
       "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
-      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4527,11 +4528,19 @@
           "Kay",
           "Gary",
           "小可愛",
-          "林立峰"
+          "林立峰",
+          "Chen H.R."
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/26 13:45",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/25 00:14",
         "name": "JoeLin",
