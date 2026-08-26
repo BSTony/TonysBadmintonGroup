@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787739687113,
+    "lastActiveTime": 1787740008652,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4223,7 +4223,8 @@
       "阿豪": "U1a05e97623cee1f79b0876626e88f0ab",
       "古書羽": "U515f3eafb608f3aada94b73067dcc156",
       "FB-Danny": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Hsiu": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Hsiu": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "雲": "U9189a06112f6a2a13fdacb08a190c60b"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4257,13 +4258,21 @@
           "阿豪",
           "古書羽",
           "FB-Danny",
-          "Hsiu"
+          "Hsiu",
+          "雲"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/26 18:26",
+        "name": "雲",
+        "operator": "雲",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 18:21",
         "name": "Sean柏宏",
