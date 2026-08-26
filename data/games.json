@@ -4419,7 +4419,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787376761752,
-    "lastActiveTime": 1787746667774,
+    "lastActiveTime": 1787746684220,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4444,7 +4444,8 @@
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
       "JOJO": "U07da54f66d0a500df5b2db748bde73a9",
       "JOJO👆✌️🖖🤘👐💪": "U07da54f66d0a500df5b2db748bde73a9",
-      "豪": "U04307fbd1087e54ce656086b653a60fd"
+      "豪": "U04307fbd1087e54ce656086b653a60fd",
+      "奶瓶": "U04307fbd1087e54ce656086b653a60fd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4464,12 +4465,20 @@
           "弘彬/Jason",
           "JOJO",
           "JOJO👆✌️🖖🤘👐💪",
-          "豪"
+          "豪",
+          "奶瓶"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/26 20:18",
+        "name": "奶瓶",
+        "operator": "黃政豪",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 20:17",
         "name": "豪",
