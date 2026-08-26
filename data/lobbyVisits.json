@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3505,
+    "viewCount": 3506,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -24,8 +24,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 674,
-        "lastVisit": 1787750719204,
+        "count": 675,
+        "lastVisit": 1787753274293,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -1143,6 +1143,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1787753274293,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1787752416543,
         "userId": "U532d12783f207181c2d0f9d9ecc8724a",
@@ -6927,7 +6933,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 188,
+    "viewCount": 191,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -7017,8 +7023,8 @@
       "U0134503a2d79a5bb7f92d876393b2fd8": {
         "displayName": "afrahuang",
         "firstVisit": 1783434567289,
-        "count": 7,
-        "lastVisit": 1787059750684,
+        "count": 8,
+        "lastVisit": 1787754370640,
         "pictureUrl": "https://profile.line-scdn.net/0m03e948127251fc7fab67d04894e1bd1b5ea0651b212a"
       },
       "U1302ddcec82bfd0d9b9eba641676ea0a": {
@@ -7087,8 +7093,8 @@
       "Ua871dc0011b1e136c14173739cf88645": {
         "displayName": "Vicky Lin",
         "firstVisit": 1785855054952,
-        "count": 4,
-        "lastVisit": 1787667339072,
+        "count": 5,
+        "lastVisit": 1787755025267,
         "pictureUrl": "https://profile.line-scdn.net/0hwUD3XXNkKHppSjfu2PRWRBkaKxBKO3FoRChlTg9IdBpTKWooFi41FF5JcU8Bej0uQCluGQ5PIx1LeAh_Fyw4YQM8PjkPKmlfBkIEQDUCDiguOy4pInsZeFQrdRAwHg1vR1U6Wx0dERACBDdUIUgjdycWEDMBBmZNMh1ELGx4RvkGSF8vRCxmGVRMfk_R"
       },
       "Ub66f54da98299c4d5d8c721187df90db": {
@@ -7097,9 +7103,34 @@
         "count": 1,
         "lastVisit": 1786615282483,
         "pictureUrl": "https://profile.line-scdn.net/0hdXsjNNosO3deEyr20TxFSS5DOB19YmJlcnJ9Q2oaNhIxInt2dHJ2GTsUNUJhICt0IXwkGWgXMkZ8ezRBDiYCWCAUZEM7Sn1FEBtxTDJQOhcXRAVGKDcEFWkWbSxkSHlqAhx9dmJnAEMnIglXCwcHFzZDZzAkZBVoc0RXIVshVfQxEUwic3V1FGMVbULm"
+      },
+      "Ufe0fe514d1b7b112a3f6910485ae1ce8": {
+        "displayName": "Yoshi(王安迪)",
+        "firstVisit": 1787754761477,
+        "count": 1,
+        "lastVisit": 1787754761477,
+        "pictureUrl": "https://profile.line-scdn.net/0hon9xA1NOMEEUAS--En5Of2RRMys3cGlTaGB2LnYHO3EpNX9APjd2JiADbHEgNn8QbDMoIiVWanI2bXF_X24LREl-HTJdcncXU2MqJSQAZw5VRwJJOjkNQGhkaHdbWj8RZCYqbiQDMAU1VC5OZxUXO1JxBQlZWApSX1ZcFxEzXsJ7A0cUOWd-IikHZnSs"
       }
     },
     "logs": [
+      {
+        "time": 1787755025267,
+        "userId": "Ua871dc0011b1e136c14173739cf88645",
+        "displayName": "Vicky Lin",
+        "pictureUrl": "https://profile.line-scdn.net/0hwUD3XXNkKHppSjfu2PRWRBkaKxBKO3FoRChlTg9IdBpTKWooFi41FF5JcU8Bej0uQCluGQ5PIx1LeAh_Fyw4YQM8PjkPKmlfBkIEQDUCDiguOy4pInsZeFQrdRAwHg1vR1U6Wx0dERACBDdUIUgjdycWEDMBBmZNMh1ELGx4RvkGSF8vRCxmGVRMfk_R"
+      },
+      {
+        "time": 1787754761477,
+        "userId": "Ufe0fe514d1b7b112a3f6910485ae1ce8",
+        "displayName": "Yoshi(王安迪)",
+        "pictureUrl": "https://profile.line-scdn.net/0hon9xA1NOMEEUAS--En5Of2RRMys3cGlTaGB2LnYHO3EpNX9APjd2JiADbHEgNn8QbDMoIiVWanI2bXF_X24LREl-HTJdcncXU2MqJSQAZw5VRwJJOjkNQGhkaHdbWj8RZCYqbiQDMAU1VC5OZxUXO1JxBQlZWApSX1ZcFxEzXsJ7A0cUOWd-IikHZnSs"
+      },
+      {
+        "time": 1787754370640,
+        "userId": "U0134503a2d79a5bb7f92d876393b2fd8",
+        "displayName": "afrahuang",
+        "pictureUrl": "https://profile.line-scdn.net/0m03e948127251fc7fab67d04894e1bd1b5ea0651b212a"
+      },
       {
         "time": 1787669255980,
         "userId": "Uf35f2dc9288c3434a5a19186f900402a",
