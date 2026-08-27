@@ -30,16 +30,17 @@
       "items": {
         "zr_0052": 3,
         "zr_0164": 1,
-        "zr_0009": 1
+        "zr_0009": 1,
+        "zr_0144": 1
       },
-      "totalAmount": 1019,
+      "totalAmount": 1139,
       "paymentMethod": "none",
       "paymentStatus": "unverified",
       "orderStatus": "unconfirmed",
       "paymentNote": "",
       "note": "",
       "anonymous": false,
-      "updatedAt": 1787833069495
+      "updatedAt": 1787833211275
     },
     "Uc3f99069e10903dd9385cbf288b526ce": {
       "userId": "Uc3f99069e10903dd9385cbf288b526ce",
