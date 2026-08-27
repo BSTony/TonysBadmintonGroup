@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.2.9
+ * Version: 1.2.10
  */
 let globalLobbyUsers = [];
 
@@ -6125,10 +6125,8 @@ function renderGroupBuyUI(data) {
     if (isUserAdmin) {
       btnCopyLink.classList.remove('hidden');
       btnCopyLink.onclick = () => {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('testRole');
-        url.searchParams.set('buy', currentGid);
-        const link = url.toString();
+        const gid = currentGid || 'default';
+        const link = window.location.origin + '/?buy=' + encodeURIComponent(gid);
         
         // 為了相容行動裝置，加上 fallback 做法
         if (navigator.clipboard && window.isSecureContext) {
