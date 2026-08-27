@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787759063222,
+    "lastActiveTime": 1787790091340,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4192,7 +4192,6 @@
       "Ashley": true,
       "周則鼎": true,
       "Mina": true,
-      "Iven": true,
       "陳呈": true,
       "John": true,
       "Wayne": true
@@ -4244,7 +4243,6 @@
           "Ashley",
           "周則鼎",
           "Mina",
-          "Iven",
           "陳呈",
           "John",
           "Wayne",
@@ -4269,6 +4267,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/27 08:21",
+        "name": "Iven",
+        "operator": "Iven",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/26 23:42",
         "name": "Fb Ruby",
