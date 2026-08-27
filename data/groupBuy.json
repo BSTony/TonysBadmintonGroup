@@ -1627,16 +1627,17 @@
         "items": {
           "zr_0014": 1,
           "zr_0011": 1,
-          "zr_0062": 1
+          "zr_0062": 1,
+          "zr_0168": 1
         },
-        "totalAmount": 1199,
+        "totalAmount": 1384,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787798470482
+        "updatedAt": 1787798482247
       }
     },
     "hiddenFromLobby": true
@@ -1645,7 +1646,7 @@
     "U9dc6c7ab7d49487c4dcb70caf20195b0": {
       "userName": "謝東霖 Tony",
       "userPhone": "0936120108",
-      "updatedAt": 1787798481776
+      "updatedAt": 1787798482247
     },
     "U3c44f145460b5671baec6a3f62309c23": {
       "userName": "Wayne 吳瑋翔 위상",
