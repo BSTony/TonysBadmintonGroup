@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-08-27
-  Version: 1.2.4
+  Version: 1.2.6
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -10,7 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>羽球接龍報名大廳</title>
   <style>.hidden { display: none !important; }</style>
-  <link rel="stylesheet" href="style.css?v=20260630">
+  <link rel="stylesheet" href="style.css?v=20260827">
 </head>
 <body>
   <div id="app" class="loading">
@@ -930,9 +930,9 @@
       <button id="gb-tab-admin" class="gb-tab hidden">⚙️ 設定</button>
     </div>
     <div style="flex:1;overflow-y:auto;position:relative;">
-      <div id="gb-pane-items" class="gb-tab-pane active" style="padding:12px;">
-        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
-          <div id="gb-category-nav" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;"></div>
+      <div id="gb-pane-items" class="gb-tab-pane active" style="padding:6px 8px 12px;">
+        <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+          <div id="gb-category-nav" style="display:flex;gap:4px;flex-wrap:wrap;flex:1;"></div>
           <div id="gb-admin-items-controls" class="hidden" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
             
             <select id="gb-preset-select" style="padding:6px 10px;font-size:12px;border:1px solid #cbd5e1;border-radius:6px;background:white;"><option value="">-- 預設檔 --</option></select>
@@ -941,7 +941,7 @@
             <button id="btn-gb-add-item" style="padding:6px 12px;font-size:12px;font-weight:bold;border-radius:6px;border:none;background:#10b981;color:white;cursor:pointer;">➕ 新增</button>
           </div>
         </div>
-        <div id="gb-items-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div>
+        <div id="gb-items-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:4px;"></div>
       </div>
       <div id="gb-pane-summary" class="gb-tab-pane hidden" style="padding:12px;">
         <div id="gb-summary-totals"></div>
@@ -1019,7 +1019,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
   <script src="pinball_v2.js?v=20260805_zoom_01"></script>
-  <script src="app.js?v=V202608270940"></script>
+  <script src="app.js?v=V202608270950"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.2.4
+ * Version: 1.2.6
  */
 let globalLobbyUsers = [];
 
@@ -6164,8 +6164,13 @@ function renderItemsGrid() {
     return;
   }
 
-  // 根據螢幕寬度自動決定兩欄、三欄或四欄 (最小寬度 190px)
-  
+  const applyDenseGrid = (el) => {
+    el.style.display = 'grid';
+    el.style.gridTemplateColumns = 'repeat(auto-fill, minmax(110px, 1fr))';
+    el.style.gap = '4px';
+    el.style.alignItems = 'start';
+  };
+
   const createItemCard = (item) => {
     const card = document.createElement('div');
     card.id = 'gb-item-card-' + item.id;
@@ -6174,48 +6179,45 @@ function renderItemsGrid() {
     const qty = currentCart[item.id] || 0;
     const isExpanded = (window.activeExpandedItemId === item.id);
     const noteText = (item.contents || '').trim();
+    const safeName = typeof escapeHTML === 'function' ? escapeHTML(item.name || '') : (item.name || '');
+    const safeNote = noteText && typeof escapeHTML === 'function' ? escapeHTML(noteText) : noteText;
     
-    card.style.cssText = `background:white; border:1px solid ${qty > 0 ? '#10b981' : '#e2e8f0'}; border-radius:8px; overflow:hidden; transition:all 0.2s ease; ${qty > 0 && !isExpanded ? 'background:#ecfdf5;' : ''}`;
+    card.style.cssText = `background:white; border:1px solid ${qty > 0 ? '#10b981' : '#e2e8f0'}; border-radius:6px; overflow:hidden; transition:all 0.15s ease; ${qty > 0 && !isExpanded ? 'background:#ecfdf5;' : ''}`;
 
-    // 主要列
+    const nameStyle = isExpanded
+      ? 'font-weight:bold;color:#2563eb;font-size:13px;line-height:1.3;word-break:break-word;'
+      : 'font-weight:bold;color:#2563eb;font-size:12px;line-height:1.25;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;';
+
+    // 主要列：未展開最多兩行；點開後顯示完整品名
     const rowHtml = `
-      <div class="gb-list-row" style="display:flex; align-items:center; justify-content:space-between; padding:12px; cursor:pointer; gap:8px;">
-        <div style="flex:1; min-width:0;">
-          <div style="font-weight:bold; color:#2563eb; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            ${item.name}
+      <div class="gb-list-row" style="display:flex; flex-direction:column; padding:6px; cursor:pointer; gap:3px;" title="${safeName}${safeNote ? ' (' + safeNote + ')' : ''}">
+        <div style="${nameStyle}">${safeName}</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
+          ${noteText && !isExpanded ? `<span style="font-size:10px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;">${safeNote}</span>` : '<span></span>'}
+          <div style="flex:0 0 auto; display:flex; align-items:center;">
+            ${qty > 0 ? `<span style="background:#10b981; color:white; font-size:10px; padding:1px 5px; border-radius:8px; margin-right:4px; font-weight:bold;">${qty}</span>` : ''}
+            <span style="font-weight:bold; font-size:13px; color:#1e293b;">${item.price}</span>
           </div>
-          ${noteText ? `<div style="font-size:12px; color:#64748b; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${typeof escapeHTML === 'function' ? escapeHTML(noteText) : noteText}</div>` : ''}
-        </div>
-        <div style="flex:0 0 auto; display:flex; align-items:center;">
-          ${qty > 0 ? `<span style="background:#10b981; color:white; font-size:11px; padding:2px 6px; border-radius:10px; margin-right:6px; font-weight:bold;">已選: ${qty}</span>` : ''}
-          <span style="font-weight:bold; font-size:15px; color:#1e293b;">${item.price}</span>
         </div>
       </div>
     `;
 
-    // 展開的區塊 (無圖片、僅內容物、數量選擇同一列)
+    // 展開的區塊：完整品名＋規格＋數量
     let expandedHtml = '';
     if (isExpanded) {
       const dQty = (draftCart[item.id] !== undefined) ? draftCart[item.id] : (qty || 1); 
 
       expandedHtml = `
-        <div class="gb-accordion-body" style="padding:12px 16px; background:#f8fafc; border-top:1px solid #e2e8f0;">
-          
-          ${noteText ? `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div style="font-size:13px; color:#334155; text-align:left; flex:1;">
-              <strong>備註：</strong>${typeof escapeHTML === 'function' ? escapeHTML(noteText) : noteText}
+        <div class="gb-accordion-body" style="padding:6px 8px 8px; background:#f8fafc; border-top:1px solid #e2e8f0;">
+          ${noteText ? `<div style="font-size:11px;color:#475569;margin-bottom:6px;word-break:break-word;">${safeNote}</div>` : ''}
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+              <button class="qty-btn btn-minus" style="width:28px;height:28px;font-size:16px;border:none;border-radius:50%;background:#e2e8f0;color:#334155;cursor:pointer;font-weight:bold;">-</button>
+              <span class="qty-num" style="min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid #cbd5e1;border-radius:4px;font-size:14px;font-weight:bold;color:#1e293b;background:white;">${dQty}</span>
+              <button class="qty-btn btn-plus" style="width:28px;height:28px;font-size:16px;border:none;border-radius:50%;background:#10b981;color:white;cursor:pointer;font-weight:bold;">+</button>
             </div>
-          </div>` : ''}
-          
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-            <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
-              <button class="qty-btn btn-minus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#e2e8f0;color:#334155;cursor:pointer;font-weight:bold;">-</button>
-              <span class="qty-num" style="min-width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid #cbd5e1;border-radius:4px;font-size:16px;font-weight:bold;color:#1e293b;background:white;">${dQty}</span>
-              <button class="qty-btn btn-plus" style="width:36px;height:36px;font-size:18px;border:none;border-radius:50%;background:#10b981;color:white;cursor:pointer;font-weight:bold;">+</button>
-            </div>
-            
-            <div style="display:flex; gap:8px;">
-              <button class="btn-confirm-draft" style="background:transparent;color:#10b981;border:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.1s;padding:0;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:32px;height:32px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button>
+            <div style="display:flex; gap:4px;">
+              <button class="btn-confirm-draft" style="background:transparent;color:#10b981;border:none;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:26px;height:26px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button>
             </div>
           </div>
         </div>
@@ -6347,10 +6349,7 @@ function renderItemsGrid() {
   const isAllView = (activeCategoryFilter === '全部' && (!currentSearchQuery || currentSearchQuery.trim() === ''));
 
   if (!isAllView) {
-    gbItemsGrid.style.display = 'grid';
-    gbItemsGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(190px, 1fr))';
-    gbItemsGrid.style.gap = '8px';
-    gbItemsGrid.style.alignItems = 'start';
+    applyDenseGrid(gbItemsGrid);
     
     filtered.forEach(item => {
       gbItemsGrid.appendChild(createItemCard(item));
@@ -6377,19 +6376,16 @@ function renderItemsGrid() {
 
     sortedCats.forEach(cat => {
       const groupDiv = document.createElement('div');
-      groupDiv.style.marginBottom = '24px';
+      groupDiv.style.marginBottom = '10px';
       groupDiv.style.background = 'transparent';
       
       const titleEl = document.createElement('div');
-      titleEl.style.cssText = 'font-size:16px; font-weight:bold; color:#1e293b; margin-bottom:12px; display:flex; align-items:center; gap:8px;';
-      titleEl.innerHTML = `<span style="width:4px; height:18px; background:#10b981; border-radius:2px; display:inline-block;"></span>${cat}`;
+      titleEl.style.cssText = 'font-size:13px; font-weight:bold; color:#1e293b; margin:2px 0 6px; display:flex; align-items:center; gap:6px;';
+      titleEl.innerHTML = `<span style="width:3px; height:14px; background:#10b981; border-radius:2px; display:inline-block;"></span>${cat}`;
       groupDiv.appendChild(titleEl);
       
       const gridDiv = document.createElement('div');
-      gridDiv.style.display = 'grid';
-      gridDiv.style.gridTemplateColumns = 'repeat(auto-fill, minmax(190px, 1fr))';
-      gridDiv.style.gap = '8px';
-      gridDiv.style.alignItems = 'start';
+      applyDenseGrid(gridDiv);
       
       groups[cat].forEach(item => {
         gridDiv.appendChild(createItemCard(item));

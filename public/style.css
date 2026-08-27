@@ -1,3 +1,8 @@
+/*
+  Author: Tony Hsieh
+  Date: 2026-08-27
+  Version: 1.2.6
+ */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
   --surface-color: #FFFFFF; /* White card */
@@ -894,19 +899,19 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
 
 .gb-category-nav {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   overflow-x: auto;
-  padding-bottom: 10px;
-  margin-bottom: 16px;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
   scrollbar-width: thin;
 }
 .gb-cat-btn {
   white-space: nowrap;
-  padding: 6px 14px;
-  border-radius: 20px;
+  padding: 4px 8px;
+  border-radius: 14px;
   border: 1px solid #ced4da;
   background: #f8f9fa;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -920,8 +925,8 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
 /* 品項網格 */
 .gb-items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 4px;
   margin-bottom: 70px; /* Leave room for floating cart bar */
 }
 
@@ -1263,5 +1268,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
      a c c e n t - c o l o r :   v a r ( - - p r i m a r y - c o l o r ) ; 
      c u r s o r :   p o i n t e r ; 
  } 
-  
+ 
+ 
  
