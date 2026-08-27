@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.2.6
+ * Version: 1.2.7
  */
 let globalLobbyUsers = [];
 
@@ -324,6 +324,18 @@ window.handleRoleSwitch = handleRoleSwitch;
 // DOM 元素
 const appDiv = document.getElementById('app');
 const statusMsg = document.getElementById('status-msg');
+
+function revealApp() {
+  if (appDiv) appDiv.className = '';
+  if (statusMsg) statusMsg.style.display = 'none';
+}
+
+function withTimeout(promise, ms, message) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
+  ]);
+}
 const lobbyView = document.getElementById('lobby-view');
 const detailView = document.getElementById('detail-view');
 const gamesContainer = document.getElementById('games-container');
@@ -1351,11 +1363,37 @@ if (btnBhEndRoom) {
 }
 
 
-// 初始化 LIFF
+let liffBootStarted = false;
+
+async function enterAppAfterIdentity(buyFromUrl) {
+  const createGameView = document.getElementById('create-game-view');
+  if (createGameView) createGameView.classList.add('hidden');
+  if (buyFromUrl) {
+    if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
+    if (typeof openGroupBuyPage === 'function') openGroupBuyPage(buyFromUrl);
+    await loadGamesLobby(true);
+  } else {
+    await loadGamesLobby();
+  }
+  if (typeof initSocket === 'function') initSocket();
+}
+
+// 初始化 LIFF（整頁只跑一次，避免手機第二次 liff.init 卡住）
 async function initializeLiff() {
+  if (liffBootStarted) return;
+  liffBootStarted = true;
+
+  const testParams = new URLSearchParams(window.location.search);
+  const buyFromUrl = testParams.get('buy');
+  let liffRedirecting = false;
+
+  // 專屬團購先開頁，不要等 LIFF / 大廳 API
+  if (buyFromUrl && typeof openGroupBuyPage === 'function') {
+    if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
+    openGroupBuyPage(buyFromUrl);
+  }
+
   try {
-    // 0. 本機測試模式 (Local Test Mode)
-    const testParams = new URLSearchParams(window.location.search);
     const testRole = testParams.get('testRole');
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
@@ -1377,8 +1415,7 @@ async function initializeLiff() {
       
       currentUser = { userId: mockUid, displayName: mockName };
       if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
-      const urlBuyGid = testParams.get('buy');
-      if (urlBuyGid && !testRole) {
+      if (buyFromUrl && !testRole) {
         globalIsSuperAdmin = false;
         globalIsAdmin = false;
         currentUser.displayName = '一般訪客 (Local Test)';
@@ -1395,43 +1432,30 @@ async function initializeLiff() {
       const h3 = document.getElementById('group-id-display');
       if (h3) h3.innerText = '群組ID: ' + currentGroupId;
       
-      const buyGid = testParams.get('buy');
-      if (buyGid) {
-        if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
-        openGroupBuyPage(buyGid);
-      } else {
-        await loadGamesLobby();
-      }
-      initSocket();
-      
-      const appDivEl = document.getElementById('app');
-      if (appDivEl) appDivEl.className = '';
-      const statusMsgEl = document.getElementById('status-msg');
-      if (statusMsgEl) statusMsgEl.style.display = 'none';
-      
-      return; // Skip LIFF initialization completely
+      await enterAppAfterIdentity(buyFromUrl);
+      return;
     }
 
-    // 1. 取得後端系統設定
-    const configRes = await fetch(`/api/config?_t=${Date.now()}`);
+    const configRes = await withTimeout(fetch(`/api/config?_t=${Date.now()}`), 8000, '無法取得系統設定');
     if (!configRes.ok) throw new Error('無法取得系統設定');
     const config = await configRes.json();
     
     if (!config.liffId) {
       throw new Error('系統未設定 LIFF ID');
     }
+    if (typeof liff === 'undefined') {
+      throw new Error('LIFF SDK 未載入');
+    }
 
-    // 2. 初始化 LIFF SDK
-    await liff.init({ liffId: config.liffId });
+    await withTimeout(liff.init({ liffId: config.liffId }), 10000, 'LIFF 初始化逾時');
 
-    // 3. 確保使用者已登入
     if (!liff.isLoggedIn()) {
+      liffRedirecting = true;
       liff.login({ redirectUri: window.location.href });
       return;
     }
 
-    // 取得使用者資料
-    const profile = await liff.getProfile();
+    const profile = await withTimeout(liff.getProfile(), 8000, '無法取得 LINE 資料');
     currentUser = profile;
     try {
       const idToken = (typeof liff.getDecodedIDToken === 'function') ? liff.getDecodedIDToken() : null;
@@ -1443,10 +1467,7 @@ async function initializeLiff() {
     }
     if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
 
-    // 4. 取得群組 Context
-    const urlParams = new URLSearchParams(window.location.search);
-    const gidFromUrl = urlParams.get('gid');
-    const buyFromUrl = urlParams.get('buy');
+    const gidFromUrl = testParams.get('gid');
     const context = liff.getContext();
     
     if (gidFromUrl) {
@@ -1459,7 +1480,6 @@ async function initializeLiff() {
       currentGroupId = currentUser.userId;
     }
 
-    // 紀錄造訪
     if (currentGroupId && currentUser) {
       fetch('/api/lobby_visit', {
         method: 'POST',
@@ -1473,12 +1493,7 @@ async function initializeLiff() {
       }).catch(e => console.error('Failed to log visit', e));
     }
 
-    // 5. 載入大廳資料
-    document.getElementById('create-game-view').classList.add('hidden');
-    await loadGamesLobby();
-    
-    // 6. 初始化派對 Socket (背景連線，以便接收廣播)
-    initSocket();
+    await enterAppAfterIdentity(buyFromUrl);
 
   } catch (err) {
     console.error('LIFF Init Error:', err);
@@ -1486,22 +1501,13 @@ async function initializeLiff() {
       currentUser = currentUser || { userId: 'U_LOCAL_TEST', displayName: '一般訪客' };
       globalIsSuperAdmin = false;
       globalIsAdmin = false;
-      
-      const urlParams = new URLSearchParams(window.location.search);
-      const buyFromUrl = urlParams.get('buy');
-      
-      if (buyFromUrl) {
-        if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
-        openGroupBuyPage(buyFromUrl);
-      } else {
-        await loadGamesLobby();
-      }
-      initSocket();
-    } catch(e) {}
-    const appDivEl = document.getElementById('app');
-    if (appDivEl) appDivEl.className = '';
-    const statusMsgEl = document.getElementById('status-msg');
-    if (statusMsgEl) statusMsgEl.style.display = 'none';
+      if (!currentGroupId) currentGroupId = testParams.get('gid') || currentUser.userId;
+      await enterAppAfterIdentity(buyFromUrl);
+    } catch(e) {
+      console.error('Fallback boot error:', e);
+    }
+  } finally {
+    if (!liffRedirecting) revealApp();
   }
 }
 
@@ -1511,16 +1517,24 @@ async function loadGamesLobby(silent = false) {
   const urlBuyEarly = urlParamsEarly.get('buy');
   try {
     // 專屬團購連結先開商場，避免卡在大廳載入畫面
-    if (!silent && urlBuyEarly) {
-      if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
-      openGroupBuyPage(urlBuyEarly);
+    if (urlBuyEarly) {
+      if (!silent && typeof openGroupBuyPage === 'function') {
+        if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
+        openGroupBuyPage(urlBuyEarly);
+      }
     } else if (!silent) {
       appDiv.className = 'loading';
       statusMsg.innerText = '載入中...';
       statusMsg.style.display = 'block';
     }
     
-    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
+    const uid = (currentUser && currentUser.userId) ? currentUser.userId : '';
+    const gid = currentGroupId || 'default';
+    const res = await withTimeout(
+      fetch(`/api/game/${gid}?uid=${uid}&_t=${Date.now()}`),
+      12000,
+      '場次資料載入逾時'
+    );
     if (!res.ok) {
       if (res.status === 404) {
         gamesList = [];
@@ -1556,17 +1570,16 @@ async function loadGamesLobby(silent = false) {
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlGameId = urlParams.get('gameId');
-    const urlBuy = urlParams.get('buy');
+    const urlBuy = urlParams.get('buy') || urlBuyEarly;
     
-    // 專屬團購連結已先開啟商場；場次資料回來後只補權限，不再重跑載入畫面
-    if (!silent && urlBuy) {
+    // 專屬團購：不要改渲染大廳，以免蓋掉已打開的商場
+    if (urlBuy) {
       if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
       if (typeof renderGroupBuyUI === 'function' && currentGroupBuyData) {
         renderGroupBuyUI(currentGroupBuyData);
       }
-    }
-    // 若為初次載入且網址有指定 gameId，則直接進入該場次，否則留在首頁
-    else if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
+      revealApp();
+    } else if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
       renderDetail(urlGameId);
     } else if (!currentGameDetailId) {
       renderLobby();
@@ -1575,9 +1588,15 @@ async function loadGamesLobby(silent = false) {
     }
   } catch (err) {
     console.error(err);
-    appDiv.className = ''; // 確保發生錯誤時也關閉轉圈圈
-    statusMsg.innerText = err.message;
-    statusMsg.style.display = 'block';
+    if (urlBuyEarly && typeof openGroupBuyPage === 'function') {
+      if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
+      openGroupBuyPage(urlBuyEarly);
+      revealApp();
+    } else {
+      appDiv.className = '';
+      statusMsg.innerText = err.message;
+      statusMsg.style.display = 'block';
+    }
   }
 }
 
@@ -2667,10 +2686,7 @@ function setupSSE() {
   };
 }
 
-// 啟動
-initializeLiff().then(() => {
-  setupSSE();
-});
+// 啟動改到檔案末尾 DOMContentLoaded，確保團購函式已定義且只初始化一次
 
 // 透過名稱取消報名
 window.handleCancelByName = async function(gameId, name) {
@@ -7898,14 +7914,21 @@ if (btnTaDelete) {
 // 畫面讀取完畢初始化
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  initializeLiff();
+function bootApp() {
   initGroupBuyEvents();
-  fetchGroupBuyData();
+  initializeLiff().then(() => {
+    setupSSE();
+  });
   
   // 替各種管理員手動新增輸入框加上自動完成下拉選單功能
   if (typeof lotteryManualName !== 'undefined' && lotteryManualName) setupAutocomplete(lotteryManualName);
   if (typeof inputPinballName !== 'undefined' && inputPinballName) setupAutocomplete(inputPinballName);
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootApp);
+} else {
+  bootApp();
+}
 
 
