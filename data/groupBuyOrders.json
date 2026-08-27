@@ -39,6 +39,23 @@
       "note": "",
       "anonymous": false,
       "updatedAt": 1787798573005
+    },
+    "Uc3f99069e10903dd9385cbf288b526ce": {
+      "userId": "Uc3f99069e10903dd9385cbf288b526ce",
+      "userName": "Paige",
+      "userPhone": "0910946418",
+      "userPictureUrl": "https://profile.line-scdn.net/0hISaDYoFzFnxMPQGYKg5oAzxtFRZvTE9uYFhRGH88QBh4DFAtMFJaHHxoTxsjBVAsMl8KGng9T0hALmEaUmvqSEsNS01xDFQiZlNcnw",
+      "items": {
+        "zr_0005": 1
+      },
+      "totalAmount": 195,
+      "paymentMethod": "none",
+      "paymentStatus": "unverified",
+      "orderStatus": "unconfirmed",
+      "paymentNote": "",
+      "note": "",
+      "anonymous": false,
+      "updatedAt": 1787820363067
     }
   }
 }
