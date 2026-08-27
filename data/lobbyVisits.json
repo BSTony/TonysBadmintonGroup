@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3522,
+    "viewCount": 3524,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -865,8 +865,9 @@
       "U884f25cb569121f0e477efdda4471fd7": {
         "displayName": "佘俊頡",
         "firstVisit": 1785054197779,
-        "count": 1,
-        "lastVisit": 1785054197779
+        "count": 3,
+        "lastVisit": 1787812221043,
+        "pictureUrl": "https://profile.line-scdn.net/0hxvxEqMvCJ1lVPDRakHxZJiVsJDN2TX5LLV89b2hufzlsXzVdLQ1hNjI7LWxuDGNceFo9bWE4fzxZL1A_S2rbbVIMemhoDWUHf1Jtug"
       },
       "U6e12f69c73073fcdc89f3b719e44cb54": {
         "displayName": "Sandy Huang",
@@ -1150,6 +1151,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1787812221043,
+        "userId": "U884f25cb569121f0e477efdda4471fd7",
+        "displayName": "佘俊頡",
+        "pictureUrl": "https://profile.line-scdn.net/0hxvxEqMvCJ1lVPDRakHxZJiVsJDN2TX5LLV89b2hufzlsXzVdLQ1hNjI7LWxuDGNceFo9bWE4fzxZL1A_S2rbbVIMemhoDWUHf1Jtug"
+      },
+      {
+        "time": 1787812084244,
+        "userId": "U884f25cb569121f0e477efdda4471fd7",
+        "displayName": "佘俊頡",
+        "pictureUrl": "https://profile.line-scdn.net/0hxvxEqMvCJ1lVPDRakHxZJiVsJDN2TX5LLV89b2hufzlsXzVdLQ1hNjI7LWxuDGNceFo9bWE4fzxZL1A_S2rbbVIMemhoDWUHf1Jtug"
+      },
       {
         "time": 1787809772567,
         "userId": "U092196c10fe7e15591482c6b7942a147",
