@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787809115936,
+    "lastActiveTime": 1787814908534,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4224,7 +4224,8 @@
       "FB-Danny": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Hsiu": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "雲": "U9189a06112f6a2a13fdacb08a190c60b",
-      "Fb Ruby": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "Fb Ruby": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "佘俊頡": "U884f25cb569121f0e477efdda4471fd7"
     },
     "noteMap": {
       "Hsiu": "FB"
@@ -4259,13 +4260,21 @@
           "古書羽",
           "FB-Danny",
           "Hsiu",
-          "Fb Ruby"
+          "Fb Ruby",
+          "佘俊頡"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/27 15:15",
+        "name": "佘俊頡",
+        "operator": "佘俊頡",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/27 13:38",
         "name": "小黑",
