@@ -20,6 +20,23 @@
       "note": "",
       "anonymous": false,
       "updatedAt": 1787798497989
+    },
+    "U3c44f145460b5671baec6a3f62309c23": {
+      "userId": "U3c44f145460b5671baec6a3f62309c23",
+      "userName": "Wayne 吳瑋翔 위상",
+      "userPhone": "0905017898",
+      "userPictureUrl": "https://profile.line-scdn.net/0hPPU_mV2MD394JhMC3h1xQQh2DBVbV1ZtAEVAHUp2Ah1EQUl7UBJCHh9zVE0SRhwtAERAHU4kBUZaQw9qDx4hUgx4JxAdZkhrBwQYai17IQQDbRt7CDggWk5gUzwgX0AgPQE0GT9NVDIdTixVMjMgBRByPykwVB5uFnFjKX0UYfwXJHgqVUBBHEUgWUrA",
+      "items": {
+        "zr_0052": 2
+      },
+      "totalAmount": 310,
+      "paymentMethod": "none",
+      "paymentStatus": "unverified",
+      "orderStatus": "unconfirmed",
+      "paymentNote": "",
+      "note": "",
+      "anonymous": false,
+      "updatedAt": 1787798533505
     }
   }
 }
