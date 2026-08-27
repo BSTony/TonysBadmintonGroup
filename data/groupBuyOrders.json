@@ -6,16 +6,17 @@
       "userPhone": "0936120108",
       "userPictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA",
       "items": {
-        "zr_0014": 1
+        "zr_0014": 1,
+        "zr_0011": 1
       },
-      "totalAmount": 695,
+      "totalAmount": 1020,
       "paymentMethod": "none",
       "paymentStatus": "unverified",
       "orderStatus": "unconfirmed",
       "paymentNote": "",
       "note": "",
       "anonymous": false,
-      "updatedAt": 1787798444267
+      "updatedAt": 1787798453585
     }
   }
 }
