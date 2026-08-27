@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.2.7
+ * Version: 1.2.9
  */
 let globalLobbyUsers = [];
 
@@ -5687,6 +5687,127 @@ window.validateNamePhone = function() {
 };
  // { [itemId]: quantity }
 let draftCart = {}; // { [itemId]: draft_quantity }
+let gbCartSaveTimer = null;
+
+function spawnGbFxNode(html, x, y, className, lifeMs) {
+  const el = document.createElement('div');
+  el.className = className;
+  el.innerHTML = html;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, lifeMs);
+  return el;
+}
+
+function playGbQtyFx(delta, btn, card) {
+  const originEl = btn || card;
+  if (!originEl) return;
+  const rect = originEl.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const origin = {
+    x: cx / Math.max(window.innerWidth, 1),
+    y: cy / Math.max(window.innerHeight, 1)
+  };
+
+  if (delta > 0) {
+    if (navigator.vibrate) navigator.vibrate([12, 28, 16, 28, 22]);
+    if (typeof confetti === 'function') {
+      confetti({
+        particleCount: 96,
+        spread: 88,
+        startVelocity: 34,
+        origin,
+        colors: ['#fbbf24', '#f59e0b', '#10b981', '#34d399', '#ffffff', '#fde68a'],
+        ticks: 230,
+        scalar: 1.08,
+        zIndex: 200000
+      });
+      confetti({
+        particleCount: 22,
+        spread: 60,
+        startVelocity: 28,
+        origin,
+        shapes: ['star'],
+        colors: ['#facc15', '#fde68a', '#ffffff'],
+        scalar: 1.55,
+        ticks: 210,
+        zIndex: 200000
+      });
+    }
+    spawnGbFxNode('<span>+1</span>', cx, cy, 'gb-fx gb-fx-plus', 950);
+    ['✨', '🎉', '⭐'].forEach((emoji, i) => {
+      const node = spawnGbFxNode(emoji, cx, cy, 'gb-fx gb-fx-spark', 850);
+      node.style.setProperty('--dx', ((i - 1) * 32) + 'px');
+      node.style.setProperty('--delay', (i * 70) + 'ms');
+    });
+    if (card) {
+      card.classList.remove('gb-card-sad');
+      card.classList.remove('gb-card-cheer');
+      void card.offsetWidth;
+      card.classList.add('gb-card-cheer');
+      setTimeout(() => card.classList.remove('gb-card-cheer'), 700);
+    }
+  } else {
+    if (navigator.vibrate) navigator.vibrate([55, 35, 90]);
+    if (typeof confetti === 'function') {
+      confetti({
+        particleCount: 32,
+        spread: 32,
+        startVelocity: 7,
+        gravity: 2.4,
+        origin,
+        colors: ['#94a3b8', '#64748b', '#475569', '#cbd5e1'],
+        ticks: 260,
+        scalar: 0.72,
+        zIndex: 200000
+      });
+    }
+    spawnGbFxNode('<span>-1</span>', cx, cy, 'gb-fx gb-fx-minus', 1150);
+    spawnGbFxNode('😢', cx, cy - 6, 'gb-fx gb-fx-tear', 1050);
+    spawnGbFxNode('💧', cx + 18, cy, 'gb-fx gb-fx-drop', 950);
+    if (card) {
+      card.classList.remove('gb-card-cheer');
+      card.classList.remove('gb-card-sad');
+      void card.offsetWidth;
+      card.classList.add('gb-card-sad');
+      setTimeout(() => card.classList.remove('gb-card-sad'), 900);
+    }
+  }
+}
+
+function saveCartToBackendSoon() {
+  clearTimeout(gbCartSaveTimer);
+  gbCartSaveTimer = setTimeout(() => saveCartToBackend({ silent: true }), 450);
+}
+
+function applyLiveCartQty(item, delta, btn) {
+  if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
+  const prev = currentCart[item.id] || 0;
+  const next = Math.max(0, prev + delta);
+  if (next === prev) return;
+  if (next > 0) currentCart[item.id] = next;
+  else delete currentCart[item.id];
+  const card = document.getElementById('gb-item-card-' + item.id);
+  playGbQtyFx(delta, btn, card);
+  if (card) {
+    const num = card.querySelector('.qty-num');
+    if (num) {
+      num.textContent = String(next);
+      num.classList.remove('gb-qty-pop');
+      void num.offsetWidth;
+      num.classList.add('gb-qty-pop');
+    }
+    const minus = card.querySelector('.btn-minus');
+    if (minus) minus.style.opacity = next > 0 ? '1' : '0.4';
+    card.style.borderColor = next > 0 ? '#10b981' : '#e2e8f0';
+    card.style.background = next > 0 ? '#ecfdf5' : 'white';
+  }
+  if (typeof updateCartBar === 'function') updateCartBar();
+  saveCartToBackendSoon();
+}
+
 let selectedDetailItem = null;
 let detailQty = 1;
 
@@ -6198,7 +6319,7 @@ function renderItemsGrid() {
     const safeName = typeof escapeHTML === 'function' ? escapeHTML(item.name || '') : (item.name || '');
     const safeNote = noteText && typeof escapeHTML === 'function' ? escapeHTML(noteText) : noteText;
     
-    card.style.cssText = `background:white; border:1px solid ${qty > 0 ? '#10b981' : '#e2e8f0'}; border-radius:6px; overflow:hidden; transition:all 0.15s ease; ${qty > 0 && !isExpanded ? 'background:#ecfdf5;' : ''}`;
+    card.style.cssText = `background:white; border:1px solid ${qty > 0 ? '#10b981' : '#e2e8f0'}; border-radius:6px; overflow:${isExpanded ? 'visible' : 'hidden'}; transition:border-color 0.15s ease, background 0.15s ease; ${qty > 0 ? 'background:#ecfdf5;' : ''}`;
 
     const nameStyle = isExpanded
       ? 'font-weight:bold;color:#2563eb;font-size:13px;line-height:1.3;word-break:break-word;'
@@ -6218,23 +6339,16 @@ function renderItemsGrid() {
       </div>
     `;
 
-    // 展開的區塊：完整品名＋規格＋數量
+    // 展開：-1 / 目前數量 / +1，按下去立刻改訂購數，不用再打勾
     let expandedHtml = '';
     if (isExpanded) {
-      const dQty = (draftCart[item.id] !== undefined) ? draftCart[item.id] : (qty || 1); 
-
       expandedHtml = `
-        <div class="gb-accordion-body" style="padding:6px 8px 8px; background:#f8fafc; border-top:1px solid #e2e8f0;">
+        <div class="gb-accordion-body" style="padding:8px 6px 8px; background:#f8fafc; border-top:1px solid #e2e8f0;">
           ${noteText ? `<div style="font-size:11px;color:#475569;margin-bottom:6px;word-break:break-word;">${safeNote}</div>` : ''}
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
-            <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
-              <button class="qty-btn btn-minus" style="width:28px;height:28px;font-size:16px;border:none;border-radius:50%;background:#e2e8f0;color:#334155;cursor:pointer;font-weight:bold;">-</button>
-              <span class="qty-num" style="min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid #cbd5e1;border-radius:4px;font-size:14px;font-weight:bold;color:#1e293b;background:white;">${dQty}</span>
-              <button class="qty-btn btn-plus" style="width:28px;height:28px;font-size:16px;border:none;border-radius:50%;background:#10b981;color:white;cursor:pointer;font-weight:bold;">+</button>
-            </div>
-            <div style="display:flex; gap:4px;">
-              <button class="btn-confirm-draft" style="background:transparent;color:#10b981;border:none;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:26px;height:26px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></button>
-            </div>
+          <div class="gb-qty-stepper" style="display:flex; align-items:center; width:100%; gap:4px;">
+            <button type="button" class="qty-btn btn-minus" style="flex:1;min-width:0;height:34px;font-size:13px;font-weight:800;border:none;border-radius:8px;background:#e2e8f0;color:#334155;cursor:pointer;opacity:${qty > 0 ? 1 : 0.4};">-1</button>
+            <span class="qty-num" style="flex:0 0 28px;height:34px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#0f172a;">${qty}</span>
+            <button type="button" class="qty-btn btn-plus" style="flex:1;min-width:0;height:34px;font-size:13px;font-weight:800;border:none;border-radius:8px;background:#10b981;color:white;cursor:pointer;">+1</button>
           </div>
         </div>
       `;
@@ -6261,12 +6375,9 @@ function renderItemsGrid() {
     const row = card.querySelector('.gb-list-row');
     row.onclick = () => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
       if (window.activeExpandedItemId === item.id) {
-        window.activeExpandedItemId = null; // 折疊
+        window.activeExpandedItemId = null;
       } else {
-        window.activeExpandedItemId = item.id; // 展開
-        if (draftCart[item.id] === undefined) {
-          draftCart[item.id] = currentCart[item.id] || 1; // 預設數量為1或目前的選擇
-        }
+        window.activeExpandedItemId = item.id;
       }
       renderItemsGrid();
     };
@@ -6274,21 +6385,15 @@ function renderItemsGrid() {
     if (isExpanded) {
       const btnMinus = card.querySelector('.btn-minus');
       const btnPlus = card.querySelector('.btn-plus');
-      const btnConfirm = card.querySelector('.btn-confirm-draft');
-      
 
-      if (btnMinus) btnMinus.onclick = (e) => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
+      if (btnMinus) btnMinus.onclick = (e) => {
         e.stopPropagation();
-        if (draftCart[item.id] > 0) {
-          draftCart[item.id]--;
-          renderItemsGrid();
-        }
+        applyLiveCartQty(item, -1, btnMinus);
       };
       
-      if (btnPlus) btnPlus.onclick = (e) => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
+      if (btnPlus) btnPlus.onclick = (e) => {
         e.stopPropagation();
-        draftCart[item.id] = (draftCart[item.id] || 0) + 1;
-        renderItemsGrid();
+        applyLiveCartQty(item, 1, btnPlus);
       };
       if (window.gbIsAdminEditMode && typeof getEffectiveRole === 'function' && getEffectiveRole().isSuperAdmin) {
         const btnInlineSave = card.querySelector('.btn-inline-save');
@@ -6340,25 +6445,8 @@ function renderItemsGrid() {
           };
         }
       }
-
-      if (btnConfirm) btnConfirm.onclick = (e) => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
-        e.stopPropagation();
-        if (draftCart[item.id] > 0) {
-          currentCart[item.id] = draftCart[item.id];
-        } else {
-          delete currentCart[item.id];
-        }
-        delete draftCart[item.id];
-        window.activeExpandedItemId = null; // 確認後自動折疊
-        renderItemsGrid();
-        updateCartBar();
-        saveCartToBackend();
-      };
-
-      
     }
 
-    
     return card;
   };
 
@@ -6455,7 +6543,8 @@ function openItemDetail(item) {
   if (itemDetailModal) itemDetailModal.classList.remove('hidden');
 }
 
-async function saveCartToBackend() {
+async function saveCartToBackend(opts) {
+  opts = opts || {};
   if (!currentGroupBuyData || !currentUser) return;
   
   const gbHeaderNameInput = document.getElementById('gb-header-name');
@@ -6483,7 +6572,7 @@ async function saveCartToBackend() {
     });
     const data = await res.json();
     if (data.success) {
-      await fetchGroupBuyData();
+      if (!opts.silent) await fetchGroupBuyData();
     }
   } catch(e) {
     console.error('發送訂單失敗:', e);

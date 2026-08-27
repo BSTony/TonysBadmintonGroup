@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-08-27
-  Version: 1.2.7
+  Version: 1.2.9
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -1011,6 +1011,89 @@
       background: white;
       border-bottom: 3px solid #2563eb;
     }
+    .gb-fx {
+      position: fixed;
+      z-index: 999999;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      font-weight: 900;
+    }
+    .gb-fx-plus span {
+      display: inline-block;
+      font-size: 48px;
+      letter-spacing: -1px;
+      color: #facc15;
+      text-shadow: 0 0 16px rgba(250,204,21,0.95), 0 3px 0 #b45309, 0 0 28px rgba(16,185,129,0.8);
+      animation: gbPlusPop 0.9s cubic-bezier(.16,1.4,.32,1) forwards;
+    }
+    @keyframes gbPlusPop {
+      0% { transform: scale(0.2) rotate(-18deg); opacity: 0; }
+      22% { transform: scale(1.55) rotate(8deg); opacity: 1; }
+      100% { transform: scale(1.15) translateY(-86px) rotate(-4deg); opacity: 0; }
+    }
+    .gb-fx-minus span {
+      display: inline-block;
+      font-size: 40px;
+      color: #64748b;
+      text-shadow: 0 2px 0 #334155;
+      animation: gbMinusDrop 1.05s ease-in forwards;
+    }
+    @keyframes gbMinusDrop {
+      0% { transform: scale(1.15) rotate(0deg); opacity: 1; filter: grayscale(0); }
+      35% { transform: scale(0.95) rotate(-16deg) translateY(10px); opacity: 0.9; }
+      100% { transform: scale(0.55) rotate(-32deg) translateY(78px); opacity: 0; filter: grayscale(1); }
+    }
+    .gb-fx-spark {
+      font-size: 24px;
+      animation: gbSpark 0.8s ease-out forwards;
+      animation-delay: var(--delay, 0ms);
+    }
+    @keyframes gbSpark {
+      0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+      100% { transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% - 64px)) scale(1.25); opacity: 0; }
+    }
+    .gb-fx-tear {
+      font-size: 30px;
+      animation: gbTear 1.05s ease-in forwards;
+    }
+    @keyframes gbTear {
+      0% { transform: translate(-50%, -50%) scale(1.1) rotate(0deg); opacity: 1; }
+      100% { transform: translate(-50%, 70px) scale(0.75) rotate(-12deg); opacity: 0; }
+    }
+    .gb-fx-drop {
+      font-size: 20px;
+      animation: gbDrop 0.95s ease-in forwards;
+    }
+    @keyframes gbDrop {
+      0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+      100% { transform: translate(-50%, 56px) scale(1); opacity: 0; }
+    }
+    .gb-card-cheer {
+      animation: gbCheer 0.62s ease-out;
+      box-shadow: 0 0 0 2px #fbbf24, 0 10px 22px rgba(16,185,129,0.38);
+      z-index: 2;
+    }
+    @keyframes gbCheer {
+      0% { transform: scale(1); }
+      28% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+    .gb-card-sad {
+      animation: gbSad 0.9s ease-in-out;
+      filter: grayscale(0.75) brightness(0.9);
+    }
+    @keyframes gbSad {
+      0% { transform: scale(1) rotate(0deg); }
+      18% { transform: scale(0.96) rotate(-2.4deg); }
+      42% { transform: scale(0.93) rotate(2.2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    .gb-qty-pop { animation: gbQtyPop 0.35s ease-out; }
+    @keyframes gbQtyPop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
@@ -1019,7 +1102,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="lottery.js?v=20260711_15"></script>
   <script src="pinball_v2.js?v=20260805_zoom_01"></script>
-  <script src="app.js?v=V202608271010"></script>
+  <script src="app.js?v=V202608271023"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>
