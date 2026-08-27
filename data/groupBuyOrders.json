@@ -44,16 +44,16 @@
       "userPhone": "0936120108",
       "userPictureUrl": "",
       "items": {
-        "zr_0014": 4
+        "zr_0014": 2
       },
-      "totalAmount": 2780,
+      "totalAmount": 1390,
       "paymentMethod": "none",
       "paymentStatus": "unverified",
       "orderStatus": "unconfirmed",
       "paymentNote": "",
       "note": "",
       "anonymous": false,
-      "updatedAt": 1787798571081
+      "updatedAt": 1787798572754
     }
   }
 }
