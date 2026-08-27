@@ -1621,5 +1621,11 @@
     "orders": {},
     "hiddenFromLobby": true
   },
-  "__profiles": {}
+  "__profiles": {
+    "U9dc6c7ab7d49487c4dcb70caf20195b0": {
+      "userName": "謝東霖 Tony",
+      "userPhone": "0936120108",
+      "updatedAt": 1787793901443
+    }
+  }
 }
