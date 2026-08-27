@@ -4952,5 +4952,82 @@
         "section": "報名名單"
       }
     ]
+  },
+  "178784008173134": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "178784008173134",
+    "title": "週四 脫水團",
+    "date": "9/3 (四)",
+    "time": "19:20~21:30",
+    "location": "玉成國小",
+    "fee": "230",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1787840081732,
+    "lastActiveTime": 1787840081732,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "謝東霖 Tony": true,
+      "Kay": true,
+      "Iven": true,
+      "Mina": true,
+      "Wayne": true,
+      "曾Jim凱": true,
+      "Ashely": true,
+      "周則鼎": true,
+      "Ong": true,
+      "郭岳翰John": true,
+      "©️張CC～©️": true,
+      "陳呈": true
+    },
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "Iven": "U7e762af3061a46f6a7e212cfc0afcb8f",
+      "Mina": "U46d67d783291b6b5a5e3a0207d0ff14a",
+      "Wayne": "U1a05e97623cee1f79b0876626e88f0ab",
+      "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
+      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
+      "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
+      "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 25,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay",
+          "Iven",
+          "Mina",
+          "Wayne",
+          "曾Jim凱",
+          "Ashely",
+          "周則鼎",
+          "Ong",
+          "郭岳翰John",
+          "©️張CC～©️",
+          "陳呈"
+        ],
+        "fee": "230"
+      }
+    ]
   }
 }
