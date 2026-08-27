@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.2.3
+ * Version: 1.2.4
  */
 let globalLobbyUsers = [];
 
@@ -6737,11 +6737,19 @@ function renderSummaryTab() {
             btnDelete.onclick = async () => {
               if (confirm(`確定要刪除 ${ord.userName} 的訂單嗎？此操作無法還原。`)) {
                 try {
-                  await fetch(`/api/groupbuy/${currentGid || 'default'}/delete_order`, {
+                  const delRes = await fetch(`/api/groupbuy/${currentGid || 'default'}/delete_order`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ targetUid: ord.orderKey })
+                    body: JSON.stringify({
+                      uid: currentUser?.userId || '',
+                      targetUid: ord.orderKey || ord.userId || ''
+                    })
                   });
+                  const delData = await delRes.json().catch(() => ({}));
+                  if (delData && delData.removed === false) {
+                    alert('刪除失敗，找不到這筆訂單');
+                    return;
+                  }
                   
                   const gbUserName = document.getElementById('gb-header-name');
                   const gbUserPhone = document.getElementById('gb-header-phone');
@@ -6749,11 +6757,11 @@ function renderSummaryTab() {
                   const p = (gbUserPhone && gbUserPhone.value.trim()) || '';
                   const keyPhone = (n && p) ? `${n}_${p}` : n;
                   const keyUid = (currentUser && currentUser.userId) ? currentUser.userId : null;
-                  if (ord.orderKey === keyUid || ord.orderKey === keyPhone) {
+                  if (ord.orderKey === keyUid || ord.orderKey === keyPhone || ord.userId === keyUid) {
                     currentCart = {};
                   }
                   
-                  if (typeof fetchGroupBuyData === 'function') fetchGroupBuyData(currentGid);
+                  if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
                 } catch(e) { console.error(e); }
               }
             };

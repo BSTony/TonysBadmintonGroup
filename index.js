@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.3.1
+ * Version: 1.3.2
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -138,7 +138,39 @@ function applyGroupBuyOrdersStore(store) {
 }
 
 function refreshGroupBuyOrdersStore() {
-  groupBuyOrdersStore = mergeOrderStore(groupBuyOrdersStore, extractGroupBuyOrders(groupBuyData));
+  const next = { ...groupBuyOrdersStore };
+  for (const [id, gb] of Object.entries(groupBuyData)) {
+    if (id === GROUPBUY_PROFILES_KEY || !gb || typeof gb !== 'object' || Array.isArray(gb)) continue;
+    const orders = (gb.orders && typeof gb.orders === 'object') ? gb.orders : {};
+    if (Object.keys(orders).length > 0) next[id] = { ...orders };
+    else delete next[id];
+  }
+  groupBuyOrdersStore = next;
+}
+
+function removeGroupBuyOrder(gid, targetUid) {
+  const gb = getGroupBuyInfo(gid);
+  if (!gb.orders) gb.orders = {};
+  let removed = false;
+  const keys = new Set();
+  if (targetUid) keys.add(targetUid);
+  for (const [key, order] of Object.entries(gb.orders)) {
+    if (order && (key === targetUid || order.userId === targetUid)) keys.add(key);
+  }
+  keys.forEach((key) => {
+    if (gb.orders[key]) {
+      delete gb.orders[key];
+      removed = true;
+    }
+    if (groupBuyOrdersStore[gid] && groupBuyOrdersStore[gid][key]) {
+      delete groupBuyOrdersStore[gid][key];
+      removed = true;
+    }
+  });
+  if (groupBuyOrdersStore[gid] && Object.keys(groupBuyOrdersStore[gid]).length === 0) {
+    delete groupBuyOrdersStore[gid];
+  }
+  return removed;
 }
 
 function loadGroupBuyOrdersStorage() {
@@ -2080,6 +2112,7 @@ app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
   const { uid } = req.body || {};
   const info = getGroupBuyInfo(gid);
   info.orders = {};
+  if (groupBuyOrdersStore[gid]) delete groupBuyOrdersStore[gid];
   await saveGroupBuyStorage();
   io.emit('group_buy_state_updated', { gid, data: info });
   notifySSEClients(gid);
@@ -6293,6 +6326,7 @@ app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
   const { uid } = req.body;
   const gb = getGroupBuyInfo(gid);
   gb.orders = {};
+  if (groupBuyOrdersStore[gid]) delete groupBuyOrdersStore[gid];
   await saveGroupBuyStorage();
   if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
   res.json({ success: true });
@@ -6301,14 +6335,14 @@ app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
 // 刪除單筆訂單
 app.post('/api/groupbuy/:gid/delete_order', async (req, res) => {
   const gid = req.params.gid || 'default';
-  const { targetUid } = req.body;
+  const { targetUid } = req.body || {};
+  const removed = removeGroupBuyOrder(gid, targetUid);
   const gb = getGroupBuyInfo(gid);
-  if (gb.orders && gb.orders[targetUid]) {
-    delete gb.orders[targetUid];
+  if (removed) {
     await saveGroupBuyStorage();
     if (typeof io !== 'undefined' && io) io.emit('group_buy_state_updated', { gid, data: gb });
   }
-  res.json({ success: true });
+  res.json({ success: true, removed: !!removed });
 });
 
 // 隱藏的 debug 端點，用來印出當前記憶體狀態
