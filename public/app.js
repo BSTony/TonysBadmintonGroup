@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.2.11
+ * Version: 1.2.12
  */
 let globalLobbyUsers = [];
 
@@ -4233,6 +4233,10 @@ if (btnLobbyStats) {
           const card = document.createElement('div');
           card.className = 'game-card'; // Reuse game-card style
           card.style.marginBottom = '15px';
+          if (stat.isGroupBuy) {
+            card.style.border = '2px solid #10b981';
+            card.style.background = '#f0fdf4';
+          }
           
           // Card Header
           const header = document.createElement('div');
@@ -4245,8 +4249,8 @@ if (btnLobbyStats) {
           
           const title = document.createElement('h3');
           title.style.margin = '0';
-          title.style.color = '#2c3e50';
-          title.innerText = stat.groupName || stat.gid;
+          title.style.color = stat.isGroupBuy ? '#047857' : '#2c3e50';
+          title.innerText = stat.isGroupBuy ? (stat.groupName || '🛒 團購訪客') : (stat.groupName || stat.gid);
           
           header.appendChild(title);
 
@@ -6041,6 +6045,21 @@ function updateCampaignSelectorDropdown(list) {
   };
 }
 
+function logGroupBuyVisit() {
+  if (!currentUser || !currentUser.userId) return;
+  fetch('/api/lobby_visit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      kind: 'groupbuy',
+      gid: '__GROUPBUY__',
+      userId: currentUser.userId,
+      displayName: currentUser.displayName || '訪客',
+      pictureUrl: currentUser.pictureUrl || ''
+    })
+  }).catch(() => {});
+}
+
 function openGroupBuyPage(gid = null) {
   if (gid) currentGid = gid;
   if (appDiv) appDiv.className = '';
@@ -6052,6 +6071,7 @@ function openGroupBuyPage(gid = null) {
   if (gbTabItems) gbTabItems.click();
 
   hydrateGbBuyerFields();
+  logGroupBuyVisit();
 
   fetchGroupBuyData().then(async () => {
     await hydrateGbBuyerFields();

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.3.3
+ * Version: 1.3.4
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -357,6 +357,11 @@ function getGroupBuyInfo(gid) {
 }
 
 let lobbyVisits = {}; // { gid: { viewCount: 0, uniqueViewers: {}, logs: [] } }
+const GROUPBUY_VISIT_GID = '__GROUPBUY__';
+
+function isGroupBuyVisitGid(gid) {
+  return gid === GROUPBUY_VISIT_GID;
+}
 let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
 
 // 讀取既有設定
@@ -2318,9 +2323,11 @@ app.get('/api/game/:gid', async (req, res) => {
 // 取得特定群組的預設名單範本
 // 大廳點擊紀錄與分析
 app.post('/api/lobby_visit', express.json(), (req, res) => {
-  const { gid, userId, displayName, pictureUrl } = req.body;
+  let { gid, userId, displayName, pictureUrl, kind } = req.body;
+  if (kind === 'groupbuy') gid = GROUPBUY_VISIT_GID;
   // 擋掉空值，以及擋掉 U 開頭的個人對話框 (避免污染群組分析資料)
-  if (!gid || !userId || gid.startsWith('U')) return res.json({ success: false });
+  if (!gid || !userId) return res.json({ success: false });
+  if (gid.startsWith('U') && !isGroupBuyVisitGid(gid)) return res.json({ success: false });
 
   if (!lobbyVisits[gid]) {
     lobbyVisits[gid] = { viewCount: 0, uniqueViewers: {}, logs: [] };
@@ -2415,12 +2422,12 @@ app.get('/api/admin/all_stats', async (req, res) => {
   let adminGids = [];
 
   if (isSuperAdminUser) {
-    // 濾掉開頭為 U 的個人對話框造訪紀錄，只保留真正的群組 (C) 或房間 (R)
-    adminGids = Object.keys(lobbyVisits).filter(id => !id.startsWith('U'));
+    // 濾掉開頭為 U 的個人對話框造訪紀錄，只保留真正的群組 (C) 或房間 (R)，以及團購訪客虛擬群組
+    adminGids = Object.keys(lobbyVisits).filter(id => !id.startsWith('U') || isGroupBuyVisitGid(id));
     
     // 順手把舊的 U 開頭垃圾資料清掉，避免資料檔越來越大
     Object.keys(lobbyVisits).forEach(id => {
-      if (id.startsWith('U')) delete lobbyVisits[id];
+      if (id.startsWith('U') && !isGroupBuyVisitGid(id)) delete lobbyVisits[id];
     });
   } else {
     // 即使是 groupAdmins 也無法使用此 API，直接阻擋
@@ -2439,29 +2446,32 @@ app.get('/api/admin/all_stats', async (req, res) => {
   let globalViewersMap = {};
 
   for (const g of adminGids) {
-    await ensureGroupSettings(g);
-    const gName = groupSettings[g]?.groupName || groupSettings[g]?.lobbyTitle || g;
+    const isGroupBuy = isGroupBuyVisitGid(g);
+    if (!isGroupBuy) await ensureGroupSettings(g);
+    const gName = isGroupBuy ? '🛒 團購訪客' : (groupSettings[g]?.groupName || groupSettings[g]?.lobbyTitle || g);
     const stats = lobbyVisits[g] || { viewCount: 0, uniqueViewers: {}, logs: [] };
     
     const uniqueViewers = stats.uniqueViewers || {};
     const uniqueCount = Object.keys(uniqueViewers).length;
     
-    totalViews += (stats.viewCount || 0);
-    for (const [uid, uData] of Object.entries(uniqueViewers)) {
-      globalUniqueViewers.add(uid);
-      if (uData.lastVisit && uData.lastVisit >= todayStartTime) {
-        todayUniqueViewers.add(uid);
-      }
+    if (!isGroupBuy) {
+      totalViews += (stats.viewCount || 0);
+      for (const [viewerUid, uData] of Object.entries(uniqueViewers)) {
+        globalUniqueViewers.add(viewerUid);
+        if (uData.lastVisit && uData.lastVisit >= todayStartTime) {
+          todayUniqueViewers.add(viewerUid);
+        }
 
-      if (!globalViewersMap[uid]) {
-        globalViewersMap[uid] = { uid, displayName: uData.displayName || '未知', count: 0, lastVisit: 0 };
-      }
-      globalViewersMap[uid].count += (uData.count || 1);
-      if (uData.lastVisit > globalViewersMap[uid].lastVisit) {
-        globalViewersMap[uid].lastVisit = uData.lastVisit;
-      }
-      if (uData.displayName && uData.displayName !== '未知' && uData.displayName !== 'undefined') {
-        globalViewersMap[uid].displayName = uData.displayName;
+        if (!globalViewersMap[viewerUid]) {
+          globalViewersMap[viewerUid] = { uid: viewerUid, displayName: uData.displayName || '未知', count: 0, lastVisit: 0 };
+        }
+        globalViewersMap[viewerUid].count += (uData.count || 1);
+        if (uData.lastVisit > globalViewersMap[viewerUid].lastVisit) {
+          globalViewersMap[viewerUid].lastVisit = uData.lastVisit;
+        }
+        if (uData.displayName && uData.displayName !== '未知' && uData.displayName !== 'undefined') {
+          globalViewersMap[viewerUid].displayName = uData.displayName;
+        }
       }
     }
     
@@ -2472,7 +2482,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
     // Compute Daily Stats (Last 7 days or so, based on logs)
     const dailyMap = {};
     for (const log of logs) {
-      if (log.time >= todayStartTime) {
+      if (!isGroupBuy && log.time >= todayStartTime) {
         totalTodayViews++;
       }
       // Create local date string (YYYY/MM/DD)
@@ -2494,12 +2504,19 @@ app.get('/api/admin/all_stats', async (req, res) => {
     allStats.push({
       gid: g,
       groupName: gName,
+      isGroupBuy: !!isGroupBuy,
       viewCount: stats.viewCount || 0,
       uniqueCount: uniqueCount,
       dailyStats: dailyStats,
       recentVisits: sortedLogs.slice(0, 50)
     });
   }
+
+  allStats.sort((a, b) => {
+    if (a.isGroupBuy && !b.isGroupBuy) return -1;
+    if (!a.isGroupBuy && b.isGroupBuy) return 1;
+    return (b.viewCount || 0) - (a.viewCount || 0);
+  });
 
   const allUsersStats = Object.values(globalViewersMap).sort((a, b) => b.count - a.count);
 
