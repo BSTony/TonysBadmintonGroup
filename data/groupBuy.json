@@ -1,6 +1,6 @@
 {
   "default": {
-    "active": false,
+    "active": true,
     "title": "🛒 展榮商號 堅果團購",
     "notice": "",
     "paymentSettings": {
