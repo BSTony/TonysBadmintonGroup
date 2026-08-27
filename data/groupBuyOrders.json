@@ -64,16 +64,17 @@
       "userPhone": "0912345678",
       "userPictureUrl": "",
       "items": {
-        "zr_0014": 1
+        "zr_0014": 1,
+        "zr_0030": 1
       },
-      "totalAmount": 695,
+      "totalAmount": 870,
       "paymentMethod": "none",
       "paymentStatus": "unverified",
       "orderStatus": "unconfirmed",
       "paymentNote": "",
       "note": "",
       "anonymous": false,
-      "updatedAt": 1787825293298
+      "updatedAt": 1787825426510
     }
   }
 }
