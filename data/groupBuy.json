@@ -1619,6 +1619,7 @@
       }
     ],
     "orders": {},
-    "hiddenFromLobby": false
-  }
+    "hiddenFromLobby": true
+  },
+  "__profiles": {}
 }
