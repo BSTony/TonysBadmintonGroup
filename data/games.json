@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787814986662,
+    "lastActiveTime": 1787815005180,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4260,13 +4260,21 @@
           "古書羽",
           "FB-Danny",
           "Hsiu",
-          "Fb Ruby"
+          "Fb Ruby",
+          "佘俊頡"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/27 15:16",
+        "name": "佘俊頡",
+        "operator": "佘俊頡",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/27 15:16",
         "name": "佘俊頡",
