@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-08-26
- * Version: 1.2.2
+ * Date: 2026-08-27
+ * Version: 1.3.1
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -35,7 +35,9 @@ const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const LOBBY_VISITS_FILE = path.join(DATA_DIR, 'lobbyVisits.json');
 const EASTER_EGG_FILE = path.join(DATA_DIR, 'easterEggSettings.json');
 const GROUP_BUY_FILE = path.join(DATA_DIR, 'groupBuy.json');
+const GROUP_BUY_ORDERS_FILE = path.join(DATA_DIR, 'groupBuyOrders.json');
 const DEFAULT_MENU_FILE = path.join(DATA_DIR, 'defaultMenu.json');
+const GROUPBUY_PROFILES_KEY = '__profiles';
 
 let defaultMenuItems = [];
 let groupBuyData = {}; // { [gid]: { active: false, title: "", notice: "", paymentSettings: {}, items: [], orders: {} } }
@@ -89,17 +91,105 @@ function loadGroupBuyStorage() {
 }
 
 let groupBuySaveChain = Promise.resolve();
+let groupBuyOrdersStore = {}; // { [gid]: { [orderKey]: order } }
+
+function extractGroupBuyOrders(data) {
+  const store = {};
+  if (!data || typeof data !== 'object') return store;
+  for (const [id, gb] of Object.entries(data)) {
+    if (id === GROUPBUY_PROFILES_KEY || !gb || typeof gb !== 'object' || Array.isArray(gb)) continue;
+    if (gb.orders && typeof gb.orders === 'object' && Object.keys(gb.orders).length > 0) {
+      store[id] = gb.orders;
+    }
+  }
+  return store;
+}
+
+function mergeOrders(a, b) {
+  const out = { ...(a || {}) };
+  for (const [key, order] of Object.entries(b || {})) {
+    if (!order) continue;
+    const cur = out[key];
+    if (!cur) {
+      out[key] = order;
+      continue;
+    }
+    const curTs = Number(new Date(cur.updatedAt || 0)) || 0;
+    const newTs = Number(new Date(order.updatedAt || 0)) || 0;
+    if (newTs >= curTs) out[key] = order;
+  }
+  return out;
+}
+
+function mergeOrderStore(base, extra) {
+  const out = { ...(base || {}) };
+  for (const [gid, orders] of Object.entries(extra || {})) {
+    out[gid] = mergeOrders(out[gid], orders);
+  }
+  return out;
+}
+
+function applyGroupBuyOrdersStore(store) {
+  if (!store) return;
+  for (const [gid, orders] of Object.entries(store)) {
+    if (!orders || !groupBuyData[gid] || typeof groupBuyData[gid] !== 'object') continue;
+    groupBuyData[gid].orders = mergeOrders(orders, groupBuyData[gid].orders);
+  }
+}
+
+function refreshGroupBuyOrdersStore() {
+  groupBuyOrdersStore = mergeOrderStore(groupBuyOrdersStore, extractGroupBuyOrders(groupBuyData));
+}
+
+function loadGroupBuyOrdersStorage() {
+  if (fs.existsSync(GROUP_BUY_ORDERS_FILE)) {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(GROUP_BUY_ORDERS_FILE, 'utf8'));
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        groupBuyOrdersStore = mergeOrderStore(groupBuyOrdersStore, parsed);
+      }
+    } catch (e) {
+      console.error('載入 groupBuyOrders.json 失敗:', e.message);
+    }
+  }
+  groupBuyOrdersStore = mergeOrderStore(groupBuyOrdersStore, extractGroupBuyOrders(groupBuyData));
+  applyGroupBuyOrdersStore(groupBuyOrdersStore);
+}
+
+function mergeRemoteGroupBuyCatalog(remote) {
+  if (!remote || typeof remote !== 'object') return;
+  groupBuyOrdersStore = mergeOrderStore(groupBuyOrdersStore, extractGroupBuyOrders(remote));
+  for (const [id, gb] of Object.entries(remote)) {
+    if (id === GROUPBUY_PROFILES_KEY) {
+      const localProfiles = groupBuyData[id] && typeof groupBuyData[id] === 'object' ? groupBuyData[id] : {};
+      groupBuyData[id] = { ...(gb || {}), ...localProfiles };
+      continue;
+    }
+    if (!gb || typeof gb !== 'object' || Array.isArray(gb)) continue;
+    if (!groupBuyData[id]) {
+      groupBuyData[id] = gb;
+      continue;
+    }
+    groupBuyData[id].orders = mergeOrders(gb.orders, groupBuyData[id].orders);
+  }
+  applyGroupBuyOrdersStore(groupBuyOrdersStore);
+}
+
 function saveGroupBuyStorage() {
   groupBuySaveChain = groupBuySaveChain.then(async () => {
     try {
+      refreshGroupBuyOrdersStore();
       const jsonStr = JSON.stringify(groupBuyData, null, 2);
+      const ordersStr = JSON.stringify(groupBuyOrdersStore, null, 2);
       await fs.promises.writeFile(GROUP_BUY_FILE, jsonStr, 'utf8');
+      await fs.promises.writeFile(GROUP_BUY_ORDERS_FILE, ordersStr, 'utf8');
       
       if (USE_GITHUB) {
         try {
           const payload = {
             message: 'chore: update groupBuy data',
-            content: Buffer.from(jsonStr).toString('base64')
+            content: Buffer.from(jsonStr).toString('base64'),
+            branch: GITHUB_BRANCH
           };
           if (groupBuySha) payload.sha = groupBuySha;
           
@@ -110,13 +200,25 @@ function saveGroupBuyStorage() {
         } catch (ghErr) {
           console.error('Failed to sync groupBuy to GitHub:', ghErr.message);
         }
+        try {
+          const ordersPayload = {
+            message: 'chore: update groupBuy orders',
+            content: Buffer.from(ordersStr).toString('base64'),
+            branch: GITHUB_BRANCH
+          };
+          if (groupBuyOrdersSha) ordersPayload.sha = groupBuyOrdersSha;
+          const ordersRes = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupBuyOrders.json`, ordersPayload);
+          if (ordersRes && ordersRes.content && ordersRes.content.sha) {
+            groupBuyOrdersSha = ordersRes.content.sha;
+          }
+        } catch (ghErr) {
+          console.error('Failed to sync groupBuy orders to GitHub:', ghErr.message);
+        }
       }
     } catch(e) { console.error('儲存 groupBuy.json 失敗:', e.message); }
   }).catch(e => console.error(e));
   return groupBuySaveChain;
 }
-
-const GROUPBUY_PROFILES_KEY = '__profiles';
 
 function getGroupBuyProfiles() {
   const profiles = groupBuyData[GROUPBUY_PROFILES_KEY];
@@ -207,9 +309,17 @@ function getGroupBuyInfo(gid) {
       orders: groupBuyData[gid]?.orders || {}
     };
     overlayItemContentsFromCatalog(groupBuyData[gid].items);
+    if (groupBuyOrdersStore[gid]) {
+      groupBuyData[gid].orders = mergeOrders(groupBuyOrdersStore[gid], groupBuyData[gid].orders);
+    }
     saveGroupBuyStorage();
-  } else if (overlayItemContentsFromCatalog(groupBuyData[gid].items)) {
-    saveGroupBuyStorage();
+  } else {
+    if (groupBuyOrdersStore[gid]) {
+      groupBuyData[gid].orders = mergeOrders(groupBuyOrdersStore[gid], groupBuyData[gid].orders);
+    }
+    if (overlayItemContentsFromCatalog(groupBuyData[gid].items)) {
+      saveGroupBuyStorage();
+    }
   }
   return groupBuyData[gid];
 }
@@ -227,6 +337,7 @@ let gamesSha = null; // GitHub games.json 的 SHA
 let visitsSha = null; // GitHub lobbyVisits.json 的 SHA
 let easterEggSha = null; // GitHub easterEggSettings.json 的 SHA
 let groupBuySha = null; // GitHub groupBuy.json 的 SHA
+let groupBuyOrdersSha = null; // GitHub groupBuyOrders.json 的 SHA
 let gamesSaveChain = Promise.resolve(); // 防併發串行保存
 let lobbyVisitClickCount = 0;
 
@@ -275,8 +386,7 @@ async function loadData() {
     } catch(e) {}
   }
   loadGroupBuyStorage();
-
-  loadGroupBuyStorage();
+  loadGroupBuyOrdersStorage();
 
   // Then try to load from GitHub if configured
   if (USE_GITHUB) {
@@ -368,6 +478,29 @@ async function loadData() {
         if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
       }
     } catch(e) { console.error('無法從 GitHub 讀取 easterEggSettings.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 groupBuy.json...');
+      const gbRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupBuy.json?ref=${GITHUB_BRANCH}`);
+      if (gbRes.content) {
+        groupBuySha = gbRes.sha;
+        const remoteGb = JSON.parse(Buffer.from(gbRes.content, 'base64').toString('utf8'));
+        mergeRemoteGroupBuyCatalog(remoteGb);
+        console.log('已從 GitHub 合併團購資料（保留訂單）');
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 groupBuy.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 groupBuyOrders.json...');
+      const gbOrdersRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/groupBuyOrders.json?ref=${GITHUB_BRANCH}`);
+      if (gbOrdersRes.content) {
+        groupBuyOrdersSha = gbOrdersRes.sha;
+        const remoteOrders = JSON.parse(Buffer.from(gbOrdersRes.content, 'base64').toString('utf8'));
+        groupBuyOrdersStore = mergeOrderStore(groupBuyOrdersStore, remoteOrders);
+        applyGroupBuyOrdersStore(groupBuyOrdersStore);
+        console.log(`已從 GitHub 載入團購訂單 ${Object.values(groupBuyOrdersStore).reduce((n, o) => n + Object.keys(o || {}).length, 0)} 筆`);
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 groupBuyOrders.json:', e.message); }
   }
 }
 
@@ -3602,21 +3735,7 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   pinballRoom.finished = [];
   pinballRoom.seed = Math.floor(Math.random() * 1000000);
   pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, {
-    mode: pinballRoom.mode,
-    onFinish: (name) => {
-      if (pinballRoom.status === 'playing' && !pinballRoom.finished.includes(name)) {
-        pinballRoom.finished.push(name);
-        const rank = pinballRoom.finished.length;
-        let points = (rank === 1) ? 7 : (rank === 2) ? 5 : (rank === 3) ? 3 : (rank <= 10) ? 2 : 1;
-        if (!pinballRoom.scores) pinballRoom.scores = {};
-        if (!pinballRoom.scores[name]) pinballRoom.scores[name] = 0;
-        pinballRoom.scores[name] += points;
-        if (pinballRoom.finished.length >= pinballRoom.pool.length) {
-          pinballRoom.status = 'finished';
-        }
-        io.emit('pinball_state', pinballRoom);
-      }
-    }
+    mode: pinballRoom.mode
   });
 
   pinballRoom.status = 'instruction';
