@@ -8,16 +8,17 @@
       "items": {
         "zr_0014": 1,
         "zr_0011": 1,
-        "zr_0062": 1
+        "zr_0062": 1,
+        "zr_0168": 1
       },
-      "totalAmount": 1199,
+      "totalAmount": 1384,
       "paymentMethod": "none",
       "paymentStatus": "unverified",
       "orderStatus": "unconfirmed",
       "paymentNote": "",
       "note": "",
       "anonymous": false,
-      "updatedAt": 1787798470482
+      "updatedAt": 1787798482247
     }
   }
 }
