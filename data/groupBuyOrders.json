@@ -35,23 +35,6 @@
       "note": "",
       "anonymous": false,
       "updatedAt": 1787794650203
-    },
-    "U4c803b98450e7d4ecbabe22a1990e55e": {
-      "userId": "U4c803b98450e7d4ecbabe22a1990e55e",
-      "userName": "jo-ling",
-      "userPhone": "0955560624",
-      "userPictureUrl": "https://profile.line-scdn.net/0hHrnxRCQpF11DAQSpyM5pIjNRFDdgcE5PPzdZPXQBT2x-MFkDa28LOSEFGWR4ZFVca2cIOiIHTGxPEmA7XVfraUQxSmx-MFUDaW9dvg",
-      "items": {
-        "zr_0014": 1
-      },
-      "totalAmount": 695,
-      "paymentMethod": "none",
-      "paymentStatus": "unverified",
-      "orderStatus": "unconfirmed",
-      "paymentNote": "",
-      "note": "",
-      "anonymous": false,
-      "updatedAt": 1787794987794
     }
   }
 }
