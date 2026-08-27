@@ -1665,16 +1665,17 @@
         "userPhone": "0910946418",
         "userPictureUrl": "https://profile.line-scdn.net/0hISaDYoFzFnxMPQGYKg5oAzxtFRZvTE9uYFhRGH88QBh4DFAtMFJaHHxoTxsjBVAsMl8KGng9T0hALmEaUmvqSEsNS01xDFQiZlNcnw",
         "items": {
-          "zr_0005": 1
+          "zr_0005": 1,
+          "zr_0002": 1
         },
-        "totalAmount": 195,
+        "totalAmount": 385,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787820363067
+        "updatedAt": 1787820367298
       }
     },
     "hiddenFromLobby": true
@@ -1708,7 +1709,7 @@
     "Uc3f99069e10903dd9385cbf288b526ce": {
       "userName": "Paige",
       "userPhone": "0910946418",
-      "updatedAt": 1787820365843
+      "updatedAt": 1787820367311
     }
   }
 }
