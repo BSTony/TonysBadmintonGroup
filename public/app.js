@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.2.10
+ * Version: 1.2.11
  */
 let globalLobbyUsers = [];
 
@@ -5688,6 +5688,53 @@ window.validateNamePhone = function() {
  // { [itemId]: quantity }
 let draftCart = {}; // { [itemId]: draft_quantity }
 let gbCartSaveTimer = null;
+let gbConfettiCanvas = null;
+let gbConfettiFn = null;
+let gbConfettiCleanupTimer = null;
+let gbFxLastAt = 0;
+
+function cleanupGbConfetti() {
+  clearTimeout(gbConfettiCleanupTimer);
+  gbConfettiCleanupTimer = null;
+  try {
+    if (gbConfettiFn && typeof gbConfettiFn.reset === 'function') gbConfettiFn.reset();
+  } catch (e) {}
+  try {
+    if (typeof confetti === 'function' && typeof confetti.reset === 'function') confetti.reset();
+  } catch (e) {}
+  gbConfettiFn = null;
+  if (gbConfettiCanvas && gbConfettiCanvas.parentNode) {
+    gbConfettiCanvas.parentNode.removeChild(gbConfettiCanvas);
+  }
+  gbConfettiCanvas = null;
+  document.querySelectorAll('.gb-confetti-canvas, .gb-fx').forEach((el) => {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  });
+  document.querySelectorAll('canvas').forEach((c) => {
+    if (c.classList.contains('gb-confetti-canvas') || c.style.zIndex === '200000') {
+      if (c.parentNode) c.parentNode.removeChild(c);
+    }
+  });
+}
+
+function scheduleGbConfettiCleanup() {
+  clearTimeout(gbConfettiCleanupTimer);
+  gbConfettiCleanupTimer = setTimeout(cleanupGbConfetti, 1500);
+}
+
+function ensureGbConfetti() {
+  if (typeof confetti !== 'function' || typeof confetti.create !== 'function') return null;
+  if (gbConfettiFn && gbConfettiCanvas && gbConfettiCanvas.parentNode) return gbConfettiFn;
+  cleanupGbConfetti();
+  const canvas = document.createElement('canvas');
+  canvas.className = 'gb-confetti-canvas';
+  canvas.setAttribute('aria-hidden', 'true');
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:200000;';
+  document.body.appendChild(canvas);
+  gbConfettiCanvas = canvas;
+  gbConfettiFn = confetti.create(canvas, { resize: true, useWorker: false });
+  return gbConfettiFn;
+}
 
 function spawnGbFxNode(html, x, y, className, lifeMs) {
   const el = document.createElement('div');
@@ -5710,31 +5757,42 @@ function playGbQtyFx(delta, btn, card) {
     x: cx / Math.max(window.innerWidth, 1),
     y: cy / Math.max(window.innerHeight, 1)
   };
+  const now = Date.now();
+  const skipHeavy = (now - gbFxLastAt) < 320;
+  gbFxLastAt = now;
+  if (skipHeavy) cleanupGbConfetti();
 
   if (delta > 0) {
-    if (navigator.vibrate) navigator.vibrate([12, 28, 16, 28, 22]);
-    if (typeof confetti === 'function') {
-      confetti({
-        particleCount: 96,
-        spread: 88,
-        startVelocity: 34,
-        origin,
-        colors: ['#fbbf24', '#f59e0b', '#10b981', '#34d399', '#ffffff', '#fde68a'],
-        ticks: 230,
-        scalar: 1.08,
-        zIndex: 200000
-      });
-      confetti({
-        particleCount: 22,
-        spread: 60,
-        startVelocity: 28,
-        origin,
-        shapes: ['star'],
-        colors: ['#facc15', '#fde68a', '#ffffff'],
-        scalar: 1.55,
-        ticks: 210,
-        zIndex: 200000
-      });
+    if (navigator.vibrate) navigator.vibrate([12, 28, 16]);
+    if (!skipHeavy) {
+      const fire = ensureGbConfetti();
+      if (fire) {
+        const isMobile = window.innerWidth < 520;
+        fire({
+          particleCount: isMobile ? 28 : 48,
+          spread: 68,
+          startVelocity: 24,
+          origin,
+          colors: ['#fbbf24', '#f59e0b', '#10b981', '#34d399', '#ffffff', '#fde68a'],
+          ticks: 120,
+          scalar: isMobile ? 0.8 : 0.95,
+          disableForReducedMotion: true
+        });
+        if (!isMobile) {
+          fire({
+            particleCount: 10,
+            spread: 50,
+            startVelocity: 22,
+            origin,
+            shapes: ['star'],
+            colors: ['#facc15', '#fde68a', '#ffffff'],
+            ticks: 110,
+            scalar: 1.15,
+            disableForReducedMotion: true
+          });
+        }
+        scheduleGbConfettiCleanup();
+      }
     }
     spawnGbFxNode('<span>+1</span>', cx, cy, 'gb-fx gb-fx-plus', 950);
     ['✨', '🎉', '⭐'].forEach((emoji, i) => {
@@ -5750,20 +5808,7 @@ function playGbQtyFx(delta, btn, card) {
       setTimeout(() => card.classList.remove('gb-card-cheer'), 700);
     }
   } else {
-    if (navigator.vibrate) navigator.vibrate([55, 35, 90]);
-    if (typeof confetti === 'function') {
-      confetti({
-        particleCount: 32,
-        spread: 32,
-        startVelocity: 7,
-        gravity: 2.4,
-        origin,
-        colors: ['#94a3b8', '#64748b', '#475569', '#cbd5e1'],
-        ticks: 260,
-        scalar: 0.72,
-        zIndex: 200000
-      });
-    }
+    if (navigator.vibrate) navigator.vibrate([40, 30, 60]);
     spawnGbFxNode('<span>-1</span>', cx, cy, 'gb-fx gb-fx-minus', 1150);
     spawnGbFxNode('😢', cx, cy - 6, 'gb-fx gb-fx-tear', 1050);
     spawnGbFxNode('💧', cx + 18, cy, 'gb-fx gb-fx-drop', 950);
@@ -5776,6 +5821,11 @@ function playGbQtyFx(delta, btn, card) {
     }
   }
 }
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) cleanupGbConfetti();
+});
+document.addEventListener('pagehide', cleanupGbConfetti);
 
 function saveCartToBackendSoon() {
   clearTimeout(gbCartSaveTimer);
