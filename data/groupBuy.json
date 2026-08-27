@@ -1646,16 +1646,17 @@
         "userPhone": "0905017898",
         "userPictureUrl": "https://profile.line-scdn.net/0hPPU_mV2MD394JhMC3h1xQQh2DBVbV1ZtAEVAHUp2Ah1EQUl7UBJCHh9zVE0SRhwtAERAHU4kBUZaQw9qDx4hUgx4JxAdZkhrBwQYai17IQQDbRt7CDggWk5gUzwgX0AgPQE0GT9NVDIdTixVMjMgBRByPykwVB5uFnFjKX0UYfwXJHgqVUBBHEUgWUrA",
         "items": {
-          "zr_0052": 3
+          "zr_0052": 3,
+          "zr_0164": 1
         },
-        "totalAmount": 465,
+        "totalAmount": 790,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787798534705
+        "updatedAt": 1787798573005
       },
       "U_LOCAL_TEST": {
         "userId": "U_LOCAL_TEST",
@@ -1663,16 +1664,16 @@
         "userPhone": "0936120108",
         "userPictureUrl": "",
         "items": {
-          "zr_0014": 2
+          "zr_0014": 1
         },
-        "totalAmount": 1390,
+        "totalAmount": 695,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787798572754
+        "updatedAt": 1787798573322
       }
     },
     "hiddenFromLobby": true
@@ -1686,7 +1687,7 @@
     "U3c44f145460b5671baec6a3f62309c23": {
       "userName": "Wayne 吳瑋翔 위상",
       "userPhone": "0905017898",
-      "updatedAt": 1787798572513
+      "updatedAt": 1787798573005
     },
     "U4c803b98450e7d4ecbabe22a1990e55e": {
       "userName": "jo-ling",
@@ -1696,7 +1697,7 @@
     "U_LOCAL_TEST": {
       "userName": "謝東霖 Tony",
       "userPhone": "0936120108",
-      "updatedAt": 1787798572855
+      "updatedAt": 1787798574094
     }
   }
 }
