@@ -1683,16 +1683,17 @@
         "userPhone": "0912345678",
         "userPictureUrl": "",
         "items": {
-          "zr_0014": 1
+          "zr_0014": 1,
+          "zr_0030": 1
         },
-        "totalAmount": 695,
+        "totalAmount": 870,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787825293298
+        "updatedAt": 1787825426510
       }
     },
     "hiddenFromLobby": true
@@ -1716,7 +1717,7 @@
     "U_LOCAL_TEST": {
       "userName": "Kay",
       "userPhone": "0912345678",
-      "updatedAt": 1787825425010
+      "updatedAt": 1787825426510
     },
     "Uec617dedcd37cd4c4e1d6afb526819d1": {
       "userName": "Chris Chen",
