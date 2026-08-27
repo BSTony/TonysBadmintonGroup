@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-08-26
- * Version: 1.2.2
+ * Date: 2026-08-27
+ * Version: 1.2.3
  */
 let globalLobbyUsers = [];
 
@@ -1507,8 +1507,14 @@ async function initializeLiff() {
 
 // 載入多場次大廳資料
 async function loadGamesLobby(silent = false) {
+  const urlParamsEarly = new URLSearchParams(window.location.search);
+  const urlBuyEarly = urlParamsEarly.get('buy');
   try {
-    if (!silent) {
+    // 專屬團購連結先開商場，避免卡在大廳載入畫面
+    if (!silent && urlBuyEarly) {
+      if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
+      openGroupBuyPage(urlBuyEarly);
+    } else if (!silent) {
       appDiv.className = 'loading';
       statusMsg.innerText = '載入中...';
       statusMsg.style.display = 'block';
@@ -1552,10 +1558,12 @@ async function loadGamesLobby(silent = false) {
     const urlGameId = urlParams.get('gameId');
     const urlBuy = urlParams.get('buy');
     
-    // 若為初次載入且網址有指定 buy，則直接進入團購商場
+    // 專屬團購連結已先開啟商場；場次資料回來後只補權限，不再重跑載入畫面
     if (!silent && urlBuy) {
       if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
-      openGroupBuyPage(urlBuy);
+      if (typeof renderGroupBuyUI === 'function' && currentGroupBuyData) {
+        renderGroupBuyUI(currentGroupBuyData);
+      }
     }
     // 若為初次載入且網址有指定 gameId，則直接進入該場次，否則留在首頁
     else if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
@@ -5848,6 +5856,8 @@ function updateCampaignSelectorDropdown(list) {
 
 function openGroupBuyPage(gid = null) {
   if (gid) currentGid = gid;
+  if (appDiv) appDiv.className = '';
+  if (statusMsg) statusMsg.style.display = 'none';
   document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
   if (groupBuyView) groupBuyView.classList.remove('hidden');
 
