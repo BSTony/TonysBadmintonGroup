@@ -1619,7 +1619,7 @@
       }
     ],
     "orders": {},
-    "hiddenFromLobby": true
+    "hiddenFromLobby": false
   },
   "__profiles": {}
 }
