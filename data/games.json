@@ -4640,7 +4640,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787809794670,
+    "lastActiveTime": 1787835457096,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4662,7 +4662,8 @@
       "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
-      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
+      "小宇": "U09e4f0126678f203e0b139a474c17637"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4703,11 +4704,19 @@
           "林立峰",
           "Chen H.R.",
           "Hsin",
-          "Sammy Su"
+          "Sammy Su",
+          "小宇"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/27 20:57",
+        "name": "小宇",
+        "operator": "詹敬智(胞弟)",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/27 13:49",
         "name": "Sammy Su",
