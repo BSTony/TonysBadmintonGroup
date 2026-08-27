@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787790091340,
+    "lastActiveTime": 1787809115936,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4248,7 +4248,6 @@
           "Wayne",
           "Matt",
           "小周",
-          "小黑",
           "凱文",
           "Jack",
           "小白",
@@ -4267,6 +4266,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/27 13:38",
+        "name": "小黑",
+        "operator": "陳宜蓁",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "08/27 08:21",
         "name": "Iven",
