@@ -4587,7 +4587,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787809364583,
+    "lastActiveTime": 1787809794670,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4608,7 +4608,8 @@
       "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
       "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
-      "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d"
+      "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4648,11 +4649,19 @@
           "小可愛",
           "林立峰",
           "Chen H.R.",
-          "Hsin"
+          "Hsin",
+          "Sammy Su"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/27 13:49",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/27 13:42",
         "name": "Hsin",
