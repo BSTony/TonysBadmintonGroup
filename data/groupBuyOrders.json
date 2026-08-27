@@ -38,21 +38,6 @@
       "note": "",
       "anonymous": false,
       "updatedAt": 1787798573005
-    },
-    "U_LOCAL_TEST": {
-      "userId": "U_LOCAL_TEST",
-      "userName": "謝東霖 Tony",
-      "userPhone": "0936120108",
-      "userPictureUrl": "",
-      "items": {},
-      "totalAmount": 0,
-      "paymentMethod": "none",
-      "paymentStatus": "unverified",
-      "orderStatus": "unconfirmed",
-      "paymentNote": "",
-      "note": "",
-      "anonymous": false,
-      "updatedAt": 1787798574556
     }
   }
 }
