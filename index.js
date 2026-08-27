@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-27
- * Version: 1.3.2
+ * Version: 1.3.3
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -1250,10 +1250,91 @@ const app = express();
 const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server, { cors: { origin: '*' } });
+
+function escapeHtmlAttr(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function buildShareMeta(req) {
+  const buyId = (typeof req.query.buy === 'string' && req.query.buy) ? req.query.buy : '';
+  const proto = String(req.get('x-forwarded-proto') || req.protocol || 'https').split(',')[0].trim();
+  const host = req.get('x-forwarded-host') || req.get('host') || 'tonys-line-bot.onrender.com';
+  const origin = `${proto}://${host}`;
+  const defaultImage = 'https://cdn.store-assets.com/s/1255165/f/10532819.jpg';
+
+  let title = '羽球接龍報名大廳';
+  let description = '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+  let image = defaultImage;
+  let url = `${origin}/`;
+
+  if (buyId) {
+    const gb = groupBuyData[buyId] || groupBuyData.default || {};
+    title = String(gb.title || '🛒 展榮商號團購').replace(/\s+/g, ' ').trim();
+    const notice = String(gb.notice || '').replace(/\s+/g, ' ').trim();
+    description = notice || '鹿港展榮商號團購：堅果、麵茶、古早味點心，點我選購。';
+    image = (gb.paymentSettings && gb.paymentSettings.linePayQrUrl) || defaultImage;
+    const firstImg = Array.isArray(gb.items) && gb.items.find(i => i && i.imageUrl);
+    if (firstImg && firstImg.imageUrl) image = firstImg.imageUrl;
+    url = `${origin}/?buy=${encodeURIComponent(buyId)}`;
+  }
+
+  if (description.length > 80) description = description.slice(0, 77) + '...';
+
+  const t = escapeHtmlAttr(title);
+  const d = escapeHtmlAttr(description);
+  const i = escapeHtmlAttr(image);
+  const u = escapeHtmlAttr(url);
+  return {
+    title: t,
+    tags: [
+      `  <meta name="description" content="${d}">`,
+      `  <meta property="og:type" content="website">`,
+      `  <meta property="og:site_name" content="Tony 羽球團">`,
+      `  <meta property="og:title" content="${t}">`,
+      `  <meta property="og:description" content="${d}">`,
+      `  <meta property="og:url" content="${u}">`,
+      `  <meta property="og:image" content="${i}">`,
+      `  <meta property="og:locale" content="zh_TW">`,
+      `  <meta name="twitter:card" content="summary_large_image">`,
+      `  <meta name="twitter:title" content="${t}">`,
+      `  <meta name="twitter:description" content="${d}">`,
+      `  <meta name="twitter:image" content="${i}">`
+    ].join('\n')
+  };
+}
+
+function sendIndexHtml(req, res) {
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  fs.readFile(indexPath, 'utf8', (err, html) => {
+    if (err) {
+      console.error('讀取 index.html 失敗:', err.message);
+      return res.status(500).send('頁面載入失敗');
+    }
+    const meta = buildShareMeta(req);
+    let out = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${meta.title}</title>`);
+    if (out.indexOf('<!-- SHARE_META -->') !== -1) {
+      out = out.replace('<!-- SHARE_META -->', meta.tags);
+    } else {
+      out = out.replace('</head>', meta.tags + '\n</head>');
+    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.send(out);
+  });
+}
+
+app.get('/', sendIndexHtml);
+app.get('/index.html', sendIndexHtml);
+
 app.use(express.static(path.join(__dirname, 'public'), {
+  index: false,
   etag: false,
   lastModified: false,
-  setHeaders: (res, path) => {
+  setHeaders: (res, filePath) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
