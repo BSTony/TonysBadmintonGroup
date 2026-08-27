@@ -1662,15 +1662,17 @@
         "userName": "謝東霖 Tony",
         "userPhone": "0936120108",
         "userPictureUrl": "",
-        "items": {},
-        "totalAmount": 0,
+        "items": {
+          "zr_0014": 1
+        },
+        "totalAmount": 695,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787798565114
+        "updatedAt": 1787798566565
       }
     },
     "hiddenFromLobby": true
@@ -1694,7 +1696,7 @@
     "U_LOCAL_TEST": {
       "userName": "謝東霖 Tony",
       "userPhone": "0936120108",
-      "updatedAt": 1787798566108
+      "updatedAt": 1787798566565
     }
   }
 }
