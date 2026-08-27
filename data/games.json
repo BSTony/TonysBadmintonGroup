@@ -4178,7 +4178,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787235896535,
-    "lastActiveTime": 1787815005180,
+    "lastActiveTime": 1787819291976,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4225,7 +4225,8 @@
       "Hsiu": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "雲": "U9189a06112f6a2a13fdacb08a190c60b",
       "Fb Ruby": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "佘俊頡": "U884f25cb569121f0e477efdda4471fd7"
+      "佘俊頡": "U884f25cb569121f0e477efdda4471fd7",
+      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb"
     },
     "noteMap": {
       "Hsiu": "FB"
@@ -4261,13 +4262,21 @@
           "FB-Danny",
           "Hsiu",
           "Fb Ruby",
-          "佘俊頡"
+          "佘俊頡",
+          "Sean"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "08/27 16:28",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/27 15:16",
         "name": "佘俊頡",
