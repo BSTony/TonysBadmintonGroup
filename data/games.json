@@ -4701,7 +4701,7 @@
       },
       {
         "title": "8-12",
-        "limit": 7,
+        "limit": 12,
         "backupLimit": 5,
         "fee": "320",
         "label": "",
