@@ -1626,16 +1626,17 @@
         "userPictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA",
         "items": {
           "zr_0014": 1,
-          "zr_0011": 1
+          "zr_0011": 1,
+          "zr_0013": 1
         },
-        "totalAmount": 1020,
+        "totalAmount": 1375,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787797737527
+        "updatedAt": 1787797739480
       },
       "U3c44f145460b5671baec6a3f62309c23": {
         "userId": "U3c44f145460b5671baec6a3f62309c23",
@@ -1679,7 +1680,7 @@
     "U9dc6c7ab7d49487c4dcb70caf20195b0": {
       "userName": "謝東霖 Tony",
       "userPhone": "0936120108",
-      "updatedAt": 1787797737527
+      "updatedAt": 1787797739495
     },
     "U3c44f145460b5671baec6a3f62309c23": {
       "userName": "Wayne 吳瑋翔 위상",
