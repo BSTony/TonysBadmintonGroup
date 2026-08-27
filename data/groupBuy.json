@@ -1664,17 +1664,15 @@
         "userName": "一般訪客",
         "userPhone": "0936120108",
         "userPictureUrl": "",
-        "items": {
-          "zr_0014": 1
-        },
-        "totalAmount": 695,
+        "items": {},
+        "totalAmount": 0,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787809085460
+        "updatedAt": 1787809100948
       }
     },
     "hiddenFromLobby": true
@@ -1698,7 +1696,7 @@
     "U_LOCAL_TEST": {
       "userName": "一般訪客",
       "userPhone": "0936120108",
-      "updatedAt": 1787809100517
+      "updatedAt": 1787809100967
     }
   }
 }
