@@ -4280,7 +4280,7 @@
         "fee": "230"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "history": [
       {
         "time": "08/27 16:28",
