@@ -4491,7 +4491,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787376761752,
-    "lastActiveTime": 1787887816706,
+    "lastActiveTime": 1787889633449,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4524,7 +4524,8 @@
       "佘俊頡": "U884f25cb569121f0e477efdda4471fd7",
       "FB 俊樹": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB 思翰": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "小高": "U4cbba92203148484d06d213547203e35"
+      "小高": "U4cbba92203148484d06d213547203e35",
+      "康": "U4cbba92203148484d06d213547203e35"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4552,12 +4553,20 @@
           "佘俊頡",
           "FB 俊樹",
           "FB 思翰",
-          "小高"
+          "小高",
+          "康"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/28 12:00",
+        "name": "康",
+        "operator": "小高",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/28 11:30",
         "name": "小高",
