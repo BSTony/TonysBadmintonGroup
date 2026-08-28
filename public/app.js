@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.2.18
+ * Version: 1.2.19
  */
 let globalLobbyUsers = [];
 
@@ -366,6 +366,53 @@ function withTimeout(promise, ms, message) {
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
   ]);
+}
+
+const LIFF_OAUTH_PARAMS = ['code', 'state', 'liffClientId', 'liffRedirectChannelId', 'friendship_status_changed', 'liff.state'];
+
+function getCleanAppUrl() {
+  const url = new URL(window.location.origin + window.location.pathname);
+  const src = new URLSearchParams(window.location.search);
+  ['buy', 'gid', 'gameId'].forEach(key => {
+    const val = src.get(key);
+    if (val) url.searchParams.set(key, val);
+  });
+  return url.toString();
+}
+
+function hasLiffOauthCallback() {
+  const src = new URLSearchParams(window.location.search);
+  return !!(src.get('code') || src.get('liff.state'));
+}
+
+function stripLiffOauthParams() {
+  try {
+    const url = new URL(window.location.href);
+    let dirty = false;
+    LIFF_OAUTH_PARAMS.forEach(key => {
+      if (url.searchParams.has(key)) {
+        url.searchParams.delete(key);
+        dirty = true;
+      }
+    });
+    if (dirty) {
+      history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+    }
+  } catch (e) {}
+}
+
+function startLiffLogin() {
+  const cleanUri = getCleanAppUrl();
+  try {
+    const last = Number(sessionStorage.getItem('gb_liff_login_at') || 0);
+    if (Date.now() - last < 20000) {
+      reportSystemLog('LIFF', 'iOS 避免重複登入跳轉', { href: window.location.href, cleanUri: cleanUri });
+      return false;
+    }
+    sessionStorage.setItem('gb_liff_login_at', String(Date.now()));
+  } catch (e) {}
+  liff.login({ redirectUri: cleanUri });
+  return true;
 }
 
 function isPlaceholderDisplayName(name) {
@@ -1578,13 +1625,23 @@ async function initializeLiff() {
         if (!config.liffId) throw new Error('系統未設定 LIFF ID');
         if (typeof liff === 'undefined') throw new Error('LIFF SDK 未載入');
 
+        const cameFromLogin = hasLiffOauthCallback();
         await ensureLiffReady(config.liffId);
+        stripLiffOauthParams();
 
         if (!liff.isLoggedIn()) {
+          if (cameFromLogin) {
+            reportSystemLog('LIFF', '登入回來後仍未登入，停止跳轉以免 iOS 迴圈', { href: window.location.href });
+            throw new Error('LINE 登入回調後仍未登入');
+          }
           liffRedirecting = true;
-          liff.login({ redirectUri: window.location.href });
+          if (!startLiffLogin()) {
+            liffRedirecting = false;
+            throw new Error('避免重複 LINE 登入跳轉');
+          }
           return;
         }
+        try { sessionStorage.removeItem('gb_liff_login_at'); } catch (e) {}
 
         currentUser = await resolveLineProfile();
         try {
