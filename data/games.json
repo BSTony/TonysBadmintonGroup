@@ -4491,7 +4491,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787376761752,
-    "lastActiveTime": 1787913077707,
+    "lastActiveTime": 1787919952822,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4530,7 +4530,8 @@
       "小羅": "U6d9e099c518efa25fd881c87e6e72dd7",
       "FB 傑諾": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-      "FB 吳郭魚": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB 吳郭魚": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB 辛言": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4563,12 +4564,20 @@
           "登",
           "小羅",
           "FB 傑諾",
-          "FB 吳郭魚"
+          "FB 吳郭魚",
+          "FB 辛言"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/28 20:25",
+        "name": "FB 辛言",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/28 18:31",
         "name": "FB 吳郭魚",
