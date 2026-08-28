@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-08-27
- * Version: 1.2.12
+ * Date: 2026-08-28
+ * Version: 1.2.13
  */
 let globalLobbyUsers = [];
 
@@ -1535,6 +1535,7 @@ async function loadGamesLobby(silent = false) {
       12000,
       '場次資料載入逾時'
     );
+    const extras = [];
     if (!res.ok) {
       if (res.status === 404) {
         gamesList = [];
@@ -1551,28 +1552,28 @@ async function loadGamesLobby(silent = false) {
       globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
       globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
       
-      if (globalLobbyUsers.length === 0) {
-        await loadLobbyUsers();
-      }
-      
-      try {
-        if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
-      } catch(gbErr) { console.error('Fetch group buy error:', gbErr); }
+      if (globalLobbyUsers.length === 0) extras.push(loadLobbyUsers());
+      extras.push((async () => {
+        try {
+          if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
+        } catch (gbErr) { console.error('Fetch group buy error:', gbErr); }
+      })());
     }
 
-    try {
-      const eeRes = await fetch('/api/easter_egg/status');
-      if (eeRes.ok) {
-        const eeData = await eeRes.json();
-        easterEggEnabled = !!eeData.enabled;
-      }
-    } catch(e) {}
+    extras.push((async () => {
+      try {
+        const eeRes = await fetch('/api/easter_egg/status');
+        if (eeRes.ok) {
+          const eeData = await eeRes.json();
+          easterEggEnabled = !!eeData.enabled;
+        }
+      } catch (e) {}
+    })());
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlGameId = urlParams.get('gameId');
     const urlBuy = urlParams.get('buy') || urlBuyEarly;
     
-    // 專屬團購：不要改渲染大廳，以免蓋掉已打開的商場
     if (urlBuy) {
       if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
       if (typeof renderGroupBuyUI === 'function' && currentGroupBuyData) {
@@ -1586,6 +1587,20 @@ async function loadGamesLobby(silent = false) {
     } else {
       renderDetail(currentGameDetailId);
     }
+
+    Promise.all(extras).then(() => {
+      if (urlBuy) {
+        if (typeof renderGroupBuyUI === 'function' && currentGroupBuyData) {
+          renderGroupBuyUI(currentGroupBuyData);
+        }
+        return;
+      }
+      if (!currentGameDetailId && lobbyView && !lobbyView.classList.contains('hidden')) {
+        if (typeof renderLobbyGroupBuyBanners === 'function') {
+          renderLobbyGroupBuyBanners(allGroupBuysList || []);
+        }
+      }
+    }).catch(() => {});
   } catch (err) {
     console.error(err);
     if (urlBuyEarly && typeof openGroupBuyPage === 'function') {

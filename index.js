@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-08-27
- * Version: 1.3.4
+ * Date: 2026-08-28
+ * Version: 1.3.5
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -1930,9 +1930,13 @@ app.get('/api/config', (req, res) => {
 async function fetchGroupName(gid) {
   if (!gid || !gid.startsWith('C')) return null;
   try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 2500);
     const res = await fetch(`https://api.line.me/v2/bot/group/${gid}/summary`, {
-      headers: { Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}` }
+      headers: { Authorization: `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}` },
+      signal: ctrl.signal
     });
+    clearTimeout(timer);
     if (res.ok) {
       const data = await res.json();
       return data.groupName;
@@ -1945,14 +1949,29 @@ async function fetchGroupName(gid) {
   return null;
 }
 
+const groupNameInFlight = new Set();
+function fillGroupNameInBackground(gid) {
+  if (!gid || !gid.startsWith('C')) return;
+  if (groupSettings[gid] && groupSettings[gid].groupName) return;
+  if (groupNameInFlight.has(gid)) return;
+  groupNameInFlight.add(gid);
+  fetchGroupName(gid).then(async (name) => {
+    if (!name) return;
+    if (!groupSettings[gid]) groupSettings[gid] = {};
+    groupSettings[gid].groupName = name;
+    await saveGroupSettings();
+  }).catch((e) => {
+    console.error('背景補群組名稱失敗:', e.message);
+  }).finally(() => {
+    groupNameInFlight.delete(gid);
+  });
+}
+
 async function ensureGroupSettings(gid) {
+  if (!gid) return;
   if (!groupSettings[gid]) groupSettings[gid] = {};
   if (!groupSettings[gid].groupName && gid.startsWith('C')) {
-    const name = await fetchGroupName(gid);
-    if (name) {
-      groupSettings[gid].groupName = name;
-      await saveGroupSettings();
-    }
+    fillGroupNameInBackground(gid);
   }
 }
 
@@ -2207,7 +2226,7 @@ app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
 
 app.get('/api/game/:gid', async (req, res) => {
   const gid = req.params.gid;
-  await ensureGroupSettings(gid);
+  ensureGroupSettings(gid);
   const lobbyTitle = groupSettings[gid]?.lobbyTitle || '羽球接龍大廳';
   const lobbyDesc = groupSettings[gid]?.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
   const uid = req.query.uid;
@@ -2217,9 +2236,6 @@ app.get('/api/game/:gid', async (req, res) => {
   if (isAdmin) {
     let adminGids = [];
     if (superAdmin) {
-       // Super admin doesn't strictly need managed groups for simple display, 
-       // but we'll show all groups they are explicitly in groupAdmins for, 
-       // or we could show all. Let's just show what they are explicitly admin of, plus the current gid.
        adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
     } else {
        adminGids = Object.keys(groupAdmins).filter(g => groupAdmins[g].has(uid));
@@ -2231,15 +2247,14 @@ app.get('/api/game/:gid', async (req, res) => {
        }
     }
     for (const g of adminGids) {
+      ensureGroupSettings(g);
       const codes = Object.keys(groupCodes).filter(k => groupCodes[k] === g);
       if (codes.length > 0) {
         for (const c of codes) {
-          await ensureGroupSettings(g);
           const gName = groupSettings[g]?.groupName || g;
           managedGroups.push({ gid: g, code: c, groupName: gName });
         }
       } else {
-        await ensureGroupSettings(g);
         const gName = groupSettings[g]?.groupName || '未命名群組';
         managedGroups.push({ gid: g, code: g === gid ? '目前群組' : '無代碼', groupName: gName });
       }
