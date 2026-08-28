@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3611,
+    "viewCount": 3613,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -290,8 +290,8 @@
       "U2ea89b78f1546c61adda03c7dd8704d5": {
         "displayName": "賴柚子",
         "firstVisit": 1783341633415,
-        "count": 40,
-        "lastVisit": 1787914190442,
+        "count": 41,
+        "lastVisit": 1787943347324,
         "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
       },
       "Uc8b0e0ef7ca58b387136a28642742b7d": {
@@ -1150,9 +1150,28 @@
         "count": 1,
         "lastVisit": 1787762905487,
         "pictureUrl": "https://profile.line-scdn.net/0h-E66w32ScmobT2M5KqYMFWsfcQA4Pit4MSE4CC9NJQouKDQ9Y3o8C30dfl0mfDBuZS1oDycfLFwXXAUMBRmOXhx_L1smfjA0MSE4iQ"
+      },
+      "U869e6c64a042cfb6f8cb9bee22827d01": {
+        "displayName": "彭",
+        "firstVisit": 1787943270384,
+        "count": 1,
+        "lastVisit": 1787943270384,
+        "pictureUrl": "https://profile.line-scdn.net/0h0zYqeTC0b1V0CH7RnzURKgRYbD9XeTZHDT4kO0AJYzdJPCkCUT4gNRJdMmAZPigHDDp1YUYMYWd4Gxgzal6TYXM4MmRJOS0LXmYltg"
       }
     },
     "logs": [
+      {
+        "time": 1787943347324,
+        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
+        "displayName": "賴柚子",
+        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
+      },
+      {
+        "time": 1787943270384,
+        "userId": "U869e6c64a042cfb6f8cb9bee22827d01",
+        "displayName": "彭",
+        "pictureUrl": "https://profile.line-scdn.net/0h0zYqeTC0b1V0CH7RnzURKgRYbD9XeTZHDT4kO0AJYzdJPCkCUT4gNRJdMmAZPigHDDp1YUYMYWd4Gxgzal6TYXM4MmRJOS0LXmYltg"
+      },
       {
         "time": 1787936570835,
         "userId": "U037afe342197214125f95fd00ebc1f0c",
