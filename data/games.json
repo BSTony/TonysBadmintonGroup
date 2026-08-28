@@ -4694,7 +4694,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787835457096,
+    "lastActiveTime": 1787901482707,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4717,7 +4717,8 @@
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
-      "小宇": "U09e4f0126678f203e0b139a474c17637"
+      "小宇": "U09e4f0126678f203e0b139a474c17637",
+      "小羅": "U6d9e099c518efa25fd881c87e6e72dd7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4733,7 +4734,8 @@
           "云",
           "ALAN LIU",
           "杜威霖 Andy",
-          "JoeLin"
+          "JoeLin",
+          "小羅"
         ]
       },
       {
@@ -4764,6 +4766,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/28 15:18",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/27 20:57",
         "name": "小宇",
