@@ -4727,7 +4727,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787911024323,
+    "lastActiveTime": 1787911035059,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4753,7 +4753,8 @@
       "小宇": "U09e4f0126678f203e0b139a474c17637",
       "小羅": "U6d9e099c518efa25fd881c87e6e72dd7",
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
-      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4799,11 +4800,19 @@
           "Hsin",
           "Sammy Su",
           "小宇",
-          "腳皮"
+          "腳皮",
+          "宇軒"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/28 17:57",
+        "name": "宇軒",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/28 17:57",
         "name": "腳皮",
