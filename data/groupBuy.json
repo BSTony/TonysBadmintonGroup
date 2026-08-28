@@ -1627,19 +1627,20 @@
         "items": {
           "zr_0014": 1,
           "zr_0062": 1,
-          "zr_0168": 1,
           "zr_0052": 2,
           "zr_0011": 1,
-          "zr_0083": 5
+          "zr_0083": 5,
+          "zr_0033": 1,
+          "zr_0037": 1
         },
-        "totalAmount": 2294,
+        "totalAmount": 2489,
         "paymentMethod": "none",
         "paymentStatus": "unverified",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787799211972
+        "updatedAt": 1787884299977
       },
       "U3c44f145460b5671baec6a3f62309c23": {
         "userId": "U3c44f145460b5671baec6a3f62309c23",
@@ -1697,6 +1698,23 @@
         "note": "",
         "anonymous": false,
         "updatedAt": 1787825426510
+      },
+      "Uf4b9b20df1812ff907d72d503ea507e1": {
+        "userId": "Uf4b9b20df1812ff907d72d503ea507e1",
+        "userName": "馮艶愛 (小愛）",
+        "userPhone": "0922279872",
+        "userPictureUrl": "https://profile.line-scdn.net/0hr8Sw0G-uLRd-DjNd7y9TKQ5eLn1df3QFADg3Ik8JJy8ROmITU2owcBwMdSAXazgRUj0xJRhdJyJcXRc0EmE3KihZEUkhO2s3CgwSEDxqJ3woSCkBMmwFLAxucHoaUGlDLx48Nz94DyQZRzgGUm0UODlLIHVfNiI_BllBQXs8Q5QRDFpCU2hjdEMIeyLG",
+        "items": {
+          "zr_0014": 1
+        },
+        "totalAmount": 695,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1787878345485
       }
     },
     "hiddenFromLobby": true
@@ -1705,7 +1723,7 @@
     "U9dc6c7ab7d49487c4dcb70caf20195b0": {
       "userName": "謝東霖 Tony",
       "userPhone": "0936120108",
-      "updatedAt": 1787799578542
+      "updatedAt": 1787884303582
     },
     "U3c44f145460b5671baec6a3f62309c23": {
       "userName": "Wayne 吳瑋翔 위상",
@@ -1720,7 +1738,7 @@
     "U_LOCAL_TEST": {
       "userName": "Kay",
       "userPhone": "0912345678",
-      "updatedAt": 1787825426938
+      "updatedAt": 1787880693553
     },
     "Uec617dedcd37cd4c4e1d6afb526819d1": {
       "userName": "Chris Chen",
@@ -1741,6 +1759,11 @@
       "userName": "憲(派瑞-Perry)",
       "userPhone": "0979673773",
       "updatedAt": 1787843809383
+    },
+    "Uf4b9b20df1812ff907d72d503ea507e1": {
+      "userName": "馮艶愛 (小愛）",
+      "userPhone": "0922279872",
+      "updatedAt": 1787878345485
     }
   }
 }
