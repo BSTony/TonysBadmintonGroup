@@ -49,16 +49,17 @@
       "userPictureUrl": "https://profile.line-scdn.net/0hISaDYoFzFnxMPQGYKg5oAzxtFRZvTE9uYFhRGH88QBh4DFAtMFJaHHxoTxsjBVAsMl8KGng9T0hALmEaUmvqSEsNS01xDFQiZlNcnw",
       "items": {
         "zr_0005": 1,
-        "zr_0002": 1
+        "zr_0002": 1,
+        "zr_0001": 1
       },
-      "totalAmount": 385,
+      "totalAmount": 710,
       "paymentMethod": "none",
       "paymentStatus": "unverified",
       "orderStatus": "unconfirmed",
       "paymentNote": "",
       "note": "",
       "anonymous": false,
-      "updatedAt": 1787820367298
+      "updatedAt": 1787877444474
     },
     "U_LOCAL_TEST": {
       "userId": "U_LOCAL_TEST",
