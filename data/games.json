@@ -4727,7 +4727,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787911016184,
+    "lastActiveTime": 1787911024323,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4798,11 +4798,19 @@
           "Chen H.R.",
           "Hsin",
           "Sammy Su",
-          "小宇"
+          "小宇",
+          "腳皮"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/28 17:57",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/28 17:56",
         "name": "腳皮",
