@@ -4727,7 +4727,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787910905068,
+    "lastActiveTime": 1787911016184,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4770,8 +4770,7 @@
           "ALAN LIU",
           "杜威霖 Andy",
           "JoeLin",
-          "小羅",
-          "腳皮"
+          "小羅"
         ]
       },
       {
@@ -4804,6 +4803,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/28 17:56",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "08/28 17:55",
         "name": "腳皮",
