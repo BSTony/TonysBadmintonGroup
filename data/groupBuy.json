@@ -1681,24 +1681,6 @@
         "anonymous": false,
         "updatedAt": 1787877444474
       },
-      "U_LOCAL_TEST": {
-        "userId": "U_LOCAL_TEST",
-        "userName": "Kay",
-        "userPhone": "0912345678",
-        "userPictureUrl": "",
-        "items": {
-          "zr_0014": 1,
-          "zr_0030": 1
-        },
-        "totalAmount": 870,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1787825426510
-      },
       "Uf4b9b20df1812ff907d72d503ea507e1": {
         "userId": "Uf4b9b20df1812ff907d72d503ea507e1",
         "userName": "馮艶愛 (小愛）",
@@ -1715,6 +1697,24 @@
         "note": "",
         "anonymous": false,
         "updatedAt": 1787878345485
+      },
+      "U49e2484c80056990b759e9039a74e1a6": {
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "userName": "Kay",
+        "userPhone": "0912345678",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0014": 1,
+          "zr_0030": 1
+        },
+        "totalAmount": 870,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1787888257651
       }
     },
     "hiddenFromLobby": true
@@ -1753,7 +1753,7 @@
     "U49e2484c80056990b759e9039a74e1a6": {
       "userName": "Kay",
       "userPhone": "0912345678",
-      "updatedAt": 1787825540533
+      "updatedAt": 1787888257651
     },
     "Uf339b049e09a02f0796afb22f5de2e7e": {
       "userName": "憲(派瑞-Perry)",
