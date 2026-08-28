@@ -4736,7 +4736,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787912573775,
+    "lastActiveTime": 1787917836427,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4810,7 +4810,6 @@
           "小可愛",
           "林立峰",
           "Chen H.R.",
-          "Hsin",
           "Sammy Su",
           "小宇",
           "腳皮",
@@ -4819,6 +4818,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/28 19:50",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "08/28 18:22",
         "name": "Alice",
