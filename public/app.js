@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.2.17
+ * Version: 1.2.18
  */
 let globalLobbyUsers = [];
 
@@ -430,8 +430,14 @@ async function resolveLineProfile() {
 
 async function finishLiffBoot(testParams, buyFromUrl) {
   if (typeof initLottery === 'function') initLottery(currentUser.userId);
-  if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
-  if (typeof flushGbCartSave === 'function') flushGbCartSave();
+  if (typeof hydrateGbBuyerFields === 'function') await hydrateGbBuyerFields();
+  if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
+  if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
+  if (typeof renderItemsGrid === 'function') renderItemsGrid();
+  if (typeof updateCartBar === 'function') updateCartBar();
+  if (typeof saveCartToBackend === 'function' && currentCart && Object.keys(currentCart).length > 0) {
+    saveCartToBackend({ silent: true });
+  }
 
   const gidFromUrl = testParams.get('gid');
   let context = null;
@@ -5647,6 +5653,8 @@ var currentGroupBuyData = null;
 var currentCart = {};
 var gbIdentityListenersBound = false;
 var gbProfileSaveTimer = null;
+var gbCartRestoredFromServer = false;
+var gbCartRestoreKey = '';
 
 function getOrCreateGuestUid() {
   try {
@@ -5742,11 +5750,14 @@ function persistGbBuyerProfile(syncServer) {
 async function fetchGbBuyerProfile() {
   const uid = getGbBuyerUid();
   const name = (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) ? currentUser.displayName : '';
-  if (!uid && !name) return null;
+  const phoneEl = document.getElementById('gb-header-phone');
+  const phone = normalizeTwPhone((phoneEl && phoneEl.value) || getDeviceSavedPhone());
+  if (!uid && !name && !phone) return null;
   try {
     const qs = new URLSearchParams();
     if (uid) qs.set('uid', uid);
     if (name) qs.set('name', name);
+    if (phone) qs.set('phone', phone);
     const res = await fetch('/api/groupbuy_profile?' + qs.toString());
     if (res.ok) {
       const data = await res.json();
@@ -5765,17 +5776,46 @@ function pickNewerGbProfile(localProfile, serverProfile) {
 function findMyGroupBuyOrder(orders) {
   if (!orders) return null;
   const uid = getGbBuyerUid();
+  const nameEl = document.getElementById('gb-header-name');
+  const phoneEl = document.getElementById('gb-header-phone');
+  const local = getLocalGbBuyerProfile();
+  const phone = normalizeTwPhone((phoneEl && phoneEl.value) || (local && local.userPhone) || getDeviceSavedPhone());
+  const name = ((nameEl && nameEl.value) || (local && local.userName) || (currentUser && currentUser.displayName) || '').trim();
+  const list = Object.values(orders).filter(Boolean);
   if (uid && orders[uid]) return orders[uid];
   if (uid) {
-    const byUid = Object.values(orders).find(order => order && order.userId === uid);
+    const byUid = list.find(order => order.userId === uid);
     if (byUid) return byUid;
   }
-  const local = getLocalGbBuyerProfile();
-  if (local && local.userName && local.userPhone) {
-    const key = `${local.userName.trim().toLowerCase()}_${local.userPhone.trim()}`;
+  if (phone) {
+    const byPhone = list.find(order => normalizeTwPhone(order.userPhone) === phone);
+    if (byPhone) return byPhone;
+  }
+  if (name && phone) {
+    const key = `${name.toLowerCase()}_${phone}`;
     if (orders[key]) return orders[key];
   }
+  if (name && typeof isPlaceholderDisplayName === 'function' && !isPlaceholderDisplayName(name)) {
+    const matches = list.filter(order => String(order.userName || '').trim().toLowerCase() === name.toLowerCase());
+    if (matches.length === 1) return matches[0];
+  }
   return null;
+}
+
+function restoreMyGroupBuyCart() {
+  const myOrder = findMyGroupBuyOrder(currentGroupBuyData && currentGroupBuyData.orders);
+  if (!myOrder || !myOrder.items) return myOrder;
+  const key = String(myOrder.userId || myOrder.userPhone || myOrder.userName || '');
+  if (gbCartRestoredFromServer && gbCartRestoreKey === key) return myOrder;
+  const serverItems = myOrder.items || {};
+  const localItems = { ...currentCart };
+  currentCart = { ...serverItems };
+  Object.keys(localItems).forEach(id => {
+    if ((localItems[id] || 0) > (currentCart[id] || 0)) currentCart[id] = localItems[id];
+  });
+  gbCartRestoredFromServer = true;
+  gbCartRestoreKey = key;
+  return myOrder;
 }
 
 function applyGbBuyerProfile(serverProfile, myOrder) {
@@ -5800,8 +5840,9 @@ function applyGbBuyerProfile(serverProfile, myOrder) {
 async function hydrateGbBuyerFields() {
   bindGbIdentityListeners();
   const serverProfile = await fetchGbBuyerProfile();
-  const myOrder = findMyGroupBuyOrder(currentGroupBuyData && currentGroupBuyData.orders);
-  applyGbBuyerProfile(serverProfile, myOrder);
+  applyGbBuyerProfile(serverProfile, findMyGroupBuyOrder(currentGroupBuyData && currentGroupBuyData.orders));
+  const myOrder = restoreMyGroupBuyCart();
+  if (myOrder) applyGbBuyerProfile(serverProfile, myOrder);
 }
 
 function bindGbIdentityListeners() {
@@ -5815,18 +5856,25 @@ function bindGbIdentityListeners() {
     clearTimeout(gbProfileSaveTimer);
     gbProfileSaveTimer = setTimeout(() => persistGbBuyerProfile(true), 400);
   };
+  const restoreSoon = () => {
+    persistGbBuyerProfile(true);
+    if (typeof restoreMyGroupBuyCart === 'function' && restoreMyGroupBuyCart()) {
+      if (typeof renderItemsGrid === 'function') renderItemsGrid();
+      if (typeof updateCartBar === 'function') updateCartBar();
+    }
+  };
   if (nameEl) {
     nameEl.addEventListener('input', persistSoon);
-    nameEl.addEventListener('change', () => persistGbBuyerProfile(true));
-    nameEl.addEventListener('blur', () => persistGbBuyerProfile(true));
+    nameEl.addEventListener('change', restoreSoon);
+    nameEl.addEventListener('blur', restoreSoon);
   }
   if (phoneEl) {
     phoneEl.addEventListener('input', () => {
       persistSoon();
       if (normalizeTwPhone(phoneEl.value)) persistGbBuyerProfile(true);
     });
-    phoneEl.addEventListener('change', () => persistGbBuyerProfile(true));
-    phoneEl.addEventListener('blur', () => persistGbBuyerProfile(true));
+    phoneEl.addEventListener('change', restoreSoon);
+    phoneEl.addEventListener('blur', restoreSoon);
   }
 }
 
@@ -6036,6 +6084,7 @@ function flushGbCartSave() {
 
 function applyLiveCartQty(item, delta, btn) {
   if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
+  if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
   const prev = currentCart[item.id] || 0;
   const next = Math.max(0, prev + delta);
   if (next === prev) return;
@@ -6275,10 +6324,7 @@ function openGroupBuyPage(gid = null) {
 
   fetchGroupBuyData().then(async () => {
     await hydrateGbBuyerFields();
-    const myOrder = findMyGroupBuyOrder(currentGroupBuyData && currentGroupBuyData.orders);
-    if (myOrder && myOrder.items && Object.keys(currentCart).length === 0) {
-      currentCart = { ...myOrder.items };
-    }
+    restoreMyGroupBuyCart();
     renderItemsGrid();
     updateCartBar();
   });
@@ -6437,15 +6483,12 @@ function renderGroupBuyUI(data) {
     else btnGbCopySummary.classList.add('hidden');
   }
 
-  // 依 LINE UID 復原個人訂單與購物車；姓名/電話由 applyGbBuyerProfile 帶入
-  const myOrder = findMyGroupBuyOrder(data.orders);
+  // 依 LINE UID / 電話 / 姓名復原個人訂單與購物車
+  const myOrder = restoreMyGroupBuyCart() || findMyGroupBuyOrder(data.orders);
   if (myOrder) {
     if (gbUserName && !gbUserName.value) gbUserName.value = myOrder.userName || '';
     if (gbUserPhone && !gbUserPhone.value) gbUserPhone.value = myOrder.userPhone || '';
-    if (Object.keys(currentCart).length === 0 && myOrder.items) {
-      currentCart = { ...myOrder.items };
-    }
-  } else if (currentUser?.displayName && gbUserName && !gbUserName.value) {
+  } else if (currentUser?.displayName && gbUserName && !gbUserName.value && !isPlaceholderDisplayName(currentUser.displayName)) {
     gbUserName.value = currentUser.displayName;
   }
 
@@ -6838,6 +6881,14 @@ async function saveCartToBackend(opts) {
   const phone = gbHeaderPhoneInput ? gbHeaderPhoneInput.value.trim() : defaultPhone;
   const note = (oldOrder && oldOrder.note) ? oldOrder.note : '';
   persistGbBuyerProfile(true);
+  if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
+  let itemsToSave = currentCart;
+  if (!gbCartRestoredFromServer && oldOrder && oldOrder.items) {
+    itemsToSave = { ...oldOrder.items };
+    Object.keys(currentCart || {}).forEach(id => {
+      if ((currentCart[id] || 0) > (itemsToSave[id] || 0)) itemsToSave[id] = currentCart[id];
+    });
+  }
   
   try {
     const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/order`, {
@@ -6845,7 +6896,8 @@ async function saveCartToBackend(opts) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         uid: uid, userName: name, userPhone: phone, userPictureUrl: (currentUser && currentUser.pictureUrl) || '',
-        items: currentCart,
+        items: itemsToSave,
+        replace: !!gbCartRestoredFromServer,
         paymentMethod: 'none',
         paymentNote: '',
         note: note
@@ -7500,15 +7552,16 @@ function initGroupBuyEvents() {
       if (headerName) headerName.value = name;
       if (headerPhone) headerPhone.value = phone;
       persistGbBuyerProfile(true);
-
-
+      if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
 
       try {
         const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            uid: (currentUser && currentUser.userId) ? currentUser.userId : phone, userName: name, userPhone: phone, items: currentCart,
+            uid: (typeof getGbBuyerUid === 'function' && getGbBuyerUid()) || (currentUser && currentUser.userId) || phone,
+            userName: name, userPhone: phone, items: currentCart,
+            replace: true,
             paymentMethod: 'none',
             paymentNote: '',
             note: gbOrderNote ? gbOrderNote.value.trim() : ''

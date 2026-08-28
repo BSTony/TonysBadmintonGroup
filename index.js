@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.3.8
+ * Version: 1.3.9
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -271,11 +271,31 @@ function upsertGroupBuyBuyerProfile(uid, userName, userPhone) {
   return profiles[uid];
 }
 
+function normalizeTwPhone(raw) {
+  if (!raw) return '';
+  let s = String(raw).replace(/[\s\-()]/g, '');
+  if (s.startsWith('+886')) s = '0' + s.slice(4);
+  else if (s.startsWith('886')) s = '0' + s.slice(3);
+  return /^09\d{8}$/.test(s) ? s : '';
+}
+
+function mergeIncomingOrderItems(existingItems, incomingItems, replace) {
+  const existing = (existingItems && typeof existingItems === 'object') ? existingItems : {};
+  const incoming = (incomingItems && typeof incomingItems === 'object') ? incomingItems : {};
+  if (replace) return { ...incoming };
+  const out = { ...existing };
+  for (const [id, qty] of Object.entries(incoming)) {
+    const n = Number(qty) || 0;
+    if (n > (Number(out[id]) || 0)) out[id] = n;
+  }
+  return out;
+}
+
 function findGroupBuyOrderKey(orders, uid, userName, userPhone) {
   if (!orders || typeof orders !== 'object') return null;
   if (uid && orders[uid]) return uid;
   const name = (userName || '').trim().toLowerCase();
-  const phone = (userPhone || '').trim();
+  const phone = normalizeTwPhone(userPhone) || String(userPhone || '').trim();
   const phoneKey = (name && phone) ? `${name}_${phone}` : null;
   if (phoneKey && orders[phoneKey]) return phoneKey;
   if (uid) {
@@ -285,8 +305,12 @@ function findGroupBuyOrderKey(orders, uid, userName, userPhone) {
   }
   if (phone) {
     for (const [key, order] of Object.entries(orders)) {
-      if (order && String(order.userPhone || '').trim() === phone) return key;
+      if (order && (normalizeTwPhone(order.userPhone) || String(order.userPhone || '').trim()) === phone) return key;
     }
+  }
+  if (name) {
+    const matches = Object.entries(orders).filter(([, order]) => order && String(order.userName || '').trim().toLowerCase() === name);
+    if (matches.length === 1) return matches[0][0];
   }
   return null;
 }
@@ -2123,28 +2147,28 @@ app.post('/api/groupbuy/:gid/settings', async (req, res) => {
 app.get('/api/groupbuy_profile', (req, res) => {
   const uid = req.query.uid;
   const name = (req.query.name || '').trim().toLowerCase();
-  if (!uid && !name) return res.status(400).json({ success: false, error: '缺少 uid' });
+  const phone = normalizeTwPhone(req.query.phone);
+  if (!uid && !name && !phone) return res.status(400).json({ success: false, error: '缺少 uid' });
   const profiles = getGroupBuyProfiles();
   let profile = uid ? (profiles[uid] || null) : null;
-  if ((!profile || !profile.userPhone) && uid) {
+  const pickFromOrders = (predicate) => {
     for (const [id, gb] of Object.entries(groupBuyData)) {
       if (id === GROUPBUY_PROFILES_KEY || !gb || !gb.orders) continue;
-      const order = gb.orders[uid] || Object.values(gb.orders).find(o => o && o.userId === uid);
+      const order = Object.values(gb.orders).find(predicate);
       if (order && order.userPhone) {
-        profile = { userName: order.userName || '', userPhone: order.userPhone, updatedAt: order.updatedAt || 0 };
-        break;
+        return { userName: order.userName || '', userPhone: order.userPhone, updatedAt: order.updatedAt || 0 };
       }
     }
+    return null;
+  };
+  if ((!profile || !profile.userPhone) && uid) {
+    profile = pickFromOrders(o => o && o.userId === uid) || profile;
+  }
+  if ((!profile || !profile.userPhone) && phone) {
+    profile = pickFromOrders(o => o && normalizeTwPhone(o.userPhone) === phone) || profile;
   }
   if ((!profile || !profile.userPhone) && name) {
-    for (const [id, gb] of Object.entries(groupBuyData)) {
-      if (id === GROUPBUY_PROFILES_KEY || !gb || !gb.orders) continue;
-      const order = Object.values(gb.orders).find(o => o && o.userName && o.userName.trim().toLowerCase() === name && o.userPhone);
-      if (order) {
-        profile = { userName: order.userName || '', userPhone: order.userPhone, updatedAt: order.updatedAt || 0 };
-        break;
-      }
-    }
+    profile = pickFromOrders(o => o && o.userName && o.userName.trim().toLowerCase() === name && o.userPhone) || profile;
   }
   res.json({ success: true, profile });
 });
@@ -2159,7 +2183,7 @@ app.post('/api/groupbuy_profile', async (req, res) => {
 
 app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid;
-  const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note, anonymous } = req.body || {};
+  const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note, anonymous, replace } = req.body || {};
   if (!uid || !userName) {
     recordSystemLog('團購下單', userName || uid || '未知', `缺少必填資訊 gid=${gid} uid=${uid || '空'} name=${userName || '空'}`);
     return res.status(400).json({ error: '請提供必填資訊' });
@@ -2185,12 +2209,19 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     const orderKey = uid;
     const oldKey = findGroupBuyOrderKey(info.orders, uid, userName, userPhone);
     const existingOrder = (oldKey && info.orders[oldKey]) || {};
+    const mergedItems = mergeIncomingOrderItems(existingOrder.items, items, !!replace);
+    let mergedAmount = 0;
+    for (const [itemId, qty] of Object.entries(mergedItems)) {
+      const p = Array.isArray(info.items) ? info.items.find(i => i.id === itemId) : null;
+      if (p && qty > 0) mergedAmount += (p.price || 0) * qty;
+    }
+    totalAmount = mergedAmount;
     info.orders[orderKey] = {
       userId: uid,
       userName: userName.trim(),
       userPhone: (userPhone || '').trim(),
-      userPictureUrl: userPictureUrl || '',
-      items: items || {},
+      userPictureUrl: userPictureUrl || existingOrder.userPictureUrl || '',
+      items: mergedItems,
       totalAmount,
       paymentMethod: paymentMethod || 'p2p_linepay',
       paymentStatus: existingOrder.paymentStatus || 'unverified',
