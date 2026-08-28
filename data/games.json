@@ -4491,7 +4491,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787376761752,
-    "lastActiveTime": 1787897048267,
+    "lastActiveTime": 1787901495165,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4526,7 +4526,8 @@
       "FB 思翰": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "小高": "U4cbba92203148484d06d213547203e35",
       "康": "U4cbba92203148484d06d213547203e35",
-      "登": "U203b76fe44ff1d74c53c21e5547aea27"
+      "登": "U203b76fe44ff1d74c53c21e5547aea27",
+      "小羅": "U6d9e099c518efa25fd881c87e6e72dd7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4556,12 +4557,20 @@
           "FB 思翰",
           "小高",
           "康",
-          "登"
+          "登",
+          "小羅"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/28 15:18",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/28 14:04",
         "name": "登",
