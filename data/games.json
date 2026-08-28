@@ -4727,7 +4727,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787912559065,
+    "lastActiveTime": 1787912573775,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4755,7 +4755,8 @@
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4783,7 +4784,8 @@
         "label": "",
         "list": [
           "Kevin",
-          "King"
+          "King",
+          "Alice"
         ]
       },
       {
@@ -4808,6 +4810,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/28 18:22",
+        "name": "Alice",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "08/28 18:22",
         "name": "King",
