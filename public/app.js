@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.2.19
+ * Version: 1.2.20
  */
 let globalLobbyUsers = [];
 
@@ -368,7 +368,20 @@ function withTimeout(promise, ms, message) {
   ]);
 }
 
-const LIFF_OAUTH_PARAMS = ['code', 'state', 'liffClientId', 'liffRedirectChannelId', 'friendship_status_changed', 'liff.state'];
+const LIFF_OAUTH_PARAMS = ['code', 'state', 'liffClientId', 'liffRedirectChannelId', 'friendship_status_changed', 'liff.state', 'liff_done'];
+
+function isIosDevice() {
+  const ua = navigator.userAgent || '';
+  return /iPad|iPhone|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isLiffInClient() {
+  try {
+    return typeof liff !== 'undefined' && typeof liff.isInClient === 'function' && !!liff.isInClient();
+  } catch (e) {
+    return false;
+  }
+}
 
 function getCleanAppUrl() {
   const url = new URL(window.location.origin + window.location.pathname);
@@ -382,7 +395,7 @@ function getCleanAppUrl() {
 
 function hasLiffOauthCallback() {
   const src = new URLSearchParams(window.location.search);
-  return !!(src.get('code') || src.get('liff.state'));
+  return !!(src.get('code') || src.get('liff.state') || src.get('liff_done'));
 }
 
 function stripLiffOauthParams() {
@@ -401,18 +414,45 @@ function stripLiffOauthParams() {
   } catch (e) {}
 }
 
-function startLiffLogin() {
-  const cleanUri = getCleanAppUrl();
+function shouldSkipLiffLogin(buyFromUrl, cameFromLogin) {
+  if (cameFromLogin) return true;
+  if (buyFromUrl) return true;
+  if (isLiffInClient()) return true;
+  if (isIosDevice()) return true;
   try {
-    const last = Number(sessionStorage.getItem('gb_liff_login_at') || 0);
-    if (Date.now() - last < 20000) {
-      reportSystemLog('LIFF', 'iOS 避免重複登入跳轉', { href: window.location.href, cleanUri: cleanUri });
+    if (localStorage.getItem('gb_liff_skip_login') === '1') return true;
+  } catch (e) {}
+  return false;
+}
+
+function startLiffLogin() {
+  const url = new URL(getCleanAppUrl());
+  url.searchParams.set('liff_done', '1');
+  const cleanUri = url.toString();
+  try {
+    if (localStorage.getItem('gb_liff_skip_login') === '1') {
+      reportSystemLog('LIFF', '已略過重複登入跳轉', { cleanUri: cleanUri });
       return false;
     }
-    sessionStorage.setItem('gb_liff_login_at', String(Date.now()));
+    localStorage.setItem('gb_liff_skip_login', '1');
   } catch (e) {}
   liff.login({ redirectUri: cleanUri });
   return true;
+}
+
+async function settleLiffIdentity() {
+  for (let i = 0; i < 8; i++) {
+    try {
+      if (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) return true;
+    } catch (e) {}
+    if (readLiffUserId()) return true;
+    await new Promise(resolve => setTimeout(resolve, 120));
+  }
+  try {
+    return (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || !!readLiffUserId();
+  } catch (e) {
+    return !!readLiffUserId();
+  }
 }
 
 function isPlaceholderDisplayName(name) {
@@ -1549,7 +1589,7 @@ async function enterAppAfterIdentity(buyFromUrl) {
   if (createGameView) createGameView.classList.add('hidden');
   if (buyFromUrl) {
     if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
-    if (typeof openGroupBuyPage === 'function') openGroupBuyPage(buyFromUrl);
+    if (typeof openGroupBuyPage === 'function') openGroupBuyPage(buyFromUrl, { reuse: true });
     await loadGamesLobby(true);
   } else {
     await loadGamesLobby();
@@ -1627,12 +1667,18 @@ async function initializeLiff() {
 
         const cameFromLogin = hasLiffOauthCallback();
         await ensureLiffReady(config.liffId);
+        await settleLiffIdentity();
         stripLiffOauthParams();
 
-        if (!liff.isLoggedIn()) {
-          if (cameFromLogin) {
-            reportSystemLog('LIFF', '登入回來後仍未登入，停止跳轉以免 iOS 迴圈', { href: window.location.href });
-            throw new Error('LINE 登入回調後仍未登入');
+        const hasLineUser = (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || !!readLiffUserId();
+        if (!hasLineUser) {
+          if (shouldSkipLiffLogin(buyFromUrl, cameFromLogin)) {
+            reportSystemLog('LIFF', 'iOS/團購略過 liff.login，避免跳轉', {
+              buy: buyFromUrl || '',
+              inClient: isLiffInClient(),
+              ios: isIosDevice()
+            });
+            throw new Error('略過 LINE 登入跳轉');
           }
           liffRedirecting = true;
           if (!startLiffLogin()) {
@@ -1641,7 +1687,7 @@ async function initializeLiff() {
           }
           return;
         }
-        try { sessionStorage.removeItem('gb_liff_login_at'); } catch (e) {}
+        try { localStorage.removeItem('gb_liff_skip_login'); } catch (e) {}
 
         currentUser = await resolveLineProfile();
         try {
@@ -1654,7 +1700,7 @@ async function initializeLiff() {
       } catch (err) {
         lastLiffErr = err;
         try {
-          if (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) {
+          if (typeof liff !== 'undefined' && ((typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || readLiffUserId())) {
             currentUser = await resolveLineProfile();
             await finishLiffBoot(testParams, buyFromUrl);
             return;
@@ -1663,14 +1709,17 @@ async function initializeLiff() {
           lastLiffErr = recoverErr;
         }
         if (attempt < 2) {
+          if (err && /略過 LINE 登入|避免重複 LINE/.test(String(err.message || err))) break;
           reportSystemLog('LIFF', '尚未拿到 LINE UID，2 秒後重試', { attempt: attempt, message: err && err.message ? err.message : String(err) });
           await new Promise(resolve => setTimeout(resolve, 2000));
         }
       }
     }
 
-    console.error('LIFF Init Error:', lastLiffErr);
-    reportSystemLog('LIFF', '兩次皆無法取得 LINE UID', { message: lastLiffErr && lastLiffErr.message ? lastLiffErr.message : String(lastLiffErr || '') });
+    if (!(lastLiffErr && /略過 LINE 登入|避免重複 LINE/.test(String(lastLiffErr.message || lastLiffErr)))) {
+      console.error('LIFF Init Error:', lastLiffErr);
+      reportSystemLog('LIFF', '兩次皆無法取得 LINE UID', { message: lastLiffErr && lastLiffErr.message ? lastLiffErr.message : String(lastLiffErr || '') });
+    }
     try {
       const headerNameEl = document.getElementById('gb-header-name');
       const headerName = headerNameEl && headerNameEl.value.trim() ? headerNameEl.value.trim() : '';
@@ -1708,7 +1757,7 @@ async function loadGamesLobby(silent = false) {
     if (urlBuyEarly) {
       if (!silent && typeof openGroupBuyPage === 'function') {
         if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
-        openGroupBuyPage(urlBuyEarly);
+        openGroupBuyPage(urlBuyEarly, { reuse: true });
       }
     } else if (!silent) {
       appDiv.className = 'loading';
@@ -1794,7 +1843,7 @@ async function loadGamesLobby(silent = false) {
     reportSystemLog('大廳', '載入大廳失敗', { message: err && err.message ? err.message : String(err) });
     if (urlBuyEarly && typeof openGroupBuyPage === 'function') {
       if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
-      openGroupBuyPage(urlBuyEarly);
+      openGroupBuyPage(urlBuyEarly, { reuse: true });
       revealApp();
     } else {
       appDiv.className = '';
@@ -5712,6 +5761,7 @@ var gbIdentityListenersBound = false;
 var gbProfileSaveTimer = null;
 var gbCartRestoredFromServer = false;
 var gbCartRestoreKey = '';
+var gbPageOpenedFor = '';
 
 function getOrCreateGuestUid() {
   try {
@@ -6366,18 +6416,29 @@ function logGroupBuyVisit() {
   }).catch(() => {});
 }
 
-function openGroupBuyPage(gid = null) {
+function openGroupBuyPage(gid = null, opts) {
+  opts = opts || {};
   if (gid) currentGid = gid;
+  const shopId = currentGid || 'default';
+  const alreadyOpen = !!(groupBuyView && !groupBuyView.classList.contains('hidden') && gbPageOpenedFor === shopId);
   if (appDiv) appDiv.className = '';
   if (statusMsg) statusMsg.style.display = 'none';
-  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-  if (groupBuyView) groupBuyView.classList.remove('hidden');
-
-  // 強制切換回選購品項頁籤，解決初次開啟時畫面空白問題
-  if (gbTabItems) gbTabItems.click();
+  if (!alreadyOpen) {
+    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+    if (groupBuyView) groupBuyView.classList.remove('hidden');
+    if (gbTabItems) gbTabItems.click();
+  }
+  gbPageOpenedFor = shopId;
 
   hydrateGbBuyerFields();
   logGroupBuyVisit();
+
+  if (alreadyOpen && opts.reuse && currentGroupBuyData) {
+    restoreMyGroupBuyCart();
+    renderItemsGrid();
+    updateCartBar();
+    return;
+  }
 
   fetchGroupBuyData().then(async () => {
     await hydrateGbBuyerFields();
