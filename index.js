@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.3.6
+ * Version: 1.3.7
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -2156,46 +2156,58 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid;
   const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note, anonymous } = req.body || {};
   if (!uid || !userName) {
+    recordSystemLog('團購下單', userName || uid || '未知', `缺少必填資訊 gid=${gid} uid=${uid || '空'} name=${userName || '空'}`);
     return res.status(400).json({ error: '請提供必填資訊' });
   }
-  const info = getGroupBuyInfo(gid);
-  if (!info.orders) info.orders = {};
-  let totalAmount = 0;
-  if (items && typeof items === 'object') {
-    for (const [itemId, qty] of Object.entries(items)) {
-      const p = info.items.find(i => i.id === itemId);
-      if (p && qty > 0) {
-        totalAmount += (p.price || 0) * qty;
+  try {
+    const info = getGroupBuyInfo(gid);
+    if (!info.orders) info.orders = {};
+    let totalAmount = 0;
+    const unknownIds = [];
+    if (items && typeof items === 'object') {
+      for (const [itemId, qty] of Object.entries(items)) {
+        const p = Array.isArray(info.items) ? info.items.find(i => i.id === itemId) : null;
+        if (p && qty > 0) {
+          totalAmount += (p.price || 0) * qty;
+        } else if (qty > 0) {
+          unknownIds.push(itemId);
+        }
       }
     }
+    if (unknownIds.length > 0) {
+      recordSystemLog('團購下單', userName, `購物車品項不在目錄 gid=${gid} ids=${unknownIds.join(',')}`);
+    }
+    const orderKey = uid;
+    const oldKey = findGroupBuyOrderKey(info.orders, uid, userName, userPhone);
+    const existingOrder = (oldKey && info.orders[oldKey]) || {};
+    info.orders[orderKey] = {
+      userId: uid,
+      userName: userName.trim(),
+      userPhone: (userPhone || '').trim(),
+      userPictureUrl: userPictureUrl || '',
+      items: items || {},
+      totalAmount,
+      paymentMethod: paymentMethod || 'p2p_linepay',
+      paymentStatus: existingOrder.paymentStatus || 'unverified',
+      orderStatus: existingOrder.orderStatus || 'unconfirmed',
+      paymentNote: paymentNote || '',
+      note: note || '',
+      anonymous: !!anonymous,
+      updatedAt: Date.now(),
+      lastConfirmedItems: existingOrder.lastConfirmedItems
+    };
+    if (oldKey && oldKey !== orderKey) {
+      delete info.orders[oldKey];
+    }
+    upsertGroupBuyBuyerProfile(uid, userName, userPhone);
+    await saveGroupBuyStorage();
+    io.emit('group_buy_state_updated', { gid, data: info });
+    notifySSEClients(gid);
+    res.json({ success: true, order: info.orders[orderKey] });
+  } catch (err) {
+    recordSystemLog('團購下單', userName || uid, `伺服器寫入失敗 gid=${gid}`, err);
+    res.status(500).json({ error: '訂單儲存失敗，請再試一次' });
   }
-  const orderKey = uid;
-  const oldKey = findGroupBuyOrderKey(info.orders, uid, userName, userPhone);
-  const existingOrder = (oldKey && info.orders[oldKey]) || {};
-  info.orders[orderKey] = {
-    userId: uid,
-    userName: userName.trim(),
-    userPhone: (userPhone || '').trim(),
-    userPictureUrl: userPictureUrl || '',
-    items: items || {},
-    totalAmount,
-    paymentMethod: paymentMethod || 'p2p_linepay',
-    paymentStatus: existingOrder.paymentStatus || 'unverified',
-    orderStatus: existingOrder.orderStatus || 'unconfirmed',
-    paymentNote: paymentNote || '',
-    note: note || '',
-    anonymous: !!anonymous,
-    updatedAt: Date.now(),
-    lastConfirmedItems: existingOrder.lastConfirmedItems
-  };
-  if (oldKey && oldKey !== orderKey) {
-    delete info.orders[oldKey];
-  }
-  upsertGroupBuyBuyerProfile(uid, userName, userPhone);
-  await saveGroupBuyStorage();
-  io.emit('group_buy_state_updated', { gid, data: info });
-  notifySSEClients(gid);
-  res.json({ success: true, order: info.orders[orderKey] });
 });
 
 app.post('/api/groupbuy/:gid/mark_paid', async (req, res) => {
@@ -6468,6 +6480,20 @@ app.get('/api/systemLogs', async (req, res) => {
   
   // 目前先允許 uid 存在就回傳，或直接回傳 (LIFF端會隱藏按鈕)
   res.json(systemLogs);
+});
+
+app.post('/api/systemLogs', (req, res) => {
+  const { title, operator, errorMsg, context } = req.body || {};
+  if (!errorMsg) {
+    return res.status(400).json({ success: false, error: '缺少錯誤訊息' });
+  }
+  let extra = '';
+  if (context != null) {
+    extra = typeof context === 'string' ? context : JSON.stringify(context);
+    if (extra.length > 400) extra = extra.substring(0, 400);
+  }
+  recordSystemLog(title || '前端操作', operator || '未知', extra ? `${errorMsg} | ${extra}` : String(errorMsg));
+  res.json({ success: true });
 });
 
 app.get('/api/debug_games', (req, res) => {

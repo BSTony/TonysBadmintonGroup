@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.2.15
+ * Version: 1.2.16
  */
 let globalLobbyUsers = [];
 
@@ -291,6 +291,37 @@ let globalLobbyTitle = '羽球接龍大廳';
 let currentGameDetailId = null;
 let lastGamesJson = '';
 let currentSimulatedRole = sessionStorage.getItem('simulatedRole') || 'superAdmin';
+let lastSystemLogKey = '';
+let lastSystemLogAt = 0;
+
+function reportSystemLog(title, errorMsg, extra) {
+  try {
+    const msg = String(errorMsg || '未知錯誤');
+    const key = String(title || '') + '|' + msg;
+    const now = Date.now();
+    if (key === lastSystemLogKey && now - lastSystemLogAt < 3000) return;
+    lastSystemLogKey = key;
+    lastSystemLogAt = now;
+    const nameEl = document.getElementById('gb-header-name');
+    const phoneEl = document.getElementById('gb-header-phone');
+    const buyer = nameEl && nameEl.value.trim()
+      ? (nameEl.value.trim() + (phoneEl && phoneEl.value.trim() ? ' ' + phoneEl.value.trim() : ''))
+      : '';
+    const operator = buyer || ((typeof currentUser !== 'undefined' && currentUser)
+      ? ((currentUser.displayName || '訪客') + (currentUser.userId ? ' (' + currentUser.userId + ')' : ''))
+      : '訪客');
+    fetch('/api/systemLogs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: title || '前端操作',
+        operator: operator,
+        errorMsg: msg,
+        context: extra || undefined
+      })
+    }).catch(() => {});
+  } catch (e) {}
+}
 
 function getEffectiveRole() {
   if (!globalIsSuperAdmin) {
@@ -1499,6 +1530,7 @@ async function initializeLiff() {
 
   } catch (err) {
     console.error('LIFF Init Error:', err);
+    reportSystemLog('LIFF', '初始化失敗，改走訪客模式', { message: err && err.message ? err.message : String(err) });
     try {
       currentUser = currentUser || { userId: getOrCreateGuestUid(), displayName: '一般訪客' };
       if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
@@ -1509,6 +1541,7 @@ async function initializeLiff() {
       await enterAppAfterIdentity(buyFromUrl);
     } catch(e) {
       console.error('Fallback boot error:', e);
+      reportSystemLog('LIFF', '訪客模式啟動也失敗', { message: e && e.message ? e.message : String(e) });
     }
   } finally {
     if (!liffRedirecting) revealApp();
@@ -1607,6 +1640,7 @@ async function loadGamesLobby(silent = false) {
     }).catch(() => {});
   } catch (err) {
     console.error(err);
+    reportSystemLog('大廳', '載入大廳失敗', { message: err && err.message ? err.message : String(err) });
     if (urlBuyEarly && typeof openGroupBuyPage === 'function') {
       if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
       openGroupBuyPage(urlBuyEarly);
@@ -4533,13 +4567,33 @@ if (btnSystemLogs) {
       if (!logs || logs.length === 0) {
         systemLogsContainer.innerHTML = '<p>目前沒有系統錯誤紀錄</p>';
       } else {
+        const toolbar = document.createElement('div');
+        toolbar.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;';
+        toolbar.innerHTML = `<span style="font-size:13px;color:#64748b;">共 ${logs.length} 筆，最新在上</span>
+          <button type="button" id="btn-copy-system-logs" style="border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">複製全部</button>`;
+        systemLogsContainer.appendChild(toolbar);
+        const copyBtn = toolbar.querySelector('#btn-copy-system-logs');
+        if (copyBtn) {
+          copyBtn.onclick = () => {
+            const text = logs.map(log => `${log.time}\n[${log.gameTitle || '未知'}] ${log.operator}\n${log.errorMsg}`).join('\n\n');
+            if (navigator.clipboard && window.isSecureContext) {
+              navigator.clipboard.writeText(text).then(() => alert('已複製全部 LOG')).catch(() => prompt('請手動複製：', text));
+            } else {
+              prompt('請手動複製：', text);
+            }
+          };
+        }
         logs.forEach(log => {
           const div = document.createElement('div');
           div.style.borderBottom = '1px solid #ddd';
           div.style.padding = '8px 0';
-          div.innerHTML = `<div style="font-size:12px; color:#888;">${log.time}</div>
-          <div style="font-weight:bold;">[${log.gameTitle || '未知場次'}] ${log.operator}</div>
-          <div style="color:red; margin-top:4px;">${log.errorMsg}</div>`;
+          const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '未知場次') : (log.gameTitle || '未知場次');
+          const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : (log.operator || '');
+          const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : (log.errorMsg || '');
+          const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : (log.time || '');
+          div.innerHTML = `<div style="font-size:12px; color:#888;">${time}</div>
+          <div style="font-weight:bold;">[${title}] ${op}</div>
+          <div style="color:#b91c1c; margin-top:4px; white-space:pre-wrap; word-break:break-word; user-select:text;">${msg}</div>`;
           systemLogsContainer.appendChild(div);
         });
       }
@@ -6033,6 +6087,7 @@ async function fetchGroupBuyData() {
     }
   } catch(e) {
     console.error('Fetch group buy data failed:', e);
+    reportSystemLog('團購資料', '載入團購資料失敗', { message: e && e.message ? e.message : String(e), gid: currentGid || 'default' });
   }
 }
 
@@ -6678,7 +6733,9 @@ async function saveCartToBackend(opts) {
   const uid = (typeof getGbBuyerUid === 'function' && getGbBuyerUid()) || '';
   if (!currentGroupBuyData) return;
   if (!uid) {
-    alert('請先填寫姓名與電話，或等 LINE 登入完成後再按一次 +1');
+    const msg = '請先填寫姓名與電話，或等 LINE 登入完成後再按一次 +1';
+    reportSystemLog('團購下單', msg, { gid: currentGid || 'default', cart: currentCart });
+    alert(msg);
     return;
   }
   
@@ -6707,12 +6764,15 @@ async function saveCartToBackend(opts) {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.success) {
-      alert(data.error || '訂單沒有存到伺服器，請再按一次 +1');
+      const msg = data.error || '訂單沒有存到伺服器，請再按一次 +1';
+      reportSystemLog('團購下單', msg, { status: res.status, gid: currentGid || 'default', uid: uid, cart: currentCart });
+      alert(msg);
       return;
     }
     if (!opts.silent) await fetchGroupBuyData();
   } catch(e) {
     console.error('發送訂單失敗:', e);
+    reportSystemLog('團購下單', '網路不穩，訂單可能沒存到', { message: e && e.message ? e.message : String(e), gid: currentGid || 'default', uid: uid, cart: currentCart });
     alert('網路不穩，訂單可能沒存到，請再按一次 +1');
   }
 }
@@ -7373,9 +7433,11 @@ function initGroupBuyEvents() {
           renderItemsGrid();
           updateCartBar();
         } else {
+          reportSystemLog('團購結帳', data.error || '送出失敗', { gid: currentGid || 'default', cart: currentCart });
           alert('送出失敗：' + data.error);
         }
       } catch(e) {
+        reportSystemLog('團購結帳', '發送訂單失敗', { message: e && e.message ? e.message : String(e), gid: currentGid || 'default', cart: currentCart });
         alert('發送訂單失敗：' + e.message);
       }
     };
