@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.3.5
+ * Version: 1.3.6
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -281,6 +281,11 @@ function findGroupBuyOrderKey(orders, uid, userName, userPhone) {
   if (uid) {
     for (const [key, order] of Object.entries(orders)) {
       if (order && order.userId === uid) return key;
+    }
+  }
+  if (phone) {
+    for (const [key, order] of Object.entries(orders)) {
+      if (order && String(order.userPhone || '').trim() === phone) return key;
     }
   }
   return null;
@@ -2154,9 +2159,6 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
     return res.status(400).json({ error: '請提供必填資訊' });
   }
   const info = getGroupBuyInfo(gid);
-  if (!info.active) {
-    return res.status(400).json({ error: '目前團購未開放' });
-  }
   if (!info.orders) info.orders = {};
   let totalAmount = 0;
   if (items && typeof items === 'object') {

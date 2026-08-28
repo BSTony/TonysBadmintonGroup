@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.2.13
+ * Version: 1.2.15
  */
 let globalLobbyUsers = [];
 
@@ -1415,6 +1415,7 @@ async function initializeLiff() {
       
       currentUser = { userId: mockUid, displayName: mockName };
       if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
+      if (typeof flushGbCartSave === 'function') flushGbCartSave();
       if (buyFromUrl && !testRole) {
         globalIsSuperAdmin = false;
         globalIsAdmin = false;
@@ -1466,6 +1467,7 @@ async function initializeLiff() {
       initLottery(currentUser.userId);
     }
     if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
+    if (typeof flushGbCartSave === 'function') flushGbCartSave();
 
     const gidFromUrl = testParams.get('gid');
     const context = liff.getContext();
@@ -1498,7 +1500,9 @@ async function initializeLiff() {
   } catch (err) {
     console.error('LIFF Init Error:', err);
     try {
-      currentUser = currentUser || { userId: 'U_LOCAL_TEST', displayName: '一般訪客' };
+      currentUser = currentUser || { userId: getOrCreateGuestUid(), displayName: '一般訪客' };
+      if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
+      if (typeof flushGbCartSave === 'function') flushGbCartSave();
       globalIsSuperAdmin = false;
       globalIsAdmin = false;
       if (!currentGroupId) currentGroupId = testParams.get('gid') || currentUser.userId;
@@ -5502,8 +5506,31 @@ var currentCart = {};
 var gbIdentityListenersBound = false;
 var gbProfileSaveTimer = null;
 
+function getOrCreateGuestUid() {
+  try {
+    let id = localStorage.getItem('gb_guest_uid');
+    if (!id) {
+      id = 'U_GUEST_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem('gb_guest_uid', id);
+    }
+    return id;
+  } catch (e) {
+    return 'U_GUEST_TMP';
+  }
+}
+
+function isWeakGbUid(uid) {
+  if (!uid) return true;
+  return uid === 'U_LOCAL_TEST' || uid.indexOf('U_GUEST_') === 0 || uid.indexOf('U_LOCAL') === 0;
+}
+
 function getGbBuyerUid() {
-  return (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) ? currentUser.userId : '';
+  const lineUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) ? String(currentUser.userId) : '';
+  const phoneEl = document.getElementById('gb-header-phone');
+  const phone = normalizeTwPhone(phoneEl && phoneEl.value) || getDeviceSavedPhone();
+  if (lineUid && !isWeakGbUid(lineUid)) return lineUid;
+  if (phone) return 'P_' + phone;
+  return lineUid || '';
 }
 
 function normalizeTwPhone(raw) {
@@ -5842,13 +5869,27 @@ function playGbQtyFx(delta, btn, card) {
 }
 
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) cleanupGbConfetti();
+  if (document.hidden) {
+    cleanupGbConfetti();
+    if (typeof flushGbCartSave === 'function') flushGbCartSave();
+  }
 });
-document.addEventListener('pagehide', cleanupGbConfetti);
+document.addEventListener('pagehide', () => {
+  cleanupGbConfetti();
+  if (typeof flushGbCartSave === 'function') flushGbCartSave();
+});
 
 function saveCartToBackendSoon() {
   clearTimeout(gbCartSaveTimer);
   gbCartSaveTimer = setTimeout(() => saveCartToBackend({ silent: true }), 450);
+}
+
+function flushGbCartSave() {
+  clearTimeout(gbCartSaveTimer);
+  gbCartSaveTimer = null;
+  if (currentCart && Object.keys(currentCart).length > 0) {
+    saveCartToBackend({ silent: true });
+  }
 }
 
 function applyLiveCartQty(item, delta, btn) {
@@ -6459,10 +6500,16 @@ function renderItemsGrid() {
     row.onclick = () => { if (typeof validateNamePhone === 'function' && !validateNamePhone()) return;
       if (window.activeExpandedItemId === item.id) {
         window.activeExpandedItemId = null;
-      } else {
-        window.activeExpandedItemId = item.id;
+        renderItemsGrid();
+        return;
       }
+      const alreadyQty = currentCart[item.id] || 0;
+      window.activeExpandedItemId = item.id;
       renderItemsGrid();
+      if (alreadyQty === 0) {
+        const plusBtn = document.querySelector('#gb-item-card-' + item.id + ' .btn-plus');
+        applyLiveCartQty(item, 1, plusBtn);
+      }
     };
 
     if (isExpanded) {
@@ -6628,12 +6675,17 @@ function openItemDetail(item) {
 
 async function saveCartToBackend(opts) {
   opts = opts || {};
-  if (!currentGroupBuyData || !currentUser) return;
+  const uid = (typeof getGbBuyerUid === 'function' && getGbBuyerUid()) || '';
+  if (!currentGroupBuyData) return;
+  if (!uid) {
+    alert('請先填寫姓名與電話，或等 LINE 登入完成後再按一次 +1');
+    return;
+  }
   
   const gbHeaderNameInput = document.getElementById('gb-header-name');
   const gbHeaderPhoneInput = document.getElementById('gb-header-phone');
   const oldOrder = findMyGroupBuyOrder(currentGroupBuyData.orders);
-  const defaultName = (oldOrder && oldOrder.userName) ? oldOrder.userName : (currentUser.displayName || '未命名');
+  const defaultName = (oldOrder && oldOrder.userName) ? oldOrder.userName : ((currentUser && currentUser.displayName) || '未命名');
   const defaultPhone = (oldOrder && oldOrder.userPhone) ? oldOrder.userPhone : '';
   
   const name = gbHeaderNameInput && gbHeaderNameInput.value.trim() ? gbHeaderNameInput.value.trim() : defaultName;
@@ -6642,23 +6694,26 @@ async function saveCartToBackend(opts) {
   persistGbBuyerProfile(true);
   
   try {
-    const res = await fetch(`/api/groupbuy/${currentGid}/order`, {
+    const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: currentUser.userId, userName: name, userPhone: phone, userPictureUrl: currentUser.pictureUrl || '',
+        uid: uid, userName: name, userPhone: phone, userPictureUrl: (currentUser && currentUser.pictureUrl) || '',
         items: currentCart,
         paymentMethod: 'none',
         paymentNote: '',
         note: note
       })
     });
-    const data = await res.json();
-    if (data.success) {
-      if (!opts.silent) await fetchGroupBuyData();
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      alert(data.error || '訂單沒有存到伺服器，請再按一次 +1');
+      return;
     }
+    if (!opts.silent) await fetchGroupBuyData();
   } catch(e) {
     console.error('發送訂單失敗:', e);
+    alert('網路不穩，訂單可能沒存到，請再按一次 +1');
   }
 }
 
