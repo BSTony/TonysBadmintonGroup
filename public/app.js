@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.2.16
+ * Version: 1.2.17
  */
 let globalLobbyUsers = [];
 
@@ -366,6 +366,101 @@ function withTimeout(promise, ms, message) {
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
   ]);
+}
+
+function isPlaceholderDisplayName(name) {
+  const n = String(name || '').trim();
+  return !n || n === '一般訪客' || n.indexOf('一般訪客') === 0 || n === '未登入' || n === 'LINE 使用者' || n === '未命名';
+}
+
+function isWeakVisitUid(uid) {
+  if (!uid) return true;
+  return uid === 'U_LOCAL_TEST' || uid.indexOf('U_GUEST_') === 0 || uid.indexOf('U_LOCAL') === 0 || uid.indexOf('P_') === 0;
+}
+
+function readLiffUserId() {
+  try {
+    if (typeof liff === 'undefined') return '';
+    const ctx = typeof liff.getContext === 'function' ? liff.getContext() : null;
+    if (ctx && ctx.userId) return ctx.userId;
+    const token = typeof liff.getDecodedIDToken === 'function' ? liff.getDecodedIDToken() : null;
+    if (token && token.sub) return token.sub;
+  } catch (e) {}
+  return '';
+}
+
+async function ensureLiffReady(liffId) {
+  try {
+    await withTimeout(liff.init({ liffId: liffId }), 10000, 'LIFF 初始化逾時');
+  } catch (e) {
+    const already = (liff && liff.id === liffId) || /already been initialized/i.test(String(e && e.message || e));
+    if (!already) throw e;
+  }
+}
+
+async function resolveLineProfile() {
+  const uidFromCtx = readLiffUserId();
+  let profile = null;
+  try {
+    profile = await withTimeout(liff.getProfile(), 8000, '無法取得 LINE 資料');
+  } catch (e) {
+    if (!uidFromCtx) throw e;
+    reportSystemLog('LIFF', 'getProfile 失敗，改用已授權的 UID', { message: e && e.message ? e.message : String(e), uid: uidFromCtx });
+  }
+  const userId = (profile && profile.userId) || uidFromCtx;
+  if (!userId) throw new Error('無法取得 LINE UID');
+  let displayName = (profile && profile.displayName) || '';
+  if (isPlaceholderDisplayName(displayName)) {
+    try {
+      const token = typeof liff.getDecodedIDToken === 'function' ? liff.getDecodedIDToken() : null;
+      if (token && token.name) displayName = token.name;
+    } catch (e) {}
+  }
+  if (isPlaceholderDisplayName(displayName)) {
+    const nameEl = document.getElementById('gb-header-name');
+    if (nameEl && nameEl.value.trim()) displayName = nameEl.value.trim();
+  }
+  if (isPlaceholderDisplayName(displayName)) displayName = '';
+  return {
+    userId: userId,
+    displayName: displayName,
+    pictureUrl: (profile && profile.pictureUrl) || ''
+  };
+}
+
+async function finishLiffBoot(testParams, buyFromUrl) {
+  if (typeof initLottery === 'function') initLottery(currentUser.userId);
+  if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
+  if (typeof flushGbCartSave === 'function') flushGbCartSave();
+
+  const gidFromUrl = testParams.get('gid');
+  let context = null;
+  try {
+    context = (typeof liff !== 'undefined' && typeof liff.getContext === 'function') ? liff.getContext() : null;
+  } catch (e) {}
+
+  if (gidFromUrl) {
+    currentGroupId = gidFromUrl;
+  } else if (context && (context.type === 'group' || context.type === 'room')) {
+    currentGroupId = context.groupId || context.roomId;
+  } else {
+    currentGroupId = currentUser.userId;
+  }
+
+  if (currentGroupId && currentUser && !isWeakVisitUid(currentUser.userId)) {
+    fetch('/api/lobby_visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        gid: currentGroupId,
+        userId: currentUser.userId,
+        displayName: currentUser.displayName || '',
+        pictureUrl: currentUser.pictureUrl || ''
+      })
+    }).catch(e => console.error('Failed to log visit', e));
+  }
+
+  await enterAppAfterIdentity(buyFromUrl);
 }
 const lobbyView = document.getElementById('lobby-view');
 const detailView = document.getElementById('detail-view');
@@ -1450,7 +1545,7 @@ async function initializeLiff() {
       if (buyFromUrl && !testRole) {
         globalIsSuperAdmin = false;
         globalIsAdmin = false;
-        currentUser.displayName = '一般訪客 (Local Test)';
+        currentUser.displayName = '本機測試';
       } else {
         globalIsSuperAdmin = (testRole !== 'user');
         globalIsAdmin = (testRole !== 'user');
@@ -1468,81 +1563,74 @@ async function initializeLiff() {
       return;
     }
 
-    const configRes = await withTimeout(fetch(`/api/config?_t=${Date.now()}`), 8000, '無法取得系統設定');
-    if (!configRes.ok) throw new Error('無法取得系統設定');
-    const config = await configRes.json();
-    
-    if (!config.liffId) {
-      throw new Error('系統未設定 LIFF ID');
-    }
-    if (typeof liff === 'undefined') {
-      throw new Error('LIFF SDK 未載入');
+    let lastLiffErr = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const configRes = await withTimeout(fetch(`/api/config?_t=${Date.now()}`), 12000, '無法取得系統設定');
+        if (!configRes.ok) throw new Error('無法取得系統設定');
+        const config = await configRes.json();
+        if (!config.liffId) throw new Error('系統未設定 LIFF ID');
+        if (typeof liff === 'undefined') throw new Error('LIFF SDK 未載入');
+
+        await ensureLiffReady(config.liffId);
+
+        if (!liff.isLoggedIn()) {
+          liffRedirecting = true;
+          liff.login({ redirectUri: window.location.href });
+          return;
+        }
+
+        currentUser = await resolveLineProfile();
+        try {
+          const idToken = (typeof liff.getDecodedIDToken === 'function') ? liff.getDecodedIDToken() : null;
+          const tokenPhone = idToken && (idToken.phone_number || idToken.phoneNumber);
+          if (tokenPhone) currentUser.phoneNumber = tokenPhone;
+        } catch (e) {}
+        await finishLiffBoot(testParams, buyFromUrl);
+        return;
+      } catch (err) {
+        lastLiffErr = err;
+        try {
+          if (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) {
+            currentUser = await resolveLineProfile();
+            await finishLiffBoot(testParams, buyFromUrl);
+            return;
+          }
+        } catch (recoverErr) {
+          lastLiffErr = recoverErr;
+        }
+        if (attempt < 2) {
+          reportSystemLog('LIFF', '尚未拿到 LINE UID，2 秒後重試', { attempt: attempt, message: err && err.message ? err.message : String(err) });
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
     }
 
-    await withTimeout(liff.init({ liffId: config.liffId }), 10000, 'LIFF 初始化逾時');
-
-    if (!liff.isLoggedIn()) {
-      liffRedirecting = true;
-      liff.login({ redirectUri: window.location.href });
-      return;
-    }
-
-    const profile = await withTimeout(liff.getProfile(), 8000, '無法取得 LINE 資料');
-    currentUser = profile;
+    console.error('LIFF Init Error:', lastLiffErr);
+    reportSystemLog('LIFF', '兩次皆無法取得 LINE UID', { message: lastLiffErr && lastLiffErr.message ? lastLiffErr.message : String(lastLiffErr || '') });
     try {
-      const idToken = (typeof liff.getDecodedIDToken === 'function') ? liff.getDecodedIDToken() : null;
-      const tokenPhone = idToken && (idToken.phone_number || idToken.phoneNumber);
-      if (tokenPhone) currentUser.phoneNumber = tokenPhone;
-    } catch (e) {}
-    if (typeof initLottery === 'function') {
-      initLottery(currentUser.userId);
-    }
-    if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
-    if (typeof flushGbCartSave === 'function') flushGbCartSave();
-
-    const gidFromUrl = testParams.get('gid');
-    const context = liff.getContext();
-    
-    if (gidFromUrl) {
-      currentGroupId = gidFromUrl;
-    } else if (context && (context.type === 'group' || context.type === 'room')) {
-      currentGroupId = context.groupId || context.roomId;
-    } else if (context && context.type === 'utou') {
-      currentGroupId = currentUser.userId;
-    } else {
-      currentGroupId = currentUser.userId;
-    }
-
-    if (currentGroupId && currentUser) {
-      fetch('/api/lobby_visit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gid: currentGroupId,
-          userId: currentUser.userId,
-          displayName: currentUser.displayName,
-          pictureUrl: currentUser.pictureUrl
-        })
-      }).catch(e => console.error('Failed to log visit', e));
-    }
-
-    await enterAppAfterIdentity(buyFromUrl);
-
-  } catch (err) {
-    console.error('LIFF Init Error:', err);
-    reportSystemLog('LIFF', '初始化失敗，改走訪客模式', { message: err && err.message ? err.message : String(err) });
-    try {
-      currentUser = currentUser || { userId: getOrCreateGuestUid(), displayName: '一般訪客' };
+      const headerNameEl = document.getElementById('gb-header-name');
+      const headerName = headerNameEl && headerNameEl.value.trim() ? headerNameEl.value.trim() : '';
+      const phone = (typeof getDeviceSavedPhone === 'function' && getDeviceSavedPhone()) || '';
+      if (!currentUser) {
+        currentUser = {
+          userId: phone ? ('P_' + phone) : getOrCreateGuestUid(),
+          displayName: headerName
+        };
+      }
       if (typeof hydrateGbBuyerFields === 'function') hydrateGbBuyerFields();
       if (typeof flushGbCartSave === 'function') flushGbCartSave();
       globalIsSuperAdmin = false;
       globalIsAdmin = false;
       if (!currentGroupId) currentGroupId = testParams.get('gid') || currentUser.userId;
       await enterAppAfterIdentity(buyFromUrl);
-    } catch(e) {
+    } catch (e) {
       console.error('Fallback boot error:', e);
-      reportSystemLog('LIFF', '訪客模式啟動也失敗', { message: e && e.message ? e.message : String(e) });
+      reportSystemLog('LIFF', '後援啟動也失敗', { message: e && e.message ? e.message : String(e) });
     }
+  } catch (err) {
+    console.error('LIFF Init Error:', err);
+    reportSystemLog('LIFF', '啟動流程例外', { message: err && err.message ? err.message : String(err) });
   } finally {
     if (!liffRedirecting) revealApp();
   }
@@ -5698,7 +5786,7 @@ function applyGbBuyerProfile(serverProfile, myOrder) {
   const picked = pickNewerGbProfile(getLocalGbBuyerProfile(), serverProfile);
   const lineName = (typeof currentUser !== 'undefined' && currentUser && currentUser.displayName) ? currentUser.displayName : '';
   const tokenPhone = (typeof currentUser !== 'undefined' && currentUser) ? normalizeTwPhone(currentUser.phoneNumber) : '';
-  const userName = (picked && picked.userName) || (myOrder && myOrder.userName) || lineName;
+  const userName = (picked && picked.userName) || (myOrder && myOrder.userName) || (isPlaceholderDisplayName(lineName) ? '' : lineName);
   const userPhone = normalizeTwPhone((picked && picked.userPhone) || (myOrder && myOrder.userPhone) || tokenPhone || getDeviceSavedPhone());
   if (nameEl && userName && document.activeElement !== nameEl) nameEl.value = userName;
   if (phoneEl && userPhone) {
@@ -6158,6 +6246,7 @@ function updateCampaignSelectorDropdown(list) {
 
 function logGroupBuyVisit() {
   if (!currentUser || !currentUser.userId) return;
+  if (typeof isWeakVisitUid === 'function' && isWeakVisitUid(currentUser.userId)) return;
   fetch('/api/lobby_visit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-28
- * Version: 1.3.7
+ * Version: 1.3.8
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -366,6 +366,11 @@ const GROUPBUY_VISIT_GID = '__GROUPBUY__';
 
 function isGroupBuyVisitGid(gid) {
   return gid === GROUPBUY_VISIT_GID;
+}
+
+function isWeakVisitUserId(userId) {
+  if (!userId) return true;
+  return userId === 'U_LOCAL_TEST' || String(userId).startsWith('U_GUEST_') || String(userId).startsWith('U_LOCAL') || String(userId).startsWith('P_');
 }
 let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
 
@@ -2357,6 +2362,7 @@ app.post('/api/lobby_visit', express.json(), (req, res) => {
   // 擋掉空值，以及擋掉 U 開頭的個人對話框 (避免污染群組分析資料)
   if (!gid || !userId) return res.json({ success: false });
   if (gid.startsWith('U') && !isGroupBuyVisitGid(gid)) return res.json({ success: false });
+  if (isWeakVisitUserId(userId)) return res.json({ success: false });
 
   if (!lobbyVisits[gid]) {
     lobbyVisits[gid] = { viewCount: 0, uniqueViewers: {}, logs: [] };
@@ -2480,7 +2486,9 @@ app.get('/api/admin/all_stats', async (req, res) => {
     const gName = isGroupBuy ? '🛒 團購訪客' : (groupSettings[g]?.groupName || groupSettings[g]?.lobbyTitle || g);
     const stats = lobbyVisits[g] || { viewCount: 0, uniqueViewers: {}, logs: [] };
     
-    const uniqueViewers = stats.uniqueViewers || {};
+    const uniqueViewers = Object.fromEntries(
+      Object.entries(stats.uniqueViewers || {}).filter(([viewerUid]) => !isWeakVisitUserId(viewerUid))
+    );
     const uniqueCount = Object.keys(uniqueViewers).length;
     
     if (!isGroupBuy) {
@@ -2505,7 +2513,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
     }
     
     // Sort logs by time descending (newest first)
-    const logs = stats.logs || [];
+    const logs = (stats.logs || []).filter(log => !isWeakVisitUserId(log && log.userId));
     const sortedLogs = [...logs].sort((a, b) => b.time - a.time);
 
     // Compute Daily Stats (Last 7 days or so, based on logs)
