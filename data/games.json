@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788000250611,
+    "lastActiveTime": 1788000262745,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4819,7 +4819,8 @@
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "小黑": "U7c381eceb3dee900bbd30b986a0f8357",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "FB shawn1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB shawn1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB shawn2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4852,7 +4853,8 @@
           "Sean柏宏",
           "小黑",
           "陳呈",
-          "FB shawn1"
+          "FB shawn1",
+          "FB shawn2"
         ]
       },
       {
@@ -4876,6 +4878,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/29 18:44",
+        "name": "FB shawn2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "08/29 18:44",
         "name": "FB shawn1",
