@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788000262745,
+    "lastActiveTime": 1788001784304,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4820,7 +4820,8 @@
       "小黑": "U7c381eceb3dee900bbd30b986a0f8357",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "FB shawn1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "FB shawn2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB shawn2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4873,11 +4874,19 @@
           "Sammy Su",
           "小宇",
           "腳皮",
-          "宇軒"
+          "宇軒",
+          "黃政豪"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/29 19:09",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "08/29 18:44",
         "name": "FB shawn2",
