@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787991154862,
+    "lastActiveTime": 1787996082637,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4817,7 +4817,8 @@
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
-      "小黑": "U7c381eceb3dee900bbd30b986a0f8357"
+      "小黑": "U7c381eceb3dee900bbd30b986a0f8357",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4848,7 +4849,8 @@
           "King",
           "Alice",
           "Sean柏宏",
-          "小黑"
+          "小黑",
+          "陳呈"
         ]
       },
       {
@@ -4872,6 +4874,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/29 17:34",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "08/29 16:12",
         "name": "小黑",
