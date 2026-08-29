@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788047109904,
+    "lastActiveTime": 1788047291863,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4796,7 +4796,8 @@
     "paidMap": {
       "瑋": true,
       "謝東霖 Tony": true,
-      "Kay": true
+      "Kay": true,
+      "林煥杰": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
