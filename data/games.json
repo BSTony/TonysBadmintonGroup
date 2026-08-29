@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788014435352,
+    "lastActiveTime": 1788014454847,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4824,7 +4824,8 @@
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "FB 林以堯": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "羅小澤": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
-      "FB 家興1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB 家興1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB 家興2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4860,7 +4861,8 @@
           "FB shawn1",
           "FB shawn2",
           "羅小澤",
-          "FB 家興1"
+          "FB 家興1",
+          "FB 家興2"
         ]
       },
       {
@@ -4885,6 +4887,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/29 22:40",
+        "name": "FB 家興2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "08/29 22:40",
         "name": "FB 家興1",
