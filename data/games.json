@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787917836427,
+    "lastActiveTime": 1787991098222,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4815,7 +4815,8 @@
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
-      "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a"
+      "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4844,7 +4845,8 @@
         "list": [
           "Kevin",
           "King",
-          "Alice"
+          "Alice",
+          "Sean柏宏"
         ]
       },
       {
@@ -4868,6 +4870,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/29 16:11",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "08/28 19:50",
         "name": "Hsin",
