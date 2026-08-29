@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788002576481,
+    "lastActiveTime": 1788008545066,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4839,7 +4839,6 @@
           "ALAN LIU",
           "杜威霖 Andy",
           "JoeLin",
-          "小羅",
           "FB 林以堯"
         ]
       },
@@ -4882,6 +4881,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/29 21:02",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "08/29 19:22",
         "name": "FB 林以堯",
