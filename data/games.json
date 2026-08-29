@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788014454847,
+    "lastActiveTime": 1788045386605,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4825,7 +4825,8 @@
       "FB 林以堯": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "羅小澤": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "FB 家興1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "FB 家興2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB 家興2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "瑋": "U799d4a509b3c76b76c249151f5a3f690"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4842,7 +4843,8 @@
           "ALAN LIU",
           "杜威霖 Andy",
           "JoeLin",
-          "FB 林以堯"
+          "FB 林以堯",
+          "瑋"
         ]
       },
       {
@@ -4887,6 +4889,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/30 07:16",
+        "name": "瑋",
+        "operator": "瑋",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/29 22:40",
         "name": "FB 家興2",
