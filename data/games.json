@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787991098222,
+    "lastActiveTime": 1787991154862,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4816,7 +4816,8 @@
       "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a",
-      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
+      "小黑": "U7c381eceb3dee900bbd30b986a0f8357"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4846,7 +4847,8 @@
           "Kevin",
           "King",
           "Alice",
-          "Sean柏宏"
+          "Sean柏宏",
+          "小黑"
         ]
       },
       {
@@ -4870,6 +4872,13 @@
       }
     ],
     "history": [
+      {
+        "time": "08/29 16:12",
+        "name": "小黑",
+        "operator": "陳宜蓁",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "08/29 16:11",
         "name": "Sean柏宏",
