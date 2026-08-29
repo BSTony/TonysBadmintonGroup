@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3676,
+    "viewCount": 3678,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -351,8 +351,8 @@
       "U7691f78ef6e34371e591dc7b0c57ce9a": {
         "displayName": "林立峰",
         "firstVisit": 1783425021538,
-        "count": 23,
-        "lastVisit": 1787552824711,
+        "count": 24,
+        "lastVisit": 1788022151353,
         "pictureUrl": "https://profile.line-scdn.net/0hHv0xUDdSF1kdAQnFQL9pZ21RFDM-cE5LNGBfPH1THGB0ZFRcMTJfaysBTTpyNgVdYmcMbX8FQT0_UkxLUhBfd3FBAWAjWTNcbwkbdlIIOW9XSQZ9UBcjSltRISpGORFOXwc8aCp9OSAnNSxqbBE9RlVTPDMiNyt9UVZ7DxgzedpyA2AMMGdZOiAHQWyl"
       },
       "U8d28d03013fc8d69b56d79e9d0fcc33a": {
@@ -477,8 +477,8 @@
       "Ua803eeb7a6e406e3fab93ee1e322a7c6": {
         "displayName": "Wang",
         "firstVisit": 1783566997371,
-        "count": 17,
-        "lastVisit": 1788002569716,
+        "count": 18,
+        "lastVisit": 1788019336823,
         "pictureUrl": "https://profile.line-scdn.net/0hNECa5TMdEWpuGAcCpKBvFR5IEgBNaUh4SnxfDl0RT1MHKFVsRSleCgkZHQpaelc9RX4JClwdS1piC2YMcE7tXmkoTFtTKVM0RHZbiQ"
       },
       "Ufa8dba5febf9f719da07f7e507391a21": {
@@ -1167,6 +1167,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1788022151353,
+        "userId": "U7691f78ef6e34371e591dc7b0c57ce9a",
+        "displayName": "林立峰",
+        "pictureUrl": "https://profile.line-scdn.net/0hHv0xUDdSF1kdAQnFQL9pZ21RFDM-cE5LNGBfPH1THGB0ZFRcMTJfaysBTTpyNgVdYmcMbX8FQT0_UkxLUhBfd3FBAWAjWTNcbwkbdlIIOW9XSQZ9UBcjSltRISpGORFOXwc8aCp9OSAnNSxqbBE9RlVTPDMiNyt9UVZ7DxgzedpyA2AMMGdZOiAHQWyl"
+      },
+      {
+        "time": 1788019336823,
+        "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
+        "displayName": "Wang",
+        "pictureUrl": "https://profile.line-scdn.net/0hNECa5TMdEWpuGAcCpKBvFR5IEgBNaUh4SnxfDl0RT1MHKFVsRSleCgkZHQpaelc9RX4JClwdS1piC2YMcE7tXmkoTFtTKVM0RHZbiQ"
+      },
       {
         "time": 1788015035524,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
