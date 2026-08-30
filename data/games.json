@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788062053536,
+    "lastActiveTime": 1788062647260,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4815,7 +4815,8 @@
       "小黑": true,
       "Gary": true,
       "King": true,
-      "Alice": true
+      "Alice": true,
+      "黃政豪": false
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
