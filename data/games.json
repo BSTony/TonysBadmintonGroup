@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788055632737,
+    "lastActiveTime": 1788056320505,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4806,7 +4806,8 @@
       "杜威霖 Andy": true,
       "FB 林以堯": true,
       "FB 家興1": true,
-      "FB 家興2": true
+      "FB 家興2": true,
+      "腳皮": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
