@@ -4786,7 +4786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1788056506916,
+    "lastActiveTime": 1788056509166,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4809,7 +4809,8 @@
       "FB 家興2": true,
       "腳皮": true,
       "宇軒": true,
-      "FB shawn1": true
+      "FB shawn1": true,
+      "FB shawn2": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
