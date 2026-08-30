@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3730,
+    "viewCount": 3731,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -616,8 +616,8 @@
       "U3d8fd8b2d2271e0f6f2f4f50e1475c12": {
         "displayName": "Sean柏宏",
         "firstVisit": 1783822853623,
-        "count": 24,
-        "lastVisit": 1788010765521,
+        "count": 25,
+        "lastVisit": 1788081439837,
         "pictureUrl": "https://profile.line-scdn.net/0hd72UYDUgOxgfLC839a5FZ298OHI8XWIKYR8nei98Y393FHhMN04gfn0oYnohGH1JZEJxfHovYHgTP0x-AXrHLBgcZikiHXlGNUJx-w"
       },
       "U88ae9c79ca7f2ef9d91e7678fecf4416": {
@@ -1175,6 +1175,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1788081439837,
+        "userId": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
+        "displayName": "Sean柏宏",
+        "pictureUrl": "https://profile.line-scdn.net/0hd72UYDUgOxgfLC839a5FZ298OHI8XWIKYR8nei98Y393FHhMN04gfn0oYnohGH1JZEJxfHovYHgTP0x-AXrHLBgcZikiHXlGNUJx-w"
+      },
       {
         "time": 1788077950441,
         "userId": "U4cbba92203148484d06d213547203e35",
