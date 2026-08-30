@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3733,
+    "viewCount": 3734,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -978,8 +978,8 @@
       "U33ec3d57827236fa5ed0f2da4c6e8205": {
         "displayName": "Matt孟錡",
         "firstVisit": 1785648408782,
-        "count": 7,
-        "lastVisit": 1787486019627,
+        "count": 8,
+        "lastVisit": 1788092056183,
         "pictureUrl": "https://profile.line-scdn.net/0hnhuiWYH1MUdYECFqNUpPOChAMi17YWhVJ3V2dD9EPyQwcHdGcnErcj4XZ35jInQQciV9dT0Yb3RUA0YhRkbNc18gbHZlIXMZcn57pA"
       },
       "Uf938f0344bbfe654e01bc1d893340ef8": {
@@ -1176,6 +1176,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1788092056183,
+        "userId": "U33ec3d57827236fa5ed0f2da4c6e8205",
+        "displayName": "Matt孟錡",
+        "pictureUrl": "https://profile.line-scdn.net/0hnhuiWYH1MUdYECFqNUpPOChAMi17YWhVJ3V2dD9EPyQwcHdGcnErcj4XZ35jInQQciV9dT0Yb3RUA0YhRkbNc18gbHZlIXMZcn57pA"
+      },
       {
         "time": 1788089704127,
         "userId": "Ue57d1fac54652a450bff80297813c93a",
