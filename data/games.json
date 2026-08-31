@@ -5325,7 +5325,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788092068695,
+    "lastActiveTime": 1788187524592,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5358,7 +5358,8 @@
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205"
+      "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205",
+      "阿豪": "U1a05e97623cee1f79b0876626e88f0ab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5381,12 +5382,20 @@
           "郭岳翰John",
           "©️張CC～©️",
           "陳呈",
-          "Matt孟錡"
+          "Matt孟錡",
+          "阿豪"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "08/31 22:45",
+        "name": "阿豪",
+        "operator": "Wayne",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/30 20:14",
         "name": "Matt孟錡",
