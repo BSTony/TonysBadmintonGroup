@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-08-28
- * Version: 1.3.9
+ * Date: 2026-08-31
+ * Version: 1.3.10
  */
 const express = require('express');
 const pinballPhysics = require('./pinballPhysics');
@@ -291,28 +291,84 @@ function mergeIncomingOrderItems(existingItems, incomingItems, replace) {
   return out;
 }
 
-function findGroupBuyOrderKey(orders, uid, userName, userPhone) {
-  if (!orders || typeof orders !== 'object') return null;
-  if (uid && orders[uid]) return uid;
+function isWeakOrderUid(uid) {
+  if (!uid) return true;
+  return uid === 'U_LOCAL_TEST' || String(uid).startsWith('U_GUEST_') || String(uid).startsWith('U_LOCAL') || String(uid).startsWith('P_');
+}
+
+function findAllGroupBuyOrderKeys(orders, uid, userName, userPhone) {
+  if (!orders || typeof orders !== 'object') return [];
+  const keys = new Set();
   const name = (userName || '').trim().toLowerCase();
   const phone = normalizeTwPhone(userPhone) || String(userPhone || '').trim();
-  const phoneKey = (name && phone) ? `${name}_${phone}` : null;
-  if (phoneKey && orders[phoneKey]) return phoneKey;
+  if (uid && orders[uid]) keys.add(uid);
   if (uid) {
     for (const [key, order] of Object.entries(orders)) {
-      if (order && order.userId === uid) return key;
+      if (order && order.userId === uid) keys.add(key);
     }
   }
+  const phoneKey = (name && phone) ? `${name}_${phone}` : null;
+  if (phoneKey && orders[phoneKey]) keys.add(phoneKey);
   if (phone) {
     for (const [key, order] of Object.entries(orders)) {
-      if (order && (normalizeTwPhone(order.userPhone) || String(order.userPhone || '').trim()) === phone) return key;
+      if (order && (normalizeTwPhone(order.userPhone) || String(order.userPhone || '').trim()) === phone) keys.add(key);
     }
   }
+  return [...keys];
+}
+
+function findGroupBuyOrderKey(orders, uid, userName, userPhone) {
+  const keys = findAllGroupBuyOrderKeys(orders, uid, userName, userPhone);
+  if (keys.length) {
+    const strong = keys.filter(k => !isWeakOrderUid((orders[k] && orders[k].userId) || k));
+    return strong[0] || keys[0];
+  }
+  const name = (userName || '').trim().toLowerCase();
   if (name) {
     const matches = Object.entries(orders).filter(([, order]) => order && String(order.userName || '').trim().toLowerCase() === name);
     if (matches.length === 1) return matches[0][0];
   }
   return null;
+}
+
+function collapseDuplicateGroupBuyOrders(orders) {
+  if (!orders || typeof orders !== 'object') return false;
+  let changed = false;
+  const byPhone = new Map();
+  for (const [key, order] of Object.entries(orders)) {
+    if (!order) continue;
+    const phone = normalizeTwPhone(order.userPhone);
+    if (!phone) continue;
+    if (!byPhone.has(phone)) byPhone.set(phone, []);
+    byPhone.get(phone).push(key);
+  }
+  for (const keys of byPhone.values()) {
+    if (keys.length < 2) continue;
+    const strong = keys.filter(k => !isWeakOrderUid((orders[k] && orders[k].userId) || k));
+    const keep = strong[0] || keys[0];
+    const mergedItems = {};
+    let latest = orders[keep] || {};
+    for (const key of keys) {
+      const o = orders[key];
+      if (!o) continue;
+      if ((o.updatedAt || 0) >= (latest.updatedAt || 0)) latest = o;
+      for (const [id, qty] of Object.entries(o.items || {})) {
+        mergedItems[id] = Math.max(mergedItems[id] || 0, Number(qty) || 0);
+      }
+    }
+    orders[keep] = {
+      ...latest,
+      userId: (orders[keep] && orders[keep].userId) || latest.userId,
+      items: mergedItems
+    };
+    for (const key of keys) {
+      if (key !== keep) {
+        delete orders[key];
+        changed = true;
+      }
+    }
+  }
+  return changed;
 }
 
 function overlayItemContentsFromCatalog(items) {
@@ -381,6 +437,9 @@ function getGroupBuyInfo(gid) {
     if (overlayItemContentsFromCatalog(groupBuyData[gid].items)) {
       saveGroupBuyStorage();
     }
+  }
+  if (groupBuyData[gid].orders && collapseDuplicateGroupBuyOrders(groupBuyData[gid].orders)) {
+    saveGroupBuyStorage();
   }
   return groupBuyData[gid];
 }
@@ -2207,9 +2266,19 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
       recordSystemLog('團購下單', userName, `購物車品項不在目錄 gid=${gid} ids=${unknownIds.join(',')}`);
     }
     const orderKey = uid;
-    const oldKey = findGroupBuyOrderKey(info.orders, uid, userName, userPhone);
-    const existingOrder = (oldKey && info.orders[oldKey]) || {};
-    const mergedItems = mergeIncomingOrderItems(existingOrder.items, items, !!replace);
+    const dupKeys = findAllGroupBuyOrderKeys(info.orders, uid, userName, userPhone);
+    const oldKey = dupKeys[0] || findGroupBuyOrderKey(info.orders, uid, userName, userPhone);
+    let existingOrder = {};
+    let existingItems = {};
+    for (const key of dupKeys) {
+      const o = info.orders[key];
+      if (!o) continue;
+      if ((o.updatedAt || 0) >= (existingOrder.updatedAt || 0)) existingOrder = o;
+      for (const [id, qty] of Object.entries(o.items || {})) {
+        existingItems[id] = Math.max(existingItems[id] || 0, Number(qty) || 0);
+      }
+    }
+    const mergedItems = mergeIncomingOrderItems(existingItems, items, !!replace);
     let mergedAmount = 0;
     for (const [itemId, qty] of Object.entries(mergedItems)) {
       const p = Array.isArray(info.items) ? info.items.find(i => i.id === itemId) : null;
@@ -2232,8 +2301,8 @@ app.post('/api/groupbuy/:gid/order', async (req, res) => {
       updatedAt: Date.now(),
       lastConfirmedItems: existingOrder.lastConfirmedItems
     };
-    if (oldKey && oldKey !== orderKey) {
-      delete info.orders[oldKey];
+    for (const key of dupKeys) {
+      if (key !== orderKey) delete info.orders[key];
     }
     upsertGroupBuyBuyerProfile(uid, userName, userPhone);
     await saveGroupBuyStorage();

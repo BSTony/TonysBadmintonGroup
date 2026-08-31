@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-08-28
- * Version: 1.2.20
+ * Date: 2026-08-31
+ * Version: 1.2.21
  */
 let globalLobbyUsers = [];
 
@@ -6808,6 +6808,7 @@ function renderItemsGrid() {
         renderItemsGrid();
         return;
       }
+      if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
       const alreadyQty = currentCart[item.id] || 0;
       window.activeExpandedItemId = item.id;
       renderItemsGrid();
