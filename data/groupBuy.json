@@ -1788,6 +1788,23 @@
           "zr_0009": 1,
           "zr_0144": 1
         }
+      },
+      "P_0955560624": {
+        "userId": "P_0955560624",
+        "userName": "jo-ling",
+        "userPhone": "0955560624",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0052": 1
+        },
+        "totalAmount": 155,
+        "paymentMethod": "none",
+        "paymentStatus": "unverified",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1788166342989
       }
     },
     "hiddenFromLobby": true
@@ -1856,7 +1873,7 @@
     "P_0955560624": {
       "userName": "jo-ling",
       "userPhone": "0955560624",
-      "updatedAt": 1788166342477
+      "updatedAt": 1788166342989
     }
   }
 }
