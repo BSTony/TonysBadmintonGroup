@@ -1773,12 +1773,15 @@
         },
         "totalAmount": 155,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1788166351659
+        "updatedAt": 1788166351659,
+        "lastConfirmedItems": {
+          "zr_0052": 1
+        }
       }
     },
     "hiddenFromLobby": true
