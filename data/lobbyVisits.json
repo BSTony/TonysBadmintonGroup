@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3743,
+    "viewCount": 3744,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1170,12 +1170,18 @@
       "U6372f83bb2d5405d07e25ef2aa038abc": {
         "displayName": "林淑惠Sophia",
         "firstVisit": 1788063257046,
-        "count": 4,
-        "lastVisit": 1788152113688,
+        "count": 5,
+        "lastVisit": 1788216923786,
         "pictureUrl": "https://profile.line-scdn.net/0hnA531hphMW4YSiDDyPxPEWgaMgQ7O2h8YC93C31DaVcmeHQ9Y3t5XX9IOlt2eyI9ZHx9X31POA4UWUYIBhzNWh96bF8le3MwMiR7jQ"
       }
     },
     "logs": [
+      {
+        "time": 1788216923786,
+        "userId": "U6372f83bb2d5405d07e25ef2aa038abc",
+        "displayName": "林淑惠Sophia",
+        "pictureUrl": "https://profile.line-scdn.net/0hnA531hphMW4YSiDDyPxPEWgaMgQ7O2h8YC93C31DaVcmeHQ9Y3t5XX9IOlt2eyI9ZHx9X31POA4UWUYIBhzNWh96bF8le3MwMiR7jQ"
+      },
       {
         "time": 1788187744181,
         "userId": "Ufa8dba5febf9f719da07f7e507391a21",
