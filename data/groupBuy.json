@@ -1651,12 +1651,17 @@
         },
         "totalAmount": 710,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787877444474
+        "updatedAt": 1787877444474,
+        "lastConfirmedItems": {
+          "zr_0005": 1,
+          "zr_0002": 1,
+          "zr_0001": 1
+        }
       },
       "Uf4b9b20df1812ff907d72d503ea507e1": {
         "userId": "Uf4b9b20df1812ff907d72d503ea507e1",
