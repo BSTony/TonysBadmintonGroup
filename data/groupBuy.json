@@ -1726,12 +1726,21 @@
         },
         "totalAmount": 2489,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1788166203314
+        "updatedAt": 1788166203314,
+        "lastConfirmedItems": {
+          "zr_0014": 1,
+          "zr_0062": 1,
+          "zr_0052": 2,
+          "zr_0011": 1,
+          "zr_0083": 5,
+          "zr_0033": 1,
+          "zr_0037": 1
+        }
       }
     },
     "hiddenFromLobby": true
