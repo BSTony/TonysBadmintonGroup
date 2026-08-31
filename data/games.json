@@ -4491,7 +4491,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787376761752,
-    "lastActiveTime": 1787897048267,
+    "lastActiveTime": 1787978288360,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -4504,7 +4504,26 @@
       "謝東霖 Tony": true,
       "Kay": true,
       "陳呈": true,
-      "Jet": true
+      "Jet": true,
+      "弘彬/Jason": true,
+      "JOJO": true,
+      "JOJO👆✌️🖖🤘👐💪": true,
+      "FB 俊樹": true,
+      "登": true,
+      "FB 吳郭魚": true,
+      "康": true,
+      "Andrew": true,
+      "FB 思翰": true,
+      "FB 辛言": true,
+      "奶瓶": true,
+      "FB 傑諾": true,
+      "FB 吳倬昀": true,
+      "小高": true,
+      "小羅": true,
+      "AddieWang": true,
+      "Kevin": true,
+      "豪": true,
+      "©️張CC～©️": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -4526,7 +4545,13 @@
       "FB 思翰": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "小高": "U4cbba92203148484d06d213547203e35",
       "康": "U4cbba92203148484d06d213547203e35",
-      "登": "U203b76fe44ff1d74c53c21e5547aea27"
+      "登": "U203b76fe44ff1d74c53c21e5547aea27",
+      "小羅": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "FB 傑諾": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "FB 吳郭魚": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB 辛言": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4549,19 +4574,85 @@
           "豪",
           "奶瓶",
           "Andrew",
-          "徐偉強",
           "FB 吳倬昀",
-          "佘俊頡",
           "FB 俊樹",
           "FB 思翰",
           "小高",
           "康",
-          "登"
+          "登",
+          "小羅",
+          "FB 傑諾",
+          "FB 吳郭魚",
+          "FB 辛言",
+          "©️張CC～©️"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "08/29 01:03",
+        "name": "徐偉強",
+        "operator": "徐偉強",
+        "action": "-1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/28 23:35",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/28 20:28",
+        "name": "佘俊頡",
+        "operator": "佘俊頡",
+        "action": "-1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/28 20:25",
+        "name": "FB 辛言",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/28 18:31",
+        "name": "FB 吳郭魚",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/28 17:56",
+        "name": "宇軒",
+        "operator": "腳皮",
+        "action": "-1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/28 17:55",
+        "name": "宇軒",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/28 17:41",
+        "name": "FB 傑諾",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "08/28 15:18",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/28 14:04",
         "name": "登",
@@ -4674,7 +4765,8 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": true
   },
   "1787377137303928": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
@@ -4694,14 +4786,43 @@
     "tag": "",
     "active": true,
     "startTime": 1787377137303,
-    "lastActiveTime": 1787835457096,
+    "lastActiveTime": 1788065496134,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {},
-    "paidMap": {},
+    "paidMap": {
+      "瑋": true,
+      "謝東霖 Tony": true,
+      "Kay": true,
+      "林煥杰": true,
+      "JoeLin": true,
+      "云": true,
+      "Chen H.R.": true,
+      "小宇": true,
+      "Sammy Su": true,
+      "杜威霖 Andy": true,
+      "FB 林以堯": true,
+      "FB 家興1": true,
+      "FB 家興2": true,
+      "腳皮": true,
+      "宇軒": true,
+      "FB shawn1": true,
+      "FB shawn2": true,
+      "ALAN LIU": true,
+      "小黑": true,
+      "Gary": true,
+      "King": true,
+      "Alice": true,
+      "黃政豪": true,
+      "Kevin": true,
+      "羅小澤": true,
+      "小可愛": true,
+      "林立峰": true,
+      "陳呈": true
+    },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
@@ -4717,7 +4838,24 @@
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
-      "小宇": "U09e4f0126678f203e0b139a474c17637"
+      "小宇": "U09e4f0126678f203e0b139a474c17637",
+      "小羅": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
+      "小黑": "U7c381eceb3dee900bbd30b986a0f8357",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "FB shawn1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB shawn2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
+      "FB 林以堯": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "羅小澤": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
+      "FB 家興1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB 家興2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "瑋": "U799d4a509b3c76b76c249151f5a3f690"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -4733,20 +4871,34 @@
           "云",
           "ALAN LIU",
           "杜威霖 Andy",
-          "JoeLin"
+          "JoeLin",
+          "FB 林以堯",
+          "瑋"
         ]
       },
       {
         "title": "10-12",
-        "limit": 10,
+        "limit": 11,
         "backupLimit": 5,
         "fee": "210",
         "label": "",
-        "list": []
+        "list": [
+          "Kevin",
+          "King",
+          "Alice",
+          "Sean柏宏",
+          "小黑",
+          "陳呈",
+          "FB shawn1",
+          "FB shawn2",
+          "羅小澤",
+          "FB 家興1",
+          "FB 家興2"
+        ]
       },
       {
         "title": "8-12",
-        "limit": 12,
+        "limit": 11,
         "backupLimit": 5,
         "fee": "320",
         "label": "",
@@ -4757,13 +4909,162 @@
           "小可愛",
           "林立峰",
           "Chen H.R.",
-          "Hsin",
           "Sammy Su",
-          "小宇"
+          "小宇",
+          "腳皮",
+          "宇軒",
+          "黃政豪"
         ]
       }
     ],
     "history": [
+      {
+        "time": "08/30 07:16",
+        "name": "瑋",
+        "operator": "瑋",
+        "action": "+1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/29 22:40",
+        "name": "FB 家興2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/29 22:40",
+        "name": "FB 家興1",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/29 21:40",
+        "name": "羅小澤",
+        "operator": "Sean柏宏",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/29 21:02",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "-1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/29 19:22",
+        "name": "FB 林以堯",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/29 19:09",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1",
+        "section": "8-12"
+      },
+      {
+        "time": "08/29 18:44",
+        "name": "FB shawn2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/29 18:44",
+        "name": "FB shawn1",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/29 17:34",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/29 16:12",
+        "name": "小黑",
+        "operator": "陳宜蓁",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/29 16:11",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/28 19:50",
+        "name": "Hsin",
+        "operator": "Hsin",
+        "action": "-1",
+        "section": "8-12"
+      },
+      {
+        "time": "08/28 18:22",
+        "name": "Alice",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/28 18:22",
+        "name": "King",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/28 17:57",
+        "name": "宇軒",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
+      {
+        "time": "08/28 17:57",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
+      {
+        "time": "08/28 17:56",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "-1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/28 17:55",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/28 17:51",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "10-12"
+      },
+      {
+        "time": "08/28 15:18",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "08/27 20:57",
         "name": "小宇",
@@ -4891,7 +5192,7 @@
         "section": "8-12"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": true
   },
   "1787661738786702": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
@@ -5024,7 +5325,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1787840081732,
+    "lastActiveTime": 1788092068695,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5056,7 +5357,8 @@
       "Ong": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5078,9 +5380,171 @@
           "Ong",
           "郭岳翰John",
           "©️張CC～©️",
-          "陳呈"
+          "陳呈",
+          "Matt孟錡"
         ],
         "fee": "230"
+      }
+    ],
+    "history": [
+      {
+        "time": "08/30 20:14",
+        "name": "Matt孟錡",
+        "operator": "Matt孟錡",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
+  },
+  "1787983024729557": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1787983024729557",
+    "title": "週六 港中 打3小",
+    "date": "9/5 (六)",
+    "time": "09:00~12:00",
+    "location": "南港高中",
+    "fee": "250",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1787983024731,
+    "lastActiveTime": 1787983024731,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "謝東霖 Tony": true,
+      "Kay": true,
+      "陳呈": true,
+      "Jet": true
+    },
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 23,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay",
+          "陳呈",
+          "Jet"
+        ],
+        "fee": "250"
+      }
+    ]
+  },
+  "1788066323878590": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1788066323878590",
+    "title": "週日 港中 早上",
+    "date": "9/6 (日)",
+    "time": "08:00~12:00",
+    "location": "南港高中",
+    "fee": "",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1788066323878,
+    "lastActiveTime": 1788068025998,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "8-10",
+        "limit": 19,
+        "backupLimit": 5,
+        "fee": "150",
+        "label": "",
+        "list": [
+          "ALAN LIU",
+          "林煥杰"
+        ]
+      },
+      {
+        "title": "10-12",
+        "limit": 12,
+        "backupLimit": 5,
+        "fee": "210",
+        "label": "",
+        "list": []
+      },
+      {
+        "title": "8-12",
+        "limit": 10,
+        "backupLimit": 5,
+        "fee": "320",
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "time": "08/30 13:33",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/30 13:31",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1",
+        "section": "8-10"
+      },
+      {
+        "time": "08/30 13:07",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
+      {
+        "time": "08/30 13:07",
+        "name": "謝東霖 Tony",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
       }
     ]
   }
