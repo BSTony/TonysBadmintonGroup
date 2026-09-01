@@ -5423,7 +5423,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788221944049,
+    "lastActiveTime": 1788222629788,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5441,7 +5441,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "Irene 葉": "U6a528d20c5cb50c8bd6efcca4c3ae6bf"
+      "Irene 葉": "U6a528d20c5cb50c8bd6efcca4c3ae6bf",
+      "小高": "U4cbba92203148484d06d213547203e35"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5456,12 +5457,20 @@
           "Kay",
           "陳呈",
           "Jet",
-          "Irene 葉"
+          "Irene 葉",
+          "小高"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/01 08:30",
+        "name": "小高",
+        "operator": "小高",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/01 08:19",
         "name": "Irene 葉",
