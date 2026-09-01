@@ -5637,7 +5637,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788270468474,
-    "lastActiveTime": 1788270683294,
+    "lastActiveTime": 1788275041088,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5666,7 +5666,8 @@
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
       "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
-      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
+      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5686,12 +5687,20 @@
           "周則鼎",
           "偉舫",
           "Sean",
-          "afrahuang"
+          "afrahuang",
+          "Jet"
         ],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "09/01 23:04",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/01 21:51",
         "name": "afrahuang",
