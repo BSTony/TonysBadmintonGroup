@@ -5423,7 +5423,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788227034805,
+    "lastActiveTime": 1788227104163,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5433,7 +5433,6 @@
     "paidMap": {
       "謝東霖 Tony": true,
       "Kay": true,
-      "陳呈": true,
       "Jet": true
     },
     "uidMap": {
@@ -5456,7 +5455,6 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "陳呈",
           "Jet",
           "Irene 葉",
           "小高",
@@ -5466,6 +5464,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/01 09:45",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/01 09:43",
         "name": "AddieWang",
