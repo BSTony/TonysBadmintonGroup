@@ -5325,7 +5325,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788187524592,
+    "lastActiveTime": 1788228709372,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5359,7 +5359,8 @@
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205",
-      "阿豪": "U1a05e97623cee1f79b0876626e88f0ab"
+      "阿豪": "U1a05e97623cee1f79b0876626e88f0ab",
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5383,12 +5384,20 @@
           "©️張CC～©️",
           "陳呈",
           "Matt孟錡",
-          "阿豪"
+          "阿豪",
+          "江こう 洋々"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/01 10:11",
+        "name": "江こう 洋々",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "08/31 22:45",
         "name": "阿豪",
