@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3813,
+    "viewCount": 3816,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -93,8 +93,8 @@
       "Ua5ba1a0ad7f4687b4075563e722331c5": {
         "displayName": "©️張CC～©️",
         "firstVisit": 1783217875055,
-        "count": 20,
-        "lastVisit": 1788173337882,
+        "count": 21,
+        "lastVisit": 1788336153387,
         "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
       },
       "U47573cf563cc67d5fc00dbb48a51092a": {
@@ -908,8 +908,8 @@
       "Uc92b4c526f0fbbbd95ccd456657f4956": {
         "displayName": "Irene",
         "firstVisit": 1785302488456,
-        "count": 8,
-        "lastVisit": 1788229373236,
+        "count": 9,
+        "lastVisit": 1788336426021,
         "pictureUrl": "https://profile.line-scdn.net/0haJ0E7tZZPmUdPCKI5mxAW21sPQ8-TWd3NQ0jC3poM1EjBXs0ZQ13AXxuZgcmCnEwMw8kAyg8aVI_bX9Pel4qAip5O0khbi5ARi0iWH9LPzQmTBxYMFo5fWNOCAJVDjlOdxMkU2hBfBNaDDJlVzhwend-FhB8Vw10cmtSMxgOUOZyPkkwMFpwBiA6aFCl"
       },
       "Uecad2c254373e2084049fc84fd7ff0a5": {
@@ -1177,8 +1177,8 @@
       "U6a528d20c5cb50c8bd6efcca4c3ae6bf": {
         "displayName": "Irene Yeh",
         "firstVisit": 1788218182173,
-        "count": 3,
-        "lastVisit": 1788237524007,
+        "count": 4,
+        "lastVisit": 1788338342014,
         "pictureUrl": "https://profile.line-scdn.net/0hx4ZQsfPIJxt3KDnHzoFZZAd4JHFUWX4JUkdqKhB6KSMfGjBODk9odUsufC0ZEWlEXkxpeEZ_eyp7O1B9aX7bL3AYeipKGWVFXUZt-A"
       },
       "Ub21af3f9c143b2c5f4a513f7d9f54de1": {
@@ -1197,6 +1197,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1788338342014,
+        "userId": "U6a528d20c5cb50c8bd6efcca4c3ae6bf",
+        "displayName": "Irene Yeh",
+        "pictureUrl": "https://profile.line-scdn.net/0hx4ZQsfPIJxt3KDnHzoFZZAd4JHFUWX4JUkdqKhB6KSMfGjBODk9odUsufC0ZEWlEXkxpeEZ_eyp7O1B9aX7bL3AYeipKGWVFXUZt-A"
+      },
+      {
+        "time": 1788336426021,
+        "userId": "Uc92b4c526f0fbbbd95ccd456657f4956",
+        "displayName": "Irene",
+        "pictureUrl": "https://profile.line-scdn.net/0haJ0E7tZZPmUdPCKI5mxAW21sPQ8-TWd3NQ0jC3poM1EjBXs0ZQ13AXxuZgcmCnEwMw8kAyg8aVI_bX9Pel4qAip5O0khbi5ARi0iWH9LPzQmTBxYMFo5fWNOCAJVDjlOdxMkU2hBfBNaDDJlVzhwend-FhB8Vw10cmtSMxgOUOZyPkkwMFpwBiA6aFCl"
+      },
+      {
+        "time": 1788336153387,
+        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
+        "displayName": "©️張CC～©️",
+        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
+      },
       {
         "time": 1788331587667,
         "userId": "Uff71e272688126b31f5f3d35b77fb07a",
