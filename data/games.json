@@ -5326,7 +5326,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788313781435,
+    "lastActiveTime": 1788314172622,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5367,7 +5367,8 @@
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
       "Winnie": "U33c39e68987a32660ebf39db4534c567",
       "Emily": "U33c39e68987a32660ebf39db4534c567",
-      "Chi chi": "U33c39e68987a32660ebf39db4534c567"
+      "Chi chi": "U33c39e68987a32660ebf39db4534c567",
+      "古書羽": "U515f3eafb608f3aada94b73067dcc156"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5398,12 +5399,20 @@
           "Win Shu",
           "Winnie",
           "Emily",
-          "Chi chi"
+          "Chi chi",
+          "古書羽"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/02 09:56",
+        "name": "古書羽",
+        "operator": "古書羽",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 09:49",
         "name": "Chi chi",
