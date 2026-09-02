@@ -5326,7 +5326,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788313774324,
+    "lastActiveTime": 1788313781435,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5366,7 +5366,8 @@
       "FB andy2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
       "Winnie": "U33c39e68987a32660ebf39db4534c567",
-      "Emily": "U33c39e68987a32660ebf39db4534c567"
+      "Emily": "U33c39e68987a32660ebf39db4534c567",
+      "Chi chi": "U33c39e68987a32660ebf39db4534c567"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5396,12 +5397,20 @@
           "FB andy2",
           "Win Shu",
           "Winnie",
-          "Emily"
+          "Emily",
+          "Chi chi"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/02 09:49",
+        "name": "Chi chi",
+        "operator": "Winnie",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 09:49",
         "name": "Emily",
