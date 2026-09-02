@@ -5326,7 +5326,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788313082656,
+    "lastActiveTime": 1788313091967,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5362,7 +5362,8 @@
       "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205",
       "阿豪": "U1a05e97623cee1f79b0876626e88f0ab",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
-      "FB andy1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB andy1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB andy2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5388,12 +5389,20 @@
           "Matt孟錡",
           "阿豪",
           "江こう 洋々",
-          "FB andy1"
+          "FB andy1",
+          "FB andy2"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/02 09:38",
+        "name": "FB andy2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 09:38",
         "name": "FB andy1",
