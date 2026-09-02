@@ -5603,7 +5603,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788315747032,
+    "lastActiveTime": 1788320294117,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5618,7 +5618,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "小高": "U4cbba92203148484d06d213547203e35",
       "Andy": "U8b4e160fd2505afd265b09e8f651ebab",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5642,7 +5643,8 @@
         "fee": "210",
         "label": "",
         "list": [
-          "楊程鈞"
+          "楊程鈞",
+          "周哲儁"
         ]
       },
       {
@@ -5659,6 +5661,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/02 11:38",
+        "name": "周哲儁",
+        "operator": "周哲儁",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/02 10:22",
         "name": "楊程鈞",
