@@ -5326,7 +5326,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788318214312,
+    "lastActiveTime": 1788326230966,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5398,7 +5398,6 @@
           "FB andy1",
           "FB andy2",
           "Win Shu",
-          "Winnie",
           "Emily",
           "Chi chi",
           "古書羽",
@@ -5408,6 +5407,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/02 13:17",
+        "name": "Winnie",
+        "operator": "Winnie",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 11:03",
         "name": "小周",
