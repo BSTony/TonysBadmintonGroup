@@ -5326,7 +5326,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788328298096,
+    "lastActiveTime": 1788361810932,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5370,7 +5370,8 @@
       "Chi chi": "U33c39e68987a32660ebf39db4534c567",
       "古書羽": "U515f3eafb608f3aada94b73067dcc156",
       "小周": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c"
+      "紀凡": "U487e8a8976a1c65af4311f4b3f842a9c",
+      "FB rick": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5403,12 +5404,20 @@
           "Chi chi",
           "古書羽",
           "小周",
-          "紀凡"
+          "紀凡",
+          "FB rick"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/02 23:10",
+        "name": "FB rick",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 13:51",
         "name": "紀凡",
