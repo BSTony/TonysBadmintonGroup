@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-08-31
- * Version: 1.2.21
+ * Date: 2026-09-02
+ * Version: 1.2.22
  */
 let globalLobbyUsers = [];
 
@@ -7704,38 +7704,57 @@ function initGroupBuyEvents() {
     };
   }
 
-  // 一鍵複製統計文字
+  // 一鍵複製統計表（商品品項 / 價格 / 數量 / 總計，可貼到 Excel）
   if (btnGbCopySummary) {
     btnGbCopySummary.onclick = () => {
       if (!currentGroupBuyData) return;
       const orders = currentGroupBuyData.orders || {};
       const itemsMap = {};
-      (currentGroupBuyData.items || []).forEach(i => { itemsMap[i.id] = { name: i.name, price: i.price, qty: 0 }; });
+      (currentGroupBuyData.items || []).forEach(i => { itemsMap[i.id] = { name: i.name, price: Number(i.price) || 0, qty: 0 }; });
 
-      let totalRevenue = 0;
       Object.values(orders).forEach(ord => {
         if (ord.items) {
           for (const [id, qty] of Object.entries(ord.items)) {
-            if (itemsMap[id] && qty > 0) {
-              itemsMap[id].qty += qty;
-              totalRevenue += itemsMap[id].price * qty;
-            }
+            if (itemsMap[id] && qty > 0) itemsMap[id].qty += qty;
           }
         }
       });
 
-      let summaryText = `🛒 【${currentGroupBuyData.title || '羽球社團購'}】統計總計：\n`;
-      summaryText += `----------------------------------------\n`;
-      Object.values(itemsMap).filter(x => x.qty > 0).forEach(x => {
-        summaryText += `- ${x.name} x ${x.qty} ($${x.price * x.qty})\n`;
+      const rows = (currentGroupBuyData.items || [])
+        .map(i => itemsMap[i.id])
+        .filter(x => x && x.qty > 0);
+      const esc = (s) => String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const tsvLines = ['商品品項\t價格\t數量\t總計'];
+      const htmlRows = [];
+      rows.forEach(x => {
+        const total = x.price * x.qty;
+        tsvLines.push([x.name, x.price, x.qty, total].join('\t'));
+        htmlRows.push(`<tr><td style="border:1px solid #d1d5db;padding:4px 8px;font-weight:bold;">${esc(x.name)}</td><td style="border:1px solid #d1d5db;padding:4px 8px;text-align:right;">${x.price}</td><td style="border:1px solid #d1d5db;padding:4px 8px;text-align:right;">${x.qty}</td><td style="border:1px solid #d1d5db;padding:4px 8px;text-align:right;">${total}</td></tr>`);
       });
-      summaryText += `----------------------------------------\n`;
-      summaryText += `總金額：$${totalRevenue}\n`;
-      summaryText += `總訂購人數：${Object.keys(orders).length} 人\n`;
+      const tsv = tsvLines.join('\n');
+      const th = 'border:1px solid #9a3412;padding:6px 8px;background:#c2410c;color:#fff;font-weight:bold;';
+      const html = `<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;"><thead><tr><th style="${th}">商品品項</th><th style="${th}">價格</th><th style="${th}">數量</th><th style="${th}">總計</th></tr></thead><tbody>${htmlRows.join('')}</tbody></table>`;
 
-      navigator.clipboard.writeText(summaryText).then(() => {
-        alert('已成功複製統計報單文字至剪貼簿！');
-      });
+      const fallbackCopy = () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(tsv).then(() => alert('已複製團購表單，可貼到 Excel／試算表')).catch(() => prompt('請手動複製：', tsv));
+        } else {
+          prompt('請手動複製：', tsv);
+        }
+      };
+
+      if (navigator.clipboard && window.ClipboardItem && window.isSecureContext) {
+        const item = new ClipboardItem({
+          'text/plain': new Blob([tsv], { type: 'text/plain' }),
+          'text/html': new Blob([html], { type: 'text/html' })
+        });
+        navigator.clipboard.write([item]).then(() => {
+          alert('已複製團購表單，可貼到 Excel／試算表');
+        }).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
     };
   }
 
