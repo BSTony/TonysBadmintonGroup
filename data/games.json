@@ -5496,7 +5496,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788227104163,
+    "lastActiveTime": 1788315733861,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5515,7 +5515,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "Irene 葉": "U6a528d20c5cb50c8bd6efcca4c3ae6bf",
       "小高": "U4cbba92203148484d06d213547203e35",
-      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5531,12 +5532,20 @@
           "Jet",
           "Irene 葉",
           "小高",
-          "AddieWang"
+          "AddieWang",
+          "楊程鈞"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/02 10:22",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/01 09:45",
         "name": "陳呈",
