@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3819,
+    "viewCount": 3821,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -971,8 +971,8 @@
       "U9189a06112f6a2a13fdacb08a190c60b": {
         "displayName": "雲",
         "firstVisit": 1785585319501,
-        "count": 7,
-        "lastVisit": 1788317623418,
+        "count": 8,
+        "lastVisit": 1788345194379,
         "pictureUrl": "https://profile.line-scdn.net/0hVGQIGuXgCWh8MBZWVH93VgxgCgJfQVB6AFMTDh45UQpGBU8-UlBEWk43AFgRAk9tAAJOCkg1UQ1eRUxJGSQ-TE9nVSVAYTZlCko-fhJXPgMRXS5fNVEfWCtRBBwpXg9jMys7DzFSM0QAUy44NFUocUFzNwdIUz1_EGdlPnkCZ-sTMn49UVZHC0E2X13E"
       },
       "U33ec3d57827236fa5ed0f2da4c6e8205": {
@@ -1051,8 +1051,8 @@
       "Ufb502013876bb82ccf9ef635bf1fbb9a": {
         "displayName": "弘彬/Jason",
         "firstVisit": 1786702647866,
-        "count": 4,
-        "lastVisit": 1787666496091,
+        "count": 5,
+        "lastVisit": 1788345527272,
         "pictureUrl": "https://profile.line-scdn.net/0hV1_B8uMICR5yOyKmIld3YQJrCnRRSlAMC15OeBQ6VyYfDRpJCVURexNpXypGDkxLCVRGKhJpUyZ-KH54bG31KnULVC9PCktAWFVD_Q"
       },
       "Ubbef4e0a6cc32f9629b0d1adde897b9e": {
@@ -1197,6 +1197,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1788345527272,
+        "userId": "Ufb502013876bb82ccf9ef635bf1fbb9a",
+        "displayName": "弘彬/Jason",
+        "pictureUrl": "https://profile.line-scdn.net/0hV1_B8uMICR5yOyKmIld3YQJrCnRRSlAMC15OeBQ6VyYfDRpJCVURexNpXypGDkxLCVRGKhJpUyZ-KH54bG31KnULVC9PCktAWFVD_Q"
+      },
+      {
+        "time": 1788345194379,
+        "userId": "U9189a06112f6a2a13fdacb08a190c60b",
+        "displayName": "雲",
+        "pictureUrl": "https://profile.line-scdn.net/0hVGQIGuXgCWh8MBZWVH93VgxgCgJfQVB6AFMTDh45UQpGBU8-UlBEWk43AFgRAk9tAAJOCkg1UQ1eRUxJGSQ-TE9nVSVAYTZlCko-fhJXPgMRXS5fNVEfWCtRBBwpXg9jMys7DzFSM0QAUy44NFUocUFzNwdIUz1_EGdlPnkCZ-sTMn49UVZHC0E2X13E"
+      },
       {
         "time": 1788341914980,
         "userId": "U7977ee57751b21a1fb17ddbb180444b3",
