@@ -5326,7 +5326,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788314172622,
+    "lastActiveTime": 1788318214312,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5368,7 +5368,8 @@
       "Winnie": "U33c39e68987a32660ebf39db4534c567",
       "Emily": "U33c39e68987a32660ebf39db4534c567",
       "Chi chi": "U33c39e68987a32660ebf39db4534c567",
-      "古書羽": "U515f3eafb608f3aada94b73067dcc156"
+      "古書羽": "U515f3eafb608f3aada94b73067dcc156",
+      "小周": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5400,12 +5401,20 @@
           "Winnie",
           "Emily",
           "Chi chi",
-          "古書羽"
+          "古書羽",
+          "小周"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/02 11:03",
+        "name": "小周",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 09:56",
         "name": "古書羽",
