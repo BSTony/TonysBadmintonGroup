@@ -5618,7 +5618,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788323595050,
+    "lastActiveTime": 1788329082723,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5640,7 +5640,8 @@
       "Nick": "U7691f78ef6e34371e591dc7b0c57ce9a",
       "蔡哥": "U7691f78ef6e34371e591dc7b0c57ce9a",
       "柏宏": "U7691f78ef6e34371e591dc7b0c57ce9a",
-      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a"
+      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5683,11 +5684,19 @@
           "Kay",
           "小高",
           "Hsin",
-          "小可愛"
+          "小可愛",
+          "Chen H.R."
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/02 14:04",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/02 12:33",
         "name": "小可愛",
