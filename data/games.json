@@ -5594,7 +5594,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788226800926,
+    "lastActiveTime": 1788315747032,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5608,7 +5608,8 @@
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "小高": "U4cbba92203148484d06d213547203e35",
-      "Andy": "U8b4e160fd2505afd265b09e8f651ebab"
+      "Andy": "U8b4e160fd2505afd265b09e8f651ebab",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5631,7 +5632,9 @@
         "backupLimit": 5,
         "fee": "210",
         "label": "",
-        "list": []
+        "list": [
+          "楊程鈞"
+        ]
       },
       {
         "title": "8-12",
@@ -5647,6 +5650,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/02 10:22",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/01 09:40",
         "name": "Andy",
