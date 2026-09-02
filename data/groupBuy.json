@@ -1619,29 +1619,6 @@
       }
     ],
     "orders": {
-      "U9dc6c7ab7d49487c4dcb70caf20195b0": {
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "userName": "謝",
-        "userPhone": "0936120108",
-        "userPictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA",
-        "items": {
-          "zr_0014": 1,
-          "zr_0062": 1,
-          "zr_0052": 2,
-          "zr_0011": 1,
-          "zr_0083": 5,
-          "zr_0033": 1,
-          "zr_0037": 1
-        },
-        "totalAmount": 2489,
-        "paymentMethod": "none",
-        "paymentStatus": "unverified",
-        "orderStatus": "unconfirmed",
-        "paymentNote": "",
-        "note": "",
-        "anonymous": false,
-        "updatedAt": 1788164933403
-      },
       "U3c44f145460b5671baec6a3f62309c23": {
         "userId": "U3c44f145460b5671baec6a3f62309c23",
         "userName": "Wayne 吳瑋翔 위상",
@@ -1655,12 +1632,18 @@
         },
         "totalAmount": 1139,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787892844330
+        "updatedAt": 1787892844330,
+        "lastConfirmedItems": {
+          "zr_0052": 3,
+          "zr_0164": 1,
+          "zr_0009": 1,
+          "zr_0144": 1
+        }
       },
       "Uc3f99069e10903dd9385cbf288b526ce": {
         "userId": "Uc3f99069e10903dd9385cbf288b526ce",
@@ -1674,12 +1657,17 @@
         },
         "totalAmount": 710,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787877444474
+        "updatedAt": 1787877444474,
+        "lastConfirmedItems": {
+          "zr_0005": 1,
+          "zr_0002": 1,
+          "zr_0001": 1
+        }
       },
       "Uf4b9b20df1812ff907d72d503ea507e1": {
         "userId": "Uf4b9b20df1812ff907d72d503ea507e1",
@@ -1691,12 +1679,15 @@
         },
         "totalAmount": 695,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787889487400
+        "updatedAt": 1787889487400,
+        "lastConfirmedItems": {
+          "zr_0014": 1
+        }
       },
       "U49e2484c80056990b759e9039a74e1a6": {
         "userId": "U49e2484c80056990b759e9039a74e1a6",
@@ -1709,12 +1700,16 @@
         },
         "totalAmount": 870,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1788062658540
+        "updatedAt": 1788274988170,
+        "lastConfirmedItems": {
+          "zr_0014": 1,
+          "zr_0030": 1
+        }
       },
       "P_0935858963": {
         "userId": "P_0935858963",
@@ -1726,12 +1721,70 @@
         },
         "totalAmount": 229,
         "paymentMethod": "none",
-        "paymentStatus": "unverified",
+        "paymentStatus": "paid",
         "orderStatus": "unconfirmed",
         "paymentNote": "",
         "note": "",
         "anonymous": false,
-        "updatedAt": 1787903574667
+        "updatedAt": 1787903574667,
+        "lastConfirmedItems": {
+          "zr_0009": 1
+        }
+      },
+      "U9dc6c7ab7d49487c4dcb70caf20195b0": {
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "userName": "謝",
+        "userPhone": "0936120108",
+        "userPictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA",
+        "items": {
+          "zr_0014": 1,
+          "zr_0062": 1,
+          "zr_0052": 2,
+          "zr_0011": 1,
+          "zr_0083": 5,
+          "zr_0033": 1,
+          "zr_0037": 1,
+          "zr_0150": 1,
+          "zr_0006": 1,
+          "zr_0002": 1
+        },
+        "totalAmount": 3033,
+        "paymentMethod": "none",
+        "paymentStatus": "paid",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1788310898542,
+        "lastConfirmedItems": {
+          "zr_0014": 1,
+          "zr_0062": 1,
+          "zr_0052": 2,
+          "zr_0011": 1,
+          "zr_0083": 5,
+          "zr_0033": 1,
+          "zr_0037": 1
+        }
+      },
+      "P_0955560624": {
+        "userId": "P_0955560624",
+        "userName": "jo-ling",
+        "userPhone": "0955560624",
+        "userPictureUrl": "",
+        "items": {
+          "zr_0052": 1
+        },
+        "totalAmount": 155,
+        "paymentMethod": "none",
+        "paymentStatus": "paid",
+        "orderStatus": "unconfirmed",
+        "paymentNote": "",
+        "note": "",
+        "anonymous": false,
+        "updatedAt": 1788166351659,
+        "lastConfirmedItems": {
+          "zr_0052": 1
+        }
       }
     },
     "hiddenFromLobby": true
@@ -1740,7 +1793,7 @@
     "U9dc6c7ab7d49487c4dcb70caf20195b0": {
       "userName": "謝",
       "userPhone": "0936120108",
-      "updatedAt": 1788164933403
+      "updatedAt": 1788310898542
     },
     "U3c44f145460b5671baec6a3f62309c23": {
       "userName": "Wayne 吳瑋翔 위상",
@@ -1770,7 +1823,7 @@
     "U49e2484c80056990b759e9039a74e1a6": {
       "userName": "kay",
       "userPhone": "0912345678",
-      "updatedAt": 1788062658540
+      "updatedAt": 1788274988173
     },
     "Uf339b049e09a02f0796afb22f5de2e7e": {
       "userName": "憲(派瑞-Perry)",
@@ -1785,12 +1838,22 @@
     "P_0936120108": {
       "userName": "謝東霖 Tony",
       "userPhone": "0936120108",
-      "updatedAt": 1788164892823
+      "updatedAt": 1788166193003
     },
     "P_0935858963": {
       "userName": "Henry Li",
       "userPhone": "0935858963",
       "updatedAt": 1787903574667
+    },
+    "P_0905017898": {
+      "userName": "Wayne 吳瑋翔 위상",
+      "userPhone": "0905017898",
+      "updatedAt": 1788166234149
+    },
+    "P_0955560624": {
+      "userName": "jo-ling",
+      "userPhone": "0955560624",
+      "updatedAt": 1788166351659
     }
   }
 }
