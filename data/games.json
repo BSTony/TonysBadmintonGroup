@@ -5326,7 +5326,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788313709660,
+    "lastActiveTime": 1788313765397,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5364,7 +5364,8 @@
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "FB andy1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB andy2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
+      "Winnie": "U33c39e68987a32660ebf39db4534c567"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5392,12 +5393,20 @@
           "江こう 洋々",
           "FB andy1",
           "FB andy2",
-          "Win Shu"
+          "Win Shu",
+          "Winnie"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/02 09:49",
+        "name": "Winnie",
+        "operator": "Winnie",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 09:48",
         "name": "Win Shu",
