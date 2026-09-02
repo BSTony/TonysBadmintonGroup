@@ -5705,16 +5705,16 @@
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
       "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-      "C73ead06e46f4c3a00a3f87d946c7d18a"
+      "C073dd061239f9bc2df13af0a1ecb4bdb"
     ],
     "gameId": "1788270468464110",
     "title": "週二冷氣團",
     "date": "9/8 (二)",
     "time": "18:00~20:00",
     "location": "南港運動中心",
-    "fee": "",
+    "fee": "280",
     "note": "",
     "tag": "",
     "active": true,
@@ -5772,7 +5772,7 @@
           "afrahuang",
           "Jet"
         ],
-        "fee": ""
+        "fee": "280"
       }
     ],
     "history": [
@@ -5797,6 +5797,7 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
