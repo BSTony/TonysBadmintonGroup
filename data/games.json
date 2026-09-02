@@ -5603,7 +5603,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788323470349,
+    "lastActiveTime": 1788323487627,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5621,7 +5621,8 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "Hsin": "U6828d5fa68c1c92cf8a000b9b253a66d",
-      "ZF": "U7691f78ef6e34371e591dc7b0c57ce9a"
+      "ZF": "U7691f78ef6e34371e591dc7b0c57ce9a",
+      "Nick": "U7691f78ef6e34371e591dc7b0c57ce9a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5636,7 +5637,8 @@
           "ALAN LIU",
           "林煥杰",
           "Andy",
-          "ZF"
+          "ZF",
+          "Nick"
         ]
       },
       {
@@ -5665,6 +5667,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/02 12:31",
+        "name": "Nick",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/02 12:31",
         "name": "ZF",
