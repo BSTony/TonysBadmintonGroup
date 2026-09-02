@@ -5603,7 +5603,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788323506642,
+    "lastActiveTime": 1788323595050,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5624,7 +5624,8 @@
       "ZF": "U7691f78ef6e34371e591dc7b0c57ce9a",
       "Nick": "U7691f78ef6e34371e591dc7b0c57ce9a",
       "蔡哥": "U7691f78ef6e34371e591dc7b0c57ce9a",
-      "柏宏": "U7691f78ef6e34371e591dc7b0c57ce9a"
+      "柏宏": "U7691f78ef6e34371e591dc7b0c57ce9a",
+      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5666,11 +5667,19 @@
           "謝東霖 Tony",
           "Kay",
           "小高",
-          "Hsin"
+          "Hsin",
+          "小可愛"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/02 12:33",
+        "name": "小可愛",
+        "operator": "林俊佑",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/02 12:31",
         "name": "柏宏",
