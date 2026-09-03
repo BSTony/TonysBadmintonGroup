@@ -5534,7 +5534,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788420106819,
+    "lastActiveTime": 1788420113137,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5558,7 +5558,8 @@
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
       "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
       "FB 吳倬昀": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "FB Shawn Yu1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB Shawn Yu1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB Shawn Yu2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5579,12 +5580,20 @@
           "Kevin",
           "Mia",
           "FB 吳倬昀",
-          "FB Shawn Yu1"
+          "FB Shawn Yu1",
+          "FB Shawn Yu2"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/03 15:21",
+        "name": "FB Shawn Yu2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/03 15:21",
         "name": "FB Shawn Yu1",
