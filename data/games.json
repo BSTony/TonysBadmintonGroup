@@ -5534,7 +5534,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788355294897,
+    "lastActiveTime": 1788420076790,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5556,7 +5556,8 @@
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
-      "Mia": "U7977ee57751b21a1fb17ddbb180444b3"
+      "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
+      "FB 吳倬昀": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5575,12 +5576,20 @@
           "AddieWang",
           "楊程鈞",
           "Kevin",
-          "Mia"
+          "Mia",
+          "FB 吳倬昀"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/03 15:21",
+        "name": "FB 吳倬昀",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 21:21",
         "name": "Mia",
