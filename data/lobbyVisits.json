@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3840,
+    "viewCount": 3846,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -93,8 +93,8 @@
       "Ua5ba1a0ad7f4687b4075563e722331c5": {
         "displayName": "©️張CC～©️",
         "firstVisit": 1783217875055,
-        "count": 21,
-        "lastVisit": 1788336153387,
+        "count": 22,
+        "lastVisit": 1788409220937,
         "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
       },
       "U47573cf563cc67d5fc00dbb48a51092a": {
@@ -249,8 +249,8 @@
       "Ua158cf62dfd0ee9c8171a29263d9da11": {
         "displayName": "曾Jim凱",
         "firstVisit": 1783331916444,
-        "count": 51,
-        "lastVisit": 1788001806611,
+        "count": 52,
+        "lastVisit": 1788409281796,
         "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
       },
       "Ud33e6f76c7549fb90abe4440b1735805": {
@@ -575,8 +575,8 @@
       "Uc13192f3a2f3585669384b9a79432950": {
         "displayName": "Roger C",
         "firstVisit": 1783688249496,
-        "count": 5,
-        "lastVisit": 1788395875998,
+        "count": 6,
+        "lastVisit": 1788410862845,
         "pictureUrl": "https://profile.line-scdn.net/0hR2lRnzinDR1BKx4KdlxzYjF7DndiWlQPPkpBfSErASR5EkhKaURBKHQuUCR0GB1KOEsXLyMvVH5NOHp7X33xKUYbUCx8Gk9Da0VH_g"
       },
       "Uec6665e7a143520c799f9d89d3755024": {
@@ -1194,9 +1194,59 @@
         "count": 1,
         "lastVisit": 1788331587667,
         "pictureUrl": "https://profile.line-scdn.net/0hdHyjrEKDO2dUEyQmDZNFWSRDOA13YmJ1LHd1AjFAYAJrJCs0enB9VGgXZFZvIH9jKyIgA2IVYF52KhRPfHEvfRJhEFNqJi40DDcLByQaDjYrWX1kJSEqWgp0BDM_VA50OzAJZh8WHEsfa3VsDhsVeQdHMREzJzktB0RXMVEhVeQ7EUwyeXV1BGkVbVLs"
+      },
+      "U029fd28cbe4ba0f1c5223f393fd8dd40": {
+        "displayName": "趙振亦",
+        "firstVisit": 1788409029787,
+        "count": 2,
+        "lastVisit": 1788409159835,
+        "pictureUrl": "https://profile.line-scdn.net/0hpILNp80fL2ZhNwcDtGJRGRFnLAxCRnZ0TFk1Ulw2JAMIAj80T1dlB1JgdAVVAj9iGVZgBFE1eVBtJFgAf2HTUmYHcldcBm04S1llhQ"
+      },
+      "U0c2bef92ae9432af322eb8964f26238e": {
+        "displayName": "董峻安",
+        "firstVisit": 1788409115000,
+        "count": 1,
+        "lastVisit": 1788409115000,
+        "pictureUrl": "https://profile.line-scdn.net/0hrOMqtmShLWBgCDrTApRTHxBYLgpDeXRyG2hrD1xfdFZcPTliSjxrD1MNdQdabG0yTzo1B1cIIQBsG1oGfl7RVGc4cFFdOW8-SmZngw"
       }
     },
     "logs": [
+      {
+        "time": 1788410862845,
+        "userId": "Uc13192f3a2f3585669384b9a79432950",
+        "displayName": "Roger C",
+        "pictureUrl": "https://profile.line-scdn.net/0hR2lRnzinDR1BKx4KdlxzYjF7DndiWlQPPkpBfSErASR5EkhKaURBKHQuUCR0GB1KOEsXLyMvVH5NOHp7X33xKUYbUCx8Gk9Da0VH_g"
+      },
+      {
+        "time": 1788409281796,
+        "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
+        "displayName": "曾Jim凱",
+        "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
+      },
+      {
+        "time": 1788409220937,
+        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
+        "displayName": "©️張CC～©️",
+        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
+      },
+      {
+        "time": 1788409159835,
+        "userId": "U029fd28cbe4ba0f1c5223f393fd8dd40",
+        "displayName": "趙振亦",
+        "pictureUrl": "https://profile.line-scdn.net/0hpILNp80fL2ZhNwcDtGJRGRFnLAxCRnZ0TFk1Ulw2JAMIAj80T1dlB1JgdAVVAj9iGVZgBFE1eVBtJFgAf2HTUmYHcldcBm04S1llhQ"
+      },
+      {
+        "time": 1788409115000,
+        "userId": "U0c2bef92ae9432af322eb8964f26238e",
+        "displayName": "董峻安",
+        "pictureUrl": "https://profile.line-scdn.net/0hrOMqtmShLWBgCDrTApRTHxBYLgpDeXRyG2hrD1xfdFZcPTliSjxrD1MNdQdabG0yTzo1B1cIIQBsG1oGfl7RVGc4cFFdOW8-SmZngw"
+      },
+      {
+        "time": 1788409029787,
+        "userId": "U029fd28cbe4ba0f1c5223f393fd8dd40",
+        "displayName": "趙振亦",
+        "pictureUrl": "https://profile.line-scdn.net/0hpILNp80fL2ZhNwcDtGJRGRFnLAxCRnZ0TFk1Ulw2JAMIAj80T1dlB1JgdAVVAj9iGVZgBFE1eVBtJFgAf2HTUmYHcldcBm04S1llhQ"
+      },
       {
         "time": 1788407696851,
         "userId": "U09e4f0126678f203e0b139a474c17637",
