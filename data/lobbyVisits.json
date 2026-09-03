@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3870,
+    "viewCount": 3874,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -24,8 +24,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 735,
-        "lastVisit": 1788436103324,
+        "count": 736,
+        "lastVisit": 1788438585245,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -201,8 +201,8 @@
       "U203b76fe44ff1d74c53c21e5547aea27": {
         "displayName": "登登登登～",
         "firstVisit": 1783233886945,
-        "count": 83,
-        "lastVisit": 1788066719253,
+        "count": 84,
+        "lastVisit": 1788438799945,
         "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
       },
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
@@ -1170,8 +1170,8 @@
       "U6372f83bb2d5405d07e25ef2aa038abc": {
         "displayName": "林淑惠Sophia",
         "firstVisit": 1788063257046,
-        "count": 5,
-        "lastVisit": 1788216923786,
+        "count": 6,
+        "lastVisit": 1788438704989,
         "pictureUrl": "https://profile.line-scdn.net/0hnA531hphMW4YSiDDyPxPEWgaMgQ7O2h8YC93C31DaVcmeHQ9Y3t5XX9IOlt2eyI9ZHx9X31POA4UWUYIBhzNWh96bF8le3MwMiR7jQ"
       },
       "U6a528d20c5cb50c8bd6efcca4c3ae6bf": {
@@ -1198,8 +1198,8 @@
       "U029fd28cbe4ba0f1c5223f393fd8dd40": {
         "displayName": "趙振亦",
         "firstVisit": 1788409029787,
-        "count": 4,
-        "lastVisit": 1788435933760,
+        "count": 5,
+        "lastVisit": 1788437469960,
         "pictureUrl": "https://profile.line-scdn.net/0hpILNp80fL2ZhNwcDtGJRGRFnLAxCRnZ0TFk1Ulw2JAMIAj80T1dlB1JgdAVVAj9iGVZgBFE1eVBtJFgAf2HTUmYHcldcBm04S1llhQ"
       },
       "U0c2bef92ae9432af322eb8964f26238e": {
@@ -1218,6 +1218,30 @@
       }
     },
     "logs": [
+      {
+        "time": 1788438799945,
+        "userId": "U203b76fe44ff1d74c53c21e5547aea27",
+        "displayName": "登登登登～",
+        "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
+      },
+      {
+        "time": 1788438704989,
+        "userId": "U6372f83bb2d5405d07e25ef2aa038abc",
+        "displayName": "林淑惠Sophia",
+        "pictureUrl": "https://profile.line-scdn.net/0hnA531hphMW4YSiDDyPxPEWgaMgQ7O2h8YC93C31DaVcmeHQ9Y3t5XX9IOlt2eyI9ZHx9X31POA4UWUYIBhzNWh96bF8le3MwMiR7jQ"
+      },
+      {
+        "time": 1788438585245,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
+      {
+        "time": 1788437469960,
+        "userId": "U029fd28cbe4ba0f1c5223f393fd8dd40",
+        "displayName": "趙振亦",
+        "pictureUrl": "https://profile.line-scdn.net/0hpILNp80fL2ZhNwcDtGJRGRFnLAxCRnZ0TFk1Ulw2JAMIAj80T1dlB1JgdAVVAj9iGVZgBFE1eVBtJFgAf2HTUmYHcldcBm04S1llhQ"
+      },
       {
         "time": 1788436103324,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
