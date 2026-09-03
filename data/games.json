@@ -5692,7 +5692,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788438621288,
+    "lastActiveTime": 1788438636828,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5720,7 +5720,8 @@
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "峻安": "U029fd28cbe4ba0f1c5223f393fd8dd40",
-      "FB 李昀宸1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB 李昀宸1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB 李昀宸2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5769,11 +5770,19 @@
           "弘彬/Jason",
           "©️張CC～©️",
           "峻安",
-          "FB 李昀宸1"
+          "FB 李昀宸1",
+          "FB 李昀宸2"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/03 20:30",
+        "name": "FB 李昀宸2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/03 20:30",
         "name": "FB 李昀宸1",
