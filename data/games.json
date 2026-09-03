@@ -5692,7 +5692,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788438733108,
+    "lastActiveTime": 1788438759615,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5722,7 +5722,8 @@
       "峻安": "U029fd28cbe4ba0f1c5223f393fd8dd40",
       "FB 李昀宸1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB 李昀宸2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Sophia": "U6372f83bb2d5405d07e25ef2aa038abc"
+      "Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
+      "Sophia2": "U6372f83bb2d5405d07e25ef2aa038abc"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5752,7 +5753,8 @@
         "list": [
           "楊程鈞",
           "周哲儁",
-          "Sophia"
+          "Sophia",
+          "Sophia2"
         ]
       },
       {
@@ -5778,6 +5780,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/03 20:32",
+        "name": "Sophia2",
+        "operator": "林淑惠Sophia",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/03 20:32",
         "name": "Sophia",
