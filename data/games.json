@@ -5692,7 +5692,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788438602214,
+    "lastActiveTime": 1788438610897,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5738,8 +5738,7 @@
           "ZF",
           "Nick",
           "蔡哥",
-          "柏宏",
-          "FB 李昀宸1"
+          "柏宏"
         ]
       },
       {
@@ -5774,6 +5773,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/03 20:30",
+        "name": "FB 李昀宸1",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "09/03 20:30",
         "name": "FB 李昀宸1",
