@@ -5645,7 +5645,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788409196088,
+    "lastActiveTime": 1788413782916,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5669,7 +5669,8 @@
       "柏宏": "U7691f78ef6e34371e591dc7b0c57ce9a",
       "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
-      "振亦": "U029fd28cbe4ba0f1c5223f393fd8dd40"
+      "振亦": "U029fd28cbe4ba0f1c5223f393fd8dd40",
+      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5714,11 +5715,19 @@
           "Hsin",
           "小可愛",
           "Chen H.R.",
-          "振亦"
+          "振亦",
+          "弘彬/Jason"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/03 13:36",
+        "name": "弘彬/Jason",
+        "operator": "弘彬/Jason",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/03 12:19",
         "name": "振亦",
