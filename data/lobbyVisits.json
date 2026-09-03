@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3836,
+    "viewCount": 3839,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -24,8 +24,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 732,
-        "lastVisit": 1788361753025,
+        "count": 733,
+        "lastVisit": 1788402057609,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -530,8 +530,8 @@
       "U7c381eceb3dee900bbd30b986a0f8357": {
         "displayName": "陳宜蓁",
         "firstVisit": 1783609656924,
-        "count": 88,
-        "lastVisit": 1788260899901,
+        "count": 89,
+        "lastVisit": 1788401378234,
         "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
       },
       "U522577348e19db90574e8dd6b95de386": {
@@ -1177,8 +1177,8 @@
       "U6a528d20c5cb50c8bd6efcca4c3ae6bf": {
         "displayName": "Irene Yeh",
         "firstVisit": 1788218182173,
-        "count": 4,
-        "lastVisit": 1788338342014,
+        "count": 5,
+        "lastVisit": 1788401749499,
         "pictureUrl": "https://profile.line-scdn.net/0hx4ZQsfPIJxt3KDnHzoFZZAd4JHFUWX4JUkdqKhB6KSMfGjBODk9odUsufC0ZEWlEXkxpeEZ_eyp7O1B9aX7bL3AYeipKGWVFXUZt-A"
       },
       "Ub21af3f9c143b2c5f4a513f7d9f54de1": {
@@ -1197,6 +1197,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1788402057609,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
+      {
+        "time": 1788401749499,
+        "userId": "U6a528d20c5cb50c8bd6efcca4c3ae6bf",
+        "displayName": "Irene Yeh",
+        "pictureUrl": "https://profile.line-scdn.net/0hx4ZQsfPIJxt3KDnHzoFZZAd4JHFUWX4JUkdqKhB6KSMfGjBODk9odUsufC0ZEWlEXkxpeEZ_eyp7O1B9aX7bL3AYeipKGWVFXUZt-A"
+      },
+      {
+        "time": 1788401378234,
+        "userId": "U7c381eceb3dee900bbd30b986a0f8357",
+        "displayName": "陳宜蓁",
+        "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
+      },
       {
         "time": 1788395875998,
         "userId": "Uc13192f3a2f3585669384b9a79432950",
