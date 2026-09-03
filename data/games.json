@@ -5326,7 +5326,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787840081732,
-    "lastActiveTime": 1788361810932,
+    "lastActiveTime": 1788419403606,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5342,7 +5342,6 @@
       "曾Jim凱": true,
       "Ashely": true,
       "周則鼎": true,
-      "Ong": true,
       "郭岳翰John": true,
       "©️張CC～©️": true,
       "陳呈": true
@@ -5390,7 +5389,6 @@
           "曾Jim凱",
           "Ashely",
           "周則鼎",
-          "Ong",
           "郭岳翰John",
           "©️張CC～©️",
           "陳呈",
@@ -5411,6 +5409,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/03 15:10",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/02 23:10",
         "name": "FB rick",
