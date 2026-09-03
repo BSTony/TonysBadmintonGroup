@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3859,
+    "viewCount": 3861,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -530,8 +530,8 @@
       "U7c381eceb3dee900bbd30b986a0f8357": {
         "displayName": "陳宜蓁",
         "firstVisit": 1783609656924,
-        "count": 89,
-        "lastVisit": 1788401378234,
+        "count": 90,
+        "lastVisit": 1788429865533,
         "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
       },
       "U522577348e19db90574e8dd6b95de386": {
@@ -1107,8 +1107,8 @@
       "U1920cbbd7be6a8816939be44d4d0e1f2": {
         "displayName": "FiFi",
         "firstVisit": 1787198716408,
-        "count": 3,
-        "lastVisit": 1788428561173,
+        "count": 4,
+        "lastVisit": 1788429915959,
         "pictureUrl": "https://profile.line-scdn.net/0hjyv_6BtwNVZbJivZR7BLKSt2Njx4V2xEdhd4YG0nbGMxEHdQI0h5NzkgP2JuEXcJIEQvNmkhOTNXNUIwRXDJYlwWaGdmF3cIcUh_tQ"
       },
       "U07da54f66d0a500df5b2db748bde73a9": {
@@ -1218,6 +1218,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1788429915959,
+        "userId": "U1920cbbd7be6a8816939be44d4d0e1f2",
+        "displayName": "FiFi",
+        "pictureUrl": "https://profile.line-scdn.net/0hjyv_6BtwNVZbJivZR7BLKSt2Njx4V2xEdhd4YG0nbGMxEHdQI0h5NzkgP2JuEXcJIEQvNmkhOTNXNUIwRXDJYlwWaGdmF3cIcUh_tQ"
+      },
+      {
+        "time": 1788429865533,
+        "userId": "U7c381eceb3dee900bbd30b986a0f8357",
+        "displayName": "陳宜蓁",
+        "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
+      },
       {
         "time": 1788429427261,
         "userId": "U7e762af3061a46f6a7e212cfc0afcb8f",
