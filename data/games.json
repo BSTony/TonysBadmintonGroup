@@ -5683,7 +5683,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788414739516,
+    "lastActiveTime": 1788435950021,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5709,7 +5709,8 @@
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "振亦": "U029fd28cbe4ba0f1c5223f393fd8dd40",
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
-      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "峻安": "U029fd28cbe4ba0f1c5223f393fd8dd40"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5756,11 +5757,19 @@
           "Chen H.R.",
           "振亦",
           "弘彬/Jason",
-          "©️張CC～©️"
+          "©️張CC～©️",
+          "峻安"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/03 19:45",
+        "name": "峻安",
+        "operator": "趙振亦",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/03 13:52",
         "name": "©️張CC～©️",
