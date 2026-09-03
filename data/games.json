@@ -5713,7 +5713,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788438759615,
+    "lastActiveTime": 1788446945098,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5744,7 +5744,8 @@
       "FB 李昀宸1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB 李昀宸2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
-      "Sophia2": "U6372f83bb2d5405d07e25ef2aa038abc"
+      "Sophia2": "U6372f83bb2d5405d07e25ef2aa038abc",
+      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5762,7 +5763,8 @@
           "ZF",
           "Nick",
           "蔡哥",
-          "柏宏"
+          "柏宏",
+          "鈞"
         ]
       },
       {
@@ -5801,6 +5803,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/03 22:49",
+        "name": "鈞",
+        "operator": "鈞",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/03 20:32",
         "name": "Sophia2",
