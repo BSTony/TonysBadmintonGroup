@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3881,
+    "viewCount": 3885,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -24,8 +24,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 737,
-        "lastVisit": 1788444365302,
+        "count": 738,
+        "lastVisit": 1788450742663,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -121,8 +121,8 @@
       "U7977ee57751b21a1fb17ddbb180444b3": {
         "displayName": "賴鈺臻",
         "firstVisit": 1783228766307,
-        "count": 39,
-        "lastVisit": 1788355286038,
+        "count": 40,
+        "lastVisit": 1788449361289,
         "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
       },
       "Uf2f63c157d1e4f7e5d289d377c568582": {
@@ -1135,8 +1135,8 @@
       "U727a70f5e61d58e7b47554222d68ae5e": {
         "displayName": "Tony",
         "firstVisit": 1787355849164,
-        "count": 1,
-        "lastVisit": 1787355849164,
+        "count": 2,
+        "lastVisit": 1788447958318,
         "pictureUrl": "https://profile.line-scdn.net/0h-7E04gQ7chhoSW2LDAgMJhgZcXJLOCsKF3g7eV4bLXhWfGVIRC48eg8ceHgHezQZQCo7dw5LeC9KJDU3GEt2Yl4qd2AIGUYKTX9NeyMeTHQ2eGcROCZmeR02Ki1SDksVQX95HjpLUVRQA0IVG1NCJwMad1cLcHAbLB4eTm17HJsHSwVNRS88e1VPJC3Q"
       },
       "U8f99bd93b0cf2c00a0fcb35378c1cb1d": {
@@ -1215,9 +1215,40 @@
         "count": 1,
         "lastVisit": 1788411672208,
         "pictureUrl": "https://profile.line-scdn.net/0hkLrbZNA3NGNfGyHOxb1KHC9LNwl8am1xc3wuUTkSOAY3InQwdyouBjoTaQBlL3QzIX4uBD9OOlZTCEMFQU3IV1graVJiKnY9dXV-gA"
+      },
+      "Ub064417033c16920c8adeae18d2c3c50": {
+        "displayName": "尸比尸比",
+        "firstVisit": 1788448104528,
+        "count": 1,
+        "lastVisit": 1788448104528,
+        "pictureUrl": "https://profile.line-scdn.net/0hRNLCR6igDWFhOh5zx9FzHhFqDgtCS1RzT18RAF07VQYJWk9nTlhCBFBoVVFfCkk3SllEBgY-VgJtKXoHf2zxVWYKUFBcC08_S1RHgg"
       }
     },
     "logs": [
+      {
+        "time": 1788450742663,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
+      {
+        "time": 1788449361289,
+        "userId": "U7977ee57751b21a1fb17ddbb180444b3",
+        "displayName": "賴鈺臻",
+        "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
+      },
+      {
+        "time": 1788448104528,
+        "userId": "Ub064417033c16920c8adeae18d2c3c50",
+        "displayName": "尸比尸比",
+        "pictureUrl": "https://profile.line-scdn.net/0hRNLCR6igDWFhOh5zx9FzHhFqDgtCS1RzT18RAF07VQYJWk9nTlhCBFBoVVFfCkk3SllEBgY-VgJtKXoHf2zxVWYKUFBcC08_S1RHgg"
+      },
+      {
+        "time": 1788447958318,
+        "userId": "U727a70f5e61d58e7b47554222d68ae5e",
+        "displayName": "Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0h-7E04gQ7chhoSW2LDAgMJhgZcXJLOCsKF3g7eV4bLXhWfGVIRC48eg8ceHgHezQZQCo7dw5LeC9KJDU3GEt2Yl4qd2AIGUYKTX9NeyMeTHQ2eGcROCZmeR02Ki1SDksVQX95HjpLUVRQA0IVG1NCJwMad1cLcHAbLB4eTm17HJsHSwVNRS88e1VPJC3Q"
+      },
       {
         "time": 1788446928011,
         "userId": "U6bfcb714aca447e0c3d2a103c0290f38",
