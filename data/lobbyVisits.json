@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3835,
+    "viewCount": 3836,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -575,8 +575,8 @@
       "Uc13192f3a2f3585669384b9a79432950": {
         "displayName": "Roger C",
         "firstVisit": 1783688249496,
-        "count": 4,
-        "lastVisit": 1788341667537,
+        "count": 5,
+        "lastVisit": 1788395875998,
         "pictureUrl": "https://profile.line-scdn.net/0hR2lRnzinDR1BKx4KdlxzYjF7DndiWlQPPkpBfSErASR5EkhKaURBKHQuUCR0GB1KOEsXLyMvVH5NOHp7X33xKUYbUCx8Gk9Da0VH_g"
       },
       "Uec6665e7a143520c799f9d89d3755024": {
@@ -1197,6 +1197,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1788395875998,
+        "userId": "Uc13192f3a2f3585669384b9a79432950",
+        "displayName": "Roger C",
+        "pictureUrl": "https://profile.line-scdn.net/0hR2lRnzinDR1BKx4KdlxzYjF7DndiWlQPPkpBfSErASR5EkhKaURBKHQuUCR0GB1KOEsXLyMvVH5NOHp7X33xKUYbUCx8Gk9Da0VH_g"
+      },
       {
         "time": 1788370550285,
         "userId": "U6bfcb714aca447e0c3d2a103c0290f38",
@@ -10361,13 +10367,13 @@
     ]
   },
   "__GROUPBUY__": {
-    "viewCount": 58,
+    "viewCount": 59,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1787819932499,
-        "count": 33,
-        "lastVisit": 1788314036113,
+        "count": 34,
+        "lastVisit": 1788396818670,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "Uc3f99069e10903dd9385cbf288b526ce": {
@@ -10455,6 +10461,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1788396818670,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1788314036113,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
