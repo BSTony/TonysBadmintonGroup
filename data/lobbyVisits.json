@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3885,
+    "viewCount": 3886,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -624,8 +624,8 @@
       "U88ae9c79ca7f2ef9d91e7678fecf4416": {
         "displayName": "腳皮",
         "firstVisit": 1783823707569,
-        "count": 48,
-        "lastVisit": 1788320692775,
+        "count": 49,
+        "lastVisit": 1788451823532,
         "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
       },
       "U09dc6234acf423e3dcac7842dd890939": {
@@ -1225,6 +1225,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1788451823532,
+        "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+        "displayName": "腳皮",
+        "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
+      },
       {
         "time": 1788450742663,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
