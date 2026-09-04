@@ -5544,7 +5544,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788444395807,
+    "lastActiveTime": 1788480776269,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5572,7 +5572,8 @@
       "FB Shawn Yu2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB 李効澄": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB yu jie1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "FB yu jie2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB yu jie2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5597,12 +5598,20 @@
           "FB Shawn Yu2",
           "FB 李効澄",
           "FB yu jie1",
-          "FB yu jie2"
+          "FB yu jie2",
+          "小金(Chen Pei Hung)"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/04 08:12",
+        "name": "小金(Chen Pei Hung)",
+        "operator": "小金(Chen Pei Hung)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/03 22:06",
         "name": "FB yu jie2",
