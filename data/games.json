@@ -5786,7 +5786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788449382146,
+    "lastActiveTime": 1788517914068,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5820,7 +5820,8 @@
       "Sophia2": "U6372f83bb2d5405d07e25ef2aa038abc",
       "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
       "尸比尸比": "Ub064417033c16920c8adeae18d2c3c50",
-      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3"
+      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5875,11 +5876,19 @@
           "©️張CC～©️",
           "峻安",
           "FB 李昀宸1",
-          "FB 李昀宸2"
+          "FB 李昀宸2",
+          "腳皮"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/04 18:31",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/03 23:29",
         "name": "Kevin",
