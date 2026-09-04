@@ -5804,7 +5804,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788517948997,
+    "lastActiveTime": 1788528605871,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5840,7 +5840,8 @@
       "尸比尸比": "Ub064417033c16920c8adeae18d2c3c50",
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-      "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416"
+      "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5861,7 +5862,8 @@
           "柏宏",
           "鈞",
           "尸比尸比",
-          "Kevin"
+          "Kevin",
+          "兔兔(玉儒)"
         ]
       },
       {
@@ -5902,6 +5904,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/04 21:30",
+        "name": "兔兔(玉儒)",
+        "operator": "兔兔(玉儒)",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/04 18:32",
         "name": "宇軒",
