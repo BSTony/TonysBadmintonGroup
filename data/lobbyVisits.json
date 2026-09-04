@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3973,
+    "viewCount": 3977,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -38,15 +38,15 @@
       "Uec617dedcd37cd4c4e1d6afb526819d1": {
         "displayName": "Chris Chen",
         "firstVisit": 1783208020463,
-        "count": 40,
-        "lastVisit": 1787355641670,
+        "count": 41,
+        "lastVisit": 1788560164416,
         "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
       },
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
         "firstVisit": 1783209148916,
-        "count": 265,
-        "lastVisit": 1788528515718,
+        "count": 266,
+        "lastVisit": 1788559720992,
         "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
       },
       "U532d12783f207181c2d0f9d9ecc8724a": {
@@ -1237,9 +1237,40 @@
         "count": 2,
         "lastVisit": 1788526219306,
         "pictureUrl": "https://profile.line-scdn.net/0hXJabiJwAB2VMGxQFqg55GjxLBA9val53MCgaBi0YWAB3K0Y6ZHhMC3sTDl12LENnYClLAnsYDF1ACHADUk37UUsrWlRxKkU7ZnVNhg"
+      },
+      "U5a4384e9cbf9a8ed916ee793a88af8cb": {
+        "displayName": "琴姐（承憲媽）",
+        "firstVisit": 1788560947187,
+        "count": 2,
+        "lastVisit": 1788561009042,
+        "pictureUrl": "https://profile.line-scdn.net/0h7KhzrGMZaGRFA0K3KwIWGzVTaw5mcjF2a2JzCydUY1V_ZH1mOzFyUXQFMgZ8YC8xaDZ3UXMLMlJJEB8CW1WUUEIzNVV4Mio6b20ihw"
       }
     },
     "logs": [
+      {
+        "time": 1788561009042,
+        "userId": "U5a4384e9cbf9a8ed916ee793a88af8cb",
+        "displayName": "琴姐（承憲媽）",
+        "pictureUrl": "https://profile.line-scdn.net/0h7KhzrGMZaGRFA0K3KwIWGzVTaw5mcjF2a2JzCydUY1V_ZH1mOzFyUXQFMgZ8YC8xaDZ3UXMLMlJJEB8CW1WUUEIzNVV4Mio6b20ihw"
+      },
+      {
+        "time": 1788560947187,
+        "userId": "U5a4384e9cbf9a8ed916ee793a88af8cb",
+        "displayName": "琴姐（承憲媽）",
+        "pictureUrl": "https://profile.line-scdn.net/0h7KhzrGMZaGRFA0K3KwIWGzVTaw5mcjF2a2JzCydUY1V_ZH1mOzFyUXQFMgZ8YC8xaDZ3UXMLMlJJEB8CW1WUUEIzNVV4Mio6b20ihw"
+      },
+      {
+        "time": 1788560164416,
+        "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
+        "displayName": "Chris Chen",
+        "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
+      },
+      {
+        "time": 1788559720992,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
       {
         "time": 1788549896857,
         "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
@@ -9831,7 +9862,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 207,
+    "viewCount": 208,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -9947,8 +9978,9 @@
       "U9904ed725b1f420b8718791594e3756b": {
         "displayName": "偉舫",
         "firstVisit": 1784033950957,
-        "count": 3,
-        "lastVisit": 1785407369458
+        "count": 4,
+        "lastVisit": 1788562741537,
+        "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
       },
       "U7c381eceb3dee900bbd30b986a0f8357": {
         "displayName": "陳宜蓁",
@@ -10018,6 +10050,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1788562741537,
+        "userId": "U9904ed725b1f420b8718791594e3756b",
+        "displayName": "偉舫",
+        "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
+      },
       {
         "time": 1788484664455,
         "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
