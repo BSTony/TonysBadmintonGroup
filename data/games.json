@@ -5544,7 +5544,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788516519303,
+    "lastActiveTime": 1788516522683,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5577,7 +5577,8 @@
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
       "kiki": "Ue8b80741d20979ceca51de03721d1184",
       "FB 宋哲元": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Sandy": "U2d79ed164c2f54f816c74f467908679e"
+      "Sandy": "U2d79ed164c2f54f816c74f467908679e",
+      "Charlie": "U2d79ed164c2f54f816c74f467908679e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5607,12 +5608,20 @@
           "Sammy Su",
           "kiki",
           "FB 宋哲元",
-          "Sandy"
+          "Sandy",
+          "Charlie"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/04 18:08",
+        "name": "Charlie",
+        "operator": "雅雯 Olivia",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/04 18:08",
         "name": "Sandy",
