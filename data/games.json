@@ -5544,7 +5544,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788480776269,
+    "lastActiveTime": 1788490077888,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5573,7 +5573,8 @@
       "FB 李効澄": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB yu jie1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB yu jie2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189"
+      "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5599,12 +5600,20 @@
           "FB 李効澄",
           "FB yu jie1",
           "FB yu jie2",
-          "小金(Chen Pei Hung)"
+          "小金(Chen Pei Hung)",
+          "Sammy Su"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/04 10:47",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/04 08:12",
         "name": "小金(Chen Pei Hung)",
