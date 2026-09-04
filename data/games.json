@@ -6192,7 +6192,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1788484005474,
+    "lastActiveTime": 1788484013716,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6225,7 +6225,8 @@
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "凱文": "U911c6faae5ae99cb4c24cbe5c22ac5e7"
+      "凱文": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
+      "Tony": "U911c6faae5ae99cb4c24cbe5c22ac5e7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6248,13 +6249,21 @@
           "郭岳翰John",
           "©️張CC～©️",
           "陳呈",
-          "凱文"
+          "凱文",
+          "Tony"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/04 09:06",
+        "name": "Tony",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/04 09:06",
         "name": "凱文",
