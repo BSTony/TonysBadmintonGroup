@@ -6123,5 +6123,55 @@
       }
     ],
     "isManualEnded": false
+  },
+  "1788481203989682": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1788481203989682",
+    "title": "週一 中山星曜樓",
+    "date": "9/7 (一)",
+    "time": "18:30~20:30",
+    "location": "中山國中 星曜樓",
+    "fee": "260",
+    "note": "",
+    "tag": "靠講台右邊場地,5等以上",
+    "active": true,
+    "startTime": 1788481203990,
+    "lastActiveTime": 1788481203990,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "uidMap": {
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 7,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "King",
+          "曾Jim凱",
+          "謝東霖 Tony",
+          "Kay"
+        ],
+        "fee": "260"
+      }
+    ]
   }
 }
