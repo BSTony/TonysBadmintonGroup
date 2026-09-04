@@ -5786,7 +5786,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788517914068,
+    "lastActiveTime": 1788517948997,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5821,7 +5821,8 @@
       "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
       "尸比尸比": "Ub064417033c16920c8adeae18d2c3c50",
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
-      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5877,11 +5878,19 @@
           "峻安",
           "FB 李昀宸1",
           "FB 李昀宸2",
-          "腳皮"
+          "腳皮",
+          "宇軒"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/04 18:32",
+        "name": "宇軒",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/04 18:31",
         "name": "腳皮",
