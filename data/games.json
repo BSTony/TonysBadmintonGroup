@@ -5544,7 +5544,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788528571770,
+    "lastActiveTime": 1788534262187,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5582,7 +5582,8 @@
       "羽生": "U2d79ed164c2f54f816c74f467908679e",
       "FB 林詠皓": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1"
+      "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5617,12 +5618,20 @@
           "羽生",
           "FB 林詠皓",
           "©️張CC～©️",
-          "Andrew"
+          "Andrew",
+          "JoeLin"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/04 23:04",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/04 21:29",
         "name": "Andrew",
