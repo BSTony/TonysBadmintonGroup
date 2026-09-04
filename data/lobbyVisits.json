@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 3905,
+    "viewCount": 3908,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -530,8 +530,8 @@
       "U7c381eceb3dee900bbd30b986a0f8357": {
         "displayName": "陳宜蓁",
         "firstVisit": 1783609656924,
-        "count": 90,
-        "lastVisit": 1788429865533,
+        "count": 91,
+        "lastVisit": 1788493543894,
         "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
       },
       "U522577348e19db90574e8dd6b95de386": {
@@ -650,8 +650,9 @@
       "U026fb9725aef08c69ba3f4cafdb6b791": {
         "displayName": "高得祐",
         "firstVisit": 1783926915481,
-        "count": 4,
-        "lastVisit": 1784399139591
+        "count": 5,
+        "lastVisit": 1788493835371,
+        "pictureUrl": "https://profile.line-scdn.net/0h6osQjWIiaUBeKHnSvA0XPy54aip9WTBScxl2J2MhPiNqTysVIBl2IGMuZSNgHn4UJ0ggJ2x7NHFSOx4mQH6VdFkYNHFjGSsedEYjow"
       },
       "Ubede3e213f0f83f81b8478616d9bd304": {
         "displayName": "邱小布",
@@ -1229,9 +1230,34 @@
         "count": 2,
         "lastVisit": 1788480886828,
         "pictureUrl": "https://profile.line-scdn.net/0hFqXkOuKMGV51EgZaympnYAVCGjRWY0BMX3FRaxIbFGwYIVYKWXxVOxVBRjtIJF0NX3JVbUAUFGtXJF9pGBIlWT1SDyc4flhYMBIuYRNiJR4eQAx6CjEpOzwaLHIbKgZ8DHUVfisOAScxRi5fRTcLMDJkLzEQejAMMkV1CHAgd90aEG4LWHRXPUgUT2vN"
+      },
+      "Ue659dd9df6fe00241198ecd79d0da433": {
+        "displayName": "王彥博 Albert",
+        "firstVisit": 1788491312895,
+        "count": 1,
+        "lastVisit": 1788491312895,
+        "pictureUrl": "https://profile.line-scdn.net/0hXJabiJwAB2VMGxQFqg55GjxLBA9val53MCgaBi0YWAB3K0Y6ZHhMC3sTDl12LENnYClLAnsYDF1ACHADUk37UUsrWlRxKkU7ZnVNhg"
       }
     },
     "logs": [
+      {
+        "time": 1788493835371,
+        "userId": "U026fb9725aef08c69ba3f4cafdb6b791",
+        "displayName": "高得祐",
+        "pictureUrl": "https://profile.line-scdn.net/0h6osQjWIiaUBeKHnSvA0XPy54aip9WTBScxl2J2MhPiNqTysVIBl2IGMuZSNgHn4UJ0ggJ2x7NHFSOx4mQH6VdFkYNHFjGSsedEYjow"
+      },
+      {
+        "time": 1788493543894,
+        "userId": "U7c381eceb3dee900bbd30b986a0f8357",
+        "displayName": "陳宜蓁",
+        "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
+      },
+      {
+        "time": 1788491312895,
+        "userId": "Ue659dd9df6fe00241198ecd79d0da433",
+        "displayName": "王彥博 Albert",
+        "pictureUrl": "https://profile.line-scdn.net/0hXJabiJwAB2VMGxQFqg55GjxLBA9val53MCgaBi0YWAB3K0Y6ZHhMC3sTDl12LENnYClLAnsYDF1ACHADUk37UUsrWlRxKkU7ZnVNhg"
+      },
       {
         "time": 1788490171852,
         "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
