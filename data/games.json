@@ -6157,7 +6157,7 @@
     "tag": "D E 場地",
     "active": true,
     "startTime": 1788270468474,
-    "lastActiveTime": 1788428569528,
+    "lastActiveTime": 1788562788465,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6173,8 +6173,7 @@
       "憲": true,
       "Robert": true,
       "海棠": true,
-      "周則鼎": true,
-      "偉舫": true
+      "周則鼎": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -6206,7 +6205,6 @@
           "Robert",
           "海棠",
           "周則鼎",
-          "偉舫",
           "Sean",
           "afrahuang",
           "Jet",
@@ -6216,6 +6214,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/05 06:59",
+        "name": "偉舫",
+        "operator": "偉舫",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/03 17:42",
         "name": "FiFi",
