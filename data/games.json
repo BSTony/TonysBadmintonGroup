@@ -5544,7 +5544,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788527728681,
+    "lastActiveTime": 1788528571770,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5581,7 +5581,8 @@
       "Charlie": "U2d79ed164c2f54f816c74f467908679e",
       "羽生": "U2d79ed164c2f54f816c74f467908679e",
       "FB 林詠皓": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "Andrew": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5615,12 +5616,20 @@
           "Charlie",
           "羽生",
           "FB 林詠皓",
-          "©️張CC～©️"
+          "©️張CC～©️",
+          "Andrew"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/04 21:29",
+        "name": "Andrew",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/04 21:15",
         "name": "©️張CC～©️",
