@@ -6435,7 +6435,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1788484110281,
+    "lastActiveTime": 1788607130973,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6473,7 +6473,8 @@
       "Jack": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "心平": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "小白": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-      "蘑菇": "U911c6faae5ae99cb4c24cbe5c22ac5e7"
+      "蘑菇": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6501,13 +6502,21 @@
           "Jack",
           "心平",
           "小白",
-          "蘑菇"
+          "蘑菇",
+          "江こう 洋々"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/05 19:18",
+        "name": "江こう 洋々",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/04 09:08",
         "name": "蘑菇",
