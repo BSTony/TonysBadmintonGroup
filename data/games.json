@@ -5544,7 +5544,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788534262187,
+    "lastActiveTime": 1788566921008,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5617,7 +5617,6 @@
           "Charlie",
           "羽生",
           "FB 林詠皓",
-          "©️張CC～©️",
           "Andrew",
           "JoeLin"
         ],
@@ -5625,6 +5624,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/05 08:08",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/04 23:04",
         "name": "JoeLin",
