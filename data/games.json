@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788615914503,
+    "lastActiveTime": 1788616611074,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5887,7 +5887,8 @@
       "jojo2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB 王志成": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "東東": "U8d28d03013fc8d69b56d79e9d0fcc33a",
-      "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd"
+      "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd",
+      "Wang": "Ua803eeb7a6e406e3fab93ee1e322a7c6"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5925,7 +5926,8 @@
           "周哲儁",
           "Sophia",
           "Sophia2",
-          "YANG 阿傑"
+          "YANG 阿傑",
+          "Wang"
         ]
       },
       {
@@ -5955,6 +5957,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/05 21:56",
+        "name": "Wang",
+        "operator": "Wang",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/05 21:45",
         "name": "YANG 阿傑",
