@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788601390976,
+    "lastActiveTime": 1788601549763,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5885,7 +5885,8 @@
       "Jojo": "U07da54f66d0a500df5b2db748bde73a9",
       "joho1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "jojo2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "FB 王志成": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB 王志成": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "東東": "U8d28d03013fc8d69b56d79e9d0fcc33a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5908,7 +5909,8 @@
           "Kevin",
           "兔兔(玉儒)",
           "Mia",
-          "FB 王志成"
+          "FB 王志成",
+          "東東"
         ]
       },
       {
@@ -5951,6 +5953,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/05 17:45",
+        "name": "東東",
+        "operator": "東東",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/05 17:43",
         "name": "FB 王志成",
