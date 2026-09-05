@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788601549763,
+    "lastActiveTime": 1788615914503,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5886,7 +5886,8 @@
       "joho1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "jojo2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB 王志成": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "東東": "U8d28d03013fc8d69b56d79e9d0fcc33a"
+      "東東": "U8d28d03013fc8d69b56d79e9d0fcc33a",
+      "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5923,7 +5924,8 @@
           "楊程鈞",
           "周哲儁",
           "Sophia",
-          "Sophia2"
+          "Sophia2",
+          "YANG 阿傑"
         ]
       },
       {
@@ -5953,6 +5955,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/05 21:45",
+        "name": "YANG 阿傑",
+        "operator": "YANG 阿傑",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/05 17:45",
         "name": "東東",
