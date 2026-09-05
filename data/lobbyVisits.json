@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4023,
+    "viewCount": 4026,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -93,8 +93,8 @@
       "Ua5ba1a0ad7f4687b4075563e722331c5": {
         "displayName": "©️張CC～©️",
         "firstVisit": 1783217875055,
-        "count": 28,
-        "lastVisit": 1788586259925,
+        "count": 30,
+        "lastVisit": 1788593426738,
         "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
       },
       "U47573cf563cc67d5fc00dbb48a51092a": {
@@ -1171,8 +1171,8 @@
       "U6372f83bb2d5405d07e25ef2aa038abc": {
         "displayName": "林淑惠Sophia",
         "firstVisit": 1788063257046,
-        "count": 7,
-        "lastVisit": 1788481888113,
+        "count": 8,
+        "lastVisit": 1788592568246,
         "pictureUrl": "https://profile.line-scdn.net/0hnA531hphMW4YSiDDyPxPEWgaMgQ7O2h8YC93C31DaVcmeHQ9Y3t5XX9IOlt2eyI9ZHx9X31POA4UWUYIBhzNWh96bF8le3MwMiR7jQ"
       },
       "U6a528d20c5cb50c8bd6efcca4c3ae6bf": {
@@ -1247,6 +1247,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1788593426738,
+        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
+        "displayName": "©️張CC～©️",
+        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
+      },
+      {
+        "time": 1788592805668,
+        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
+        "displayName": "©️張CC～©️",
+        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
+      },
+      {
+        "time": 1788592568246,
+        "userId": "U6372f83bb2d5405d07e25ef2aa038abc",
+        "displayName": "林淑惠Sophia",
+        "pictureUrl": "https://profile.line-scdn.net/0hnA531hphMW4YSiDDyPxPEWgaMgQ7O2h8YC93C31DaVcmeHQ9Y3t5XX9IOlt2eyI9ZHx9X31POA4UWUYIBhzNWh96bF8le3MwMiR7jQ"
+      },
       {
         "time": 1788590764284,
         "userId": "Ud9c980235866b4402d34cdfa250b9aed",
