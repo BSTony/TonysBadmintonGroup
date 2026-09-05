@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788583944290,
+    "lastActiveTime": 1788601390976,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5884,7 +5884,8 @@
       "JoJo": "U07da54f66d0a500df5b2db748bde73a9",
       "Jojo": "U07da54f66d0a500df5b2db748bde73a9",
       "joho1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "jojo2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "jojo2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB 王志成": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5906,7 +5907,8 @@
           "鈞",
           "Kevin",
           "兔兔(玉儒)",
-          "Mia"
+          "Mia",
+          "FB 王志成"
         ]
       },
       {
@@ -5949,6 +5951,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/05 17:43",
+        "name": "FB 王志成",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/05 12:52",
         "name": "jojo2",
