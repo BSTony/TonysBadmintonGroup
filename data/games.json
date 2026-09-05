@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788583933238,
+    "lastActiveTime": 1788583944290,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5883,7 +5883,8 @@
       "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
       "JoJo": "U07da54f66d0a500df5b2db748bde73a9",
       "Jojo": "U07da54f66d0a500df5b2db748bde73a9",
-      "joho1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "joho1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "jojo2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5942,11 +5943,19 @@
           "FB 李昀宸2",
           "腳皮",
           "宇軒",
-          "joho1"
+          "joho1",
+          "jojo2"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/05 12:52",
+        "name": "jojo2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/05 12:52",
         "name": "joho1",
