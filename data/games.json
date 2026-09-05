@@ -5819,7 +5819,8 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": true
   },
   "1788066323878590": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
