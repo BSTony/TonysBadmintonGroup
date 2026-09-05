@@ -5544,7 +5544,7 @@
     "tag": "",
     "active": true,
     "startTime": 1787983024731,
-    "lastActiveTime": 1788570001059,
+    "lastActiveTime": 1788570150922,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5557,7 +5557,8 @@
       "Jet": true,
       "Irene 葉": true,
       "小金(Chen Pei Hung)": true,
-      "FB 宋哲元": true
+      "FB 宋哲元": true,
+      "FB Shawn Yu1": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
