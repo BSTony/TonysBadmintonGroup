@@ -6356,7 +6356,7 @@
     "tag": "靠講台右邊場地,5等以上",
     "active": true,
     "startTime": 1788481203990,
-    "lastActiveTime": 1788481203990,
+    "lastActiveTime": 1788596331173,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6368,7 +6368,8 @@
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Kay": "U49e2484c80056990b759e9039a74e1a6"
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "Sunny - fb": "U1302ddcec82bfd0d9b9eba641676ea0a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6382,9 +6383,19 @@
           "King",
           "曾Jim凱",
           "謝東霖 Tony",
-          "Kay"
+          "Kay",
+          "Sunny - fb"
         ],
         "fee": "260"
+      }
+    ],
+    "history": [
+      {
+        "time": "09/05 16:18",
+        "name": "Sunny - fb",
+        "operator": "King",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   },
