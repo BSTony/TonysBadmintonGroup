@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788583784024,
+    "lastActiveTime": 1788583804209,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5881,7 +5881,8 @@
       "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a",
       "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
-      "JoJo": "U07da54f66d0a500df5b2db748bde73a9"
+      "JoJo": "U07da54f66d0a500df5b2db748bde73a9",
+      "Jojo": "U07da54f66d0a500df5b2db748bde73a9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5904,7 +5905,8 @@
           "Kevin",
           "兔兔(玉儒)",
           "Mia",
-          "JoJo"
+          "JoJo",
+          "Jojo"
         ]
       },
       {
@@ -5945,6 +5947,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/05 12:50",
+        "name": "Jojo",
+        "operator": "JOJO👆✌️🖖🤘👐💪",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/05 12:49",
         "name": "JoJo",
