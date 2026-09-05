@@ -5840,13 +5840,15 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788575266639,
+    "lastActiveTime": 1788583784024,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "JoJo": "+2"
+    },
     "paidMap": {},
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -5878,7 +5880,8 @@
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "宇軒": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "兔兔(玉儒)": "U47573cf563cc67d5fc00dbb48a51092a",
-      "Mia": "U7977ee57751b21a1fb17ddbb180444b3"
+      "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
+      "JoJo": "U07da54f66d0a500df5b2db748bde73a9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -5900,7 +5903,8 @@
           "鈞",
           "Kevin",
           "兔兔(玉儒)",
-          "Mia"
+          "Mia",
+          "JoJo"
         ]
       },
       {
@@ -5941,6 +5945,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/05 12:49",
+        "name": "JoJo",
+        "operator": "JOJO👆✌️🖖🤘👐💪",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/05 10:27",
         "name": "Mia",
