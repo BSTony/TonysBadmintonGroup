@@ -6694,7 +6694,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788698607378,
+    "lastActiveTime": 1788698650344,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6710,7 +6710,8 @@
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "張筳": "U1302ddcec82bfd0d9b9eba641676ea0a",
-      "Alex": "U1302ddcec82bfd0d9b9eba641676ea0a"
+      "Alex": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6736,7 +6737,8 @@
           "King",
           "Alice",
           "張筳",
-          "Alex"
+          "Alex",
+          "YANG 阿傑"
         ]
       },
       {
@@ -6753,6 +6755,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/06 20:44",
+        "name": "YANG 阿傑",
+        "operator": "YANG 阿傑",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/06 20:43",
         "name": "Alex",
