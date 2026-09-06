@@ -6723,7 +6723,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788701840960,
+    "lastActiveTime": 1788703637528,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6741,7 +6741,8 @@
       "張筳": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "Alex": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6780,12 +6781,20 @@
         "label": "",
         "list": [
           "謝東霖 Tony",
-          "Kay"
+          "Kay",
+          "Gary"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/06 22:07",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/06 21:37",
         "name": "楊程鈞",
