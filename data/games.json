@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788616611074,
+    "lastActiveTime": 1788652909864,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5849,7 +5849,9 @@
     "levelMap": {
       "JoJo": "+2"
     },
-    "paidMap": {},
+    "paidMap": {
+      "FB 李昀宸1": true
+    },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
