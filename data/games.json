@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788659956445,
+    "lastActiveTime": 1788659966184,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5866,7 +5866,8 @@
       "FB 王志成": true,
       "Sophia": true,
       "Sophia2": true,
-      "Nick": true
+      "Nick": true,
+      "蔡哥": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
