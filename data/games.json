@@ -5840,7 +5840,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788066323878,
-    "lastActiveTime": 1788663857621,
+    "lastActiveTime": 1788663862340,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -5872,7 +5872,8 @@
       "joho1": true,
       "jojo2": true,
       "謝東霖 Tony": true,
-      "Kay": true
+      "Kay": true,
+      "小可愛": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
