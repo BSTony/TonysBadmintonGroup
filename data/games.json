@@ -6723,7 +6723,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788703637528,
+    "lastActiveTime": 1788704512620,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6742,7 +6742,8 @@
       "Alex": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6782,12 +6783,20 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "Gary"
+          "Gary",
+          "小可愛"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/06 22:21",
+        "name": "小可愛",
+        "operator": "林俊佑",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/06 22:07",
         "name": "Gary",
