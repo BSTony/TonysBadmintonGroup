@@ -6714,7 +6714,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788698650344,
+    "lastActiveTime": 1788701840960,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6731,7 +6731,8 @@
       "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "張筳": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "Alex": "U1302ddcec82bfd0d9b9eba641676ea0a",
-      "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd"
+      "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6758,7 +6759,8 @@
           "Alice",
           "張筳",
           "Alex",
-          "YANG 阿傑"
+          "YANG 阿傑",
+          "楊程鈞"
         ]
       },
       {
@@ -6775,6 +6777,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/06 21:37",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/06 20:44",
         "name": "YANG 阿傑",
