@@ -6694,7 +6694,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788698522619,
+    "lastActiveTime": 1788698567939,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6706,7 +6706,8 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
-      "云": "U433bba23fffec0bbdba4f408822eb6ec"
+      "云": "U433bba23fffec0bbdba4f408822eb6ec",
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6728,7 +6729,9 @@
         "backupLimit": 5,
         "fee": "210",
         "label": "",
-        "list": []
+        "list": [
+          "King"
+        ]
       },
       {
         "title": "8-12",
@@ -6744,6 +6747,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/06 20:42",
+        "name": "King",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/06 20:42",
         "name": "云",
