@@ -6694,7 +6694,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788698567939,
+    "lastActiveTime": 1788698580430,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6707,7 +6707,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "云": "U433bba23fffec0bbdba4f408822eb6ec",
-      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "Alice": "U1302ddcec82bfd0d9b9eba641676ea0a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6730,7 +6731,8 @@
         "fee": "210",
         "label": "",
         "list": [
-          "King"
+          "King",
+          "Alice"
         ]
       },
       {
@@ -6747,6 +6749,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/06 20:43",
+        "name": "Alice",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/06 20:42",
         "name": "King",
