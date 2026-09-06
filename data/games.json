@@ -6480,7 +6480,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1788607130973,
+    "lastActiveTime": 1788670856650,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6519,7 +6519,8 @@
       "心平": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "小白": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "蘑菇": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "阿豪": "U1a05e97623cee1f79b0876626e88f0ab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6548,13 +6549,21 @@
           "心平",
           "小白",
           "蘑菇",
-          "江こう 洋々"
+          "江こう 洋々",
+          "阿豪"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/06 13:00",
+        "name": "阿豪",
+        "operator": "Wayne",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/05 19:18",
         "name": "江こう 洋々",
