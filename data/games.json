@@ -6694,7 +6694,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788672530648,
+    "lastActiveTime": 1788698522619,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6705,7 +6705,8 @@
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
-      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "云": "U433bba23fffec0bbdba4f408822eb6ec"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6717,7 +6718,8 @@
         "fee": "150",
         "label": "",
         "list": [
-          "林煥杰"
+          "林煥杰",
+          "云"
         ]
       },
       {
@@ -6742,6 +6744,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/06 20:42",
+        "name": "云",
+        "operator": "鄭人云",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/06 13:28",
         "name": "林煥杰",
