@@ -6312,7 +6312,7 @@
     "tag": "D E 場地",
     "active": true,
     "startTime": 1788270468474,
-    "lastActiveTime": 1788562788465,
+    "lastActiveTime": 1788705872076,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6362,13 +6362,19 @@
           "周則鼎",
           "Sean",
           "afrahuang",
-          "Jet",
           "FiFi"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/06 22:44",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/05 06:59",
         "name": "偉舫",
