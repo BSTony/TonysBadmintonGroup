@@ -525,7 +525,7 @@ async function resolveLineProfile() {
 }
 
 async function finishLiffBoot(testParams, buyFromUrl) {
-  if (typeof initLottery === 'function') initLottery(currentUser.userId);
+  if (typeof initLottery === 'function' && currentUser && currentUser.userId) initLottery(currentUser.userId);
   
   if (buyFromUrl) {
     if (typeof hydrateGbBuyerFields === 'function') await hydrateGbBuyerFields();
@@ -562,8 +562,10 @@ async function finishLiffBoot(testParams, buyFromUrl) {
     currentGroupId = gidFromUrl;
   } else if (context && (context.type === 'group' || context.type === 'room')) {
     currentGroupId = context.groupId || context.roomId;
-  } else {
+  } else if (currentUser && currentUser.userId && !currentUser.userId.startsWith('G_') && !currentUser.userId.startsWith('P_')) {
     currentGroupId = currentUser.userId;
+  } else {
+    currentGroupId = 'default';
   }
 
   if (currentGroupId && currentUser && !isWeakVisitUid(currentUser.userId)) {
@@ -1751,7 +1753,7 @@ async function initializeLiff() {
       if (typeof flushGbCartSave === 'function') flushGbCartSave();
       globalIsSuperAdmin = false;
       globalIsAdmin = false;
-      if (!currentGroupId) currentGroupId = testParams.get('gid') || currentUser.userId;
+      if (!currentGroupId) currentGroupId = testParams.get('gid') || ((currentUser && currentUser.userId && !currentUser.userId.startsWith('G_') && !currentUser.userId.startsWith('P_')) ? currentUser.userId : 'default');
       await enterAppAfterIdentity(buyFromUrl);
     } catch (e) {
       console.error('Fallback boot error:', e);
