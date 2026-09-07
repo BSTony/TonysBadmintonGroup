@@ -6312,7 +6312,7 @@
     "tag": "D E 場地",
     "active": true,
     "startTime": 1788270468474,
-    "lastActiveTime": 1788746683260,
+    "lastActiveTime": 1788758023605,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6343,7 +6343,8 @@
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
-      "FB 小z": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB 小z": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB 薛宇翔": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6364,12 +6365,20 @@
           "Sean",
           "afrahuang",
           "FiFi",
-          "FB 小z"
+          "FB 小z",
+          "FB 薛宇翔"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/07 13:13",
+        "name": "FB 薛宇翔",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/07 10:04",
         "name": "FB 小z",
