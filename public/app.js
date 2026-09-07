@@ -441,13 +441,11 @@ function startLiffLogin() {
 }
 
 async function settleLiffIdentity() {
-  for (let i = 0; i < 8; i++) {
-    try {
-      if (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) return true;
-    } catch (e) {}
+  try {
+    if (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) return true;
     if (readLiffUserId()) return true;
-    await new Promise(resolve => setTimeout(resolve, 120));
-  }
+  } catch (e) {}
+  await new Promise(resolve => setTimeout(resolve, 60));
   try {
     return (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || !!readLiffUserId();
   } catch (e) {
@@ -487,16 +485,23 @@ async function ensureLiffReady(liffId) {
 
 async function resolveLineProfile() {
   const uidFromCtx = readLiffUserId();
+  let cached = null;
+  try {
+    const raw = localStorage.getItem('gb_cached_user_profile');
+    if (raw) cached = JSON.parse(raw);
+  } catch (e) {}
+
   let profile = null;
   try {
-    profile = await withTimeout(liff.getProfile(), 8000, '無法取得 LINE 資料');
+    profile = await withTimeout(liff.getProfile(), 4000, '無法取得 LINE 資料');
   } catch (e) {
-    if (!uidFromCtx) throw e;
-    reportSystemLog('LIFF', 'getProfile 失敗，改用已授權的 UID', { message: e && e.message ? e.message : String(e), uid: uidFromCtx });
+    if (!uidFromCtx && !cached) throw e;
+    profile = cached;
+    reportSystemLog('LIFF', 'getProfile 失敗，改用已授權/快取的 UID', { message: e && e.message ? e.message : String(e), uid: uidFromCtx || (cached && cached.userId) });
   }
-  const userId = (profile && profile.userId) || uidFromCtx;
+  const userId = (profile && profile.userId) || uidFromCtx || (cached && cached.userId);
   if (!userId) throw new Error('無法取得 LINE UID');
-  let displayName = (profile && profile.displayName) || '';
+  let displayName = (profile && profile.displayName) || (cached && cached.displayName) || '';
   if (isPlaceholderDisplayName(displayName)) {
     try {
       const token = typeof liff.getDecodedIDToken === 'function' ? liff.getDecodedIDToken() : null;
@@ -508,22 +513,43 @@ async function resolveLineProfile() {
     if (nameEl && nameEl.value.trim()) displayName = nameEl.value.trim();
   }
   if (isPlaceholderDisplayName(displayName)) displayName = '';
-  return {
+  const resolved = {
     userId: userId,
     displayName: displayName,
-    pictureUrl: (profile && profile.pictureUrl) || ''
+    pictureUrl: (profile && profile.pictureUrl) || (cached && cached.pictureUrl) || ''
   };
+  try {
+    localStorage.setItem('gb_cached_user_profile', JSON.stringify(resolved));
+  } catch (e) {}
+  return resolved;
 }
 
 async function finishLiffBoot(testParams, buyFromUrl) {
   if (typeof initLottery === 'function') initLottery(currentUser.userId);
-  if (typeof hydrateGbBuyerFields === 'function') await hydrateGbBuyerFields();
-  if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
-  if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
-  if (typeof renderItemsGrid === 'function') renderItemsGrid();
-  if (typeof updateCartBar === 'function') updateCartBar();
-  if (typeof saveCartToBackend === 'function' && currentCart && Object.keys(currentCart).length > 0) {
-    saveCartToBackend({ silent: true });
+  
+  if (buyFromUrl) {
+    if (typeof hydrateGbBuyerFields === 'function') await hydrateGbBuyerFields();
+    if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
+    if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
+    if (typeof renderItemsGrid === 'function') renderItemsGrid();
+    if (typeof updateCartBar === 'function') updateCartBar();
+    if (typeof saveCartToBackend === 'function' && currentCart && Object.keys(currentCart).length > 0) {
+      saveCartToBackend({ silent: true });
+    }
+  } else {
+    // 羽球接龍大廳：團購資料在背景非同步載入，絕不阻擋大廳開啟！
+    setTimeout(async () => {
+      try {
+        if (typeof hydrateGbBuyerFields === 'function') await hydrateGbBuyerFields();
+        if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
+        if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
+        if (typeof renderItemsGrid === 'function') renderItemsGrid();
+        if (typeof updateCartBar === 'function') updateCartBar();
+        if (typeof saveCartToBackend === 'function' && currentCart && Object.keys(currentCart).length > 0) {
+          saveCartToBackend({ silent: true });
+        }
+      } catch (e) { console.error('Background gb sync failed', e); }
+    }, 20);
   }
 
   const gidFromUrl = testParams.get('gid');
@@ -1592,7 +1618,8 @@ async function enterAppAfterIdentity(buyFromUrl) {
     if (typeof openGroupBuyPage === 'function') openGroupBuyPage(buyFromUrl, { reuse: true });
     await loadGamesLobby(true);
   } else {
-    await loadGamesLobby();
+    const hasData = gamesList && gamesList.length > 0;
+    await loadGamesLobby(hasData);
   }
   if (typeof initSocket === 'function') initSocket();
 }
@@ -1659,14 +1686,18 @@ async function initializeLiff() {
     let lastLiffErr = null;
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
-        const configRes = await withTimeout(fetch(`/api/config?_t=${Date.now()}`), 12000, '無法取得系統設定');
-        if (!configRes.ok) throw new Error('無法取得系統設定');
-        const config = await configRes.json();
-        if (!config.liffId) throw new Error('系統未設定 LIFF ID');
+        let liffId = (window.__INITIAL_CONFIG__ && window.__INITIAL_CONFIG__.liffId) || '';
+        if (!liffId) {
+          const configRes = await withTimeout(fetch(`/api/config?_t=${Date.now()}`), 6000, '無法取得系統設定');
+          if (!configRes.ok) throw new Error('無法取得系統設定');
+          const config = await configRes.json();
+          liffId = config.liffId;
+        }
+        if (!liffId) throw new Error('系統未設定 LIFF ID');
         if (typeof liff === 'undefined') throw new Error('LIFF SDK 未載入');
 
         const cameFromLogin = hasLiffOauthCallback();
-        await ensureLiffReady(config.liffId);
+        await ensureLiffReady(liffId);
         await settleLiffIdentity();
         stripLiffOauthParams();
 
@@ -1710,8 +1741,8 @@ async function initializeLiff() {
         }
         if (attempt < 2) {
           if (err && /略過 LINE 登入|避免重複 LINE/.test(String(err.message || err))) break;
-          reportSystemLog('LIFF', '尚未拿到 LINE UID，2 秒後重試', { attempt: attempt, message: err && err.message ? err.message : String(err) });
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          reportSystemLog('LIFF', '尚未拿到 LINE UID，快速重試', { attempt: attempt, message: err && err.message ? err.message : String(err) });
+          await new Promise(resolve => setTimeout(resolve, 150));
         }
       }
     }
@@ -1759,7 +1790,7 @@ async function loadGamesLobby(silent = false) {
         if (btnBackGroupBuy) btnBackGroupBuy.style.display = 'none';
         openGroupBuyPage(urlBuyEarly, { reuse: true });
       }
-    } else if (!silent) {
+    } else if (!silent && (!gamesList || gamesList.length === 0)) {
       appDiv.className = 'loading';
       statusMsg.innerText = '載入中...';
       statusMsg.style.display = 'block';
@@ -1767,35 +1798,50 @@ async function loadGamesLobby(silent = false) {
     
     const uid = (currentUser && currentUser.userId) ? currentUser.userId : '';
     const gid = currentGroupId || 'default';
-    const res = await withTimeout(
-      fetch(`/api/game/${gid}?uid=${uid}&_t=${Date.now()}`),
-      12000,
-      '場次資料載入逾時'
-    );
-    const extras = [];
-    if (!res.ok) {
-      if (res.status === 404) {
-        gamesList = [];
-      } else {
-        throw new Error('無法取得場次資料');
-      }
-    } else {
-      const data = await res.json();
-      gamesList = data.games || [];
-      lastGamesJson = JSON.stringify(gamesList);
-      globalIsAdmin = !!data.isAdmin;
-      globalIsSuperAdmin = !!data.isSuperAdmin;
-      globalManagedGroups = data.managedGroups || [];
-      globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
-      globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
-      
-      if (globalLobbyUsers.length === 0) extras.push(loadLobbyUsers());
-      extras.push((async () => {
-        try {
-          if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
-        } catch (gbErr) { console.error('Fetch group buy error:', gbErr); }
-      })());
+
+    let data = null;
+    if (window.__EARLY_GAME_PROMISE__) {
+      try {
+        data = await window.__EARLY_GAME_PROMISE__;
+      } catch (e) {}
+      window.__EARLY_GAME_PROMISE__ = null;
     }
+    if (!data) {
+      const res = await withTimeout(
+        fetch(`/api/game/${gid}?uid=${uid}&_t=${Date.now()}`),
+        8000,
+        '場次資料載入逾時'
+      );
+      if (!res.ok) {
+        if (res.status === 404) {
+          data = { games: [] };
+        } else {
+          throw new Error('無法取得場次資料');
+        }
+      } else {
+        data = await res.json();
+      }
+    }
+
+    const extras = [];
+    gamesList = data.games || [];
+    lastGamesJson = JSON.stringify(gamesList);
+    globalIsAdmin = !!data.isAdmin;
+    globalIsSuperAdmin = !!data.isSuperAdmin;
+    globalManagedGroups = data.managedGroups || [];
+    globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
+    globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+    
+    try {
+      localStorage.setItem('cached_lobby_games_' + gid, JSON.stringify(data));
+    } catch (e) {}
+
+    if (globalLobbyUsers.length === 0) extras.push(loadLobbyUsers());
+    extras.push((async () => {
+      try {
+        if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
+      } catch (gbErr) { console.error('Fetch group buy error:', gbErr); }
+    })());
 
     extras.push((async () => {
       try {
@@ -1819,10 +1865,13 @@ async function loadGamesLobby(silent = false) {
       revealApp();
     } else if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
       renderDetail(urlGameId);
+      revealApp();
     } else if (!currentGameDetailId) {
       renderLobby();
+      revealApp();
     } else {
       renderDetail(currentGameDetailId);
+      revealApp();
     }
 
     Promise.all(extras).then(() => {
@@ -1848,7 +1897,6 @@ async function loadGamesLobby(silent = false) {
     } else {
       appDiv.className = '';
       statusMsg.innerText = err.message;
-      statusMsg.style.display = 'block';
     }
   }
 }
@@ -8482,8 +8530,84 @@ if (btnTaDelete) {
 
 // 畫面讀取完畢初始化
 
+function tryRenderOptimisticLobby() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const buyFromUrl = urlParams.get('buy');
+    if (buyFromUrl) return; // 專屬團購由 groupBuy 自行處理
+
+    const cachedUserRaw = localStorage.getItem('gb_cached_user_profile');
+    if (cachedUserRaw && !currentUser) {
+      try { currentUser = JSON.parse(cachedUserRaw); } catch(e) {}
+    }
+
+    const gid = urlParams.get('gid') || (currentUser && currentUser.userId) || 'default';
+    const cachedGamesRaw = localStorage.getItem('cached_lobby_games_' + gid);
+    if (cachedGamesRaw) {
+      const data = JSON.parse(cachedGamesRaw);
+      if (data && Array.isArray(data.games)) {
+        gamesList = data.games;
+        lastGamesJson = JSON.stringify(gamesList);
+        globalIsAdmin = !!data.isAdmin;
+        globalIsSuperAdmin = !!data.isSuperAdmin;
+        globalManagedGroups = data.managedGroups || [];
+        globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
+        globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+
+        const urlGameId = urlParams.get('gameId');
+        if (urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
+          renderDetail(urlGameId);
+        } else if (!currentGameDetailId) {
+          renderLobby();
+        }
+        revealApp();
+      }
+    }
+  } catch (e) {
+    console.warn('Optimistic render warning:', e);
+  }
+}
 
 function bootApp() {
+  if (window.__INITIAL_DATA__) {
+    if (Array.isArray(window.__INITIAL_DATA__.games) && window.__INITIAL_DATA__.games.length > 0) {
+      gamesList = window.__INITIAL_DATA__.games;
+      lastGamesJson = JSON.stringify(gamesList);
+    }
+    if (window.__INITIAL_DATA__.lobbyTitle) globalLobbyTitle = window.__INITIAL_DATA__.lobbyTitle;
+    if (window.__INITIAL_DATA__.lobbyDesc) globalLobbyDesc = window.__INITIAL_DATA__.lobbyDesc;
+    if (window.__INITIAL_DATA__.gid) currentGroupId = window.__INITIAL_DATA__.gid;
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const buyFromUrl = urlParams.get('buy');
+  const urlGameId = urlParams.get('gameId');
+
+  // ⚡ 1. 第 0 毫秒立即呈現大廳！
+  if (gamesList && gamesList.length > 0) {
+    if (urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
+      renderDetail(urlGameId);
+    } else if (!buyFromUrl) {
+      renderLobby();
+    }
+    revealApp();
+  } else {
+    tryRenderOptimisticLobby();
+  }
+
+  // 🚀 2. 並行預取最新資料
+  try {
+    const earlyGid = urlParams.get('gid') || (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.gid) || 'default';
+    let earlyUid = '';
+    try {
+      const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
+      if (u && u.userId) earlyUid = u.userId;
+    } catch(e) {}
+    window.__EARLY_GAME_PROMISE__ = fetch(`/api/game/${earlyGid}?uid=${earlyUid}&_t=${Date.now()}`)
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null);
+  } catch(e) {}
+
   initGroupBuyEvents();
   initializeLiff().then(() => {
     setupSSE();

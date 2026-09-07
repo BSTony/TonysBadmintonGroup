@@ -10,16 +10,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>羽球接龍報名大廳</title>
   <!-- SHARE_META -->
+  <link rel="preconnect" href="https://static.line-scdn.net" crossorigin>
+  <link rel="dns-prefetch" href="https://static.line-scdn.net">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <style>.hidden { display: none !important; }</style>
   <link rel="stylesheet" href="style.css?v=20260827">
 </head>
 <body>
-  <div id="app" class="loading">
-    <div class="loader"></div>
-    <p id="status-msg">載入中...</p>
+  <div id="app">
+    <div class="loader" style="display: none;"></div>
+    <p id="status-msg" style="display: none;">載入中...</p>
     
     <!-- 大廳視圖 (顯示所有場次) -->
-    <div id="lobby-view" class="view hidden">
+    <div id="lobby-view" class="view">
+      <script>
+        (function() {
+          try {
+            var d = window.__INITIAL_DATA__;
+            if (d) {
+              if (d.lobbyTitle) {
+                var t = document.getElementById('lobby-title-text');
+                if (t) t.innerText = d.lobbyTitle;
+              }
+              if (d.lobbyDesc) {
+                var desc = document.getElementById('lobby-desc-text');
+                if (desc) desc.innerText = d.lobbyDesc;
+              }
+            }
+          } catch(e) {}
+        })();
+      </script>
       <!-- 派對開啟廣播按鈕 -->
       <div id="party-active-banner" class="hidden" style="padding: 15px 15px 0 15px;">
         <button id="btn-enter-party" class="btn btn-primary" style="width: 100%; background-color: #e74c3c; font-weight: bold; border-radius: 12px; font-size: 16px; padding: 12px; animation: pulse 1.5s infinite;">
@@ -1100,13 +1120,13 @@
     }
   </style>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="lottery.js?v=20260711_15"></script>
-  <script src="pinball_v2.js?v=20260805_zoom_01"></script>
-  <script src="app.js?v=V202609020904"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script defer src="/socket.io/socket.io.js"></script>
+  <script defer src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script defer src="lottery.js?v=20260711_15"></script>
+  <script defer src="pinball_v2.js?v=20260902_pure60fps"></script>
+  <script defer src="app.js?v=V20260907_fast"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>

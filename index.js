@@ -4,6 +4,7 @@
  * Version: 1.3.10
  */
 const express = require('express');
+const compression = require('compression');
 const pinballPhysics = require('./pinballPhysics');
 const { Client, middleware } = require('@line/bot-sdk');
 const fs = require('fs');
@@ -1345,6 +1346,12 @@ async function isUserInTargetGroup(targetGid, uid) {
 }
 
 const app = express();
+app.use(compression({
+  filter: (req, res) => {
+    if (req.path === '/webhook') return false;
+    return compression.filter(req, res);
+  }
+}));
 const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server, { cors: { origin: '*' } });
@@ -1405,24 +1412,66 @@ function buildShareMeta(req) {
   };
 }
 
+// 全域存儲：支援多群組、多區段
+let games = {};
+let systemLogs = [];
+
+let cachedIndexHtml = null;
+
+function getInitialDataForReq(req) {
+  const gid = (typeof req.query.gid === 'string' && req.query.gid) ? req.query.gid : '';
+  const gameId = (typeof req.query.gameId === 'string' && req.query.gameId) ? req.query.gameId : '';
+  const gTitle = (gid && groupSettings[gid] && groupSettings[gid].lobbyTitle) || '羽球接龍大廳';
+  const gDesc = (gid && groupSettings[gid] && groupSettings[gid].lobbyDesc) || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
+
+  let list = Object.values(games || {}).filter(g => {
+    if (!g || !g.active || g.isManualEnded) return false;
+    if (gameId && g.gameId === gameId) return true;
+    if (!gid || gid === 'default') return true;
+    if (g.gid === gid) return true;
+    if (g.targetGids && Array.isArray(g.targetGids) && g.targetGids.includes(gid)) return true;
+    return false;
+  });
+
+  return {
+    liffId: process.env.LIFF_ID || '',
+    gid: gid || 'default',
+    gameId: gameId,
+    games: list,
+    lobbyTitle: gTitle,
+    lobbyDesc: gDesc
+  };
+}
+
 function sendIndexHtml(req, res) {
-  const indexPath = path.join(__dirname, 'public', 'index.html');
-  fs.readFile(indexPath, 'utf8', (err, html) => {
-    if (err) {
-      console.error('讀取 index.html 失敗:', err.message);
-      return res.status(500).send('頁面載入失敗');
-    }
+  const send = (html) => {
     const meta = buildShareMeta(req);
+    const initialData = getInitialDataForReq(req);
+    const initialScript = `<script>window.__INITIAL_DATA__ = ${JSON.stringify(initialData)}; window.__INITIAL_CONFIG__ = { liffId: ${JSON.stringify(process.env.LIFF_ID || '')} };</script>`;
     let out = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${meta.title}</title>`);
     if (out.indexOf('<!-- SHARE_META -->') !== -1) {
-      out = out.replace('<!-- SHARE_META -->', meta.tags);
+      out = out.replace('<!-- SHARE_META -->', meta.tags + '\n' + initialScript);
     } else {
-      out = out.replace('</head>', meta.tags + '\n</head>');
+      out = out.replace('</head>', meta.tags + '\n' + initialScript + '\n</head>');
     }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Cache-Control', 'no-cache');
     res.send(out);
-  });
+  };
+
+  if (cachedIndexHtml) {
+    send(cachedIndexHtml);
+  } else {
+    const indexPath = path.join(__dirname, 'public', 'index.html');
+    fs.readFile(indexPath, 'utf8', (err, html) => {
+      if (err) {
+        console.error('讀取 index.html 失敗:', err.message);
+        return res.status(500).send('頁面載入失敗');
+      }
+      cachedIndexHtml = html;
+      send(html);
+    });
+  }
 }
 
 app.get('/', sendIndexHtml);
@@ -1430,12 +1479,14 @@ app.get('/index.html', sendIndexHtml);
 
 app.use(express.static(path.join(__dirname, 'public'), {
   index: false,
-  etag: false,
-  lastModified: false,
+  etag: true,
+  lastModified: true,
   setHeaders: (res, filePath) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    } else if (filePath.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+    }
   }
 }));
 app.use((req, res, next) => {
@@ -1443,10 +1494,6 @@ app.use((req, res, next) => {
   if (req.path === '/webhook') return next();
   express.json()(req, res, next);
 });
-
-// 全域存儲：支援多群組、多區段
-let games = {};
-let systemLogs = [];
 
 const SYSTEM_LOGS_FILE = path.join(__dirname, 'data', 'systemLogs.json');
 
@@ -3731,6 +3778,7 @@ io.on('connection', (socket) => {
       if (name && typeof x === 'number' && typeof y === 'number') {
         if (!pinballRoom.positions) pinballRoom.positions = {};
         pinballRoom.positions[name] = { x, y };
+        pinballPhysics.setBallPosition(name, x, y);
         socket.broadcast.emit('pinball_ball_moved', { name, x, y });
       }
     });
@@ -3739,12 +3787,15 @@ io.on('connection', (socket) => {
       if (name && typeof x === 'number' && typeof y === 'number') {
         if (!pinballRoom.positions) pinballRoom.positions = {};
         pinballRoom.positions[name] = { x, y };
+        pinballPhysics.setBallPosition(name, x, y);
         socket.broadcast.emit('pinball_ball_moved', { name, x, y });
       }
     });
   socket.on('pinball_host_sync', (data) => {
-    if (pinballRoom.hostSocketId && socket.id !== pinballRoom.hostSocketId) return;
-    socket.broadcast.emit('pinball_host_sync', data);
+    if (!pinballRoom.hostSocketId || socket.id === pinballRoom.hostSocketId) {
+      pinballRoom.hostSocketId = socket.id;
+      socket.broadcast.emit('pinball_host_sync', data);
+    }
   });
 
   socket.on('join_lottery', (data) => {
@@ -3912,6 +3963,7 @@ app.post('/api/admin/room/open', express.json(), (req, res) => {
     pinballRoom.pool = [];
     pinballRoom.finished = [];
     pinballRoom.scores = {};
+    pinballRoom.positions = {};
     
     lotteryRoom.status = 'idle';
     partyRoom.status = 'idle';
@@ -4003,8 +4055,13 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
   pinballRoom.finished = [];
   pinballRoom.seed = Math.floor(Math.random() * 1000000);
   pinballPhysics.initServerEngine(pinballRoom.pool, pinballRoom.seed, {
-    mode: pinballRoom.mode
+    mode: pinballRoom.mode,
+    initialPositions: pinballRoom.positions || {},
+    onFinish: (name) => {
+      handlePinballFinish(name);
+    }
   });
+  pinballPhysics.setIo(io);
 
   pinballRoom.status = 'instruction';
   pinballRoom.statusEndTime = Date.now() + 5000;
@@ -4027,7 +4084,7 @@ app.post('/api/admin/pinball/start-sequence', express.json(), (req, res) => {
     
     setTimeout(() => {
       if (pinballRoom.status === 'playing') {
-        pinballPhysics.startRace();
+        pinballPhysics.startRace(io);
       }
     }, 5000);
   }, 5000);
@@ -4055,6 +4112,7 @@ app.post('/api/admin/pinball/reset', express.json(), (req, res) => {
   pinballRoom.round = (pinballRoom.round || 1) + 1; // Increment round
   pinballRoom.seed = Math.floor(Math.random() * 1000000); // Generate new track
   pinballRoom.finished = [];
+  pinballRoom.positions = {};
   
   pinballPhysics.stopEngine();
   io.emit('pinball_state', pinballRoom);

@@ -1,3 +1,9 @@
+/**
+ * Author: Tony Hsieh
+ * Date: 2026-08-26
+ * Version: 1.3.0
+ * Server-side pinball physics (host-authoritative finish; matching track layout)
+ */
 const Matter = require('matter-js');
 const { Engine, World, Bodies, Events, Body } = Matter;
 
@@ -11,7 +17,7 @@ const PB_WIDTH = 800;
 const PB_START_Y = Math.floor(1000 * 0.65); // 650
 const PB_TRACK_WIDTH = 200;
 const PB_MARBLE_RADIUS = 12;
-const PB_GRAVITY_Y = 0.88; // Reduced by 20% for smooth readable race speed
+const PB_GRAVITY_Y = 0.96; // +20% faster than 0.80
 
 let prngState = 12345;
 function setSeed(s) { prngState = s; }
@@ -52,8 +58,8 @@ function buildTopDownTrack(W) {
     const flX = topLeftX + easeT * (targetLeftX - topLeftX);
     const frX = topRightX + easeT * (targetRightX - topRightX);
     
-    bodies.push(Bodies.circle(flX - 30, fy, 40, { isStatic: true, friction: 0.0, restitution: 0.2 }));
-    bodies.push(Bodies.circle(frX + 30, fy, 40, { isStatic: true, friction: 0.0, restitution: 0.2 }));
+    bodies.push(Bodies.circle(flX - 30, fy, 40, { isStatic: true, friction: 0.001, restitution: 0.7 }));
+    bodies.push(Bodies.circle(frX + 30, fy, 40, { isStatic: true, friction: 0.001, restitution: 0.7 }));
   }
 
   currentY += funnelHeight;
@@ -106,7 +112,7 @@ function buildTopDownTrack(W) {
   }
 
   // Build physical guardrails along the path using overlapping circles (exact 1:1 match with client)
-  const wallThickness = 120;
+  const wallThickness = 140;
   const wallOffset = (PB_TRACK_WIDTH / 2) + (wallThickness / 2) - 2;
   
   for (let i = 0; i < pathPoints.length; i++) {
@@ -136,14 +142,14 @@ function buildTopDownTrack(W) {
     
     bodies.push(Bodies.circle(leftX, leftY, wallThickness / 2, {
       isStatic: true,
-      friction: 0.0,
-      restitution: 0.2
+      friction: 0.03,
+      restitution: 0.45
     }));
 
     bodies.push(Bodies.circle(rightX, rightY, wallThickness / 2, {
       isStatic: true,
-      friction: 0.0,
-      restitution: 0.2
+      friction: 0.03,
+      restitution: 0.45
     }));
   }
 
@@ -154,8 +160,8 @@ function buildTopDownTrack(W) {
     const by = finalP.y + (PB_TRACK_WIDTH / 2) * Math.sin(angle) + 40;
     bodies.push(Bodies.circle(bx, by, wallThickness / 2, {
       isStatic: true,
-      friction: 0.0,
-      restitution: 0.4
+      friction: 0.001,
+      restitution: 0.5
     }));
   }
 
@@ -183,8 +189,8 @@ function initServerEngine(pool, seed, optionsOrCb) {
   pbBalls = {};
 
   pbEngine = Engine.create({
-    positionIterations: 12,
-    velocityIterations: 12,
+    positionIterations: 10,
+    velocityIterations: 10,
     enableSleeping: false
   });
   pbEngine.gravity.x = 0;
@@ -230,31 +236,29 @@ function initServerEngine(pool, seed, optionsOrCb) {
       
       if (isWindmillRow) {
         bodies.push(Bodies.rectangle(cx, cy, 128, 20, {
-          isStatic: true, restitution: 1.2, friction: 0.0,
+          isStatic: true, restitution: 0.85, friction: 0.02,
           plugin: { isRotary: true, isBumper: true }
         }));
       } else {
         bodies.push(Bodies.circle(cx, cy, 14, {
-          isStatic: true, restitution: 1.5, friction: 0.0,
+          isStatic: true, restitution: 0.85, friction: 0.02,
           plugin: { isBumper: true }
         }));
       }
     }
   }
 
-  // GENERATE FINAL PACHINKO GRID
+  // GENERATE FINAL PACHINKO GRID (must match client: step by 5)
   const startFinalIdx = Math.floor(pathPoints.length * 0.92);
   const endFinalIdx = Math.floor(pathPoints.length * 0.98);
-  const pachinkoRows = 6;
-  const pachinkoRowSpacing = Math.floor((endFinalIdx - startFinalIdx) / pachinkoRows);
-  
-  if (pachinkoRowSpacing > 0) {
+
+  if (endFinalIdx > startFinalIdx) {
     let rowNum = 0;
-    for (let pIdx = startFinalIdx; pIdx <= endFinalIdx; pIdx += pachinkoRowSpacing) {
+    for (let pIdx = startFinalIdx; pIdx <= endFinalIdx; pIdx += 5) {
       const p = pathPoints[pIdx];
-      const pNext = pathPoints[Math.min(pathPoints.length - 1, pIdx + 3)];
-      const pPrev = pathPoints[Math.max(0, pIdx - 3)];
-      
+      const pNext = pathPoints[pIdx + 5] || pathPoints[pathPoints.length - 1];
+      const pPrev = pathPoints[pIdx - 5] || pathPoints[0];
+
       let dx = pNext.x - pPrev.x;
       let dy = pNext.y - pPrev.y;
       let len = Math.sqrt(dx*dx + dy*dy) || 1;
@@ -271,7 +275,7 @@ function initServerEngine(pool, seed, optionsOrCb) {
         const cx = p.x + nx * offsetAmt;
         const cy = p.y + ny * offsetAmt;
         bodies.push(Bodies.circle(cx, cy, 14, {
-          isStatic: true, restitution: 1.5, friction: 0.0, plugin: { isBumper: true }
+          isStatic: true, restitution: 0.85, friction: 0.02, plugin: { isBumper: true }
         }));
       }
       rowNum++;
@@ -301,11 +305,15 @@ function initServerEngine(pool, seed, optionsOrCb) {
   const lobbyRightWall = Bodies.rectangle(PB_WIDTH + 20, (finalY + PB_START_Y) / 2, 40, (finalY + PB_START_Y) * 2, { isStatic: true });
   World.add(pbEngine.world, [pbStartGate, lobbyCeiling, lobbyLeftWall, lobbyRightWall]);
 
-  // Spawn balls
-  pool.forEach((name, idx) => {
+  // Spawn balls (alphabetical grid must match every client, unless custom dragged position exists)
+  const initialPositions = (options && options.initialPositions) || {};
+  const sortedPool = [...pool].sort();
+  sortedPool.forEach((name, idx) => {
     let x, y;
-    if (isUphill) {
-      // Inside 220px track, use 4 columns to fit comfortably inside [290, 510]
+    if (initialPositions[name] && typeof initialPositions[name].x === 'number' && typeof initialPositions[name].y === 'number') {
+      x = initialPositions[name].x;
+      y = initialPositions[name].y;
+    } else if (isUphill) {
       const cols = 4;
       const rRow = Math.floor(idx / cols);
       const cCol = idx % cols;
@@ -318,16 +326,16 @@ function initServerEngine(pool, seed, optionsOrCb) {
       const rRow = Math.floor(idx / cols);
       const cCol = idx % cols;
       const spacingX = 40;
-      const startXOffset = PB_WIDTH / 2 - ((Math.min(pool.length, cols) - 1) * spacingX) / 2;
+      const startXOffset = PB_WIDTH / 2 - ((Math.min(sortedPool.length, cols) - 1) * spacingX) / 2;
       x = startXOffset + cCol * spacingX;
-      y = PB_START_Y - 30 - (rRow * 35);
+      y = PB_START_Y - 25 - (rRow * 35);
     }
 
     const ball = Bodies.circle(x, y, PB_MARBLE_RADIUS, {
-      restitution: isUphill ? 0.4 : 0.6,
-      friction: 0.005,
+      restitution: isUphill ? 0.45 : 0.65,
+      friction: 0.04,
       density: 0.05,
-      frictionAir: 0.02,
+      frictionAir: 0.007,
       isBullet: true,
       plugin: { isBall: true, name: name }
     });
@@ -337,29 +345,15 @@ function initServerEngine(pool, seed, optionsOrCb) {
 
   Events.on(pbEngine, 'beforeUpdate', () => {
     const bodies = pbEngine.world.bodies;
+    const isUphill = pbEngine.plugin && pbEngine.plugin.mode === 'uphill';
+    const windmillAngle = (Date.now() / 1000) * 3.0;
+
     for (let i = 0; i < bodies.length; i++) {
       const body = bodies[i];
       if (body.plugin && body.plugin.isRotary) {
-        Body.setAngle(body, body.angle + 0.05);
+        Body.setAngle(body, windmillAngle);
       }
       if (body.plugin && body.plugin.isBall) {
-        // Foolproof Anti-Out-Of-Bounds Containment
-        if (body.position.x < 30) {
-          Body.setPosition(body, { x: 45, y: body.position.y });
-          Body.setVelocity(body, { x: Math.abs(body.velocity.x) * 0.5, y: body.velocity.y });
-        } else if (body.position.x > PB_WIDTH - 30) {
-          Body.setPosition(body, { x: PB_WIDTH - 45, y: body.position.y });
-          Body.setVelocity(body, { x: -Math.abs(body.velocity.x) * 0.5, y: body.velocity.y });
-        }
-        if (body.position.y > finalY + 65) {
-          Body.setPosition(body, { x: body.position.x, y: finalY + 40 });
-          Body.setVelocity(body, { x: body.velocity.x, y: Math.min(-2, -Math.abs(body.velocity.y) * 0.5) });
-        }
-        if (body.position.y < 30) {
-          Body.setPosition(body, { x: body.position.x, y: 45 });
-          Body.setVelocity(body, { x: body.velocity.x, y: Math.abs(body.velocity.y) * 0.5 });
-        }
-
         // Position-based 100% reliable finish check
         if (!body.plugin.finished && pbEngine.plugin && pbEngine.plugin.raceStarted) {
           const reachedFinish = isUphill ? (body.position.y <= PB_START_Y - 30) : (body.position.y >= finalY - 45);
@@ -369,13 +363,14 @@ function initServerEngine(pool, seed, optionsOrCb) {
           }
         }
 
+        // Anti-stuck gentle nudge
         if (!body.plugin.finished && pbEngine.plugin && pbEngine.plugin.raceStarted) {
-          if (body.speed < 0.5) {
+          if (body.speed < 0.2) {
             body.plugin.stuckFrames = (body.plugin.stuckFrames || 0) + 1;
-            if (body.plugin.stuckFrames > 60) {
+            if (body.plugin.stuckFrames > 45) {
               Body.setVelocity(body, {
-                x: (Math.random() - 0.5) * 10,
-                y: isUphill ? -10 : 8
+                x: (Math.random() - 0.5) * 4,
+                y: isUphill ? -6 : 5
               });
               body.plugin.stuckFrames = 0;
             }
@@ -385,60 +380,33 @@ function initServerEngine(pool, seed, optionsOrCb) {
         }
       }
     }
-    
-    // Rubber-banding (catch-up mechanic) & Anti-tunneling
-    if (pbEngine.plugin && pbEngine.plugin.raceStarted) {
+
+    // Server-side gentle slipstream catch-up boost
+    if (pbEngine.plugin && pbEngine.plugin.raceStarted && Math.abs(pbEngine.gravity.y) > 0) {
       const allBalls = Object.values(pbBalls).filter(b => !b.plugin.finished);
-      if (isUphill) {
-        const highestY = Math.min(...allBalls.map(b => b.position.y));
-        allBalls.forEach(ball => {
-          const distanceBehind = ball.position.y - highestY;
+      if (allBalls.length > 1) {
+        const sortedBalls = [...allBalls].sort((a, b) => isUphill ? (a.position.y - b.position.y) : (b.position.y - a.position.y));
+        sortedBalls.forEach((ball, index) => {
           let multiplier = 0;
-          if (distanceBehind > 200) multiplier = 0.05;
-          if (distanceBehind > 400) multiplier = 0.10;
-          if (distanceBehind > 600) multiplier = 0.20;
-          if (distanceBehind > 1000) multiplier = 0.35;
-          
-          const baseForce = ball.mass * Math.abs(pbEngine.gravity.y) * pbEngine.gravity.scale;
-          let totalYForce = -baseForce * multiplier;
-          
-          Body.applyForce(ball, ball.position, { x: 0, y: totalYForce });
-        });
-      } else {
-        const lowestY = Math.max(...allBalls.map(b => b.position.y));
-        allBalls.forEach(ball => {
-          const distanceBehind = lowestY - ball.position.y;
-          let multiplier = 0;
-          if (distanceBehind > 200) multiplier = 0.05;
-          if (distanceBehind > 400) multiplier = 0.1;
-          if (distanceBehind > 600) multiplier = 0.2;
-          if (distanceBehind > 1000) multiplier = 0.35;
-          
-          const baseForce = ball.mass * Math.abs(pbEngine.gravity.y) * pbEngine.gravity.scale;
-          let totalYForce = baseForce * multiplier;
-          
-          Body.applyForce(ball, ball.position, { x: 0, y: totalYForce });
+          if (index === 0) multiplier = 0.0;
+          else if (index === 1) multiplier = 0.03;
+          else if (index === 2) multiplier = 0.06;
+          else if (index >= 3 && index <= 9) multiplier = 0.10;
+          else multiplier = 0.15;
+
+          if (multiplier > 0) {
+            const baseForce = ball.mass * Math.abs(pbEngine.gravity.y) * pbEngine.gravity.scale;
+            Body.applyForce(ball, ball.position, { x: 0, y: isUphill ? (-baseForce * multiplier) : (baseForce * multiplier) });
+          }
         });
       }
-      
-      // Speed clamp to prevent tunneling
+    }
+    
+    // Out-Of-Bounds True Emergency Rescue (only if > 140px outside track)
+    if (pbEngine.plugin && pbEngine.plugin.raceStarted) {
+      const allBalls = Object.values(pbBalls).filter(b => !b.plugin.finished);
       allBalls.forEach(ball => {
-        if (ball.velocity.y > 25) {
-          Body.setVelocity(ball, { x: ball.velocity.x, y: 25 });
-        }
-        if (ball.velocity.y < -25) {
-          Body.setVelocity(ball, { x: ball.velocity.x, y: -25 });
-        }
-        if (Math.abs(ball.velocity.x) > 25) {
-          Body.setVelocity(ball, { x: Math.sign(ball.velocity.x) * 25, y: ball.velocity.y });
-        }
-      });
-      
-      // Out-Of-Bounds Rescue Mechanic
-      allBalls.forEach(ball => {
-        if (ball.plugin.finished) return;
         if (serverPathPoints.length === 0) return;
-        
         if (ball.position.y > serverPathPoints[serverPathPoints.length - 1].y) return;
 
         if (ball.position.y > serverPathPoints[0].y) {
@@ -453,9 +421,9 @@ function initServerEngine(pool, seed, optionsOrCb) {
             if (serverPathPoints[j].y > ball.position.y + 100) break;
           }
           
-          if (Math.abs(ball.position.x - closest.x) > 85) {
+          if (Math.abs(ball.position.x - closest.x) > 140) {
             Body.setPosition(ball, { x: closest.x, y: closest.y });
-            Body.setVelocity(ball, { x: 0, y: ball.velocity.y * 0.5 });
+            Body.setVelocity(ball, { x: (Math.random() - 0.5) * 2, y: isUphill ? -5 : 5 });
           }
         }
       });
@@ -505,7 +473,13 @@ function initServerEngine(pool, seed, optionsOrCb) {
   }, 1000 / 60);
 }
 
-function startRace() {
+let ioInstance = null;
+function setIo(io) {
+  ioInstance = io;
+}
+
+function startRace(io) {
+  if (io) ioInstance = io;
   if (pbEngine) {
     const isUphill = pbEngine.plugin && pbEngine.plugin.mode === 'uphill';
     pbEngine.gravity.y = isUphill ? -PB_GRAVITY_Y : PB_GRAVITY_Y;
@@ -520,6 +494,36 @@ function startRace() {
         y: isUphill ? -(2 + Math.random() * 2) : (2 + Math.random() * 2)
       });
     });
+
+    let syncFrameCount = 0;
+    if (updateInterval) clearInterval(updateInterval);
+    updateInterval = setInterval(() => {
+      if (pbEngine) {
+        Engine.update(pbEngine, 1000 / 60);
+        // Visual rolling angle — accumulated AFTER physics step, never touching b.angle
+        const bodies = pbEngine.world.bodies;
+        for (let i = 0; i < bodies.length; i++) {
+          const b = bodies[i];
+          if (b.plugin && b.plugin.isBall) {
+            if (b.plugin.rollAngle === undefined) b.plugin.rollAngle = 0;
+            b.plugin.rollAngle += (b.velocity.y * 0.045 + b.velocity.x * 0.07);
+          }
+        }
+        syncFrameCount++;
+        // Broadcast snapshot every frame (60Hz) for buttery-smooth responsiveness
+        if (ioInstance) {
+          const syncData = getSyncState();
+          ioInstance.emit('pinball_host_sync', { syncData, t: Date.now() });
+        }
+      }
+    }, 1000 / 60);
+  }
+}
+
+function setBallPosition(name, x, y) {
+  if (pbBalls && pbBalls[name]) {
+    Body.setPosition(pbBalls[name], { x, y });
+    Body.setVelocity(pbBalls[name], { x: 0, y: 0 });
   }
 }
 
@@ -600,18 +604,21 @@ function applyForce(name, forceX, forceY) {
 }
 
 function getSyncState() {
-    const state = {};
-    for (const name in pbBalls) {
+  const state = {};
+  for (const name in pbBalls) {
+    const b = pbBalls[name];
+    if (b && b.position) {
       state[name] = {
-        x: Math.round(pbBalls[name].position.x * 100) / 100,
-        y: Math.round(pbBalls[name].position.y * 100) / 100,
-        a: Math.round(pbBalls[name].angle * 1000) / 1000,
-        vx: Math.round(pbBalls[name].velocity.x * 100) / 100,
-        vy: Math.round(pbBalls[name].velocity.y * 100) / 100
+        x: Math.round(b.position.x * 10) / 10,
+        y: Math.round(b.position.y * 10) / 10,
+        a: Math.round((b.plugin.rollAngle || 0) * 1000) / 1000,
+        vx: Math.round(b.velocity.x * 100) / 100,
+        vy: Math.round(b.velocity.y * 100) / 100
       };
     }
-    return state;
   }
+  return state;
+}
 
 function stopEngine() {
   if (updateInterval) clearInterval(updateInterval);
@@ -645,11 +652,13 @@ function addBall(name) {
 
 module.exports = {
   initServerEngine,
+  setIo,
   startRace,
   scatterBallsOnFive,
   pushBall,
   applyForce,
   getSyncState,
   stopEngine,
-  addBall
+  addBall,
+  setBallPosition
 };
