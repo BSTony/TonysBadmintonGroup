@@ -6312,7 +6312,7 @@
     "tag": "D E 場地",
     "active": true,
     "startTime": 1788270468474,
-    "lastActiveTime": 1788793225386,
+    "lastActiveTime": 1788793251292,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6369,13 +6369,19 @@
           "FiFi",
           "FB 小z",
           "FB 薛宇翔",
-          "✨品婕✨",
-          "品婕"
+          "✨品婕✨"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/07 23:00",
+        "name": "品婕",
+        "operator": "✨品婕✨",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/07 23:00",
         "name": "品婕",
