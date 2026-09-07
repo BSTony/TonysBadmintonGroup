@@ -6729,7 +6729,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788704512620,
+    "lastActiveTime": 1788740643731,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6749,7 +6749,8 @@
       "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
-      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a"
+      "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6762,7 +6763,8 @@
         "label": "",
         "list": [
           "林煥杰",
-          "云"
+          "云",
+          "ALAN LIU"
         ]
       },
       {
@@ -6796,6 +6798,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/07 08:24",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/06 22:21",
         "name": "小可愛",
