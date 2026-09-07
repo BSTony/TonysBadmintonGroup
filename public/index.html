@@ -23,23 +23,6 @@
     
     <!-- 大廳視圖 (顯示所有場次) -->
     <div id="lobby-view" class="view">
-      <script>
-        (function() {
-          try {
-            var d = window.__INITIAL_DATA__;
-            if (d) {
-              if (d.lobbyTitle) {
-                var t = document.getElementById('lobby-title-text');
-                if (t) t.innerText = d.lobbyTitle;
-              }
-              if (d.lobbyDesc) {
-                var desc = document.getElementById('lobby-desc-text');
-                if (desc) desc.innerText = d.lobbyDesc;
-              }
-            }
-          } catch(e) {}
-        })();
-      </script>
       <!-- 派對開啟廣播按鈕 -->
       <div id="party-active-banner" class="hidden" style="padding: 15px 15px 0 15px;">
         <button id="btn-enter-party" class="btn btn-primary" style="width: 100%; background-color: #e74c3c; font-weight: bold; border-radius: 12px; font-size: 16px; padding: 12px; animation: pulse 1.5s infinite;">
@@ -99,6 +82,23 @@
           </div>
         </div>
       </header>
+      <script>
+        (function() {
+          try {
+            var d = window.__INITIAL_DATA__;
+            if (d) {
+              if (d.lobbyTitle) {
+                var t = document.getElementById('lobby-title-text');
+                if (t) t.innerText = d.lobbyTitle;
+              }
+              if (d.lobbyDesc) {
+                var desc = document.getElementById('lobby-desc-text');
+                if (desc) desc.innerText = d.lobbyDesc;
+              }
+            }
+          } catch(e) {}
+        })();
+      </script>
       
       <div id="games-container" class="games-list">
         <!-- JS 將在這裡生成卡片 -->

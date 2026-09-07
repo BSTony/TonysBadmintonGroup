@@ -1702,30 +1702,16 @@ async function initializeLiff() {
         stripLiffOauthParams();
 
         const hasLineUser = (typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || !!readLiffUserId();
-        if (!hasLineUser) {
-          if (shouldSkipLiffLogin(buyFromUrl, cameFromLogin)) {
-            reportSystemLog('LIFF', 'iOS/團購略過 liff.login，避免跳轉', {
-              buy: buyFromUrl || '',
-              inClient: isLiffInClient(),
-              ios: isIosDevice()
-            });
-            throw new Error('略過 LINE 登入跳轉');
-          }
-          liffRedirecting = true;
-          if (!startLiffLogin()) {
-            liffRedirecting = false;
-            throw new Error('避免重複 LINE 登入跳轉');
-          }
-          return;
+        if (hasLineUser) {
+          currentUser = await resolveLineProfile();
+          try {
+            const idToken = (typeof liff.getDecodedIDToken === 'function') ? liff.getDecodedIDToken() : null;
+            const tokenPhone = idToken && (idToken.phone_number || idToken.phoneNumber);
+            if (tokenPhone) currentUser.phoneNumber = tokenPhone;
+          } catch (e) {}
+        } else {
+          reportSystemLog('LIFF', '以訪客模式顯示大廳，不強制登入跳轉', { buy: buyFromUrl || '', inClient: isLiffInClient() });
         }
-        try { localStorage.removeItem('gb_liff_skip_login'); } catch (e) {}
-
-        currentUser = await resolveLineProfile();
-        try {
-          const idToken = (typeof liff.getDecodedIDToken === 'function') ? liff.getDecodedIDToken() : null;
-          const tokenPhone = idToken && (idToken.phone_number || idToken.phoneNumber);
-          if (tokenPhone) currentUser.phoneNumber = tokenPhone;
-        } catch (e) {}
         await finishLiffBoot(testParams, buyFromUrl);
         return;
       } catch (err) {
@@ -1824,8 +1810,10 @@ async function loadGamesLobby(silent = false) {
     }
 
     const extras = [];
+    const newGamesJson = JSON.stringify(data.games || []);
+    const hasGamesChanged = (newGamesJson !== lastGamesJson);
     gamesList = data.games || [];
-    lastGamesJson = JSON.stringify(gamesList);
+    lastGamesJson = newGamesJson;
     globalIsAdmin = !!data.isAdmin;
     globalIsSuperAdmin = !!data.isSuperAdmin;
     globalManagedGroups = data.managedGroups || [];
@@ -1867,7 +1855,8 @@ async function loadGamesLobby(silent = false) {
       renderDetail(urlGameId);
       revealApp();
     } else if (!currentGameDetailId) {
-      renderLobby();
+      const needRenderCards = hasGamesChanged || (gamesContainer && gamesContainer.children.length === 0);
+      renderLobby(needRenderCards);
       revealApp();
     } else {
       renderDetail(currentGameDetailId);
@@ -1921,7 +1910,7 @@ document.addEventListener('click', (e) => {
 });
 
 // 渲染大廳畫面
-function renderLobby() {
+function renderLobby(forceCards = true) {
     appDiv.className = '';
     if (statusMsg) statusMsg.style.display = 'none';
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
@@ -2030,6 +2019,11 @@ function renderLobby() {
       }
     }
     
+    // 🚀 如果不需強制重算卡片，且卡片已經在畫面上，直接保留現有 DOM，絕不閃爍二次載入！
+    if (!forceCards && gamesContainer && gamesContainer.children.length > 0) {
+      return;
+    }
+
     gamesContainer.innerHTML = '';
     
     if (gamesList.length === 0) {
