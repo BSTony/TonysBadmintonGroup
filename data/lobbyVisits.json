@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4150,
+    "viewCount": 4153,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -72,8 +72,8 @@
       "Uc608f165fc93c9affa9b9d721d6d0efd": {
         "displayName": "YANG 阿傑",
         "firstVisit": 1783211742856,
-        "count": 53,
-        "lastVisit": 1788698630969,
+        "count": 54,
+        "lastVisit": 1788821965838,
         "pictureUrl": "https://profile.line-scdn.net/0hxqkHySt6J15GMTkKU79ZYDZhJDRlQH5MaQQ_OXtkej0rAzcJYlJtMXZhLG4sUWMIYwRpPXM4emdkR2dpMAI9QTMzDhUMZTVJLhcwcyVmGAgJYgdAOVIzcxFTOhwuVQtRKks6SCA5K24tdGB4azRtTihSIzMFdghzLmZLCEMDSd0pM1ALa1dpPXs3cWv-"
       },
       "Uc85aca08d5834bad3d829179ce81db1e": {
@@ -1122,8 +1122,8 @@
       "U098e41fcf09988ed14a5da8c7cf3fede": {
         "displayName": "✨品婕✨",
         "firstVisit": 1787232511330,
-        "count": 3,
-        "lastVisit": 1788793241082,
+        "count": 4,
+        "lastVisit": 1788820151172,
         "pictureUrl": "https://profile.line-scdn.net/0hyx86YkIJJlcVTzYB-S1YKGUfJT02Pn9Fbn1tMidKK2V_dmAJMSBhZndJLWcuKGEGbio6ZnVPfGIZXFExCxnaYxJ_e2YofmQJPyFstA"
       },
       "Ufa933cc19dd49a60255d5ee956e97d4d": {
@@ -1248,8 +1248,8 @@
       "U1473353b8a73287cdf22605c5d95f353": {
         "displayName": "王志成",
         "firstVisit": 1788659890539,
-        "count": 10,
-        "lastVisit": 1788784016531,
+        "count": 11,
+        "lastVisit": 1788821664717,
         "pictureUrl": "https://profile.line-scdn.net/0hktXedfm8NFt1HCvWbH9KZQVMNzFWbW1JXSlyaEQbOm0dLHMPC3x6ahUUPTxOeCQPCXh9aUMdYzhXbRdGLGYVORB-KDU7ci9RWR4OUx99bxZJS3R6PXgISjMZNHdJJS1ZWAEjRDQUFzsSLxNIJi98WCduMysJUjBKA0tYDXAuWtgaHkMOWHp6OEgaYm7N"
       },
       "Uc91d243122c7370e3439aebcc018d859": {
@@ -1261,6 +1261,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1788821965838,
+        "userId": "Uc608f165fc93c9affa9b9d721d6d0efd",
+        "displayName": "YANG 阿傑",
+        "pictureUrl": "https://profile.line-scdn.net/0hxqkHySt6J15GMTkKU79ZYDZhJDRlQH5MaQQ_OXtkej0rAzcJYlJtMXZhLG4sUWMIYwRpPXM4emdkR2dpMAI9QTMzDhUMZTVJLhcwcyVmGAgJYgdAOVIzcxFTOhwuVQtRKks6SCA5K24tdGB4azRtTihSIzMFdghzLmZLCEMDSd0pM1ALa1dpPXs3cWv-"
+      },
+      {
+        "time": 1788821664717,
+        "userId": "U1473353b8a73287cdf22605c5d95f353",
+        "displayName": "王志成",
+        "pictureUrl": "https://profile.line-scdn.net/0hktXedfm8NFt1HCvWbH9KZQVMNzFWbW1JXSlyaEQbOm0dLHMPC3x6ahUUPTxOeCQPCXh9aUMdYzhXbRdGLGYVORB-KDU7ci9RWR4OUx99bxZJS3R6PXgISjMZNHdJJS1ZWAEjRDQUFzsSLxNIJi98WCduMysJUjBKA0tYDXAuWtgaHkMOWHp6OEgaYm7N"
+      },
+      {
+        "time": 1788820151172,
+        "userId": "U098e41fcf09988ed14a5da8c7cf3fede",
+        "displayName": "✨品婕✨",
+        "pictureUrl": "https://profile.line-scdn.net/0hyx86YkIJJlcVTzYB-S1YKGUfJT02Pn9Fbn1tMidKK2V_dmAJMSBhZndJLWcuKGEGbio6ZnVPfGIZXFExCxnaYxJ_e2YofmQJPyFstA"
+      },
       {
         "time": 1788806353767,
         "userId": "U1920cbbd7be6a8816939be44d4d0e1f2",
