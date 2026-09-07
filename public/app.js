@@ -2622,6 +2622,15 @@ function renderDetail(gameId, preserveScroll = false) {
      tagsHtml += '</div>';
      detailList.innerHTML += tagsHtml;
   }
+  if (game.tag) {
+     const tagArr = game.tag.split(/[,、，]/).map(t => t.trim()).filter(Boolean);
+     if (tagArr.length > 0) {
+        let tagBadgesHtml = '<div class="card-badges" style="margin-top: 8px; margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px;">';
+        tagBadgesHtml += tagArr.map(t => `<div class="badge default" style="background-color: #f1f5f9; color: #475569; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">🏷️ ${escapeHTML(t)}</div>`).join('');
+        tagBadgesHtml += '</div>';
+        detailList.innerHTML += tagBadgesHtml;
+     }
+  }
   if (game.note) {
      detailList.innerHTML += `<div class="game-note">${escapeHTML(game.note)}</div>`;
   }

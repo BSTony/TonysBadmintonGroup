@@ -3512,6 +3512,7 @@ function generateListMessage(g, customTitle = null) {
   if (g.date) msg += `📅 ${g.date}\n`;
   if (g.time) msg += `⏰ ${g.time}\n`;
   if (g.location) msg += `📍 ${g.location}\n`;
+  if (g.tag) msg += `🏷️ 標籤：${g.tag}\n`;
   
   g.sections.forEach(sec => {
     msg += `\n【${sec.title}】 (目前 ${sec.list.length} / ${sec.limit} 人)\n`;
