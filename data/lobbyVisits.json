@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4149,
+    "viewCount": 4150,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1108,8 +1108,8 @@
       "U1920cbbd7be6a8816939be44d4d0e1f2": {
         "displayName": "FiFi",
         "firstVisit": 1787198716408,
-        "count": 6,
-        "lastVisit": 1788782445465,
+        "count": 7,
+        "lastVisit": 1788806353767,
         "pictureUrl": "https://profile.line-scdn.net/0hjyv_6BtwNVZbJivZR7BLKSt2Njx4V2xEdhd4YG0nbGMxEHdQI0h5NzkgP2JuEXcJIEQvNmkhOTNXNUIwRXDJYlwWaGdmF3cIcUh_tQ"
       },
       "U07da54f66d0a500df5b2db748bde73a9": {
@@ -1261,6 +1261,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1788806353767,
+        "userId": "U1920cbbd7be6a8816939be44d4d0e1f2",
+        "displayName": "FiFi",
+        "pictureUrl": "https://profile.line-scdn.net/0hjyv_6BtwNVZbJivZR7BLKSt2Njx4V2xEdhd4YG0nbGMxEHdQI0h5NzkgP2JuEXcJIEQvNmkhOTNXNUIwRXDJYlwWaGdmF3cIcUh_tQ"
+      },
       {
         "time": 1788800836017,
         "userId": "U33ec3d57827236fa5ed0f2da4c6e8205",
