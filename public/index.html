@@ -10,6 +10,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>羽球接龍報名大廳</title>
   <!-- SHARE_META -->
+  <script>
+    (function() {
+      try {
+        var url = new URL(window.location.href);
+        var rawState = url.searchParams.get('liff.state');
+        if (rawState) {
+          window.__HAD_LIFF_STATE__ = true;
+          url.searchParams.delete('liff.state');
+          var s = decodeURIComponent(rawState);
+          var qIndex = s.indexOf('?');
+          if (qIndex !== -1) {
+            var queryPart = s.substring(qIndex + 1);
+            var p = new URLSearchParams(queryPart);
+            p.forEach(function(v, k) {
+              if (!url.searchParams.has(k)) url.searchParams.set(k, v);
+            });
+            var pathPart = s.substring(0, qIndex);
+            if (pathPart && pathPart !== '/' && !url.pathname.endsWith(pathPart)) {
+              url.pathname = (url.pathname.replace(/\/$/, '') + '/' + pathPart.replace(/^\//, ''));
+            }
+          } else if (s.indexOf('=') !== -1) {
+            var p2 = new URLSearchParams(s.replace(/^\//, ''));
+            p2.forEach(function(v, k) {
+              if (!url.searchParams.has(k)) url.searchParams.set(k, v);
+            });
+          }
+          window.history.replaceState(null, document.title, url.pathname + (url.searchParams.toString() ? ('?' + url.searchParams.toString()) : '') + url.hash);
+        }
+      } catch(e) {}
+    })();
+  </script>
   <link rel="preconnect" href="https://static.line-scdn.net" crossorigin>
   <link rel="dns-prefetch" href="https://static.line-scdn.net">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>

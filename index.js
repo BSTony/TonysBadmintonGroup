@@ -1443,7 +1443,30 @@ function getInitialDataForReq(req) {
   };
 }
 
+function unpackLiffState(query) {
+  if (!query) return;
+  const rawState = query['liff.state'];
+  if (typeof rawState === 'string' && rawState) {
+    try {
+      let s = decodeURIComponent(rawState);
+      const qIndex = s.indexOf('?');
+      if (qIndex !== -1) {
+        const p = new URLSearchParams(s.substring(qIndex + 1));
+        for (const [k, v] of p.entries()) {
+          if (!query[k]) query[k] = v;
+        }
+      } else if (s.indexOf('=') !== -1) {
+        const p2 = new URLSearchParams(s.replace(/^\//, ''));
+        for (const [k, v] of p2.entries()) {
+          if (!query[k]) query[k] = v;
+        }
+      }
+    } catch (e) {}
+  }
+}
+
 function sendIndexHtml(req, res) {
+  unpackLiffState(req.query);
   const send = (html) => {
     const meta = buildShareMeta(req);
     const initialData = getInitialDataForReq(req);
