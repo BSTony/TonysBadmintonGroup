@@ -6312,7 +6312,7 @@
     "tag": "D E 場地",
     "active": true,
     "startTime": 1788270468474,
-    "lastActiveTime": 1788758023605,
+    "lastActiveTime": 1788793182955,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6344,7 +6344,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
       "FB 小z": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "FB 薛宇翔": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB 薛宇翔": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "✨品婕✨": "U098e41fcf09988ed14a5da8c7cf3fede"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6366,12 +6367,20 @@
           "afrahuang",
           "FiFi",
           "FB 小z",
-          "FB 薛宇翔"
+          "FB 薛宇翔",
+          "✨品婕✨"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/07 22:59",
+        "name": "✨品婕✨",
+        "operator": "✨品婕✨",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/07 13:13",
         "name": "FB 薛宇翔",
