@@ -3293,107 +3293,193 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
       };
       const messagesToSend = [carouselMsg];
       
-      if (isMentionPush) {
-          const registeredUsers = [];
-          for (const g of groupGames) {
-              const sections = g.sections && g.sections.length > 0 ? g.sections : [{ list: [] }];
-              for (const section of sections) {
-                  const list = section.list || [];
-                  for (const name of list) {
-                      if (name !== '__ANON__') {
-                          let uid = nameToUidMap.get(`${g.gameId}_${name}`);
-                          if (!uid && g.uidMap) {
-                              uid = g.uidMap[name];
-                          }
-                          if (!uid) {
-                              uid = nameToUidMap.get(`${targetGid}_${name}`);
-                          }
-                          registeredUsers.push({ uid: uid || null, name });
-                      }
-                  }
-              }
-          }
+       if (isMentionPush) {
+           const confirmedUsers = [];
+           const backupUsers = [];
 
-          // Deduplicate by uid or name
-          const uniquePlayers = [];
-          const seen = new Set();
-          for (const item of registeredUsers) {
-              const key = item.uid ? `uid_${item.uid}` : `name_${item.name}`;
-              if (!seen.has(key)) {
-                  seen.add(key);
-                  uniquePlayers.push(item);
-              }
-          }
+           for (const g of groupGames) {
+               const sections = (g.sections && g.sections.length > 0) ? g.sections : [{ list: g.list || [], limit: g.limit || 20 }];
+               for (const section of sections) {
+                   const list = section.list || [];
+                   const limit = (section.limit !== undefined && section.limit !== null && !isNaN(section.limit))
+                       ? Number(section.limit)
+                       : 20;
 
-          if (uniquePlayers.length > 0) {
-              // Pre-verify which users are active in the target group
-              const verificationResults = await Promise.all(
-                  uniquePlayers.map(async (player) => {
-                      if (!player.uid) return { ...player, inGroup: false };
-                      const inGroup = await isUserInTargetGroup(targetGid, player.uid);
-                      return { ...player, inGroup };
-                  })
-              );
+                   for (let idx = 0; idx < list.length; idx++) {
+                       const name = list[idx];
+                       if (name && name !== '__ANON__') {
+                           let uid = nameToUidMap.get(`${g.gameId}_${name}`);
+                           if (!uid && g.uidMap) {
+                               uid = g.uidMap[name];
+                           }
+                           if (!uid) {
+                               uid = nameToUidMap.get(`${targetGid}_${name}`);
+                           }
+                           const player = { uid: uid || null, name };
+                           if (idx < limit) {
+                               confirmedUsers.push(player);
+                           } else {
+                               backupUsers.push(player);
+                           }
+                       }
+                   }
+               }
+           }
 
-              const gameTitles = groupGames.map(g => g.title).filter(Boolean).join('、');
-              
-              const mentionChunks = [];
-              for (let i = 0; i < verificationResults.length; i += 20) {
-                  mentionChunks.push(verificationResults.slice(i, i + 20));
-              }
+           // Deduplicate players within confirmed and backup lists
+           const deduplicatePlayers = (players) => {
+               const unique = [];
+               const seen = new Set();
+               for (const item of players) {
+                   const key = item.uid ? `uid_${item.uid}` : `name_${item.name}`;
+                   if (!seen.has(key)) {
+                       seen.add(key);
+                       unique.push(item);
+                   }
+               }
+               return unique;
+           };
 
-              for (let i = 0; i < mentionChunks.length; i++) {
-                  const chunk = mentionChunks[i];
-                  const isFirst = (i === 0);
-                  const prefix = isFirst ? (gameTitles ? `[${gameTitles}] 已報名成功，記得來打球：` : '報名成功提醒：') : '(續)：';
-                  
-                  let textParts = [prefix];
-                  const substitution = {};
-                  const _names = {};
-                  let hasAnyMention = false;
-                  let subCounter = 0;
-                  
-                  for (let j = 0; j < chunk.length; j++) {
-                      const player = chunk[j];
-                      if (player.inGroup && player.uid) {
-                          const key = `user${subCounter++}`;
-                          textParts.push(`{${key}}`);
-                          substitution[key] = {
-                              type: "mention",
-                              mentionee: {
-                                  type: "user",
-                                  userId: player.uid
-                              }
-                          };
-                          _names[key] = player.name;
-                          hasAnyMention = true;
-                      } else {
-                          // Not in group or no UID -> output plain text @Name
-                          textParts.push(`@${player.name}`);
-                      }
-                  }
-                  
-                  if (hasAnyMention) {
-                      messagesToSend.push({
-                          type: "textV2",
-                          text: textParts.join(" "),
-                          substitution: substitution,
-                          _names: _names
-                      });
-                  } else {
-                      messagesToSend.push({
-                          type: "text",
-                          text: textParts.join(" ")
-                      });
-                  }
-              }
-          } else {
-              messagesToSend.push({
-                  type: "text",
-                  text: "⚠️ 推播提醒：目前尚無任何報名者名單。"
-              });
-          }
-      }
+           const uniqueConfirmed = deduplicatePlayers(confirmedUsers);
+           const uniqueBackup = deduplicatePlayers(backupUsers);
+
+           if (uniqueConfirmed.length > 0 || uniqueBackup.length > 0) {
+               // Pre-verify which users are active in the target group
+               const allPlayers = [...uniqueConfirmed, ...uniqueBackup];
+               const uidInGroupMap = new Map();
+               await Promise.all(
+                   allPlayers.map(async (p) => {
+                       if (p.uid && !uidInGroupMap.has(p.uid)) {
+                           uidInGroupMap.set(p.uid, false);
+                           const inGroup = await isUserInTargetGroup(targetGid, p.uid);
+                           uidInGroupMap.set(p.uid, inGroup);
+                       }
+                   })
+               );
+
+               const attachGroupStatus = (p) => ({
+                   ...p,
+                   inGroup: p.uid ? (uidInGroupMap.get(p.uid) || false) : false
+               });
+
+               const verifiedConfirmed = uniqueConfirmed.map(attachGroupStatus);
+               const verifiedBackup = uniqueBackup.map(attachGroupStatus);
+
+               const gameTitles = groupGames.map(g => g.title).filter(Boolean).join('、');
+               const titlePrefix = gameTitles ? `[${gameTitles}]\n` : '';
+
+               const buildSingleMentionMessage = (secList) => {
+                   let fullText = '';
+                   const substitution = {};
+                   const _names = {};
+                   let hasAnyMention = false;
+                   let subCounter = 0;
+
+                   for (const sec of secList) {
+                       if (sec.header) {
+                           fullText += sec.header;
+                       }
+                       const tokens = [];
+                       for (const player of sec.players) {
+                           if (player.inGroup && player.uid) {
+                               const key = `user${subCounter++}`;
+                               tokens.push(`{${key}}`);
+                               substitution[key] = {
+                                   type: "mention",
+                                   mentionee: {
+                                       type: "user",
+                                       userId: player.uid
+                                   }
+                               };
+                               _names[key] = player.name;
+                               hasAnyMention = true;
+                           } else {
+                               tokens.push(`@${player.name}`);
+                           }
+                       }
+                       fullText += tokens.join(" ");
+                   }
+
+                   if (hasAnyMention) {
+                       return {
+                           type: "textV2",
+                           text: fullText,
+                           substitution: substitution,
+                           _names: _names
+                       };
+                   } else {
+                       return {
+                           type: "text",
+                           text: fullText
+                       };
+                   }
+               };
+
+               const totalPlayers = verifiedConfirmed.length + verifiedBackup.length;
+               if (totalPlayers <= 20) {
+                   // Fits cleanly in one message
+                   const secList = [];
+                   if (verifiedConfirmed.length > 0) {
+                       secList.push({
+                           header: `${titlePrefix}已報名成功：\n`,
+                           players: verifiedConfirmed
+                       });
+                   }
+                   if (verifiedBackup.length > 0) {
+                       const backupHeader = verifiedConfirmed.length > 0 ? '\n備取如下：\n' : `${titlePrefix}備取如下：\n`;
+                       secList.push({
+                           header: backupHeader,
+                           players: verifiedBackup
+                       });
+                   }
+                   messagesToSend.push(buildSingleMentionMessage(secList));
+               } else {
+                   // Total exceeds 20 mentions limit: chunk confirmed and backup separately
+                   const confirmedChunks = [];
+                   for (let i = 0; i < verifiedConfirmed.length; i += 20) {
+                       confirmedChunks.push(verifiedConfirmed.slice(i, i + 20));
+                   }
+
+                   const backupChunks = [];
+                   for (let i = 0; i < verifiedBackup.length; i += 20) {
+                       backupChunks.push(verifiedBackup.slice(i, i + 20));
+                   }
+
+                   for (let i = 0; i < confirmedChunks.length; i++) {
+                       const chunk = confirmedChunks[i];
+                       const isFirst = (i === 0);
+                       const prefix = isFirst
+                           ? `${titlePrefix}已報名成功：\n`
+                           : `${titlePrefix}(續) 已報名成功：\n`;
+                       messagesToSend.push(buildSingleMentionMessage([{
+                           header: prefix,
+                           players: chunk
+                       }]));
+                   }
+
+                   for (let i = 0; i < backupChunks.length; i++) {
+                       const chunk = backupChunks[i];
+                       const isFirst = (i === 0);
+                       const prefix = isFirst
+                           ? `${titlePrefix}備取如下：\n`
+                           : `${titlePrefix}(續) 備取如下：\n`;
+                       messagesToSend.push(buildSingleMentionMessage([{
+                           header: prefix,
+                           players: chunk
+                       }]));
+                   }
+               }
+
+               while (messagesToSend.length > 5) {
+                   messagesToSend.pop();
+               }
+           } else {
+               messagesToSend.push({
+                   type: "text",
+                   text: "⚠️ 推播提醒：目前尚無任何報名者名單。"
+               });
+           }
+       }
 
       
     return messagesToSend;
