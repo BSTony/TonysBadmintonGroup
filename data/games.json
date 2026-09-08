@@ -6757,7 +6757,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1788701834032,
+    "lastActiveTime": 1788842228895,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6775,7 +6775,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6790,12 +6791,20 @@
           "Kay",
           "陳呈",
           "Jet",
-          "楊程鈞"
+          "楊程鈞",
+          "Kevin"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/08 12:37",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/06 21:37",
         "name": "楊程鈞",
