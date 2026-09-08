@@ -6869,7 +6869,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788883287066,
+    "lastActiveTime": 1788883294631,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6891,7 +6891,8 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
-      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3"
+      "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
+      "Mia": "U7977ee57751b21a1fb17ddbb180444b3"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6906,7 +6907,8 @@
           "林煥杰",
           "云",
           "ALAN LIU",
-          "Kevin"
+          "Kevin",
+          "Mia"
         ]
       },
       {
@@ -6940,6 +6942,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/09 00:01",
+        "name": "Mia",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/09 00:01",
         "name": "Kevin",
