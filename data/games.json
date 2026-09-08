@@ -6559,7 +6559,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1788830950492,
+    "lastActiveTime": 1788831138751,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6602,7 +6602,8 @@
       "阿豪": "U1a05e97623cee1f79b0876626e88f0ab",
       "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "Winnie": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+      "Winnie": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+      "雲": "U9189a06112f6a2a13fdacb08a190c60b"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6635,13 +6636,21 @@
           "阿豪",
           "Matt孟錡",
           "Emily🙈🙉🙊",
-          "Winnie"
+          "Winnie",
+          "雲"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/08 09:32",
+        "name": "雲",
+        "operator": "雲",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/08 09:29",
         "name": "Winnie",
