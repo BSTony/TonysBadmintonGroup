@@ -6559,7 +6559,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1788800842050,
+    "lastActiveTime": 1788830943959,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6600,7 +6600,8 @@
       "蘑菇": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "阿豪": "U1a05e97623cee1f79b0876626e88f0ab",
-      "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205"
+      "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205",
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6631,13 +6632,21 @@
           "蘑菇",
           "江こう 洋々",
           "阿豪",
-          "Matt孟錡"
+          "Matt孟錡",
+          "Emily🙈🙉🙊"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/08 09:29",
+        "name": "Emily🙈🙉🙊",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/08 01:07",
         "name": "Matt孟錡",
