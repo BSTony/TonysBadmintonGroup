@@ -7040,7 +7040,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788872296513,
-    "lastActiveTime": 1788872784785,
+    "lastActiveTime": 1788877931006,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7068,7 +7068,8 @@
       "海棠": "Ufa8dba5febf9f719da07f7e507391a21",
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
-      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb"
+      "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
+      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7087,13 +7088,21 @@
           "海棠",
           "周則鼎",
           "偉舫",
-          "Sean"
+          "Sean",
+          "FiFi"
         ],
         "fee": "280"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/08 22:32",
+        "name": "FiFi",
+        "operator": "FiFi",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/08 21:06",
         "name": "Sean",
