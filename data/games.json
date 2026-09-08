@@ -6312,7 +6312,7 @@
     "tag": "D E 場地",
     "active": true,
     "startTime": 1788270468474,
-    "lastActiveTime": 1788870330160,
+    "lastActiveTime": 1788870331018,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6330,7 +6330,8 @@
       "海棠": true,
       "周則鼎": true,
       "FiFi": true,
-      "afrahuang": true
+      "afrahuang": true,
+      "FB 薛宇翔": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
