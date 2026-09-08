@@ -6564,7 +6564,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1788831150107,
+    "lastActiveTime": 1788873249234,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6580,7 +6580,6 @@
       "曾Jim凱": true,
       "Ashely": true,
       "周則鼎": true,
-      "Ong": true,
       "郭岳翰John": true,
       "©️張CC～©️": true,
       "陳呈": true
@@ -6628,7 +6627,6 @@
           "曾Jim凱",
           "Ashely",
           "周則鼎",
-          "Ong",
           "郭岳翰John",
           "©️張CC～©️",
           "陳呈",
@@ -6651,6 +6649,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/08 21:14",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/08 09:32",
         "name": "lipei",
