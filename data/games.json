@@ -6564,7 +6564,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1788877869129,
+    "lastActiveTime": 1788881000560,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6609,7 +6609,8 @@
       "Winnie": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "雲": "U9189a06112f6a2a13fdacb08a190c60b",
       "lipei": "U9189a06112f6a2a13fdacb08a190c60b",
-      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2"
+      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
+      "小周老婆": "Uf2f63c157d1e4f7e5d289d377c568582"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6644,13 +6645,21 @@
           "Winnie",
           "雲",
           "lipei",
-          "FiFi"
+          "FiFi",
+          "小周老婆"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/08 23:23",
+        "name": "小周老婆",
+        "operator": "周則鼎",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/08 22:31",
         "name": "FiFi",
