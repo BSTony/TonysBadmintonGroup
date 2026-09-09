@@ -294,6 +294,74 @@ let currentSimulatedRole = sessionStorage.getItem('simulatedRole') || 'superAdmi
 let lastSystemLogKey = '';
 let lastSystemLogAt = 0;
 
+function getClientSource() {
+  if (typeof liff !== 'undefined' && typeof liff.isInClient === 'function' && liff.isInClient()) {
+    return '手機 LINE App';
+  }
+  const ua = navigator.userAgent || '';
+  if (/iPhone|iPad|iPod|Android/i.test(ua)) {
+    return '手機外部瀏覽器';
+  }
+  return '電腦瀏覽器';
+}
+
+function getLogProducerInfo(preferredName = '') {
+  let displayName = '';
+  let userId = '';
+
+  // 1. 優先取 currentUser
+  if (typeof currentUser !== 'undefined' && currentUser) {
+    if (currentUser.displayName && (typeof isPlaceholderDisplayName !== 'function' || !isPlaceholderDisplayName(currentUser.displayName))) {
+      displayName = currentUser.displayName;
+    }
+    if (currentUser.userId) {
+      userId = currentUser.userId;
+    }
+  }
+
+  // 2. 次選 LocalStorage 快取資料
+  if (!displayName || !userId) {
+    try {
+      const raw = localStorage.getItem('gb_cached_user_profile');
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (!displayName && p && p.displayName && (typeof isPlaceholderDisplayName !== 'function' || !isPlaceholderDisplayName(p.displayName))) {
+          displayName = p.displayName;
+        }
+        if (!userId && p && p.userId) {
+          userId = p.userId;
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 3. 次選輸入框填寫的名字 (例如使用者手動輸入名字)
+  if (!displayName && preferredName && preferredName.trim()) {
+    displayName = preferredName.trim() + ' (輸入框)';
+  }
+
+  // 4. 團購 Header 姓名 / 聯絡方式
+  if (!displayName) {
+    const nameEl = document.getElementById('gb-header-name');
+    if (nameEl && nameEl.value.trim()) {
+      displayName = nameEl.value.trim();
+    }
+  }
+
+  const source = getClientSource();
+  if (!displayName) displayName = '訪客';
+  if (!userId) {
+    userId = (typeof getOrCreateGuestUid === 'function') ? getOrCreateGuestUid() : '無UID';
+  }
+
+  return {
+    displayName,
+    userId,
+    source,
+    producerText: `${displayName} (UID: ${userId}, 來源: ${source})`
+  };
+}
+
 function reportSystemLog(title, errorMsg, extra) {
   try {
     const msg = String(errorMsg || '未知錯誤');
@@ -302,20 +370,18 @@ function reportSystemLog(title, errorMsg, extra) {
     if (key === lastSystemLogKey && now - lastSystemLogAt < 3000) return;
     lastSystemLogKey = key;
     lastSystemLogAt = now;
-    const nameEl = document.getElementById('gb-header-name');
-    const phoneEl = document.getElementById('gb-header-phone');
-    const buyer = nameEl && nameEl.value.trim()
-      ? (nameEl.value.trim() + (phoneEl && phoneEl.value.trim() ? ' ' + phoneEl.value.trim() : ''))
-      : '';
-    const operator = buyer || ((typeof currentUser !== 'undefined' && currentUser)
-      ? ((currentUser.displayName || '訪客') + (currentUser.userId ? ' (' + currentUser.userId + ')' : ''))
-      : '訪客');
+    
+    const prodInfo = getLogProducerInfo();
+
     fetch('/api/systemLogs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: title || '前端操作',
-        operator: operator,
+        operator: prodInfo.displayName,
+        producer: prodInfo.producerText,
+        uid: prodInfo.userId,
+        source: prodInfo.source,
         errorMsg: msg,
         context: extra || undefined
       })
@@ -3045,8 +3111,7 @@ function setupSSE() {
 window.handleCancelByName = async function(gameId, name) {
   const game = gamesList.find(g => g.gameId === gameId);
   const gameTitle = game ? game.title : '未知場次';
-  const opName = (currentUser && currentUser.displayName) ? currentUser.displayName : '未知';
-  const opUid = (currentUser && currentUser.userId) ? currentUser.userId : '無';
+  const prodInfo = getLogProducerInfo(name);
 
   if (!confirm(`確定要取消「${name}」的報名嗎？`)) {
     fetch('/api/systemLogs', {
@@ -3054,8 +3119,11 @@ window.handleCancelByName = async function(gameId, name) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: gameTitle,
-        operator: opName,
-        errorMsg: `名單取消 (第 1 次按 ❌ / 彈窗選擇放棄取消) | 對象: ${name} | UID: ${opUid}`
+        operator: prodInfo.displayName,
+        producer: prodInfo.producerText,
+        uid: prodInfo.userId,
+        source: prodInfo.source,
+        errorMsg: `名單取消 (第 1 次按 ❌ / 彈窗選擇放棄取消) | 對象: ${name} | 操作者UID: ${prodInfo.userId}`
       })
     }).catch(() => {});
     return;
@@ -3066,8 +3134,11 @@ window.handleCancelByName = async function(gameId, name) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       title: gameTitle,
-      operator: opName,
-      errorMsg: `名單取消 (第 2 次確認 ❌) | 對象: ${name} | UID: ${opUid}`
+      operator: prodInfo.displayName,
+      producer: prodInfo.producerText,
+      uid: prodInfo.userId,
+      source: prodInfo.source,
+      errorMsg: `名單取消 (第 2 次確認 ❌) | 對象: ${name} | 操作者UID: ${prodInfo.userId}`
     })
   }).catch(() => {});
 
@@ -3081,9 +3152,11 @@ window.handleCancelByName = async function(gameId, name) {
       body: JSON.stringify({
         gid: currentGroupId,
         gameId: gameId,
-        uid: currentUser.userId,
+        uid: prodInfo.userId,
         name: name,
-        operatorName: currentUser.displayName,
+        operatorName: prodInfo.displayName,
+        producer: prodInfo.producerText,
+        source: prodInfo.source,
         action: 'cancel'
       })
     });
@@ -3297,9 +3370,12 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
   const levelEl = document.getElementById(`level-input-${gameId}${suffix}`);
   const errorEl = document.getElementById(`error-msg-${gameId}${suffix}`);
   
-  let name = (currentUser && currentUser.displayName) ? currentUser.displayName : '訪客';
-  if (inputEl && inputEl.value.trim()) {
-    name = inputEl.value.trim();
+  const inputVal = (inputEl && inputEl.value.trim()) ? inputEl.value.trim() : '';
+  const prodInfo = getLogProducerInfo(inputVal);
+
+  let name = prodInfo.displayName;
+  if (inputVal) {
+    name = inputVal;
   }
   
   let level = '';
@@ -3309,8 +3385,10 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
 
   const game = gamesList.find(g => g.gameId === gameId);
   const gameTitle = game ? game.title : gameId;
-  const operatorName = (currentUser && currentUser.displayName) ? currentUser.displayName : '未知';
-  const operatorUid = (currentUser && currentUser.userId) ? currentUser.userId : '無';
+  const operatorName = prodInfo.displayName;
+  const operatorUid = prodInfo.userId;
+  const producerText = prodInfo.producerText;
+  const clientSource = prodInfo.source;
   
   if (action === 'cancel' && btn) {
     if (btn.dataset.dodged !== 'true') {
@@ -3321,7 +3399,10 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
         body: JSON.stringify({
           title: gameTitle,
           operator: operatorName,
-          errorMsg: `點選 -1 (第 1 次按 / 考慮中未確認) | 欲取消對象: ${name} | UID: ${operatorUid}`
+          producer: producerText,
+          uid: operatorUid,
+          source: clientSource,
+          errorMsg: `點選 -1 (第 1 次按 / 考慮中未確認) | 欲取消對象: ${name} | 操作者UID: ${operatorUid}`
         })
       }).catch(() => {});
 
@@ -3335,7 +3416,10 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
         body: JSON.stringify({
           title: gameTitle,
           operator: operatorName,
-          errorMsg: `點選 -1 (第 2 次按 / 執行確認) | 欲取消對象: ${name} | UID: ${operatorUid}`
+          producer: producerText,
+          uid: operatorUid,
+          source: clientSource,
+          errorMsg: `點選 -1 (第 2 次按 / 執行確認) | 欲取消對象: ${name} | 操作者UID: ${operatorUid}`
         })
       }).catch(() => {});
 
@@ -3402,7 +3486,10 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       body: JSON.stringify({
         title: gameTitle,
         operator: operatorName,
-        errorMsg: `點選 -1 取消失敗 (第 2 次按 / 名單中無此姓名: ${name}) | UID: ${operatorUid}`
+        producer: producerText,
+        uid: operatorUid,
+        source: clientSource,
+        errorMsg: `點選 -1 取消失敗 (第 2 次按 / 名單中無此姓名: ${name}) | 操作者UID: ${operatorUid}`
       })
     }).catch(() => {});
     return;
@@ -3422,9 +3509,11 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       body: JSON.stringify({
         gid: currentGroupId,
         gameId: gameId,
-        uid: (inputEl && inputEl.dataset.uuid) ? inputEl.dataset.uuid : currentUser.userId,
+        uid: (inputEl && inputEl.dataset.uuid) ? inputEl.dataset.uuid : operatorUid,
         name: name,
-        operatorName: currentUser.displayName,
+        operatorName: operatorName,
+        producer: producerText,
+        source: clientSource,
         level: level,
         action: action,
         sectionIdx: sectionIdx,
@@ -3457,7 +3546,10 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
         body: JSON.stringify({
           title: gameTitle,
           operator: operatorName,
-          errorMsg: `點選 -1 操作異常: ${err.message} | 欲取消姓名: ${name} | UID: ${operatorUid}`
+          producer: producerText,
+          uid: operatorUid,
+          source: clientSource,
+          errorMsg: `點選 -1 操作異常: ${err.message} | 欲取消姓名: ${name} | 操作者UID: ${operatorUid}`
         })
       }).catch(() => {});
     }
@@ -4956,7 +5048,11 @@ if (btnSystemLogs) {
         const copyBtn = toolbar.querySelector('#btn-copy-system-logs');
         if (copyBtn) {
           copyBtn.onclick = () => {
-            const text = logs.map(log => `${log.time}\n[${log.gameTitle || '未知'}] ${log.operator}\n${log.errorMsg}`).join('\n\n');
+            const text = logs.map(log => {
+              const prod = log.producer || log.operator || '未知';
+              const src = log.source ? ` [${log.source}]` : '';
+              return `${log.time}${src}\n[${log.gameTitle || '未知場次'}] 產出者: ${prod}\n${log.errorMsg}`;
+            }).join('\n\n');
             if (navigator.clipboard && window.isSecureContext) {
               navigator.clipboard.writeText(text).then(() => alert('已複製全部 LOG')).catch(() => prompt('請手動複製：', text));
             } else {
@@ -4966,21 +5062,37 @@ if (btnSystemLogs) {
         }
         logs.forEach(log => {
           const div = document.createElement('div');
-          div.style.borderBottom = '1px solid #ddd';
-          div.style.padding = '8px 0';
-          const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '未知場次') : (log.gameTitle || '未知場次');
+          div.style.borderBottom = '1px solid #e2e8f0';
+          div.style.padding = '10px 0';
+          
+          const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '系統') : (log.gameTitle || '系統');
           const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : (log.operator || '');
           const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : (log.errorMsg || '');
           const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : (log.time || '');
+          
+          const rawProducer = log.producer || (op ? `${op}${log.uid ? ` (${log.uid})` : ''}` : '系統');
+          const producer = typeof escapeHTML === 'function' ? escapeHTML(rawProducer) : rawProducer;
+          const source = log.source ? (typeof escapeHTML === 'function' ? escapeHTML(log.source) : log.source) : '';
+          const ip = log.ip ? (typeof escapeHTML === 'function' ? escapeHTML(log.ip) : log.ip) : '';
+
           let msgColor = '#b91c1c';
           if (msg.includes('第 1 次按') || msg.includes('第 1 次')) {
             msgColor = '#d97706';
           } else if (msg.includes('成功') || msg.includes('已移出名單')) {
             msgColor = '#15803d';
           }
-          div.innerHTML = `<div style="font-size:12px; color:#888;">${time}</div>
-          <div style="font-weight:bold;">[${title}] ${op}</div>
-          <div style="color:${msgColor}; margin-top:4px; white-space:pre-wrap; word-break:break-word; user-select:text;">${msg}</div>`;
+          div.innerHTML = `
+            <div style="font-size:12px; color:#64748b; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span>🕒 ${time}</span>
+              ${source ? `<span style="background:#e2e8f0; color:#334155; padding:1px 6px; border-radius:4px; font-size:11px; font-weight:500;">${source}</span>` : ''}
+            </div>
+            <div style="font-size:13px; margin-bottom:5px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+              <span style="font-weight:bold; color:#0f172a; background:#f1f5f9; padding:2px 8px; border-radius:4px;">[${title}]</span>
+              <span style="color:#0284c7; font-weight:bold;">👤 產出者：${producer}</span>
+              ${ip ? `<span style="color:#94a3b8; font-size:11px;">(IP: ${ip})</span>` : ''}
+            </div>
+            <div style="color:${msgColor}; margin-top:4px; white-space:pre-wrap; word-break:break-word; user-select:text; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:13px; border-left:3px solid ${msgColor}; line-height:1.5;">${msg}</div>
+          `;
           systemLogsContainer.appendChild(div);
         });
       }

@@ -1539,7 +1539,7 @@ function saveSystemLogs() {
   }
 }
 
-function recordSystemLog(title, operator, msg, errObj) {
+function recordSystemLog(title, operator, msg, errObj, meta = {}) {
   try {
     let errDetailStr = '';
     if (errObj) {
@@ -1553,7 +1553,32 @@ function recordSystemLog(title, operator, msg, errObj) {
     }
     const timeStr = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
     const finalMsg = errDetailStr ? `${msg} | ${errDetailStr}` : msg;
-    systemLogs.unshift({ time: timeStr, gameTitle: title || '系統', operator: operator || '系統', errorMsg: finalMsg });
+
+    const op = operator || '系統';
+    const clientIp = meta.ip || '';
+    const source = meta.source || '';
+    const uid = meta.uid || '';
+    let producer = meta.producer;
+    if (!producer) {
+      if (uid) {
+        producer = `${op} (UID: ${uid}${source ? ', 來源: ' + source : ''})`;
+      } else if (source) {
+        producer = `${op} (來源: ${source})`;
+      } else {
+        producer = op;
+      }
+    }
+
+    systemLogs.unshift({
+      time: timeStr,
+      gameTitle: title || '系統',
+      operator: op,
+      producer: producer,
+      uid: uid,
+      ip: clientIp,
+      source: source,
+      errorMsg: finalMsg
+    });
     if (systemLogs.length > 500) systemLogs.pop();
     saveSystemLogs();
   } catch(e) {
@@ -5005,6 +5030,11 @@ app.post('/api/action', express.json(), async (req, res) => {
         delete game.noteMap[name];
       }
     } else if (action === 'cancel') {
+      const clientIp = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '';
+      const actionSource = req.body.source || (req.body.clientSupportsLiffSendMessage ? '手機 LINE LIFF' : '電腦/外部網頁');
+      const actionProducer = req.body.producer || `${operatorName || name} (UID: ${uid || '無'}, 來源: ${actionSource}${clientIp ? ', IP: ' + clientIp : ''})`;
+      const actionMeta = { producer: actionProducer, uid: uid || '', ip: clientIp, source: actionSource };
+
       let foundInSecIdx = -1;
       for (let i = 0; i < game.sections.length; i++) {
           if (game.sections[i].list.includes(name)) {
@@ -5014,7 +5044,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       if (foundInSecIdx === -1) {
-        recordSystemLog(game.title, operatorName || name, `點選 -1 取消失敗 (名單中找不到姓名: ${name}) | 操作者UID: ${uid || '無'}`);
+        recordSystemLog(game.title, operatorName || name, `點選 -1 取消失敗 (名單中找不到姓名: ${name}) | 操作者UID: ${uid || '無'}`, null, actionMeta);
         return res.status(400).json({ error: '找不到此名稱' });
       }
       affectedSectionName = game.sections[foundInSecIdx].title;
@@ -5035,7 +5065,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       game.history.unshift({ time: timeStr, name: name, operator: operatorName || name, action: '-1', section: game.sections[foundInSecIdx].title });
       if (game.history.length > 2000) game.history.pop();
       
-      recordSystemLog(game.title, operatorName || name, `點選 -1 取消成功 (已移出名單) | 姓名: ${name} | 分區: ${game.sections[foundInSecIdx].title} | 操作者UID: ${uid || '無'}`);
+      recordSystemLog(game.title, operatorName || name, `點選 -1 取消成功 (已移出名單) | 姓名: ${name} | 分區: ${game.sections[foundInSecIdx].title} | 操作者UID: ${uid || '無'}`, null, actionMeta);
       
       if (game.paidMap) delete game.paidMap[name];
       if (game.noteMap) delete game.noteMap[name];
@@ -6793,7 +6823,7 @@ app.get('/api/systemLogs', async (req, res) => {
 });
 
 app.post('/api/systemLogs', (req, res) => {
-  const { title, operator, errorMsg, context } = req.body || {};
+  const { title, operator, errorMsg, context, producer, uid, source } = req.body || {};
   if (!errorMsg) {
     return res.status(400).json({ success: false, error: '缺少錯誤訊息' });
   }
@@ -6802,7 +6832,22 @@ app.post('/api/systemLogs', (req, res) => {
     extra = typeof context === 'string' ? context : JSON.stringify(context);
     if (extra.length > 400) extra = extra.substring(0, 400);
   }
-  recordSystemLog(title || '前端操作', operator || '未知', extra ? `${errorMsg} | ${extra}` : String(errorMsg));
+  const clientIp = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '';
+  const finalSource = source || (req.headers['user-agent']?.includes('Mobile') ? '手機網頁' : '電腦網頁');
+  const finalProducer = producer || `${operator || '訪客'} (UID: ${uid || '無'}, 來源: ${finalSource}${clientIp ? ', IP: ' + clientIp : ''})`;
+
+  recordSystemLog(
+    title || '前端操作',
+    operator || '未知',
+    extra ? `${errorMsg} | ${extra}` : String(errorMsg),
+    null,
+    {
+      producer: finalProducer,
+      uid: uid || '',
+      ip: clientIp,
+      source: finalSource
+    }
+  );
   res.json({ success: true });
 });
 
