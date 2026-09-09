@@ -6887,7 +6887,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788883294631,
+    "lastActiveTime": 1788940323456,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6910,7 +6910,8 @@
       "小可愛": "U532d12783f207181c2d0f9d9ecc8724a",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
-      "Mia": "U7977ee57751b21a1fb17ddbb180444b3"
+      "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
+      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6926,7 +6927,8 @@
           "云",
           "ALAN LIU",
           "Kevin",
-          "Mia"
+          "Mia",
+          "鈞"
         ]
       },
       {
@@ -6960,6 +6962,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/09 15:52",
+        "name": "鈞",
+        "operator": "鈞",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/09 00:01",
         "name": "Mia",
