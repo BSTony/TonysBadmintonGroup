@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4196,
+    "viewCount": 4198,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -93,8 +93,8 @@
       "Ua5ba1a0ad7f4687b4075563e722331c5": {
         "displayName": "©️張CC～©️",
         "firstVisit": 1783217875055,
-        "count": 31,
-        "lastVisit": 1788711253153,
+        "count": 32,
+        "lastVisit": 1788925855711,
         "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
       },
       "U47573cf563cc67d5fc00dbb48a51092a": {
@@ -1259,9 +1259,28 @@
         "count": 2,
         "lastVisit": 1788783805224,
         "pictureUrl": "https://profile.line-scdn.net/0h-zfa4fkgclVLGGLINfEMKjtIcT9oaStHMipoMn9KKmclfGJWZH08MipPLGN-ITIBN3lpZ34cJDFHCwUzVU6OYUwoL2R2KTALYXY4tg"
+      },
+      "Ubd783ca8df10092279cc1dddb68b341c": {
+        "displayName": "Chris L",
+        "firstVisit": 1788922912447,
+        "count": 1,
+        "lastVisit": 1788922912447,
+        "pictureUrl": "https://profile.line-scdn.net/0hAur5F6SDHlpfTAFVOEBgZC8cHTB8PUdIdy4COD5JSWNjfFAJIHoBO20fQGtjdFkEcSkCO2xIQW19fy5YckxVPTgqGRcUOQcMHXknPhoYFxwmAj5YB3cvYCIUAioieCpNDXUWfDYwFz5iDgNUN0glNDQyGDUnDl58CxtyDFp-cNkwTmkPcipQOWJKSG_n"
       }
     },
     "logs": [
+      {
+        "time": 1788925855711,
+        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
+        "displayName": "©️張CC～©️",
+        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
+      },
+      {
+        "time": 1788922912447,
+        "userId": "Ubd783ca8df10092279cc1dddb68b341c",
+        "displayName": "Chris L",
+        "pictureUrl": "https://profile.line-scdn.net/0hAur5F6SDHlpfTAFVOEBgZC8cHTB8PUdIdy4COD5JSWNjfFAJIHoBO20fQGtjdFkEcSkCO2xIQW19fy5YckxVPTgqGRcUOQcMHXknPhoYFxwmAj5YB3cvYCIUAioieCpNDXUWfDYwFz5iDgNUN0glNDQyGDUnDl58CxtyDFp-cNkwTmkPcipQOWJKSG_n"
+      },
       {
         "time": 1788920770315,
         "userId": "U49e2484c80056990b759e9039a74e1a6",
