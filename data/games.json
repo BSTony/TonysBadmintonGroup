@@ -6803,7 +6803,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1788842235147,
+    "lastActiveTime": 1788944418291,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6823,7 +6823,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
-      "Mia": "U7977ee57751b21a1fb17ddbb180444b3"
+      "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
+      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6840,12 +6841,20 @@
           "Jet",
           "楊程鈞",
           "Kevin",
-          "Mia"
+          "Mia",
+          "弘彬/Jason"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/09 17:00",
+        "name": "弘彬/Jason",
+        "operator": "弘彬/Jason",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/08 12:37",
         "name": "Mia",
