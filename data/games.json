@@ -7085,7 +7085,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788872296513,
-    "lastActiveTime": 1788877931006,
+    "lastActiveTime": 1788928852913,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7114,7 +7114,8 @@
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
       "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
-      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2"
+      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7134,13 +7135,21 @@
           "周則鼎",
           "偉舫",
           "Sean",
-          "FiFi"
+          "FiFi",
+          "Jet"
         ],
         "fee": "280"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/09 12:40",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/08 22:32",
         "name": "FiFi",
