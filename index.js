@@ -2857,7 +2857,8 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       });
     }
     const isFull = limit > 0 && count >= limit;
-    const statusText = isFull ? (limit > 0 ? `滿團(${limit})` : '滿團') : (limit > 0 ? `${count}/${limit}` : `${count}人`);
+    const backupCount = (limit > 0 && count > limit) ? (count - limit) : 0;
+    const statusText = isFull ? (backupCount > 0 ? (limit > 0 ? `滿團(${limit})+${backupCount}` : `滿團+${backupCount}`) : (limit > 0 ? `滿團(${limit})` : '滿團')) : (limit > 0 ? `${count}/${limit}` : `${count}人`);
     const titleText = g.title || g.date || '場次';
     
     let combinedTitle = titleText;
@@ -2892,7 +2893,8 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
         const sCount = (s.list || []).length;
         const sLimit = s.limit || 0;
         const sIsFull = sLimit > 0 && sCount >= sLimit;
-        const sStatusText = sIsFull ? (sLimit > 0 ? `滿(${sLimit})` : '滿') : (sLimit > 0 ? `${sCount}/${sLimit}` : `${sCount}`);
+        const sBackupCount = (sLimit > 0 && sCount > sLimit) ? (sCount - sLimit) : 0;
+        const sStatusText = sIsFull ? (sBackupCount > 0 ? (sLimit > 0 ? `滿(${sLimit})+${sBackupCount}` : `滿+${sBackupCount}`) : (sLimit > 0 ? `滿(${sLimit})` : '滿')) : (sLimit > 0 ? `${sCount}/${sLimit}` : `${sCount}`);
         
         const sIsSectionTarget = isTarget && cleanText.includes(`(${s.title})`);
         
@@ -2913,7 +2915,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
               layout: "horizontal",
               flex: 0,
               height: "18px",
-              width: sIsFull ? (sLimit > 0 ? "46px" : "28px") : "36px",
+              width: sIsFull ? (sLimit > 0 ? (sBackupCount > 0 ? "58px" : "46px") : (sBackupCount > 0 ? "36px" : "28px")) : "36px",
               cornerRadius: "sm",
               backgroundColor: sIsFull ? "#ffebee" : "#e8f5e9",
               justifyContent: "center",
@@ -2940,7 +2942,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
           layout: "horizontal",
           flex: 0,
           height: "22px",
-          width: isFull ? (limit > 0 ? "56px" : "36px") : "48px",
+          width: isFull ? (limit > 0 ? (backupCount > 0 ? "70px" : "56px") : (backupCount > 0 ? "46px" : "36px")) : "48px",
           cornerRadius: "sm",
           backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
           justifyContent: "center",
@@ -3042,7 +3044,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
       const flexBubbles = (statusBubble && !isMentionPush) ? [statusBubble] : [];
       const liffBaseUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : '';
       
-      const MAX_ROWS = 8;
+      const MAX_ROWS = 12;
       let currentBubbleRows = [];
       let currentBubbleRowCount = 0;
       let currentBubbleGameUris = new Set();
@@ -3082,7 +3084,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               } else if (row.type === 'backupHeader') {
                   listBoxes.push({
                       type: "box", layout: "horizontal", margin: "sm",
-                      contents: [{ type: "text", text: "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }]
+                      contents: [{ type: "text", text: row.text || "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }]
                   });
               } else if (row.type === 'main_dyn') {
                   const boxes = row.items.map(item => ({
@@ -3118,6 +3120,26 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               bubble.action = { type: "uri", label: "報名頁面", uri: gameUri };
           }
           return bubble;
+      };
+
+      const flushCurrentBubble = () => {
+          if (currentBubbleRows.length > 0) {
+              while (currentBubbleRows.length > 0) {
+                  const lastType = currentBubbleRows[currentBubbleRows.length - 1].type;
+                  if (lastType === 'header' || lastType === 'backupHeader' || lastType === 'gameHeader') {
+                      currentBubbleRows.pop();
+                  } else {
+                      break;
+                  }
+              }
+              if (currentBubbleRows.length > 0 && flexBubbles.length < 12) {
+                  const bUri = currentBubbleGameUris.size > 0 ? Array.from(currentBubbleGameUris)[0] : null;
+                  flexBubbles.push(createBubbleFromRows(currentBubbleRows, bUri));
+              }
+              currentBubbleRows = [];
+              currentBubbleRowCount = 0;
+              currentBubbleGameUris.clear();
+          }
       };
 
       for (const g of groupGames) {
@@ -3162,7 +3184,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               }
               
               const secList = sec.list || [];
-              const secLimit = sec.limit || 20;
+              const secLimit = (sec.limit !== undefined && sec.limit !== null && !isNaN(sec.limit)) ? Number(sec.limit) : 20;
               const MAX_ROW_LEN = 55;
               
               // 正取名單 (Dynamic wrapping)
@@ -3191,7 +3213,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               
               // 候補名單
               if (secList.length > secLimit) {
-                  allRows.push({ type: 'backupHeader' });
+                  allRows.push({ type: 'backupHeader', text: '⌛ 候補' });
                   let currBkupRow = [];
                   let currBkupLen = 0;
                   for (let i = secLimit; i < secList.length; i++) {
@@ -3217,71 +3239,78 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               }
           });
 
-          let gameRowCount = 0;
-          allRows.forEach(row => {
-              if (row.type === 'main_dyn' || row.type === 'backup_dyn' || row.type === 'empty' || row.type === 'gameHeader') {
-                  gameRowCount++;
-              }
-          });
-
-          if (currentBubbleRowCount > 0 && (currentBubbleRowCount + gameRowCount > MAX_ROWS)) {
-              const bUri = currentBubbleGameUris.size > 0 ? Array.from(currentBubbleGameUris)[0] : null;
-              if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(currentBubbleRows, bUri));
-              currentBubbleRows = [];
-              currentBubbleRowCount = 0;
-              currentBubbleGameUris.clear();
-          }
+          const gameRowCount = allRows.length;
 
           if (gameRowCount > MAX_ROWS) {
-              if (currentBubbleRows.length > 0) {
-                  const bUri = currentBubbleGameUris.size > 0 ? Array.from(currentBubbleGameUris)[0] : null;
-                  if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(currentBubbleRows, bUri));
-                  currentBubbleRows = [];
-                  currentBubbleRowCount = 0;
-                  currentBubbleGameUris.clear();
-              }
+              flushCurrentBubble();
+
               let chunk = [];
               let chunkRowCount = 0;
               let titleAdded = false;
+
               for (let i = 0; i < allRows.length; i++) {
                   const row = allRows[i];
-                  if (chunkRowCount >= MAX_ROWS && row.type !== 'header' && row.type !== 'backupHeader' && row.type !== 'gameHeader') {
-                      if (flexBubbles.length < 12) flexBubbles.push(createBubbleFromRows(chunk, gameUri));
+
+                  let shouldCut = false;
+                  if (chunkRowCount >= MAX_ROWS) {
+                      shouldCut = true;
+                  } else if (row.type === 'backupHeader' || row.type === 'header') {
+                      if (chunkRowCount >= MAX_ROWS - 1) {
+                          shouldCut = true;
+                      }
+                  }
+
+                  if (shouldCut && chunk.length > 0) {
+                      while (chunk.length > 0) {
+                          const lastType = chunk[chunk.length - 1].type;
+                          if (lastType === 'header' || lastType === 'backupHeader' || lastType === 'gameHeader') {
+                              chunk.pop();
+                          } else {
+                              break;
+                          }
+                      }
+
+                      if (flexBubbles.length < 12 && chunk.length > 0) {
+                          flexBubbles.push(createBubbleFromRows(chunk, gameUri));
+                      }
                       chunk = [];
                       chunkRowCount = 0;
                       titleAdded = false;
                   }
-                  
-                  // Re-inject gameHeader if we chunked
+
                   if (!titleAdded && row.type !== 'gameHeader') {
                       chunk.push({ type: 'gameHeader', text: `🏸 ${g.title} (續)`, rightText: countText, gameUri });
                       chunkRowCount++;
                       titleAdded = true;
                   }
-                  
+
+                  if (row.type === 'backup_dyn' && !chunk.some(r => r.type === 'backupHeader')) {
+                      chunk.push({ type: 'backupHeader', text: '⌛ 候補' });
+                      chunkRowCount++;
+                  }
+
                   if (row.type === 'gameHeader') {
                       titleAdded = true;
                   }
-                  
+
                   chunk.push(row);
-                  if (row.type === 'main_dyn' || row.type === 'backup_dyn' || row.type === 'empty' || row.type === 'gameHeader') {
-                      chunkRowCount++;
-                  }
+                  chunkRowCount++;
               }
-              currentBubbleRows = chunk;
-              currentBubbleRowCount = chunkRowCount;
-              if (gameUri) currentBubbleGameUris.add(gameUri);
+
+              if (chunk.length > 0 && flexBubbles.length < 12) {
+                  flexBubbles.push(createBubbleFromRows(chunk, gameUri));
+              }
           } else {
+              if (currentBubbleRowCount > 0 && (currentBubbleRowCount + gameRowCount > MAX_ROWS)) {
+                  flushCurrentBubble();
+              }
               currentBubbleRows.push(...allRows);
               currentBubbleRowCount += gameRowCount;
               if (gameUri) currentBubbleGameUris.add(gameUri);
           }
       }
       
-      if (currentBubbleRows.length > 0 && flexBubbles.length < 12) {
-          const bUri = currentBubbleGameUris.size > 0 ? Array.from(currentBubbleGameUris)[0] : null;
-          flexBubbles.push(createBubbleFromRows(currentBubbleRows, bUri));
-      }
+      flushCurrentBubble();
 
       const carouselMsg = {
           type: "flex",
