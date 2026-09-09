@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4204,
+    "viewCount": 4206,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -505,8 +505,8 @@
       "U6828d5fa68c1c92cf8a000b9b253a66d": {
         "displayName": "Hsin",
         "firstVisit": 1783573015272,
-        "count": 18,
-        "lastVisit": 1788609304322,
+        "count": 19,
+        "lastVisit": 1788934852552,
         "pictureUrl": "https://profile.line-scdn.net/0h_QmJQsWwAH5AMxH11GB-ATBjAxRjQllsZQYfGXU7DkZ7UUN_aVBHGXdhVk8qBEF_O1ZMHnQ3DExMIHcYXmX8SkcDXU99AkIgal1KnQ"
       },
       "U27f23a1855894c45cf1e7898369224c1": {
@@ -1249,8 +1249,8 @@
       "U1473353b8a73287cdf22605c5d95f353": {
         "displayName": "王志成",
         "firstVisit": 1788659890539,
-        "count": 12,
-        "lastVisit": 1788883735612,
+        "count": 13,
+        "lastVisit": 1788935770113,
         "pictureUrl": "https://profile.line-scdn.net/0hktXedfm8NFt1HCvWbH9KZQVMNzFWbW1JXSlyaEQbOm0dLHMPC3x6ahUUPTxOeCQPCXh9aUMdYzhXbRdGLGYVORB-KDU7ci9RWR4OUx99bxZJS3R6PXgISjMZNHdJJS1ZWAEjRDQUFzsSLxNIJi98WCduMysJUjBKA0tYDXAuWtgaHkMOWHp6OEgaYm7N"
       },
       "Uc91d243122c7370e3439aebcc018d859": {
@@ -1269,6 +1269,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1788935770113,
+        "userId": "U1473353b8a73287cdf22605c5d95f353",
+        "displayName": "王志成",
+        "pictureUrl": "https://profile.line-scdn.net/0hktXedfm8NFt1HCvWbH9KZQVMNzFWbW1JXSlyaEQbOm0dLHMPC3x6ahUUPTxOeCQPCXh9aUMdYzhXbRdGLGYVORB-KDU7ci9RWR4OUx99bxZJS3R6PXgISjMZNHdJJS1ZWAEjRDQUFzsSLxNIJi98WCduMysJUjBKA0tYDXAuWtgaHkMOWHp6OEgaYm7N"
+      },
+      {
+        "time": 1788934852552,
+        "userId": "U6828d5fa68c1c92cf8a000b9b253a66d",
+        "displayName": "Hsin",
+        "pictureUrl": "https://profile.line-scdn.net/0h_QmJQsWwAH5AMxH11GB-ATBjAxRjQllsZQYfGXU7DkZ7UUN_aVBHGXdhVk8qBEF_O1ZMHnQ3DExMIHcYXmX8SkcDXU99AkIgal1KnQ"
+      },
       {
         "time": 1788931053455,
         "userId": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
