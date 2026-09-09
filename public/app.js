@@ -352,6 +352,23 @@ function handleRoleSwitch(role) {
 }
 window.handleRoleSwitch = handleRoleSwitch;
 
+function handleUserLoginClick() {
+  try {
+    localStorage.removeItem('gb_liff_skip_login');
+  } catch(e) {}
+  if (typeof liff !== 'undefined' && typeof liff.login === 'function') {
+    liff.login({ redirectUri: window.location.href });
+  } else {
+    let liffId = (window.__INITIAL_CONFIG__ && window.__INITIAL_CONFIG__.liffId) || '';
+    if (liffId) {
+      window.location.href = `https://liff.line.me/${liffId}`;
+    } else {
+      alert('正在載入登入模組，請稍候再試...');
+    }
+  }
+}
+window.handleUserLoginClick = handleUserLoginClick;
+
 // DOM 元素
 const appDiv = document.getElementById('app');
 const statusMsg = document.getElementById('status-msg');
@@ -1984,6 +2001,36 @@ function renderLobby(forceCards = true) {
       btnPartyAdmin.classList.remove('hidden');
     } else if (btnPartyAdmin) {
       btnPartyAdmin.classList.add('hidden');
+    }
+
+    const btnLineLogin = document.getElementById('btn-line-login');
+    const userStatusBadge = document.getElementById('user-status-badge');
+    const isLineLoggedIn = (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || (currentUser && currentUser.userId && !currentUser.userId.startsWith('G_') && !currentUser.userId.startsWith('P_'));
+
+    if (btnLineLogin && userStatusBadge) {
+      if (isLineLoggedIn) {
+        btnLineLogin.classList.add('hidden');
+        userStatusBadge.classList.remove('hidden');
+        if (effIsSuperAdmin) {
+          userStatusBadge.style.background = '#fff3e0';
+          userStatusBadge.style.color = '#e65100';
+          userStatusBadge.innerText = `👑 超級管理員 ${currentUser && currentUser.displayName ? `(${currentUser.displayName})` : ''}`;
+        } else if (effIsAdmin) {
+          userStatusBadge.style.background = '#e3f2fd';
+          userStatusBadge.style.color = '#1565c0';
+          userStatusBadge.innerText = `🛡️ 管理員 ${currentUser && currentUser.displayName ? `(${currentUser.displayName})` : ''}`;
+        } else {
+          userStatusBadge.style.background = '#e8f5e9';
+          userStatusBadge.style.color = '#1b5e20';
+          userStatusBadge.innerText = `👤 ${currentUser && currentUser.displayName ? currentUser.displayName : 'LINE 會員'}`;
+        }
+      } else {
+        btnLineLogin.classList.remove('hidden');
+        userStatusBadge.classList.remove('hidden');
+        userStatusBadge.style.background = '#f1f5f9';
+        userStatusBadge.style.color = '#64748b';
+        userStatusBadge.innerText = '👤 訪客模式';
+      }
     }
 
     const btnGbNav = document.getElementById('btn-group-buy-nav');
