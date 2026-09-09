@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4219,
+    "viewCount": 4221,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -973,8 +973,8 @@
       "U9189a06112f6a2a13fdacb08a190c60b": {
         "displayName": "雲",
         "firstVisit": 1785585319501,
-        "count": 8,
-        "lastVisit": 1788345194379,
+        "count": 9,
+        "lastVisit": 1788967435759,
         "pictureUrl": "https://profile.line-scdn.net/0hVGQIGuXgCWh8MBZWVH93VgxgCgJfQVB6AFMTDh45UQpGBU8-UlBEWk43AFgRAk9tAAJOCkg1UQ1eRUxJGSQ-TE9nVSVAYTZlCko-fhJXPgMRXS5fNVEfWCtRBBwpXg9jMys7DzFSM0QAUy44NFUocUFzNwdIUz1_EGdlPnkCZ-sTMn49UVZHC0E2X13E"
       },
       "U33ec3d57827236fa5ed0f2da4c6e8205": {
@@ -1256,8 +1256,8 @@
       "Uc91d243122c7370e3439aebcc018d859": {
         "displayName": "陳家興(Jerry)",
         "firstVisit": 1788782248877,
-        "count": 2,
-        "lastVisit": 1788783805224,
+        "count": 3,
+        "lastVisit": 1788966153000,
         "pictureUrl": "https://profile.line-scdn.net/0h-zfa4fkgclVLGGLINfEMKjtIcT9oaStHMipoMn9KKmclfGJWZH08MipPLGN-ITIBN3lpZ34cJDFHCwUzVU6OYUwoL2R2KTALYXY4tg"
       },
       "Ubd783ca8df10092279cc1dddb68b341c": {
@@ -1269,6 +1269,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1788967435759,
+        "userId": "U9189a06112f6a2a13fdacb08a190c60b",
+        "displayName": "雲",
+        "pictureUrl": "https://profile.line-scdn.net/0hVGQIGuXgCWh8MBZWVH93VgxgCgJfQVB6AFMTDh45UQpGBU8-UlBEWk43AFgRAk9tAAJOCkg1UQ1eRUxJGSQ-TE9nVSVAYTZlCko-fhJXPgMRXS5fNVEfWCtRBBwpXg9jMys7DzFSM0QAUy44NFUocUFzNwdIUz1_EGdlPnkCZ-sTMn49UVZHC0E2X13E"
+      },
+      {
+        "time": 1788966153000,
+        "userId": "Uc91d243122c7370e3439aebcc018d859",
+        "displayName": "陳家興(Jerry)",
+        "pictureUrl": "https://profile.line-scdn.net/0h-zfa4fkgclVLGGLINfEMKjtIcT9oaStHMipoMn9KKmclfGJWZH08MipPLGN-ITIBN3lpZ34cJDFHCwUzVU6OYUwoL2R2KTALYXY4tg"
+      },
       {
         "time": 1788965662325,
         "userId": "U6e876bc8dda2910dd04b58b4543d15f1",
