@@ -1,8 +1,9 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-26
- * Version: 1.3.0
+ * Version: 1.4.0
  * Server-side pinball physics (host-authoritative finish; matching track layout)
+ * Optimized: Sub-stepping, 30Hz sync, delta compression, velocity clamping
  */
 const Matter = require('matter-js');
 const { Engine, World, Bodies, Events, Body } = Matter;
@@ -384,6 +385,20 @@ function initServerEngine(pool, seed, optionsOrCb) {
     // Server-side gentle slipstream catch-up boost
     if (pbEngine.plugin && pbEngine.plugin.raceStarted && Math.abs(pbEngine.gravity.y) > 0) {
       const allBalls = Object.values(pbBalls).filter(b => !b.plugin.finished);
+
+      // D: Velocity clamping — prevent tunneling and unstable bounces
+      const MAX_SPEED = 28;
+      allBalls.forEach(ball => {
+        const speed = Math.sqrt(ball.velocity.x * ball.velocity.x + ball.velocity.y * ball.velocity.y);
+        if (speed > MAX_SPEED) {
+          const scale = MAX_SPEED / speed;
+          Body.setVelocity(ball, {
+            x: ball.velocity.x * scale,
+            y: ball.velocity.y * scale
+          });
+        }
+      });
+
       if (allBalls.length > 1) {
         const sortedBalls = [...allBalls].sort((a, b) => isUphill ? (a.position.y - b.position.y) : (b.position.y - a.position.y));
         sortedBalls.forEach((ball, index) => {
@@ -496,10 +511,15 @@ function startRace(io) {
     });
 
     let syncFrameCount = 0;
+    // D3: Track last synced positions for delta compression
+    let lastSyncPositions = {};
+
     if (updateInterval) clearInterval(updateInterval);
     updateInterval = setInterval(() => {
       if (pbEngine) {
-        Engine.update(pbEngine, 1000 / 60);
+        // D1: Sub-stepping — 2 half-steps for more stable collisions
+        Engine.update(pbEngine, 1000 / 120);
+        Engine.update(pbEngine, 1000 / 120);
         // Visual rolling angle — accumulated AFTER physics step, never touching b.angle
         const bodies = pbEngine.world.bodies;
         for (let i = 0; i < bodies.length; i++) {
@@ -510,10 +530,28 @@ function startRace(io) {
           }
         }
         syncFrameCount++;
-        // Broadcast snapshot every frame (60Hz) for buttery-smooth responsiveness
-        if (ioInstance) {
-          const syncData = getSyncState();
-          ioInstance.emit('pinball_host_sync', { syncData, t: Date.now() });
+        // D2: Broadcast snapshot every 2nd frame (30Hz) — client dead-reckoning fills the gap
+        if (syncFrameCount % 2 === 0 && ioInstance) {
+          // D3: Delta compression — only send balls that moved significantly
+          const fullSync = getSyncState();
+          const deltaSync = {};
+          let hasChanges = false;
+          for (const name in fullSync) {
+            const cur = fullSync[name];
+            const prev = lastSyncPositions[name];
+            if (!prev ||
+                Math.abs(cur.x - prev.x) > 0.5 ||
+                Math.abs(cur.y - prev.y) > 0.5 ||
+                Math.abs(cur.vx - prev.vx) > 0.3 ||
+                Math.abs(cur.vy - prev.vy) > 0.3) {
+              deltaSync[name] = cur;
+              hasChanges = true;
+            }
+          }
+          if (hasChanges) {
+            lastSyncPositions = fullSync;
+            ioInstance.emit('pinball_host_sync', { syncData: deltaSync, t: Date.now() });
+          }
         }
       }
     }, 1000 / 60);

@@ -1,9 +1,10 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-08-26
- * Version: 1.3.0
+ * Version: 1.4.0
  * pinball.js - Top-Down Racing Track (S-Curve)
  * Redesigned: 2.5D top-down view matching real marble race tracks
+ * Optimized: Pre-baked track rendering, adaptive interpolation, viewport culling
  */
 
 let pbEngine, pbRender, pbRunner;
@@ -11,27 +12,67 @@ let pbBalls = {};
 let pbState = { status: 'idle', pool: [], finished: [], winnerLimit: 3 };
 let pbWorldHeight = 3500;
 
-// Dead-Reckoning + Gentle Correction Renderer
-// Each frame: advance visual by last-known velocity (feels like real physics),
-// then gently pull toward actual server position to correct any drift.
-// This gives buttery-smooth motion with no rubber-banding or deliberate lag.
+// ── Performance: Pre-baked track canvas ──
+let _pbTrackCanvas = null;   // OffscreenCanvas with full road pre-rendered
+let _pbTrackCanvasY = 0;     // World-Y origin of the pre-baked canvas
+let _pbTrackCanvasH = 0;     // Height of the pre-baked canvas
+let _pbTrackDirty = true;    // Flag: needs re-bake on next render
+
+// ── Performance: Leaderboard DOM throttle ──
+let _pbLeaderboardLastUpdate = 0;
+let _pbLeaderboardLastHash = '';
+
+// Dead-Reckoning + Adaptive Correction Renderer
+// Each frame: advance visual by velocity + gravity prediction,
+// then adaptively pull toward server position based on drift distance.
+// Small drift → gentle; large drift → aggressive; huge → snap.
 class PinballSnapshotInterpolator {
   constructor() {
     this.target = {};  // latest server snapshot {x, y, a, vx, vy}
     this.visual = {};  // visual state: advances by velocity each frame, corrected toward target
+    this.lastSnapshotTime = 0;  // timestamp of last received snapshot
+    this.snapshotLag = 0;       // estimated network lag in ms
   }
 
   reset() {
     this.target = {};
     this.visual = {};
+    this.lastSnapshotTime = 0;
+    this.snapshotLag = 0;
   }
 
-  addSnapshot(syncData, _timestamp) {
+  addSnapshot(syncData, serverTimestamp) {
     if (!syncData) return;
+
+    // Estimate network lag from server timestamp
+    if (typeof serverTimestamp === 'number' && serverTimestamp > 0) {
+      const now = Date.now();
+      const rawLag = now - serverTimestamp;
+      // Smooth the lag estimate to avoid jitter (EMA α=0.15)
+      if (this.lastSnapshotTime > 0) {
+        this.snapshotLag = this.snapshotLag * 0.85 + Math.max(0, rawLag) * 0.15;
+      } else {
+        this.snapshotLag = Math.max(0, rawLag);
+      }
+      this.lastSnapshotTime = now;
+    }
+
     for (const name in syncData) {
       const d = syncData[name];
       if (!d || typeof d.x !== 'number') continue;
       const entry = { x: d.x, y: d.y, a: d.a || 0, vx: d.vx || 0, vy: d.vy || 0 };
+
+      // Compensate for network lag: advance target by estimated lag frames
+      if (this.snapshotLag > 5) {
+        const lagFrames = Math.min(this.snapshotLag / 16.67, 4); // cap at 4 frames
+        entry.x += entry.vx * lagFrames;
+        entry.y += entry.vy * lagFrames;
+        // Add gravity prediction during lag
+        const isUphill = pbState && pbState.mode === 'uphill';
+        const gravDir = isUphill ? -1 : 1;
+        entry.vy += GRAVITY_Y * gravDir * lagFrames * 0.5;
+      }
+
       if (!this.target[name]) {
         // First snapshot: snap visual immediately so ball doesn't fly in from (0,0)
         this.target[name] = entry;
@@ -45,6 +86,9 @@ class PinballSnapshotInterpolator {
   update(pbBalls) {
     if (!pbBalls || Object.keys(this.target).length === 0) return;
 
+    const isUphill = pbState && pbState.mode === 'uphill';
+    const gravDir = isUphill ? -1 : 1;
+
     for (const name in pbBalls) {
       const tgt = this.target[name];
       if (!tgt) continue;
@@ -54,18 +98,34 @@ class PinballSnapshotInterpolator {
       }
       const vis = this.visual[name];
 
-      // ── Step 1: Dead-reckoning ──────────────────────────────────────────
-      // Advance visual by current visual velocity (pixels/step, same unit as Matter.js).
-      // This makes the ball feel like it's obeying real physics continuously.
+      // ── Step 1: Dead-reckoning with gravity prediction ──────────────────
+      // Advance visual by velocity AND simulate gravity so ball follows
+      // a natural parabolic arc between snapshots.
+      vis.vy += GRAVITY_Y * gravDir * 0.5; // half-step gravity prediction
       vis.x += vis.vx;
       vis.y += vis.vy;
 
-      // ── Step 2: Drift correction ────────────────────────────────────────
-      // Gently pull toward the authoritative server position.
-      // 0.18 = correct ~18% of remaining error per frame → fully corrected in ~9 frames (150ms).
-      // Small enough to be invisible, large enough to prevent drift accumulation.
-      vis.x += (tgt.x - vis.x) * 0.18;
-      vis.y += (tgt.y - vis.y) * 0.18;
+      // ── Step 2: Adaptive drift correction ───────────────────────────────
+      // Distance-based: small drifts get gentle correction, large drifts
+      // get aggressive correction, huge drifts snap immediately.
+      const dx = tgt.x - vis.x;
+      const dy = tgt.y - vis.y;
+      const drift = Math.sqrt(dx * dx + dy * dy);
+
+      let correctionAlpha;
+      if (drift > 120) {
+        // Huge drift (>120px): snap immediately to prevent long sliding
+        correctionAlpha = 1.0;
+      } else if (drift > 40) {
+        // Medium drift (40-120px): aggressive correction
+        correctionAlpha = 0.35;
+      } else {
+        // Small drift (<40px): gentle, invisible correction
+        correctionAlpha = 0.18;
+      }
+
+      vis.x += dx * correctionAlpha;
+      vis.y += dy * correctionAlpha;
 
       // ── Step 3: Velocity blending ───────────────────────────────────────
       // Blend visual velocity toward server velocity so future dead-reckoning stays accurate.
@@ -303,6 +363,127 @@ function destroyEngine() {
   trackObstacles = [];
   startGateBody = null;
   pbMouseConstraint = null;
+  // Clear pre-baked track cache
+  _pbTrackCanvas = null;
+  _pbTrackDirty = true;
+}
+
+/**
+ * Pre-bake the entire track (road surface, guardrails, dashed lines, arrows)
+ * onto an OffscreenCanvas. Called once after track generation; afterRender
+ * then just does a single drawImage() per frame instead of 7 full-path passes.
+ */
+function bakeTrackCanvas() {
+  if (trackPathPoints.length === 0) return;
+
+  const isUphillMode = pbState && pbState.mode === 'uphill';
+  // Determine world-space bounds of the track
+  let minY = Infinity, maxY = -Infinity;
+  trackPathPoints.forEach(p => {
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  });
+  // Add generous padding for guardrails, funnel, arrows
+  const padding = 350;
+  const worldMinY = Math.min(minY, START_Y) - padding;
+  const worldMaxY = maxY + padding;
+  const worldH = worldMaxY - worldMinY;
+
+  // Use 1:1 pixel scale in world coordinates (enough detail at any zoom)
+  const bakeW = LOGICAL_WIDTH;
+  const bakeH = Math.ceil(worldH);
+  _pbTrackCanvasY = worldMinY;
+  _pbTrackCanvasH = bakeH;
+
+  // Create offscreen canvas (or reuse)
+  const offCanvas = document.createElement('canvas');
+  offCanvas.width = bakeW;
+  offCanvas.height = bakeH;
+  const ctx = offCanvas.getContext('2d');
+
+  // In bake-space: world X maps 1:1, world Y offset by worldMinY
+  function toBake(wx, wy) {
+    return { x: wx, y: wy - worldMinY };
+  }
+
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+
+  // Funnel asphalt surface
+  if (!isUphillMode) {
+    const topY = START_Y;
+    const botY = trackPathPoints[0].y;
+    const pTopL = toBake(-150, topY);
+    const pTopR = toBake(LOGICAL_WIDTH + 150, topY);
+    const pBotL = toBake(LOGICAL_WIDTH / 2 - TRACK_WIDTH / 2, botY);
+    const pBotR = toBake(LOGICAL_WIDTH / 2 + TRACK_WIDTH / 2, botY);
+    ctx.beginPath();
+    ctx.moveTo(pTopL.x, pTopL.y);
+    ctx.lineTo(pTopR.x, pTopR.y);
+    ctx.lineTo(pBotR.x, pBotR.y);
+    ctx.lineTo(pBotL.x, pBotL.y);
+    ctx.closePath();
+    ctx.fillStyle = '#4a4a4a';
+    ctx.fill();
+  }
+
+  // Helper: draw full path at given stroke
+  function drawPath(style, width, offsetX, offsetY) {
+    ctx.beginPath();
+    trackPathPoints.forEach((p, i) => {
+      const bp = toBake(p.x + (offsetX || 0), p.y + (offsetY || 0));
+      if (i === 0) ctx.moveTo(bp.x, bp.y);
+      else ctx.lineTo(bp.x, bp.y);
+    });
+    ctx.strokeStyle = style;
+    ctx.lineWidth = width;
+    ctx.stroke();
+  }
+
+  // 7 track layers (same as original, but drawn once)
+  drawPath('#7f8c8d', TRACK_WIDTH + 24);          // Guardrail outer border
+  drawPath('#bdc3c7', TRACK_WIDTH + 14);          // Guardrail inner trim
+  drawPath('rgba(0,0,0,0.3)', TRACK_WIDTH + 6, 8, 8); // Road shadow
+  drawPath('#4a4a4a', TRACK_WIDTH);               // Main road
+  drawPath('#ecf0f1', TRACK_WIDTH - 6);           // White border
+  drawPath('#616161', TRACK_WIDTH - 14);          // Inner fill
+
+  // Center dashed line
+  ctx.beginPath();
+  trackPathPoints.forEach((p, i) => {
+    const bp = toBake(p.x, p.y);
+    if (i === 0) ctx.moveTo(bp.x, bp.y);
+    else ctx.lineTo(bp.x, bp.y);
+  });
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 4;
+  ctx.setLineDash([20, 20]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Arrows on the track
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = 'bold 30px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const arrowSymbol = isUphillMode ? '\u00AB' : '\u00BB';
+  for (let i = 10; i < trackPathPoints.length; i += 20) {
+    const p = trackPathPoints[i];
+    const pNext = trackPathPoints[i + 1];
+    if (!pNext) continue;
+    const bp = toBake(p.x, p.y);
+    const angle = Math.atan2(pNext.y - p.y, pNext.x - p.x);
+    ctx.save();
+    ctx.translate(bp.x, bp.y);
+    ctx.rotate(angle);
+    ctx.fillText(arrowSymbol, 0, -20);
+    ctx.fillText(arrowSymbol, 0, 20);
+    ctx.restore();
+  }
+
+  _pbTrackCanvas = offCanvas;
+  _pbTrackDirty = false;
+  console.log('[Pinball] Track pre-baked: ' + bakeW + 'x' + bakeH);
 }
 
 function initPinballEngine() {
@@ -549,10 +730,22 @@ function initPinballEngine() {
     });
   });
 
-  // Physics updates and clamping
+  // Physics updates, velocity clamping, and position clamping
   Events.on(pbEngine, 'beforeUpdate', () => {
     // When race is running, server is authoritative; clients update HUD and let interpolator drive positions
     if (pbState && pbState.status === 'playing' && window.pinballRaceStarted) {
+      // C1: Velocity clamping — cap ball speed to prevent tunneling/unstable bounces
+      const MAX_SPEED = 25;
+      Object.values(pbBalls).forEach(ball => {
+        const speed = Math.sqrt(ball.velocity.x * ball.velocity.x + ball.velocity.y * ball.velocity.y);
+        if (speed > MAX_SPEED) {
+          const scale = MAX_SPEED / speed;
+          Matter.Body.setVelocity(ball, {
+            x: ball.velocity.x * scale,
+            y: ball.velocity.y * scale
+          });
+        }
+      });
       updateDynamicLeaderboard();
       return;
     }
@@ -661,7 +854,7 @@ function initPinballEngine() {
     pbRender.bounds.max.y = clampedY + viewH;
   });
 
-  // Custom rendering: Road surface, arrows, billiard balls
+  // Custom rendering: Pre-baked road surface + billiard balls
   Events.on(pbRender, 'afterRender', () => {
     const ctx = pbRender.context;
     const { canvasWidth, canvasHeight } = getViewMetrics();
@@ -679,127 +872,22 @@ function initPinballEngine() {
 
     const isUphillMode = pbState && pbState.mode === 'uphill';
 
-    // 1. Draw the road surface underneath
+    // A1: Draw road from pre-baked canvas (single drawImage vs 7 full-path passes)
     if (trackPathPoints.length > 0) {
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
+      if (_pbTrackDirty || !_pbTrackCanvas) bakeTrackCanvas();
 
-      // Funnel asphalt surface
-      if (!isUphillMode) {
-        const topY = START_Y;
-        const botY = trackPathPoints[0].y;
-        const pTopL = toScreen(-150, topY);
-        const pTopR = toScreen(LOGICAL_WIDTH + 150, topY);
-        const pBotL = toScreen(LOGICAL_WIDTH / 2 - TRACK_WIDTH / 2, botY);
-        const pBotR = toScreen(LOGICAL_WIDTH / 2 + TRACK_WIDTH / 2, botY);
-        ctx.beginPath();
-        ctx.moveTo(pTopL.x, pTopL.y);
-        ctx.lineTo(pTopR.x, pTopR.y);
-        ctx.lineTo(pBotR.x, pBotR.y);
-        ctx.lineTo(pBotL.x, pBotL.y);
-        ctx.closePath();
-        ctx.fillStyle = '#4a4a4a';
-        ctx.fill();
-      }
-      
-      // Outer Guardrail / Track Outer Border (Smooth continuous outer margin)
-      ctx.beginPath();
-      trackPathPoints.forEach((p, i) => {
-        const sp = toScreen(p.x, p.y);
-        if (i === 0) ctx.moveTo(sp.x, sp.y);
-        else ctx.lineTo(sp.x, sp.y);
-      });
-      ctx.strokeStyle = '#7f8c8d'; // Guardrail outer border color
-      ctx.lineWidth = (TRACK_WIDTH + 24) * scaleX;
-      ctx.stroke();
-
-      // Outer Guardrail Inner Trim (White highlight line)
-      ctx.beginPath();
-      trackPathPoints.forEach((p, i) => {
-        const sp = toScreen(p.x, p.y);
-        if (i === 0) ctx.moveTo(sp.x, sp.y);
-        else ctx.lineTo(sp.x, sp.y);
-      });
-      ctx.strokeStyle = '#bdc3c7';
-      ctx.lineWidth = (TRACK_WIDTH + 14) * scaleX;
-      ctx.stroke();
-
-      // Road shadow
-      ctx.beginPath();
-      trackPathPoints.forEach((p, i) => {
-        const sp = toScreen(p.x + 8, p.y + 8);
-        if (i === 0) ctx.moveTo(sp.x, sp.y);
-        else ctx.lineTo(sp.x, sp.y);
-      });
-      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-      ctx.lineWidth = (TRACK_WIDTH + 6) * scaleX;
-      ctx.stroke();
-
-      // Main Road (Grey asphalt)
-      ctx.beginPath();
-      trackPathPoints.forEach((p, i) => {
-        const sp = toScreen(p.x, p.y);
-        if (i === 0) ctx.moveTo(sp.x, sp.y);
-        else ctx.lineTo(sp.x, sp.y);
-      });
-      ctx.strokeStyle = '#4a4a4a'; // Darker grey asphalt
-      ctx.lineWidth = TRACK_WIDTH * scaleX;
-      ctx.stroke();
-
-      // Outer track lines (white borders)
-      ctx.beginPath();
-      trackPathPoints.forEach((p, i) => {
-        const sp = toScreen(p.x, p.y);
-        if (i === 0) ctx.moveTo(sp.x, sp.y);
-        else ctx.lineTo(sp.x, sp.y);
-      });
-      ctx.strokeStyle = '#ecf0f1';
-      ctx.lineWidth = (TRACK_WIDTH - 6) * scaleX;
-      ctx.stroke();
-      
-      // Inner track fill (darker grey)
-      ctx.beginPath();
-      trackPathPoints.forEach((p, i) => {
-        const sp = toScreen(p.x, p.y);
-        if (i === 0) ctx.moveTo(sp.x, sp.y);
-        else ctx.lineTo(sp.x, sp.y);
-      });
-      ctx.strokeStyle = '#616161';
-      ctx.lineWidth = (TRACK_WIDTH - 14) * scaleX;
-      ctx.stroke();
-
-      // Center dashed line
-      ctx.beginPath();
-      trackPathPoints.forEach((p, i) => {
-        const sp = toScreen(p.x, p.y);
-        if (i === 0) ctx.moveTo(sp.x, sp.y);
-        else ctx.lineTo(sp.x, sp.y);
-      });
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-      ctx.lineWidth = 4 * scaleX;
-      ctx.setLineDash([20 * scaleY, 20 * scaleY]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      
-      // Draw arrows on the track
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      ctx.font = 'bold 30px Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      const arrowSymbol = isUphillMode ? '«' : '»';
-      for(let i = 10; i < trackPathPoints.length; i += 20) {
-        const p = trackPathPoints[i];
-        const pNext = trackPathPoints[i+1];
-        if(!pNext) continue;
-        const sp = toScreen(p.x, p.y);
-        if (sp.y > -50 && sp.y < canvasHeight + 50) {
-          const angle = Math.atan2(pNext.y - p.y, pNext.x - p.x);
-          ctx.save();
-          ctx.translate(sp.x, sp.y);
-          ctx.rotate(angle);
-          ctx.fillText(arrowSymbol, 0, -20);
-          ctx.fillText(arrowSymbol, 0, 20);
-          ctx.restore();
+      if (_pbTrackCanvas) {
+        // Map pre-baked canvas world coords to screen coords
+        const srcY = Math.max(0, bMinY - _pbTrackCanvasY);
+        const srcH = Math.min(_pbTrackCanvasH - srcY, bH);
+        if (srcH > 0) {
+          const dstSp = toScreen(0, Math.max(bMinY, _pbTrackCanvasY));
+          const dstH = srcH * scaleY;
+          ctx.drawImage(
+            _pbTrackCanvas,
+            0, srcY, LOGICAL_WIDTH, srcH,     // source rect
+            dstSp.x, dstSp.y, canvasWidth / (bW / LOGICAL_WIDTH), dstH  // dest rect
+          );
         }
       }
     }
@@ -819,9 +907,12 @@ function initPinballEngine() {
       ctx.shadowBlur = 0;
     }
 
-    // Draw Obstacles (on top of the road)
+    // Draw Obstacles (on top of the road) — A2: viewport culling
     trackObstacles.forEach(body => {
       if (!body.vertices || body.vertices.length === 0) return;
+      // Quick viewport check: skip obstacles entirely off-screen
+      const obY = body.position.y;
+      if (obY < bMinY - 100 || obY > bMaxY + 100) return;
       ctx.beginPath();
       body.vertices.forEach((v, idx) => {
         const sp = toScreen(v.x, v.y);
@@ -1337,6 +1428,9 @@ function drawCheckerboard(ctx, x, y, width, height) {
 }
 
 // Removed old drawRankingHUD as we now use DOM-based dynamic leaderboard
+// A3: Throttled — only rebuilds DOM when ranking actually changes, max every 200ms
+let lastBoardHash = '';
+let lastBoardTime = 0;
 function updateDynamicLeaderboard() {
   if (pbState.status !== 'playing' || Object.values(pbBalls).length === 0) return;
   
@@ -1362,6 +1456,13 @@ function updateDynamicLeaderboard() {
     return isUphill ? (a.position.y - b.position.y) : (b.position.y - a.position.y); // Uphill: smallest Y is leading; Downhill: largest Y is leading
   });
   
+  // A3: Throttle — skip DOM rebuild if ranking is unchanged (max 200ms gap)
+  const now = Date.now();
+  const boardHash = sortedAll.map(b => b.plugin.name).join(',') + '|' + finishedOrder.length;
+  if (boardHash === lastBoardHash && (now - lastBoardTime) < 200) return;
+  lastBoardHash = boardHash;
+  lastBoardTime = now;
+
   // Find current user's rank
   let myName = typeof currentUser !== 'undefined' && currentUser ? currentUser.displayName : null;
   let myRankIdx = -1;
