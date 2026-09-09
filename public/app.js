@@ -3043,7 +3043,34 @@ function setupSSE() {
 
 // 透過名稱取消報名
 window.handleCancelByName = async function(gameId, name) {
-  if (!confirm(`確定要取消「${name}」的報名嗎？`)) return;
+  const game = gamesList.find(g => g.gameId === gameId);
+  const gameTitle = game ? game.title : '未知場次';
+  const opName = (currentUser && currentUser.displayName) ? currentUser.displayName : '未知';
+  const opUid = (currentUser && currentUser.userId) ? currentUser.userId : '無';
+
+  if (!confirm(`確定要取消「${name}」的報名嗎？`)) {
+    fetch('/api/systemLogs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: gameTitle,
+        operator: opName,
+        errorMsg: `名單取消 (第 1 次按 ❌ / 彈窗選擇放棄取消) | 對象: ${name} | UID: ${opUid}`
+      })
+    }).catch(() => {});
+    return;
+  }
+
+  fetch('/api/systemLogs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: gameTitle,
+      operator: opName,
+      errorMsg: `名單取消 (第 2 次確認 ❌) | 對象: ${name} | UID: ${opUid}`
+    })
+  }).catch(() => {});
+
   try {
     appDiv.className = 'loading';
     statusMsg.innerText = '取消中...';
@@ -3266,12 +3293,52 @@ async function triggerLiffNotification(msg) {
 async function handleActionWithInput(event, gameId, action, suffix = '') {
   const btn = event.currentTarget || event.target;
   
+  const inputEl = document.getElementById(`name-input-${gameId}${suffix}`);
+  const levelEl = document.getElementById(`level-input-${gameId}${suffix}`);
+  const errorEl = document.getElementById(`error-msg-${gameId}${suffix}`);
+  
+  let name = (currentUser && currentUser.displayName) ? currentUser.displayName : '訪客';
+  if (inputEl && inputEl.value.trim()) {
+    name = inputEl.value.trim();
+  }
+  
+  let level = '';
+  if (levelEl && levelEl.value.trim()) {
+    level = levelEl.value.trim();
+  }
+
+  const game = gamesList.find(g => g.gameId === gameId);
+  const gameTitle = game ? game.title : gameId;
+  const operatorName = (currentUser && currentUser.displayName) ? currentUser.displayName : '未知';
+  const operatorUid = (currentUser && currentUser.userId) ? currentUser.userId : '無';
+  
   if (action === 'cancel' && btn) {
     if (btn.dataset.dodged !== 'true') {
+      // 第 1 次按 -1：記錄到系統 LOG
+      fetch('/api/systemLogs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: gameTitle,
+          operator: operatorName,
+          errorMsg: `點選 -1 (第 1 次按 / 考慮中未確認) | 欲取消對象: ${name} | UID: ${operatorUid}`
+        })
+      }).catch(() => {});
+
       playMinusOneDodgeAnimation(btn);
       return; // Stop actual cancellation
     } else {
-      // Second click
+      // 第 2 次按 -1：記錄到系統 LOG
+      fetch('/api/systemLogs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: gameTitle,
+          operator: operatorName,
+          errorMsg: `點選 -1 (第 2 次按 / 執行確認) | 欲取消對象: ${name} | UID: ${operatorUid}`
+        })
+      }).catch(() => {});
+
       playMinusOneCancelAnimation(btn);
     }
   } else if (action === 'register') {
@@ -3289,25 +3356,12 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       }
     });
   }
-
-  const inputEl = document.getElementById(`name-input-${gameId}${suffix}`);
-  const levelEl = document.getElementById(`level-input-${gameId}${suffix}`);
-  const errorEl = document.getElementById(`error-msg-${gameId}${suffix}`);
   
-  let name = currentUser.displayName;
-  if (inputEl && inputEl.value.trim()) {
-    name = inputEl.value.trim();
+  if (errorEl) {
+    errorEl.style.display = 'none';
+    errorEl.innerText = '';
   }
   
-  let level = '';
-  if (levelEl && levelEl.value.trim()) {
-    level = levelEl.value.trim();
-  }
-  
-  errorEl.style.display = 'none';
-  errorEl.innerText = '';
-  
-  const game = gamesList.find(g => g.gameId === gameId);
   if (!game) return;
   
   // Find selected section
@@ -3329,14 +3383,28 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
   });
   
   if (action === 'register' && existsAnywhere) {
-    errorEl.innerText = '您已經報名過了（每人限選一時段）';
-    errorEl.style.display = 'block';
+    if (errorEl) {
+      errorEl.innerText = '您已經報名過了（每人限選一時段）';
+      errorEl.style.display = 'block';
+    }
     return;
   }
   
   if (action === 'cancel' && !existsAnywhere) {
-    errorEl.innerText = '找不到此名稱';
-    errorEl.style.display = 'block';
+    if (errorEl) {
+      errorEl.innerText = '找不到此名稱';
+      errorEl.style.display = 'block';
+    }
+    // 記錄名單找不到此人
+    fetch('/api/systemLogs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: gameTitle,
+        operator: operatorName,
+        errorMsg: `點選 -1 取消失敗 (第 2 次按 / 名單中無此姓名: ${name}) | UID: ${operatorUid}`
+      })
+    }).catch(() => {});
     return;
   }
   
@@ -3382,8 +3450,21 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
     await loadGamesLobby(true); // 使用靜默加載，不轉圈圈，防止滾動條重置
   } catch (err) {
     console.error(err);
-    errorEl.innerText = err.message;
-    errorEl.style.display = 'block';
+    if (action === 'cancel') {
+      fetch('/api/systemLogs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: gameTitle,
+          operator: operatorName,
+          errorMsg: `點選 -1 操作異常: ${err.message} | 欲取消姓名: ${name} | UID: ${operatorUid}`
+        })
+      }).catch(() => {});
+    }
+    if (errorEl) {
+      errorEl.innerText = err.message;
+      errorEl.style.display = 'block';
+    }
   } finally {
     if (btn) {
       btn.disabled = false;
@@ -4891,9 +4972,15 @@ if (btnSystemLogs) {
           const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : (log.operator || '');
           const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : (log.errorMsg || '');
           const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : (log.time || '');
+          let msgColor = '#b91c1c';
+          if (msg.includes('第 1 次按') || msg.includes('第 1 次')) {
+            msgColor = '#d97706';
+          } else if (msg.includes('成功') || msg.includes('已移出名單')) {
+            msgColor = '#15803d';
+          }
           div.innerHTML = `<div style="font-size:12px; color:#888;">${time}</div>
           <div style="font-weight:bold;">[${title}] ${op}</div>
-          <div style="color:#b91c1c; margin-top:4px; white-space:pre-wrap; word-break:break-word; user-select:text;">${msg}</div>`;
+          <div style="color:${msgColor}; margin-top:4px; white-space:pre-wrap; word-break:break-word; user-select:text;">${msg}</div>`;
           systemLogsContainer.appendChild(div);
         });
       }

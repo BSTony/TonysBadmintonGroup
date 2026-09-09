@@ -5014,6 +5014,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       if (foundInSecIdx === -1) {
+        recordSystemLog(game.title, operatorName || name, `點選 -1 取消失敗 (名單中找不到姓名: ${name}) | 操作者UID: ${uid || '無'}`);
         return res.status(400).json({ error: '找不到此名稱' });
       }
       affectedSectionName = game.sections[foundInSecIdx].title;
@@ -5033,6 +5034,8 @@ app.post('/api/action', express.json(), async (req, res) => {
       const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       game.history.unshift({ time: timeStr, name: name, operator: operatorName || name, action: '-1', section: game.sections[foundInSecIdx].title });
       if (game.history.length > 2000) game.history.pop();
+      
+      recordSystemLog(game.title, operatorName || name, `點選 -1 取消成功 (已移出名單) | 姓名: ${name} | 分區: ${game.sections[foundInSecIdx].title} | 操作者UID: ${uid || '無'}`);
       
       if (game.paidMap) delete game.paidMap[name];
       if (game.noteMap) delete game.noteMap[name];
