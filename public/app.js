@@ -3438,7 +3438,6 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       playMinusOneCancelAnimation(btn);
     }
   } else if (action === 'register') {
-    if (btn) playPlusOneAnimation(btn);
     // Reset all dodged buttons when +1 is clicked
     document.querySelectorAll('button.btn-danger').forEach(b => {
       if (b.dataset.dodged === 'true') {
@@ -3451,6 +3450,21 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
         }
       }
     });
+
+    // 電腦/非 LINE 環境，若沒有輸入名字則要求先輸入
+    const isRealLineUser = currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId);
+    if (!inputVal && !isRealLineUser) {
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.style.outline = '2px solid #e53935';
+        setTimeout(() => { if (inputEl) inputEl.style.outline = ''; }, 2000);
+      }
+      if (errorEl) {
+        errorEl.innerText = '請先在輸入框填入要報名的暱稱';
+        errorEl.style.display = 'block';
+      }
+      return;
+    }
   }
   
   if (errorEl) {
@@ -3458,7 +3472,13 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
     errorEl.innerText = '';
   }
   
-  if (!game) return;
+  if (!game) {
+    if (errorEl) {
+      errorEl.innerText = '找不到此場次，請重新整理頁面';
+      errorEl.style.display = 'block';
+    }
+    return;
+  }
   
   // Find selected section
   let sectionIdx = 0;
@@ -3480,10 +3500,15 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
   
   if (action === 'register' && existsAnywhere) {
     if (errorEl) {
-      errorEl.innerText = '您已經報名過了（每人限選一時段）';
+      errorEl.innerText = `「${name}」已在名單中了（每人限報一次）`;
       errorEl.style.display = 'block';
     }
     return;
+  }
+
+  // 通過所有驗證，播放 +1 動畫
+  if (action === 'register' && btn) {
+    playPlusOneAnimation(btn);
   }
   
   if (action === 'cancel' && !existsAnywhere) {
