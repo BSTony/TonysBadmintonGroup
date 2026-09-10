@@ -6564,7 +6564,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1789005402679,
+    "lastActiveTime": 1789010345138,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6647,7 +6647,6 @@
           "雲",
           "lipei",
           "FiFi",
-          "marty",
           "Leo",
           "Win Shu"
         ],
@@ -6656,6 +6655,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/10 11:19",
+        "name": "marty",
+        "operator": "Wayne",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/10 09:56",
         "name": "Win Shu",
