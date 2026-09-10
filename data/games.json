@@ -6564,7 +6564,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1789038755037,
+    "lastActiveTime": 1789041166843,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6586,7 +6586,8 @@
       "Matt孟錡": true,
       "Jack": true,
       "凱文": true,
-      "Tony": true
+      "Tony": true,
+      "FiFi": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
