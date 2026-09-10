@@ -6564,7 +6564,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1789038676944,
+    "lastActiveTime": 1789038755037,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6584,7 +6584,9 @@
       "陳呈": true,
       "江こう 洋々": true,
       "Matt孟錡": true,
-      "Jack": true
+      "Jack": true,
+      "凱文": true,
+      "Tony": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
