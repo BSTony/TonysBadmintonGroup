@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-02
- * Version: 1.2.22
+ * Date: 2026-09-10
+ * Version: 1.2.24
  */
 let globalLobbyUsers = [];
 
@@ -38,9 +38,11 @@ function setupAutocomplete(inputElement, avatarImg) {
   // Wrapper to position dropdown correctly
   const wrapper = document.createElement('div');
   wrapper.style.position = 'relative';
-  wrapper.style.display = 'inline-block';
-  wrapper.style.flex = inputElement.style.flex;
-  wrapper.style.width = '100%';
+  wrapper.style.display = 'block';
+  wrapper.style.flex = '2 1 120px';
+  wrapper.style.minWidth = '100px';
+  wrapper.style.width = 'auto';
+  wrapper.style.maxWidth = '100%';
   
   inputElement.parentNode.insertBefore(wrapper, inputElement);
   wrapper.appendChild(inputElement);
@@ -307,7 +309,7 @@ let lastSystemLogKey = '';
 let lastSystemLogAt = 0;
 
 function getClientSource() {
-  if (typeof liff !== 'undefined' && typeof liff.isInClient === 'function' && liff.isInClient()) {
+  if (isLiffInClient()) {
     return '手機 LINE App';
   }
   const ua = navigator.userAgent || '';
@@ -454,6 +456,43 @@ const statusMsg = document.getElementById('status-msg');
 function revealApp() {
   if (appDiv) appDiv.className = '';
   if (statusMsg) statusMsg.style.display = 'none';
+}
+
+const PINNED_ADMIN_VIEW_IDS = [
+  'stats-view',
+  'system-logs-view',
+  'party-admin-view',
+  'easter-egg-settings-view',
+  'template-admin-view',
+  'create-game-view',
+  'edit-game-view'
+];
+
+function isPinnedAdminView() {
+  return PINNED_ADMIN_VIEW_IDS.some(id => {
+    const el = document.getElementById(id);
+    return el && !el.classList.contains('hidden');
+  });
+}
+
+function lobbyHasDraftInput() {
+  return Array.from(document.querySelectorAll('.name-input, input[id^="level-input-"]')).some(el => el && String(el.value || '').trim());
+}
+
+function showAppView(el, opts = {}) {
+  if (!el) return;
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  el.classList.remove('hidden');
+  el.style.opacity = '1';
+  el.style.transform = 'none';
+  el.style.webkitTransform = 'none';
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = '';
+  revealApp();
+  if (opts.scroll !== false) {
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
 }
 
 function withTimeout(promise, ms, message) {
@@ -1883,28 +1922,36 @@ async function loadGamesLobby(silent = false) {
     const gid = currentGroupId || 'default';
 
     let data = null;
+    const earlyMeta = window.__EARLY_GAME_META__ || {};
     if (window.__EARLY_GAME_PROMISE__) {
       try {
         data = await window.__EARLY_GAME_PROMISE__;
       } catch (e) {}
       window.__EARLY_GAME_PROMISE__ = null;
     }
-    if (!data) {
-      const res = await withTimeout(
-        fetch(`/api/game/${gid}?uid=${uid}&_t=${Date.now()}`),
-        8000,
-        '場次資料載入逾時'
-      );
-      if (!res.ok) {
-        if (res.status === 404) {
-          data = { games: [] };
+    const earlyUid = earlyMeta.uid || '';
+    const earlyGid = earlyMeta.gid || 'default';
+    if (!data || uid !== earlyUid || gid !== earlyGid) {
+      try {
+        const res = await withTimeout(
+          fetch(`/api/game/${gid}?uid=${uid}&_t=${Date.now()}`),
+          8000,
+          '場次資料載入逾時'
+        );
+        if (!res.ok) {
+          if (res.status === 404) {
+            if (!data) data = { games: [] };
+          } else if (!data) {
+            throw new Error('無法取得場次資料');
+          }
         } else {
-          throw new Error('無法取得場次資料');
+          data = await res.json();
         }
-      } else {
-        data = await res.json();
+      } catch (e) {
+        if (!data) throw e;
       }
     }
+    if (!data) data = { games: [] };
 
     const extras = [];
     const newGamesJson = JSON.stringify(data.games || []);
@@ -1948,13 +1995,19 @@ async function loadGamesLobby(silent = false) {
         renderGroupBuyUI(currentGroupBuyData);
       }
       revealApp();
+    } else if (isPinnedAdminView()) {
+      revealApp();
     } else if (!silent && urlGameId && gamesList.some(g => g.gameId === urlGameId)) {
       renderDetail(urlGameId);
       revealApp();
     } else if (!currentGameDetailId) {
       const needRenderCards = hasGamesChanged || (gamesContainer && gamesContainer.children.length === 0);
-      renderLobby(needRenderCards);
-      revealApp();
+      if (lobbyHasDraftInput() && gamesContainer && gamesContainer.children.length > 0) {
+        revealApp();
+      } else {
+        renderLobby(needRenderCards);
+        revealApp();
+      }
     } else {
       renderDetail(currentGameDetailId);
       revealApp();
@@ -2008,10 +2061,7 @@ document.addEventListener('click', (e) => {
 
 // 渲染大廳畫面
 function renderLobby(forceCards = true) {
-    appDiv.className = '';
-    if (statusMsg) statusMsg.style.display = 'none';
-    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-    lobbyView.classList.remove('hidden');
+    showAppView(lobbyView, { scroll: false });
     
     const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = getEffectiveRole();
 
@@ -2218,7 +2268,7 @@ function renderLobby(forceCards = true) {
               totalLimit += (s.limit || 0) + (s.backupLimit || 0);
           });
       } else {
-          const section = game.sections[0] || { list: [], limit: 20 };
+          const section = (game.sections && game.sections[0]) || { list: [], limit: 20 };
           count = section.list.length;
           limit = section.limit;
           totalLimit = limit + (section.backupLimit || 0);
@@ -2316,7 +2366,7 @@ function renderLobby(forceCards = true) {
         
         ${(() => {
           if (!isMultiSection) {
-            const section = game.sections[0] || { list: [], limit: 20 };
+            const section = (game.sections && game.sections[0]) || { list: [], limit: 20 };
             const limit = section.limit || 0;
             const count = (section.list || []).length;
             const progressPercent = limit > 0 ? Math.min(100, (count / limit) * 100) : 0;
@@ -2366,8 +2416,8 @@ function renderLobby(forceCards = true) {
         } else {
             actionRowHtml = `
               <div class="action-row" style="flex-wrap: wrap;">
-                <button class="btn btn-primary btn-square" ${(isFull || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
-                <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
+                <button type="button" class="btn btn-primary btn-square" ${(isFull || isExpired) && !effIsSuperAdmin ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
+                <button type="button" class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
                 <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
                 <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
               </div>
@@ -2422,6 +2472,7 @@ function renderLobby(forceCards = true) {
       }
     });
   }
+  if (typeof bindAllNameInputEnterHandlers === 'function') bindAllNameInputEnterHandlers();
 }
 
 async function handleEditLobbyTitle() {
@@ -2703,8 +2754,8 @@ function renderDetail(gameId, preserveScroll = false) {
 
   actionRowHtml += `
     <div class="action-row" style="flex-wrap: wrap; margin-top: ${isMultiSection ? '5px' : '15px'}; margin-bottom: 10px;">
-      <button class="btn btn-primary btn-square" ${(isFullSingle || isExpired) ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
-      <button class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
+      <button type="button" class="btn btn-primary btn-square" ${(isFullSingle || isExpired) && !effIsSuperAdmin ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
+      <button type="button" class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
       <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
       <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
     </div>
@@ -2946,6 +2997,7 @@ function renderDetail(gameId, preserveScroll = false) {
       }
     });
   }
+  if (typeof bindAllNameInputEnterHandlers === 'function') bindAllNameInputEnterHandlers();
 }
 
 // 返回大廳
@@ -3079,10 +3131,16 @@ async function silentRefreshGames() {
         globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
         globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
         
-        // 根據目前所在畫面重新渲染
+        // 根據目前所在畫面重新渲染（分析 / LOG 等管理頁不要被大廳蓋掉）
+        if (isPinnedAdminView()) {
+          return;
+        }
+        if (lobbyHasDraftInput()) {
+          return;
+        }
         if (currentGameDetailId && !detailView.classList.contains('hidden')) {
           renderDetail(currentGameDetailId, true);
-        } else {
+        } else if (lobbyView && !lobbyView.classList.contains('hidden')) {
           renderLobby();
         }
       }
@@ -3357,7 +3415,7 @@ function playMinusOneCancelAnimation(btn) {
 
 // 發送 LIFF 通知
 async function triggerLiffNotification(msg) {
-  if (msg && typeof liff !== 'undefined' && liff.isInClient()) {
+  if (msg && isLiffInClient()) {
     try {
       await liff.sendMessages([{ type: 'text', text: msg + '\n\n[系統代發]' }]);
       console.log('自動發話成功');
@@ -3374,16 +3432,58 @@ async function triggerLiffNotification(msg) {
   }
 }
 
+function bindAllNameInputEnterHandlers() {
+  document.querySelectorAll('input[id^="name-input-"], input[id^="level-input-"]').forEach(el => {
+    if (el.dataset.enterBind === 'true') return;
+    el.dataset.enterBind = 'true';
+    const id = el.id || '';
+    const suffix = id.endsWith('-detail') ? '-detail' : '';
+    const gameId = id.replace(/^name-input-/, '').replace(/^level-input-/, '').replace(/-detail$/, '');
+    if (!gameId) return;
+    el.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const row = el.closest('.action-row');
+      const btn = row && row.querySelector('button.btn-primary.btn-square');
+      if (btn && !btn.disabled) {
+        handleActionWithInput({ currentTarget: btn, target: btn }, gameId, 'register', suffix);
+      }
+    });
+  });
+}
+
 // 處理新的輸入框報名與防呆
 async function handleActionWithInput(event, gameId, action, suffix = '') {
   const btn = event.currentTarget || event.target;
   
-  const inputEl = document.getElementById(`name-input-${gameId}${suffix}`);
-  const levelEl = document.getElementById(`level-input-${gameId}${suffix}`);
-  const errorEl = document.getElementById(`error-msg-${gameId}${suffix}`);
+  let inputEl = document.getElementById(`name-input-${gameId}${suffix}`);
+  let levelEl = document.getElementById(`level-input-${gameId}${suffix}`);
+  let errorEl = document.getElementById(`error-msg-${gameId}${suffix}`);
+
+  if (btn && btn.closest) {
+    const row = btn.closest('.action-row');
+    if (row) {
+      const nearbyName = row.querySelector('input[id^="name-input-"]');
+      const nearbyLevel = row.querySelector('input[id^="level-input-"]');
+      if (nearbyName && (!inputEl || !String(inputEl.value || '').trim())) inputEl = nearbyName;
+      if (nearbyLevel && !levelEl) levelEl = nearbyLevel;
+      if (!errorEl) {
+        const host = row.parentElement;
+        errorEl = host && host.querySelector('.error-msg');
+      }
+    }
+  }
   
   const inputVal = (inputEl && inputEl.value.trim()) ? inputEl.value.trim() : '';
-  const prodInfo = getLogProducerInfo(inputVal);
+  let prodInfo = { displayName: '訪客', userId: '', source: '電腦瀏覽器', producerText: '訪客' };
+  try {
+    prodInfo = getLogProducerInfo(inputVal);
+  } catch (e) {
+    console.error('getLogProducerInfo failed', e);
+  }
+  if (!prodInfo.userId && currentUser && currentUser.userId) prodInfo.userId = currentUser.userId;
+  if (!prodInfo.userId) prodInfo.userId = (typeof getOrCreateGuestUid === 'function') ? getOrCreateGuestUid() : 'U_WEB';
+  if (!prodInfo.displayName) prodInfo.displayName = (currentUser && currentUser.displayName) || inputVal || '訪客';
 
   let name = prodInfo.displayName;
   if (inputVal) {
@@ -3546,7 +3646,8 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       body: JSON.stringify({
         gid: currentGroupId,
         gameId: gameId,
-        uid: (inputEl && inputEl.dataset.uuid) ? inputEl.dataset.uuid : operatorUid,
+        uid: operatorUid,
+        targetUid: (inputEl && inputEl.dataset.uuid) ? inputEl.dataset.uuid : '',
         name: name,
         operatorName: operatorName,
         producer: producerText,
@@ -3554,7 +3655,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
         level: level,
         action: action,
         sectionIdx: sectionIdx,
-        clientSupportsLiffSendMessage: typeof liff !== 'undefined' && liff.isInClient()
+        clientSupportsLiffSendMessage: isLiffInClient()
       })
     });
     
@@ -3594,6 +3695,8 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
     if (errorEl) {
       errorEl.innerText = err.message;
       errorEl.style.display = 'block';
+    } else {
+      alert(err.message || '操作失敗');
     }
   } finally {
     if (btn) {
@@ -3602,6 +3705,8 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
     }
   }
 }
+
+window.handleActionWithInput = handleActionWithInput;
 
 
 async function handleTogglePaid(gameId, name) {
@@ -3798,7 +3903,7 @@ window.handlePushList = async function(gameId) {
     }
     
     // 如果可以自動發話，且沒有指定特定群組代碼，直接代替使用者送出「推播提醒」指令
-    if (!targetCode && typeof liff !== 'undefined' && liff.isInClient()) {
+    if (!targetCode && isLiffInClient()) {
       try {
         await liff.sendMessages([{ type: 'text', text: `推播提醒\n\n[系統代發]` }]);
         alert('✅ 名單推播成功！已自動在聊天室呼叫機器人。');
@@ -4643,14 +4748,15 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.btn-danger')
 // 大廳分析邏輯
 if (btnLobbyStats) {
   btnLobbyStats.addEventListener('click', async () => {
-    appDiv.className = 'loading';
-    statusMsg.innerText = '讀取分析資料中...';
-    statusMsg.style.display = 'block';
-    
     const { isSuperAdmin: effIsSuperAdmin } = (typeof getEffectiveRole === 'function') ? getEffectiveRole() : { isSuperAdmin: false };
+    showAppView(statsView);
+    if (statsGroupsContainer) {
+      statsGroupsContainer.innerHTML = '<div style="text-align:center; padding:24px; color:#888;">讀取分析資料中...</div>';
+    }
     
     try {
-      const res = await fetch(`/api/admin/all_stats?uid=${currentUser.userId}`);
+      const uid = (currentUser && currentUser.userId) ? currentUser.userId : '';
+      const res = await withTimeout(fetch(`/api/admin/all_stats?uid=${encodeURIComponent(uid)}`), 20000, '分析資料載入逾時');
       if (!res.ok) throw new Error('無法取得分析資料');
       const data = await res.json();
       
@@ -4732,6 +4838,7 @@ if (btnLobbyStats) {
 
             let currentSort = 'lastVisit';
             let sortDesc = true;
+            let usersTableBuilt = false;
 
             const renderTbody = () => {
               const tbody = table.querySelector('tbody');
@@ -4752,10 +4859,11 @@ if (btnLobbyStats) {
                   const visitDate = new Date(u.lastVisit);
                   const isToday = visitDate.toLocaleDateString('zh-TW') === todayStr;
                   const bgStyle = isToday ? 'background: #fff8e1;' : '';
+                  const safeName = escapeHTML(u.displayName || '未知');
                   
                   return `
                   <tr style="border-bottom: 1px solid #eee; ${bgStyle}">
-                    <td style="padding: 5px; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${u.displayName}">${u.displayName}</td>
+                    <td style="padding: 5px; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${safeName}">${safeName}</td>
                     <td style="padding: 5px;">${u.count}</td>
                     <td style="padding: 5px;">${visitDate.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}</td>
                   </tr>
@@ -4765,8 +4873,6 @@ if (btnLobbyStats) {
               table.querySelector('#sort-count').innerText = currentSort === 'count' ? (sortDesc ? '總點擊 ▼' : '總點擊 ▲') : '總點擊';
               table.querySelector('#sort-time').innerText = currentSort === 'lastVisit' ? (sortDesc ? '最後點擊 ▼' : '最後點擊 ▲') : '最後點擊';
             };
-
-            renderTbody();
 
             table.querySelector('#sort-count').onclick = () => {
               if (currentSort === 'count') sortDesc = !sortDesc;
@@ -4783,6 +4889,10 @@ if (btnLobbyStats) {
 
             titleContainer.onclick = () => {
               if (tableContainer.style.display === 'none') {
+                if (!usersTableBuilt) {
+                  renderTbody();
+                  usersTableBuilt = true;
+                }
                 tableContainer.style.display = 'block';
                 toggleIcon.style.transform = 'rotate(180deg)';
               } else {
@@ -5027,33 +5137,28 @@ if (btnLobbyStats) {
         statsGroupsContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">目前沒有任何群組的分析資料。</div>';
       }
       
-      lobbyView.classList.add('hidden');
-      statsView.classList.remove('hidden');
+      showAppView(statsView);
     } catch (e) {
-      alert(e.message);
+      if (statsGroupsContainer) {
+        statsGroupsContainer.innerHTML = `<div style="text-align:center; padding:24px; color:#c0392b;">${escapeHTML(e && e.message ? e.message : '無法取得分析資料')}</div>`;
+      } else {
+        alert(e.message);
+      }
     } finally {
-      appDiv.className = '';
-      statusMsg.style.display = 'none';
+      revealApp();
     }
   });
 }
 
 if (btnBackStats) {
   btnBackStats.addEventListener('click', () => {
-    statsView.classList.add('hidden');
-    lobbyView.classList.remove('hidden');
+    showAppView(lobbyView);
   });
 }
 
 if (btnPartyAdmin) {
   btnPartyAdmin.addEventListener('click', () => {
-    lobbyView.classList.add('hidden');
-    detailView.classList.add('hidden');
-    if (easterEggSettingsView) easterEggSettingsView.classList.add('hidden');
-    if (statsView) statsView.classList.add('hidden');
-    if (systemLogsView) systemLogsView.classList.add('hidden');
-    
-    partyAdminView.classList.remove('hidden');
+    showAppView(partyAdminView);
     initSocket();
   });
 }
@@ -5067,8 +5172,10 @@ if (btnBackParty) {
 
 if (btnSystemLogs) {
   btnSystemLogs.addEventListener('click', async () => {
-    appDiv.className = 'loading';
-    statusMsg.innerText = '讀取中...';
+    showAppView(systemLogsView);
+    if (systemLogsContainer) {
+      systemLogsContainer.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">讀取中...</p>';
+    }
     try {
       const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
         ? currentUser.userId 
@@ -5078,7 +5185,7 @@ if (btnSystemLogs) {
               return (u && u.userId) ? u.userId : '';
             } catch(e) { return ''; }
           })();
-      const res = await fetch('/api/systemLogs?uid=' + encodeURIComponent(currentUid));
+      const res = await withTimeout(fetch('/api/systemLogs?uid=' + encodeURIComponent(currentUid)), 15000, '系統 LOG 載入逾時');
       if (!res.ok) throw new Error('無法讀取系統LOG');
       const logs = await res.json();
       
@@ -5143,20 +5250,22 @@ if (btnSystemLogs) {
         });
       }
       
-      document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
-      systemLogsView.classList.remove('hidden');
+      showAppView(systemLogsView);
     } catch(e) {
-      alert(e.message);
+      if (systemLogsContainer) {
+        systemLogsContainer.innerHTML = `<p style="color:#c0392b;text-align:center;padding:20px;">${escapeHTML(e && e.message ? e.message : '無法讀取系統LOG')}</p>`;
+      } else {
+        alert(e.message);
+      }
     } finally {
-      appDiv.className = '';
+      revealApp();
     }
   });
 }
 
 if (btnBackLogs) {
   btnBackLogs.addEventListener('click', () => {
-    document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
-    document.getElementById('lobby-view').classList.remove('hidden');
+    showAppView(lobbyView);
   });
 }
 
@@ -8900,6 +9009,7 @@ function bootApp() {
       const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
       if (u && u.userId) earlyUid = u.userId;
     } catch(e) {}
+    window.__EARLY_GAME_META__ = { gid: earlyGid, uid: earlyUid };
     window.__EARLY_GAME_PROMISE__ = fetch(`/api/game/${earlyGid}?uid=${earlyUid}&_t=${Date.now()}`)
       .then(r => r.ok ? r.json() : null)
       .catch(() => null);

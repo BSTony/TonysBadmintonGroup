@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-08-31
- * Version: 1.3.10
+ * Date: 2026-09-10
+ * Version: 1.3.12
  */
 const express = require('express');
 const compression = require('compression');
@@ -1796,16 +1796,20 @@ async function loadGames() {
     } else {
       // 如果已從 GitHub 載入資料，就不從本地檔案覆蓋
       const alreadyLoadedFromGithub = USE_GITHUB && Object.keys(games).length > 0;
-      if (!alreadyLoadedFromGithub && fs.existsSync(GAMES_FILE)) {
+      if (!alreadyLoadedFromGithub) {
         try {
-          const content = fs.readFileSync(GAMES_FILE, 'utf8') || '{}';
-          const obj = JSON.parse(content);
-          games = obj || {};
-          console.log(`已從 ${GAMES_FILE} 載入 ${Object.keys(games).length} 筆接龍資料`);
+          const dataGamesFile = path.join(DATA_DIR, 'games.json');
+          const fileToLoad = fs.existsSync(dataGamesFile) ? dataGamesFile : GAMES_FILE;
+          if (fs.existsSync(fileToLoad)) {
+            const content = fs.readFileSync(fileToLoad, 'utf8') || '{}';
+            const obj = JSON.parse(content);
+            games = obj || {};
+            console.log(`已從 ${fileToLoad} 載入 ${Object.keys(games).length} 筆接龍資料`);
+          }
         } catch (e) {
           console.error('從檔案載入接龍資料失敗:', e);
         }
-      } else if (alreadyLoadedFromGithub) {
+      } else {
         console.log(`已從 GitHub 載入場次資料，跳過本地檔案讀取`);
       }
     }
@@ -2650,17 +2654,12 @@ app.get('/api/admin/all_stats', async (req, res) => {
   const uid = req.query.uid;
   if (!uid) return res.status(403).json({ error: '需要 uid' });
 
-  const isSuperAdminUser = isSuperAdmin(uid);
+  const isSuperAdminUser = isTrueSuperAdmin(uid);
   let adminGids = [];
 
   if (isSuperAdminUser) {
     // 濾掉開頭為 U 的個人對話框造訪紀錄，只保留真正的群組 (C) 或房間 (R)，以及團購訪客虛擬群組
     adminGids = Object.keys(lobbyVisits).filter(id => !id.startsWith('U') || isGroupBuyVisitGid(id));
-    
-    // 順手把舊的 U 開頭垃圾資料清掉，避免資料檔越來越大
-    Object.keys(lobbyVisits).forEach(id => {
-      if (id.startsWith('U') && !isGroupBuyVisitGid(id)) delete lobbyVisits[id];
-    });
   } else {
     // 即使是 groupAdmins 也無法使用此 API，直接阻擋
     return res.status(403).json({ error: '只有超級管理員能查看全域數據分析' });
@@ -2683,14 +2682,12 @@ app.get('/api/admin/all_stats', async (req, res) => {
     const gName = isGroupBuy ? '🛒 團購訪客' : (groupSettings[g]?.groupName || groupSettings[g]?.lobbyTitle || g);
     const stats = lobbyVisits[g] || { viewCount: 0, uniqueViewers: {}, logs: [] };
     
-    const uniqueViewers = Object.fromEntries(
-      Object.entries(stats.uniqueViewers || {}).filter(([viewerUid]) => !isWeakVisitUserId(viewerUid))
-    );
-    const uniqueCount = Object.keys(uniqueViewers).length;
+    const uniqueViewerEntries = Object.entries(stats.uniqueViewers || {}).filter(([viewerUid]) => !isWeakVisitUserId(viewerUid));
+    const uniqueCount = uniqueViewerEntries.length;
     
     if (!isGroupBuy) {
       totalViews += (stats.viewCount || 0);
-      for (const [viewerUid, uData] of Object.entries(uniqueViewers)) {
+      for (const [viewerUid, uData] of uniqueViewerEntries) {
         globalUniqueViewers.add(viewerUid);
         if (uData.lastVisit && uData.lastVisit >= todayStartTime) {
           todayUniqueViewers.add(viewerUid);
@@ -2733,7 +2730,7 @@ app.get('/api/admin/all_stats', async (req, res) => {
       date: d.date,
       viewCount: d.viewCount,
       uniqueCount: d.uniqueUsers.size
-    })).sort((a, b) => b.date.localeCompare(a.date));
+    })).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14);
 
     allStats.push({
       gid: g,
@@ -4584,9 +4581,10 @@ app.post('/api/action', express.json(), async (req, res) => {
 
   try {
     const { gid, gameId, uid, name, level, action, count, text, pushToAll, operatorName, clientSupportsLiffSendMessage } = req.body;
+    const targetUid = (typeof req.body.targetUid === 'string' && req.body.targetUid) ? req.body.targetUid : '';
     
     const targetGameGid = (gameId && games[gameId]) ? games[gameId].gid : gid;
-    const isSuperAdminUser = isSuperAdmin(uid);
+    const isSuperAdminUser = isTrueSuperAdmin(uid);
     let isAdmin = isSuperAdminUser;
     
     if (!isAdmin) {
@@ -4994,11 +4992,13 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (hasDuplicate) { 
         return res.status(400).json({ error: '您已經報名過了（每人限選一時段）' });
       }
+
+      const mappedUid = targetUid || ((operatorName && name !== operatorName) ? '' : uid);
       
       namesToAdd.forEach(n => {
-        addToList(gameId, targetSecIdx, n, { uid, level: n !== '__ANON__' ? level : undefined });
+        addToList(gameId, targetSecIdx, n, { uid: n !== '__ANON__' ? mappedUid : undefined, level: n !== '__ANON__' ? level : undefined });
         if (n !== '__ANON__') {
-          uidToNameMap.set(`${gameId}_${uid}`, n);
+          if (mappedUid) uidToNameMap.set(`${gameId}_${mappedUid}`, n);
           if (!game.history) game.history = [];
           const now = new Date();
           const timeStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;

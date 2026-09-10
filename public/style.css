@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
-  Date: 2026-08-27
-  Version: 1.2.6
+  Date: 2026-09-10
+  Version: 1.2.7
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -45,7 +45,8 @@ body {
 
 .view {
   padding: 20px;
-  animation: slideIn var(--transition-speed) ease forwards;
+  opacity: 1;
+  transform: none;
 }
 
 @keyframes slideIn {
