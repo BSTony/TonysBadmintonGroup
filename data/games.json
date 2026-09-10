@@ -6970,7 +6970,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789006402812,
+    "lastActiveTime": 1789025536592,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7012,7 +7012,8 @@
           "ALAN LIU",
           "Kevin",
           "Mia",
-          "鈞"
+          "鈞",
+          "FB Dylan Lee"
         ]
       },
       {
@@ -7047,6 +7048,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/10 15:32",
+        "name": "FB Dylan Lee",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/10 10:13",
         "name": "陳呈",
