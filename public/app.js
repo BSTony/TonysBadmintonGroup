@@ -3573,7 +3573,8 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       levelEl.value = '';
     }
     
-    await loadGamesLobby(true); // 使用靜默加載，不轉圈圈，防止滾動條重置
+    lastGamesJson = ''; // 清除快取，確保 loadGamesLobby 一定重新渲染名單
+    await loadGamesLobby(false); // 強制重新渲染，確保畫面同步
   } catch (err) {
     console.error(err);
     if (action === 'cancel') {
