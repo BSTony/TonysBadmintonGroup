@@ -6823,7 +6823,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789009620544,
+    "lastActiveTime": 1789009629334,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6847,7 +6847,8 @@
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "test": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "FB Wei Wei Chen1": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "FB Wei Wei Chen1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "FB Wei Wei Chen2": "U9dc6c7ab7d49487c4dcb70caf20195b0"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6867,12 +6868,20 @@
           "Mia",
           "弘彬/Jason",
           "Gary",
-          "FB Wei Wei Chen1"
+          "FB Wei Wei Chen1",
+          "FB Wei Wei Chen2"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/10 11:07",
+        "name": "FB Wei Wei Chen2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/10 11:07",
         "name": "FB Wei Wei Chen1",
