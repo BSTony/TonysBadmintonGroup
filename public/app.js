@@ -9,7 +9,8 @@ async function loadLobbyUsers() {
   if (!currentGroupId) return;
   try {
     const fetchGid = globalIsSuperAdmin ? 'all' : currentGroupId;
-    const res = await fetch(`/api/users/${fetchGid}?uid=${currentUser.userId}`);
+    const uid = (currentUser && currentUser.userId) || '';
+    const res = await fetch(`/api/users/${fetchGid}?uid=${uid}`);
     const data = await res.json();
     if (res.ok && data.success) {
       globalLobbyUsers = data.users || [];
@@ -3088,7 +3089,8 @@ async function silentRefreshGames() {
   }
   
   try {
-    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
+    const refreshUid = (currentUser && currentUser.userId) || '';
+    const res = await fetch(`/api/game/${currentGroupId}?uid=${refreshUid}&_t=${Date.now()}`);
     if (res.ok) {
       const data = await res.json();
       const newGamesJson = JSON.stringify(data.games || []);
@@ -4138,11 +4140,12 @@ document.getElementById('btn-save-template').onclick = async () => {
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
+    const tplUid = (currentUser && currentUser.userId) || '';
+    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || tplUid || 'default')}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: currentUser.userId,
+        uid: tplUid,
         action: 'save',
         name: name,
         content: text
@@ -4171,11 +4174,12 @@ document.getElementById('btn-delete-template').onclick = async () => {
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
+    const tplUid = (currentUser && currentUser.userId) || '';
+    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || tplUid || 'default')}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: currentUser.userId,
+        uid: tplUid,
         action: 'delete',
         name: name
       })
@@ -5265,7 +5269,7 @@ function renderLeaderboard(leaderboardData, quota) {
       ? '-- s' 
       : (user.timeTaken / 1000).toFixed(2) + ' s';
       
-    const isMe = user.uid === currentUser.userId;
+    const isMe = !!(currentUser && currentUser.userId && user.uid === currentUser.userId);
     const nameColor = isMe ? '#E91E63' : '#333';
     
     const li = document.createElement('li');
@@ -8807,11 +8811,12 @@ if (btnTaSave) {
     
     appDiv.className = 'loading';
     try {
-      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
+      const tplUid = (currentUser && currentUser.userId) || '';
+      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || tplUid || 'default')}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: currentUser.userId,
+          uid: tplUid,
           action: 'save',
           name: name,
           content: content
@@ -8843,11 +8848,12 @@ if (btnTaDelete) {
     
     appDiv.className = 'loading';
     try {
-      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
+      const tplUid = (currentUser && currentUser.userId) || '';
+      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || tplUid || 'default')}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: currentUser.userId,
+          uid: tplUid,
           action: 'delete',
           name: name
         })
