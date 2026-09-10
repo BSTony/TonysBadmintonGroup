@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-09-10
- * Version: 1.2.25
+ * Version: 1.2.27
  */
 let globalLobbyUsers = [];
 
@@ -5248,93 +5248,168 @@ if (btnBackParty) {
 if (btnSystemLogs) {
   btnSystemLogs.addEventListener('click', async () => {
     showAppView(systemLogsView);
-    if (systemLogsContainer) {
-      systemLogsContainer.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">讀取中...</p>';
-    }
-    try {
-      const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
-        ? currentUser.userId 
-        : (() => {
-            try {
-              const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
-              return (u && u.userId) ? u.userId : '';
-            } catch(e) { return ''; }
-          })();
-      const res = await withTimeout(fetch('/api/systemLogs?uid=' + encodeURIComponent(currentUid)), 15000, '系統 LOG 載入逾時');
-      if (!res.ok) throw new Error('無法讀取系統LOG');
-      const logs = await res.json();
-      
-      systemLogsContainer.innerHTML = '';
-      if (!logs || logs.length === 0) {
-        systemLogsContainer.innerHTML = '<p>目前沒有系統錯誤紀錄</p>';
-      } else {
-        const toolbar = document.createElement('div');
-        toolbar.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;';
-        toolbar.innerHTML = `<span style="font-size:13px;color:#64748b;">共 ${logs.length} 筆，最新在上</span>
-          <button type="button" id="btn-copy-system-logs" style="border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">複製全部</button>`;
-        systemLogsContainer.appendChild(toolbar);
-        const copyBtn = toolbar.querySelector('#btn-copy-system-logs');
-        if (copyBtn) {
-          copyBtn.onclick = () => {
-            const text = logs.map(log => {
-              const prod = log.producer || log.operator || '未知';
-              const src = log.source ? ` [${log.source}]` : '';
-              return `${log.time}${src}\n[${log.gameTitle || '未知場次'}] 產出者: ${prod}\n${log.errorMsg}`;
-            }).join('\n\n');
-            if (navigator.clipboard && window.isSecureContext) {
-              navigator.clipboard.writeText(text).then(() => alert('已複製全部 LOG')).catch(() => prompt('請手動複製：', text));
-            } else {
-              prompt('請手動複製：', text);
-            }
-          };
-        }
-        logs.forEach(log => {
-          const div = document.createElement('div');
-          div.style.borderBottom = '1px solid #e2e8f0';
-          div.style.padding = '10px 0';
-          
-          const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '系統') : (log.gameTitle || '系統');
-          const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : (log.operator || '');
-          const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : (log.errorMsg || '');
-          const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : (log.time || '');
-          
-          const rawProducer = log.producer || (op ? `${op}${log.uid ? ` (${log.uid})` : ''}` : '系統');
-          const producer = typeof escapeHTML === 'function' ? escapeHTML(rawProducer) : rawProducer;
-          const source = log.source ? (typeof escapeHTML === 'function' ? escapeHTML(log.source) : log.source) : '';
-          const ip = log.ip ? (typeof escapeHTML === 'function' ? escapeHTML(log.ip) : log.ip) : '';
+    await loadSystemLogsView();
+  });
+}
 
-          let msgColor = '#b91c1c';
-          if (msg.includes('第 1 次按') || msg.includes('第 1 次')) {
-            msgColor = '#d97706';
-          } else if (msg.includes('成功') || msg.includes('已移出名單')) {
-            msgColor = '#15803d';
-          }
-          div.innerHTML = `
-            <div style="font-size:12px; color:#64748b; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span>🕒 ${time}</span>
-              ${source ? `<span style="background:#e2e8f0; color:#334155; padding:1px 6px; border-radius:4px; font-size:11px; font-weight:500;">${source}</span>` : ''}
-            </div>
-            <div style="font-size:13px; margin-bottom:5px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
-              <span style="font-weight:bold; color:#0f172a; background:#f1f5f9; padding:2px 8px; border-radius:4px;">[${title}]</span>
-              <span style="color:#0284c7; font-weight:bold;">👤 產出者：${producer}</span>
-              ${ip ? `<span style="color:#94a3b8; font-size:11px;">(IP: ${ip})</span>` : ''}
-            </div>
-            <div style="color:${msgColor}; margin-top:4px; white-space:pre-wrap; word-break:break-word; user-select:text; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:13px; border-left:3px solid ${msgColor}; line-height:1.5;">${msg}</div>
-          `;
-          systemLogsContainer.appendChild(div);
-        });
-      }
-      
-      showAppView(systemLogsView);
-    } catch(e) {
-      if (systemLogsContainer) {
-        systemLogsContainer.innerHTML = `<p style="color:#c0392b;text-align:center;padding:20px;">${escapeHTML(e && e.message ? e.message : '無法讀取系統LOG')}</p>`;
-      } else {
-        alert(e.message);
-      }
-    } finally {
-      revealApp();
+function getSystemLogsUid() {
+  if (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) return currentUser.userId;
+  try {
+    const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
+    return (u && u.userId) ? u.userId : '';
+  } catch (e) {
+    return '';
+  }
+}
+
+async function loadSystemLogsView() {
+  if (systemLogsContainer) {
+    systemLogsContainer.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">讀取中...</p>';
+  }
+  try {
+    const currentUid = getSystemLogsUid();
+    const res = await withTimeout(fetch('/api/systemLogs?uid=' + encodeURIComponent(currentUid)), 15000, '系統 LOG 載入逾時');
+    if (!res.ok) throw new Error('無法讀取系統LOG');
+    const logs = await res.json();
+    renderSystemLogs(Array.isArray(logs) ? logs : []);
+    showAppView(systemLogsView);
+  } catch (e) {
+    if (systemLogsContainer) {
+      systemLogsContainer.innerHTML = `<p style="color:#c0392b;text-align:center;padding:20px;">${escapeHTML(e && e.message ? e.message : '無法讀取系統LOG')}</p>`;
+    } else {
+      alert(e.message);
     }
+  } finally {
+    revealApp();
+  }
+}
+
+async function deleteSystemLogs(payload, confirmMsg) {
+  if (confirmMsg && !confirm(confirmMsg)) return null;
+  const currentUid = getSystemLogsUid();
+  const res = await fetch('/api/systemLogs/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ uid: currentUid }, payload))
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || '刪除 LOG 失敗');
+  }
+  return data;
+}
+
+function renderSystemLogs(logs) {
+  if (!systemLogsContainer) return;
+  systemLogsContainer.innerHTML = '';
+  if (!logs || logs.length === 0) {
+    systemLogsContainer.innerHTML = '<p>目前沒有系統錯誤紀錄</p>';
+    return;
+  }
+
+  const toolbar = document.createElement('div');
+  toolbar.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;';
+  toolbar.innerHTML = `<span style="font-size:13px;color:#64748b;">共 ${logs.length} 筆（上限 500），最新在上</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button type="button" id="btn-delete-old-system-logs" style="border:1px solid #fdba74;background:#fff7ed;color:#c2410c;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">刪除 30 天前</button>
+      <button type="button" id="btn-clear-system-logs" style="border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">清空全部</button>
+      <button type="button" id="btn-copy-system-logs" style="border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">複製全部</button>
+    </div>`;
+  systemLogsContainer.appendChild(toolbar);
+
+  const copyBtn = toolbar.querySelector('#btn-copy-system-logs');
+  if (copyBtn) {
+    copyBtn.onclick = () => {
+      const text = logs.map(log => {
+        const prod = log.producer || log.operator || '未知';
+        const src = log.source ? ` [${log.source}]` : '';
+        return `${log.time}${src}\n[${log.gameTitle || '未知場次'}] 產出者: ${prod}\n${log.errorMsg}`;
+      }).join('\n\n');
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => alert('已複製全部 LOG')).catch(() => prompt('請手動複製：', text));
+      } else {
+        prompt('請手動複製：', text);
+      }
+    };
+  }
+
+  const deleteOldBtn = toolbar.querySelector('#btn-delete-old-system-logs');
+  if (deleteOldBtn) {
+    deleteOldBtn.onclick = async () => {
+      try {
+        const data = await deleteSystemLogs({ olderThanDays: 30 }, '確定刪除 30 天前的 LOG？此動作無法復原。');
+        if (!data) return;
+        alert(data.deleted > 0 ? `已刪除 ${data.deleted} 筆舊 LOG` : '沒有超過 30 天的 LOG');
+        renderSystemLogs(data.logs || []);
+      } catch (e) {
+        alert(e.message || '刪除失敗');
+      }
+    };
+  }
+
+  const clearBtn = toolbar.querySelector('#btn-clear-system-logs');
+  if (clearBtn) {
+    clearBtn.onclick = async () => {
+      try {
+        const data = await deleteSystemLogs({ clearAll: true }, `確定清空全部 ${logs.length} 筆 LOG？此動作無法復原。`);
+        if (!data) return;
+        alert(`已清空 ${data.deleted} 筆 LOG`);
+        renderSystemLogs(data.logs || []);
+      } catch (e) {
+        alert(e.message || '刪除失敗');
+      }
+    };
+  }
+
+  logs.forEach(log => {
+    const div = document.createElement('div');
+    div.style.borderBottom = '1px solid #e2e8f0';
+    div.style.padding = '10px 0';
+
+    const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '系統') : (log.gameTitle || '系統');
+    const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : (log.operator || '');
+    const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : (log.errorMsg || '');
+    const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : (log.time || '');
+
+    const rawProducer = log.producer || (op ? `${op}${log.uid ? ` (${log.uid})` : ''}` : '系統');
+    const producer = typeof escapeHTML === 'function' ? escapeHTML(rawProducer) : rawProducer;
+    const source = log.source ? (typeof escapeHTML === 'function' ? escapeHTML(log.source) : log.source) : '';
+    const ip = log.ip ? (typeof escapeHTML === 'function' ? escapeHTML(log.ip) : log.ip) : '';
+
+    let msgColor = '#b91c1c';
+    if (msg.includes('第 1 次按') || msg.includes('第 1 次')) {
+      msgColor = '#d97706';
+    } else if (msg.includes('成功') || msg.includes('已移出名單')) {
+      msgColor = '#15803d';
+    }
+    div.innerHTML = `
+      <div style="font-size:12px; color:#64748b; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:8px;">
+        <span>🕒 ${time}</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          ${source ? `<span style="background:#e2e8f0; color:#334155; padding:1px 6px; border-radius:4px; font-size:11px; font-weight:500;">${source}</span>` : ''}
+          <button type="button" class="btn-delete-one-log" style="border:1px solid #fecaca;background:#fff;color:#b91c1c;border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;">刪除</button>
+        </div>
+      </div>
+      <div style="font-size:13px; margin-bottom:5px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
+        <span style="font-weight:bold; color:#0f172a; background:#f1f5f9; padding:2px 8px; border-radius:4px;">[${title}]</span>
+        <span style="color:#0284c7; font-weight:bold;">👤 產出者：${producer}</span>
+        ${ip ? `<span style="color:#94a3b8; font-size:11px;">(IP: ${ip})</span>` : ''}
+      </div>
+      <div style="color:${msgColor}; margin-top:4px; white-space:pre-wrap; word-break:break-word; user-select:text; background:#f8fafc; padding:8px 12px; border-radius:6px; font-size:13px; border-left:3px solid ${msgColor}; line-height:1.5;">${msg}</div>
+    `;
+    const oneDelBtn = div.querySelector('.btn-delete-one-log');
+    if (oneDelBtn) {
+      oneDelBtn.onclick = async () => {
+        try {
+          const data = await deleteSystemLogs({ ids: [log.id] }, '確定刪除這筆 LOG？');
+          if (!data) return;
+          renderSystemLogs(data.logs || []);
+        } catch (e) {
+          alert(e.message || '刪除失敗');
+        }
+      };
+    }
+    systemLogsContainer.appendChild(div);
   });
 }
 
@@ -5427,52 +5502,63 @@ function renderLeaderboard(leaderboardData, quota) {
 }
 
 // --- Admin Easter Egg View ---
-if (btnEasterEgg) {
-  btnEasterEgg.addEventListener('click', async () => {
-    statusMsg.innerText = '載入設定中...';
-    statusMsg.style.display = 'block';
-    appDiv.className = 'loading';
-    try {
-      const res = await fetch(`/api/admin/easter_egg?uid=${currentUser.userId}`);
-      if (res.ok) {
-        const data = await res.json();
-        eeEnabledCheckbox.checked = data.enabled;
-        eeMessageInput.value = data.message;
-        eeQuotaInput.value = data.quota;
-        
-        if (data.activeGame) {
-          eeActiveGameSelect.value = data.activeGame;
-        }
-        
-        const isBulletHell = eeActiveGameSelect.value === 'bullet_hell';
-        const listData = isBulletHell ? (data.bulletHellLeaderboard || []) : (data.winners || []);
-        
-        eeWinnersCount.innerText = listData.length;
-        eeWinnersList.innerHTML = '';
-        if (listData.length > 0) {
-          listData.forEach((w, index) => {
-            const li = document.createElement('li');
-            if (isBulletHell) {
-              li.innerHTML = `<strong>${index+1}.</strong> ${w.name} - ${w.survivalTime} 秒`;
-            } else {
-              li.innerText = w.name || 'Unknown';
-            }
-            eeWinnersList.appendChild(li);
-          });
-        }
-        
-        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-        easterEggSettingsView.classList.remove('hidden');
-        appDiv.className = '';
-        statusMsg.style.display = 'none';
+function fillEasterEggSettingsForm(data) {
+  const settings = data || {};
+  if (eeEnabledCheckbox) eeEnabledCheckbox.checked = !!settings.enabled;
+  if (eeMessageInput) eeMessageInput.value = settings.message || '';
+  if (eeQuotaInput) eeQuotaInput.value = (typeof settings.quota === 'number' ? settings.quota : 3);
+  if (eeActiveGameSelect && settings.activeGame) {
+    eeActiveGameSelect.value = settings.activeGame;
+  }
+
+  const isBulletHell = eeActiveGameSelect && eeActiveGameSelect.value === 'bullet_hell';
+  const listData = isBulletHell ? (settings.bulletHellLeaderboard || []) : (settings.winners || []);
+  const rows = Array.isArray(listData) ? listData : [];
+  if (eeWinnersCount) eeWinnersCount.innerText = String(rows.length);
+  if (eeWinnersList) {
+    eeWinnersList.innerHTML = '';
+    rows.forEach((w, index) => {
+      const li = document.createElement('li');
+      const name = (w && typeof w === 'object') ? (w.name || 'Unknown') : String(w || 'Unknown');
+      if (isBulletHell && w && typeof w === 'object') {
+        li.innerText = `${index + 1}. ${name} - ${w.survivalTime || 0} 秒`;
       } else {
-        throw new Error('Load failed');
+        li.innerText = `${index + 1}. ${name}`;
       }
-    } catch(e) {
-      alert('無法載入彩蛋設定');
-      statusMsg.style.display = 'none';
-      appDiv.className = '';
+      eeWinnersList.appendChild(li);
+    });
+  }
+}
+
+async function openEasterEggSettings() {
+  showAppView(easterEggSettingsView);
+  if (eeWinnersList) {
+    eeWinnersList.innerHTML = '<li style="color:#888;">讀取中...</li>';
+  }
+  try {
+    const uid = (typeof getSystemLogsUid === 'function') ? getSystemLogsUid() : ((currentUser && currentUser.userId) || '');
+    const res = await withTimeout(
+      fetch(`/api/admin/easter_egg?uid=${encodeURIComponent(uid)}`),
+      12000,
+      '彩蛋設定載入逾時'
+    );
+    if (!res.ok) throw new Error('無法載入彩蛋設定');
+    const data = await res.json();
+    fillEasterEggSettingsForm(data);
+  } catch (e) {
+    if (eeWinnersList) {
+      eeWinnersList.innerHTML = `<li style="color:#c0392b;">${escapeHTML(e && e.message ? e.message : '無法載入彩蛋設定')}</li>`;
+    } else {
+      alert(e && e.message ? e.message : '無法載入彩蛋設定');
     }
+  } finally {
+    revealApp();
+  }
+}
+
+if (btnEasterEgg) {
+  btnEasterEgg.addEventListener('click', () => {
+    openEasterEggSettings();
   });
 
   // Removed old duplicate dropdown listener
@@ -5664,7 +5750,12 @@ if (btnEasterEgg) {
     });
   }
 
-  btnBackEasterEgg.addEventListener('click', () => renderLobby());
+  if (btnBackEasterEgg) {
+    btnBackEasterEgg.addEventListener('click', () => {
+      showAppView(lobbyView);
+      renderLobby();
+    });
+  }
 }
 
 if (btnSaveEasterEgg) {
@@ -5675,12 +5766,12 @@ if (btnSaveEasterEgg) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: currentUser.userId,
+          uid: (typeof getSystemLogsUid === 'function' ? getSystemLogsUid() : (currentUser && currentUser.userId)) || '',
           settings: {
-            enabled: eeEnabledCheckbox.checked,
-            message: eeMessageInput.value,
-            quota: parseInt(eeQuotaInput.value, 10) || 3,
-            activeGame: eeActiveGameSelect.value
+            enabled: !!(eeEnabledCheckbox && eeEnabledCheckbox.checked),
+            message: eeMessageInput ? eeMessageInput.value : '',
+            quota: parseInt(eeQuotaInput && eeQuotaInput.value, 10) || 3,
+            activeGame: eeActiveGameSelect ? eeActiveGameSelect.value : 'piggy_run'
           }
         })
       });
@@ -5699,14 +5790,14 @@ if (btnClearWinners) {
   btnClearWinners.addEventListener('click', async () => {
     if (!confirm('確定要清除名單？')) return;
     try {
-      const isBulletHell = eeActiveGameSelect.value === 'bullet_hell';
+      const isBulletHell = eeActiveGameSelect && eeActiveGameSelect.value === 'bullet_hell';
       const settingsPayload = isBulletHell ? { bulletHellLeaderboard: [] } : { winners: [] };
       
       const res = await fetch('/api/admin/easter_egg', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: currentUser.userId,
+          uid: (typeof getSystemLogsUid === 'function' ? getSystemLogsUid() : (currentUser && currentUser.userId)) || '',
           settings: settingsPayload
         })
       });

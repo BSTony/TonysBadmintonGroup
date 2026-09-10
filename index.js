@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-09-10
- * Version: 1.3.13
+ * Version: 1.3.15
  */
 const express = require('express');
 const compression = require('compression');
@@ -1528,6 +1528,54 @@ app.use((req, res, next) => {
 
 const SYSTEM_LOGS_FILE = path.join(__dirname, 'data', 'systemLogs.json');
 
+function parseSystemLogTs(log) {
+  if (!log) return 0;
+  if (typeof log.ts === 'number' && log.ts > 0) return log.ts;
+  const raw = String(log.time || '');
+  const parsed = Date.parse(raw);
+  if (!Number.isNaN(parsed)) return parsed;
+  const m = raw.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s*(上午|下午)?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return 0;
+  let hour = parseInt(m[5], 10);
+  if (m[4] === '下午' && hour < 12) hour += 12;
+  if (m[4] === '上午' && hour === 12) hour = 0;
+  return new Date(
+    parseInt(m[1], 10),
+    parseInt(m[2], 10) - 1,
+    parseInt(m[3], 10),
+    hour,
+    parseInt(m[6], 10),
+    parseInt(m[7] || '0', 10)
+  ).getTime();
+}
+
+function createSystemLogId() {
+  return `lg_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function normalizeSystemLogs() {
+  if (!Array.isArray(systemLogs)) {
+    systemLogs = [];
+    return false;
+  }
+  let changed = false;
+  systemLogs.forEach((log, i) => {
+    if (!log || typeof log !== 'object') return;
+    if (!log.id) {
+      log.id = `lg_legacy_${i}_${String(log.time || '').replace(/\s+/g, '_')}`;
+      changed = true;
+    }
+    if (!log.ts) {
+      const ts = parseSystemLogTs(log);
+      if (ts) {
+        log.ts = ts;
+        changed = true;
+      }
+    }
+  });
+  return changed;
+}
+
 function loadSystemLogs() {
   try {
     if (fs.existsSync(SYSTEM_LOGS_FILE)) {
@@ -1537,6 +1585,7 @@ function loadSystemLogs() {
   } catch (e) {
     console.error('載入 systemLogs.json 失敗:', e.message);
   }
+  if (normalizeSystemLogs()) saveSystemLogs();
 }
 
 function saveSystemLogs() {
@@ -1578,6 +1627,8 @@ function recordSystemLog(title, operator, msg, errObj, meta = {}) {
     }
 
     systemLogs.unshift({
+      id: createSystemLogId(),
+      ts: Date.now(),
       time: timeStr,
       gameTitle: title || '系統',
       operator: op,
@@ -3826,7 +3877,7 @@ app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
 
 app.get('/api/admin/easter_egg', (req, res) => {
   const uid = req.query.uid;
-  if (!uid || !isSuperAdmin(uid)) {
+  if (!uid || !isTrueSuperAdmin(uid)) {
     return res.status(403).json({ error: 'Permission denied' });
   }
   res.json(easterEggSettings);
@@ -3834,7 +3885,7 @@ app.get('/api/admin/easter_egg', (req, res) => {
 
 app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
   const { uid, settings } = req.body;
-  if (!uid || !isSuperAdmin(uid)) {
+  if (!uid || !isTrueSuperAdmin(uid)) {
     return res.status(403).json({ error: 'Permission denied' });
   }
   
@@ -5141,12 +5192,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       game.history.unshift({ time: timeStr, name: '系統', operator: operatorName || name, action: '錯誤', errorMsg: text });
       if (game.history.length > 2000) game.history.pop();
       
-      systemLogs.unshift({ time: timeStr, gameTitle: game.title, operator: operatorName || name, errorMsg: text });
-      if (systemLogs.length > 500) systemLogs.pop();
-      
-      systemLogs.unshift({ time: timeStr, gameTitle: game.title, operator: operatorName || name, errorMsg: text });
-      if (systemLogs.length > 500) systemLogs.pop();
-      saveSystemLogs();
+      recordSystemLog(game.title, operatorName || name, text, null, { uid: uid || '', source: '', producer: '' });
     } else {
       return res.status(400).json({ error: 'Unknown action' });
     }
@@ -6831,11 +6877,10 @@ app.post('/api/groupbuy/:gid/delete_order', async (req, res) => {
 
 // 隱藏的 debug 端點，用來印出當前記憶體狀態
 app.get('/api/systemLogs', async (req, res) => {
-  // 簡易權限檢查
   const { uid } = req.query;
-  const isSuperAdminUser = isSuperAdmin(uid);
-  
-  // 目前先允許 uid 存在就回傳，或直接回傳 (LIFF端會隱藏按鈕)
+  if (!isTrueSuperAdmin(uid)) {
+    return res.status(403).json({ error: '只有超級管理員能查看系統 LOG' });
+  }
   res.json(systemLogs);
 });
 
@@ -6866,6 +6911,40 @@ app.post('/api/systemLogs', (req, res) => {
     }
   );
   res.json({ success: true });
+});
+
+app.post('/api/systemLogs/delete', (req, res) => {
+  const { uid, ids, clearAll, olderThanDays } = req.body || {};
+  if (!isTrueSuperAdmin(uid)) {
+    return res.status(403).json({ error: '只有超級管理員能刪除系統 LOG' });
+  }
+
+  const beforeCount = Array.isArray(systemLogs) ? systemLogs.length : 0;
+  if (!Array.isArray(systemLogs)) systemLogs = [];
+
+  if (clearAll) {
+    systemLogs = [];
+  } else if (typeof olderThanDays === 'number' && olderThanDays > 0) {
+    const cutoff = Date.now() - olderThanDays * 24 * 60 * 60 * 1000;
+    systemLogs = systemLogs.filter(log => {
+      const ts = parseSystemLogTs(log);
+      if (!ts) return true;
+      return ts >= cutoff;
+    });
+  } else if (Array.isArray(ids) && ids.length > 0) {
+    const idSet = new Set(ids.map(v => String(v)));
+    systemLogs = systemLogs.filter(log => !idSet.has(String((log && log.id) || '')));
+  } else {
+    return res.status(400).json({ success: false, error: '請指定要刪除的 LOG' });
+  }
+
+  saveSystemLogs();
+  res.json({
+    success: true,
+    deleted: beforeCount - systemLogs.length,
+    remaining: systemLogs.length,
+    logs: systemLogs
+  });
 });
 
 app.get('/api/debug_games', (req, res) => {
