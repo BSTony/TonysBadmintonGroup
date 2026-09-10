@@ -2083,7 +2083,7 @@ function renderLobby(forceCards = true) {
 
     const btnLineLogin = document.getElementById('btn-line-login');
     const userStatusBadge = document.getElementById('user-status-badge');
-    const isLineLoggedIn = (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || (currentUser && currentUser.userId && !currentUser.userId.startsWith('G_') && !currentUser.userId.startsWith('P_'));
+    const isLineLoggedIn = (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || (currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId));
 
     if (btnLineLogin && userStatusBadge) {
       if (isLineLoggedIn) {
