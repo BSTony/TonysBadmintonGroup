@@ -9,8 +9,7 @@ async function loadLobbyUsers() {
   if (!currentGroupId) return;
   try {
     const fetchGid = globalIsSuperAdmin ? 'all' : currentGroupId;
-    const uid = (currentUser && currentUser.userId) || '';
-    const res = await fetch(`/api/users/${fetchGid}?uid=${uid}`);
+    const res = await fetch(`/api/users/${fetchGid}?uid=${currentUser.userId}`);
     const data = await res.json();
     if (res.ok && data.success) {
       globalLobbyUsers = data.users || [];
@@ -658,7 +657,7 @@ async function finishLiffBoot(testParams, buyFromUrl) {
     currentGroupId = gidFromUrl;
   } else if (context && (context.type === 'group' || context.type === 'room')) {
     currentGroupId = context.groupId || context.roomId;
-  } else if (context && context.type === 'utou' && currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId)) {
+  } else if (currentUser && currentUser.userId && !currentUser.userId.startsWith('G_') && !currentUser.userId.startsWith('P_')) {
     currentGroupId = currentUser.userId;
   } else {
     currentGroupId = 'default';
@@ -1808,21 +1807,6 @@ async function initializeLiff() {
             if (tokenPhone) currentUser.phoneNumber = tokenPhone;
           } catch (e) {}
         } else {
-          if (!currentUser) {
-            try {
-              const raw = localStorage.getItem('gb_cached_user_profile');
-              if (raw) currentUser = JSON.parse(raw);
-            } catch(e) {}
-          }
-          if (!currentUser) {
-            const phone = (typeof getDeviceSavedPhone === 'function' && getDeviceSavedPhone()) || '';
-            const headerNameEl = document.getElementById('gb-header-name');
-            const headerName = headerNameEl && headerNameEl.value.trim() ? headerNameEl.value.trim() : '';
-            currentUser = {
-              userId: phone ? ('P_' + phone) : getOrCreateGuestUid(),
-              displayName: headerName
-            };
-          }
           reportSystemLog('LIFF', '以訪客模式顯示大廳，不強制登入跳轉', { buy: buyFromUrl || '', inClient: isLiffInClient() });
         }
         await finishLiffBoot(testParams, buyFromUrl);
@@ -1864,7 +1848,7 @@ async function initializeLiff() {
       if (typeof flushGbCartSave === 'function') flushGbCartSave();
       globalIsSuperAdmin = false;
       globalIsAdmin = false;
-      if (!currentGroupId) currentGroupId = testParams.get('gid') || 'default';
+      if (!currentGroupId) currentGroupId = testParams.get('gid') || ((currentUser && currentUser.userId && !currentUser.userId.startsWith('G_') && !currentUser.userId.startsWith('P_')) ? currentUser.userId : 'default');
       await enterAppAfterIdentity(buyFromUrl);
     } catch (e) {
       console.error('Fallback boot error:', e);
@@ -2099,7 +2083,7 @@ function renderLobby(forceCards = true) {
 
     const btnLineLogin = document.getElementById('btn-line-login');
     const userStatusBadge = document.getElementById('user-status-badge');
-    const isLineLoggedIn = (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || (currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId)) || effIsSuperAdmin;
+    const isLineLoggedIn = (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || (currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId));
 
     if (btnLineLogin && userStatusBadge) {
       if (isLineLoggedIn) {
@@ -3050,14 +3034,7 @@ function formatFee(fee) {
 
 // HTML 逃脫函數防 XSS
 function escapeHTML(str) {
-  if (str == null) return '';
-  if (typeof str !== 'string') {
-    if (typeof str === 'object') {
-      try { str = JSON.stringify(str); } catch(e) { str = String(str); }
-    } else {
-      str = String(str);
-    }
-  }
+  if (!str) return '';
   return str.replace(/[&<>'"]/g, 
     tag => ({
       '&': '&amp;',
@@ -3089,8 +3066,7 @@ async function silentRefreshGames() {
   }
   
   try {
-    const refreshUid = (currentUser && currentUser.userId) || '';
-    const res = await fetch(`/api/game/${currentGroupId}?uid=${refreshUid}&_t=${Date.now()}`);
+    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
     if (res.ok) {
       const data = await res.json();
       const newGamesJson = JSON.stringify(data.games || []);
@@ -4140,12 +4116,11 @@ document.getElementById('btn-save-template').onclick = async () => {
   
   appDiv.className = 'loading';
   try {
-    const tplUid = (currentUser && currentUser.userId) || '';
-    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || tplUid || 'default')}`, {
+    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: tplUid,
+        uid: currentUser.userId,
         action: 'save',
         name: name,
         content: text
@@ -4174,12 +4149,11 @@ document.getElementById('btn-delete-template').onclick = async () => {
   
   appDiv.className = 'loading';
   try {
-    const tplUid = (currentUser && currentUser.userId) || '';
-    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || tplUid || 'default')}`, {
+    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: tplUid,
+        uid: currentUser.userId,
         action: 'delete',
         name: name
       })
@@ -4676,19 +4650,8 @@ if (btnLobbyStats) {
     const { isSuperAdmin: effIsSuperAdmin } = (typeof getEffectiveRole === 'function') ? getEffectiveRole() : { isSuperAdmin: false };
     
     try {
-      const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
-        ? currentUser.userId 
-        : (() => {
-            try {
-              const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
-              return (u && u.userId) ? u.userId : '';
-            } catch(e) { return ''; }
-          })();
-      const res = await fetch(`/api/admin/all_stats?uid=${encodeURIComponent(currentUid)}`);
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || '無法取得分析資料');
-      }
+      const res = await fetch(`/api/admin/all_stats?uid=${currentUser.userId}`);
+      if (!res.ok) throw new Error('無法取得分析資料');
       const data = await res.json();
       
       statsGroupsContainer.innerHTML = '';
@@ -4867,7 +4830,7 @@ if (btnLobbyStats) {
                   const delRes = await fetch(`/api/admin/lobby_stats/${stat.gid}/delete`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ uid: (currentUser && currentUser.userId) || currentUid })
+                    body: JSON.stringify({ uid: currentUser.userId })
                   });
                   if (delRes.ok) {
                     alert('刪除成功');
@@ -5064,22 +5027,21 @@ if (btnLobbyStats) {
         statsGroupsContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">目前沒有任何群組的分析資料。</div>';
       }
       
-      document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
+      lobbyView.classList.add('hidden');
       statsView.classList.remove('hidden');
     } catch (e) {
       alert(e.message);
     } finally {
       appDiv.className = '';
-      if (statusMsg) statusMsg.style.display = 'none';
+      statusMsg.style.display = 'none';
     }
   });
 }
 
 if (btnBackStats) {
   btnBackStats.addEventListener('click', () => {
-    document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
-    document.getElementById('lobby-view').classList.remove('hidden');
-    renderLobby(false);
+    statsView.classList.add('hidden');
+    lobbyView.classList.remove('hidden');
   });
 }
 
@@ -5106,10 +5068,7 @@ if (btnBackParty) {
 if (btnSystemLogs) {
   btnSystemLogs.addEventListener('click', async () => {
     appDiv.className = 'loading';
-    if (statusMsg) {
-      statusMsg.innerText = '讀取中...';
-      statusMsg.style.display = 'block';
-    }
+    statusMsg.innerText = '讀取中...';
     try {
       const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
         ? currentUser.userId 
@@ -5138,7 +5097,7 @@ if (btnSystemLogs) {
             const text = logs.map(log => {
               const prod = log.producer || log.operator || '未知';
               const src = log.source ? ` [${log.source}]` : '';
-              return `${log.time || ''}${src}\n[${log.gameTitle || '未知場次'}] 產出者: ${prod}\n${log.errorMsg || ''}`;
+              return `${log.time}${src}\n[${log.gameTitle || '未知場次'}] 產出者: ${prod}\n${log.errorMsg}`;
             }).join('\n\n');
             if (navigator.clipboard && window.isSecureContext) {
               navigator.clipboard.writeText(text).then(() => alert('已複製全部 LOG')).catch(() => prompt('請手動複製：', text));
@@ -5152,15 +5111,15 @@ if (btnSystemLogs) {
           div.style.borderBottom = '1px solid #e2e8f0';
           div.style.padding = '10px 0';
           
-          const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '系統') : String(log.gameTitle || '系統');
-          const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : String(log.operator || '');
-          const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : String(log.errorMsg || '');
-          const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : String(log.time || '');
+          const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '系統') : (log.gameTitle || '系統');
+          const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : (log.operator || '');
+          const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : (log.errorMsg || '');
+          const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : (log.time || '');
           
           const rawProducer = log.producer || (op ? `${op}${log.uid ? ` (${log.uid})` : ''}` : '系統');
-          const producer = typeof escapeHTML === 'function' ? escapeHTML(rawProducer) : String(rawProducer || '');
-          const source = log.source ? (typeof escapeHTML === 'function' ? escapeHTML(log.source) : String(log.source)) : '';
-          const ip = log.ip ? (typeof escapeHTML === 'function' ? escapeHTML(log.ip) : String(log.ip)) : '';
+          const producer = typeof escapeHTML === 'function' ? escapeHTML(rawProducer) : rawProducer;
+          const source = log.source ? (typeof escapeHTML === 'function' ? escapeHTML(log.source) : log.source) : '';
+          const ip = log.ip ? (typeof escapeHTML === 'function' ? escapeHTML(log.ip) : log.ip) : '';
 
           let msgColor = '#b91c1c';
           if (msg.includes('第 1 次按') || msg.includes('第 1 次')) {
@@ -5190,7 +5149,6 @@ if (btnSystemLogs) {
       alert(e.message);
     } finally {
       appDiv.className = '';
-      if (statusMsg) statusMsg.style.display = 'none';
     }
   });
 }
@@ -5199,7 +5157,6 @@ if (btnBackLogs) {
   btnBackLogs.addEventListener('click', () => {
     document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
     document.getElementById('lobby-view').classList.remove('hidden');
-    renderLobby(false);
   });
 }
 
@@ -5271,7 +5228,7 @@ function renderLeaderboard(leaderboardData, quota) {
       ? '-- s' 
       : (user.timeTaken / 1000).toFixed(2) + ' s';
       
-    const isMe = !!(currentUser && currentUser.userId && user.uid === currentUser.userId);
+    const isMe = user.uid === currentUser.userId;
     const nameColor = isMe ? '#E91E63' : '#333';
     
     const li = document.createElement('li');
@@ -5292,15 +5249,7 @@ if (btnEasterEgg) {
     statusMsg.style.display = 'block';
     appDiv.className = 'loading';
     try {
-      const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
-        ? currentUser.userId 
-        : (() => {
-            try {
-              const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
-              return (u && u.userId) ? u.userId : '';
-            } catch(e) { return ''; }
-          })();
-      const res = await fetch(`/api/admin/easter_egg?uid=${encodeURIComponent(currentUid)}`);
+      const res = await fetch(`/api/admin/easter_egg?uid=${currentUser.userId}`);
       if (res.ok) {
         const data = await res.json();
         eeEnabledCheckbox.checked = data.enabled;
@@ -8813,12 +8762,11 @@ if (btnTaSave) {
     
     appDiv.className = 'loading';
     try {
-      const tplUid = (currentUser && currentUser.userId) || '';
-      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || tplUid || 'default')}`, {
+      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: tplUid,
+          uid: currentUser.userId,
           action: 'save',
           name: name,
           content: content
@@ -8850,12 +8798,11 @@ if (btnTaDelete) {
     
     appDiv.className = 'loading';
     try {
-      const tplUid = (currentUser && currentUser.userId) || '';
-      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || tplUid || 'default')}`, {
+      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: tplUid,
+          uid: currentUser.userId,
           action: 'delete',
           name: name
         })
@@ -8891,7 +8838,7 @@ function tryRenderOptimisticLobby() {
       try { currentUser = JSON.parse(cachedUserRaw); } catch(e) {}
     }
 
-    const gid = urlParams.get('gid') || 'default';
+    const gid = urlParams.get('gid') || (currentUser && currentUser.userId) || 'default';
     const cachedGamesRaw = localStorage.getItem('cached_lobby_games_' + gid);
     if (cachedGamesRaw) {
       const data = JSON.parse(cachedGamesRaw);

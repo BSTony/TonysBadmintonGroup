@@ -2071,7 +2071,7 @@ function bindPinballSocket(s) {
             fetch('/api/admin/pinball/shake', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ uid: (currentUser && currentUser.userId) || '' })
+              body: JSON.stringify({ uid: currentUser.userId })
             });
           });
         }
