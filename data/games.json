@@ -6970,7 +6970,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789025536592,
+    "lastActiveTime": 1789031416930,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6995,7 +6995,8 @@
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
       "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
       "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "政達": "Ub3fbddfc79aa3e5533b06da553d5bdce"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7042,12 +7043,20 @@
           "謝東霖 Tony",
           "Kay",
           "Gary",
-          "小可愛"
+          "小可愛",
+          "政達"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/10 17:10",
+        "name": "政達",
+        "operator": "政達",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/10 15:32",
         "name": "FB Dylan Lee",
