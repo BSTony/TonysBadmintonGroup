@@ -6564,7 +6564,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1788920598847,
+    "lastActiveTime": 1789001157897,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6579,7 +6579,6 @@
       "Wayne": true,
       "曾Jim凱": true,
       "Ashely": true,
-      "周則鼎": true,
       "郭岳翰John": true,
       "©️張CC～©️": true,
       "陳呈": true
@@ -6630,7 +6629,6 @@
           "Wayne",
           "曾Jim凱",
           "Ashely",
-          "周則鼎",
           "郭岳翰John",
           "©️張CC～©️",
           "陳呈",
@@ -6657,6 +6655,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/10 08:45",
+        "name": "周則鼎",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/09 10:23",
         "name": "Leo",
