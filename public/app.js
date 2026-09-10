@@ -64,10 +64,22 @@ function setupAutocomplete(inputElement, avatarImg) {
     const matches = globalLobbyUsers.filter(u => u.displayName && u.displayName.toLowerCase().includes(val));
     if (matches.length === 0) {
       const item = document.createElement('div');
-      item.style.padding = '5px 10px';
-      item.style.color = '#999';
-      item.style.fontSize = '14px';
-      item.innerText = '無符合名單';
+      item.style.padding = '8px 12px';
+      item.style.fontSize = '13px';
+      item.style.cursor = 'pointer';
+      const cleanVal = escapeHTML(inputElement.value.trim());
+      item.innerHTML = `
+        <div style="color: #03c75a; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+          <span>✓</span> 自訂暱稱「${cleanVal}」
+        </div>
+        <div style="color: #888; font-size: 11px; margin-top: 2px;">
+          點擊左側 <b>[+1]</b> 即可為他報名
+        </div>
+      `;
+      item.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        dropdown.style.display = 'none';
+      });
       dropdown.appendChild(item);
       dropdown.style.display = 'block';
       return;
