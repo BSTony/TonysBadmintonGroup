@@ -6985,7 +6985,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789044951918,
+    "lastActiveTime": 1789049868755,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7061,12 +7061,20 @@
           "小可愛",
           "政達",
           "JoJo+1",
-          "Jojo+1"
+          "Jojo+1",
+          "羅"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/10 22:17",
+        "name": "羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/10 20:55",
         "name": "Jojo+1",
