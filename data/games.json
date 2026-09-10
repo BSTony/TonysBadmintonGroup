@@ -6981,7 +6981,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789031416930,
+    "lastActiveTime": 1789044909081,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7055,12 +7055,20 @@
           "Kay",
           "Gary",
           "小可愛",
-          "政達"
+          "政達",
+          "JoJo+1"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/10 20:55",
+        "name": "JoJo+1",
+        "operator": "JOJO👆✌️🖖🤘👐💪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/10 17:10",
         "name": "政達",
