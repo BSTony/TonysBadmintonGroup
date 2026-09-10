@@ -658,7 +658,7 @@ async function finishLiffBoot(testParams, buyFromUrl) {
     currentGroupId = gidFromUrl;
   } else if (context && (context.type === 'group' || context.type === 'room')) {
     currentGroupId = context.groupId || context.roomId;
-  } else if (currentUser && currentUser.userId && !currentUser.userId.startsWith('G_') && !currentUser.userId.startsWith('P_')) {
+  } else if (context && context.type === 'utou' && currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId)) {
     currentGroupId = currentUser.userId;
   } else {
     currentGroupId = 'default';
@@ -1864,7 +1864,7 @@ async function initializeLiff() {
       if (typeof flushGbCartSave === 'function') flushGbCartSave();
       globalIsSuperAdmin = false;
       globalIsAdmin = false;
-      if (!currentGroupId) currentGroupId = testParams.get('gid') || ((currentUser && currentUser.userId && !currentUser.userId.startsWith('G_') && !currentUser.userId.startsWith('P_')) ? currentUser.userId : 'default');
+      if (!currentGroupId) currentGroupId = testParams.get('gid') || 'default';
       await enterAppAfterIdentity(buyFromUrl);
     } catch (e) {
       console.error('Fallback boot error:', e);
@@ -5079,6 +5079,7 @@ if (btnBackStats) {
   btnBackStats.addEventListener('click', () => {
     document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
     document.getElementById('lobby-view').classList.remove('hidden');
+    renderLobby(false);
   });
 }
 
@@ -5198,6 +5199,7 @@ if (btnBackLogs) {
   btnBackLogs.addEventListener('click', () => {
     document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
     document.getElementById('lobby-view').classList.remove('hidden');
+    renderLobby(false);
   });
 }
 
@@ -8889,7 +8891,7 @@ function tryRenderOptimisticLobby() {
       try { currentUser = JSON.parse(cachedUserRaw); } catch(e) {}
     }
 
-    const gid = urlParams.get('gid') || (currentUser && currentUser.userId) || 'default';
+    const gid = urlParams.get('gid') || 'default';
     const cachedGamesRaw = localStorage.getItem('cached_lobby_games_' + gid);
     if (cachedGamesRaw) {
       const data = JSON.parse(cachedGamesRaw);
