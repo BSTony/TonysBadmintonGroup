@@ -6564,7 +6564,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788481651379,
-    "lastActiveTime": 1789001166677,
+    "lastActiveTime": 1789005402679,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6611,7 +6611,8 @@
       "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
       "小周老婆": "Uf2f63c157d1e4f7e5d289d377c568582",
       "marty": "U1a05e97623cee1f79b0876626e88f0ab",
-      "Leo": "U1a05e97623cee1f79b0876626e88f0ab"
+      "Leo": "U1a05e97623cee1f79b0876626e88f0ab",
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6647,13 +6648,21 @@
           "lipei",
           "FiFi",
           "marty",
-          "Leo"
+          "Leo",
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/10 09:56",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/10 08:46",
         "name": "小周老婆",
