@@ -2894,7 +2894,10 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       }
     }
 
-    const isTarget = isPlusMinus && g.title && g.title.length > 1 && cleanText && cleanText.includes(g.title);
+    const isTarget = isPlusMinus && cleanText && (
+      (g.title && g.title.length > 1 && cleanText.includes(g.title)) ||
+      (g.title && /週[一二三四五六日天]/.test(g.title) && cleanText.includes(g.title.match(/週[一二三四五六日天]/)[0]))
+    );
 
     let finalBox = null;
 
@@ -5467,7 +5470,12 @@ async function handleEvent(event) {
   const isAdmin = isSuperAdmin(uid) || isGroupAdmin(uid, gid);
   
   const cleanText = text.replace(/\n\n\[系統代發\]$/, '').trim();
-  const isPlusMinus = cleanText.match(/^\+[1-9]/) || cleanText.match(/^-[1-9]/) || cleanText.match(/\+[1-9]$/) || cleanText.match(/-[1-9]$/) || cleanText.match(/🔄順序更新$/) || cleanText.match(/💰繳費更新$/);
+  const isPlusMinus = cleanText.match(/(?:^|\s|[(\uff08])[+＋]\s*[1-9]/) || 
+                      cleanText.match(/(?:^|\s|[(\uff08])[-－]\s*[1-9]/) || 
+                      cleanText.match(/[+＋]\s*[1-9](?:\s|$|[)\uff09])/) || 
+                      cleanText.match(/[-－]\s*[1-9](?:\s|$|[)\uff09])/) || 
+                      cleanText.match(/🔄順序更新/) || 
+                      cleanText.match(/💰繳費更新/);
   const isPublicCommand = text.startsWith('接龍名單') || 
                           text.startsWith('推播提醒') ||
                           text === '接龍狀態' || 

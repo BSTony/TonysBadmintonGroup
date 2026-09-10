@@ -5032,7 +5032,15 @@ if (btnSystemLogs) {
     appDiv.className = 'loading';
     statusMsg.innerText = '讀取中...';
     try {
-      const res = await fetch('/api/systemLogs?uid=' + currentUser.userId);
+      const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
+        ? currentUser.userId 
+        : (() => {
+            try {
+              const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
+              return (u && u.userId) ? u.userId : '';
+            } catch(e) { return ''; }
+          })();
+      const res = await fetch('/api/systemLogs?uid=' + encodeURIComponent(currentUid));
       if (!res.ok) throw new Error('無法讀取系統LOG');
       const logs = await res.json();
       
