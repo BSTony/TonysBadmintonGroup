@@ -6940,7 +6940,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1788940323456,
+    "lastActiveTime": 1789006402812,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6964,7 +6964,8 @@
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "Kevin": "U7977ee57751b21a1fb17ddbb180444b3",
       "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
-      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38"
+      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6996,7 +6997,8 @@
           "張筳",
           "Alex",
           "YANG 阿傑",
-          "楊程鈞"
+          "楊程鈞",
+          "陳呈"
         ]
       },
       {
@@ -7015,6 +7017,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/10 10:13",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/09 15:52",
         "name": "鈞",
