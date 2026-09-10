@@ -6814,7 +6814,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789004365016,
+    "lastActiveTime": 1789004371636,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6856,13 +6856,19 @@
           "Kevin",
           "Mia",
           "弘彬/Jason",
-          "Gary",
-          "test"
+          "Gary"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/10 09:39",
+        "name": "test",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/10 09:39",
         "name": "test",
