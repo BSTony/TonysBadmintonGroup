@@ -1,14 +1,33 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-09-10
- * Version: 1.2.24
+ * Version: 1.2.25
  */
 let globalLobbyUsers = [];
 
-async function loadLobbyUsers() {
-  if (!currentGroupId) return;
+function isPersonalLobbyGid(gid) {
+  if (!gid || gid === 'default' || gid === 'all') return true;
+  const s = String(gid);
+  if (s.indexOf('U_GUEST') === 0 || s.indexOf('P_') === 0 || s.indexOf('U_LOCAL') === 0) return true;
+  return s.charAt(0) === 'U';
+}
+
+function getGamesApiGid(gid) {
+  return isPersonalLobbyGid(gid) ? 'default' : gid;
+}
+
+function isLiffLoggedInSafe() {
   try {
-    const fetchGid = globalIsSuperAdmin ? 'all' : currentGroupId;
+    return typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && !!liff.isLoggedIn();
+  } catch (e) {
+    return false;
+  }
+}
+
+async function loadLobbyUsers() {
+  if (!currentUser || !currentUser.userId) return;
+  try {
+    const fetchGid = globalIsSuperAdmin ? 'all' : getGamesApiGid(currentGroupId);
     const res = await fetch(`/api/users/${fetchGid}?uid=${currentUser.userId}`);
     const data = await res.json();
     if (res.ok && data.success) {
@@ -476,7 +495,9 @@ function isPinnedAdminView() {
 }
 
 function lobbyHasDraftInput() {
-  return Array.from(document.querySelectorAll('.name-input, input[id^="level-input-"]')).some(el => el && String(el.value || '').trim());
+  const root = (lobbyView && !lobbyView.classList.contains('hidden')) ? lobbyView : null;
+  if (!root) return false;
+  return Array.from(root.querySelectorAll('.name-input, input[id^="level-input-"]')).some(el => el && String(el.value || '').trim());
 }
 
 function showAppView(el, opts = {}) {
@@ -1919,22 +1940,22 @@ async function loadGamesLobby(silent = false) {
     }
     
     const uid = (currentUser && currentUser.userId) ? currentUser.userId : '';
-    const gid = currentGroupId || 'default';
+    const gid = getGamesApiGid(currentGroupId || 'default');
 
     let data = null;
     const earlyMeta = window.__EARLY_GAME_META__ || {};
     if (window.__EARLY_GAME_PROMISE__) {
       try {
-        data = await window.__EARLY_GAME_PROMISE__;
+        data = await withTimeout(window.__EARLY_GAME_PROMISE__, 6000, '場次資料載入逾時');
       } catch (e) {}
       window.__EARLY_GAME_PROMISE__ = null;
     }
     const earlyUid = earlyMeta.uid || '';
-    const earlyGid = earlyMeta.gid || 'default';
-    if (!data || uid !== earlyUid || gid !== earlyGid) {
+    const earlyGid = getGamesApiGid(earlyMeta.gid || 'default');
+    if (!data || (uid && uid !== earlyUid) || gid !== earlyGid) {
       try {
         const res = await withTimeout(
-          fetch(`/api/game/${gid}?uid=${uid}&_t=${Date.now()}`),
+          fetch(`/api/game/${gid}?uid=${encodeURIComponent(uid)}&_t=${Date.now()}`),
           8000,
           '場次資料載入逾時'
         );
@@ -1952,6 +1973,11 @@ async function loadGamesLobby(silent = false) {
       }
     }
     if (!data) data = { games: [] };
+
+    const incomingGames = Array.isArray(data.games) ? data.games : [];
+    if (incomingGames.length === 0 && Array.isArray(gamesList) && gamesList.length > 0) {
+      data = Object.assign({}, data, { games: gamesList });
+    }
 
     const extras = [];
     const newGamesJson = JSON.stringify(data.games || []);
@@ -2036,6 +2062,11 @@ async function loadGamesLobby(silent = false) {
     } else {
       appDiv.className = '';
       statusMsg.innerText = err.message;
+      statusMsg.style.display = 'block';
+      if (gamesList && gamesList.length > 0) {
+        try { renderLobby(); } catch (e) {}
+        revealApp();
+      }
     }
   }
 }
@@ -2061,6 +2092,7 @@ document.addEventListener('click', (e) => {
 
 // 渲染大廳畫面
 function renderLobby(forceCards = true) {
+  try {
     showAppView(lobbyView, { scroll: false });
     
     const { isAdmin: effIsAdmin, isSuperAdmin: effIsSuperAdmin } = getEffectiveRole();
@@ -2133,7 +2165,7 @@ function renderLobby(forceCards = true) {
 
     const btnLineLogin = document.getElementById('btn-line-login');
     const userStatusBadge = document.getElementById('user-status-badge');
-    const isLineLoggedIn = (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || (currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId));
+    const isLineLoggedIn = isLiffLoggedInSafe() || (currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId));
 
     if (btnLineLogin && userStatusBadge) {
       if (isLineLoggedIn) {
@@ -2429,7 +2461,13 @@ function renderLobby(forceCards = true) {
       return card;
     };
     
-    activeGames.forEach(game => gamesContainer.appendChild(renderCard(game)));
+    activeGames.forEach(game => {
+      try {
+        gamesContainer.appendChild(renderCard(game));
+      } catch (e) {
+        console.error('renderCard failed', game && game.gameId, e);
+      }
+    });
     
     if (globalIsAdmin && endedGames.length > 0) {
       const detailsEl = document.createElement('details');
@@ -2450,7 +2488,13 @@ function renderLobby(forceCards = true) {
       
       endedGames.sort((a, b) => getGameTime(b) - getGameTime(a));
       
-      endedGames.forEach(game => contentEl.appendChild(renderCard(game)));
+      endedGames.forEach(game => {
+        try {
+          contentEl.appendChild(renderCard(game));
+        } catch (e) {
+          console.error('renderCard failed', game && game.gameId, e);
+        }
+      });
       
       detailsEl.appendChild(summaryEl);
       detailsEl.appendChild(contentEl);
@@ -2473,6 +2517,17 @@ function renderLobby(forceCards = true) {
     });
   }
   if (typeof bindAllNameInputEnterHandlers === 'function') bindAllNameInputEnterHandlers();
+  } catch (err) {
+    console.error('renderLobby failed', err);
+    try { reportSystemLog('大廳', '渲染大廳失敗', { message: err && err.message ? err.message : String(err) }); } catch (e) {}
+    if (lobbyView) {
+      lobbyView.classList.remove('hidden');
+      lobbyView.style.opacity = '1';
+    }
+    if (noGamesMsg && gamesContainer && gamesContainer.children.length === 0) {
+      noGamesMsg.classList.remove('hidden');
+    }
+  }
 }
 
 async function handleEditLobbyTitle() {
@@ -2639,6 +2694,7 @@ window.showDetail = function(gameId) {
 function renderDetail(gameId, preserveScroll = false) {
   const game = gamesList.find(g => g.gameId === gameId);
   if (!game) return;
+  try {
   
   appDiv.className = '';
   const statusMsgEl = document.getElementById('status-msg');
@@ -2703,6 +2759,13 @@ function renderDetail(gameId, preserveScroll = false) {
     if (btnEditGame) btnEditGame.classList.add('hidden');
   }
   
+  if (!Array.isArray(game.sections) || game.sections.length === 0) {
+    game.sections = [{ title: '正取', list: [], limit: 20, backupLimit: 0 }];
+  }
+  game.sections.forEach(sec => {
+    if (!Array.isArray(sec.list)) sec.list = [];
+    if (typeof sec.limit !== 'number' || sec.limit < 0) sec.limit = 20;
+  });
   const section = game.sections[0] || { list: [], limit: 20 };
   const isRegistered = game.myRegisteredNames && game.myRegisteredNames.length > 0;
   
@@ -2998,6 +3061,13 @@ function renderDetail(gameId, preserveScroll = false) {
     });
   }
   if (typeof bindAllNameInputEnterHandlers === 'function') bindAllNameInputEnterHandlers();
+  } catch (err) {
+    console.error('renderDetail failed', err);
+    try { reportSystemLog('大廳', '渲染報名名單失敗', { message: err && err.message ? err.message : String(err) }); } catch (e) {}
+    if (detailList) {
+      detailList.innerHTML = '<div class="error-msg" style="display:block">名單顯示失敗，請回大廳重新進入。</div>';
+    }
+  }
 }
 
 // 返回大廳
@@ -3086,8 +3156,8 @@ function formatFee(fee) {
 
 // HTML 逃脫函數防 XSS
 function escapeHTML(str) {
-  if (!str) return '';
-  return str.replace(/[&<>'"]/g, 
+  if (str === undefined || str === null || str === '') return '';
+  return String(str).replace(/[&<>'"]/g, 
     tag => ({
       '&': '&amp;',
       '<': '&lt;',
@@ -3102,7 +3172,7 @@ function escapeHTML(str) {
 let refreshPending = false;
 
 async function silentRefreshGames() {
-  if (!currentGroupId || !currentUser) return;
+  if (!currentUser) return;
   
   // 若使用者正在輸入，暫停更新以免打斷輸入
   const activeTag = document.activeElement ? document.activeElement.tagName : '';
@@ -3118,10 +3188,14 @@ async function silentRefreshGames() {
   }
   
   try {
-    const res = await fetch(`/api/game/${currentGroupId}?uid=${currentUser.userId}&_t=${Date.now()}`);
+    const res = await fetch(`/api/game/${getGamesApiGid(currentGroupId)}?uid=${encodeURIComponent(currentUser.userId)}&_t=${Date.now()}`);
     if (res.ok) {
       const data = await res.json();
-      const newGamesJson = JSON.stringify(data.games || []);
+      const incoming = Array.isArray(data.games) ? data.games : [];
+      if (incoming.length === 0 && gamesList.length > 0) {
+        return;
+      }
+      const newGamesJson = JSON.stringify(incoming);
       
       if (newGamesJson !== lastGamesJson) {
         lastGamesJson = newGamesJson;
@@ -3154,12 +3228,13 @@ async function silentRefreshGames() {
 let eventSource = null;
 
 function setupSSE() {
-  if (!currentGroupId) return;
+  const sseGid = getGamesApiGid(currentGroupId);
+  if (!sseGid) return;
   if (eventSource) {
     eventSource.close();
   }
   
-  eventSource = new EventSource(`/api/events/${currentGroupId}`);
+  eventSource = new EventSource(`/api/events/${sseGid}`);
   
   eventSource.onmessage = (e) => {
     if (e.data === 'refresh') {
@@ -8947,7 +9022,7 @@ function tryRenderOptimisticLobby() {
       try { currentUser = JSON.parse(cachedUserRaw); } catch(e) {}
     }
 
-    const gid = urlParams.get('gid') || (currentUser && currentUser.userId) || 'default';
+    const gid = getGamesApiGid(urlParams.get('gid') || (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.gid) || 'default');
     const cachedGamesRaw = localStorage.getItem('cached_lobby_games_' + gid);
     if (cachedGamesRaw) {
       const data = JSON.parse(cachedGamesRaw);
@@ -9003,7 +9078,7 @@ function bootApp() {
 
   // 🚀 2. 並行預取最新資料
   try {
-    const earlyGid = urlParams.get('gid') || (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.gid) || 'default';
+    const earlyGid = getGamesApiGid(urlParams.get('gid') || (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.gid) || 'default');
     let earlyUid = '';
     try {
       const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');

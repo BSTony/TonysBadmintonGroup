@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-09-10
- * Version: 1.3.12
+ * Version: 1.3.13
  */
 const express = require('express');
 const compression = require('compression');
@@ -1418,8 +1418,16 @@ let systemLogs = [];
 
 let cachedIndexHtml = null;
 
+function isPersonalLobbyGid(gid) {
+  if (!gid || gid === 'default' || gid === 'all') return true;
+  const s = String(gid);
+  if (s.indexOf('U_GUEST') === 0 || s.indexOf('P_') === 0 || s.indexOf('U_LOCAL') === 0) return true;
+  return s.charAt(0) === 'U';
+}
+
 function getInitialDataForReq(req) {
-  const gid = (typeof req.query.gid === 'string' && req.query.gid) ? req.query.gid : '';
+  let gid = (typeof req.query.gid === 'string' && req.query.gid) ? req.query.gid : '';
+  if (isPersonalLobbyGid(gid)) gid = '';
   const gameId = (typeof req.query.gameId === 'string' && req.query.gameId) ? req.query.gameId : '';
   const gTitle = (gid && groupSettings[gid] && groupSettings[gid].lobbyTitle) || '羽球接龍大廳';
   const gDesc = (gid && groupSettings[gid] && groupSettings[gid].lobbyDesc) || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
@@ -2443,7 +2451,8 @@ app.post('/api/groupbuy/:gid/clear_orders', async (req, res) => {
 });
 
 app.get('/api/game/:gid', async (req, res) => {
-  const gid = req.params.gid;
+  let gid = req.params.gid;
+  if (isPersonalLobbyGid(gid)) gid = 'default';
   ensureGroupSettings(gid);
   const lobbyTitle = groupSettings[gid]?.lobbyTitle || '羽球接龍大廳';
   const lobbyDesc = groupSettings[gid]?.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
