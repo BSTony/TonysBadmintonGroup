@@ -1807,6 +1807,21 @@ async function initializeLiff() {
             if (tokenPhone) currentUser.phoneNumber = tokenPhone;
           } catch (e) {}
         } else {
+          if (!currentUser) {
+            try {
+              const raw = localStorage.getItem('gb_cached_user_profile');
+              if (raw) currentUser = JSON.parse(raw);
+            } catch(e) {}
+          }
+          if (!currentUser) {
+            const phone = (typeof getDeviceSavedPhone === 'function' && getDeviceSavedPhone()) || '';
+            const headerNameEl = document.getElementById('gb-header-name');
+            const headerName = headerNameEl && headerNameEl.value.trim() ? headerNameEl.value.trim() : '';
+            currentUser = {
+              userId: phone ? ('P_' + phone) : getOrCreateGuestUid(),
+              displayName: headerName
+            };
+          }
           reportSystemLog('LIFF', '以訪客模式顯示大廳，不強制登入跳轉', { buy: buyFromUrl || '', inClient: isLiffInClient() });
         }
         await finishLiffBoot(testParams, buyFromUrl);
@@ -2083,7 +2098,7 @@ function renderLobby(forceCards = true) {
 
     const btnLineLogin = document.getElementById('btn-line-login');
     const userStatusBadge = document.getElementById('user-status-badge');
-    const isLineLoggedIn = (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || (currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId));
+    const isLineLoggedIn = (typeof liff !== 'undefined' && typeof liff.isLoggedIn === 'function' && liff.isLoggedIn()) || (currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId)) || effIsSuperAdmin;
 
     if (btnLineLogin && userStatusBadge) {
       if (isLineLoggedIn) {
@@ -3034,7 +3049,14 @@ function formatFee(fee) {
 
 // HTML 逃脫函數防 XSS
 function escapeHTML(str) {
-  if (!str) return '';
+  if (str == null) return '';
+  if (typeof str !== 'string') {
+    if (typeof str === 'object') {
+      try { str = JSON.stringify(str); } catch(e) { str = String(str); }
+    } else {
+      str = String(str);
+    }
+  }
   return str.replace(/[&<>'"]/g, 
     tag => ({
       '&': '&amp;',
@@ -4650,8 +4672,19 @@ if (btnLobbyStats) {
     const { isSuperAdmin: effIsSuperAdmin } = (typeof getEffectiveRole === 'function') ? getEffectiveRole() : { isSuperAdmin: false };
     
     try {
-      const res = await fetch(`/api/admin/all_stats?uid=${currentUser.userId}`);
-      if (!res.ok) throw new Error('無法取得分析資料');
+      const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
+        ? currentUser.userId 
+        : (() => {
+            try {
+              const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
+              return (u && u.userId) ? u.userId : '';
+            } catch(e) { return ''; }
+          })();
+      const res = await fetch(`/api/admin/all_stats?uid=${encodeURIComponent(currentUid)}`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || '無法取得分析資料');
+      }
       const data = await res.json();
       
       statsGroupsContainer.innerHTML = '';
@@ -4830,7 +4863,7 @@ if (btnLobbyStats) {
                   const delRes = await fetch(`/api/admin/lobby_stats/${stat.gid}/delete`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ uid: currentUser.userId })
+                    body: JSON.stringify({ uid: (currentUser && currentUser.userId) || currentUid })
                   });
                   if (delRes.ok) {
                     alert('刪除成功');
@@ -5027,21 +5060,21 @@ if (btnLobbyStats) {
         statsGroupsContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">目前沒有任何群組的分析資料。</div>';
       }
       
-      lobbyView.classList.add('hidden');
+      document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
       statsView.classList.remove('hidden');
     } catch (e) {
       alert(e.message);
     } finally {
       appDiv.className = '';
-      statusMsg.style.display = 'none';
+      if (statusMsg) statusMsg.style.display = 'none';
     }
   });
 }
 
 if (btnBackStats) {
   btnBackStats.addEventListener('click', () => {
-    statsView.classList.add('hidden');
-    lobbyView.classList.remove('hidden');
+    document.querySelectorAll('.view').forEach(el => el.classList.add('hidden'));
+    document.getElementById('lobby-view').classList.remove('hidden');
   });
 }
 
@@ -5068,7 +5101,10 @@ if (btnBackParty) {
 if (btnSystemLogs) {
   btnSystemLogs.addEventListener('click', async () => {
     appDiv.className = 'loading';
-    statusMsg.innerText = '讀取中...';
+    if (statusMsg) {
+      statusMsg.innerText = '讀取中...';
+      statusMsg.style.display = 'block';
+    }
     try {
       const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
         ? currentUser.userId 
@@ -5097,7 +5133,7 @@ if (btnSystemLogs) {
             const text = logs.map(log => {
               const prod = log.producer || log.operator || '未知';
               const src = log.source ? ` [${log.source}]` : '';
-              return `${log.time}${src}\n[${log.gameTitle || '未知場次'}] 產出者: ${prod}\n${log.errorMsg}`;
+              return `${log.time || ''}${src}\n[${log.gameTitle || '未知場次'}] 產出者: ${prod}\n${log.errorMsg || ''}`;
             }).join('\n\n');
             if (navigator.clipboard && window.isSecureContext) {
               navigator.clipboard.writeText(text).then(() => alert('已複製全部 LOG')).catch(() => prompt('請手動複製：', text));
@@ -5111,15 +5147,15 @@ if (btnSystemLogs) {
           div.style.borderBottom = '1px solid #e2e8f0';
           div.style.padding = '10px 0';
           
-          const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '系統') : (log.gameTitle || '系統');
-          const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : (log.operator || '');
-          const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : (log.errorMsg || '');
-          const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : (log.time || '');
+          const title = typeof escapeHTML === 'function' ? escapeHTML(log.gameTitle || '系統') : String(log.gameTitle || '系統');
+          const op = typeof escapeHTML === 'function' ? escapeHTML(log.operator || '') : String(log.operator || '');
+          const msg = typeof escapeHTML === 'function' ? escapeHTML(log.errorMsg || '') : String(log.errorMsg || '');
+          const time = typeof escapeHTML === 'function' ? escapeHTML(log.time || '') : String(log.time || '');
           
           const rawProducer = log.producer || (op ? `${op}${log.uid ? ` (${log.uid})` : ''}` : '系統');
-          const producer = typeof escapeHTML === 'function' ? escapeHTML(rawProducer) : rawProducer;
-          const source = log.source ? (typeof escapeHTML === 'function' ? escapeHTML(log.source) : log.source) : '';
-          const ip = log.ip ? (typeof escapeHTML === 'function' ? escapeHTML(log.ip) : log.ip) : '';
+          const producer = typeof escapeHTML === 'function' ? escapeHTML(rawProducer) : String(rawProducer || '');
+          const source = log.source ? (typeof escapeHTML === 'function' ? escapeHTML(log.source) : String(log.source)) : '';
+          const ip = log.ip ? (typeof escapeHTML === 'function' ? escapeHTML(log.ip) : String(log.ip)) : '';
 
           let msgColor = '#b91c1c';
           if (msg.includes('第 1 次按') || msg.includes('第 1 次')) {
@@ -5149,6 +5185,7 @@ if (btnSystemLogs) {
       alert(e.message);
     } finally {
       appDiv.className = '';
+      if (statusMsg) statusMsg.style.display = 'none';
     }
   });
 }
@@ -5249,7 +5286,15 @@ if (btnEasterEgg) {
     statusMsg.style.display = 'block';
     appDiv.className = 'loading';
     try {
-      const res = await fetch(`/api/admin/easter_egg?uid=${currentUser.userId}`);
+      const currentUid = (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) 
+        ? currentUser.userId 
+        : (() => {
+            try {
+              const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
+              return (u && u.userId) ? u.userId : '';
+            } catch(e) { return ''; }
+          })();
+      const res = await fetch(`/api/admin/easter_egg?uid=${encodeURIComponent(currentUid)}`);
       if (res.ok) {
         const data = await res.json();
         eeEnabledCheckbox.checked = data.enabled;
