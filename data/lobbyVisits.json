@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4338,
+    "viewCount": 4342,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -175,8 +175,8 @@
       "U9d06cac35df59cb7e460b83e88d303cf": {
         "displayName": "ALAN LIU",
         "firstVisit": 1783233473481,
-        "count": 23,
-        "lastVisit": 1788740632074,
+        "count": 24,
+        "lastVisit": 1789145616725,
         "pictureUrl": "https://profile.line-scdn.net/0haxDLakDfPldpNSFnCTlAaRllPT1KRGdFRAAkZQhnaTNQUH0FRQd1ZF5iY2JQUH0ITVQlOFwzNG9LbCB5GVMiQTR3aQcPYwVdOgQjalxnOBwrQRwCRSklZjcxIBpIDA52MDstSg5oPhcSWg9JMQM4aBtLACMAVxpyHmJSAWwHUNQGN0kCRFNwNFQzaGLR"
       },
       "U799d4a509b3c76b76c249151f5a3f690": {
@@ -201,8 +201,8 @@
       "U203b76fe44ff1d74c53c21e5547aea27": {
         "displayName": "登登登登～",
         "firstVisit": 1783233886945,
-        "count": 88,
-        "lastVisit": 1789045545470,
+        "count": 89,
+        "lastVisit": 1789142614907,
         "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
       },
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
@@ -290,8 +290,8 @@
       "U2ea89b78f1546c61adda03c7dd8704d5": {
         "displayName": "賴柚子",
         "firstVisit": 1783341633415,
-        "count": 43,
-        "lastVisit": 1788011684904,
+        "count": 44,
+        "lastVisit": 1789144524164,
         "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
       },
       "Uc8b0e0ef7ca58b387136a28642742b7d": {
@@ -405,8 +405,8 @@
       "U82cf8acdc2735b2ff6e5a97104a154b7": {
         "displayName": "(AK) Seth Hu",
         "firstVisit": 1783498883719,
-        "count": 13,
-        "lastVisit": 1787308364201,
+        "count": 14,
+        "lastVisit": 1789143350884,
         "pictureUrl": "https://profile.line-scdn.net/0haqivChwIPl5EDyDTTENAYDRfPTRnfmdMb2kmPSUJYm95PX9fbWtwbSRbZjt-OHwIPWkma3gNYT5mWSEKFC53QCpvYTopVx91PWg4PhZ8YRIlOCFyCRwZPR9oAAgFbHF-FAAhXnNSExB4NiVWNnUVfChdCDIifSReFFhSCEE9UN0rDUkLaWlwPXkJaGv8"
       },
       "U4b697f748229b4804aa652c06b3fd285": {
@@ -1285,6 +1285,30 @@
       }
     },
     "logs": [
+      {
+        "time": 1789145616725,
+        "userId": "U9d06cac35df59cb7e460b83e88d303cf",
+        "displayName": "ALAN LIU",
+        "pictureUrl": "https://profile.line-scdn.net/0haxDLakDfPldpNSFnCTlAaRllPT1KRGdFRAAkZQhnaTNQUH0FRQd1ZF5iY2JQUH0ITVQlOFwzNG9LbCB5GVMiQTR3aQcPYwVdOgQjalxnOBwrQRwCRSklZjcxIBpIDA52MDstSg5oPhcSWg9JMQM4aBtLACMAVxpyHmJSAWwHUNQGN0kCRFNwNFQzaGLR"
+      },
+      {
+        "time": 1789144524164,
+        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
+        "displayName": "賴柚子",
+        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
+      },
+      {
+        "time": 1789143350884,
+        "userId": "U82cf8acdc2735b2ff6e5a97104a154b7",
+        "displayName": "(AK) Seth Hu",
+        "pictureUrl": "https://profile.line-scdn.net/0haqivChwIPl5EDyDTTENAYDRfPTRnfmdMb2kmPSUJYm95PX9fbWtwbSRbZjt-OHwIPWkma3gNYT5mWSEKFC53QCpvYTopVx91PWg4PhZ8YRIlOCFyCRwZPR9oAAgFbHF-FAAhXnNSExB4NiVWNnUVfChdCDIifSReFFhSCEE9UN0rDUkLaWlwPXkJaGv8"
+      },
+      {
+        "time": 1789142614907,
+        "userId": "U203b76fe44ff1d74c53c21e5547aea27",
+        "displayName": "登登登登～",
+        "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
+      },
       {
         "time": 1789142163678,
         "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
