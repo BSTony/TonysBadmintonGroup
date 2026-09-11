@@ -7037,7 +7037,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789129775668,
+    "lastActiveTime": 1789129906527,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7082,7 +7082,6 @@
           "林煥杰",
           "云",
           "ALAN LIU",
-          "Kevin",
           "Mia",
           "鈞",
           "FB Dylan Lee",
@@ -7133,6 +7132,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 20:31",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "09/11 20:29",
         "name": "Brian",
