@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789113804829,
+    "lastActiveTime": 1789121482610,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6877,7 +6877,8 @@
       "FB Wei Wei Chen1": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "FB Wei Wei Chen2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "陳家興(Jerry)": "Uc91d243122c7370e3439aebcc018d859",
-      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
+      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6901,12 +6902,20 @@
           "FB Wei Wei Chen2",
           "陳家興(Jerry)",
           "Andrew Kuo",
-          "Shwan"
+          "Shwan",
+          "卡比"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/11 18:11",
+        "name": "卡比",
+        "operator": "卡比",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 16:03",
         "name": "Shwan",
