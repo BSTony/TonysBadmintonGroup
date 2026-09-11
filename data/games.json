@@ -7011,7 +7011,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789115727678,
+    "lastActiveTime": 1789116400968,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7060,7 +7060,8 @@
           "Mia",
           "鈞",
           "FB Dylan Lee",
-          "周哲儁"
+          "周哲儁",
+          "Roy"
         ]
       },
       {
@@ -7103,6 +7104,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 16:46",
+        "name": "Roy",
+        "operator": "逢丞Roy",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/11 16:35",
         "name": "Chen H.R.",
