@@ -7359,7 +7359,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789087293030,
+    "lastActiveTime": 1789087298028,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7421,13 +7421,21 @@
           "Winnie",
           "Timmon",
           "心平",
-          "小白"
+          "小白",
+          "蘑菇"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 08:41",
+        "name": "蘑菇",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 08:41",
         "name": "小白",
