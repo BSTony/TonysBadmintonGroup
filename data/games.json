@@ -7023,9 +7023,9 @@
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
       "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C73ead06e46f4c3a00a3f87d946c7d18a",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-      "C073dd061239f9bc2df13af0a1ecb4bdb"
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1788671765730649",
     "title": "週日 港中 早上",
@@ -7074,7 +7074,7 @@
     "sections": [
       {
         "title": "8-10",
-        "limit": 16,
+        "limit": 9,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
@@ -7093,7 +7093,7 @@
       },
       {
         "title": "10-12",
-        "limit": 9,
+        "limit": 10,
         "backupLimit": 5,
         "fee": "210",
         "label": "",
@@ -7111,7 +7111,7 @@
       },
       {
         "title": "8-12",
-        "limit": 13,
+        "limit": 12,
         "backupLimit": 5,
         "fee": "320",
         "label": "",
