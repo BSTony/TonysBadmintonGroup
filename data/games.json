@@ -7037,7 +7037,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789118471094,
+    "lastActiveTime": 1789129775668,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7089,7 +7089,8 @@
           "周哲儁",
           "Roy",
           "FB poki",
-          "FB hamilton"
+          "FB hamilton",
+          "Brian"
         ]
       },
       {
@@ -7132,6 +7133,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 20:29",
+        "name": "Brian",
+        "operator": "Brian 王暉鈞",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/11 17:21",
         "name": "FB hamilton",
