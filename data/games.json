@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789121482610,
+    "lastActiveTime": 1789125468503,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6903,12 +6903,20 @@
           "陳家興(Jerry)",
           "Andrew Kuo",
           "Shwan",
-          "卡比"
+          "卡比",
+          "FB 李効澄"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/11 19:17",
+        "name": "FB 李効澄",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 18:11",
         "name": "卡比",
