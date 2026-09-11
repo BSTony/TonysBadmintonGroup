@@ -7037,7 +7037,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789129909555,
+    "lastActiveTime": 1789129922308,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7104,7 +7104,8 @@
           "Alex",
           "YANG 阿傑",
           "楊程鈞",
-          "陳呈"
+          "陳呈",
+          "Kevin"
         ]
       },
       {
@@ -7131,6 +7132,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 20:32",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/11 20:31",
         "name": "Mia",
