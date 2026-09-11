@@ -7011,7 +7011,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789106689419,
+    "lastActiveTime": 1789115727678,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7040,7 +7040,8 @@
       "政達": "Ub3fbddfc79aa3e5533b06da553d5bdce",
       "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
-      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7095,12 +7096,20 @@
           "羅",
           "林立峰",
           "小黑",
-          "John"
+          "John",
+          "Chen H.R."
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 16:35",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/11 14:04",
         "name": "周哲儁",
