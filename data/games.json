@@ -7514,7 +7514,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789098200938,
+    "lastActiveTime": 1789139836442,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7547,7 +7547,8 @@
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7578,13 +7579,21 @@
           "心平",
           "小白",
           "蘑菇",
-          "Jack 友"
+          "Jack 友",
+          "FiFi"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 23:17",
+        "name": "FiFi",
+        "operator": "FiFi",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 11:43",
         "name": "Jack 友",
