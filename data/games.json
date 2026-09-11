@@ -7003,7 +7003,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789087251594,
+    "lastActiveTime": 1789098152969,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7082,12 +7082,20 @@
           "JoJo+1",
           "Jojo+1",
           "羅",
-          "林立峰"
+          "林立峰",
+          "小黑"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 11:42",
+        "name": "小黑",
+        "operator": "陳宜蓁",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/11 08:40",
         "name": "林立峰",
