@@ -7350,7 +7350,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789087214103,
+    "lastActiveTime": 1789087224714,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7410,13 +7410,21 @@
           "凱文",
           "Emily🙈🙉🙊",
           "Winnie",
-          "Timmon"
+          "Timmon",
+          "心平"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 08:40",
+        "name": "心平",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 08:40",
         "name": "Timmon",
