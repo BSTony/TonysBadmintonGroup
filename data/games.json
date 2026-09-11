@@ -7056,7 +7056,7 @@
       },
       {
         "title": "10-12",
-        "limit": 11,
+        "limit": 9,
         "backupLimit": 5,
         "fee": "210",
         "label": "",
