@@ -6985,7 +6985,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789049868755,
+    "lastActiveTime": 1789087251594,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7011,7 +7011,8 @@
       "Mia": "U7977ee57751b21a1fb17ddbb180444b3",
       "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "政達": "Ub3fbddfc79aa3e5533b06da553d5bdce"
+      "政達": "Ub3fbddfc79aa3e5533b06da553d5bdce",
+      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7062,12 +7063,20 @@
           "政達",
           "JoJo+1",
           "Jojo+1",
-          "羅"
+          "羅",
+          "林立峰"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 08:40",
+        "name": "林立峰",
+        "operator": "林立峰",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/10 22:17",
         "name": "羅",
