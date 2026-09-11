@@ -7359,7 +7359,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789087224714,
+    "lastActiveTime": 1789087293030,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7420,13 +7420,21 @@
           "Emily🙈🙉🙊",
           "Winnie",
           "Timmon",
-          "心平"
+          "心平",
+          "小白"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 08:41",
+        "name": "小白",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 08:40",
         "name": "心平",
