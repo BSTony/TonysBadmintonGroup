@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789125858075,
+    "lastActiveTime": 1789139778361,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6906,12 +6906,20 @@
           "Shwan",
           "卡比",
           "FB 李効澄",
-          "黃政豪"
+          "黃政豪",
+          "FB 林三凱"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/11 23:16",
+        "name": "FB 林三凱",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 19:24",
         "name": "黃政豪",
