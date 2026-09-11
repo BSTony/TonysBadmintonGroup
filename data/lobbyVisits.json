@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4314,
+    "viewCount": 4320,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -45,8 +45,8 @@
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
         "firstVisit": 1783209148916,
-        "count": 291,
-        "lastVisit": 1789041673646,
+        "count": 293,
+        "lastVisit": 1789130573606,
         "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
       },
       "U532d12783f207181c2d0f9d9ecc8724a": {
@@ -121,8 +121,8 @@
       "U7977ee57751b21a1fb17ddbb180444b3": {
         "displayName": "賴鈺臻",
         "firstVisit": 1783228766307,
-        "count": 50,
-        "lastVisit": 1789098569852,
+        "count": 53,
+        "lastVisit": 1789129955303,
         "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
       },
       "Uf2f63c157d1e4f7e5d289d377c568582": {
@@ -815,8 +815,8 @@
       "U5640de569b97f16342b7e1875f88599c": {
         "displayName": "Brian 王暉鈞",
         "firstVisit": 1784516333672,
-        "count": 2,
-        "lastVisit": 1789126668981,
+        "count": 3,
+        "lastVisit": 1789129727806,
         "pictureUrl": "https://profile.line-scdn.net/0h_tKjZP53AFtmEx6elWV-ZRZDAzFFYllJGCIYOlpEVzxTcEdaGnVGNAcSW2NcKkVaGSdGOFoQVjlEWkdQSxsVRz1EATcwfBcKHHUQaBRwK247fTRPOnIMT1JLOTEtYkFXDAwnNBAaJgAIUxd0KAASTgdbFRQNTQFLPERsDWMhbtgJEXcOS3VOOFsVVm7e"
       },
       "U035236d143fb82322787a1ebb84ecd32": {
@@ -1285,6 +1285,42 @@
       }
     },
     "logs": [
+      {
+        "time": 1789130573606,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
+      {
+        "time": 1789129955303,
+        "userId": "U7977ee57751b21a1fb17ddbb180444b3",
+        "displayName": "賴鈺臻",
+        "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
+      },
+      {
+        "time": 1789129893456,
+        "userId": "U7977ee57751b21a1fb17ddbb180444b3",
+        "displayName": "賴鈺臻",
+        "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
+      },
+      {
+        "time": 1789129727806,
+        "userId": "U5640de569b97f16342b7e1875f88599c",
+        "displayName": "Brian 王暉鈞",
+        "pictureUrl": "https://profile.line-scdn.net/0h_tKjZP53AFtmEx6elWV-ZRZDAzFFYllJGCIYOlpEVzxTcEdaGnVGNAcSW2NcKkVaGSdGOFoQVjlEWkdQSxsVRz1EATcwfBcKHHUQaBRwK247fTRPOnIMT1JLOTEtYkFXDAwnNBAaJgAIUxd0KAASTgdbFRQNTQFLPERsDWMhbtgJEXcOS3VOOFsVVm7e"
+      },
+      {
+        "time": 1789129621664,
+        "userId": "U7977ee57751b21a1fb17ddbb180444b3",
+        "displayName": "賴鈺臻",
+        "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
+      },
+      {
+        "time": 1789129205991,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
       {
         "time": 1789126991845,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
