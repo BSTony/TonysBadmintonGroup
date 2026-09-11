@@ -7385,7 +7385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789087298028,
+    "lastActiveTime": 1789098200938,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7448,13 +7448,21 @@
           "Timmon",
           "心平",
           "小白",
-          "蘑菇"
+          "蘑菇",
+          "Jack 友"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 11:43",
+        "name": "Jack 友",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 08:41",
         "name": "蘑菇",
