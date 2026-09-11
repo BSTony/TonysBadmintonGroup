@@ -7074,7 +7074,7 @@
     "sections": [
       {
         "title": "8-10",
-        "limit": 9,
+        "limit": 10,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
