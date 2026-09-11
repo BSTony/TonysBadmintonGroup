@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789125468503,
+    "lastActiveTime": 1789125858075,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6878,7 +6878,8 @@
       "FB Wei Wei Chen2": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "陳家興(Jerry)": "Uc91d243122c7370e3439aebcc018d859",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510"
+      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510",
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -6904,12 +6905,20 @@
           "Andrew Kuo",
           "Shwan",
           "卡比",
-          "FB 李効澄"
+          "FB 李効澄",
+          "黃政豪"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/11 19:24",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 19:17",
         "name": "FB 李効澄",
