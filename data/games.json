@@ -7350,7 +7350,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789087166549,
+    "lastActiveTime": 1789087172264,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7405,13 +7405,21 @@
           "郭岳翰John",
           "©️張CC～©️",
           "陳呈",
-          "Jack"
+          "Jack",
+          "凱文"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 08:39",
+        "name": "凱文",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 08:39",
         "name": "Jack",
