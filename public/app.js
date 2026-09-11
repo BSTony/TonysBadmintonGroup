@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-10
- * Version: 1.2.27
+ * Date: 2026-09-11
+ * Version: 1.2.28
  */
 let globalLobbyUsers = [];
 
@@ -521,6 +521,23 @@ function withTimeout(promise, ms, message) {
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
   ]);
+}
+
+async function fetchJson(url, options, timeoutMs, timeoutMsg) {
+  const res = await withTimeout(fetch(url, options), timeoutMs || 15000, timeoutMsg || '連線逾時');
+  const text = await res.text();
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      throw new Error(res.ok ? '伺服器回傳格式錯誤' : `伺服器錯誤 (${res.status})`);
+    }
+  }
+  if (!res.ok) {
+    throw new Error((data && (data.error || data.message)) || `伺服器錯誤 (${res.status})`);
+  }
+  return data;
 }
 
 const LIFF_OAUTH_PARAMS = ['code', 'state', 'liffClientId', 'liffRedirectChannelId', 'friendship_status_changed', 'liff.state', 'liff_done'];
@@ -4629,7 +4646,7 @@ function showEditGameForm(gameId) {
   document.getElementById('eg-fee').value = game.fee || '';
   document.getElementById('eg-tag').value = game.tag || '';
   
-  const section = game.sections[0] || {};
+  const section = (game.sections && game.sections[0]) || {};
   document.getElementById('eg-limit').value = section.limit || 20;
   document.getElementById('eg-backup').value = section.backupLimit || 0;
   document.getElementById('eg-fee').value = game.fee || section.fee || '';
@@ -4761,7 +4778,12 @@ document.getElementById('btn-submit-edit').onclick = async () => {
   
   const locStr = document.getElementById('eg-loc').value.trim();
   const targetGids = Array.from(document.querySelectorAll('#eg-target-gids-container input[name="targetGids"]:checked')).map(el => el.value);
+  const uid = (currentUser && currentUser.userId) || (typeof getSystemLogsUid === 'function' ? getSystemLogsUid() : '');
   
+  if (!uid) {
+    alert('請先用 LINE 登入後再儲存');
+    return;
+  }
   if (!rawDateStr || !timeStr || !locStr || targetGids.length === 0) {
     alert('「目標群組」、「日期」、「時間」、「地點」為必填欄位！');
     return;
@@ -4772,14 +4794,14 @@ document.getElementById('btn-submit-edit').onclick = async () => {
     statusMsg.style.display = 'block';
     statusMsg.innerText = '儲存變更中...';
     
-    const res = await fetch('/api/action', {
+    await fetchJson('/api/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         gid: currentGroupId,
         gameId: gameId,
-        uid: currentUser.userId,
-        name: currentUser.displayName,
+        uid: uid,
+        name: (currentUser && currentUser.displayName) || '',
         action: 'editGame',
         targetGids: targetGids,
         title: document.getElementById('eg-title').value.trim(),
@@ -4796,21 +4818,20 @@ document.getElementById('btn-submit-edit').onclick = async () => {
         note: document.getElementById('eg-note').value.trim(),
         sections: document.getElementById('eg-multi-section-toggle').checked ? (saveEgSectionsData(), egSections) : null
       })
-    });
+    }, 15000, '儲存逾時');
     
-    const result = await res.json();
-    if (!res.ok) {
-      alert(result.error || '儲存失敗');
-    } else {
-      alert('儲存成功！');
-      editGameView.classList.add('hidden');
+    alert('儲存成功！');
+    editGameView.classList.add('hidden');
+    try {
       await loadGamesLobby();
       if (currentGameDetailId === gameId) {
          renderDetail(gameId, true);
       }
+    } catch (reloadErr) {
+      console.error(reloadErr);
     }
   } catch(e) {
-    alert('網路錯誤');
+    alert(e && e.message ? e.message : '儲存失敗');
   } finally {
     appDiv.className = '';
     statusMsg.style.display = 'none';
@@ -5762,26 +5783,29 @@ if (btnSaveEasterEgg) {
   btnSaveEasterEgg.addEventListener('click', async () => {
     btnSaveEasterEgg.disabled = true;
     try {
-      const res = await fetch('/api/admin/easter_egg', {
+      const uid = (typeof getSystemLogsUid === 'function' ? getSystemLogsUid() : (currentUser && currentUser.userId)) || '';
+      if (!uid) throw new Error('請先用 LINE 登入後再儲存');
+      const quota = parseInt(eeQuotaInput && eeQuotaInput.value, 10);
+      await fetchJson('/api/admin/easter_egg', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: (typeof getSystemLogsUid === 'function' ? getSystemLogsUid() : (currentUser && currentUser.userId)) || '',
+          uid: uid,
           settings: {
             enabled: !!(eeEnabledCheckbox && eeEnabledCheckbox.checked),
             message: eeMessageInput ? eeMessageInput.value : '',
-            quota: parseInt(eeQuotaInput && eeQuotaInput.value, 10) || 3,
+            quota: Number.isFinite(quota) && quota > 0 ? quota : 3,
             activeGame: eeActiveGameSelect ? eeActiveGameSelect.value : 'piggy_run'
           }
         })
-      });
-      if (res.ok) {
-        alert('儲存成功');
-        easterEggEnabled = eeEnabledCheckbox.checked;
-        easterEggActiveGame = eeActiveGameSelect.value;
-        renderLobby();
-      }
-    } catch(e) { alert('儲存失敗'); }
+      }, 12000, '彩蛋設定儲存逾時');
+      alert('儲存成功');
+      easterEggEnabled = !!(eeEnabledCheckbox && eeEnabledCheckbox.checked);
+      easterEggActiveGame = eeActiveGameSelect ? eeActiveGameSelect.value : 'piggy_run';
+      renderLobby();
+    } catch(e) {
+      alert(e && e.message ? e.message : '儲存失敗');
+    }
     btnSaveEasterEgg.disabled = false;
   });
 }

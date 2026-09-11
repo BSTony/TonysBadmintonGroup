@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-10
- * Version: 1.3.15
+ * Date: 2026-09-11
+ * Version: 1.3.16
  */
 const express = require('express');
 const compression = require('compression');
@@ -1664,6 +1664,16 @@ const firstUseGroups = new Set(); // 記錄已經顯示過歡迎訊息的群組
 // === 權限輔助函式 ===
 let superAdminViewOverrides = {}; // uid -> 'user' | 'admin' | 'superadmin'
 
+function parseIntOrDefault(v, fallback) {
+  const n = parseInt(v, 10);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function parsePositiveInt(v, fallback) {
+  const n = parseIntOrDefault(v, NaN);
+  return n > 0 ? n : fallback;
+}
+
 function isTrueSuperAdmin(uid) {
   if (!uid) return false;
   if (uid.startsWith('U_SUPER_ADMIN_TEST_ID')) return true;
@@ -2047,10 +2057,18 @@ async function saveGame(gid, immediate = false) {
   if (!games[gid]) return;
   if (pool) {
     try {
-    await pool.query(
-      'INSERT INTO games (gid, data) VALUES ($1, $2) ON CONFLICT (gid) DO UPDATE SET data = $2',
-      [gid, games[gid]]
-    );
+      const q = pool.query(
+        'INSERT INTO games (gid, data) VALUES ($1, $2) ON CONFLICT (gid) DO UPDATE SET data = $2',
+        [gid, games[gid]]
+      );
+      if (immediate) {
+        await Promise.race([
+          q,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('資料庫儲存逾時')), 5000))
+        ]);
+      } else {
+        q.catch(e => console.error('資料庫儲存失敗:', e));
+      }
     } catch (e) {
       console.error('資料庫儲存失敗:', e);
       // 降級到檔案備份
@@ -3886,20 +3904,30 @@ app.get('/api/admin/easter_egg', (req, res) => {
 app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
   const { uid, settings } = req.body;
   if (!uid || !isTrueSuperAdmin(uid)) {
-    return res.status(403).json({ error: 'Permission denied' });
+    return res.status(403).json({ error: '只有超級管理員能修改彩蛋設定' });
   }
   
   if (settings) {
     if (typeof settings.enabled === 'boolean') easterEggSettings.enabled = settings.enabled;
     if (typeof settings.message === 'string') easterEggSettings.message = settings.message;
-    if (typeof settings.quota === 'number') easterEggSettings.quota = settings.quota;
+    if (settings.quota !== undefined && settings.quota !== null && settings.quota !== '') {
+      const quota = parsePositiveInt(settings.quota, 0);
+      if (quota > 0) easterEggSettings.quota = quota;
+    }
     if (Array.isArray(settings.winners)) easterEggSettings.winners = settings.winners;
     if (typeof settings.activeGame === 'string') easterEggSettings.activeGame = settings.activeGame;
     if (Array.isArray(settings.bulletHellLeaderboard)) easterEggSettings.bulletHellLeaderboard = settings.bulletHellLeaderboard;
     
-    saveEasterEggSettings();
+    try {
+      await Promise.race([
+        saveEasterEggSettings(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('彩蛋設定寫入逾時')), 8000))
+      ]);
+    } catch (e) {
+      console.error('saveEasterEggSettings failed:', e);
+    }
   }
-res.json({ success: true });
+  return res.json({ success: true, quota: easterEggSettings.quota, enabled: easterEggSettings.enabled });
 });
 // ------------------
 
@@ -4761,13 +4789,13 @@ app.post('/api/action', express.json(), async (req, res) => {
         allowUserNoteEdit: req.body.allowUserNoteEdit !== false,
         sections: (req.body.sections && Array.isArray(req.body.sections) && req.body.sections.length > 0) ? req.body.sections.map((s, idx) => ({
           title: s.title || `分區 ${idx+1}`,
-          limit: parseInt(s.limit, 10) || 20,
-          backupLimit: parseInt(backupLimit, 10) || 5,
+          limit: parsePositiveInt(s.limit, 20),
+          backupLimit: parseIntOrDefault(backupLimit, 5),
           fee: s.fee || '',
           label: '',
           list: initialLists.length > 0 ? (initialLists[idx] || []) : []
         })) : [
-          { title: '報名名單', limit: parseInt(limit, 10) || 20, backupLimit: parseInt(backupLimit, 10) || 5, label: '', list: initialLists.flat(), fee: fee || '' }
+          { title: '報名名單', limit: parsePositiveInt(limit, 20), backupLimit: parseIntOrDefault(backupLimit, 5), label: '', list: initialLists.flat(), fee: fee || '' }
         ]
       };
       
@@ -4882,16 +4910,16 @@ app.post('/api/action', express.json(), async (req, res) => {
         game.sections = req.body.sections.map((s, idx) => {
           return {
             title: s.title || `分區 ${idx+1}`,
-            limit: parseInt(s.limit, 10) || 20,
-            backupLimit: parseInt(backupLimit, 10) || 5,
+            limit: parsePositiveInt(s.limit, 20),
+            backupLimit: parseIntOrDefault(backupLimit, 5),
             fee: s.fee || '',
             label: '',
             list: oldSections[idx] ? oldSections[idx].list : (idx === 0 && oldSections[0] ? oldSections[0].list : [])
           };
         });
       } else if (game.sections && game.sections[0]) {
-        game.sections[0].limit = parseInt(limit, 10) || 20;
-        game.sections[0].backupLimit = parseInt(backupLimit, 10) || 0;
+        game.sections[0].limit = parsePositiveInt(limit, 20);
+        game.sections[0].backupLimit = parseIntOrDefault(backupLimit, 0);
         game.sections[0].fee = fee || '';
         // If it was a multi-section and now changed to single, keep the first section's list and discard others.
         game.sections = [game.sections[0]];
@@ -4915,7 +4943,11 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       game.reminderTime = pReminder;
       
-      await saveGame(gameId, true);
+      try {
+        await saveGame(gameId, true);
+      } catch (e) {
+        console.error('editGame saveGame failed:', e);
+      }
       
       return res.json({ success: true });
     }
