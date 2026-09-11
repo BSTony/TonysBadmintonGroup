@@ -7350,7 +7350,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789087193355,
+    "lastActiveTime": 1789087204945,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7408,13 +7408,21 @@
           "陳呈",
           "Jack",
           "凱文",
-          "Emily🙈🙉🙊"
+          "Emily🙈🙉🙊",
+          "Winnie"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 08:40",
+        "name": "Winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 08:39",
         "name": "Emily🙈🙉🙊",
