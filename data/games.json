@@ -7011,7 +7011,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789116400968,
+    "lastActiveTime": 1789118445487,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7061,7 +7061,8 @@
           "鈞",
           "FB Dylan Lee",
           "周哲儁",
-          "Roy"
+          "Roy",
+          "FB poki"
         ]
       },
       {
@@ -7104,6 +7105,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 17:20",
+        "name": "FB poki",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/11 16:46",
         "name": "Roy",
