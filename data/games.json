@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789094279434,
+    "lastActiveTime": 1789113804829,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6900,12 +6900,20 @@
           "FB Wei Wei Chen1",
           "FB Wei Wei Chen2",
           "陳家興(Jerry)",
-          "Andrew Kuo"
+          "Andrew Kuo",
+          "Shwan"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/11 16:03",
+        "name": "Shwan",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 10:37",
         "name": "Andrew Kuo",
