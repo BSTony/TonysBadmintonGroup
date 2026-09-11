@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789139778361,
+    "lastActiveTime": 1789142079587,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6902,7 +6902,6 @@
           "FB Wei Wei Chen1",
           "FB Wei Wei Chen2",
           "陳家興(Jerry)",
-          "Andrew Kuo",
           "Shwan",
           "卡比",
           "FB 李効澄",
@@ -6913,6 +6912,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/11 23:54",
+        "name": "Andrew Kuo",
+        "operator": "Andrew Kuo",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 23:16",
         "name": "FB 林三凱",
