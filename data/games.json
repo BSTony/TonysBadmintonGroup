@@ -7003,7 +7003,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789098152969,
+    "lastActiveTime": 1789098540426,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7030,7 +7030,8 @@
       "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "政達": "Ub3fbddfc79aa3e5533b06da553d5bdce",
-      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a"
+      "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7083,12 +7084,20 @@
           "Jojo+1",
           "羅",
           "林立峰",
-          "小黑"
+          "小黑",
+          "John"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/11 11:49",
+        "name": "John",
+        "operator": "John",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/11 11:42",
         "name": "小黑",
