@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4344,
+    "viewCount": 4346,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -72,8 +72,8 @@
       "Uc608f165fc93c9affa9b9d721d6d0efd": {
         "displayName": "YANG 阿傑",
         "firstVisit": 1783211742856,
-        "count": 56,
-        "lastVisit": 1788893119667,
+        "count": 57,
+        "lastVisit": 1789154034164,
         "pictureUrl": "https://profile.line-scdn.net/0hxqkHySt6J15GMTkKU79ZYDZhJDRlQH5MaQQ_OXtkej0rAzcJYlJtMXZhLG4sUWMIYwRpPXM4emdkR2dpMAI9QTMzDhUMZTVJLhcwcyVmGAgJYgdAOVIzcxFTOhwuVQtRKks6SCA5K24tdGB4azRtTihSIzMFdghzLmZLCEMDSd0pM1ALa1dpPXs3cWv-"
       },
       "Uc85aca08d5834bad3d829179ce81db1e": {
@@ -768,8 +768,8 @@
       "Ufb12bb922c93c69d206c9a6fc3b07510": {
         "displayName": "卡比",
         "firstVisit": 1784368694762,
-        "count": 16,
-        "lastVisit": 1789121518662,
+        "count": 17,
+        "lastVisit": 1789153793130,
         "pictureUrl": "https://profile.line-scdn.net/0h7BU593AnaG14THjarNUWEggcawdbPTF_BCgvAxlJNF8SdXhsAC4gWU1NNFhHfyk6Vi0iWB4bP1V0Xx8LZhqUWX98NVxFfSozUiIijg"
       },
       "U2613060afa9a749259aded886a4cdf4d": {
@@ -1285,6 +1285,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1789154034164,
+        "userId": "Uc608f165fc93c9affa9b9d721d6d0efd",
+        "displayName": "YANG 阿傑",
+        "pictureUrl": "https://profile.line-scdn.net/0hxqkHySt6J15GMTkKU79ZYDZhJDRlQH5MaQQ_OXtkej0rAzcJYlJtMXZhLG4sUWMIYwRpPXM4emdkR2dpMAI9QTMzDhUMZTVJLhcwcyVmGAgJYgdAOVIzcxFTOhwuVQtRKks6SCA5K24tdGB4azRtTihSIzMFdghzLmZLCEMDSd0pM1ALa1dpPXs3cWv-"
+      },
+      {
+        "time": 1789153793130,
+        "userId": "Ufb12bb922c93c69d206c9a6fc3b07510",
+        "displayName": "卡比",
+        "pictureUrl": "https://profile.line-scdn.net/0h7BU593AnaG14THjarNUWEggcawdbPTF_BCgvAxlJNF8SdXhsAC4gWU1NNFhHfyk6Vi0iWB4bP1V0Xx8LZhqUWX98NVxFfSozUiIijg"
+      },
       {
         "time": 1789148187545,
         "userId": "U1902d5e6d155f6dcf1f365f8494d557f",
