@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789142079587,
+    "lastActiveTime": 1789171958229,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6906,12 +6906,20 @@
           "卡比",
           "FB 李効澄",
           "黃政豪",
-          "FB 林三凱"
+          "FB 林三凱",
+          "Roy"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/12 08:12",
+        "name": "Roy",
+        "operator": "逢丞Roy",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 23:54",
         "name": "Andrew Kuo",
