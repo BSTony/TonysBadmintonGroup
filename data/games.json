@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789174573945,
+    "lastActiveTime": 1789174580119,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6863,7 +6863,8 @@
       "陳呈": true,
       "Jet": true,
       "陳家興(Jerry)": true,
-      "弘彬/Jason": true
+      "弘彬/Jason": true,
+      "Roy": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
