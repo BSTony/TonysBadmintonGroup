@@ -7130,7 +7130,7 @@
       },
       {
         "title": "10-12",
-        "limit": 9,
+        "limit": 8,
         "backupLimit": 5,
         "fee": "210",
         "label": "",
