@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789171958229,
+    "lastActiveTime": 1789173620685,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6894,7 +6894,6 @@
           "Kay",
           "陳呈",
           "Jet",
-          "楊程鈞",
           "Kevin",
           "Mia",
           "弘彬/Jason",
@@ -6913,6 +6912,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/12 08:40",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/12 08:12",
         "name": "Roy",
