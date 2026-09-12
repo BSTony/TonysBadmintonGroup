@@ -7075,7 +7075,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789181461551,
+    "lastActiveTime": 1789181472157,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7164,12 +7164,20 @@
           "小黑",
           "John",
           "Chen H.R.",
-          "卡比"
+          "卡比",
+          "陳呈"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/12 10:51",
+        "name": "陳呈",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/12 10:51",
         "name": "陳呈",
