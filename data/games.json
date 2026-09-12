@@ -7075,7 +7075,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789174508698,
+    "lastActiveTime": 1789181461551,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7141,7 +7141,6 @@
           "Alex",
           "YANG 阿傑",
           "楊程鈞",
-          "陳呈",
           "Kevin",
           "Mia"
         ]
@@ -7171,6 +7170,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/12 10:51",
+        "name": "陳呈",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "10-12"
+      },
       {
         "time": "09/12 08:55",
         "name": "卡比",
