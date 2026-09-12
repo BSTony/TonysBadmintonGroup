@@ -7059,7 +7059,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789171935645,
+    "lastActiveTime": 1789172462224,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7102,7 +7102,6 @@
         "label": "",
         "list": [
           "林煥杰",
-          "云",
           "ALAN LIU",
           "鈞",
           "FB Dylan Lee",
@@ -7154,6 +7153,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/12 08:21",
+        "name": "云",
+        "operator": "鄭人云",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "09/12 08:12",
         "name": "Roy",
