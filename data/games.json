@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789175036545,
+    "lastActiveTime": 1789176035253,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6870,7 +6870,8 @@
       "Shwan": true,
       "FB Wei Wei Chen2": true,
       "FB 林三凱": true,
-      "黃政豪": true
+      "黃政豪": true,
+      "FB 李効澄": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -7112,7 +7113,7 @@
     "sections": [
       {
         "title": "8-10",
-        "limit": 9,
+        "limit": 8,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
