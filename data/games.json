@@ -7077,7 +7077,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789187980738,
+    "lastActiveTime": 1789216451846,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7109,7 +7109,8 @@
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510",
-      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7169,12 +7170,20 @@
           "John",
           "Chen H.R.",
           "卡比",
-          "陳呈"
+          "陳呈",
+          "Andrew Kuo"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/12 20:34",
+        "name": "Andrew Kuo",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/12 12:39",
         "name": "JoeLin",
