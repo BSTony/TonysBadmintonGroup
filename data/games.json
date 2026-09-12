@@ -7056,7 +7056,8 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": true
   },
   "1788671765730649": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
