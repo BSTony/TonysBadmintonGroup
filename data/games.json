@@ -7076,7 +7076,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789181472157,
+    "lastActiveTime": 1789187980738,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7107,7 +7107,8 @@
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
-      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510"
+      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7143,7 +7144,8 @@
           "YANG 阿傑",
           "楊程鈞",
           "Kevin",
-          "Mia"
+          "Mia",
+          "JoeLin"
         ]
       },
       {
@@ -7172,6 +7174,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/12 12:39",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/12 10:51",
         "name": "陳呈",
