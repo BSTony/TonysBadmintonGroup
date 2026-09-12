@@ -7051,7 +7051,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789129941259,
+    "lastActiveTime": 1789171935645,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7099,7 +7099,6 @@
           "鈞",
           "FB Dylan Lee",
           "周哲儁",
-          "Roy",
           "FB poki",
           "FB hamilton",
           "Brian"
@@ -7147,6 +7146,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/12 08:12",
+        "name": "Roy",
+        "operator": "逢丞Roy",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "09/11 20:32",
         "name": "Mia",
