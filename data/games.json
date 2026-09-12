@@ -7112,7 +7112,7 @@
     "sections": [
       {
         "title": "8-10",
-        "limit": 10,
+        "limit": 9,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
@@ -7129,7 +7129,7 @@
       },
       {
         "title": "10-12",
-        "limit": 10,
+        "limit": 9,
         "backupLimit": 5,
         "fee": "210",
         "label": "",
@@ -7147,7 +7147,7 @@
       },
       {
         "title": "8-12",
-        "limit": 12,
+        "limit": 13,
         "backupLimit": 5,
         "fee": "320",
         "label": "",
