@@ -7065,7 +7065,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789172462224,
+    "lastActiveTime": 1789174508698,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7095,7 +7095,8 @@
       "林立峰": "U7691f78ef6e34371e591dc7b0c57ce9a",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
-      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
+      "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7153,12 +7154,20 @@
           "林立峰",
           "小黑",
           "John",
-          "Chen H.R."
+          "Chen H.R.",
+          "卡比"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/12 08:55",
+        "name": "卡比",
+        "operator": "卡比",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/12 08:21",
         "name": "云",
