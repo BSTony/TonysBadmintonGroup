@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4393,
+    "viewCount": 4394,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1258,8 +1258,8 @@
       "Uc91d243122c7370e3439aebcc018d859": {
         "displayName": "陳家興(Jerry)",
         "firstVisit": 1788782248877,
-        "count": 6,
-        "lastVisit": 1789173788751,
+        "count": 7,
+        "lastVisit": 1789213691018,
         "pictureUrl": "https://profile.line-scdn.net/0h-zfa4fkgclVLGGLINfEMKjtIcT9oaStHMipoMn9KKmclfGJWZH08MipPLGN-ITIBN3lpZ34cJDFHCwUzVU6OYUwoL2R2KTALYXY4tg"
       },
       "Ubd783ca8df10092279cc1dddb68b341c": {
@@ -1285,6 +1285,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1789213691018,
+        "userId": "Uc91d243122c7370e3439aebcc018d859",
+        "displayName": "陳家興(Jerry)",
+        "pictureUrl": "https://profile.line-scdn.net/0h-zfa4fkgclVLGGLINfEMKjtIcT9oaStHMipoMn9KKmclfGJWZH08MipPLGN-ITIBN3lpZ34cJDFHCwUzVU6OYUwoL2R2KTALYXY4tg"
+      },
       {
         "time": 1789207031130,
         "userId": "Uc608f165fc93c9affa9b9d721d6d0efd",
