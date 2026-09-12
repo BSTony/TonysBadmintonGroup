@@ -6850,7 +6850,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788584074238,
-    "lastActiveTime": 1789174617035,
+    "lastActiveTime": 1789174825734,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -6865,7 +6865,9 @@
       "陳家興(Jerry)": true,
       "弘彬/Jason": true,
       "Roy": true,
-      "卡比": true
+      "卡比": true,
+      "FB Wei Wei Chen1": true,
+      "Shwan": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
