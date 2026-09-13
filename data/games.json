@@ -7795,7 +7795,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789188357683,
+    "lastActiveTime": 1789306281367,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7812,7 +7812,8 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7",
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7826,9 +7827,19 @@
           "謝東霖 Tony",
           "Kay",
           "陳呈",
-          "Jet"
+          "Jet",
+          "Andrew Kuo"
         ],
         "fee": ""
+      }
+    ],
+    "history": [
+      {
+        "time": "09/13 21:31",
+        "name": "Andrew Kuo",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   },
