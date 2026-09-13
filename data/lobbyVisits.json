@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4443,
+    "viewCount": 4449,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -52,8 +52,8 @@
       "U532d12783f207181c2d0f9d9ecc8724a": {
         "displayName": "林俊佑",
         "firstVisit": 1783209416710,
-        "count": 38,
-        "lastVisit": 1789275438890,
+        "count": 39,
+        "lastVisit": 1789289167855,
         "pictureUrl": "https://profile.line-scdn.net/0hz8wiwhEyJRdaEDQI9I5baCpAJn15YXwFIXZudmcWfyNlJDdGcnc9IjxDKHBkJ2UUc3E_cjsQe3RWA1JxREbZI10geCZnIWdJcH5v9A"
       },
       "U610a1cb7211453949dbb88fa527c90aa": {
@@ -93,8 +93,8 @@
       "Ua5ba1a0ad7f4687b4075563e722331c5": {
         "displayName": "©️張CC～©️",
         "firstVisit": 1783217875055,
-        "count": 35,
-        "lastVisit": 1789274213803,
+        "count": 36,
+        "lastVisit": 1789287266528,
         "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
       },
       "U47573cf563cc67d5fc00dbb48a51092a": {
@@ -114,15 +114,15 @@
       "Ub2e84850d9446141bcb1ae89ec450821": {
         "displayName": "林煥杰",
         "firstVisit": 1783228203505,
-        "count": 50,
-        "lastVisit": 1789257146203,
+        "count": 51,
+        "lastVisit": 1789288484965,
         "pictureUrl": "https://profile.line-scdn.net/0hxdPS2trOJ0t9KjRJ6D1ZNA16JCFeW35ZUE9oLEAocHIVSmdKBR87K08icX8TSjceUklrJU8if35xOVAtY3zbf3oaenpAG2UVV0RtqA"
       },
       "U7977ee57751b21a1fb17ddbb180444b3": {
         "displayName": "賴鈺臻",
         "firstVisit": 1783228766307,
-        "count": 55,
-        "lastVisit": 1789190016110,
+        "count": 57,
+        "lastVisit": 1789288038008,
         "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
       },
       "Uf2f63c157d1e4f7e5d289d377c568582": {
@@ -611,8 +611,8 @@
       "Ua4c9b87ae0f49f0e264f14642944a52e": {
         "displayName": "Chen H.R.",
         "firstVisit": 1783822652122,
-        "count": 95,
-        "lastVisit": 1789259556185,
+        "count": 96,
+        "lastVisit": 1789287042088,
         "pictureUrl": "https://profile.line-scdn.net/0ht-ExTO7jKwJoATcw3mhVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
       },
       "U3d8fd8b2d2271e0f6f2f4f50e1475c12": {
@@ -1292,6 +1292,42 @@
       }
     },
     "logs": [
+      {
+        "time": 1789289167855,
+        "userId": "U532d12783f207181c2d0f9d9ecc8724a",
+        "displayName": "林俊佑",
+        "pictureUrl": "https://profile.line-scdn.net/0hz8wiwhEyJRdaEDQI9I5baCpAJn15YXwFIXZudmcWfyNlJDdGcnc9IjxDKHBkJ2UUc3E_cjsQe3RWA1JxREbZI10geCZnIWdJcH5v9A"
+      },
+      {
+        "time": 1789288484965,
+        "userId": "Ub2e84850d9446141bcb1ae89ec450821",
+        "displayName": "林煥杰",
+        "pictureUrl": "https://profile.line-scdn.net/0hxdPS2trOJ0t9KjRJ6D1ZNA16JCFeW35ZUE9oLEAocHIVSmdKBR87K08icX8TSjceUklrJU8if35xOVAtY3zbf3oaenpAG2UVV0RtqA"
+      },
+      {
+        "time": 1789288038008,
+        "userId": "U7977ee57751b21a1fb17ddbb180444b3",
+        "displayName": "賴鈺臻",
+        "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
+      },
+      {
+        "time": 1789287940157,
+        "userId": "U7977ee57751b21a1fb17ddbb180444b3",
+        "displayName": "賴鈺臻",
+        "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
+      },
+      {
+        "time": 1789287266528,
+        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
+        "displayName": "©️張CC～©️",
+        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
+      },
+      {
+        "time": 1789287042088,
+        "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
+        "displayName": "Chen H.R.",
+        "pictureUrl": "https://profile.line-scdn.net/0ht-ExTO7jKwJoATcw3mhVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
+      },
       {
         "time": 1789285334761,
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
