@@ -7841,7 +7841,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789288529701,
+    "lastActiveTime": 1789289613818,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7885,12 +7885,20 @@
         "label": "",
         "list": [
           "謝東霖 Tony",
-          "Kay"
+          "Kay",
+          "小可愛"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/13 16:53",
+        "name": "小可愛",
+        "operator": "林俊佑",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/13 16:35",
         "name": "林煥杰",
