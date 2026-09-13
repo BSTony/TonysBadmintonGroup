@@ -7841,7 +7841,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789284044630,
+    "lastActiveTime": 1789284052633,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7850,7 +7850,8 @@
     "levelMap": {},
     "paidMap": {},
     "uidMap": {
-      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7878,12 +7879,20 @@
         "fee": "320",
         "label": "",
         "list": [
-          "謝東霖 Tony"
+          "謝東霖 Tony",
+          "Kay"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/13 15:20",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/13 15:20",
         "name": "謝東霖 Tony",
