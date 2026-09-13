@@ -7861,7 +7861,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789294837857,
+    "lastActiveTime": 1789306318720,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7874,7 +7874,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
-      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7897,7 +7898,9 @@
         "backupLimit": 5,
         "fee": "210",
         "label": "",
-        "list": []
+        "list": [
+          "Andrew Kuo"
+        ]
       },
       {
         "title": "8-12",
@@ -7914,6 +7917,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/13 21:31",
+        "name": "Andrew Kuo",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/13 18:20",
         "name": "JoeLin",
