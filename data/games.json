@@ -7841,7 +7841,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789284052633,
+    "lastActiveTime": 1789284849715,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7851,7 +7851,8 @@
     "paidMap": {},
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Kay": "U49e2484c80056990b759e9039a74e1a6"
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7862,7 +7863,9 @@
         "backupLimit": 5,
         "fee": "150",
         "label": "",
-        "list": []
+        "list": [
+          "ALAN LIU"
+        ]
       },
       {
         "title": "10-12",
@@ -7886,6 +7889,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/13 15:34",
+        "name": "ALAN LIU",
+        "operator": "ALAN LIU",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/13 15:20",
         "name": "Kay",
