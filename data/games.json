@@ -7832,11 +7832,11 @@
       "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1789283959326336",
-    "title": "9/20 (日) 08:00~12:00 南港高中",
+    "title": "週日 港中 早上",
     "date": "9/20 (日)",
     "time": "08:00~12:00",
     "location": "南港高中",
-    "fee": "",
+    "fee": "150",
     "note": "",
     "tag": "",
     "active": true,
@@ -7877,6 +7877,7 @@
         "label": "",
         "list": []
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
