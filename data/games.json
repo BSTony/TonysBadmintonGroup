@@ -7623,7 +7623,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789139836442,
+    "lastActiveTime": 1789304801535,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7657,7 +7657,8 @@
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2"
+      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
+      "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7689,13 +7690,21 @@
           "小白",
           "蘑菇",
           "Jack 友",
-          "FiFi"
+          "FiFi",
+          "Matt孟錡"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/13 21:06",
+        "name": "Matt孟錡",
+        "operator": "Matt孟錡",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/11 23:17",
         "name": "FiFi",
