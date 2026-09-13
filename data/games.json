@@ -7077,7 +7077,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788671765730,
-    "lastActiveTime": 1789257699526,
+    "lastActiveTime": 1789257728104,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7085,7 +7085,7 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "FB Dylan Lee": true,
+      "FB Dylan Lee": false,
       "林煥杰": true,
       "ALAN LIU": true,
       "鈞": true
