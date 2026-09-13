@@ -7515,7 +7515,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788872296513,
-    "lastActiveTime": 1789313553541,
+    "lastActiveTime": 1789343990784,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7545,7 +7545,8 @@
       "Sean": "Ua698eb94f633310ce3b6cf6f34265adb",
       "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "凱文": "U911c6faae5ae99cb4c24cbe5c22ac5e7"
+      "凱文": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
+      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7566,13 +7567,21 @@
           "Sean",
           "FiFi",
           "Jet",
-          "凱文"
+          "凱文",
+          "afrahuang"
         ],
         "fee": "280"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/14 07:59",
+        "name": "afrahuang",
+        "operator": "afrahuang",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/13 23:32",
         "name": "偉舫",
