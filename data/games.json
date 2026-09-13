@@ -7841,7 +7841,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789289613818,
+    "lastActiveTime": 1789294837857,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7853,7 +7853,8 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "ALAN LIU": "U9d06cac35df59cb7e460b83e88d303cf",
-      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7866,7 +7867,8 @@
         "label": "",
         "list": [
           "ALAN LIU",
-          "林煥杰"
+          "林煥杰",
+          "JoeLin"
         ]
       },
       {
@@ -7892,6 +7894,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/13 18:20",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/13 16:53",
         "name": "小可愛",
