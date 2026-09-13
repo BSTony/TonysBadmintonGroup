@@ -7515,7 +7515,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788872296513,
-    "lastActiveTime": 1788931059965,
+    "lastActiveTime": 1789313553541,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7531,8 +7531,7 @@
       "憲": true,
       "Robert": true,
       "海棠": true,
-      "周則鼎": true,
-      "偉舫": true
+      "周則鼎": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -7564,7 +7563,6 @@
           "Robert",
           "海棠",
           "周則鼎",
-          "偉舫",
           "Sean",
           "FiFi",
           "Jet",
@@ -7575,6 +7573,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/13 23:32",
+        "name": "偉舫",
+        "operator": "偉舫",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/09 13:17",
         "name": "凱文",
