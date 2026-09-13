@@ -7861,7 +7861,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789309126077,
+    "lastActiveTime": 1789309147104,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7891,7 +7891,8 @@
           "ALAN LIU",
           "林煥杰",
           "JoeLin",
-          "Kevin"
+          "Kevin",
+          "Mia"
         ]
       },
       {
@@ -7920,6 +7921,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/13 22:19",
+        "name": "Mia",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/13 22:18",
         "name": "Kevin",
