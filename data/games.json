@@ -7637,7 +7637,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789304801535,
+    "lastActiveTime": 1789351068321,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7705,13 +7705,21 @@
           "蘑菇",
           "Jack 友",
           "FiFi",
-          "Matt孟錡"
+          "Matt孟錡",
+          "Tank"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/14 09:57",
+        "name": "Tank",
+        "operator": "Tank Lin",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/13 21:06",
         "name": "Matt孟錡",
