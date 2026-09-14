@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-11
- * Version: 1.2.28
+ * Date: 2026-09-14
+ * Version: 1.2.29
  */
 let globalLobbyUsers = [];
 
@@ -314,6 +314,7 @@ let currentDetailGame = null;
 let gamesList = [];
 let globalIsAdmin = false;
 let globalIsSuperAdmin = false;
+let lastKnownSuperAdminUid = '';
 let easterEggEnabled = false;
 let easterEggActiveGame = 'piggy_run';
 let piggyClicks = 0;
@@ -2003,6 +2004,7 @@ async function loadGamesLobby(silent = false) {
     lastGamesJson = newGamesJson;
     globalIsAdmin = !!data.isAdmin;
     globalIsSuperAdmin = !!data.isSuperAdmin;
+    if (globalIsSuperAdmin && uid && !isWeakVisitUid(uid)) lastKnownSuperAdminUid = uid;
     globalManagedGroups = data.managedGroups || [];
     globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
     globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';
@@ -4851,10 +4853,9 @@ if (btnLobbyStats) {
     }
     
     try {
-      const uid = (currentUser && currentUser.userId) ? currentUser.userId : '';
-      const res = await withTimeout(fetch(`/api/admin/all_stats?uid=${encodeURIComponent(uid)}`), 20000, '分析資料載入逾時');
-      if (!res.ok) throw new Error('無法取得分析資料');
-      const data = await res.json();
+      const uid = (typeof getAdminRequestUid === 'function') ? getAdminRequestUid() : ((currentUser && currentUser.userId) || '');
+      if (!uid) throw new Error('請先用 LINE 登入後再查看分析');
+      const data = await fetchJson(`/api/admin/all_stats?uid=${encodeURIComponent(uid)}`, {}, 25000, '分析資料載入逾時');
       
       statsGroupsContainer.innerHTML = '';
       
@@ -5281,6 +5282,18 @@ function getSystemLogsUid() {
   } catch (e) {
     return '';
   }
+}
+
+function getAdminRequestUid() {
+  const candidates = [];
+  if (typeof currentUser !== 'undefined' && currentUser && currentUser.userId) candidates.push(currentUser.userId);
+  try {
+    const u = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
+    if (u && u.userId) candidates.push(u.userId);
+  } catch (e) {}
+  if (lastKnownSuperAdminUid) candidates.push(lastKnownSuperAdminUid);
+  const strong = candidates.find(id => id && typeof isWeakVisitUid === 'function' && !isWeakVisitUid(id));
+  return strong || candidates[0] || '';
 }
 
 async function loadSystemLogsView() {
@@ -9146,6 +9159,9 @@ function tryRenderOptimisticLobby() {
         lastGamesJson = JSON.stringify(gamesList);
         globalIsAdmin = !!data.isAdmin;
         globalIsSuperAdmin = !!data.isSuperAdmin;
+        if (globalIsSuperAdmin && currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId)) {
+          lastKnownSuperAdminUid = currentUser.userId;
+        }
         globalManagedGroups = data.managedGroups || [];
         globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
         globalLobbyDesc = data.lobbyDesc || '本週臨打名額有限，趕快搶位，跟著小豬一起快樂揮拍吧！';

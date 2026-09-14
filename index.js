@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-11
- * Version: 1.3.16
+ * Date: 2026-09-14
+ * Version: 1.3.17
  */
 const express = require('express');
 const compression = require('compression');
@@ -2729,6 +2729,7 @@ app.get('/api/admin/backfill_avatars', async (req, res) => {
 });
 
 app.get('/api/admin/all_stats', async (req, res) => {
+  try {
   const uid = req.query.uid;
   if (!uid) return res.status(403).json({ error: '需要 uid' });
 
@@ -2817,7 +2818,11 @@ app.get('/api/admin/all_stats', async (req, res) => {
       viewCount: stats.viewCount || 0,
       uniqueCount: uniqueCount,
       dailyStats: dailyStats,
-      recentVisits: sortedLogs.slice(0, 50)
+      recentVisits: sortedLogs.slice(0, 20).map(log => ({
+        time: log.time,
+        userId: log.userId,
+        displayName: log.displayName || '未知'
+      }))
     });
   }
 
@@ -2838,6 +2843,10 @@ app.get('/api/admin/all_stats', async (req, res) => {
     todayUniqueCount: todayUniqueViewers.size,
     allUsersStats
   });
+  } catch (e) {
+    console.error('all_stats failed:', e);
+    res.status(500).json({ error: '分析資料處理失敗，請稍後再試' });
+  }
 });
 
 app.post('/api/admin/lobby_stats/:gid/delete', express.json(), async (req, res) => {
