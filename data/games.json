@@ -7515,7 +7515,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788872296513,
-    "lastActiveTime": 1789376656753,
+    "lastActiveTime": 1789391141721,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7547,7 +7547,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "凱文": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7569,13 +7570,21 @@
           "Jet",
           "凱文",
           "afrahuang",
-          "陳呈"
+          "陳呈",
+          "腳皮"
         ],
         "fee": "280"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/14 21:05",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 17:04",
         "name": "陳呈",
