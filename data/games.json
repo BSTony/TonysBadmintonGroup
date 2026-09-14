@@ -7515,7 +7515,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788872296513,
-    "lastActiveTime": 1789391141721,
+    "lastActiveTime": 1789391182066,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7570,14 +7570,20 @@
           "Jet",
           "凱文",
           "afrahuang",
-          "陳呈",
-          "腳皮"
+          "陳呈"
         ],
         "fee": "280"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/14 21:06",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 21:05",
         "name": "腳皮",
