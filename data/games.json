@@ -7841,7 +7841,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789342930678,
+    "lastActiveTime": 1789377014090,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7876,12 +7876,20 @@
           "陳呈",
           "Jet",
           "Andrew Kuo",
-          "楊程鈞"
+          "楊程鈞",
+          "Kevin"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/14 17:10",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 07:42",
         "name": "楊程鈞",
