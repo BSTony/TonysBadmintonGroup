@@ -7652,7 +7652,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789371466464,
+    "lastActiveTime": 1789381340797,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7688,7 +7688,8 @@
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
       "Matt孟錡": "U33ec3d57827236fa5ed0f2da4c6e8205",
-      "古書羽": "U515f3eafb608f3aada94b73067dcc156"
+      "古書羽": "U515f3eafb608f3aada94b73067dcc156",
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7723,13 +7724,21 @@
           "FiFi",
           "Matt孟錡",
           "Tank",
-          "古書羽"
+          "古書羽",
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/14 18:22",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 15:37",
         "name": "古書羽",
