@@ -7865,7 +7865,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789391224086,
+    "lastActiveTime": 1789391239989,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7906,12 +7906,20 @@
           "Mia",
           "阿伸",
           "腳皮",
-          "Sample"
+          "Sample",
+          "牧森"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/14 21:07",
+        "name": "牧森",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 21:07",
         "name": "Sample",
