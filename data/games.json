@@ -7515,7 +7515,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788872296513,
-    "lastActiveTime": 1789374746581,
+    "lastActiveTime": 1789376656753,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7546,7 +7546,8 @@
       "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "凱文": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
+      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7567,13 +7568,21 @@
           "Sean",
           "Jet",
           "凱文",
-          "afrahuang"
+          "afrahuang",
+          "陳呈"
         ],
         "fee": "280"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/14 17:04",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 16:32",
         "name": "FiFi",
