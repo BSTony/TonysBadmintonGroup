@@ -7859,7 +7859,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789377019182,
+    "lastActiveTime": 1789391154508,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7896,12 +7896,20 @@
           "Andrew Kuo",
           "楊程鈞",
           "Kevin",
-          "Mia"
+          "Mia",
+          "阿伸"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/14 21:05",
+        "name": "阿伸",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 17:10",
         "name": "Mia",
