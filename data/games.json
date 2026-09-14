@@ -7865,7 +7865,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789391197921,
+    "lastActiveTime": 1789391224086,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7905,12 +7905,20 @@
           "Kevin",
           "Mia",
           "阿伸",
-          "腳皮"
+          "腳皮",
+          "Sample"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/14 21:07",
+        "name": "Sample",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 21:06",
         "name": "腳皮",
