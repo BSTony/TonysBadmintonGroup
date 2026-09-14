@@ -7865,7 +7865,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789391154508,
+    "lastActiveTime": 1789391197921,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7884,7 +7884,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7903,12 +7904,20 @@
           "楊程鈞",
           "Kevin",
           "Mia",
-          "阿伸"
+          "阿伸",
+          "腳皮"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/14 21:06",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 21:05",
         "name": "阿伸",
