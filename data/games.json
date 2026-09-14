@@ -7515,7 +7515,7 @@
     "tag": "",
     "active": true,
     "startTime": 1788872296513,
-    "lastActiveTime": 1789343990784,
+    "lastActiveTime": 1789374746581,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7565,7 +7565,6 @@
           "海棠",
           "周則鼎",
           "Sean",
-          "FiFi",
           "Jet",
           "凱文",
           "afrahuang"
@@ -7575,6 +7574,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/14 16:32",
+        "name": "FiFi",
+        "operator": "FiFi",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 07:59",
         "name": "afrahuang",
