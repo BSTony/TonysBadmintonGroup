@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4476,
+    "viewCount": 4479,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -425,9 +425,9 @@
       "Ucc18abd872eeb2825efa5241bb92bfa0": {
         "displayName": "Cliff Huang",
         "firstVisit": 1783515555907,
-        "count": 5,
-        "lastVisit": 1787109517371,
-        "pictureUrl": "https://profile.line-scdn.net/0hWPdJON5OCH9JMxRfFcl2QTljCxVqQlFtNlBOTS5kUh13Bk4qbVRCTHo6VUtzVh8qMVYUHnUwA0lrajBKOwsUQC40XxkpXSQqLCpba2BYBR0mUDZLJycDEQNbJkwLdEpyBgo8WwprERonXzQqZgUkcnRvEBAxbSlOYWRkKUwBZvwmMX8qZFVGHHQ1Xkrx"
+        "count": 7,
+        "lastVisit": 1789373684793,
+        "pictureUrl": "https://profile.line-scdn.net/0hWPdJDRWECH9JMxS5Dq92QTljCxVqQlFtNlBOTS5kUh13Bk4qbVRCTHo6VUtzVh8qMVYUHnUwA0lrajBKOwsUQC40XxkpXSQqLCpba2BYBR0mUDZLJycDEQNbJkwLdEpyBgo8WwprERonXzQqZgUkcnRvEBAxbSlOYWRkKUwBZvwmMX8qZFVGHHQ1Xkrx"
       },
       "U7224dcf829dda94227f70908b96deeed": {
         "displayName": "陳彥至🦁Roger",
@@ -1112,8 +1112,8 @@
       "U1920cbbd7be6a8816939be44d4d0e1f2": {
         "displayName": "FiFi",
         "firstVisit": 1787198716408,
-        "count": 15,
-        "lastVisit": 1789139811137,
+        "count": 16,
+        "lastVisit": 1789374740534,
         "pictureUrl": "https://profile.line-scdn.net/0hjyv_6BtwNVZbJivZR7BLKSt2Njx4V2xEdhd4YG0nbGMxEHdQI0h5NzkgP2JuEXcJIEQvNmkhOTNXNUIwRXDJYlwWaGdmF3cIcUh_tQ"
       },
       "U07da54f66d0a500df5b2db748bde73a9": {
@@ -1293,6 +1293,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1789374740534,
+        "userId": "U1920cbbd7be6a8816939be44d4d0e1f2",
+        "displayName": "FiFi",
+        "pictureUrl": "https://profile.line-scdn.net/0hjyv_6BtwNVZbJivZR7BLKSt2Njx4V2xEdhd4YG0nbGMxEHdQI0h5NzkgP2JuEXcJIEQvNmkhOTNXNUIwRXDJYlwWaGdmF3cIcUh_tQ"
+      },
+      {
+        "time": 1789373684793,
+        "userId": "Ucc18abd872eeb2825efa5241bb92bfa0",
+        "displayName": "Cliff Huang",
+        "pictureUrl": "https://profile.line-scdn.net/0hWPdJDRWECH9JMxS5Dq92QTljCxVqQlFtNlBOTS5kUh13Bk4qbVRCTHo6VUtzVh8qMVYUHnUwA0lrajBKOwsUQC40XxkpXSQqLCpba2BYBR0mUDZLJycDEQNbJkwLdEpyBgo8WwprERonXzQqZgUkcnRvEBAxbSlOYWRkKUwBZvwmMX8qZFVGHHQ1Xkrx"
+      },
+      {
+        "time": 1789373612551,
+        "userId": "Ucc18abd872eeb2825efa5241bb92bfa0",
+        "displayName": "Cliff Huang",
+        "pictureUrl": "https://profile.line-scdn.net/0hWPdJDRWECH9JMxS5Dq92QTljCxVqQlFtNlBOTS5kUh13Bk4qbVRCTHo6VUtzVh8qMVYUHnUwA0lrajBKOwsUQC40XxkpXSQqLCpba2BYBR0mUDZLJycDEQNbJkwLdEpyBgo8WwprERonXzQqZgUkcnRvEBAxbSlOYWRkKUwBZvwmMX8qZFVGHHQ1Xkrx"
+      },
       {
         "time": 1789371458807,
         "userId": "U515f3eafb608f3aada94b73067dcc156",
