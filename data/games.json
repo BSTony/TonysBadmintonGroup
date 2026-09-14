@@ -7865,7 +7865,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789392592184,
+    "lastActiveTime": 1789397707054,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7905,12 +7905,20 @@
           "阿伸",
           "腳皮",
           "Sample",
-          "牧森"
+          "牧森",
+          "Roger"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/14 22:55",
+        "name": "Roger",
+        "operator": "Roger C",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 21:29",
         "name": "Jet",
