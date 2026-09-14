@@ -7865,7 +7865,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789391239989,
+    "lastActiveTime": 1789392592184,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7875,8 +7875,7 @@
     "paidMap": {
       "謝東霖 Tony": true,
       "Kay": true,
-      "陳呈": true,
-      "Jet": true
+      "陳呈": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -7899,7 +7898,6 @@
           "謝東霖 Tony",
           "Kay",
           "陳呈",
-          "Jet",
           "Andrew Kuo",
           "楊程鈞",
           "Kevin",
@@ -7913,6 +7911,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/14 21:29",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 21:07",
         "name": "牧森",
