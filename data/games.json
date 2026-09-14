@@ -7892,7 +7892,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789342950076,
+    "lastActiveTime": 1789353388762,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7909,7 +7909,8 @@
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7950,12 +7951,20 @@
           "謝東霖 Tony",
           "Kay",
           "小可愛",
-          "Gary"
+          "Gary",
+          "陳呈"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/14 10:36",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/14 07:42",
         "name": "楊程鈞",
