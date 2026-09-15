@@ -7865,7 +7865,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789397707054,
+    "lastActiveTime": 1789459148495,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7884,7 +7884,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
-      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -7906,12 +7907,20 @@
           "腳皮",
           "Sample",
           "牧森",
-          "Roger"
+          "Roger",
+          "林淑惠Sophia"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/15 15:59",
+        "name": "林淑惠Sophia",
+        "operator": "林淑惠Sophia",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/14 22:55",
         "name": "Roger",
