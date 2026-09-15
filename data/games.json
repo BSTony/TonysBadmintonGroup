@@ -8012,7 +8012,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789460160978,
+    "lastActiveTime": 1789460400356,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8030,7 +8030,8 @@
       "YANG 阿傑": "Uc608f165fc93c9affa9b9d721d6d0efd",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8047,7 +8048,8 @@
           "JoeLin",
           "Kevin",
           "Mia",
-          "云"
+          "云",
+          "杜威霖 Andy"
         ]
       },
       {
@@ -8079,6 +8081,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/15 16:20",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/15 16:16",
         "name": "云",
