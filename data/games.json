@@ -8246,7 +8246,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789482157170,
-    "lastActiveTime": 1789482157170,
+    "lastActiveTime": 1789482897058,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8291,9 +8291,19 @@
           "Robert",
           "海棠",
           "周則鼎",
-          "偉舫"
+          "偉舫",
+          "Sean"
         ],
         "fee": "280"
+      }
+    ],
+    "history": [
+      {
+        "time": "09/15 22:34",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
