@@ -8021,7 +8021,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789460599955,
+    "lastActiveTime": 1789462543324,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8041,7 +8041,8 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
-      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38"
+      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8086,12 +8087,20 @@
           "Kay",
           "小可愛",
           "Gary",
-          "陳呈"
+          "陳呈",
+          "黃政豪"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/15 16:55",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/15 16:23",
         "name": "鈞",
