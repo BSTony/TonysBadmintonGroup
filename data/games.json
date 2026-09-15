@@ -7667,7 +7667,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789482867153,
+    "lastActiveTime": 1789482963478,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7738,14 +7738,20 @@
           "Matt孟錡",
           "Tank",
           "古書羽",
-          "Win Shu",
-          "Sean"
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/15 22:36",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/15 22:34",
         "name": "Sean",
