@@ -7667,7 +7667,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789534634962,
+    "lastActiveTime": 1789534654315,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7736,13 +7736,21 @@
           "FiFi",
           "Matt孟錡",
           "Tank",
-          "古書羽"
+          "古書羽",
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/16 12:57",
+        "name": "Win Shu",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/16 12:57",
         "name": "Win Shu",
