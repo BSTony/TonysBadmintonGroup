@@ -7932,7 +7932,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789462528021,
+    "lastActiveTime": 1789548634103,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7977,12 +7977,20 @@
           "牧森",
           "Roger",
           "林淑惠Sophia",
-          "黃政豪"
+          "黃政豪",
+          "宇軒"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/16 16:50",
+        "name": "宇軒",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/15 16:55",
         "name": "黃政豪",
