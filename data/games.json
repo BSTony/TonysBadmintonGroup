@@ -8112,7 +8112,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789568394822,
+    "lastActiveTime": 1789568400585,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8170,7 +8170,8 @@
           "楊程鈞",
           "Wang",
           "周哲儁",
-          "King"
+          "King",
+          "Alice"
         ]
       },
       {
@@ -8192,6 +8193,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/16 22:20",
+        "name": "Alice",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/16 22:19",
         "name": "King",
