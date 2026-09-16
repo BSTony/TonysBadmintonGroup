@@ -7940,7 +7940,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789548634103,
+    "lastActiveTime": 1789563449147,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7986,12 +7986,20 @@
           "Roger",
           "林淑惠Sophia",
           "黃政豪",
-          "宇軒"
+          "宇軒",
+          "FB 黃柏越"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/16 20:57",
+        "name": "FB 黃柏越",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/16 16:50",
         "name": "宇軒",
