@@ -8112,7 +8112,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789569913860,
+    "lastActiveTime": 1789572294051,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8172,7 +8172,8 @@
           "Wang",
           "周哲儁",
           "King",
-          "Alice"
+          "Alice",
+          "FB 冰山葉"
         ]
       },
       {
@@ -8195,6 +8196,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/16 23:24",
+        "name": "FB 冰山葉",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/16 22:45",
         "name": "弘彬/Jason",
