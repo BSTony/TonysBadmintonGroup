@@ -8074,7 +8074,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789462543324,
+    "lastActiveTime": 1789536055917,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8141,12 +8141,20 @@
           "小可愛",
           "Gary",
           "陳呈",
-          "黃政豪"
+          "黃政豪",
+          "FB Yuanlung Chang"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/16 13:20",
+        "name": "FB Yuanlung Chang",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/15 16:55",
         "name": "黃政豪",
