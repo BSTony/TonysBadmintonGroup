@@ -8112,7 +8112,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789536055917,
+    "lastActiveTime": 1789566586831,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8133,7 +8133,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
-      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
+      "Wang": "Ua803eeb7a6e406e3fab93ee1e322a7c6"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8164,7 +8165,8 @@
         "list": [
           "Andrew Kuo",
           "YANG 阿傑",
-          "楊程鈞"
+          "楊程鈞",
+          "Wang"
         ]
       },
       {
@@ -8186,6 +8188,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/16 21:49",
+        "name": "Wang",
+        "operator": "Wang",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/16 13:20",
         "name": "FB Yuanlung Chang",
