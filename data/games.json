@@ -8112,7 +8112,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789567230116,
+    "lastActiveTime": 1789568394822,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8135,7 +8135,8 @@
       "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "Wang": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
-      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8168,7 +8169,8 @@
           "YANG 阿傑",
           "楊程鈞",
           "Wang",
-          "周哲儁"
+          "周哲儁",
+          "King"
         ]
       },
       {
@@ -8190,6 +8192,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/16 22:19",
+        "name": "King",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/16 22:00",
         "name": "周哲儁",
