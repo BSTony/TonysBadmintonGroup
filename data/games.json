@@ -7672,7 +7672,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789548548289,
+    "lastActiveTime": 1789549427436,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7744,13 +7744,21 @@
           "Tank",
           "古書羽",
           "Win Shu",
-          "Edwardエドワード 에드워드 Ëd"
+          "Edwardエドワード 에드워드 Ëd",
+          "柚子"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/16 17:03",
+        "name": "柚子",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/16 16:49",
         "name": "Edwardエドワード 에드워드 Ëd",
