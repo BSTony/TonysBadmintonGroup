@@ -7672,7 +7672,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789573663301,
+    "lastActiveTime": 1789584302731,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7739,7 +7739,6 @@
           "Jack 友",
           "FiFi",
           "Matt孟錡",
-          "Tank",
           "古書羽",
           "Win Shu",
           "Edwardエドワード 에드워드 Ëd",
@@ -7750,6 +7749,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/17 02:45",
+        "name": "Tank",
+        "operator": "Tank Lin",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/16 23:47",
         "name": "周則鼎",
