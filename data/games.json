@@ -8123,7 +8123,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789572294051,
+    "lastActiveTime": 1789595914106,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8148,7 +8148,8 @@
       "Wang": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
-      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a"
+      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8184,7 +8185,8 @@
           "周哲儁",
           "King",
           "Alice",
-          "FB 冰山葉"
+          "FB 冰山葉",
+          "Sean柏宏"
         ]
       },
       {
@@ -8207,6 +8209,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/17 05:58",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/16 23:24",
         "name": "FB 冰山葉",
