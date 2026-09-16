@@ -7667,7 +7667,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789530377403,
+    "lastActiveTime": 1789534631264,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7737,14 +7737,20 @@
           "Matt孟錡",
           "Tank",
           "古書羽",
-          "Win Shu",
-          "afrahuang"
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/16 12:57",
+        "name": "afrahuang",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/16 11:46",
         "name": "曾Jim凱",
