@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-14
- * Version: 1.2.29
+ * Date: 2026-09-17
+ * Version: 1.2.32
  */
 let globalLobbyUsers = [];
 
@@ -38,8 +38,27 @@ async function loadLobbyUsers() {
   }
 }
 
+function disableBrowserCredentialSave(inputElement) {
+  if (!inputElement) return;
+  inputElement.setAttribute('autocomplete', 'off');
+  inputElement.setAttribute('autocorrect', 'off');
+  inputElement.setAttribute('autocapitalize', 'none');
+  inputElement.setAttribute('spellcheck', 'false');
+  inputElement.setAttribute('data-lpignore', 'true');
+  inputElement.setAttribute('data-1p-ignore', 'true');
+  inputElement.setAttribute('data-bwignore', 'true');
+  inputElement.setAttribute('data-form-type', 'other');
+  if (!inputElement.getAttribute('name') && inputElement.id) {
+    inputElement.setAttribute('name', inputElement.id);
+  }
+}
+
+function credentialSaveBlockAttrs(nameValue) {
+  return `autocomplete="off" name="${nameValue}" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-1p-ignore="true" data-form-type="other"`;
+}
+
 function setupAutocomplete(inputElement, avatarImg) {
-  inputElement.setAttribute('autocomplete', 'new-password');
+  disableBrowserCredentialSave(inputElement);
   
   let dropdown = document.createElement('div');
   dropdown.className = 'autocomplete-dropdown';
@@ -324,6 +343,7 @@ let globalManagedGroups = [];
 let globalLobbyTitle = '羽球接龍大廳';
 let currentGameDetailId = null;
 let lastGamesJson = '';
+let activeMinusOneDodge = null;
 let currentSimulatedRole = sessionStorage.getItem('simulatedRole') || 'superAdmin';
 let lastSystemLogKey = '';
 let lastSystemLogAt = 0;
@@ -399,9 +419,10 @@ function getLogProducerInfo(preferredName = '') {
 function reportSystemLog(title, errorMsg, extra) {
   try {
     const msg = String(errorMsg || '未知錯誤');
+    if (/以訪客模式顯示大廳|已略過重複登入跳轉|尚未拿到 LINE UID，快速重試|載入團購資料失敗|請先填寫姓名與電話|團購已關閉/.test(msg)) return;
     const key = String(title || '') + '|' + msg;
     const now = Date.now();
-    if (key === lastSystemLogKey && now - lastSystemLogAt < 3000) return;
+    if (key === lastSystemLogKey && now - lastSystemLogAt < 60000) return;
     lastSystemLogKey = key;
     lastSystemLogAt = now;
     
@@ -604,7 +625,6 @@ function startLiffLogin() {
   const cleanUri = url.toString();
   try {
     if (localStorage.getItem('gb_liff_skip_login') === '1') {
-      reportSystemLog('LIFF', '已略過重複登入跳轉', { cleanUri: cleanUri });
       return false;
     }
     localStorage.setItem('gb_liff_skip_login', '1');
@@ -702,25 +722,18 @@ async function finishLiffBoot(testParams, buyFromUrl) {
   
   if (buyFromUrl) {
     if (typeof hydrateGbBuyerFields === 'function') await hydrateGbBuyerFields();
-    if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
+    if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData({ forceDetail: true });
     if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
     if (typeof renderItemsGrid === 'function') renderItemsGrid();
     if (typeof updateCartBar === 'function') updateCartBar();
-    if (typeof saveCartToBackend === 'function' && currentCart && Object.keys(currentCart).length > 0) {
+    if (typeof saveCartToBackend === 'function' && currentCart && Object.keys(currentCart).length > 0 && currentGroupBuyData && currentGroupBuyData.active) {
       saveCartToBackend({ silent: true });
     }
   } else {
-    // 羽球接龍大廳：團購資料在背景非同步載入，絕不阻擋大廳開啟！
+    // 羽球接龍大廳：只背景載入團購列表（橫幅），關閉中的團購不要同步購物車或寫 LOG
     setTimeout(async () => {
       try {
-        if (typeof hydrateGbBuyerFields === 'function') await hydrateGbBuyerFields();
         if (typeof fetchGroupBuyData === 'function') await fetchGroupBuyData();
-        if (typeof restoreMyGroupBuyCart === 'function') restoreMyGroupBuyCart();
-        if (typeof renderItemsGrid === 'function') renderItemsGrid();
-        if (typeof updateCartBar === 'function') updateCartBar();
-        if (typeof saveCartToBackend === 'function' && currentCart && Object.keys(currentCart).length > 0) {
-          saveCartToBackend({ silent: true });
-        }
       } catch (e) { console.error('Background gb sync failed', e); }
     }, 20);
   }
@@ -1884,8 +1897,6 @@ async function initializeLiff() {
             const tokenPhone = idToken && (idToken.phone_number || idToken.phoneNumber);
             if (tokenPhone) currentUser.phoneNumber = tokenPhone;
           } catch (e) {}
-        } else {
-          reportSystemLog('LIFF', '以訪客模式顯示大廳，不強制登入跳轉', { buy: buyFromUrl || '', inClient: isLiffInClient() });
         }
         await finishLiffBoot(testParams, buyFromUrl);
         return;
@@ -1902,7 +1913,6 @@ async function initializeLiff() {
         }
         if (attempt < 2) {
           if (err && /略過 LINE 登入|避免重複 LINE/.test(String(err.message || err))) break;
-          reportSystemLog('LIFF', '尚未拿到 LINE UID，快速重試', { attempt: attempt, message: err && err.message ? err.message : String(err) });
           await new Promise(resolve => setTimeout(resolve, 150));
         }
       }
@@ -2098,6 +2108,7 @@ function isGameExpired(game) {
 
 
 document.addEventListener('click', (e) => {
+  if (activeMinusOneDodge) return;
   if (!e.target.closest('.btn-danger')) {
     document.querySelectorAll('.btn-danger').forEach(b => {
       if (b.dataset.dodged === 'true') {
@@ -2249,6 +2260,7 @@ function renderLobby(forceCards = true) {
     
     // 🚀 如果不需強制重算卡片，且卡片已經在畫面上，直接保留現有 DOM，絕不閃爍二次載入！
     if (!forceCards && gamesContainer && gamesContainer.children.length > 0) {
+      restoreMinusOneDodgeAfterRender();
       return;
     }
 
@@ -2256,6 +2268,7 @@ function renderLobby(forceCards = true) {
     
     if (gamesList.length === 0) {
       noGamesMsg.classList.remove('hidden');
+      restoreMinusOneDodgeAfterRender();
       return;
     }
     
@@ -2469,8 +2482,8 @@ function renderLobby(forceCards = true) {
               <div class="action-row" style="flex-wrap: wrap;">
                 <button type="button" class="btn btn-primary btn-square" ${(isFull || isExpired) && !effIsSuperAdmin ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
                 <button type="button" class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
-                <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
-                <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+                <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${credentialSaveBlockAttrs('player_nickname_' + game.gameId)} ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
+                <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="備註" ${credentialSaveBlockAttrs('player_note_' + game.gameId)} ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
               </div>
               <div id="error-msg-${game.gameId}" class="error-msg"></div>
             `;
@@ -2546,6 +2559,8 @@ function renderLobby(forceCards = true) {
     if (noGamesMsg && gamesContainer && gamesContainer.children.length === 0) {
       noGamesMsg.classList.remove('hidden');
     }
+  } finally {
+    restoreMinusOneDodgeAfterRender();
   }
 }
 
@@ -2838,8 +2853,8 @@ function renderDetail(gameId, preserveScroll = false) {
     <div class="action-row" style="flex-wrap: wrap; margin-top: ${isMultiSection ? '5px' : '15px'}; margin-bottom: 10px;">
       <button type="button" class="btn btn-primary btn-square" ${(isFullSingle || isExpired) && !effIsSuperAdmin ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
       <button type="button" class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
-      <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="請輸入暱稱" ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
-      <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="備註" ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
+      <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="請輸入暱稱" ${credentialSaveBlockAttrs('player_nickname_' + game.gameId + '_detail')} ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
+      <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="備註" ${credentialSaveBlockAttrs('player_note_' + game.gameId + '_detail')} ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
     </div>
     <div id="error-msg-${game.gameId}-detail" class="error-msg"></div>
   `;
@@ -2944,6 +2959,7 @@ function renderDetail(gameId, preserveScroll = false) {
   }
   historyHtml += '</div></div>';
   detailList.innerHTML += historyHtml;
+  restoreMinusOneDodgeAfterRender();
   
   // 顯示所有區段 (含候補)
   game.sections.forEach((sec, sIdx) => {
@@ -3086,6 +3102,8 @@ function renderDetail(gameId, preserveScroll = false) {
     if (detailList) {
       detailList.innerHTML = '<div class="error-msg" style="display:block">名單顯示失敗，請回大廳重新進入。</div>';
     }
+  } finally {
+    restoreMinusOneDodgeAfterRender();
   }
 }
 
@@ -3411,7 +3429,53 @@ function playPlusOneAnimation(btn) {
   }, 3000);
 }
 
-function playMinusOneDodgeAnimation(btn) {
+function findCancelButton(gameId, suffix = '') {
+  const input = document.getElementById(`name-input-${gameId}${suffix || ''}`);
+  if (input) {
+    const row = input.closest('.action-row');
+    if (row) {
+      const found = row.querySelector('button.btn-danger.btn-square');
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function clearActiveMinusOneDodge() {
+  if (!activeMinusOneDodge) return;
+  const { btn, floatingQuokka } = activeMinusOneDodge;
+  activeMinusOneDodge = null;
+  if (floatingQuokka) {
+    if (floatingQuokka._moveInterval) clearInterval(floatingQuokka._moveInterval);
+    if (floatingQuokka.parentNode) floatingQuokka.remove();
+  }
+  if (btn) {
+    btn.dataset.dodged = 'false';
+    btn.style.visibility = 'visible';
+    btn._floatingQuokka = null;
+  }
+}
+
+function restoreMinusOneDodgeAfterRender() {
+  if (!activeMinusOneDodge || activeMinusOneDodge.phase !== 'dodging') return;
+  const { gameId, suffix, floatingQuokka } = activeMinusOneDodge;
+  if (!floatingQuokka || !floatingQuokka.isConnected) {
+    activeMinusOneDodge = null;
+    return;
+  }
+  const newBtn = findCancelButton(gameId, suffix) || findCancelButton(gameId, '');
+  if (!newBtn) return;
+  newBtn.dataset.dodged = 'true';
+  newBtn.style.visibility = 'hidden';
+  newBtn._floatingQuokka = floatingQuokka;
+  activeMinusOneDodge.btn = newBtn;
+}
+
+function playMinusOneDodgeAnimation(btn, gameId, suffix = '') {
+  if (activeMinusOneDodge && activeMinusOneDodge.btn !== btn) {
+    clearActiveMinusOneDodge();
+  }
+
   btn.dataset.dodged = 'true';
   btn.style.visibility = 'hidden';
   
@@ -3451,20 +3515,32 @@ function playMinusOneDodgeAnimation(btn) {
   floatingQuokka._moveInterval = moveInterval;
   floatingQuokka._img = img;
   floatingQuokka._startPos = startPos;
+
+  activeMinusOneDodge = {
+    phase: 'dodging',
+    btn: btn,
+    gameId: gameId,
+    suffix: suffix || '',
+    floatingQuokka: floatingQuokka
+  };
   
   floatingQuokka.addEventListener('click', (e) => {
     e.stopPropagation();
-    btn._floatingQuokka = floatingQuokka;
-    btn.click();
+    const targetBtn = (activeMinusOneDodge && activeMinusOneDodge.btn) || btn;
+    if (!targetBtn) return;
+    targetBtn._floatingQuokka = floatingQuokka;
+    targetBtn.click();
   });
 }
 
 function playMinusOneCancelAnimation(btn) {
+  if (activeMinusOneDodge) activeMinusOneDodge.phase = 'returning';
   btn.dataset.dodged = 'false';
   
-  const floatingQuokka = btn._floatingQuokka;
+  const floatingQuokka = btn._floatingQuokka || (activeMinusOneDodge && activeMinusOneDodge.floatingQuokka);
   if (!floatingQuokka) {
     btn.style.visibility = 'visible';
+    if (activeMinusOneDodge) activeMinusOneDodge = null;
     return;
   }
   
@@ -3488,7 +3564,8 @@ function playMinusOneCancelAnimation(btn) {
       floatingQuokka.style.transform = 'translate(0px, 0px)';
       
       // 顯示真正的按鈕
-      btn.style.visibility = 'visible';
+      const visibleBtn = (activeMinusOneDodge && activeMinusOneDodge.btn) || btn;
+      if (visibleBtn) visibleBtn.style.visibility = 'visible';
       
       // 圖3 揮手哭泣
       getTransparentImage('images/quokka_cry.png', (src) => {
@@ -3499,6 +3576,9 @@ function playMinusOneCancelAnimation(btn) {
       
       setTimeout(() => {
         floatingQuokka.remove();
+        if (activeMinusOneDodge && activeMinusOneDodge.floatingQuokka === floatingQuokka) {
+          activeMinusOneDodge = null;
+        }
       }, 4000);
       
     }, 200);
@@ -3528,6 +3608,7 @@ async function triggerLiffNotification(msg) {
 
 function bindAllNameInputEnterHandlers() {
   document.querySelectorAll('input[id^="name-input-"], input[id^="level-input-"]').forEach(el => {
+    disableBrowserCredentialSave(el);
     if (el.dataset.enterBind === 'true') return;
     el.dataset.enterBind = 'true';
     const id = el.id || '';
@@ -3598,7 +3679,7 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
   
   if (action === 'cancel' && btn) {
     if (btn.dataset.dodged !== 'true') {
-      // 第 1 次按 -1：記錄到系統 LOG
+      // 第 1 次按 -1：立刻取消，同時播出袋鼠帶走按鈕
       fetch('/api/systemLogs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -3608,14 +3689,13 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
           producer: producerText,
           uid: operatorUid,
           source: clientSource,
-          errorMsg: `點選 -1 (第 1 次按 / 考慮中未確認) | 欲取消對象: ${name} | 操作者UID: ${operatorUid}`
+          errorMsg: `點選 -1 (第 1 次按 / 立即取消) | 欲取消對象: ${name} | 操作者UID: ${operatorUid}`
         })
       }).catch(() => {});
 
-      playMinusOneDodgeAnimation(btn);
-      return; // Stop actual cancellation
+      playMinusOneDodgeAnimation(btn, gameId, suffix);
     } else {
-      // 第 2 次按 -1：記錄到系統 LOG
+      // 第 2 次按袋鼠：只播放回歸/按下去/哭泣動畫，不再重複取消
       fetch('/api/systemLogs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -3625,14 +3705,16 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
           producer: producerText,
           uid: operatorUid,
           source: clientSource,
-          errorMsg: `點選 -1 (第 2 次按 / 執行確認) | 欲取消對象: ${name} | 操作者UID: ${operatorUid}`
+          errorMsg: `點選 -1 (第 2 次按 / 袋鼠確認動畫) | 欲取消對象: ${name} | 操作者UID: ${operatorUid}`
         })
       }).catch(() => {});
 
       playMinusOneCancelAnimation(btn);
+      return;
     }
   } else if (action === 'register') {
     // Reset all dodged buttons when +1 is clicked
+    clearActiveMinusOneDodge();
     document.querySelectorAll('button.btn-danger').forEach(b => {
       if (b.dataset.dodged === 'true') {
         b.dataset.dodged = 'false';
@@ -3720,15 +3802,16 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
         producer: producerText,
         uid: operatorUid,
         source: clientSource,
-        errorMsg: `點選 -1 取消失敗 (第 2 次按 / 名單中無此姓名: ${name}) | 操作者UID: ${operatorUid}`
+        errorMsg: `點選 -1 取消失敗 (名單中無此姓名: ${name}) | 操作者UID: ${operatorUid}`
       })
     }).catch(() => {});
     return;
   }
   
   // btn already declared at top of function — just use it
+  const lockBtn = !(action === 'cancel' && activeMinusOneDodge && activeMinusOneDodge.phase === 'dodging');
   try {
-    if (btn) {
+    if (btn && lockBtn) {
       btn.disabled = true;
       btn.dataset.originalText = btn.innerText;
       btn.innerText = '...';
@@ -3793,10 +3876,11 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
       alert(err.message || '操作失敗');
     }
   } finally {
-    if (btn) {
+    if (btn && lockBtn) {
       btn.disabled = false;
       btn.innerText = btn.dataset.originalText || btn.innerText;
     }
+    restoreMinusOneDodgeAfterRender();
   }
 }
 
@@ -4841,7 +4925,7 @@ document.getElementById('btn-submit-edit').onclick = async () => {
 };
 
 
-document.addEventListener('click', (e) => { if (!e.target.closest('.btn-danger')) { document.querySelectorAll('.btn-danger').forEach(b => { if (b.dataset.dodged === 'true') { b.dataset.dodged = 'false'; b.style.transition = 'transform 1s ease'; b.style.transform = 'translate(0px, 0px)'; } }); } });
+document.addEventListener('click', (e) => { if (activeMinusOneDodge) return; if (!e.target.closest('.btn-danger')) { document.querySelectorAll('.btn-danger').forEach(b => { if (b.dataset.dodged === 'true') { b.dataset.dodged = 'false'; b.style.transition = 'transform 1s ease'; b.style.transform = 'translate(0px, 0px)'; } }); } });
 
 // 大廳分析邏輯
 if (btnLobbyStats) {
@@ -5301,11 +5385,12 @@ async function loadSystemLogsView() {
     systemLogsContainer.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">讀取中...</p>';
   }
   try {
-    const currentUid = getSystemLogsUid();
+    const currentUid = getAdminRequestUid();
     const res = await withTimeout(fetch('/api/systemLogs?uid=' + encodeURIComponent(currentUid)), 15000, '系統 LOG 載入逾時');
-    if (!res.ok) throw new Error('無法讀取系統LOG');
-    const logs = await res.json();
-    renderSystemLogs(Array.isArray(logs) ? logs : []);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error((data && data.error) || '無法讀取系統LOG');
+    const logs = Array.isArray(data) ? data : [];
+    renderSystemLogs(logs);
     showAppView(systemLogsView);
   } catch (e) {
     if (systemLogsContainer) {
@@ -5320,7 +5405,7 @@ async function loadSystemLogsView() {
 
 async function deleteSystemLogs(payload, confirmMsg) {
   if (confirmMsg && !confirm(confirmMsg)) return null;
-  const currentUid = getSystemLogsUid();
+  const currentUid = getAdminRequestUid();
   const res = await fetch('/api/systemLogs/delete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -6841,6 +6926,7 @@ function saveCartToBackendSoon() {
 function flushGbCartSave() {
   clearTimeout(gbCartSaveTimer);
   gbCartSaveTimer = null;
+  if (!currentGroupBuyData || !currentGroupBuyData.active) return;
   if (currentCart && Object.keys(currentCart).length > 0) {
     saveCartToBackend({ silent: true });
   }
@@ -6965,7 +7051,27 @@ let currentSearchQuery = '';
 
 var allGroupBuysList = [];
 
-async function fetchGroupBuyData() {
+function isGroupBuyPageOpen() {
+  try {
+    return !!(groupBuyView && !groupBuyView.classList.contains('hidden'));
+  } catch (e) {
+    return false;
+  }
+}
+
+function wantsGroupBuyDetail(opts) {
+  opts = opts || {};
+  if (opts.forceDetail) return true;
+  if (isGroupBuyPageOpen()) return true;
+  try {
+    if (new URLSearchParams(window.location.search).get('buy')) return true;
+  } catch (e) {}
+  return false;
+}
+
+async function fetchGroupBuyData(opts) {
+  opts = opts || {};
+  const needDetail = wantsGroupBuyDetail(opts);
   try {
     const listRes = await fetch('/api/groupbuy_list');
     if (listRes.ok) {
@@ -6977,8 +7083,15 @@ async function fetchGroupBuyData() {
       }
     }
 
+    if (!needDetail) {
+      if (currentGroupBuyData && !(allGroupBuysList || []).some(gb => gb && gb.active)) {
+        currentGroupBuyData.active = false;
+      }
+      return;
+    }
+
     const targetGid = currentGid || 'default';
-    const res = await fetch(`/api/groupbuy/${targetGid}`);
+    const res = await fetch('/api/groupbuy/' + encodeURIComponent(targetGid));
     if (res.ok) {
       const result = await res.json();
       if (result.success) {
@@ -6988,7 +7101,6 @@ async function fetchGroupBuyData() {
     }
   } catch(e) {
     console.error('Fetch group buy data failed:', e);
-    reportSystemLog('團購資料', '載入團購資料失敗', { message: e && e.message ? e.message : String(e), gid: currentGid || 'default' });
   }
 }
 
@@ -7639,8 +7751,9 @@ function openItemDetail(item) {
 async function saveCartToBackend(opts) {
   opts = opts || {};
   const uid = (typeof getGbBuyerUid === 'function' && getGbBuyerUid()) || '';
-  if (!currentGroupBuyData) return;
+  if (!currentGroupBuyData || !currentGroupBuyData.active) return;
   if (!uid) {
+    if (opts.silent) return;
     const msg = '請先填寫姓名與電話，或等 LINE 登入完成後再按一次 +1';
     reportSystemLog('團購下單', msg, { gid: currentGid || 'default', cart: currentCart });
     alert(msg);
@@ -7667,7 +7780,7 @@ async function saveCartToBackend(opts) {
   }
   
   try {
-    const res = await fetch(`/api/groupbuy/${currentGid || 'default'}/order`, {
+    const res = await fetch('/api/groupbuy/' + encodeURIComponent(currentGid || 'default') + '/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -7682,15 +7795,24 @@ async function saveCartToBackend(opts) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.success) {
       const msg = data.error || '訂單沒有存到伺服器，請再按一次 +1';
-      reportSystemLog('團購下單', msg, { status: res.status, gid: currentGid || 'default', uid: uid, cart: currentCart });
-      alert(msg);
+      if (res.status === 403 || /團購已關閉/.test(msg)) {
+        if (currentGroupBuyData) currentGroupBuyData.active = false;
+        if (!opts.silent) alert(msg);
+        return;
+      }
+      if (!opts.silent) {
+        reportSystemLog('團購下單', msg, { status: res.status, gid: currentGid || 'default', uid: uid, cart: currentCart });
+        alert(msg);
+      }
       return;
     }
-    if (!opts.silent) await fetchGroupBuyData();
+    if (!opts.silent) await fetchGroupBuyData({ forceDetail: true });
   } catch(e) {
     console.error('發送訂單失敗:', e);
-    reportSystemLog('團購下單', '網路不穩，訂單可能沒存到', { message: e && e.message ? e.message : String(e), gid: currentGid || 'default', uid: uid, cart: currentCart });
-    alert('網路不穩，訂單可能沒存到，請再按一次 +1');
+    if (!opts.silent) {
+      reportSystemLog('團購下單', '網路不穩，訂單可能沒存到', { message: e && e.message ? e.message : String(e), gid: currentGid || 'default', uid: uid, cart: currentCart });
+      alert('網路不穩，訂單可能沒存到，請再按一次 +1');
+    }
   }
 }
 
@@ -8317,6 +8439,10 @@ function initGroupBuyEvents() {
   // 送出團購訂單
   if (btnSubmitGbOrder) {
     btnSubmitGbOrder.onclick = async () => {
+      if (!currentGroupBuyData || !currentGroupBuyData.active) {
+        alert('團購已關閉');
+        return;
+      }
       const name = gbUserName.value.trim();
       const phone = gbUserPhone.value.trim();
       if (!name || !phone) {
@@ -8351,8 +8477,11 @@ function initGroupBuyEvents() {
           renderItemsGrid();
           updateCartBar();
         } else {
-          reportSystemLog('團購結帳', data.error || '送出失敗', { gid: currentGid || 'default', cart: currentCart });
-          alert('送出失敗：' + data.error);
+          const errMsg = data.error || '送出失敗';
+          if (!/團購已關閉/.test(errMsg)) {
+            reportSystemLog('團購結帳', errMsg, { gid: currentGid || 'default', cart: currentCart });
+          }
+          alert('送出失敗：' + errMsg);
         }
       } catch(e) {
         reportSystemLog('團購結帳', '發送訂單失敗', { message: e && e.message ? e.message : String(e), gid: currentGid || 'default', cart: currentCart });

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-09-14
- * Version: 1.3.17
+ * Version: 1.3.18
  */
 const express = require('express');
 const compression = require('compression');
@@ -404,8 +404,23 @@ function overlayItemContentsFromCatalog(items) {
   return changed;
 }
 
+function looksLikePersonalGroupBuyGid(gid) {
+  if (!gid) return false;
+  const s = String(gid);
+  if (s === 'default' || s === 'all' || s === GROUPBUY_PROFILES_KEY) return false;
+  if (s.indexOf('gb_') === 0) return false;
+  if (s.indexOf('U_GUEST') === 0 || s.indexOf('P_') === 0 || s.indexOf('U_LOCAL') === 0) return true;
+  return s.charAt(0) === 'U';
+}
+
+function normalizeGroupBuyGid(gid) {
+  if (!gid || gid === GROUPBUY_PROFILES_KEY) return 'default';
+  if (looksLikePersonalGroupBuyGid(gid)) return 'default';
+  return String(gid);
+}
+
 function getGroupBuyInfo(gid) {
-  if (!gid || gid === GROUPBUY_PROFILES_KEY) gid = 'default';
+  gid = normalizeGroupBuyGid(gid);
   if (!groupBuyData[gid] || !Array.isArray(groupBuyData[gid].items) || groupBuyData[gid].items.length === 0) {
     const defaultData = groupBuyData['default'] || {};
     groupBuyData[gid] = {
@@ -1596,6 +1611,14 @@ function saveSystemLogs() {
   }
 }
 
+let lastRecordedSystemLogKey = '';
+let lastRecordedSystemLogAt = 0;
+
+function isNoisyClientSystemLog(title, errorMsg) {
+  const m = String(errorMsg || '');
+  return /以訪客模式顯示大廳|已略過重複登入跳轉|尚未拿到 LINE UID，快速重試|載入團購資料失敗|請先填寫姓名與電話|團購已關閉/.test(m);
+}
+
 function recordSystemLog(title, operator, msg, errObj, meta = {}) {
   try {
     let errDetailStr = '';
@@ -1615,6 +1638,11 @@ function recordSystemLog(title, operator, msg, errObj, meta = {}) {
     const clientIp = meta.ip || '';
     const source = meta.source || '';
     const uid = meta.uid || '';
+    const dedupeKey = `${title || ''}|${finalMsg}`;
+    const now = Date.now();
+    if (dedupeKey === lastRecordedSystemLogKey && now - lastRecordedSystemLogAt < 60000) return;
+    lastRecordedSystemLogKey = dedupeKey;
+    lastRecordedSystemLogAt = now;
     let producer = meta.producer;
     if (!producer) {
       if (uid) {
@@ -2419,12 +2447,14 @@ app.post('/api/groupbuy_profile', async (req, res) => {
 app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid;
   const { uid, userName, userPhone, userPictureUrl, items, paymentMethod, paymentNote, note, anonymous, replace } = req.body || {};
-  if (!uid || !userName) {
-    recordSystemLog('團購下單', userName || uid || '未知', `缺少必填資訊 gid=${gid} uid=${uid || '空'} name=${userName || '空'}`);
-    return res.status(400).json({ error: '請提供必填資訊' });
-  }
   try {
     const info = getGroupBuyInfo(gid);
+    if (!info || !info.active) {
+      return res.status(403).json({ success: false, error: '團購已關閉' });
+    }
+    if (!uid || !userName) {
+      return res.status(400).json({ success: false, error: '請提供必填資訊' });
+    }
     if (!info.orders) info.orders = {};
     let totalAmount = 0;
     const unknownIds = [];
@@ -6836,10 +6866,13 @@ app.post('/api/groupbuy/:gid/category/rename', async (req, res) => {
 app.post('/api/groupbuy/:gid/order', async (req, res) => {
   const gid = req.params.gid || 'default';
   const { uid, userName, userPhone, items, paymentMethod, paymentNote, note, anonymous } = req.body;
+  const gb = getGroupBuyInfo(gid);
+  if (!gb || !gb.active) {
+    return res.status(403).json({ success: false, error: '團購已關閉' });
+  }
   if (!uid || !userName) {
     return res.status(400).json({ success: false, error: '缺少使用者資訊' });
   }
-  const gb = getGroupBuyInfo(gid);
   if (!gb.orders) gb.orders = {};
   const orderKey = uid;
   const oldKey = findGroupBuyOrderKey(gb.orders, uid, userName, userPhone);
@@ -6929,6 +6962,9 @@ app.post('/api/systemLogs', (req, res) => {
   const { title, operator, errorMsg, context, producer, uid, source } = req.body || {};
   if (!errorMsg) {
     return res.status(400).json({ success: false, error: '缺少錯誤訊息' });
+  }
+  if (isNoisyClientSystemLog(title, errorMsg)) {
+    return res.json({ success: true, ignored: true });
   }
   let extra = '';
   if (context != null) {
