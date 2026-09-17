@@ -8131,7 +8131,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789595914106,
+    "lastActiveTime": 1789608775583,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8211,12 +8211,20 @@
           "陳呈",
           "黃政豪",
           "FB Yuanlung Chang",
-          "弘彬/Jason"
+          "弘彬/Jason",
+          "林立"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/17 09:32",
+        "name": "林立",
+        "operator": "林立 (輸入框)",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/17 05:58",
         "name": "Sean柏宏",
