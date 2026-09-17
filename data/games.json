@@ -8460,7 +8460,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789482157170,
-    "lastActiveTime": 1789625967044,
+    "lastActiveTime": 1789656899588,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8470,7 +8470,6 @@
       "憲": "派瑞-Perry"
     },
     "paidMap": {
-      "謝東霖 Tony": true,
       "Kay": true,
       "Ong": true,
       "憲": true,
@@ -8500,7 +8499,6 @@
         "backupLimit": 5,
         "label": "",
         "list": [
-          "謝東霖 Tony",
           "Kay",
           "Ong",
           "憲",
@@ -8516,6 +8514,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/17 22:54",
+        "name": "謝東霖 Tony",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/17 14:19",
         "name": "Sean",
