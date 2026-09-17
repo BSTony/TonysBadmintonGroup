@@ -7672,7 +7672,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789632002442,
+    "lastActiveTime": 1789640090083,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7741,7 +7741,6 @@
           "FiFi",
           "Matt孟錡",
           "古書羽",
-          "Win Shu",
           "Edwardエドワード 에드워드 Ëd",
           "柚子",
           "Mike"
@@ -7751,6 +7750,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/17 18:14",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/17 16:00",
         "name": "3智",
