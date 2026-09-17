@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4577,
+    "viewCount": 4578,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1318,9 +1318,22 @@
         "count": 1,
         "lastVisit": 1789604553557,
         "pictureUrl": "https://profile.line-scdn.net/0hT1PvS_QXCx59Dx8XGER1YQ1fCHReflIMWT5DLBoOAnsXbEtIV2lMKksIXCZEPRkaATlHfkwIUi9xHHx4Y1n3Kno_Vi9APklAV2FB_Q"
+      },
+      "U98b5504e0babe6e8636bd5589882b39d": {
+        "displayName": "3智",
+        "firstVisit": 1789631968984,
+        "count": 1,
+        "lastVisit": 1789631968984,
+        "pictureUrl": "https://profile.line-scdn.net/0h_PaTGYhpAH9MLRxEjLF-QTx9AxVvXFltMxxMGyl_XEcmTU97ZksbTXF5XxwkGEQqN0gcGn8pWx9uHhtyDh9HahteOz0WYQZOPSUMfHtQOBczSTpdDjwpZjp-DDovVgRAFjY4UColLjQieBAuFjMwYA8tLAk2G0NqJHpsKUkfbvwjL3cqYUtOHHErVkr0"
       }
     },
     "logs": [
+      {
+        "time": 1789631968984,
+        "userId": "U98b5504e0babe6e8636bd5589882b39d",
+        "displayName": "3智",
+        "pictureUrl": "https://profile.line-scdn.net/0h_PaTGYhpAH9MLRxEjLF-QTx9AxVvXFltMxxMGyl_XEcmTU97ZksbTXF5XxwkGEQqN0gcGn8pWx9uHhtyDh9HahteOz0WYQZOPSUMfHtQOBczSTpdDjwpZjp-DDovVgRAFjY4UColLjQieBAuFjMwYA8tLAk2G0NqJHpsKUkfbvwjL3cqYUtOHHErVkr0"
+      },
       {
         "time": 1789624148926,
         "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
@@ -13304,12 +13317,6 @@
         "userId": "U49e2484c80056990b759e9039a74e1a6",
         "displayName": "Kay",
         "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
-      },
-      {
-        "time": 1785545123862,
-        "userId": "U169c089d184f3be52ae8124893db17c1",
-        "displayName": "Rebecca",
-        "pictureUrl": "https://profile.line-scdn.net/0h8gosV8eeZ0hCCnhDoiwZdjJaZCJhez5aaG8ue38KbXsoOiFMamt4KSQJaX94P3AdZm18fiUDai1gaCNYaQdwfiNuZT82WGVVLx5wcS9wZB0oX0hMPRBxbS5JWH8DblRgDWhqZyxtMB80RUd4CCdQdXFrWiYhRGB3OF0LHkc4CcstCBAdb2wpK38MMX36"
       }
     ]
   },
