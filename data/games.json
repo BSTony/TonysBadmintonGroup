@@ -7672,7 +7672,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789048429467,
-    "lastActiveTime": 1789631975871,
+    "lastActiveTime": 1789632002442,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -7744,14 +7744,20 @@
           "Win Shu",
           "Edwardエドワード 에드워드 Ëd",
           "柚子",
-          "Mike",
-          "3智"
+          "Mike"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/17 16:00",
+        "name": "3智",
+        "operator": "3智",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/17 15:59",
         "name": "3智",
