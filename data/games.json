@@ -8420,7 +8420,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789482157170,
-    "lastActiveTime": 1789535553677,
+    "lastActiveTime": 1789625967044,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8468,7 +8468,6 @@
           "海棠",
           "周則鼎",
           "偉舫",
-          "Sean",
           "Jet",
           "afrahuang",
           "凱文"
@@ -8477,6 +8476,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/17 14:19",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/16 13:12",
         "name": "凱文",
