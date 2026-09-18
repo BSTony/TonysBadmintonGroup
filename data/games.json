@@ -7991,7 +7991,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789703384265,
+    "lastActiveTime": 1789706536876,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8043,12 +8043,20 @@
           "FB 林昱君",
           "FB YuJie Wang1",
           "FB YuJie Wang2",
-          "卡比"
+          "卡比",
+          "Amber"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/18 12:42",
+        "name": "Amber",
+        "operator": "卡比",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 11:49",
         "name": "卡比",
