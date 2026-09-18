@@ -8607,7 +8607,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789693506497,
+    "lastActiveTime": 1789694696291,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8665,13 +8665,19 @@
           "©️張CC～©️",
           "陳呈",
           "江こう 洋々",
-          "林煥杰",
-          "Mike"
+          "林煥杰"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 09:24",
+        "name": "Mike",
+        "operator": "李智揚 Mike",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 09:05",
         "name": "Mike",
