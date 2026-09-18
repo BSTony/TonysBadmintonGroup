@@ -7991,7 +7991,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789689862644,
+    "lastActiveTime": 1789689870924,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8040,12 +8040,20 @@
           "宇軒",
           "FB 黃柏越",
           "FB 林昱君",
-          "FB YuJie Wang1"
+          "FB YuJie Wang1",
+          "FB YuJie Wang2"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/18 08:04",
+        "name": "FB YuJie Wang2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 08:04",
         "name": "FB YuJie Wang1",
