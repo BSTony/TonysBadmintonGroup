@@ -8623,7 +8623,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789694704776,
+    "lastActiveTime": 1789701666106,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8683,12 +8683,20 @@
           "陳呈",
           "江こう 洋々",
           "林煥杰",
-          "李智揚 Mike"
+          "李智揚 Mike",
+          "凱文"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 11:21",
+        "name": "凱文",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 09:25",
         "name": "李智揚 Mike",
