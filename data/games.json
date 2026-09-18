@@ -8656,7 +8656,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789702693312,
+    "lastActiveTime": 1789705755009,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8719,12 +8719,20 @@
           "李智揚 Mike",
           "凱文",
           "小白",
-          "蘑菇"
+          "蘑菇",
+          "心平"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 12:29",
+        "name": "心平",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 11:38",
         "name": "蘑菇",
