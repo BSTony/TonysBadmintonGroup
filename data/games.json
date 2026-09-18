@@ -8607,7 +8607,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789690357393,
+    "lastActiveTime": 1789691650123,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8640,7 +8640,8 @@
       "郭岳翰John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8663,12 +8664,20 @@
           "郭岳翰John",
           "©️張CC～©️",
           "陳呈",
-          "江こう 洋々"
+          "江こう 洋々",
+          "林煥杰"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 08:34",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 08:12",
         "name": "江こう 洋々",
