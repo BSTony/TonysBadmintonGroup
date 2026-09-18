@@ -7991,7 +7991,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789707826208,
+    "lastActiveTime": 1789716069031,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8014,7 +8014,8 @@
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "卡比": "Ufb12bb922c93c69d206c9a6fc3b07510",
-      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8046,12 +8047,20 @@
           "FB YuJie Wang2",
           "卡比",
           "Amber",
-          "Sammy Su"
+          "Sammy Su",
+          "©️張CC～©️"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/18 15:21",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 13:03",
         "name": "Sammy Su",
