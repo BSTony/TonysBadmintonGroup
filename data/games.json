@@ -8690,7 +8690,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789712445091,
+    "lastActiveTime": 1789714372160,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8760,12 +8760,20 @@
           "Win Shu",
           "Emily🙈🙉🙊",
           "winnie",
-          "Timmon"
+          "Timmon",
+          "Chi"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 14:52",
+        "name": "Chi",
+        "operator": "Winnie",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 14:20",
         "name": "Timmon",
