@@ -8196,7 +8196,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789701775173,
+    "lastActiveTime": 1789703592650,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8260,7 +8260,8 @@
           "Alice",
           "FB 冰山葉",
           "FB 周容而",
-          "hsin"
+          "hsin",
+          "FB Frank"
         ]
       },
       {
@@ -8286,6 +8287,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/18 11:53",
+        "name": "FB Frank",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/18 11:22",
         "name": "hsin",
