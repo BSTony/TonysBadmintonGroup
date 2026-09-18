@@ -8607,7 +8607,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789691650123,
+    "lastActiveTime": 1789692557154,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8665,12 +8665,20 @@
           "©️張CC～©️",
           "陳呈",
           "江こう 洋々",
-          "林煥杰"
+          "林煥杰",
+          "test"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 08:49",
+        "name": "test",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 08:34",
         "name": "林煥杰",
