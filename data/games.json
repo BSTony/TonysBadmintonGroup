@@ -7991,7 +7991,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789716077445,
+    "lastActiveTime": 1789735222815,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8047,12 +8047,20 @@
           "FB YuJie Wang2",
           "卡比",
           "Amber",
-          "Sammy Su"
+          "Sammy Su",
+          "FB 吳昱緯"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/18 20:40",
+        "name": "FB 吳昱緯",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 15:21",
         "name": "©️張CC～©️",
