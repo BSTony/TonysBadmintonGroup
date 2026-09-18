@@ -8187,7 +8187,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789701726568,
+    "lastActiveTime": 1789701775173,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8250,7 +8250,8 @@
           "King",
           "Alice",
           "FB 冰山葉",
-          "FB 周容而"
+          "FB 周容而",
+          "hsin"
         ]
       },
       {
@@ -8276,6 +8277,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/18 11:22",
+        "name": "hsin",
+        "operator": "hsin (輸入框)",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/18 11:22",
         "name": "FB 周容而",
