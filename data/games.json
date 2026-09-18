@@ -8213,7 +8213,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789703592650,
+    "lastActiveTime": 1789709685631,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8239,7 +8239,8 @@
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
-      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8278,7 +8279,8 @@
           "FB 冰山葉",
           "FB 周容而",
           "hsin",
-          "FB Frank"
+          "FB Frank",
+          "Tank Lin"
         ]
       },
       {
@@ -8304,6 +8306,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/18 13:34",
+        "name": "Tank Lin",
+        "operator": "Tank Lin",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/18 11:53",
         "name": "FB Frank",
