@@ -7991,7 +7991,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789188357683,
-    "lastActiveTime": 1789716069031,
+    "lastActiveTime": 1789716077445,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8047,13 +8047,19 @@
           "FB YuJie Wang2",
           "卡比",
           "Amber",
-          "Sammy Su",
-          "©️張CC～©️"
+          "Sammy Su"
         ],
         "fee": "250"
       }
     ],
     "history": [
+      {
+        "time": "09/18 15:21",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 15:21",
         "name": "©️張CC～©️",
