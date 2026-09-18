@@ -8639,7 +8639,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789701666106,
+    "lastActiveTime": 1789702687406,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8700,12 +8700,20 @@
           "江こう 洋々",
           "林煥杰",
           "李智揚 Mike",
-          "凱文"
+          "凱文",
+          "小白"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 11:38",
+        "name": "小白",
+        "operator": "小白 (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 11:21",
         "name": "凱文",
