@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-14
- * Version: 1.3.18
+ * Date: 2026-09-18
+ * Version: 1.3.19
  */
 const express = require('express');
 const compression = require('compression');
@@ -5141,11 +5141,16 @@ app.post('/api/action', express.json(), async (req, res) => {
       if (!isAdmin) {
         return res.status(403).json({ error: '只有管理員能修改繳費狀態' });
       }
+      let paidFound = false;
       for (let i = 0; i < game.sections.length; i++) {
           if (game.sections[i].list.includes(name)) {
               affectedSectionName = game.sections[i].title;
+              paidFound = true;
               break;
           }
+      }
+      if (!paidFound) {
+        return res.status(400).json({ error: '名單中找不到此人，無法更新繳費' });
       }
       game.paidMap = game.paidMap || {};
       game.paidMap[name] = !game.paidMap[name];

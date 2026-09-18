@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-17
- * Version: 1.2.32
+ * Date: 2026-09-18
+ * Version: 1.2.33
  */
 let globalLobbyUsers = [];
 
@@ -2982,7 +2982,7 @@ function renderDetail(gameId, preserveScroll = false) {
         let paidHtml = '';
         if (canCancel) {
           if (effIsAdmin) {
-            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
+            paidHtml = `<button type="button" class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid(${onclickStrArg(game.gameId)}, ${onclickStrArg(name)})">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
           } else if (isPaid) {
             paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
           }
@@ -2993,7 +2993,7 @@ function renderDetail(gameId, preserveScroll = false) {
         let noteHtml = '';
         if (canCancel) {
           if (canEditNote) {
-            noteHtml = `<button class="note-btn ${noteVal ? 'has-note' : ''}" onclick="handleEditNote('${game.gameId}', '${escapeHTML(name)}')">${noteVal ? escapeHTML(noteVal) : '📝 備註'}</button>`;
+            noteHtml = `<button type="button" class="note-btn ${noteVal ? 'has-note' : ''}" onclick="handleEditNote(${onclickStrArg(game.gameId)}, ${onclickStrArg(name)})">${noteVal ? escapeHTML(noteVal) : '📝 備註'}</button>`;
           } else if (noteVal) {
             noteHtml = `<span class="note-badge">${escapeHTML(noteVal)}</span>`;
           }
@@ -3018,7 +3018,7 @@ function renderDetail(gameId, preserveScroll = false) {
             <div class="list-name ${isMe ? 'me' : ''}">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
             ${noteHtml}
-            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
+            ${(canCancel && !isGameExpired(game)) ? `<button type="button" class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName(${onclickStrArg(game.gameId)}, ${onclickStrArg(name)})">❌</button>` : ''}
           </div>
         `;
       }
@@ -3041,7 +3041,7 @@ function renderDetail(gameId, preserveScroll = false) {
         let paidHtml = '';
         if (canCancel) {
           if (effIsAdmin) {
-            paidHtml = `<button class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid('${game.gameId}', '${escapeHTML(name)}')">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
+            paidHtml = `<button type="button" class="paid-btn ${isPaid ? 'paid' : ''}" onclick="handleTogglePaid(${onclickStrArg(game.gameId)}, ${onclickStrArg(name)})">${isPaid ? '💰 已繳費' : '⬜ 未繳費'}</button>`;
           } else if (isPaid) {
             paidHtml = `<span class="paid-badge">💰 已繳費</span>`;
           }
@@ -3052,7 +3052,7 @@ function renderDetail(gameId, preserveScroll = false) {
         let noteHtml = '';
         if (canCancel) {
           if (canEditNote) {
-            noteHtml = `<button class="note-btn ${noteVal ? 'has-note' : ''}" onclick="handleEditNote('${game.gameId}', '${escapeHTML(name)}')">${noteVal ? escapeHTML(noteVal) : '📝 備註'}</button>`;
+            noteHtml = `<button type="button" class="note-btn ${noteVal ? 'has-note' : ''}" onclick="handleEditNote(${onclickStrArg(game.gameId)}, ${onclickStrArg(name)})">${noteVal ? escapeHTML(noteVal) : '📝 備註'}</button>`;
           } else if (noteVal) {
             noteHtml = `<span class="note-badge">${escapeHTML(noteVal)}</span>`;
           }
@@ -3077,7 +3077,7 @@ function renderDetail(gameId, preserveScroll = false) {
             <div class="list-name ${isMe ? 'me' : ''}" style="color: #666;">${escapeHTML(displayName)}${levelStr}</div>
             ${paidHtml}
             ${noteHtml}
-            ${(canCancel && !isGameExpired(game)) ? `<button class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName('${game.gameId}', '${escapeHTML(name)}')">❌</button>` : ''}
+            ${(canCancel && !isGameExpired(game)) ? `<button type="button" class="btn-icon" style="color:var(--danger-color); padding: 4px; margin: 0; font-size: 16px;" onclick="handleCancelByName(${onclickStrArg(game.gameId)}, ${onclickStrArg(name)})">❌</button>` : ''}
           </div>
         `;
       }
@@ -3203,6 +3203,30 @@ function escapeHTML(str) {
       '"': '&quot;'
     }[tag] || tag)
   );
+}
+
+function onclickStrArg(value) {
+  return `decodeURIComponent('${encodeURIComponent(String(value ?? ''))}')`;
+}
+
+function getActionRequestUid() {
+  if (typeof getAdminRequestUid === 'function') {
+    const adminUid = getAdminRequestUid();
+    if (adminUid) return adminUid;
+  }
+  if (currentUser && currentUser.userId) return currentUser.userId;
+  if (typeof getOrCreateGuestUid === 'function') return getOrCreateGuestUid();
+  return '';
+}
+
+async function readJsonResponse(res) {
+  const text = await res.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error(res.ok ? '伺服器回傳格式錯誤' : `伺服器錯誤 (${res.status})`);
+  }
 }
 
 // 靜默重新整理資料 (不顯示 loading)
@@ -3888,10 +3912,19 @@ window.handleActionWithInput = handleActionWithInput;
 
 
 async function handleTogglePaid(gameId, name) {
+  const prodInfo = (typeof getLogProducerInfo === 'function') ? getLogProducerInfo(name) : { displayName: (currentUser && currentUser.displayName) || '管理員', userId: '', producerText: '', source: '' };
+  const uid = getActionRequestUid() || prodInfo.userId || '';
+  if (!uid) {
+    alert('找不到登入身分，請重新整理後再標記繳費');
+    return;
+  }
+
   try {
-    appDiv.className = 'loading';
-    statusMsg.style.display = 'block';
-    statusMsg.innerText = '更新中...';
+    if (appDiv) appDiv.className = 'loading';
+    if (statusMsg) {
+      statusMsg.style.display = 'block';
+      statusMsg.innerText = '更新中...';
+    }
     
     const res = await fetch('/api/action', {
       method: 'POST',
@@ -3899,27 +3932,36 @@ async function handleTogglePaid(gameId, name) {
       body: JSON.stringify({
         gid: currentGroupId,
         gameId: gameId,
-        uid: currentUser.userId,
+        uid: uid,
         name: name,
-        action: 'togglePaid'
+        operatorName: prodInfo.displayName,
+        producer: prodInfo.producerText,
+        source: prodInfo.source,
+        action: 'togglePaid',
+        clientSupportsLiffSendMessage: isLiffInClient()
       })
     });
     
-    const result = await res.json();
+    const result = await readJsonResponse(res);
     if (!res.ok) {
-      alert(result.error || '發生錯誤');
+      alert(result.error || '更新繳費狀態失敗');
       await loadGamesLobby();
       return;
     }
     
     const idx = gamesList.findIndex(g => g.gameId === gameId);
-    if (idx !== -1) gamesList[idx] = result.game;
+    if (idx !== -1 && result.game) gamesList[idx] = result.game;
     renderDetail(gameId, true);
     
   } catch (err) {
     console.error(err);
-    alert('網路錯誤，請稍後再試');
+    const msg = (err && err.message) ? String(err.message) : '';
+    const isNetwork = /failed to fetch|networkerror|load failed|network error/i.test(msg);
+    alert(isNetwork || !msg ? '網路錯誤，請稍後再試' : `更新繳費狀態失敗：${msg}`);
     await loadGamesLobby();
+  } finally {
+    if (appDiv) appDiv.className = '';
+    if (statusMsg) statusMsg.style.display = 'none';
   }
 }
 
@@ -3938,20 +3980,25 @@ async function handleEditNote(gameId, name) {
       statusMsg.innerText = '更新備註中...';
     }
     
+    const uid = getActionRequestUid();
+    const operatorName = (currentUser && currentUser.displayName) || '';
+    
     const res = await fetch('/api/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         gid: currentGroupId,
         gameId: gameId,
-        uid: currentUser.userId,
+        uid: uid,
         name: name,
+        operatorName: operatorName,
         action: 'updateNote',
-        note: newNote.trim()
+        note: newNote.trim(),
+        clientSupportsLiffSendMessage: isLiffInClient()
       })
     });
     
-    const result = await res.json();
+    const result = await readJsonResponse(res);
     if (!res.ok) {
       alert(result.error || '發生錯誤');
       await loadGamesLobby();
@@ -3959,12 +4006,17 @@ async function handleEditNote(gameId, name) {
     }
     
     const idx = gamesList.findIndex(g => g.gameId === gameId);
-    if (idx !== -1) gamesList[idx] = result.game;
+    if (idx !== -1 && result.game) gamesList[idx] = result.game;
     renderDetail(gameId, true);
   } catch (err) {
     console.error(err);
-    alert('網路錯誤，請稍後再試');
+    const msg = (err && err.message) ? String(err.message) : '';
+    const isNetwork = /failed to fetch|networkerror|load failed|network error/i.test(msg);
+    alert(isNetwork || !msg ? '網路錯誤，請稍後再試' : `更新備註失敗：${msg}`);
     await loadGamesLobby();
+  } finally {
+    if (appDiv) appDiv.className = '';
+    if (statusMsg) statusMsg.style.display = 'none';
   }
 }
 
@@ -3978,22 +4030,27 @@ window.handleReorder = async function(gameId, fromIdx, toIdx, sectionIdx = 0) {
     statusMsg.style.display = 'block';
     statusMsg.innerText = '更新順序中...';
     
+    const uid = getActionRequestUid();
+    const operatorName = (currentUser && currentUser.displayName) || '';
+    
     const res = await fetch('/api/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         gid: currentGroupId,
         gameId: gameId,
-        uid: currentUser.userId,
-        name: currentUser.displayName,
+        uid: uid,
+        name: operatorName || '管理員',
+        operatorName: operatorName,
         action: 'reorder',
         fromIdx: fromIdx,
         toIdx: toIdx,
-        sectionIdx: sectionIdx
+        sectionIdx: sectionIdx,
+        clientSupportsLiffSendMessage: isLiffInClient()
       })
     });
     
-    const result = await res.json();
+    const result = await readJsonResponse(res);
     if (!res.ok) {
       alert(result.error || '發生錯誤');
       await loadGamesLobby();
