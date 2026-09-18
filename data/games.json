@@ -8639,7 +8639,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789702687406,
+    "lastActiveTime": 1789702693312,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8701,12 +8701,20 @@
           "林煥杰",
           "李智揚 Mike",
           "凱文",
-          "小白"
+          "小白",
+          "蘑菇"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 11:38",
+        "name": "蘑菇",
+        "operator": "蘑菇 (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 11:38",
         "name": "小白",
