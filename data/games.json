@@ -8213,7 +8213,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789709685631,
+    "lastActiveTime": 1789710319931,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8259,7 +8259,8 @@
           "Mia",
           "云",
           "杜威霖 Andy",
-          "鈞"
+          "鈞",
+          "登"
         ]
       },
       {
@@ -8306,6 +8307,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/18 13:45",
+        "name": "登",
+        "operator": "登登登登～",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/18 13:34",
         "name": "Tank Lin",
