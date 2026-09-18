@@ -8705,7 +8705,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789714372160,
+    "lastActiveTime": 1789716748584,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8776,12 +8776,20 @@
           "Emily🙈🙉🙊",
           "winnie",
           "Timmon",
-          "Chi"
+          "Chi",
+          "柚子"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 15:32",
+        "name": "柚子",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 14:52",
         "name": "Chi",
