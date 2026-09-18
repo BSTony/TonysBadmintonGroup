@@ -8682,7 +8682,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789705755009,
+    "lastActiveTime": 1789709714461,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8717,7 +8717,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
-      "李智揚 Mike": "U9797aabca4e9dbd9b5227c37b6eeace1"
+      "李智揚 Mike": "U9797aabca4e9dbd9b5227c37b6eeace1",
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8746,12 +8747,20 @@
           "凱文",
           "小白",
           "蘑菇",
-          "心平"
+          "心平",
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/18 13:35",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 12:29",
         "name": "心平",
