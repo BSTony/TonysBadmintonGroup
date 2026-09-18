@@ -8187,7 +8187,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789608775583,
+    "lastActiveTime": 1789690014633,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8249,8 +8249,7 @@
           "周哲儁",
           "King",
           "Alice",
-          "FB 冰山葉",
-          "Sean柏宏"
+          "FB 冰山葉"
         ]
       },
       {
@@ -8274,6 +8273,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/18 08:06",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "-1",
+        "section": "10-12"
+      },
       {
         "time": "09/17 09:32",
         "name": "林立",
