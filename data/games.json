@@ -8187,7 +8187,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789698012545,
+    "lastActiveTime": 1789698023856,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8268,12 +8268,20 @@
           "FB Yuanlung Chang",
           "弘彬/Jason",
           "林立",
-          "JOJO1"
+          "JOJO1",
+          "JOJO2"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/18 10:20",
+        "name": "JOJO2",
+        "operator": "JOJO👆✌️🖖🤘👐💪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/18 10:20",
         "name": "JOJO1",
