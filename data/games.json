@@ -8187,7 +8187,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789698023856,
+    "lastActiveTime": 1789701726568,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8249,7 +8249,8 @@
           "周哲儁",
           "King",
           "Alice",
-          "FB 冰山葉"
+          "FB 冰山葉",
+          "FB 周容而"
         ]
       },
       {
@@ -8275,6 +8276,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/18 11:22",
+        "name": "FB 周容而",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/18 10:20",
         "name": "JOJO2",
