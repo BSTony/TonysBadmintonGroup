@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789822115051,
+    "lastActiveTime": 1789825930731,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8265,7 +8265,8 @@
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "謝弘傑": "U8ecbb1daa2fcb8fb206b82c29052da1e",
-      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8326,12 +8327,20 @@
           "林立",
           "JOJO1",
           "JOJO2",
-          "Sammy Su"
+          "Sammy Su",
+          "Chen H.R."
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 21:52",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/19 20:48",
         "name": "Sammy Su",
