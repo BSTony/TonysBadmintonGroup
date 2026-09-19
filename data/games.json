@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789821134352,
+    "lastActiveTime": 1789822115051,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8264,7 +8264,8 @@
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
-      "謝弘傑": "U8ecbb1daa2fcb8fb206b82c29052da1e"
+      "謝弘傑": "U8ecbb1daa2fcb8fb206b82c29052da1e",
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8324,12 +8325,20 @@
           "弘彬/Jason",
           "林立",
           "JOJO1",
-          "JOJO2"
+          "JOJO2",
+          "Sammy Su"
         ]
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 20:48",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/19 20:32",
         "name": "黃政豪",
