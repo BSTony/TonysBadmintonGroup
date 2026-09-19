@@ -8799,7 +8799,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789778119860,
+    "lastActiveTime": 1789825664172,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8835,7 +8835,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "李智揚 Mike": "U9797aabca4e9dbd9b5227c37b6eeace1",
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
-      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+      "Dylan L": "U5188f7b1380f9b687655e4806fd43f2b"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8870,12 +8871,20 @@
           "Timmon",
           "Chi",
           "柚子",
-          "阿豪"
+          "阿豪",
+          "Dylan L"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/19 21:47",
+        "name": "Dylan L",
+        "operator": "Dylan L",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/19 08:35",
         "name": "阿豪",
