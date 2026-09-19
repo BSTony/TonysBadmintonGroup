@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789786483203,
+    "lastActiveTime": 1789791238525,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8280,7 +8280,6 @@
           "JoeLin",
           "Kevin",
           "Mia",
-          "云",
           "杜威霖 Andy",
           "鈞",
           "登"
@@ -8332,6 +8331,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 12:13",
+        "name": "云",
+        "operator": "鄭人云",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "09/19 10:54",
         "name": "流浪貓",
