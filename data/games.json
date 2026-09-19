@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789862358252,
+    "lastActiveTime": 1789862360554,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8244,7 +8244,9 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "林煥杰": true
+      "林煥杰": true,
+      "ALAN LIU": true,
+      "JoeLin": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
