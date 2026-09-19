@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789796799846,
+    "lastActiveTime": 1789796802110,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8298,7 +8298,6 @@
           "楊程鈞",
           "Wang",
           "周哲儁",
-          "Alice",
           "FB 冰山葉",
           "FB 周容而",
           "hsin",
@@ -8330,6 +8329,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 13:46",
+        "name": "Alice",
+        "operator": "King",
+        "action": "-1",
+        "section": "10-12"
+      },
       {
         "time": "09/19 13:46",
         "name": "King",
