@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789793149032,
+    "lastActiveTime": 1789795818540,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8304,7 +8304,6 @@
           "FB 周容而",
           "hsin",
           "FB Frank",
-          "Tank Lin",
           "Jenny",
           "流浪貓"
         ]
@@ -8332,6 +8331,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 13:30",
+        "name": "Tank Lin",
+        "operator": "Tank Lin",
+        "action": "-1",
+        "section": "10-12"
+      },
       {
         "time": "09/19 12:45",
         "name": "FB 曾翔順",
