@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789784353838,
+    "lastActiveTime": 1789786483203,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8305,7 +8305,8 @@
           "hsin",
           "FB Frank",
           "Tank Lin",
-          "Jenny"
+          "Jenny",
+          "流浪貓"
         ]
       },
       {
@@ -8331,6 +8332,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 10:54",
+        "name": "流浪貓",
+        "operator": "仁世觀-李佳豪🏸",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/19 10:19",
         "name": "Jenny",
