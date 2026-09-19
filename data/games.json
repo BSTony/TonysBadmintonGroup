@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789809088249,
+    "lastActiveTime": 1789810011656,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8285,8 +8285,7 @@
           "鈞",
           "登",
           "FB 曾翔順",
-          "謝弘傑",
-          "FB North Huang"
+          "謝弘傑"
         ]
       },
       {
@@ -8332,6 +8331,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 17:26",
+        "name": "FB North Huang",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "09/19 17:11",
         "name": "FB North Huang",
