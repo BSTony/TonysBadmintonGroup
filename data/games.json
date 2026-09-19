@@ -8713,7 +8713,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789716801283,
+    "lastActiveTime": 1789778119860,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8783,12 +8783,20 @@
           "winnie",
           "Timmon",
           "Chi",
-          "柚子"
+          "柚子",
+          "阿豪"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/19 08:35",
+        "name": "阿豪",
+        "operator": "Wayne",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/18 15:33",
         "name": "陳呈",
