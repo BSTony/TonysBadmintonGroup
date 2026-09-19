@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789791238525,
+    "lastActiveTime": 1789793149032,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8282,7 +8282,8 @@
           "Mia",
           "杜威霖 Andy",
           "鈞",
-          "登"
+          "登",
+          "FB 曾翔順"
         ]
       },
       {
@@ -8331,6 +8332,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 12:45",
+        "name": "FB 曾翔順",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/19 12:13",
         "name": "云",
