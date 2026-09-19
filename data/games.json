@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789825930731,
+    "lastActiveTime": 1789857858775,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8321,7 +8321,6 @@
           "Kay",
           "小可愛",
           "Gary",
-          "陳呈",
           "FB Yuanlung Chang",
           "弘彬/Jason",
           "林立",
@@ -8334,6 +8333,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/20 06:44",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "09/19 21:52",
         "name": "Chen H.R.",
