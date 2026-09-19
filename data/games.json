@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789796802110,
+    "lastActiveTime": 1789798288480,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8263,7 +8263,8 @@
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
-      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
+      "謝弘傑": "U8ecbb1daa2fcb8fb206b82c29052da1e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8283,7 +8284,8 @@
           "杜威霖 Andy",
           "鈞",
           "登",
-          "FB 曾翔順"
+          "FB 曾翔順",
+          "謝弘傑"
         ]
       },
       {
@@ -8329,6 +8331,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 14:11",
+        "name": "謝弘傑",
+        "operator": "謝弘傑",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/19 13:46",
         "name": "Alice",
