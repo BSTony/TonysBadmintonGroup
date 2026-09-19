@@ -8236,14 +8236,16 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789857858775,
+    "lastActiveTime": 1789862358252,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {},
-    "paidMap": {},
+    "paidMap": {
+      "林煥杰": true
+    },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
