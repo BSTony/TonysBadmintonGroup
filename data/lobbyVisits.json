@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 4712,
+    "viewCount": 4715,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -290,8 +290,8 @@
       "U2ea89b78f1546c61adda03c7dd8704d5": {
         "displayName": "賴柚子",
         "firstVisit": 1783341633415,
-        "count": 63,
-        "lastVisit": 1789797186768,
+        "count": 64,
+        "lastVisit": 1789814862705,
         "pictureUrl": "https://profile.line-scdn.net/0hQ3AjdbHzDhxsExLTY01wIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
       },
       "Uc8b0e0ef7ca58b387136a28642742b7d": {
@@ -451,8 +451,8 @@
       "U70293580bf944ee91dff2fdea1b5ec16": {
         "displayName": "雅0🐱",
         "firstVisit": 1783562549114,
-        "count": 28,
-        "lastVisit": 1789262465803,
+        "count": 29,
+        "lastVisit": 1789815545704,
         "pictureUrl": "https://profile.line-scdn.net/0h8ZNN_70TZ3VjN3nA1E0ZSxNnZB9ARj5nTgEpEQM2PENcVSglT1R_QAYyaUcNAXVwT1ErFVdiMUFBb05bLgIgZQ1eOisXT0QmRiFXFS1kPDwbB2ElCQhQdx5xfxxfZCRFB1JOYRdXR0EuQSQiGCtLFRNjMB0CdyJKDWALI2YFCfYMNRAgTlEpFl4xMUDb"
       },
       "Ubf312b4cd3bdb90efe9e5e8ec6c86f10": {
@@ -970,8 +970,8 @@
       "Ubd1a0b5beefb2dc573ebff053671dc21": {
         "displayName": "仁世觀-李佳豪🏸",
         "firstVisit": 1785582090149,
-        "count": 6,
-        "lastVisit": 1789786398885,
+        "count": 7,
+        "lastVisit": 1789814667652,
         "pictureUrl": "https://profile.line-scdn.net/0hvnUQu9V_KUF4KDW4--dXfwh4KitbWXBTXB5mLkUqd3FHGjtHAE0zIRosdiVCSD0QXEY2Iksoc3laSBl-ACszT0pAFTQVbwpOEyolZgZWLndAYhRINk84LkhaEQowTGsLIEoRO1FYAyFZSmdQAighfSQsAhRER21HJH9FF30aR8IXKl4UVU5nIkUuf3TA"
       },
       "U9189a06112f6a2a13fdacb08a190c60b": {
@@ -1329,6 +1329,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1789815545704,
+        "userId": "U70293580bf944ee91dff2fdea1b5ec16",
+        "displayName": "雅0🐱",
+        "pictureUrl": "https://profile.line-scdn.net/0h8ZNN_70TZ3VjN3nA1E0ZSxNnZB9ARj5nTgEpEQM2PENcVSglT1R_QAYyaUcNAXVwT1ErFVdiMUFBb05bLgIgZQ1eOisXT0QmRiFXFS1kPDwbB2ElCQhQdx5xfxxfZCRFB1JOYRdXR0EuQSQiGCtLFRNjMB0CdyJKDWALI2YFCfYMNRAgTlEpFl4xMUDb"
+      },
+      {
+        "time": 1789814862705,
+        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
+        "displayName": "賴柚子",
+        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjdbHzDhxsExLTY01wIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
+      },
+      {
+        "time": 1789814667652,
+        "userId": "Ubd1a0b5beefb2dc573ebff053671dc21",
+        "displayName": "仁世觀-李佳豪🏸",
+        "pictureUrl": "https://profile.line-scdn.net/0hvnUQu9V_KUF4KDW4--dXfwh4KitbWXBTXB5mLkUqd3FHGjtHAE0zIRosdiVCSD0QXEY2Iksoc3laSBl-ACszT0pAFTQVbwpOEyolZgZWLndAYhRINk84LkhaEQowTGsLIEoRO1FYAyFZSmdQAighfSQsAhRER21HJH9FF30aR8IXKl4UVU5nIkUuf3TA"
+      },
       {
         "time": 1789810007311,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -13301,24 +13319,6 @@
         "userId": "U201d654a17dd39665844d06801bd4571",
         "displayName": "Yuuuu",
         "pictureUrl": "https://profile.line-scdn.net/0hqA8tScZdLm4VDT-QmcNQEWVdLQQ2fHd8OGJoACBYc14pb2htMG5iACALcFcoPWswPjwxASMJIF4ZHlkIC1vSWhI9c18oPGwwP2NkjQ"
-      },
-      {
-        "time": 1785638959977,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1785637545518,
-        "userId": "U47573cf563cc67d5fc00dbb48a51092a",
-        "displayName": "兔兔(玉儒)",
-        "pictureUrl": "https://profile.line-scdn.net/0hwOdjz548KGBJEzcDixVWXjlDKwpqYnFyYnxlUXUUJVN0JmdiZyEwVngRcVcjd28yYCFjUi5BcwBrcDFqbB0xZX50dRt1fg81OwUzZDl0FVISRBJOPDI1QQRbMjYKdxpdGRdhWSlhPTYsYhZ9BgknZgdbEAgkfyp1JERENkwhRuMmEV81ZHVmA3QVflXx"
-      },
-      {
-        "time": 1785637215102,
-        "userId": "U49e2484c80056990b759e9039a74e1a6",
-        "displayName": "Kay",
-        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
       }
     ]
   },
