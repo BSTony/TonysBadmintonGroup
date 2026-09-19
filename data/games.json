@@ -8799,7 +8799,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789825664172,
+    "lastActiveTime": 1789825670184,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8871,13 +8871,19 @@
           "Timmon",
           "Chi",
           "柚子",
-          "阿豪",
-          "Dylan L"
+          "阿豪"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/19 21:47",
+        "name": "Dylan L",
+        "operator": "Dylan L",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/19 21:47",
         "name": "Dylan L",
