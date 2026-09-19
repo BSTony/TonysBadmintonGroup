@@ -8236,7 +8236,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789283959326,
-    "lastActiveTime": 1789810011656,
+    "lastActiveTime": 1789821134352,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8320,7 +8320,6 @@
           "小可愛",
           "Gary",
           "陳呈",
-          "黃政豪",
           "FB Yuanlung Chang",
           "弘彬/Jason",
           "林立",
@@ -8331,6 +8330,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "09/19 20:32",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "09/19 17:26",
         "name": "FB North Huang",
