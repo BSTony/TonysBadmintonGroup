@@ -8714,7 +8714,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789482157170,
-    "lastActiveTime": 1789865062907,
+    "lastActiveTime": 1789897540157,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8742,7 +8742,8 @@
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
+      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -8762,12 +8763,20 @@
           "周則鼎",
           "Jet",
           "afrahuang",
-          "凱文"
+          "凱文",
+          "Andrew Kuo"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/20 17:45",
+        "name": "Andrew Kuo",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/20 08:44",
         "name": "偉舫",
