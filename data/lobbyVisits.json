@@ -13340,7 +13340,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 281,
+    "viewCount": 282,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13506,8 +13506,8 @@
       "Ua871dc0011b1e136c14173739cf88645": {
         "displayName": "Vicky Lin",
         "firstVisit": 1785855054952,
-        "count": 10,
-        "lastVisit": 1789905877781,
+        "count": 11,
+        "lastVisit": 1789913404457,
         "pictureUrl": "https://profile.line-scdn.net/0hwUD3XXNkKHppSjfu2PRWRBkaKxBKO3FoRChlTg9IdBpTKWooFi41FF5JcU8Bej0uQCluGQ5PIx1LeAh_Fyw4YQM8PjkPKmlfBkIEQDUCDiguOy4pInsZeFQrdRAwHg1vR1U6Wx0dERACBDdUIUgjdycWEDMBBmZNMh1ELGx4RvkGSF8vRCxmGVRMfk_R"
       },
       "Ub66f54da98299c4d5d8c721187df90db": {
@@ -13540,6 +13540,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1789913404457,
+        "userId": "Ua871dc0011b1e136c14173739cf88645",
+        "displayName": "Vicky Lin",
+        "pictureUrl": "https://profile.line-scdn.net/0hwUD3XXNkKHppSjfu2PRWRBkaKxBKO3FoRChlTg9IdBpTKWooFi41FF5JcU8Bej0uQCluGQ5PIx1LeAh_Fyw4YQM8PjkPKmlfBkIEQDUCDiguOy4pInsZeFQrdRAwHg1vR1U6Wx0dERACBDdUIUgjdycWEDMBBmZNMh1ELGx4RvkGSF8vRCxmGVRMfk_R"
+      },
       {
         "time": 1789910554508,
         "userId": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
