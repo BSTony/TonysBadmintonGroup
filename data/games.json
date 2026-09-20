@@ -8714,7 +8714,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789482157170,
-    "lastActiveTime": 1789897540157,
+    "lastActiveTime": 1789905806357,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8728,7 +8728,6 @@
       "Ong": true,
       "憲": true,
       "Robert": true,
-      "海棠": true,
       "周則鼎": true,
       "謝東霖 Tony": true
     },
@@ -8759,7 +8758,6 @@
           "Ong",
           "憲",
           "Robert",
-          "海棠",
           "周則鼎",
           "Jet",
           "afrahuang",
@@ -8770,6 +8768,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/20 20:03",
+        "name": "海棠",
+        "operator": "海棠",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/20 17:45",
         "name": "Andrew Kuo",
