@@ -9118,5 +9118,45 @@
         "fee": ""
       }
     ]
+  },
+  "1789889199815440": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1789889199815440",
+    "title": "週日 港中 中秋節沒開",
+    "date": "9/27 (日)",
+    "time": "18:00~20:00",
+    "location": "南港高中",
+    "fee": "",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1789889199815,
+    "lastActiveTime": 1789889199815,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "uidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 1,
+        "backupLimit": 5,
+        "label": "",
+        "list": [],
+        "fee": ""
+      }
+    ]
   }
 }
