@@ -8714,7 +8714,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789482157170,
-    "lastActiveTime": 1790063915392,
+    "lastActiveTime": 1790068087927,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8763,12 +8763,20 @@
           "afrahuang",
           "凱文",
           "Andrew Kuo",
-          "FB dylan"
+          "FB dylan",
+          "信廷"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/22 17:08",
+        "name": "信廷",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/22 15:58",
         "name": "FB dylan",
