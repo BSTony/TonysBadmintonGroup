@@ -9288,7 +9288,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790080194651,
-    "lastActiveTime": 1790086443550,
+    "lastActiveTime": 1790087329003,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9340,12 +9340,20 @@
           "Jet",
           "afrahuang",
           "Sean",
-          "陳呈"
+          "陳呈",
+          "凱文"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/22 22:28",
+        "name": "凱文",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/22 22:14",
         "name": "陳呈",
