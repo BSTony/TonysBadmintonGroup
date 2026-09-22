@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-18
- * Version: 1.3.19
+ * Date: 2026-09-22
+ * Version: 1.3.21
  */
 const express = require('express');
 const compression = require('compression');
@@ -2803,11 +2803,14 @@ app.get('/api/admin/all_stats', async (req, res) => {
         }
 
         if (!globalViewersMap[viewerUid]) {
-          globalViewersMap[viewerUid] = { uid: viewerUid, displayName: uData.displayName || '未知', count: 0, lastVisit: 0 };
+          globalViewersMap[viewerUid] = { uid: viewerUid, displayName: uData.displayName || '未知', count: 0, lastVisit: 0, pictureUrl: uData.pictureUrl || '' };
         }
         globalViewersMap[viewerUid].count += (uData.count || 1);
         if (uData.lastVisit > globalViewersMap[viewerUid].lastVisit) {
           globalViewersMap[viewerUid].lastVisit = uData.lastVisit;
+        }
+        if (uData.pictureUrl) {
+          globalViewersMap[viewerUid].pictureUrl = uData.pictureUrl;
         }
         if (uData.displayName && uData.displayName !== '未知' && uData.displayName !== 'undefined') {
           globalViewersMap[viewerUid].displayName = uData.displayName;
@@ -2848,11 +2851,15 @@ app.get('/api/admin/all_stats', async (req, res) => {
       viewCount: stats.viewCount || 0,
       uniqueCount: uniqueCount,
       dailyStats: dailyStats,
-      recentVisits: sortedLogs.slice(0, 20).map(log => ({
-        time: log.time,
-        userId: log.userId,
-        displayName: log.displayName || '未知'
-      }))
+      recentVisits: sortedLogs.slice(0, 20).map(log => {
+        const viewer = (stats.uniqueViewers || {})[log.userId] || {};
+        return {
+          time: log.time,
+          userId: log.userId,
+          displayName: log.displayName || viewer.displayName || '未知',
+          pictureUrl: log.pictureUrl || viewer.pictureUrl || ''
+        };
+      })
     });
   }
 
@@ -2900,15 +2907,25 @@ app.get('/api/users/:gid', (req, res) => {
         
         if (gid === 'all') {
             const reqUid = req.query.uid;
-            if (!isSuperAdmin(reqUid)) {
+            if (!isSuperAdmin(reqUid) && !isTrueSuperAdmin(reqUid)) {
                 return res.status(403).json({ success: false, error: 'Unauthorized' });
             }
             for (const groupGid in lobbyVisits) {
                 const stats = lobbyVisits[groupGid];
                 if (stats && stats.uniqueViewers) {
                     for (const [userId, info] of Object.entries(stats.uniqueViewers)) {
-                        if (!aggregatedUsers[userId] || aggregatedUsers[userId].lastVisit < info.lastVisit) {
-                            aggregatedUsers[userId] = info;
+                        if (!aggregatedUsers[userId]) {
+                            aggregatedUsers[userId] = { ...info };
+                        } else {
+                            const prev = aggregatedUsers[userId];
+                            if ((info.lastVisit || 0) > (prev.lastVisit || 0)) {
+                                aggregatedUsers[userId] = {
+                                    ...info,
+                                    pictureUrl: info.pictureUrl || prev.pictureUrl || ''
+                                };
+                            } else if (!prev.pictureUrl && info.pictureUrl) {
+                                prev.pictureUrl = info.pictureUrl;
+                            }
                         }
                     }
                 }
@@ -2921,7 +2938,8 @@ app.get('/api/users/:gid', (req, res) => {
         }
         
         const sortedUsers = Object.entries(aggregatedUsers)
-            .sort((a, b) => b[1].lastVisit - a[1].lastVisit)
+            .filter(([userId, info]) => info && info.displayName && !isWeakVisitUserId(userId))
+            .sort((a, b) => (b[1].lastVisit || 0) - (a[1].lastVisit || 0))
             .map(([userId, info]) => ({ 
                 displayName: info.displayName, 
                 userId: userId,

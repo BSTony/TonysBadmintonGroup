@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
-  Date: 2026-09-10
-  Version: 1.2.7
+  Date: 2026-09-22
+  Version: 1.2.8
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -401,6 +401,17 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
 .name-input::placeholder {
   color: #bbb;
   font-weight: normal;
+}
+.autocomplete-dropdown {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.autocomplete-wrap {
+  min-width: 0;
 }
 .error-msg {
   color: var(--danger-color);

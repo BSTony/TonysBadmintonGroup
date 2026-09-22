@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-18
- * Version: 1.2.33
+ * Date: 2026-09-22
+ * Version: 1.2.35
  */
 let globalLobbyUsers = [];
 
@@ -25,10 +25,14 @@ function isLiffLoggedInSafe() {
 }
 
 async function loadLobbyUsers() {
-  if (!currentUser || !currentUser.userId) return;
+  const uid = (typeof getActionRequestUid === 'function' && getActionRequestUid())
+    || (typeof getAdminRequestUid === 'function' && getAdminRequestUid())
+    || (currentUser && currentUser.userId)
+    || '';
+  if (!uid) return;
   try {
     const fetchGid = globalIsSuperAdmin ? 'all' : getGamesApiGid(currentGroupId);
-    const res = await fetch(`/api/users/${fetchGid}?uid=${currentUser.userId}`);
+    const res = await fetch('/api/users/' + encodeURIComponent(fetchGid) + '?uid=' + encodeURIComponent(uid));
     const data = await res.json();
     if (res.ok && data.success) {
       globalLobbyUsers = data.users || [];
@@ -36,6 +40,50 @@ async function loadLobbyUsers() {
   } catch(e) {
     console.error('Failed to load lobby users:', e);
   }
+}
+
+function getAutocompleteNamePool() {
+  const byKey = {};
+  (globalLobbyUsers || []).forEach(u => {
+    if (!u || !u.displayName) return;
+    byKey[u.displayName] = {
+      displayName: u.displayName,
+      userId: u.userId || '',
+      pictureUrl: u.pictureUrl || ''
+    };
+  });
+  (gamesList || []).forEach(g => {
+    (g.sections || []).forEach(sec => {
+      (sec.list || []).forEach(n => {
+        if (!n || n === '__ANON__' || byKey[n]) return;
+        byKey[n] = { displayName: n, userId: '', pictureUrl: '' };
+      });
+    });
+  });
+  return Object.values(byKey);
+}
+
+function positionAutocompleteDropdown(inputElement, dropdown) {
+  const rect = inputElement.getBoundingClientRect();
+  const width = Math.max(rect.width, 220);
+  const maxH = 220;
+  let top = rect.bottom + 4;
+  if (top + Math.min(maxH, 160) > window.innerHeight && rect.top > maxH) {
+    top = Math.max(8, rect.top - maxH - 4);
+  }
+  dropdown.style.position = 'fixed';
+  dropdown.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8)) + 'px';
+  dropdown.style.top = top + 'px';
+  dropdown.style.width = width + 'px';
+  dropdown.style.maxHeight = maxH + 'px';
+  dropdown.style.zIndex = '30000';
+}
+
+function avatarImgHtml(pictureUrl) {
+  if (pictureUrl && /^https:\/\//i.test(pictureUrl)) {
+    return `<img referrerpolicy="no-referrer" alt="" src="${escapeHTML(pictureUrl)}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 8px;">`;
+  }
+  return `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #eee; margin-right: 8px; display: inline-block;"></div>`;
 }
 
 function disableBrowserCredentialSave(inputElement) {
@@ -62,47 +110,66 @@ function setupAutocomplete(inputElement, avatarImg) {
   
   let dropdown = document.createElement('div');
   dropdown.className = 'autocomplete-dropdown';
-  dropdown.style.position = 'absolute';
-  dropdown.style.backgroundColor = '#fff';
-  dropdown.style.border = '1px solid #ccc';
-  dropdown.style.maxHeight = '150px';
-  dropdown.style.overflowY = 'auto';
-  dropdown.style.zIndex = '1000';
   dropdown.style.display = 'none';
-  dropdown.style.width = inputElement.offsetWidth ? inputElement.offsetWidth + 'px' : '100%';
-  dropdown.style.top = '100%';
-  dropdown.style.left = '0';
-  
-  // Wrapper to position dropdown correctly
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'relative';
-  wrapper.style.display = 'block';
-  wrapper.style.flex = '2 1 120px';
-  wrapper.style.minWidth = '100px';
-  wrapper.style.width = 'auto';
-  wrapper.style.maxWidth = '100%';
-  
-  inputElement.parentNode.insertBefore(wrapper, inputElement);
-  wrapper.appendChild(inputElement);
-  wrapper.appendChild(dropdown);
-  
-  inputElement.style.flex = '1';
-  inputElement.style.width = '100%';
+  if (inputElement.id && inputElement.id.indexOf('name-input-') === 0) {
+    dropdown.dataset.lobbyAc = '1';
+  }
+  document.body.appendChild(dropdown);
+  dropdown.addEventListener('mousedown', (e) => e.preventDefault());
 
-  inputElement.addEventListener('input', () => {
+  let hideTimer = null;
+  const clearHideTimer = () => {
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+  };
+
+  const hideDropdown = () => {
+    dropdown.style.display = 'none';
+  };
+
+  const pickUser = (user) => {
+    inputElement.value = user.displayName;
+    if (user.userId) inputElement.dataset.uuid = user.userId;
+    else delete inputElement.dataset.uuid;
+    if (avatarImg) {
+      avatarImg.src = user.pictureUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    }
+    hideDropdown();
+  };
+
+  const renderUserItem = (user) => {
+    const item = document.createElement('div');
+    item.className = 'autocomplete-item';
+    item.style.padding = '8px 10px';
+    item.style.cursor = 'pointer';
+    item.style.borderBottom = '1px solid #eee';
+    item.style.fontSize = '14px';
+    item.innerHTML = `<div style="display: flex; align-items: center;">${avatarImgHtml(user.pictureUrl)}<span>${escapeHTML(user.displayName)}</span></div>`;
+    item.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      pickUser(user);
+    });
+    item.addEventListener('mouseenter', () => { item.style.background = '#f5f5f5'; });
+    item.addEventListener('mouseleave', () => { item.style.background = ''; });
+    dropdown.appendChild(item);
+  };
+
+  const showMatches = () => {
+    const pool = getAutocompleteNamePool();
     const val = inputElement.value.trim().toLowerCase();
     dropdown.innerHTML = '';
-    
-    // Clear uuid if user edits the text
-    delete inputElement.dataset.uuid;
-    
-    if (!val) {
-      dropdown.style.display = 'none';
-      return;
-    }
-    
-    const matches = globalLobbyUsers.filter(u => u.displayName && u.displayName.toLowerCase().includes(val));
+
+    const matches = val
+      ? pool.filter(u => u.displayName && u.displayName.toLowerCase().includes(val))
+      : pool;
+
     if (matches.length === 0) {
+      if (!val) {
+        hideDropdown();
+        return;
+      }
       const item = document.createElement('div');
       item.style.padding = '8px 12px';
       item.style.fontSize = '13px';
@@ -118,73 +185,60 @@ function setupAutocomplete(inputElement, avatarImg) {
       `;
       item.addEventListener('mousedown', (e) => {
         e.preventDefault();
-        dropdown.style.display = 'none';
+        hideDropdown();
       });
       dropdown.appendChild(item);
-      dropdown.style.display = 'block';
-      return;
+    } else {
+      matches.slice(0, 80).forEach(renderUserItem);
     }
-    
-    matches.forEach(user => {
-      const item = document.createElement('div');
-      item.style.padding = '5px 10px';
-      item.style.cursor = 'pointer';
-      item.style.borderBottom = '1px solid #eee';
-      item.style.fontSize = '14px';
-      
-      const imgHtml = user.pictureUrl ? `<img src="${user.pictureUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 8px;">` : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #eee; margin-right: 8px; display: inline-block;"></div>`;
-      item.innerHTML = `<div style="display: flex; align-items: center;">${imgHtml}<span>${user.displayName}</span></div>`;
-      
-      item.addEventListener('mousedown', (e) => {
-        // use mousedown to fire before input blur
-        e.preventDefault();
-        inputElement.value = user.displayName;
-        inputElement.dataset.uuid = user.userId;
-        if (avatarImg) {
-          avatarImg.src = user.pictureUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-        }
-        dropdown.style.display = 'none';
-      });
-      
-      dropdown.appendChild(item);
-    });
-    
+
+    positionAutocompleteDropdown(inputElement, dropdown);
     dropdown.style.display = 'block';
+  };
+
+  if (inputElement.parentNode && !inputElement.parentNode.classList.contains('autocomplete-wrap')) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'autocomplete-wrap';
+    wrapper.style.position = 'relative';
+    wrapper.style.display = 'block';
+    wrapper.style.flex = '2 1 120px';
+    wrapper.style.minWidth = '100px';
+    wrapper.style.width = 'auto';
+    wrapper.style.maxWidth = '100%';
+    inputElement.parentNode.insertBefore(wrapper, inputElement);
+    wrapper.appendChild(inputElement);
+  }
+  inputElement.style.flex = '1';
+  inputElement.style.width = '100%';
+
+  inputElement.addEventListener('input', () => {
+    delete inputElement.dataset.uuid;
+    showMatches();
   });
-  
-  inputElement.addEventListener('focus', () => {
-    // trigger input event to show dropdown if there's text, or show all if empty
-    inputElement.dispatchEvent(new Event('input'));
-    if (!inputElement.value.trim() && globalLobbyUsers.length > 0) {
-      dropdown.innerHTML = '';
-      globalLobbyUsers.forEach(user => {
-        const item = document.createElement('div');
-        item.style.padding = '5px 10px';
-        item.style.cursor = 'pointer';
-        item.style.borderBottom = '1px solid #eee';
-        item.style.fontSize = '14px';
-        
-        const imgHtml = user.pictureUrl ? `<img src="${user.pictureUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-right: 8px;">` : `<div style="width: 24px; height: 24px; border-radius: 50%; background-color: #eee; margin-right: 8px; display: inline-block;"></div>`;
-        item.innerHTML = `<div style="display: flex; align-items: center;">${imgHtml}<span>${user.displayName}</span></div>`;
-        
-        item.addEventListener('mousedown', (e) => {
-          e.preventDefault();
-          inputElement.value = user.displayName;
-          inputElement.dataset.uuid = user.userId;
-          if (avatarImg) {
-            avatarImg.src = user.pictureUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-          }
-          dropdown.style.display = 'none';
-        });
-        dropdown.appendChild(item);
-      });
-      dropdown.style.display = 'block';
+
+  inputElement.addEventListener('focus', async () => {
+    clearHideTimer();
+    if (!globalLobbyUsers.length) {
+      await loadLobbyUsers();
     }
+    showMatches();
   });
-  
+
+  inputElement.addEventListener('click', () => {
+    clearHideTimer();
+    showMatches();
+  });
+
   inputElement.addEventListener('blur', () => {
-    dropdown.style.display = 'none';
+    clearHideTimer();
+    hideTimer = setTimeout(hideDropdown, 180);
   });
+
+  const onWinChange = () => {
+    if (dropdown.style.display === 'block') positionAutocompleteDropdown(inputElement, dropdown);
+  };
+  window.addEventListener('scroll', onWinChange, true);
+  window.addEventListener('resize', onWinChange);
 }
 
 const imageCache = {};
@@ -2541,6 +2595,7 @@ function renderLobby(forceCards = true) {
 
   // 替超級管理員的代報輸入框加上自動完成下拉選單功能
   if (effIsSuperAdmin) {
+    document.querySelectorAll('.autocomplete-dropdown[data-lobby-ac]').forEach(el => el.remove());
     document.querySelectorAll('.name-input[id^="name-input-"]').forEach(input => {
       if (!input.id.includes('level-input') && !input.dataset.autocompleteSetup) {
         setupAutocomplete(input);
@@ -3088,6 +3143,7 @@ function renderDetail(gameId, preserveScroll = false) {
 
   // 替超級管理員代報的輸入框加上自動完成下拉選單功能 (在詳細頁)
   if (effIsSuperAdmin) {
+    document.querySelectorAll('.autocomplete-dropdown[data-lobby-ac]').forEach(el => el.remove());
     document.querySelectorAll('.name-input[id^="name-input-"]').forEach(input => {
       if (!input.id.includes('level-input') && !input.dataset.autocompleteSetup) {
         setupAutocomplete(input);
@@ -5098,10 +5154,13 @@ if (btnLobbyStats) {
                   const isToday = visitDate.toLocaleDateString('zh-TW') === todayStr;
                   const bgStyle = isToday ? 'background: #fff8e1;' : '';
                   const safeName = escapeHTML(u.displayName || '未知');
+                  const avatar = (u.pictureUrl && /^https:\/\//i.test(u.pictureUrl))
+                    ? `<img referrerpolicy="no-referrer" alt="" src="${escapeHTML(u.pictureUrl)}" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;flex-shrink:0;">`
+                    : `<span style="display:inline-flex;width:18px;height:18px;border-radius:50%;background:#ccc;align-items:center;justify-content:center;font-size:10px;margin-right:6px;flex-shrink:0;">👤</span>`;
                   
                   return `
                   <tr style="border-bottom: 1px solid #eee; ${bgStyle}">
-                    <td style="padding: 5px; max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${safeName}">${safeName}</td>
+                    <td style="padding: 5px; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${safeName}"><span style="display:inline-flex;align-items:center;">${avatar}${safeName}</span></td>
                     <td style="padding: 5px;">${u.count}</td>
                     <td style="padding: 5px;">${visitDate.toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}</td>
                   </tr>
@@ -5303,6 +5362,22 @@ if (btnLobbyStats) {
           logsContainer.style.paddingTop = '10px';
           
           if (stat.recentVisits && stat.recentVisits.length > 0) {
+            const fallbackAvatarEl = () => {
+              const fallbackImg = document.createElement('div');
+              fallbackImg.style.width = '20px';
+              fallbackImg.style.height = '20px';
+              fallbackImg.style.borderRadius = '50%';
+              fallbackImg.style.background = '#ccc';
+              fallbackImg.style.marginRight = '8px';
+              fallbackImg.style.flexShrink = '0';
+              fallbackImg.style.display = 'flex';
+              fallbackImg.style.alignItems = 'center';
+              fallbackImg.style.justifyContent = 'center';
+              fallbackImg.style.fontSize = '10px';
+              fallbackImg.style.color = '#fff';
+              fallbackImg.innerText = '👤';
+              return fallbackImg;
+            };
             stat.recentVisits.forEach(log => {
               const d = new Date(log.time);
               const timeStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
@@ -5321,28 +5396,23 @@ if (btnLobbyStats) {
               timeDiv.innerText = timeStr;
               item.appendChild(timeDiv);
 
-              if (log.pictureUrl && log.pictureUrl.startsWith('https://')) {
+              if (log.pictureUrl && /^https:\/\//i.test(log.pictureUrl)) {
                 const img = document.createElement('img');
-                img.src = log.pictureUrl;
+                img.alt = '';
+                img.referrerPolicy = 'no-referrer';
                 img.style.width = '20px';
                 img.style.height = '20px';
                 img.style.borderRadius = '50%';
+                img.style.objectFit = 'cover';
                 img.style.marginRight = '8px';
+                img.style.flexShrink = '0';
+                img.onerror = () => {
+                  img.replaceWith(fallbackAvatarEl());
+                };
+                img.src = log.pictureUrl;
                 item.appendChild(img);
               } else {
-                const fallbackImg = document.createElement('div');
-                fallbackImg.style.width = '20px';
-                fallbackImg.style.height = '20px';
-                fallbackImg.style.borderRadius = '50%';
-                fallbackImg.style.background = '#ccc';
-                fallbackImg.style.marginRight = '8px';
-                fallbackImg.style.display = 'flex';
-                fallbackImg.style.alignItems = 'center';
-                fallbackImg.style.justifyContent = 'center';
-                fallbackImg.style.fontSize = '10px';
-                fallbackImg.style.color = '#fff';
-                fallbackImg.innerText = '👤';
-                item.appendChild(fallbackImg);
+                item.appendChild(fallbackAvatarEl());
               }
               
               const nameDiv = document.createElement('div');
