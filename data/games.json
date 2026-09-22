@@ -8714,7 +8714,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789482157170,
-    "lastActiveTime": 1789905806357,
+    "lastActiveTime": 1790063915392,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8762,12 +8762,20 @@
           "Jet",
           "afrahuang",
           "凱文",
-          "Andrew Kuo"
+          "Andrew Kuo",
+          "FB dylan"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/22 15:58",
+        "name": "FB dylan",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/20 20:03",
         "name": "海棠",
