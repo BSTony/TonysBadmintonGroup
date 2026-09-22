@@ -9288,7 +9288,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790080194651,
-    "lastActiveTime": 1790085770782,
+    "lastActiveTime": 1790086053997,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9337,12 +9337,20 @@
           "周則鼎",
           "偉舫",
           "Jet",
-          "afrahuang"
+          "afrahuang",
+          "Sean"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/22 22:07",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/22 22:02",
         "name": "afrahuang",
