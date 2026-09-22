@@ -8858,7 +8858,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1789896704092,
+    "lastActiveTime": 1790038511773,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8930,7 +8930,6 @@
           "winnie",
           "Timmon",
           "Chi",
-          "柚子",
           "阿豪",
           "Dylan L",
           "Gary"
@@ -8939,6 +8938,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/22 08:55",
+        "name": "柚子",
+        "operator": "賴柚子",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/20 17:31",
         "name": "Gary",
