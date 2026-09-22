@@ -9206,7 +9206,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790042432997,
-    "lastActiveTime": 1790042432997,
+    "lastActiveTime": 1790044178695,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9231,9 +9231,19 @@
           "曾Jim凱",
           "Ashely",
           "謝東霖 Tony",
-          "Kay"
+          "Kay",
+          "陳呈"
         ],
         "fee": "260"
+      }
+    ],
+    "history": [
+      {
+        "time": "09/22 10:29",
+        "name": "陳呈",
+        "operator": "陳呈 (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
