@@ -9215,9 +9215,9 @@
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
       "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-      "C73ead06e46f4c3a00a3f87d946c7d18a"
+      "C073dd061239f9bc2df13af0a1ecb4bdb"
     ],
     "gameId": "1790042432996495",
     "title": "週一 中山星曜樓",
@@ -9226,7 +9226,7 @@
     "location": "中山星曜樓",
     "fee": "260",
     "note": "",
-    "tag": "",
+    "tag": "5級以上",
     "active": true,
     "startTime": 1790042432997,
     "lastActiveTime": 1790044178695,
@@ -9268,7 +9268,8 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1790080194650870": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
