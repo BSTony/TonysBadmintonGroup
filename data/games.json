@@ -8881,7 +8881,7 @@
     "tag": "",
     "active": true,
     "startTime": 1789689937818,
-    "lastActiveTime": 1790236078737,
+    "lastActiveTime": 1790236274947,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -8898,8 +8898,7 @@
       "Ashely": true,
       "周則鼎": true,
       "Ong": true,
-      "郭岳翰John": true,
-      "©️張CC～©️": true
+      "郭岳翰John": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -8940,7 +8939,6 @@
           "周則鼎",
           "Ong",
           "郭岳翰John",
-          "©️張CC～©️",
           "江こう 洋々",
           "林煥杰",
           "李智揚 Mike",
@@ -8961,6 +8959,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/24 15:51",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/22 08:55",
         "name": "柚子",
