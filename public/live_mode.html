@@ -48,9 +48,9 @@
 
   /* CALIBRATE */
   #screen-calibrate { background: #000; position: relative; }
-  #calibrate-video { width: 100%; height: 100%; object-fit: cover; }
+  #calibrate-video { width: 100%; height: 100%; object-fit: contain; background: #000; }
   #calibrate-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
-  .calibrate-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.85)); }
+  .calibrate-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.85)); z-index: 20; }
   .calibrate-hint { text-align: center; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
   .calibrate-steps { display: flex; justify-content: center; gap: 10px; margin-bottom: 16px; }
   .calibrate-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); transition: all 0.3s; }
@@ -60,9 +60,12 @@
 
   /* LIVE */
   #screen-live { flex-direction: column; background: #000; position: relative; }
-  #live-video { width: 100%; height: 100%; object-fit: cover; }
+  #live-video { width: 100%; height: 100%; object-fit: contain; background: #000; }
   #live-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
   #court3d-canvas { position: absolute; bottom: 130px; right: 10px; width: 160px; height: 110px; border-radius: 10px; border: 1px solid rgba(67,97,238,0.5); background: rgba(13,13,26,0.85); z-index: 15; display: none; }
+  .spd-btn { padding: 4px 10px; border-radius: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; font-size: 11px; cursor: pointer; transition: all 0.2s; }
+  .spd-btn:hover { background: rgba(255,255,255,0.18); }
+  .spd-btn.active { background: #4361ee; color: #fff; border-color: #4361ee; font-weight: 700; box-shadow: 0 0 10px rgba(67,97,238,0.5); }
 
   .scoreboard { position: absolute; top: 0; left: 0; right: 0; z-index: 20; background: linear-gradient(180deg, rgba(0,0,0,0.9) 60%, transparent); padding: 8px 12px 20px; }
   .score-inner { display: flex; align-items: center; justify-content: space-between; background: rgba(22,22,39,0.85); border-radius: 14px; padding: 8px 12px; border: 1px solid rgba(67,97,238,0.3); backdrop-filter: blur(10px); }
@@ -124,12 +127,26 @@
   <div class="splash-sub">Ball Tracking · 3D Court · Speed Meter</div>
   <div id="live-status-badge" class="splash-badge offline">正在確認直播狀態…</div>
   <div id="splash-spinner" class="spinner"></div>
-  <button id="btn-enter-live" class="btn-primary" style="display:none">🚀 進入直播分析</button>
+
+  <!-- 操作按鈕區 (直播中 / 本地模式時顯示) -->
+  <div id="splash-actions" style="display:none; flex-direction:column; gap:12px; margin-top:24px; width:100%; max-width:320px; padding:0 16px; box-sizing:border-box;">
+    <button id="btn-enter-live" class="btn-primary" style="margin-top:0; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <span>📷</span> 即時相機鏡頭直播
+    </button>
+    <button id="btn-upload-video" class="btn-secondary" style="width:100%; background:linear-gradient(135deg,rgba(99,102,241,0.25),rgba(59,130,246,0.2)); border:1px solid rgba(99,102,241,0.5); color:#a5b4fc; font-weight:700; padding:13px; font-size:15px; border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="triggerVideoUpload()">
+      <span>📁</span> 上傳羽球影片檔分析 (MP4/MOV)
+    </button>
+  </div>
+  <input type="file" id="video-file-input" accept="video/mp4,video/quicktime,video/webm,video/*" style="display:none" onchange="handleVideoFileSelected(event)">
+
   <p id="splash-no-live" style="display:none;color:var(--muted);font-size:13px;margin-top:16px;text-align:center;padding:0 32px">
-    目前直播模式尚未開啟<br>請點下方按鈕立即開啟
+    目前直播模式尚未開啟<br>您可以一鍵開啟，或直接上傳羽球影片進行分析
   </p>
   <button id="btn-start-live-direct" class="btn-primary" style="display:none;margin-top:16px;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 6px 20px rgba(16,185,129,0.35);" onclick="directStartLive()">
     🚀 一鍵開啟直播模式
+  </button>
+  <button id="btn-upload-direct" class="btn-secondary" style="display:none;margin-top:10px;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);color:#c7d2fe;font-weight:700;padding:12px 24px;border-radius:12px;cursor:pointer;" onclick="triggerVideoUpload()">
+    📁 直接上傳影片進行分析
   </button>
   <div id="splash-no-auth" style="display:none;color:#ff6b81;font-size:13px;margin-top:20px;text-align:center;padding:14px 20px;background:rgba(255,107,129,0.1);border:1px solid rgba(255,107,129,0.3);border-radius:12px;line-height:1.6">
     🔒 <strong>僅限超級管理員使用</strong><br>此為內部測試專區，其他使用者無法操作
@@ -140,6 +157,24 @@
 <div id="screen-calibrate" class="screen">
   <video id="calibrate-video" autoplay muted playsinline></video>
   <canvas id="calibrate-canvas"></canvas>
+
+  <!-- 影片校正控制列 (上傳影片模式顯示) -->
+  <div id="calib-video-bar" style="display:none; position:absolute; top:16px; left:16px; right:16px; z-index:25; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px); border:1px solid rgba(99,102,241,0.3); border-radius:14px; padding:10px 14px; flex-direction:column; gap:8px; box-shadow:0 8px 30px rgba(0,0,0,0.7);">
+    <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
+      <span id="calib-video-filename" style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#e2e8f0; font-weight:700;">📹 影片校正</span>
+      <span id="calib-video-time" style="font-family:monospace; color:#38bdf8; font-weight:700;">00:00 / 00:00</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button id="btn-calib-play" onclick="toggleCalibPlay()" style="background:#4361ee; border:none; color:#fff; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer;">⏸ 暫停</button>
+      <button onclick="seekCalibVideo(-1)" style="background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer;">⏪ -1s</button>
+      <input type="range" id="calib-video-scrub" min="0" max="100" value="0" step="0.1" style="flex:1; cursor:pointer; accent-color:#38bdf8;" oninput="onCalibScrub(this.value)">
+      <button onclick="seekCalibVideo(1)" style="background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer;">+1s ⏩</button>
+    </div>
+    <div style="font-size:11px; color:#94a3b8; text-align:center;">
+      💡 提示：可暫停在<strong>清楚看到球場4個角落</strong>的畫面，依序點擊4個角落！
+    </div>
+  </div>
+
   <div class="calibrate-overlay">
     <div class="calibrate-hint" id="calibrate-hint">👆 依序點擊球場的 4 個角落（左上→右上→右下→左下）</div>
     <div class="calibrate-steps">
@@ -181,11 +216,32 @@
 
   <div class="speed-badge" id="speed-badge">⚡ 0 km/h</div>
 
+  <!-- 影片播放控制列 (上傳影片模式顯示) -->
+  <div id="live-video-bar" style="display:none; position:absolute; bottom:140px; left:12px; right:12px; z-index:22; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px); border:1px solid rgba(99,102,241,0.3); border-radius:14px; padding:10px 14px; flex-direction:column; gap:6px; box-shadow:0 8px 30px rgba(0,0,0,0.6);">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button id="btn-live-play" onclick="toggleLivePlay()" style="background:#4361ee; border:none; color:#fff; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer;">⏸ 暫停</button>
+      <button onclick="replayLiveVideo()" style="background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer;" title="重頭播放">🔄 重放</button>
+      <input type="range" id="live-video-scrub" min="0" max="100" value="0" step="0.1" style="flex:1; cursor:pointer; accent-color:#38bdf8;" oninput="onLiveScrub(this.value)">
+      <span id="live-video-time" style="font-size:11px; font-family:monospace; color:#38bdf8; min-width:70px; text-align:right;">00:00</span>
+    </div>
+    <div style="display:flex; align-items:center; justify-content:space-between; font-size:11px; margin-top:2px;">
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span style="color:#94a3b8;">分析倍速:</span>
+        <button class="spd-btn active" id="spd-05" onclick="setLiveSpeed(0.5)">0.5x 慢動作</button>
+        <button class="spd-btn" id="spd-10" onclick="setLiveSpeed(1.0)">1.0x 原速</button>
+        <button class="spd-btn" id="spd-025" onclick="setLiveSpeed(0.25)">0.25x</button>
+      </div>
+      <label style="color:#94a3b8; font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+        <input type="checkbox" id="chk-live-loop" checked onchange="toggleLiveLoop(this.checked)"> 循環播放
+      </label>
+    </div>
+  </div>
+
   <div class="live-controls">
     <div class="control-row">
       <button class="btn-toggle3d" id="btn-toggle3d" onclick="toggle3D()">🗺 3D俯瞰</button>
       <div style="flex:1"></div>
-      <button class="btn-end" id="btn-end-live">■ 結束直播</button>
+      <button class="btn-end" id="btn-end-live">■ 結束分析</button>
     </div>
     <div class="control-row">
       <button class="score-btn btn-minus" onclick="adjustScore('A',-1)">−</button>
@@ -236,6 +292,9 @@ let uid = null;
 let liveModeState = {};
 let currentScreen = 'splash';
 let cameraStream = null;
+let videoSourceType = 'camera'; // 'camera' | 'file'
+let videoFileUrl = null;
+let currentPlaybackRate = 0.5; // default 0.5x slow-motion for uploaded video
 let calibPoints = [];
 const COURT_W = 610, COURT_H = 1340; // cm
 let trackCtx, trackVideo;
@@ -259,32 +318,34 @@ let _initDone = false;
 function _safeCheckLive() {
   if (_initDone) return;
   _initDone = true;
-  // URL uid takes priority so the page works even outside LIFF
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
   const urlUid = new URLSearchParams(window.location.search).get('uid');
   if (!uid && urlUid) uid = urlUid;
+  if (!uid && isLocal) uid = 'U_SUPER_ADMIN_TEST_ID_LOCAL';
   checkLive();
 }
 
 async function init() {
-  // Safety net: always call checkLive within 4 seconds even if LIFF hangs
   const safeTimer = setTimeout(_safeCheckLive, 4000);
   try {
-    // Read URL uid first before any async LIFF work
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
     const urlUid = new URLSearchParams(window.location.search).get('uid');
     if (urlUid) uid = urlUid;
+    if (!uid && isLocal) uid = 'U_SUPER_ADMIN_TEST_ID_LOCAL';
 
-    const r = await fetch('/api/config');
-    const cfg = await r.json();
-    if (cfg.liffId && window.liff) {
-      // Wrap liff.init with its own 3-second timeout
-      await Promise.race([
-        liff.init({ liffId: cfg.liffId }),
-        new Promise((_, rej) => setTimeout(() => rej(new Error('liff timeout')), 3000))
-      ]);
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile().catch(() => null);
-        const liffUid = profile?.userId || liff.getContext()?.userId || null;
-        if (liffUid) uid = liffUid; // LIFF uid overrides URL uid if available
+    const r = await fetch('/api/config').catch(() => null);
+    if (r && r.ok) {
+      const cfg = await r.json();
+      if (cfg.liffId && window.liff) {
+        await Promise.race([
+          liff.init({ liffId: cfg.liffId }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('liff timeout')), 3000))
+        ]);
+        if (liff.isLoggedIn()) {
+          const profile = await liff.getProfile().catch(() => null);
+          const liffUid = profile?.userId || liff.getContext()?.userId || null;
+          if (liffUid) uid = liffUid;
+        }
       }
     }
   } catch(e) { console.warn('LIFF/config:', e.message); }
@@ -294,37 +355,50 @@ async function init() {
 
 async function checkLive() {
   let isSuper = false;
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+  if (isLocal) {
+    if (!uid) uid = 'U_SUPER_ADMIN_TEST_ID_LOCAL';
+    isSuper = true; // 本地測試環境自動獲得超管權限
+  }
+
   try {
     const query = uid ? '?uid=' + encodeURIComponent(uid) : '';
     const r = await fetch(BASE + '/api/live_mode' + query);
     liveModeState = await r.json();
-    isSuper = !!liveModeState.isSuperAdmin;
-  } catch(e) { liveModeState = { enabled: false }; }
+    if (!isSuper) isSuper = !!liveModeState.isSuperAdmin;
+  } catch(e) {
+    liveModeState = { enabled: isLocal };
+  }
 
   document.getElementById('splash-spinner').style.display = 'none';
   const badge = document.getElementById('live-status-badge');
-  const btn = document.getElementById('btn-enter-live');
+  const actions = document.getElementById('splash-actions');
   const noLive = document.getElementById('splash-no-live');
   const noAuth = document.getElementById('splash-no-auth');
+  const btnStartDirect = document.getElementById('btn-start-live-direct');
+  const btnUploadDirect = document.getElementById('btn-upload-direct');
 
   if (!isSuper) {
     badge.textContent = '🔒 權限限制';
     badge.className = 'splash-badge offline';
-    btn.style.display = 'none';
-    noLive.style.display = 'none';
+    if (actions) actions.style.display = 'none';
+    if (noLive) noLive.style.display = 'none';
     if (noAuth) noAuth.style.display = 'block';
+    if (btnStartDirect) btnStartDirect.style.display = 'none';
+    if (btnUploadDirect) btnUploadDirect.style.display = 'none';
     return;
   }
 
   if (noAuth) noAuth.style.display = 'none';
 
-  const btnStartDirect = document.getElementById('btn-start-live-direct');
-  if (btnStartDirect) btnStartDirect.style.display = 'none';
-
   if (liveModeState.enabled) {
-    badge.textContent = '🟢 直播中';
+    badge.textContent = isLocal ? '💻 本地直播模式 (超管連線中)' : '🟢 直播中';
     badge.className = 'splash-badge live';
-    btn.style.display = 'block';
+    if (actions) actions.style.display = 'flex';
+    if (noLive) noLive.style.display = 'none';
+    if (btnStartDirect) btnStartDirect.style.display = 'none';
+    if (btnUploadDirect) btnUploadDirect.style.display = 'none';
+
     setText('name-a', liveModeState.teamA || '主場');
     setText('name-b', liveModeState.teamB || '客場');
     setText('ctrl-a-name', liveModeState.teamA || '主場');
@@ -332,10 +406,12 @@ async function checkLive() {
     setText('res-name-a', liveModeState.teamA || '主場');
     setText('res-name-b', liveModeState.teamB || '客場');
   } else {
-    badge.textContent = '🔴 直播未開啟';
+    badge.textContent = isLocal ? '💻 本地測試模式 (可直接上傳影片分析)' : '🔴 直播未開啟';
     badge.className = 'splash-badge offline';
-    noLive.style.display = 'block';
+    if (actions) actions.style.display = 'none';
+    if (noLive) noLive.style.display = 'block';
     if (btnStartDirect) btnStartDirect.style.display = 'block';
+    if (btnUploadDirect) btnUploadDirect.style.display = 'block';
   }
 }
 
@@ -359,20 +435,167 @@ async function directStartLive() {
   }
 }
 
+// ═══ VIDEO UPLOAD & CONTROLS ═══
+function triggerVideoUpload() {
+  const input = document.getElementById('video-file-input');
+  if (input) {
+    input.value = '';
+    input.click();
+  }
+}
+
+function handleVideoFileSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  if (videoFileUrl) {
+    URL.revokeObjectURL(videoFileUrl);
+  }
+  videoFileUrl = URL.createObjectURL(file);
+  videoSourceType = 'file';
+
+  showScreen('calibrate');
+  startVideoFile(videoFileUrl, file.name);
+}
+
+function startVideoFile(url, fileName) {
+  videoSourceType = 'file';
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+  }
+  const v = document.getElementById('calibrate-video');
+  v.srcObject = null;
+  v.src = url;
+  v.controls = false;
+  v.loop = true;
+  v.muted = true;
+  v.playsInline = true;
+
+  const calibBar = document.getElementById('calib-video-bar');
+  if (calibBar) calibBar.style.display = 'flex';
+  const nameEl = document.getElementById('calib-video-filename');
+  if (nameEl) nameEl.textContent = '📹 ' + (fileName || '羽球影片');
+
+  v.onloadedmetadata = () => {
+    v.play().catch(()=>{});
+    setupCalib(v);
+  };
+  v.ontimeupdate = () => updateCalibVideoProgress(v);
+}
+
+function toggleCalibPlay() {
+  const v = document.getElementById('calibrate-video');
+  const btn = document.getElementById('btn-calib-play');
+  if (v.paused) {
+    v.play().catch(()=>{});
+    if (btn) btn.textContent = '⏸ 暫停';
+  } else {
+    v.pause();
+    if (btn) btn.textContent = '▶ 播放';
+  }
+}
+
+function seekCalibVideo(sec) {
+  const v = document.getElementById('calibrate-video');
+  v.currentTime = Math.max(0, Math.min(v.duration || 0, v.currentTime + sec));
+}
+
+function onCalibScrub(val) {
+  const v = document.getElementById('calibrate-video');
+  if (v.duration) {
+    v.currentTime = (val / 100) * v.duration;
+  }
+}
+
+function updateCalibVideoProgress(v) {
+  if (!v.duration) return;
+  const scrub = document.getElementById('calib-video-scrub');
+  const timeEl = document.getElementById('calib-video-time');
+  if (scrub) scrub.value = (v.currentTime / v.duration) * 100;
+  if (timeEl) timeEl.textContent = `${formatTime(v.currentTime)} / ${formatTime(v.duration)}`;
+}
+
+function formatTime(s) {
+  s = Math.floor(s || 0);
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m < 10 ? '0' : ''}${m}:${sec < 10 ? '0' : ''}${sec}`;
+}
+
+// ═══ LIVE VIDEO PLAYBACK CONTROLS ═══
+function toggleLivePlay() {
+  const v = document.getElementById('live-video');
+  const btn = document.getElementById('btn-live-play');
+  if (v.paused) {
+    v.play().catch(()=>{});
+    if (btn) btn.textContent = '⏸ 暫停';
+  } else {
+    v.pause();
+    if (btn) btn.textContent = '▶ 播放';
+  }
+}
+
+function replayLiveVideo() {
+  const v = document.getElementById('live-video');
+  v.currentTime = 0;
+  v.play().catch(()=>{});
+  const btn = document.getElementById('btn-live-play');
+  if (btn) btn.textContent = '⏸ 暫停';
+  shuttleTrail = [];
+}
+
+function onLiveScrub(val) {
+  const v = document.getElementById('live-video');
+  if (v.duration) {
+    v.currentTime = (val / 100) * v.duration;
+  }
+}
+
+function updateLiveVideoProgress(v) {
+  if (!v.duration) return;
+  const scrub = document.getElementById('live-video-scrub');
+  const timeEl = document.getElementById('live-video-time');
+  if (scrub) scrub.value = (v.currentTime / v.duration) * 100;
+  if (timeEl) timeEl.textContent = `${formatTime(v.currentTime)} / ${formatTime(v.duration)}`;
+}
+
+function setLiveSpeed(rate) {
+  currentPlaybackRate = rate;
+  const v = document.getElementById('live-video');
+  if (v) v.playbackRate = rate;
+  document.querySelectorAll('.spd-btn').forEach(b => b.classList.remove('active'));
+  const targetId = rate === 0.5 ? 'spd-05' : (rate === 1.0 ? 'spd-10' : 'spd-025');
+  const targetBtn = document.getElementById(targetId);
+  if (targetBtn) targetBtn.classList.add('active');
+  showToast(`⚡ 分析倍速：${rate}x`);
+}
+
+function toggleLiveLoop(checked) {
+  const v = document.getElementById('live-video');
+  if (v) v.loop = checked;
+}
+
 document.getElementById('btn-enter-live').onclick = () => {
+  videoSourceType = 'camera';
   showScreen('calibrate');
   startCamera();
 };
 
 // ═══ CAMERA ═══
 async function startCamera() {
+  videoSourceType = 'camera';
+  const calibBar = document.getElementById('calib-video-bar');
+  if (calibBar) calibBar.style.display = 'none';
+
   try {
     cameraStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'environment', width: {ideal:1280}, height: {ideal:720}, frameRate: {ideal:60} }
     });
     const v = document.getElementById('calibrate-video');
+    v.src = '';
     v.srcObject = cameraStream;
-    v.play();
+    v.play().catch(()=>{});
     setupCalib(v);
   } catch(e) {
     showToast('❌ 無法存取相機：' + e.message);
@@ -383,15 +606,15 @@ async function startCamera() {
 function setupCalib(video) {
   const canvas = document.getElementById('calibrate-canvas');
   const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+  canvas.width = video.videoWidth || window.innerWidth;
+  canvas.height = video.videoHeight || window.innerHeight;
 
   const colors = ['#4361ee','#f72585','#06d6a0','#ffd60a'];
   function draw() {
+    if (currentScreen !== 'calibrate') return;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     if (calibPoints.length < 4) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
       ctx.lineWidth = 1; ctx.setLineDash([4,4]);
       ctx.beginPath();
       ctx.moveTo(canvas.width/2,0); ctx.lineTo(canvas.width/2,canvas.height);
@@ -409,12 +632,12 @@ function setupCalib(video) {
       ctx.beginPath(); ctx.moveTo(calibPoints[0].x,calibPoints[0].y);
       calibPoints.forEach(p=>ctx.lineTo(p.x,p.y));
       if (calibPoints.length===4) ctx.closePath();
-      ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=2; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
     }
     if (calibPoints.length===4) {
       ctx.beginPath(); ctx.moveTo(calibPoints[0].x,calibPoints[0].y);
       calibPoints.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath();
-      ctx.fillStyle='rgba(67,97,238,0.12)'; ctx.fill();
+      ctx.fillStyle='rgba(6,214,160,0.18)'; ctx.fill();
     }
     requestAnimationFrame(draw);
   }
@@ -424,12 +647,14 @@ function setupCalib(video) {
     '✅ 左上角！點擊右上角 ↗',
     '✅ 右上角！點擊右下角 ↘',
     '✅ 右下角！點擊左下角 ↙',
-    '✅ 校正完成！按「開始分析」'
+    '✅ 校正完成！請按下方「開始分析」'
   ];
-  canvas.addEventListener('click', e => {
+  canvas.onclick = e => {
     if (calibPoints.length >= 4) return;
     const rc = canvas.getBoundingClientRect();
-    calibPoints.push({ x: (e.clientX-rc.left)*(canvas.width/rc.width), y: (e.clientY-rc.top)*(canvas.height/rc.height) });
+    const px = (e.clientX - rc.left) * (canvas.width / rc.width);
+    const py = (e.clientY - rc.top) * (canvas.height / rc.height);
+    calibPoints.push({ x: px, y: py });
     updateDots();
     document.getElementById('calibrate-hint').textContent = hints[calibPoints.length-1];
     if (calibPoints.length===4) {
@@ -437,7 +662,7 @@ function setupCalib(video) {
       btn.disabled = false;
       btn.style.background = 'linear-gradient(135deg,#06d6a0,#0a9971)';
     }
-  });
+  };
 }
 
 function updateDots() {
@@ -473,15 +698,37 @@ function startLive() {
 
   const video = document.getElementById('live-video');
   const canvas = document.getElementById('live-canvas');
-  video.srcObject = cameraStream;
-  video.play();
+  const liveVideoBar = document.getElementById('live-video-bar');
+
+  if (videoSourceType === 'file' && videoFileUrl) {
+    video.srcObject = null;
+    video.src = videoFileUrl;
+    video.currentTime = 0;
+    video.loop = true;
+    video.playbackRate = currentPlaybackRate || 0.5;
+    if (liveVideoBar) liveVideoBar.style.display = 'flex';
+  } else {
+    video.src = '';
+    video.srcObject = cameraStream;
+    if (liveVideoBar) liveVideoBar.style.display = 'none';
+  }
+
+  video.play().catch(()=>{});
   trackVideo = video;
   trackCtx = canvas.getContext('2d');
   court3dCtx = document.getElementById('court3d-canvas').getContext('2d');
 
-  function resize() { canvas.width=video.videoWidth||window.innerWidth; canvas.height=video.videoHeight||window.innerHeight; }
+  function resize() {
+    canvas.width = video.videoWidth || window.innerWidth;
+    canvas.height = video.videoHeight || window.innerHeight;
+  }
   video.onloadedmetadata = resize;
   resize();
+
+  video.ontimeupdate = () => {
+    if (videoSourceType === 'file') updateLiveVideoProgress(video);
+  };
+
   loop();
 }
 
@@ -506,7 +753,9 @@ function loop() {
         const [cx,cy] = applyH(H,kx,ky);
         const [px,py] = applyH(H,prevShuttlePos.x,prevShuttlePos.y);
         const dist = Math.sqrt((cx-px)**2+(cy-py)**2)/100;
-        const spd = Math.round(dist/dt*3.6);
+        const rate = (trackVideo && trackVideo.playbackRate) ? trackVideo.playbackRate : 1.0;
+        const effectiveDt = dt * rate;
+        const spd = Math.round(dist/effectiveDt*3.6);
         if (spd>5 && spd<400) {
           speedKmh=spd;
           if (spd>maxSpeedKmh) maxSpeedKmh=spd;
@@ -677,6 +926,8 @@ async function syncSession() {
 
 document.getElementById('btn-end-live').onclick = () => {
   if (animFrameId) cancelAnimationFrame(animFrameId);
+  const vLive = document.getElementById('live-video');
+  if (vLive) vLive.pause();
   const dur = startTime ? Math.floor((Date.now()-startTime)/1000) : 0;
   const m=Math.floor(dur/60), s=dur%60;
   const avg = speedHistory.length ? Math.round(speedHistory.reduce((a,b)=>a+b,0)/speedHistory.length) : 0;
@@ -688,7 +939,15 @@ document.getElementById('btn-end-live').onclick = () => {
   showScreen('result');
 };
 
-function goBack() { showScreen('splash'); checkLive(); }
+function goBack() {
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  const vCalib = document.getElementById('calibrate-video');
+  const vLive = document.getElementById('live-video');
+  if (vCalib) vCalib.pause();
+  if (vLive) vLive.pause();
+  showScreen('splash');
+  checkLive();
+}
 async function saveAndClose() {
   if(uid) await syncSession();
   showToast('✅ 比賽紀錄已儲存！');
