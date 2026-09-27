@@ -255,21 +255,41 @@ let offCanvas = null, offCtx = null;
 const SW = 320, SH = 180;
 
 // ═══ BOOT ═══
-async function init() {
-  try {
-    const r = await fetch('/api/config');
-    const cfg = await r.json();
-    if (cfg.liffId && window.liff) {
-      await liff.init({ liffId: cfg.liffId });
-      if (liff.isLoggedIn()) {
-        const profile = await liff.getProfile().catch(() => null);
-        uid = profile?.userId || liff.getContext()?.userId || null;
-      }
-    }
-  } catch(e) { console.warn('LIFF:', e.message); }
+let _initDone = false;
+function _safeCheckLive() {
+  if (_initDone) return;
+  _initDone = true;
+  // URL uid takes priority so the page works even outside LIFF
   const urlUid = new URLSearchParams(window.location.search).get('uid');
   if (!uid && urlUid) uid = urlUid;
   checkLive();
+}
+
+async function init() {
+  // Safety net: always call checkLive within 4 seconds even if LIFF hangs
+  const safeTimer = setTimeout(_safeCheckLive, 4000);
+  try {
+    // Read URL uid first before any async LIFF work
+    const urlUid = new URLSearchParams(window.location.search).get('uid');
+    if (urlUid) uid = urlUid;
+
+    const r = await fetch('/api/config');
+    const cfg = await r.json();
+    if (cfg.liffId && window.liff) {
+      // Wrap liff.init with its own 3-second timeout
+      await Promise.race([
+        liff.init({ liffId: cfg.liffId }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('liff timeout')), 3000))
+      ]);
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile().catch(() => null);
+        const liffUid = profile?.userId || liff.getContext()?.userId || null;
+        if (liffUid) uid = liffUid; // LIFF uid overrides URL uid if available
+      }
+    }
+  } catch(e) { console.warn('LIFF/config:', e.message); }
+  clearTimeout(safeTimer);
+  _safeCheckLive();
 }
 
 async function checkLive() {
@@ -731,11 +751,22 @@ function showToast(msg,dur=2500) {
 
 // ═══ LIFF BOOTSTRAP ═══
 (function boot() {
-  if (typeof liff !== 'undefined') { init(); return; }
-  const s=document.createElement('script');
-  s.src='https://static.line-scdn.net/liff/edge/2/sdk.js';
-  s.onload=()=>init();
-  s.onerror=()=>{ console.warn('no LIFF SDK'); checkLive(); };
+  // Absolute fallback: if nothing calls init within 6s, force checkLive
+  const hardTimeout = setTimeout(() => {
+    console.warn('hard timeout reached, forcing checkLive');
+    _safeCheckLive();
+  }, 6000);
+
+  function startInit() {
+    clearTimeout(hardTimeout);
+    init();
+  }
+
+  if (typeof liff !== 'undefined') { startInit(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://static.line-scdn.net/liff/edge/2/sdk.js';
+  s.onload = () => startInit();
+  s.onerror = () => { console.warn('no LIFF SDK'); clearTimeout(hardTimeout); _safeCheckLive(); };
   document.head.appendChild(s);
 })();
 </script>
