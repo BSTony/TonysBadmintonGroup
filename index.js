@@ -1490,6 +1490,13 @@ function unpackLiffState(query) {
 
 function sendIndexHtml(req, res) {
   unpackLiffState(req.query);
+
+  // 🏸 直播分析模式：伺服器直接轉向，不載入大廳
+  if (req.query.page === 'live_mode' || req.query.live === '1') {
+    const uid = req.query.uid ? '?uid=' + encodeURIComponent(req.query.uid) : '';
+    return res.redirect(302, '/live_mode.html' + uid);
+  }
+
   const send = (html) => {
     const meta = buildShareMeta(req);
     const initialData = getInitialDataForReq(req);

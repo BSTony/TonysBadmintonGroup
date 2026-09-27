@@ -9458,10 +9458,6 @@ function bootApp() {
   }
 
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('page') === 'live_mode' || urlParams.get('live') === '1') {
-    window.location.replace('/live_mode.html' + window.location.search);
-    return;
-  }
   const buyFromUrl = urlParams.get('buy');
   const urlGameId = urlParams.get('gameId');
 
