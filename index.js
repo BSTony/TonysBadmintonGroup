@@ -6753,7 +6753,7 @@ async function pushToAdmins(targetGid, messages) {
   }
 }
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const AUTO_WAKE_ENABLED = (process.env.AUTO_WAKE_ENABLED || 'true').toLowerCase() !== 'false';
 const AUTO_WAKE_INTERVAL_MINUTES = Math.max(5, parseInt(process.env.AUTO_WAKE_INTERVAL_MINUTES || '10', 10) || 10);
 
