@@ -47,9 +47,10 @@
   .btn-secondary { padding: 10px 24px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; transition: all 0.2s; }
 
   /* CALIBRATE */
-  #screen-calibrate { background: #000; position: relative; }
+  #screen-calibrate { background: #000; position: relative; overflow: hidden; }
+  #calib-video-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
   #calibrate-video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-  #calibrate-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+  #calibrate-canvas { position: absolute; pointer-events: auto; cursor: crosshair; z-index: 10; }
   .calibrate-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.85)); z-index: 20; }
   .calibrate-hint { text-align: center; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
   .calibrate-steps { display: flex; justify-content: center; gap: 10px; margin-bottom: 16px; }
@@ -59,13 +60,17 @@
   .calibrate-actions { display: flex; gap: 10px; }
 
   /* LIVE */
-  #screen-live { flex-direction: column; background: #000; position: relative; }
+  #screen-live { flex-direction: column; background: #000; position: relative; overflow: hidden; }
+  #live-video-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
   #live-video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-  #live-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-  #court3d-canvas { position: absolute; bottom: 130px; right: 10px; width: 160px; height: 110px; border-radius: 10px; border: 1px solid rgba(67,97,238,0.5); background: rgba(13,13,26,0.85); z-index: 15; display: none; }
+  #live-canvas { position: absolute; pointer-events: auto; cursor: crosshair; z-index: 10; }
+  #court3d-canvas { position: absolute; top: 90px; right: 16px; width: 150px; height: 260px; border-radius: 12px; border: 1.5px solid rgba(6,214,160,0.7); background: rgba(13,13,26,0.92); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 15px rgba(6,214,160,0.25); z-index: 25; display: block; }
   .spd-btn { padding: 4px 10px; border-radius: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; font-size: 11px; cursor: pointer; transition: all 0.2s; }
   .spd-btn:hover { background: rgba(255,255,255,0.18); }
   .spd-btn.active { background: #4361ee; color: #fff; border-color: #4361ee; font-weight: 700; box-shadow: 0 0 10px rgba(67,97,238,0.5); }
+  .btn-opt { padding: 8px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; color: #cbd5e1; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
+  .btn-opt:hover { background: rgba(255,255,255,0.15); }
+  .btn-opt.active { background: rgba(6,214,160,0.2); border-color: var(--accent2); color: var(--accent2); box-shadow: 0 0 10px rgba(6,214,160,0.3); }
 
   .scoreboard { position: absolute; top: 0; left: 0; right: 0; z-index: 20; background: linear-gradient(180deg, rgba(0,0,0,0.9) 60%, transparent); padding: 8px 12px 20px; }
   .score-inner { display: flex; align-items: center; justify-content: space-between; background: rgba(22,22,39,0.85); border-radius: 14px; padding: 8px 12px; border: 1px solid rgba(67,97,238,0.3); backdrop-filter: blur(10px); }
@@ -155,8 +160,10 @@
 
 <!-- CALIBRATE -->
 <div id="screen-calibrate" class="screen">
-  <video id="calibrate-video" autoplay muted playsinline></video>
-  <canvas id="calibrate-canvas"></canvas>
+  <div id="calib-video-wrap">
+    <video id="calibrate-video" autoplay muted playsinline></video>
+    <canvas id="calibrate-canvas"></canvas>
+  </div>
 
   <!-- 影片校正控制列 (上傳影片模式顯示) -->
   <div id="calib-video-bar" style="display:none; position:absolute; top:16px; left:16px; right:16px; z-index:25; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px); border:1px solid rgba(99,102,241,0.3); border-radius:14px; padding:10px 14px; flex-direction:column; gap:8px; box-shadow:0 8px 30px rgba(0,0,0,0.7);">
@@ -192,9 +199,11 @@
 
 <!-- LIVE -->
 <div id="screen-live" class="screen">
-  <video id="live-video" autoplay muted playsinline></video>
-  <canvas id="live-canvas"></canvas>
-  <canvas id="court3d-canvas"></canvas>
+  <div id="live-video-wrap">
+    <video id="live-video" autoplay muted playsinline></video>
+    <canvas id="live-canvas"></canvas>
+  </div>
+  <canvas id="court3d-canvas" width="150" height="260"></canvas>
 
   <div class="scoreboard">
     <div class="score-inner">
@@ -238,8 +247,11 @@
   </div>
 
   <div class="live-controls">
-    <div class="control-row">
-      <button class="btn-toggle3d" id="btn-toggle3d" onclick="toggle3D()">🗺 3D俯瞰</button>
+    <div class="control-row" style="flex-wrap:wrap; gap:8px;">
+      <button class="btn-opt active" id="btn-toggle3d" onclick="toggle3D()">🗺 3D俯瞰</button>
+      <button class="btn-opt active" id="btn-toggle-court" onclick="toggleCourtOverlay()">📐 球場標線</button>
+      <button class="btn-opt active" id="btn-toggle-hud" onclick="toggleHud()">📊 數據儀表</button>
+      <button class="btn-opt" onclick="simulateRallyDemo()" style="color:#ffd60a; border-color:rgba(255,214,10,0.4);" title="點擊立即展示高科技軌跡與球速動畫">✨ 軌跡示範</button>
       <div style="flex:1"></div>
       <button class="btn-end" id="btn-end-live">■ 結束分析</button>
     </div>
@@ -300,7 +312,9 @@ const COURT_W = 610, COURT_H = 1340; // cm
 let trackCtx, trackVideo;
 let court3dCtx;
 let animFrameId = null;
-let show3D = false;
+let show3D = true;
+let showCourtOverlay = true;
+let showHud = true;
 let shuttlePos = null, prevShuttlePos = null;
 let shuttleTrail = [];
 let kalX = mkKalman(1,1,0.1), kalY = mkKalman(1,1,0.1);
@@ -311,7 +325,7 @@ let scoreA = 0, scoreB = 0;
 let startTime = null, speedHistory = [];
 let H = null;
 let offCanvas = null, offCtx = null;
-const SW = 320, SH = 180;
+const SW = 480, SH = 270;
 
 // ═══ BOOT ═══
 let _initDone = false;
@@ -603,11 +617,45 @@ async function startCamera() {
   }
 }
 
+function alignCanvasToVideo(video, canvas) {
+  if (!video || !canvas) return;
+  const vw = video.videoWidth || 1280;
+  const vh = video.videoHeight || 720;
+  const vAspect = vw / vh;
+  const parent = video.parentElement || document.body;
+  const pw = parent.clientWidth || window.innerWidth;
+  const ph = parent.clientHeight || window.innerHeight;
+  const pAspect = pw / ph;
+
+  let dw, dh, dx, dy;
+  if (pAspect > vAspect) {
+    dh = ph;
+    dw = ph * vAspect;
+    dx = (pw - dw) / 2;
+    dy = 0;
+  } else {
+    dw = pw;
+    dh = pw / vAspect;
+    dx = 0;
+    dy = (ph - dh) / 2;
+  }
+
+  canvas.style.position = 'absolute';
+  canvas.style.left = Math.round(dx) + 'px';
+  canvas.style.top = Math.round(dy) + 'px';
+  canvas.style.width = Math.round(dw) + 'px';
+  canvas.style.height = Math.round(dh) + 'px';
+  canvas.width = vw;
+  canvas.height = vh;
+}
+
 function setupCalib(video) {
   const canvas = document.getElementById('calibrate-canvas');
   const ctx = canvas.getContext('2d');
-  canvas.width = video.videoWidth || window.innerWidth;
-  canvas.height = video.videoHeight || window.innerHeight;
+  alignCanvasToVideo(video, canvas);
+  window.addEventListener('resize', () => {
+    if (currentScreen === 'calibrate') alignCanvasToVideo(video, canvas);
+  });
 
   const colors = ['#4361ee','#f72585','#06d6a0','#ffd60a'];
   function draw() {
@@ -625,7 +673,7 @@ function setupCalib(video) {
       ctx.beginPath(); ctx.arc(p.x,p.y,14,0,Math.PI*2);
       ctx.fillStyle = colors[i]+'33'; ctx.fill();
       ctx.strokeStyle = colors[i]; ctx.lineWidth = 2.5; ctx.stroke();
-      ctx.fillStyle = colors[i]; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+      ctx.fillStyle = colors[i]; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
       ctx.fillText((i+1).toString(),p.x,p.y+4);
     });
     if (calibPoints.length >= 2) {
@@ -690,15 +738,47 @@ document.getElementById('btn-start-analysis').onclick = () => {
 // ═══ LIVE ANALYSIS ═══
 function startLive() {
   showScreen('live');
+  show3D = true;
+  showCourtOverlay = true;
+  showHud = true;
   startTime = Date.now();
-  scoreA = liveModeState.scoreA||0;
-  scoreB = liveModeState.scoreB||0;
-  rallyCount = liveModeState.rallyCount||0;
+  scoreA = liveModeState.scoreA || 0;
+  scoreB = liveModeState.scoreB || 0;
+  rallyCount = liveModeState.rallyCount || 0;
   updateScores();
 
   const video = document.getElementById('live-video');
   const canvas = document.getElementById('live-canvas');
   const liveVideoBar = document.getElementById('live-video-bar');
+  const court3dCanvas = document.getElementById('court3d-canvas');
+
+  // Sensible default calibrated court corners fallback if user started without 4 corners
+  if (!calibPoints || calibPoints.length < 4) {
+    const vw = video.videoWidth || 1280;
+    const vh = video.videoHeight || 720;
+    calibPoints = [
+      { x: Math.round(vw * 0.28), y: Math.round(vh * 0.42) },
+      { x: Math.round(vw * 0.72), y: Math.round(vh * 0.42) },
+      { x: Math.round(vw * 0.88), y: Math.round(vh * 0.90) },
+      { x: Math.round(vw * 0.12), y: Math.round(vh * 0.90) }
+    ];
+    H = computeH(calibPoints.map(p => [p.x, p.y]), [[0, 0], [COURT_W, 0], [COURT_W, COURT_H], [0, COURT_H]]);
+  }
+
+  if (court3dCanvas) {
+    court3dCanvas.style.display = 'block';
+    court3dCanvas.width = 150;
+    court3dCanvas.height = 260;
+    court3dCtx = court3dCanvas.getContext('2d');
+  }
+
+  // Update button active states
+  const btn3D = document.getElementById('btn-toggle3d');
+  if (btn3D) btn3D.classList.add('active');
+  const btnCourt = document.getElementById('btn-toggle-court');
+  if (btnCourt) btnCourt.classList.add('active');
+  const btnHud = document.getElementById('btn-toggle-hud');
+  if (btnHud) btnHud.classList.add('active');
 
   if (videoSourceType === 'file' && videoFileUrl) {
     video.srcObject = null;
@@ -713,22 +793,40 @@ function startLive() {
     if (liveVideoBar) liveVideoBar.style.display = 'none';
   }
 
-  video.play().catch(()=>{});
+  video.play().catch(() => {});
   trackVideo = video;
   trackCtx = canvas.getContext('2d');
-  court3dCtx = document.getElementById('court3d-canvas').getContext('2d');
+
+  // Interactive ball lock: clicking on the video snaps AI tracking to the point
+  canvas.onclick = (e) => {
+    const rc = canvas.getBoundingClientRect();
+    const clickX = (e.clientX - rc.left) * (canvas.width / rc.width);
+    const clickY = (e.clientY - rc.top) * (canvas.height / rc.height);
+    kalX = mkKalman(6, 2, 4);
+    kalY = mkKalman(6, 2, 4);
+    const kx = kalX.update(clickX);
+    const ky = kalY.update(clickY);
+    prevShuttlePos = shuttlePos;
+    shuttlePos = { x: kx, y: ky, t: Date.now() };
+    shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
+    showToast('🎯 已手動鎖定羽球！', 1200);
+  };
 
   function resize() {
-    canvas.width = video.videoWidth || window.innerWidth;
-    canvas.height = video.videoHeight || window.innerHeight;
+    alignCanvasToVideo(video, canvas);
   }
   video.onloadedmetadata = resize;
   resize();
+  window.addEventListener('resize', () => {
+    if (currentScreen === 'live') resize();
+  });
 
   video.ontimeupdate = () => {
     if (videoSourceType === 'file') updateLiveVideoProgress(video);
   };
 
+  // Immediate first minimap render
+  drawMiniMap();
   loop();
 }
 
@@ -736,173 +834,600 @@ function loop() {
   if (currentScreen !== 'live') return;
   animFrameId = requestAnimationFrame(loop);
   const canvas = document.getElementById('live-canvas');
+  if (!canvas || !trackCtx) return;
   const W = canvas.width, HH = canvas.height;
-  trackCtx.clearRect(0,0,W,HH);
+  trackCtx.clearRect(0, 0, W, HH);
 
+  // 1. Holographic Court Overlay on real court
+  if (showCourtOverlay) {
+    drawCourtOverlay(trackCtx, canvas);
+  }
+
+  // 2. AI Vision HUD Status Pill (Top Left)
+  if (showHud) {
+    drawAiHud(trackCtx);
+  }
+
+  // 3. Robust Ball Detection
   const det = detectBall(trackVideo, canvas);
   if (det) {
     const kx = kalX.update(det.x), ky = kalY.update(det.y);
     prevShuttlePos = shuttlePos;
-    shuttlePos = {x:kx,y:ky,t:Date.now()};
-    shuttleTrail.push({x:kx,y:ky,t:Date.now()});
-    if (shuttleTrail.length>20) shuttleTrail.shift();
+    shuttlePos = { x: kx, y: ky, t: Date.now() };
+    shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
+    if (shuttleTrail.length > 25) shuttleTrail.shift();
 
     if (prevShuttlePos && H) {
-      const dt = (shuttlePos.t - prevShuttlePos.t)/1000;
-      if (dt>0 && dt<0.5) {
-        const [cx,cy] = applyH(H,kx,ky);
-        const [px,py] = applyH(H,prevShuttlePos.x,prevShuttlePos.y);
-        const dist = Math.sqrt((cx-px)**2+(cy-py)**2)/100;
+      const dt = (shuttlePos.t - prevShuttlePos.t) / 1000;
+      if (dt > 0 && dt < 0.5) {
+        const [cx, cy] = applyH(H, kx, ky);
+        const [px, py] = applyH(H, prevShuttlePos.x, prevShuttlePos.y);
+        const dist = Math.sqrt((cx - px) ** 2 + (cy - py) ** 2) / 100;
         const rate = (trackVideo && trackVideo.playbackRate) ? trackVideo.playbackRate : 1.0;
         const effectiveDt = dt * rate;
-        const spd = Math.round(dist/effectiveDt*3.6);
-        if (spd>5 && spd<400) {
-          speedKmh=spd;
-          if (spd>maxSpeedKmh) maxSpeedKmh=spd;
-          speedHistory.push(spd); if(speedHistory.length>60) speedHistory.shift();
+        const spd = Math.round(dist / effectiveDt * 3.6);
+        if (spd > 8 && spd < 450) {
+          speedKmh = spd;
+          if (spd > maxSpeedKmh) maxSpeedKmh = spd;
+          speedHistory.push(spd);
+          if (speedHistory.length > 60) speedHistory.shift();
           showSpeed(spd);
           detectRally(ky, prevShuttlePos.y);
         }
       }
     }
     drawTrail(trackCtx);
-    drawBall(trackCtx, kx, ky);
+    drawBall(trackCtx, kx, ky, det.r || 10);
   } else {
-    const age = shuttleTrail.length ? Date.now()-shuttleTrail[shuttleTrail.length-1].t : 9999;
-    if (age<1000) drawTrail(trackCtx); else shuttleTrail=[];
-    kalX.predict(); kalY.predict();
+    // Fade trail gracefully over 1200ms
+    const age = shuttleTrail.length ? Date.now() - shuttleTrail[shuttleTrail.length - 1].t : 9999;
+    if (age < 1200) {
+      drawTrail(trackCtx);
+    } else {
+      shuttleTrail = [];
+    }
+    kalX.predict();
+    kalY.predict();
   }
+
+  // 4. Top-Down 3D Minimap
   if (show3D) drawMiniMap();
 }
 
-// ═══ BALL DETECTION ═══
+// ═══ ROBUST TEMPORAL BALL DETECTION ═══
+let prevGray = null;
+
 function detectBall(video, dest) {
-  if (!video.videoWidth) return null;
+  if (!video || !video.videoWidth || video.paused || video.ended) return null;
   if (!offCanvas) {
     offCanvas = document.createElement('canvas');
-    offCanvas.width = SW; offCanvas.height = SH;
-    offCtx = offCanvas.getContext('2d',{willReadFrequently:true});
+    offCanvas.width = SW;
+    offCanvas.height = SH;
+    offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+    prevGray = null;
   }
-  offCtx.drawImage(video,0,0,SW,SH);
-  const {data} = offCtx.getImageData(0,0,SW,SH);
-  const pts = [];
-  for (let y=0;y<SH;y+=2) for (let x=0;x<SW;x+=2) {
-    const i=(y*SW+x)*4, r=data[i],g=data[i+1],b=data[i+2];
-    const white = r>200&&g>200&&b>200&&Math.abs(r-g)<30&&Math.abs(g-b)<30;
-    const yellow = r>200&&g>180&&b<100&&r-b>120;
-    if (white||yellow) pts.push({x,y});
-  }
-  if (pts.length<3||pts.length>600) return null;
-  const clusters = clusterPts(pts,18);
-  let best=null, bestS=Infinity;
-  for (const c of clusters) {
-    if (c.n<2||c.n>150) continue;
-    const s = c.r*2-c.n;
-    if (s<bestS) { bestS=s; best=c; }
-  }
-  if (!best) return null;
-  return { x: best.cx*(dest.width/SW), y: best.cy*(dest.height/SH) };
-}
 
-function clusterPts(pts, d) {
-  const used = new Uint8Array(pts.length);
-  const out = [];
-  for (let i=0;i<pts.length;i++) {
-    if (used[i]) continue;
-    let cx=pts[i].x, cy=pts[i].y, n=1; used[i]=1;
-    const members=[pts[i]];
-    for (let j=i+1;j<pts.length;j++) {
-      if(used[j]) continue;
-      if(Math.abs(pts[j].x-cx)<d&&Math.abs(pts[j].y-cy)<d) {
-        members.push(pts[j]); used[j]=1; n++;
-        cx=members.reduce((s,p)=>s+p.x,0)/n;
-        cy=members.reduce((s,p)=>s+p.y,0)/n;
+  offCtx.drawImage(video, 0, 0, SW, SH);
+  const imgData = offCtx.getImageData(0, 0, SW, SH);
+  const data = imgData.data;
+  const currGray = new Uint8Array(SW * SH);
+
+  // 1. Grayscale & Temporal Difference (Background Subtraction)
+  const diff = new Uint8Array(SW * SH);
+  for (let i = 0; i < SW * SH; i++) {
+    const idx = i * 4;
+    const g = (data[idx] * 299 + data[idx + 1] * 587 + data[idx + 2] * 114) >> 10;
+    currGray[i] = g;
+    diff[i] = prevGray ? Math.abs(g - prevGray[i]) : 0;
+  }
+
+  if (!prevGray) prevGray = new Uint8Array(SW * SH);
+  prevGray.set(currGray);
+
+  // 2. Region of Interest (ROI) from calibration court bounds
+  let minRoiX = 0, maxRoiX = SW;
+  // Strictly cut off upper ceiling light fixtures (top 16% guaranteed cut)
+  let minRoiY = Math.floor(SH * 0.16);
+  let maxRoiY = Math.floor(SH * 0.95);
+
+  if (calibPoints && calibPoints.length === 4) {
+    const scaleX = SW / (video.videoWidth || dest.width);
+    const scaleY = SH / (video.videoHeight || dest.height);
+    const xs = calibPoints.map(p => p.x * scaleX);
+    const ys = calibPoints.map(p => p.y * scaleY);
+    const cMinX = Math.min(...xs), cMaxX = Math.max(...xs);
+    const cMinY = Math.min(...ys), cMaxY = Math.max(...ys);
+    const courtW = cMaxX - cMinX;
+    const courtH = cMaxY - cMinY;
+
+    minRoiX = Math.max(0, Math.floor(cMinX - courtW * 0.2));
+    maxRoiX = Math.min(SW, Math.ceil(cMaxX + courtW * 0.2));
+    minRoiY = Math.max(Math.floor(SH * 0.16), Math.floor(cMinY - courtH * 0.45));
+    maxRoiY = Math.min(SH, Math.ceil(cMaxY + courtH * 0.15));
+  }
+
+  // 3. Fast Candidate Pixel Collection
+  const candidates = [];
+  for (let y = minRoiY; y < maxRoiY; y++) {
+    for (let x = minRoiX; x < maxRoiX; x++) {
+      const i = y * SW + x;
+      const g = currGray[i];
+      const d = diff[i];
+      const idx = i * 4;
+      const r = data[idx], gr = data[idx + 1], b = data[idx + 2];
+
+      const isMotionBright = (d >= 7 && g >= 125);
+      const isHighContrastWhite = (g >= 195 && d >= 4);
+      const isYellowShuttle = (r > 165 && gr > 145 && b < 130 && d >= 5);
+
+      if (isMotionBright || isHighContrastWhite || isYellowShuttle) {
+        candidates.push({ x, y, g, d });
       }
     }
-    const r=Math.max(...members.map(p=>Math.sqrt((p.x-cx)**2+(p.y-cy)**2)));
-    out.push({cx,cy,n,r});
   }
-  return out;
+
+  if (candidates.length < 2) return null;
+
+  // 4. Fast O(N) Spatial Grid Bucket Clustering (14x14 px cells)
+  const cellSize = 14;
+  const gridW = Math.ceil(SW / cellSize);
+  const gridH = Math.ceil(SH / cellSize);
+  const grid = Array.from({ length: gridW * gridH }, () => []);
+
+  for (let i = 0; i < candidates.length; i++) {
+    const p = candidates[i];
+    const gx = Math.floor(p.x / cellSize);
+    const gy = Math.floor(p.y / cellSize);
+    if (gx >= 0 && gx < gridW && gy >= 0 && gy < gridH) {
+      grid[gy * gridW + gx].push(p);
+    }
+  }
+
+  const clusters = [];
+  for (let gy = 0; gy < gridH; gy++) {
+    for (let gx = 0; gx < gridW; gx++) {
+      const cell = grid[gy * gridW + gx];
+      // Shuttlecock is compact: 2 to 65 pixels. Large bodies (>80) are filtered out!
+      if (cell.length >= 2 && cell.length <= 65) {
+        let sumX = 0, sumY = 0, sumG = 0, sumD = 0;
+        for (const p of cell) {
+          sumX += p.x; sumY += p.y; sumG += p.g; sumD += p.d;
+        }
+        const cx = sumX / cell.length;
+        const cy = sumY / cell.length;
+        let maxD = 0;
+        for (const p of cell) {
+          const d = (p.x - cx) ** 2 + (p.y - cy) ** 2;
+          if (d > maxD) maxD = d;
+        }
+        const r = Math.sqrt(maxD);
+        if (r <= 12) {
+          clusters.push({
+            cx, cy, r, n: cell.length,
+            score: (sumD / cell.length) * 1.6 + (sumG / cell.length) * 0.9 - r * 2.0
+          });
+        }
+      }
+    }
+  }
+
+  if (clusters.length === 0) return null;
+
+  // 5. Select Best Cluster with Trajectory Continuity Bonus
+  let best = null, bestScore = -Infinity;
+  for (const c of clusters) {
+    let score = c.score;
+    if (shuttlePos) {
+      const prevX_SW = shuttlePos.x * (SW / dest.width);
+      const prevY_SW = shuttlePos.y * (SH / dest.height);
+      const dist = Math.hypot(c.cx - prevX_SW, c.cy - prevY_SW);
+      if (dist <= 50) {
+        score += (50 - dist) * 12;
+      } else {
+        score -= dist * 2;
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      best = c;
+    }
+  }
+
+  if (!best) return null;
+
+  return {
+    x: best.cx * (dest.width / SW),
+    y: best.cy * (dest.height / SH),
+    r: Math.max(8, best.r * (dest.width / SW))
+  };
 }
 
-function drawBall(ctx,x,y) {
-  ctx.beginPath(); ctx.arc(x,y,12,0,Math.PI*2);
-  ctx.fillStyle='rgba(255,214,10,0.15)'; ctx.fill();
-  ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2);
-  ctx.fillStyle='#ffd60a';
-  ctx.shadowColor='#ffd60a'; ctx.shadowBlur=18;
-  ctx.fill(); ctx.shadowBlur=0;
+// ═══ HOLOGRAPHIC COURT OVERLAY ═══
+function drawCourtOverlay(ctx, canvas) {
+  if (!calibPoints || calibPoints.length < 4) return;
+  const [p0, p1, p2, p3] = calibPoints;
+
+  ctx.save();
+  // 1. Semi-transparent Court Carpet Glow
+  ctx.beginPath();
+  ctx.moveTo(p0.x, p0.y);
+  ctx.lineTo(p1.x, p1.y);
+  ctx.lineTo(p2.x, p2.y);
+  ctx.lineTo(p3.x, p3.y);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(6, 214, 160, 0.05)';
+  ctx.fill();
+
+  // 2. Holographic Boundary Lines
+  ctx.strokeStyle = 'rgba(6, 214, 160, 0.65)';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = 'rgba(6, 214, 160, 0.6)';
+  ctx.shadowBlur = 10;
+  ctx.stroke();
+
+  // 3. Center Net Line
+  const netLx = (p0.x + p3.x) / 2;
+  const netLy = (p0.y + p3.y) / 2;
+  const netRx = (p1.x + p2.x) / 2;
+  const netRy = (p1.y + p2.y) / 2;
+  ctx.beginPath();
+  ctx.moveTo(netLx, netLy);
+  ctx.lineTo(netRx, netRy);
+  ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 6]);
+  ctx.shadowColor = '#ef4444';
+  ctx.shadowBlur = 12;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 4. Corner Crosshairs [P1] ~ [P4]
+  const colors = ['#4361ee', '#f72585', '#06d6a0', '#ffd60a'];
+  calibPoints.forEach((p, i) => {
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = colors[i];
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+  });
+
+  // Net Tag
+  const netMidX = (netLx + netRx) / 2;
+  const netMidY = (netLy + netRy) / 2;
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = '#000';
+  ctx.fillStyle = '#ef4444';
+  ctx.font = 'bold 11px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('⚡ 球網 (NET)', netMidX, netMidY - 6);
+
+  ctx.restore();
+}
+
+// ═══ AI VISION HUD STATUS ═══
+function drawAiHud(ctx) {
+  if (!showHud) return;
+  ctx.save();
+  const hudX = 16, hudY = 72, hudW = 210, hudH = 74;
+
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+  ctx.strokeStyle = 'rgba(67, 97, 238, 0.45)';
+  ctx.lineWidth = 1.5;
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+  ctx.shadowBlur = 12;
+  if (ctx.roundRect) {
+    ctx.beginPath();
+    ctx.roundRect(hudX, hudY, hudW, hudH, 12);
+    ctx.fill();
+    ctx.stroke();
+  } else {
+    ctx.fillRect(hudX, hudY, hudW, hudH);
+    ctx.strokeRect(hudX, hudY, hudW, hudH);
+  }
+
+  const isTracking = Boolean(shuttlePos && (Date.now() - shuttlePos.t < 400));
+  // Status indicator dot
+  ctx.beginPath();
+  ctx.arc(hudX + 16, hudY + 18, 5, 0, Math.PI * 2);
+  ctx.fillStyle = isTracking ? '#06d6a0' : '#38bdf8';
+  ctx.shadowColor = isTracking ? '#06d6a0' : '#38bdf8';
+  ctx.shadowBlur = 8;
+  ctx.fill();
+
+  ctx.shadowBlur = 0;
+  ctx.font = 'bold 12px system-ui, sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'left';
+  ctx.fillText('🏸 AI 即時視覺分析', hudX + 28, hudY + 22);
+
+  ctx.font = '11px system-ui, sans-serif';
+  ctx.fillStyle = isTracking ? '#ffd60a' : '#94a3b8';
+  ctx.fillText(isTracking ? `🎯 鎖定羽球 · 速度 ${speedKmh || 0} km/h` : `🔍 掃描中 · 擊球 ${rallyHitCount} 次`, hudX + 14, hudY + 44);
+
+  ctx.fillStyle = '#cbd5e1';
+  ctx.fillText(`⚡ 最高速: ${maxSpeedKmh || 0} km/h · ${rallyCount} 回合`, hudX + 14, hudY + 62);
+
+  ctx.restore();
+}
+
+// ═══ VISUAL DRAWING ═══
+function drawBall(ctx, x, y, r = 10) {
+  ctx.save();
+  const size = Math.max(16, r * 1.5);
+
+  // Futuristic Target Reticle
+  ctx.strokeStyle = '#06d6a0';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = '#06d6a0';
+  ctx.shadowBlur = 12;
+
+  const cLen = size * 0.38;
+  ctx.beginPath();
+  ctx.moveTo(x - size, y - size + cLen); ctx.lineTo(x - size, y - size); ctx.lineTo(x - size + cLen, y - size);
+  ctx.moveTo(x + size - cLen, y - size); ctx.lineTo(x + size, y - size); ctx.lineTo(x + size, y - size + cLen);
+  ctx.moveTo(x + size, y + size - cLen); ctx.lineTo(x + size, y + size); ctx.lineTo(x + size - cLen, y + size);
+  ctx.moveTo(x - size + cLen, y + size); ctx.lineTo(x - size, y + size); ctx.lineTo(x - size, y + size - cLen);
+  ctx.stroke();
+
+  // Glowing Ball Center
+  ctx.beginPath();
+  ctx.arc(x, y, Math.max(5, r * 0.55), 0, Math.PI * 2);
+  ctx.fillStyle = '#ffd60a';
+  ctx.shadowColor = '#ffd60a';
+  ctx.shadowBlur = 18;
+  ctx.fill();
+
+  // Speed Tag Badge
+  if (speedKmh > 0) {
+    const txt = `⚡ ${speedKmh} km/h`;
+    ctx.font = 'bold 12px system-ui, sans-serif';
+    const tw = ctx.measureText(txt).width;
+    const bx = x - tw / 2 - 8, by = y - size - 24, bw = tw + 16, bh = 20;
+
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    ctx.strokeStyle = speedKmh > 120 ? '#f72585' : '#06d6a0';
+    ctx.lineWidth = 1;
+    ctx.shadowBlur = 6;
+    ctx.shadowColor = '#000';
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(bx, by, bw, bh, 6) : ctx.rect(bx, by, bw, bh);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = speedKmh > 120 ? '#f72585' : '#ffd60a';
+    ctx.textAlign = 'center';
+    ctx.fillText(txt, x, by + 14);
+  }
+  ctx.restore();
 }
 
 function drawTrail(ctx) {
-  for (let i=1;i<shuttleTrail.length;i++) {
-    const t=i/shuttleTrail.length, p=shuttleTrail[i-1], c=shuttleTrail[i];
-    ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(c.x,c.y);
-    ctx.strokeStyle=`rgba(255,214,10,${t*0.7})`; ctx.lineWidth=t*4; ctx.lineCap='round'; ctx.stroke();
+  if (shuttleTrail.length < 2) return;
+  ctx.save();
+  for (let i = 1; i < shuttleTrail.length; i++) {
+    const p1 = shuttleTrail[i - 1];
+    const p2 = shuttleTrail[i];
+    const prog = i / shuttleTrail.length;
+
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+
+    const spd = speedKmh || 80;
+    let color = `rgba(6, 214, 160, ${prog * 0.9})`;
+    if (spd > 130) color = `rgba(247, 37, 133, ${prog * 0.95})`;
+    else if (spd > 75) color = `rgba(255, 214, 10, ${prog * 0.9})`;
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = Math.max(2, prog * 7);
+    ctx.lineCap = 'round';
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.stroke();
   }
+  ctx.restore();
 }
 
 // ═══ RALLY ═══
 function detectRally(cy, py) {
-  const dir = cy<py?'up':'down';
+  const dir = cy < py ? 'up' : 'down';
   const now = Date.now();
-  if (lastDir && dir!==lastDir && now-lastHitTime>200) {
+  if (lastDir && dir !== lastDir && now - lastHitTime > 300) {
     rallyHitCount++;
-    rallyCount = Math.floor(rallyHitCount/2);
+    rallyCount = Math.floor(rallyHitCount / 2);
     lastHitTime = now;
-    setText('rally-label', rallyCount+' 回合');
+    setText('rally-label', `${rallyCount} 回合 (擊球: ${rallyHitCount})`);
     syncSession();
   }
-  lastDir=dir;
+  lastDir = dir;
 }
 
 // ═══ SPEED ═══
-let speedTimer=null;
+let speedTimer = null;
 function showSpeed(km) {
-  const b=document.getElementById('speed-badge');
-  b.textContent='⚡ '+km+' km/h'; b.classList.add('visible');
+  const b = document.getElementById('speed-badge');
+  if (!b) return;
+  b.innerHTML = `⚡ 即時球速 <strong>${km}</strong> km/h`;
+  b.classList.add('visible');
   clearTimeout(speedTimer);
-  speedTimer=setTimeout(()=>b.classList.remove('visible'),2000);
+  speedTimer = setTimeout(() => b.classList.remove('visible'), 2500);
 }
 
-// ═══ 3D MINIMAP ═══
+// ═══ 3D TOP-DOWN MINIMAP ═══
 function drawMiniMap() {
   const c3 = document.getElementById('court3d-canvas');
+  if (!c3 || !court3dCtx) return;
   const ctx = court3dCtx;
-  const W=c3.width, HH=c3.height;
-  ctx.clearRect(0,0,W,HH);
-  const p=10;
-  ctx.fillStyle='#1a3a2a'; ctx.fillRect(p,p,W-p*2,HH-p*2);
-  ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=1; ctx.strokeRect(p+2,p+2,W-p*2-4,HH-p*2-4);
-  ctx.strokeStyle='rgba(255,80,80,0.8)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(p+2,HH/2); ctx.lineTo(W-p-2,HH/2); ctx.stroke();
-  ctx.strokeStyle='rgba(255,255,255,0.3)'; ctx.lineWidth=0.8;
-  [HH/2-25,HH/2+25].forEach(y=>{ ctx.beginPath(); ctx.moveTo(p+2,y); ctx.lineTo(W-p-2,y); ctx.stroke(); });
+  const W = c3.width, H_C = c3.height;
+  ctx.clearRect(0, 0, W, H_C);
 
+  const pad = 12;
+  const courtW = W - pad * 2;
+  const courtH = H_C - pad * 2;
+
+  // Emerald Court Floor
+  ctx.fillStyle = '#0f4c3a';
+  ctx.fillRect(pad, pad, courtW, courtH);
+
+  // Outer Boundary Line
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(pad, pad, courtW, courtH);
+
+  // Singles Sidelines
+  const sMargin = courtW * (46 / 610);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(pad + sMargin, pad, courtW - sMargin * 2, courtH);
+
+  // Net Line
+  const netY = pad + courtH / 2;
+  ctx.strokeStyle = '#ef4444';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(pad - 2, netY);
+  ctx.lineTo(pad + courtW + 2, netY);
+  ctx.stroke();
+
+  // Short Service Lines
+  const srvDist = courtH * (198 / 1340);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad, netY + srvDist);
+  ctx.lineTo(pad + courtW, netY + srvDist);
+  ctx.moveTo(pad, netY - srvDist);
+  ctx.lineTo(pad + courtW, netY - srvDist);
+  ctx.stroke();
+
+  // Center Line
+  ctx.beginPath();
+  ctx.moveTo(pad + courtW / 2, pad);
+  ctx.lineTo(pad + courtW / 2, netY - srvDist);
+  ctx.moveTo(pad + courtW / 2, netY + srvDist);
+  ctx.lineTo(pad + courtW / 2, pad + courtH);
+  ctx.stroke();
+
+  // Header Title
+  ctx.fillStyle = '#e2e8f0';
+  ctx.font = 'bold 10px system-ui, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('🗺️ 3D 落點俯瞰', pad + 4, pad - 3);
+
+  // Shuttlecock on Minimap
   if (shuttlePos && H) {
-    shuttleTrail.slice(-8).forEach((tp,i,a)=>{
-      const t=i/a.length;
-      const [tcx,tcy]=applyH(H,tp.x,tp.y);
-      const tx=p+4+(tcx/COURT_W)*(W-p*2-8), ty=p+4+(tcy/COURT_H)*(HH-p*2-8);
-      ctx.beginPath(); ctx.arc(tx,ty,2,0,Math.PI*2);
-      ctx.fillStyle=`rgba(255,214,10,${t*0.5})`; ctx.fill();
-    });
-    const [bx,by]=applyH(H,shuttlePos.x,shuttlePos.y);
-    const mx=p+4+(bx/COURT_W)*(W-p*2-8), my=p+4+(by/COURT_H)*(HH-p*2-8);
-    ctx.beginPath(); ctx.arc(mx,my,4,0,Math.PI*2);
-    ctx.fillStyle='#ffd60a'; ctx.shadowColor='#ffd60a'; ctx.shadowBlur=8;
-    ctx.fill(); ctx.shadowBlur=0;
+    for (let i = 1; i < shuttleTrail.length; i++) {
+      const tp1 = shuttleTrail[i - 1];
+      const tp2 = shuttleTrail[i];
+      const [c1X, c1Y] = applyH(H, tp1.x, tp1.y);
+      const [c2X, c2Y] = applyH(H, tp2.x, tp2.y);
+
+      const m1X = pad + (c1X / COURT_W) * courtW;
+      const m1Y = pad + (c1Y / COURT_H) * courtH;
+      const m2X = pad + (c2X / COURT_W) * courtW;
+      const m2Y = pad + (c2Y / COURT_H) * courtH;
+
+      const prog = i / shuttleTrail.length;
+      ctx.beginPath();
+      ctx.moveTo(m1X, m1Y);
+      ctx.lineTo(m2X, m2Y);
+      ctx.strokeStyle = `rgba(255, 214, 10, ${prog * 0.6})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    const [curCX, curCY] = applyH(H, shuttlePos.x, shuttlePos.y);
+    const mx = pad + (curCX / COURT_W) * courtW;
+    const my = pad + (curCY / COURT_H) * courtH;
+
+    // In or Out Tag
+    const isInside = (curCX >= 0 && curCX <= COURT_W && curCY >= 0 && curCY <= COURT_H);
+    ctx.fillStyle = isInside ? '#10b981' : '#ef4444';
+    ctx.font = 'bold 9px system-ui, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(isInside ? '● 界內 IN' : '● 界外 OUT', pad + courtW - 2, pad - 3);
+
+    ctx.beginPath();
+    ctx.arc(mx, my, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffd60a';
+    ctx.shadowColor = '#ffd60a';
+    ctx.shadowBlur = 12;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(mx, my, 9, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255, 214, 10, 0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
   }
 }
 
+// ═══ CONTROLS TOGGLES ═══
 function toggle3D() {
-  show3D=!show3D;
-  const c=document.getElementById('court3d-canvas');
-  c.style.display=show3D?'block':'none';
-  const b=document.getElementById('btn-toggle3d');
-  b.style.borderColor=show3D?'var(--accent2)':'';
-  b.style.color=show3D?'var(--accent2)':'';
-  if(show3D) drawMiniMap();
+  show3D = !show3D;
+  const c = document.getElementById('court3d-canvas');
+  if (c) c.style.display = show3D ? 'block' : 'none';
+  const b = document.getElementById('btn-toggle3d');
+  if (b) b.classList.toggle('active', show3D);
+  if (show3D) drawMiniMap();
+}
+
+function toggleCourtOverlay() {
+  showCourtOverlay = !showCourtOverlay;
+  const b = document.getElementById('btn-toggle-court');
+  if (b) b.classList.toggle('active', showCourtOverlay);
+}
+
+function toggleHud() {
+  showHud = !showHud;
+  const b = document.getElementById('btn-toggle-hud');
+  if (b) b.classList.toggle('active', showHud);
+}
+
+// ═══ SIMULATE DEMO RALLY ═══
+let demoAnimId = null;
+function simulateRallyDemo() {
+  if (demoAnimId) cancelAnimationFrame(demoAnimId);
+  const canvas = document.getElementById('live-canvas');
+  if (!canvas) return;
+  const W = canvas.width, H_V = canvas.height;
+  const [p0, p1, p2, p3] = calibPoints;
+
+  const startTime = Date.now();
+  const duration = 1200;
+  const startX = (p0.x + p1.x) / 2 + (Math.random() - 0.5) * (p1.x - p0.x) * 0.5;
+  const startY = (p0.y + p1.y) / 2;
+  const endX = (p2.x + p3.x) / 2 + (Math.random() - 0.5) * (p2.x - p3.x) * 0.6;
+  const endY = (p2.y + p3.y) / 2 - 25;
+
+  shuttleTrail = [];
+  function step() {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(1, elapsed / duration);
+    const curX = startX + (endX - startX) * progress;
+    const curY = startY + (endY - startY) * progress - Math.sin(progress * Math.PI) * (H_V * 0.2);
+
+    shuttlePos = { x: curX, y: curY, t: Date.now() };
+    shuttleTrail.push({ x: curX, y: curY, t: Date.now() });
+    if (shuttleTrail.length > 25) shuttleTrail.shift();
+
+    const spd = Math.round(150 + Math.sin(progress * Math.PI) * 90);
+    speedKmh = spd;
+    if (spd > maxSpeedKmh) maxSpeedKmh = spd;
+    showSpeed(spd);
+
+    if (progress < 1) {
+      demoAnimId = requestAnimationFrame(step);
+    } else {
+      rallyHitCount++;
+      rallyCount = Math.floor(rallyHitCount / 2);
+      setText('rally-label', `${rallyCount} 回合 (擊球: ${rallyHitCount})`);
+      showToast('⚡ 示範殺球完成！球速 ' + speedKmh + ' km/h', 1500);
+    }
+  }
+  step();
 }
 
 // ═══ SCORES ═══
