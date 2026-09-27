@@ -7285,9 +7285,21 @@ app.get('/api/debug_games', (req, res) => {
     games: games
   });
 });
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    const nextPort = (port === 3000 ? 5000 : (Number(port) + 1));
+    console.log(`⚠️ Port ${port} 已被佔用，自動改用 Port ${nextPort}...`);
+    server.listen(nextPort);
+  } else {
+    console.error('❌ Server error:', err);
+  }
+});
+
 loadPromise.then(() => {
   server.listen(port, () => {
-    console.log(`Badminton Bot Running on port ${port}...`);
+    const actualPort = server.address().port;
+    console.log(`Badminton Bot Running on port ${actualPort}...`);
+    console.log(`👉 羽球直播分析頁面：http://localhost:${actualPort}/live_mode.html`);
     
     if (AUTO_WAKE_ENABLED) {
       // 立即執行一次（延遲5秒，確保服務器完全啟動）
