@@ -5917,6 +5917,130 @@ async function handleEvent(event) {
       }
     }
 
+    // 🏸 直播分析模式指令（超級管理員）
+    if (text === '開啟直播' || text === '開啟直播模式') {
+      if (!isSuperAdmin(uid)) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '❌ 只有超級管理員可以開啟直播模式' });
+      }
+      const liffUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?page=live_mode` : null;
+      return client.replyMessage(event.replyToken, {
+        type: 'flex',
+        altText: '🏸 直播分析模式設定',
+        contents: {
+          type: 'bubble',
+          header: {
+            type: 'box', layout: 'vertical',
+            backgroundColor: '#1a1a2e',
+            contents: [{
+              type: 'text', text: '🏸 直播分析模式', color: '#ffffff',
+              weight: 'bold', size: 'xl'
+            }, {
+              type: 'text', text: '選擇設定後點「開啟直播」', color: '#aaaacc', size: 'sm'
+            }]
+          },
+          body: {
+            type: 'box', layout: 'vertical', spacing: 'md',
+            contents: [
+              { type: 'text', text: '📐 場地類型', weight: 'bold', color: '#333333', size: 'sm' },
+              {
+                type: 'box', layout: 'horizontal', spacing: 'sm',
+                contents: [
+                  { type: 'button', style: 'primary', color: '#4361ee', height: 'sm',
+                    action: { type: 'message', label: '🎾 單打', text: '直播設定 單打 固定' } },
+                  { type: 'button', style: 'primary', color: '#7209b7', height: 'sm',
+                    action: { type: 'message', label: '👥 雙打', text: '直播設定 雙打 固定' } }
+                ]
+              },
+              { type: 'separator' },
+              { type: 'text', text: '📱 攝影機模式', weight: 'bold', color: '#333333', size: 'sm' },
+              {
+                type: 'box', layout: 'horizontal', spacing: 'sm',
+                contents: [
+                  { type: 'button', style: 'secondary', height: 'sm',
+                    action: { type: 'message', label: '📷 固定架設', text: '直播設定 單打 固定' } },
+                  { type: 'button', style: 'secondary', height: 'sm',
+                    action: { type: 'message', label: '🤳 手持拍攝', text: '直播設定 單打 手持' } }
+                ]
+              }
+            ]
+          },
+          footer: {
+            type: 'box', layout: 'vertical', spacing: 'sm',
+            contents: [
+              liffUrl ? {
+                type: 'button', style: 'primary', color: '#06d6a0',
+                action: { type: 'uri', label: '🚀 開啟直播頁面', uri: liffUrl }
+              } : { type: 'text', text: '（尚未設定 LIFF ID）', size: 'xs', color: '#999999' }
+            ]
+          }
+        }
+      });
+    }
+
+    if (text.startsWith('直播設定')) {
+      if (!isSuperAdmin(uid)) return null;
+      const parts = text.split(' ');
+      const courtType = parts[1] === '雙打' ? 'double' : 'single';
+      const cameraMode = parts[2] === '手持' ? 'handheld' : 'fixed';
+      liveModeState.enabled = true;
+      liveModeState.courtType = courtType;
+      liveModeState.cameraMode = cameraMode;
+      if (!liveModeState.startedAt) {
+        liveModeState.startedAt = new Date().toISOString();
+        liveModeState.scoreA = 0;
+        liveModeState.scoreB = 0;
+        liveModeState.rallyCount = 0;
+      }
+      saveLiveModeState();
+      if (typeof io !== 'undefined' && io) io.emit('live_mode_updated', liveModeState);
+      const courtLabel = courtType === 'double' ? '雙打' : '單打';
+      const cameraLabel = cameraMode === 'handheld' ? '手持拍攝' : '固定架設';
+      const liffUrl2 = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?page=live_mode` : '（請設定 LIFF_ID）';
+      return client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: `✅ 直播模式已開啟！\n\n📐 場地：${courtLabel}\n📷 模式：${cameraLabel}\n\n👇 請點此進入直播分析頁面：\n${liffUrl2}`
+      });
+    }
+
+    if (text === '關閉直播' || text === '關閉直播模式') {
+      if (!isSuperAdmin(uid)) {
+        return client.replyMessage(event.replyToken, { type: 'text', text: '❌ 只有超級管理員可以關閉直播模式' });
+      }
+      if (liveModeState.startedAt) {
+        liveModeState.sessions.push({
+          startedAt: liveModeState.startedAt,
+          endedAt: new Date().toISOString(),
+          teamA: liveModeState.teamA,
+          teamB: liveModeState.teamB,
+          scoreA: liveModeState.scoreA,
+          scoreB: liveModeState.scoreB,
+          rallyCount: liveModeState.rallyCount,
+          courtType: liveModeState.courtType
+        });
+        if (liveModeState.sessions.length > 50) liveModeState.sessions = liveModeState.sessions.slice(-50);
+      }
+      liveModeState.enabled = false;
+      liveModeState.startedAt = null;
+      saveLiveModeState();
+      if (typeof io !== 'undefined' && io) io.emit('live_mode_updated', liveModeState);
+      return client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: `🏁 直播模式已關閉\n\n📊 本場結果：\n${liveModeState.teamA} ${liveModeState.scoreA} : ${liveModeState.scoreB} ${liveModeState.teamB}\n⚡ 回合數：${liveModeState.rallyCount}`
+      });
+    }
+
+    if (text === '直播狀態') {
+      const s = liveModeState;
+      const status = s.enabled ? '🟢 直播中' : '🔴 未開啟';
+      const info = s.enabled
+        ? `${s.teamA} ${s.scoreA} : ${s.scoreB} ${s.teamB}\n⚡ 回合：${s.rallyCount}\n🕐 開始：${s.startedAt ? new Date(s.startedAt).toLocaleString('zh-TW') : '-'}`
+        : '（目前沒有進行中的直播）';
+      return client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: `🏸 直播分析狀態\n${status}\n\n${info}`
+      });
+    }
+
     if (text === '/debug-uid') {
       return client.replyMessage(event.replyToken, {
         type: 'text',
@@ -7045,6 +7169,101 @@ app.post('/api/systemLogs/delete', (req, res) => {
     remaining: systemLogs.length,
     logs: systemLogs
   });
+});
+
+// ==========================================
+// 🏸 直播分析模式 (Live Mode) - Phase 1
+// ==========================================
+const LIVE_MODE_FILE = path.join(DATA_DIR, 'liveMode.json');
+
+let liveModeState = {
+  enabled: false,
+  courtType: 'single',      // 'single' | 'double'
+  cameraMode: 'fixed',      // 'fixed' | 'handheld'
+  teamA: '主場',
+  teamB: '客場',
+  scoreA: 0,
+  scoreB: 0,
+  rallyCount: 0,
+  startedAt: null,
+  sessions: []              // 已結束場次歷史
+};
+
+function loadLiveModeState() {
+  if (fs.existsSync(LIVE_MODE_FILE)) {
+    try {
+      const saved = JSON.parse(fs.readFileSync(LIVE_MODE_FILE, 'utf8'));
+      liveModeState = { ...liveModeState, ...saved };
+    } catch(e) { console.error('載入 liveMode.json 失敗:', e.message); }
+  }
+}
+
+function saveLiveModeState() {
+  try {
+    fs.writeFileSync(LIVE_MODE_FILE, JSON.stringify(liveModeState, null, 2), 'utf8');
+  } catch(e) { console.error('儲存 liveMode.json 失敗:', e.message); }
+}
+
+loadLiveModeState();
+
+// GET /api/live_mode — 取得目前直播狀態（任何人可查詢）
+app.get('/api/live_mode', (req, res) => {
+  res.json(liveModeState);
+});
+
+// POST /api/live_mode/toggle — 超管開關直播模式
+app.post('/api/live_mode/toggle', express.json(), (req, res) => {
+  const { uid, enabled, courtType, cameraMode, teamA, teamB } = req.body;
+  if (!isSuperAdmin(uid)) {
+    return res.status(403).json({ error: '只有超級管理員可以操作直播模式' });
+  }
+  liveModeState.enabled = !!enabled;
+  if (courtType) liveModeState.courtType = courtType;
+  if (cameraMode) liveModeState.cameraMode = cameraMode;
+  if (teamA !== undefined) liveModeState.teamA = teamA;
+  if (teamB !== undefined) liveModeState.teamB = teamB;
+  if (enabled && !liveModeState.startedAt) {
+    liveModeState.startedAt = new Date().toISOString();
+    liveModeState.scoreA = 0;
+    liveModeState.scoreB = 0;
+    liveModeState.rallyCount = 0;
+  }
+  if (!enabled) {
+    // 結束時存入 sessions 歷史
+    if (liveModeState.startedAt) {
+      liveModeState.sessions.push({
+        startedAt: liveModeState.startedAt,
+        endedAt: new Date().toISOString(),
+        teamA: liveModeState.teamA,
+        teamB: liveModeState.teamB,
+        scoreA: liveModeState.scoreA,
+        scoreB: liveModeState.scoreB,
+        rallyCount: liveModeState.rallyCount,
+        courtType: liveModeState.courtType
+      });
+      // 只保留最近 50 場
+      if (liveModeState.sessions.length > 50) liveModeState.sessions = liveModeState.sessions.slice(-50);
+    }
+    liveModeState.startedAt = null;
+  }
+  saveLiveModeState();
+  if (typeof io !== 'undefined' && io) io.emit('live_mode_updated', liveModeState);
+  res.json({ success: true, state: liveModeState });
+});
+
+// POST /api/live_mode/session — 更新比賽資料（計分、回合）
+app.post('/api/live_mode/session', express.json(), (req, res) => {
+  const { uid, scoreA, scoreB, rallyCount } = req.body;
+  if (!isSuperAdmin(uid)) {
+    return res.status(403).json({ error: '只有超級管理員可以更新比賽資料' });
+  }
+  if (!liveModeState.enabled) return res.status(400).json({ error: '直播模式未開啟' });
+  if (scoreA !== undefined) liveModeState.scoreA = scoreA;
+  if (scoreB !== undefined) liveModeState.scoreB = scoreB;
+  if (rallyCount !== undefined) liveModeState.rallyCount = rallyCount;
+  saveLiveModeState();
+  if (typeof io !== 'undefined' && io) io.emit('live_mode_session_updated', liveModeState);
+  res.json({ success: true, state: liveModeState });
 });
 
 app.get('/api/debug_games', (req, res) => {

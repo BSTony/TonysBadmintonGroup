@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🏸 羽球直播分析</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #0d0d1a;
+    --card: #161627;
+    --accent: #4361ee;
+    --accent2: #06d6a0;
+    --warn: #f72585;
+    --text: #e8e8ff;
+    --muted: #7070a0;
+    --ball-color: #ffd60a;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .screen { display: none; flex-direction: column; height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; }
+  .screen.active { display: flex; }
+
+  /* SPLASH */
+  #screen-splash {
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 30%, #1a1a4e 0%, #0d0d1a 70%);
+  }
+  .splash-logo { font-size: 72px; animation: floatY 2.5s ease-in-out infinite; filter: drop-shadow(0 0 30px rgba(67,97,238,0.8)); }
+  .splash-title { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #4361ee, #06d6a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 16px; text-align: center; }
+  .splash-sub { color: var(--muted); font-size: 14px; margin-top: 8px; text-align: center; }
+  .splash-badge { margin-top: 32px; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+  .splash-badge.live { background: rgba(247,37,133,0.2); color: var(--warn); border: 1px solid var(--warn); animation: pulseBadge 1.5s ease-in-out infinite; }
+  .splash-badge.offline { background: rgba(112,112,160,0.15); color: var(--muted); border: 1px solid rgba(112,112,160,0.3); }
+
+  .btn-primary { margin-top: 28px; padding: 14px 36px; background: linear-gradient(135deg, #4361ee, #3a0ca3); border: none; border-radius: 14px; color: white; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(67,97,238,0.4); transition: all 0.2s; }
+  .btn-primary:active { transform: scale(0.96); }
+  .btn-secondary { padding: 10px 24px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; transition: all 0.2s; }
+
+  /* CALIBRATE */
+  #screen-calibrate { background: #000; position: relative; }
+  #calibrate-video { width: 100%; height: 100%; object-fit: cover; }
+  #calibrate-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+  .calibrate-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.85)); }
+  .calibrate-hint { text-align: center; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .calibrate-steps { display: flex; justify-content: center; gap: 10px; margin-bottom: 16px; }
+  .calibrate-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); transition: all 0.3s; }
+  .calibrate-dot.done { background: var(--accent2); border-color: var(--accent2); }
+  .calibrate-dot.active { background: var(--warn); border-color: var(--warn); animation: pulseBadge 1s infinite; }
+  .calibrate-actions { display: flex; gap: 10px; }
+
+  /* LIVE */
+  #screen-live { flex-direction: column; background: #000; position: relative; }
+  #live-video { width: 100%; height: 100%; object-fit: cover; }
+  #live-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+  #court3d-canvas { position: absolute; bottom: 130px; right: 10px; width: 160px; height: 110px; border-radius: 10px; border: 1px solid rgba(67,97,238,0.5); background: rgba(13,13,26,0.85); z-index: 15; display: none; }
+
+  .scoreboard { position: absolute; top: 0; left: 0; right: 0; z-index: 20; background: linear-gradient(180deg, rgba(0,0,0,0.9) 60%, transparent); padding: 8px 12px 20px; }
+  .score-inner { display: flex; align-items: center; justify-content: space-between; background: rgba(22,22,39,0.85); border-radius: 14px; padding: 8px 12px; border: 1px solid rgba(67,97,238,0.3); backdrop-filter: blur(10px); }
+  .score-team { flex: 1; text-align: center; }
+  .team-name { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .team-score { font-size: 36px; font-weight: 900; line-height: 1; margin-top: 2px; }
+  .team-a .team-score { color: #4361ee; }
+  .team-b .team-score { color: #f72585; }
+  .score-center { display: flex; flex-direction: column; align-items: center; padding: 0 8px; }
+  .score-divider { color: var(--muted); font-size: 24px; font-weight: 300; }
+  .rally-badge { font-size: 10px; color: var(--accent2); font-weight: 700; letter-spacing: 1px; margin-top: 2px; }
+  .live-tag { background: var(--warn); color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 1px; animation: pulseBadge 1.5s infinite; }
+
+  .speed-badge { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); z-index: 20; background: rgba(13,13,26,0.85); border: 1px solid var(--accent2); border-radius: 12px; padding: 4px 14px; font-size: 13px; font-weight: 700; color: var(--accent2); display: none; }
+  .speed-badge.visible { display: block; }
+
+  .live-controls { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; padding: 12px 12px 28px; background: linear-gradient(transparent, rgba(0,0,0,0.9) 40%); }
+  .control-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .score-btn { width: 44px; height: 44px; border-radius: 50%; border: none; font-size: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .score-btn:active { transform: scale(0.88); }
+  .btn-plus { background: linear-gradient(135deg, #4361ee, #3a0ca3); color: white; }
+  .btn-minus { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
+  .score-label { font-size: 12px; color: var(--muted); text-align: center; width: 60px; }
+  .btn-end { padding: 10px 20px; background: rgba(247,37,133,0.2); border: 1px solid var(--warn); border-radius: 10px; color: var(--warn); font-size: 13px; font-weight: 700; cursor: pointer; }
+  .btn-toggle3d { padding: 8px 14px; background: rgba(67,97,238,0.2); border: 1px solid rgba(67,97,238,0.5); border-radius: 10px; color: var(--accent); font-size: 12px; cursor: pointer; }
+
+  /* RESULT */
+  #screen-result { align-items: center; justify-content: center; padding: 24px; background: radial-gradient(ellipse at 50% 30%, #1a1a4e 0%, #0d0d1a 70%); }
+  .result-card { width: 100%; max-width: 400px; background: var(--card); border-radius: 20px; padding: 28px; border: 1px solid rgba(67,97,238,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center; }
+  .result-title { font-size: 20px; font-weight: 800; margin-bottom: 24px; }
+  .result-scores { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; }
+  .result-team { display: flex; flex-direction: column; align-items: center; }
+  .result-team-name { font-size: 14px; color: var(--muted); }
+  .result-score { font-size: 56px; font-weight: 900; line-height: 1; }
+  .result-vs { font-size: 22px; color: var(--muted); }
+  .result-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .stat-box { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.08); }
+  .stat-value { font-size: 22px; font-weight: 800; color: var(--accent2); }
+  .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .result-actions { display: flex; gap: 10px; }
+
+  /* ANIMATIONS */
+  @keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes pulseBadge { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  .spinner { width: 40px; height: 40px; border: 3px solid rgba(67,97,238,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 20px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px); background: rgba(22,22,39,0.95); border: 1px solid var(--accent2); border-radius: 12px; padding: 10px 20px; font-size: 14px; font-weight: 600; z-index: 100; transition: transform 0.35s cubic-bezier(.175,.885,.32,1.275); backdrop-filter: blur(10px); }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="screen-splash" class="screen active">
+  <div class="splash-logo">🏸</div>
+  <div class="splash-title">羽球直播分析</div>
+  <div class="splash-sub">Ball Tracking · 3D Court · Speed Meter</div>
+  <div id="live-status-badge" class="splash-badge offline">正在確認直播狀態…</div>
+  <div id="splash-spinner" class="spinner"></div>
+  <button id="btn-enter-live" class="btn-primary" style="display:none">🚀 進入直播分析</button>
+  <p id="splash-no-live" style="display:none;color:var(--muted);font-size:13px;margin-top:16px;text-align:center;padding:0 32px">
+    目前直播模式尚未開啟<br>請聯繫管理員輸入「開啟直播」指令
+  </p>
+</div>
+
+<!-- CALIBRATE -->
+<div id="screen-calibrate" class="screen">
+  <video id="calibrate-video" autoplay muted playsinline></video>
+  <canvas id="calibrate-canvas"></canvas>
+  <div class="calibrate-overlay">
+    <div class="calibrate-hint" id="calibrate-hint">👆 依序點擊球場的 4 個角落（左上→右上→右下→左下）</div>
+    <div class="calibrate-steps">
+      <div class="calibrate-dot active" id="dot-0"></div>
+      <div class="calibrate-dot" id="dot-1"></div>
+      <div class="calibrate-dot" id="dot-2"></div>
+      <div class="calibrate-dot" id="dot-3"></div>
+    </div>
+    <div class="calibrate-actions">
+      <button class="btn-secondary" id="btn-reset-calibrate" style="flex:1">↺ 重置</button>
+      <button class="btn-primary" id="btn-start-analysis" disabled style="flex:2;margin-top:0">✅ 開始分析</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE -->
+<div id="screen-live" class="screen">
+  <video id="live-video" autoplay muted playsinline></video>
+  <canvas id="live-canvas"></canvas>
+  <canvas id="court3d-canvas"></canvas>
+
+  <div class="scoreboard">
+    <div class="score-inner">
+      <div class="score-team team-a">
+        <div class="team-name" id="name-a">主場</div>
+        <div class="team-score" id="score-a">0</div>
+      </div>
+      <div class="score-center">
+        <span class="live-tag">LIVE</span>
+        <span class="score-divider">:</span>
+        <span class="rally-badge" id="rally-label">0 回合</span>
+      </div>
+      <div class="score-team team-b">
+        <div class="team-name" id="name-b">客場</div>
+        <div class="team-score" id="score-b">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="speed-badge" id="speed-badge">⚡ 0 km/h</div>
+
+  <div class="live-controls">
+    <div class="control-row">
+      <button class="btn-toggle3d" id="btn-toggle3d" onclick="toggle3D()">🗺 3D俯瞰</button>
+      <div style="flex:1"></div>
+      <button class="btn-end" id="btn-end-live">■ 結束直播</button>
+    </div>
+    <div class="control-row">
+      <button class="score-btn btn-minus" onclick="adjustScore('A',-1)">−</button>
+      <div class="score-label" id="ctrl-a-name">主場</div>
+      <button class="score-btn btn-plus" onclick="adjustScore('A',1)">+</button>
+      <div style="width:20px"></div>
+      <button class="score-btn btn-plus" onclick="adjustScore('B',1)">+</button>
+      <div class="score-label" id="ctrl-b-name">客場</div>
+      <button class="score-btn btn-minus" onclick="adjustScore('B',-1)">−</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="screen-result" class="screen">
+  <div class="result-card">
+    <div class="result-title">🏁 比賽結束</div>
+    <div class="result-scores">
+      <div class="result-team">
+        <div class="result-team-name" id="res-name-a">主場</div>
+        <div class="result-score" id="res-score-a" style="color:#4361ee">0</div>
+      </div>
+      <div class="result-vs">:</div>
+      <div class="result-team">
+        <div class="result-team-name" id="res-name-b">客場</div>
+        <div class="result-score" id="res-score-b" style="color:#f72585">0</div>
+      </div>
+    </div>
+    <div class="result-stats">
+      <div class="stat-box"><div class="stat-value" id="res-rally">0</div><div class="stat-label">總回合數</div></div>
+      <div class="stat-box"><div class="stat-value" id="res-duration">0:00</div><div class="stat-label">比賽時長</div></div>
+      <div class="stat-box"><div class="stat-value" id="res-max-speed">0</div><div class="stat-label">最高球速 km/h</div></div>
+      <div class="stat-box"><div class="stat-value" id="res-avg-speed">0</div><div class="stat-label">平均球速 km/h</div></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-secondary" style="flex:1" onclick="goBack()">← 返回</button>
+      <button class="btn-primary" style="flex:2;margin-top:0" onclick="saveAndClose()">💾 儲存並關閉</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ STATE ═══
+const BASE = window.location.origin;
+let uid = null;
+let liveModeState = {};
+let currentScreen = 'splash';
+let cameraStream = null;
+let calibPoints = [];
+const COURT_W = 610, COURT_H = 1340; // cm
+let trackCtx, trackVideo;
+let court3dCtx;
+let animFrameId = null;
+let show3D = false;
+let shuttlePos = null, prevShuttlePos = null;
+let shuttleTrail = [];
+let kalX = mkKalman(1,1,0.1), kalY = mkKalman(1,1,0.1);
+let speedKmh = 0, maxSpeedKmh = 0;
+let rallyCount = 0, rallyHitCount = 0;
+let lastHitTime = 0, lastDir = null;
+let scoreA = 0, scoreB = 0;
+let startTime = null, speedHistory = [];
+let H = null;
+let offCanvas = null, offCtx = null;
+const SW = 320, SH = 180;
+
+// ═══ BOOT ═══
+async function init() {
+  try {
+    const r = await fetch('/api/config');
+    const cfg = await r.json();
+    if (cfg.liffId && window.liff) {
+      await liff.init({ liffId: cfg.liffId });
+      if (liff.isLoggedIn()) uid = liff.getContext()?.userId || null;
+    }
+  } catch(e) { console.warn('LIFF:', e.message); }
+  checkLive();
+}
+
+async function checkLive() {
+  try {
+    const r = await fetch(BASE + '/api/live_mode');
+    liveModeState = await r.json();
+  } catch(e) { liveModeState = { enabled: false }; }
+
+  document.getElementById('splash-spinner').style.display = 'none';
+  const badge = document.getElementById('live-status-badge');
+  const btn = document.getElementById('btn-enter-live');
+  const noLive = document.getElementById('splash-no-live');
+
+  if (liveModeState.enabled) {
+    badge.textContent = '🟢 直播中';
+    badge.className = 'splash-badge live';
+    btn.style.display = 'block';
+    setText('name-a', liveModeState.teamA || '主場');
+    setText('name-b', liveModeState.teamB || '客場');
+    setText('ctrl-a-name', liveModeState.teamA || '主場');
+    setText('ctrl-b-name', liveModeState.teamB || '客場');
+    setText('res-name-a', liveModeState.teamA || '主場');
+    setText('res-name-b', liveModeState.teamB || '客場');
+  } else {
+    badge.textContent = '🔴 直播未開啟';
+    badge.className = 'splash-badge offline';
+    noLive.style.display = 'block';
+  }
+}
+
+document.getElementById('btn-enter-live').onclick = () => {
+  showScreen('calibrate');
+  startCamera();
+};
+
+// ═══ CAMERA ═══
+async function startCamera() {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: {ideal:1280}, height: {ideal:720}, frameRate: {ideal:60} }
+    });
+    const v = document.getElementById('calibrate-video');
+    v.srcObject = cameraStream;
+    v.play();
+    setupCalib(v);
+  } catch(e) {
+    showToast('❌ 無法存取相機：' + e.message);
+    showScreen('splash');
+  }
+}
+
+function setupCalib(video) {
+  const canvas = document.getElementById('calibrate-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+  const colors = ['#4361ee','#f72585','#06d6a0','#ffd60a'];
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if (calibPoints.length < 4) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+      ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+      ctx.beginPath();
+      ctx.moveTo(canvas.width/2,0); ctx.lineTo(canvas.width/2,canvas.height);
+      ctx.moveTo(0,canvas.height/2); ctx.lineTo(canvas.width,canvas.height/2);
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+    calibPoints.forEach((p,i) => {
+      ctx.beginPath(); ctx.arc(p.x,p.y,14,0,Math.PI*2);
+      ctx.fillStyle = colors[i]+'33'; ctx.fill();
+      ctx.strokeStyle = colors[i]; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.fillStyle = colors[i]; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+      ctx.fillText((i+1).toString(),p.x,p.y+4);
+    });
+    if (calibPoints.length >= 2) {
+      ctx.beginPath(); ctx.moveTo(calibPoints[0].x,calibPoints[0].y);
+      calibPoints.forEach(p=>ctx.lineTo(p.x,p.y));
+      if (calibPoints.length===4) ctx.closePath();
+      ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+    }
+    if (calibPoints.length===4) {
+      ctx.beginPath(); ctx.moveTo(calibPoints[0].x,calibPoints[0].y);
+      calibPoints.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath();
+      ctx.fillStyle='rgba(67,97,238,0.12)'; ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  const hints = [
+    '✅ 左上角！點擊右上角 ↗',
+    '✅ 右上角！點擊右下角 ↘',
+    '✅ 右下角！點擊左下角 ↙',
+    '✅ 校正完成！按「開始分析」'
+  ];
+  canvas.addEventListener('click', e => {
+    if (calibPoints.length >= 4) return;
+    const rc = canvas.getBoundingClientRect();
+    calibPoints.push({ x: (e.clientX-rc.left)*(canvas.width/rc.width), y: (e.clientY-rc.top)*(canvas.height/rc.height) });
+    updateDots();
+    document.getElementById('calibrate-hint').textContent = hints[calibPoints.length-1];
+    if (calibPoints.length===4) {
+      const btn = document.getElementById('btn-start-analysis');
+      btn.disabled = false;
+      btn.style.background = 'linear-gradient(135deg,#06d6a0,#0a9971)';
+    }
+  });
+}
+
+function updateDots() {
+  for (let i=0;i<4;i++) {
+    const d = document.getElementById('dot-'+i);
+    d.className = 'calibrate-dot';
+    if (i<calibPoints.length) d.classList.add('done');
+    else if (i===calibPoints.length) d.classList.add('active');
+  }
+}
+
+document.getElementById('btn-reset-calibrate').onclick = () => {
+  calibPoints = [];
+  updateDots();
+  document.getElementById('calibrate-hint').textContent = '👆 依序點擊球場的 4 個角落（左上→右上→右下→左下）';
+  const btn = document.getElementById('btn-start-analysis');
+  btn.disabled = true; btn.style.background = '';
+};
+
+document.getElementById('btn-start-analysis').onclick = () => {
+  H = computeH(calibPoints.map(p=>[p.x,p.y]), [[0,0],[COURT_W,0],[COURT_W,COURT_H],[0,COURT_H]]);
+  startLive();
+};
+
+// ═══ LIVE ANALYSIS ═══
+function startLive() {
+  showScreen('live');
+  startTime = Date.now();
+  scoreA = liveModeState.scoreA||0;
+  scoreB = liveModeState.scoreB||0;
+  rallyCount = liveModeState.rallyCount||0;
+  updateScores();
+
+  const video = document.getElementById('live-video');
+  const canvas = document.getElementById('live-canvas');
+  video.srcObject = cameraStream;
+  video.play();
+  trackVideo = video;
+  trackCtx = canvas.getContext('2d');
+  court3dCtx = document.getElementById('court3d-canvas').getContext('2d');
+
+  function resize() { canvas.width=video.videoWidth||window.innerWidth; canvas.height=video.videoHeight||window.innerHeight; }
+  video.onloadedmetadata = resize;
+  resize();
+  loop();
+}
+
+function loop() {
+  if (currentScreen !== 'live') return;
+  animFrameId = requestAnimationFrame(loop);
+  const canvas = document.getElementById('live-canvas');
+  const W = canvas.width, HH = canvas.height;
+  trackCtx.clearRect(0,0,W,HH);
+
+  const det = detectBall(trackVideo, canvas);
+  if (det) {
+    const kx = kalX.update(det.x), ky = kalY.update(det.y);
+    prevShuttlePos = shuttlePos;
+    shuttlePos = {x:kx,y:ky,t:Date.now()};
+    shuttleTrail.push({x:kx,y:ky,t:Date.now()});
+    if (shuttleTrail.length>20) shuttleTrail.shift();
+
+    if (prevShuttlePos && H) {
+      const dt = (shuttlePos.t - prevShuttlePos.t)/1000;
+      if (dt>0 && dt<0.5) {
+        const [cx,cy] = applyH(H,kx,ky);
+        const [px,py] = applyH(H,prevShuttlePos.x,prevShuttlePos.y);
+        const dist = Math.sqrt((cx-px)**2+(cy-py)**2)/100;
+        const spd = Math.round(dist/dt*3.6);
+        if (spd>5 && spd<400) {
+          speedKmh=spd;
+          if (spd>maxSpeedKmh) maxSpeedKmh=spd;
+          speedHistory.push(spd); if(speedHistory.length>60) speedHistory.shift();
+          showSpeed(spd);
+          detectRally(ky, prevShuttlePos.y);
+        }
+      }
+    }
+    drawTrail(trackCtx);
+    drawBall(trackCtx, kx, ky);
+  } else {
+    const age = shuttleTrail.length ? Date.now()-shuttleTrail[shuttleTrail.length-1].t : 9999;
+    if (age<1000) drawTrail(trackCtx); else shuttleTrail=[];
+    kalX.predict(); kalY.predict();
+  }
+  if (show3D) drawMiniMap();
+}
+
+// ═══ BALL DETECTION ═══
+function detectBall(video, dest) {
+  if (!video.videoWidth) return null;
+  if (!offCanvas) {
+    offCanvas = document.createElement('canvas');
+    offCanvas.width = SW; offCanvas.height = SH;
+    offCtx = offCanvas.getContext('2d',{willReadFrequently:true});
+  }
+  offCtx.drawImage(video,0,0,SW,SH);
+  const {data} = offCtx.getImageData(0,0,SW,SH);
+  const pts = [];
+  for (let y=0;y<SH;y+=2) for (let x=0;x<SW;x+=2) {
+    const i=(y*SW+x)*4, r=data[i],g=data[i+1],b=data[i+2];
+    const white = r>200&&g>200&&b>200&&Math.abs(r-g)<30&&Math.abs(g-b)<30;
+    const yellow = r>200&&g>180&&b<100&&r-b>120;
+    if (white||yellow) pts.push({x,y});
+  }
+  if (pts.length<3||pts.length>600) return null;
+  const clusters = clusterPts(pts,18);
+  let best=null, bestS=Infinity;
+  for (const c of clusters) {
+    if (c.n<2||c.n>150) continue;
+    const s = c.r*2-c.n;
+    if (s<bestS) { bestS=s; best=c; }
+  }
+  if (!best) return null;
+  return { x: best.cx*(dest.width/SW), y: best.cy*(dest.height/SH) };
+}
+
+function clusterPts(pts, d) {
+  const used = new Uint8Array(pts.length);
+  const out = [];
+  for (let i=0;i<pts.length;i++) {
+    if (used[i]) continue;
+    let cx=pts[i].x, cy=pts[i].y, n=1; used[i]=1;
+    const members=[pts[i]];
+    for (let j=i+1;j<pts.length;j++) {
+      if(used[j]) continue;
+      if(Math.abs(pts[j].x-cx)<d&&Math.abs(pts[j].y-cy)<d) {
+        members.push(pts[j]); used[j]=1; n++;
+        cx=members.reduce((s,p)=>s+p.x,0)/n;
+        cy=members.reduce((s,p)=>s+p.y,0)/n;
+      }
+    }
+    const r=Math.max(...members.map(p=>Math.sqrt((p.x-cx)**2+(p.y-cy)**2)));
+    out.push({cx,cy,n,r});
+  }
+  return out;
+}
+
+function drawBall(ctx,x,y) {
+  ctx.beginPath(); ctx.arc(x,y,12,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,214,10,0.15)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2);
+  ctx.fillStyle='#ffd60a';
+  ctx.shadowColor='#ffd60a'; ctx.shadowBlur=18;
+  ctx.fill(); ctx.shadowBlur=0;
+}
+
+function drawTrail(ctx) {
+  for (let i=1;i<shuttleTrail.length;i++) {
+    const t=i/shuttleTrail.length, p=shuttleTrail[i-1], c=shuttleTrail[i];
+    ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(c.x,c.y);
+    ctx.strokeStyle=`rgba(255,214,10,${t*0.7})`; ctx.lineWidth=t*4; ctx.lineCap='round'; ctx.stroke();
+  }
+}
+
+// ═══ RALLY ═══
+function detectRally(cy, py) {
+  const dir = cy<py?'up':'down';
+  const now = Date.now();
+  if (lastDir && dir!==lastDir && now-lastHitTime>200) {
+    rallyHitCount++;
+    rallyCount = Math.floor(rallyHitCount/2);
+    lastHitTime = now;
+    setText('rally-label', rallyCount+' 回合');
+    syncSession();
+  }
+  lastDir=dir;
+}
+
+// ═══ SPEED ═══
+let speedTimer=null;
+function showSpeed(km) {
+  const b=document.getElementById('speed-badge');
+  b.textContent='⚡ '+km+' km/h'; b.classList.add('visible');
+  clearTimeout(speedTimer);
+  speedTimer=setTimeout(()=>b.classList.remove('visible'),2000);
+}
+
+// ═══ 3D MINIMAP ═══
+function drawMiniMap() {
+  const c3 = document.getElementById('court3d-canvas');
+  const ctx = court3dCtx;
+  const W=c3.width, HH=c3.height;
+  ctx.clearRect(0,0,W,HH);
+  const p=10;
+  ctx.fillStyle='#1a3a2a'; ctx.fillRect(p,p,W-p*2,HH-p*2);
+  ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=1; ctx.strokeRect(p+2,p+2,W-p*2-4,HH-p*2-4);
+  ctx.strokeStyle='rgba(255,80,80,0.8)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(p+2,HH/2); ctx.lineTo(W-p-2,HH/2); ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,0.3)'; ctx.lineWidth=0.8;
+  [HH/2-25,HH/2+25].forEach(y=>{ ctx.beginPath(); ctx.moveTo(p+2,y); ctx.lineTo(W-p-2,y); ctx.stroke(); });
+
+  if (shuttlePos && H) {
+    shuttleTrail.slice(-8).forEach((tp,i,a)=>{
+      const t=i/a.length;
+      const [tcx,tcy]=applyH(H,tp.x,tp.y);
+      const tx=p+4+(tcx/COURT_W)*(W-p*2-8), ty=p+4+(tcy/COURT_H)*(HH-p*2-8);
+      ctx.beginPath(); ctx.arc(tx,ty,2,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,214,10,${t*0.5})`; ctx.fill();
+    });
+    const [bx,by]=applyH(H,shuttlePos.x,shuttlePos.y);
+    const mx=p+4+(bx/COURT_W)*(W-p*2-8), my=p+4+(by/COURT_H)*(HH-p*2-8);
+    ctx.beginPath(); ctx.arc(mx,my,4,0,Math.PI*2);
+    ctx.fillStyle='#ffd60a'; ctx.shadowColor='#ffd60a'; ctx.shadowBlur=8;
+    ctx.fill(); ctx.shadowBlur=0;
+  }
+}
+
+function toggle3D() {
+  show3D=!show3D;
+  const c=document.getElementById('court3d-canvas');
+  c.style.display=show3D?'block':'none';
+  const b=document.getElementById('btn-toggle3d');
+  b.style.borderColor=show3D?'var(--accent2)':'';
+  b.style.color=show3D?'var(--accent2)':'';
+  if(show3D) drawMiniMap();
+}
+
+// ═══ SCORES ═══
+function adjustScore(team,d) {
+  if(team==='A') scoreA=Math.max(0,scoreA+d);
+  else scoreB=Math.max(0,scoreB+d);
+  updateScores();
+  syncSession();
+}
+function updateScores() {
+  setText('score-a',scoreA); setText('score-b',scoreB);
+  setText('res-score-a',scoreA); setText('res-score-b',scoreB);
+  setText('rally-label',rallyCount+' 回合');
+}
+async function syncSession() {
+  if (!uid) return;
+  try {
+    await fetch(BASE+'/api/live_mode/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uid,scoreA,scoreB,rallyCount})});
+  } catch(e){}
+}
+
+document.getElementById('btn-end-live').onclick = () => {
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  const dur = startTime ? Math.floor((Date.now()-startTime)/1000) : 0;
+  const m=Math.floor(dur/60), s=dur%60;
+  const avg = speedHistory.length ? Math.round(speedHistory.reduce((a,b)=>a+b,0)/speedHistory.length) : 0;
+  setText('res-rally',rallyCount);
+  setText('res-duration',m+':'+(s<10?'0':'')+s);
+  setText('res-max-speed',maxSpeedKmh||0);
+  setText('res-avg-speed',avg);
+  updateScores();
+  showScreen('result');
+};
+
+function goBack() { showScreen('splash'); checkLive(); }
+async function saveAndClose() {
+  if(uid) await syncSession();
+  showToast('✅ 比賽紀錄已儲存！');
+  setTimeout(()=>{ if(window.liff&&liff.isInClient()) liff.closeWindow(); else showScreen('splash'); },1500);
+}
+
+// ═══ HOMOGRAPHY DLT ═══
+function computeH(src,dst) {
+  const A=[];
+  for(let i=0;i<4;i++) {
+    const [x,y]=src[i],[X,Y]=dst[i];
+    A.push([-x,-y,-1,0,0,0,X*x,X*y,X]);
+    A.push([0,0,0,-x,-y,-1,Y*x,Y*y,Y]);
+  }
+  return gaussSolve(A);
+}
+function gaussSolve(A) {
+  const M=A.map(r=>[...r]); let piv=0;
+  for(let c=0;c<8&&piv<M.length;c++) {
+    let mxr=piv; for(let r=piv+1;r<M.length;r++) if(Math.abs(M[r][c])>Math.abs(M[mxr][c])) mxr=r;
+    [M[piv],M[mxr]]=[M[mxr],M[piv]];
+    const d=M[piv][c]; if(Math.abs(d)<1e-12) continue;
+    for(let k=c;k<9;k++) M[piv][k]/=d;
+    for(let r=0;r<M.length;r++) if(r!==piv){const f=M[r][c]; for(let k=c;k<9;k++) M[r][k]-=f*M[piv][k];}
+    piv++;
+  }
+  const h=new Array(9).fill(0);
+  for(let i=0;i<Math.min(8,M.length);i++) {
+    let col=-1; for(let c=0;c<8;c++) if(Math.abs(M[i][c])>0.5){col=c;break;}
+    if(col>=0) h[col]=-M[i][8];
+  }
+  h[8]=1; return h;
+}
+function applyH(H,x,y) {
+  const w=H[6]*x+H[7]*y+H[8];
+  return [(H[0]*x+H[1]*y+H[2])/w,(H[3]*x+H[4]*y+H[5])/w];
+}
+
+// ═══ KALMAN ═══
+function mkKalman(R,Q,P) {
+  let x=0,v=0;
+  return {
+    update(z){const K=P/(P+R);x=x+K*(z-x);v=v+K*(z-x)*0.1;P=(1-K)*P;return x;},
+    predict(){x=x+v;v*=0.9;return x;}
+  };
+}
+
+// ═══ UTILS ═══
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  currentScreen=id;
+}
+function setText(id,val) { const e=document.getElementById(id); if(e) e.textContent=val; }
+let toastT=null;
+function showToast(msg,dur=2500) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+// ═══ LIFF BOOTSTRAP ═══
+(function boot() {
+  if (typeof liff !== 'undefined') { init(); return; }
+  const s=document.createElement('script');
+  s.src='https://static.line-scdn.net/liff/edge/2/sdk.js';
+  s.onload=()=>init();
+  s.onerror=()=>{ console.warn('no LIFF SDK'); checkLive(); };
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>
