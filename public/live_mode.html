@@ -126,8 +126,11 @@
   <div id="splash-spinner" class="spinner"></div>
   <button id="btn-enter-live" class="btn-primary" style="display:none">🚀 進入直播分析</button>
   <p id="splash-no-live" style="display:none;color:var(--muted);font-size:13px;margin-top:16px;text-align:center;padding:0 32px">
-    目前直播模式尚未開啟<br>請聯繫管理員輸入「開啟直播」指令
+    目前直播模式尚未開啟<br>請點下方按鈕立即開啟
   </p>
+  <button id="btn-start-live-direct" class="btn-primary" style="display:none;margin-top:16px;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 6px 20px rgba(16,185,129,0.35);" onclick="directStartLive()">
+    🚀 一鍵開啟直播模式
+  </button>
   <div id="splash-no-auth" style="display:none;color:#ff6b81;font-size:13px;margin-top:20px;text-align:center;padding:14px 20px;background:rgba(255,107,129,0.1);border:1px solid rgba(255,107,129,0.3);border-radius:12px;line-height:1.6">
     🔒 <strong>僅限超級管理員使用</strong><br>此為內部測試專區，其他使用者無法操作
   </div>
@@ -295,6 +298,9 @@ async function checkLive() {
 
   if (noAuth) noAuth.style.display = 'none';
 
+  const btnStartDirect = document.getElementById('btn-start-live-direct');
+  if (btnStartDirect) btnStartDirect.style.display = 'none';
+
   if (liveModeState.enabled) {
     badge.textContent = '🟢 直播中';
     badge.className = 'splash-badge live';
@@ -309,6 +315,27 @@ async function checkLive() {
     badge.textContent = '🔴 直播未開啟';
     badge.className = 'splash-badge offline';
     noLive.style.display = 'block';
+    if (btnStartDirect) btnStartDirect.style.display = 'block';
+  }
+}
+
+async function directStartLive() {
+  const btn = document.getElementById('btn-start-live-direct');
+  if (btn) { btn.disabled = true; btn.textContent = '🚀 開啟中...'; }
+  try {
+    const r = await fetch(BASE + '/api/live_mode/toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid, enabled: true, courtType: 'single', cameraMode: 'fixed', teamA: '主場', teamB: '客場' })
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    showToast('✅ 直播模式已開啟！');
+    await checkLive();
+  } catch(e) {
+    showToast('❌ 開啟失敗：' + (e && e.message ? e.message : String(e)));
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 一鍵開啟直播模式'; }
   }
 }
 

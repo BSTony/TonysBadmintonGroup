@@ -73,6 +73,16 @@
             🛒 團購管理
           </button>
         </div>
+        <!-- 🏸 直播分析模式快捷按鈕（超管專屬） -->
+        <div style="margin-top: 8px;">
+          <button id="btn-admin-live-mode" type="button" class="btn btn-primary" style="width: 100%; background: linear-gradient(135deg, #4f46e5, #7c3aed); font-weight: bold; border-radius: 12px; font-size: 14px; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; border: none; box-shadow: 0 4px 14px rgba(124,58,237,0.3); cursor: pointer;" onclick="openLiveModeAdminModal()">
+            <span style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">🏸</span>
+              <span>羽球直播分析 (Live Mode)</span>
+            </span>
+            <span id="live-mode-admin-badge" style="font-size: 12px; padding: 3px 10px; border-radius: 20px; background: rgba(255,255,255,0.25); color: #fff; font-weight: 600;">未開啟</span>
+          </button>
+        </div>
       </div>
 
       <!-- 🛒 團購開放橫幅廣告/按鈕列表 (支援多團購活動同時開啟與獨立分類入口) -->
@@ -107,6 +117,7 @@
               <button id="btn-system-logs" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="系統錯誤 LOG">📜</button>
               <button id="btn-party-admin" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="派對大廳控制台">🎮</button>
               <button id="btn-easter-egg" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="彩蛋設定">🎁</button>
+              <button id="btn-live-mode-icon" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="🏸 羽球直播分析模式" onclick="openLiveModeAdminModal()">📹</button>
             </div>
             <div id="user-auth-container" style="display:flex; align-items:center; gap:6px; margin-left:auto;">
               <button id="btn-line-login" class="hidden" style="background-color:#06C755; color:white; border:none; border-radius:18px; font-size:12px; font-weight:bold; padding:5px 12px; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(0,0,0,0.15);" onclick="handleUserLoginClick()">
@@ -1157,7 +1168,74 @@
       40% { transform: scale(1.4); }
       100% { transform: scale(1); }
     }
-  </style>
+  <!-- 🏸 羽球直播分析控制台 Modal (超管專屬) -->
+  <div id="live-mode-admin-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.65); z-index:10005; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px); padding:16px; box-sizing:border-box;">
+    <div style="background:#16162a; border:1px solid rgba(99,102,241,0.3); border-radius:20px; width:100%; max-width:420px; color:#fff; padding:22px; box-shadow:0 20px 60px rgba(0,0,0,0.6); position:relative;">
+      <!-- 關閉按鈕 -->
+      <button onclick="closeLiveModeAdminModal()" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.1); border:none; color:#fff; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <span style="font-size:28px;">🏸</span>
+        <div>
+          <h3 style="margin:0; font-size:18px; font-weight:800; background:linear-gradient(135deg,#818cf8,#38bdf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">羽球直播分析控制台</h3>
+          <p style="margin:2px 0 0; font-size:12px; color:#94a3b8;">超級管理員專屬即時控制與鏡頭分析</p>
+        </div>
+      </div>
+
+      <!-- 目前狀態區塊 -->
+      <div id="lma-status-box" style="background:#0f172a; border-radius:14px; padding:14px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13px; color:#94a3b8;">目前模式狀態</span>
+          <span id="lma-status-tag" style="font-size:12px; font-weight:700; padding:3px 10px; border-radius:12px; background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.3);">🔴 未開啟</span>
+        </div>
+        <div id="lma-session-info" style="display:none; margin-top:10px; font-size:13px; color:#cbd5e1; line-height:1.6; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px;"></div>
+      </div>
+
+      <!-- 設定表單 (未開啟時顯示) -->
+      <div id="lma-settings-form">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px; color:#94a3b8; font-weight:600; display:block; margin-bottom:6px;">📐 比賽類型</label>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="lma-court-single" class="btn" style="flex:1; padding:8px; border-radius:10px; background:#6366f1; color:#fff; font-weight:700; border:none; font-size:13px;" onclick="setLmaCourtType('single')">🎾 單打</button>
+            <button type="button" id="lma-court-double" class="btn" style="flex:1; padding:8px; border-radius:10px; background:rgba(255,255,255,0.08); color:#94a3b8; font-weight:700; border:1px solid rgba(255,255,255,0.1); font-size:13px;" onclick="setLmaCourtType('double')">👥 雙打</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px; color:#94a3b8; font-weight:600; display:block; margin-bottom:6px;">📱 鏡頭架設方式</label>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="lma-cam-fixed" class="btn" style="flex:1; padding:8px; border-radius:10px; background:#6366f1; color:#fff; font-weight:700; border:none; font-size:13px;" onclick="setLmaCamMode('fixed')">📷 固定架設 (底線)</button>
+            <button type="button" id="lma-cam-handheld" class="btn" style="flex:1; padding:8px; border-radius:10px; background:rgba(255,255,255,0.08); color:#94a3b8; font-weight:700; border:1px solid rgba(255,255,255,0.1); font-size:13px;" onclick="setLmaCamMode('handheld')">🤳 手持拍攝</button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <div style="flex:1;">
+            <label style="font-size:12px; color:#94a3b8; font-weight:600; display:block; margin-bottom:4px;">主隊名稱</label>
+            <input type="text" id="lma-team-a" value="主隊" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:8px 10px; color:#fff; font-size:13px;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:12px; color:#94a3b8; font-weight:600; display:block; margin-bottom:4px;">客隊名稱</label>
+            <input type="text" id="lma-team-b" value="客隊" style="width:100%; box-sizing:border-box; background:#0f172a; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:8px 10px; color:#fff; font-size:13px;">
+          </div>
+        </div>
+
+        <button id="btn-lma-start" class="btn btn-primary" style="width:100%; background:linear-gradient(135deg, #10b981, #059669); font-weight:800; font-size:15px; padding:12px; border-radius:12px; border:none; box-shadow:0 6px 20px rgba(16,185,129,0.3); cursor:pointer;" onclick="startLiveModeFromAdmin()">
+          🚀 一鍵開啟並進入直播分析
+        </button>
+      </div>
+
+      <!-- 控制按鈕 (直播中時顯示) -->
+      <div id="lma-active-actions" style="display:none; flex-direction:column; gap:10px;">
+        <button class="btn btn-primary" style="width:100%; background:linear-gradient(135deg, #6366f1, #4338ca); font-weight:800; font-size:15px; padding:12px; border-radius:12px; border:none; box-shadow:0 6px 20px rgba(99,102,241,0.35); cursor:pointer;" onclick="launchLiveModePage()">
+          📹 進入手機直播分析畫面
+        </button>
+        <button class="btn btn-primary" style="width:100%; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#f87171; font-weight:700; font-size:14px; padding:11px; border-radius:12px; cursor:pointer;" onclick="stopLiveModeFromAdmin()">
+          🏁 結束並關閉直播
+        </button>
+      </div>
+    </div>
+  </div>
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>

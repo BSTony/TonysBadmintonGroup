@@ -2247,6 +2247,16 @@ function renderLobby(forceCards = true) {
       btnPartyAdmin.classList.add('hidden');
     }
 
+    const btnLiveModeIcon = document.getElementById('btn-live-mode-icon');
+    if (effIsSuperAdmin && btnLiveModeIcon) {
+      btnLiveModeIcon.classList.remove('hidden');
+    } else if (btnLiveModeIcon) {
+      btnLiveModeIcon.classList.add('hidden');
+    }
+    if (effIsSuperAdmin && typeof refreshLiveModeAdminBadge === 'function') {
+      refreshLiveModeAdminBadge();
+    }
+
     const btnLineLogin = document.getElementById('btn-line-login');
     const userStatusBadge = document.getElementById('user-status-badge');
     const isLineLoggedIn = isLiffLoggedInSafe() || (currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId));
@@ -9448,6 +9458,10 @@ function bootApp() {
   }
 
   const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('page') === 'live_mode' || urlParams.get('live') === '1') {
+    window.location.replace('/live_mode.html' + window.location.search);
+    return;
+  }
   const buyFromUrl = urlParams.get('buy');
   const urlGameId = urlParams.get('gameId');
 
@@ -9491,6 +9505,183 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', bootApp);
 } else {
   bootApp();
+}
+
+// ==========================================
+// 🏸 羽球直播分析控制台 (Live Mode Admin)
+// ==========================================
+let lmaSelectedCourtType = 'single';
+let lmaSelectedCamMode = 'fixed';
+let lmaCurrentState = null;
+
+function setLmaCourtType(type) {
+  lmaSelectedCourtType = type;
+  const btnS = document.getElementById('lma-court-single');
+  const btnD = document.getElementById('lma-court-double');
+  if (btnS && btnD) {
+    if (type === 'single') {
+      btnS.style.background = '#6366f1'; btnS.style.color = '#fff'; btnS.style.border = 'none';
+      btnD.style.background = 'rgba(255,255,255,0.08)'; btnD.style.color = '#94a3b8'; btnD.style.border = '1px solid rgba(255,255,255,0.1)';
+    } else {
+      btnD.style.background = '#6366f1'; btnD.style.color = '#fff'; btnD.style.border = 'none';
+      btnS.style.background = 'rgba(255,255,255,0.08)'; btnS.style.color = '#94a3b8'; btnS.style.border = '1px solid rgba(255,255,255,0.1)';
+    }
+  }
+}
+
+function setLmaCamMode(mode) {
+  lmaSelectedCamMode = mode;
+  const btnF = document.getElementById('lma-cam-fixed');
+  const btnH = document.getElementById('lma-cam-handheld');
+  if (btnF && btnH) {
+    if (mode === 'fixed') {
+      btnF.style.background = '#6366f1'; btnF.style.color = '#fff'; btnF.style.border = 'none';
+      btnH.style.background = 'rgba(255,255,255,0.08)'; btnH.style.color = '#94a3b8'; btnH.style.border = '1px solid rgba(255,255,255,0.1)';
+    } else {
+      btnH.style.background = '#6366f1'; btnH.style.color = '#fff'; btnH.style.border = 'none';
+      btnF.style.background = 'rgba(255,255,255,0.08)'; btnF.style.color = '#94a3b8'; btnF.style.border = '1px solid rgba(255,255,255,0.1)';
+    }
+  }
+}
+
+async function refreshLiveModeAdminBadge() {
+  const badge = document.getElementById('live-mode-admin-badge');
+  const uid = (currentUser && currentUser.userId) || '';
+  if (!badge) return;
+  try {
+    const res = await fetch('/api/live_mode' + (uid ? '?uid=' + encodeURIComponent(uid) : ''));
+    if (!res.ok) return;
+    const state = await res.json();
+    lmaCurrentState = state;
+    if (state.enabled) {
+      badge.textContent = '🟢 直播中';
+      badge.style.background = '#10b981';
+      badge.style.color = '#ffffff';
+    } else {
+      badge.textContent = '未開啟';
+      badge.style.background = 'rgba(255,255,255,0.25)';
+      badge.style.color = '#ffffff';
+    }
+  } catch(e) {}
+}
+
+async function openLiveModeAdminModal() {
+  const modal = document.getElementById('live-mode-admin-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+
+  const statusTag = document.getElementById('lma-status-tag');
+  const sessionInfo = document.getElementById('lma-session-info');
+  const settingsForm = document.getElementById('lma-settings-form');
+  const activeActions = document.getElementById('lma-active-actions');
+
+  const uid = (currentUser && currentUser.userId) || '';
+  try {
+    const res = await fetch('/api/live_mode' + (uid ? '?uid=' + encodeURIComponent(uid) : ''));
+    const state = await res.json();
+    lmaCurrentState = state;
+
+    if (state.enabled) {
+      if (statusTag) {
+        statusTag.textContent = '🟢 直播中';
+        statusTag.style.background = 'rgba(16,185,129,0.2)';
+        statusTag.style.color = '#34d399';
+        statusTag.style.border = '1px solid rgba(16,185,129,0.3)';
+      }
+      if (sessionInfo) {
+        const durMin = state.startedAt ? Math.floor((Date.now() - new Date(state.startedAt).getTime()) / 60000) : 0;
+        sessionInfo.innerHTML = `
+          <div>對戰：<strong>${escapeHTML(state.teamA || '主隊')}</strong> ${state.scoreA || 0} : ${state.scoreB || 0} <strong>${escapeHTML(state.teamB || '客隊')}</strong></div>
+          <div>回合：⚡ <strong>${state.rallyCount || 0}</strong> 回合 | 時長：<strong>${durMin}</strong> 分鐘</div>
+          <div>類型：${state.courtType === 'double' ? '👥 雙打' : '🎾 單打'} | 架設：${state.cameraMode === 'handheld' ? '🤳 手持拍攝' : '📷 固定架設'}</div>
+        `;
+        sessionInfo.style.display = 'block';
+      }
+      if (settingsForm) settingsForm.style.display = 'none';
+      if (activeActions) activeActions.style.display = 'flex';
+    } else {
+      if (statusTag) {
+        statusTag.textContent = '🔴 未開啟';
+        statusTag.style.background = 'rgba(239,68,68,0.2)';
+        statusTag.style.color = '#f87171';
+        statusTag.style.border = '1px solid rgba(239,68,68,0.3)';
+      }
+      if (sessionInfo) sessionInfo.style.display = 'none';
+      if (settingsForm) settingsForm.style.display = 'block';
+      if (activeActions) activeActions.style.display = 'none';
+    }
+  } catch(e) {
+    console.error('取得直播狀態失敗:', e);
+  }
+}
+
+function closeLiveModeAdminModal() {
+  const modal = document.getElementById('live-mode-admin-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+async function startLiveModeFromAdmin() {
+  const uid = (currentUser && currentUser.userId) || '';
+  if (!uid) {
+    alert('請先登入 LINE！');
+    return;
+  }
+  const teamA = (document.getElementById('lma-team-a')?.value || '主隊').trim();
+  const teamB = (document.getElementById('lma-team-b')?.value || '客隊').trim();
+  const btn = document.getElementById('btn-lma-start');
+  if (btn) { btn.disabled = true; btn.textContent = '🚀 開啟中...'; }
+
+  try {
+    const res = await fetch('/api/live_mode/toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid,
+        enabled: true,
+        courtType: lmaSelectedCourtType,
+        cameraMode: lmaSelectedCamMode,
+        teamA,
+        teamB
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || '開啟失敗');
+
+    refreshLiveModeAdminBadge();
+    closeLiveModeAdminModal();
+    launchLiveModePage();
+  } catch(e) {
+    alert('❌ ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🚀 一鍵開啟並進入直播分析'; }
+  }
+}
+
+async function stopLiveModeFromAdmin() {
+  const uid = (currentUser && currentUser.userId) || '';
+  if (!confirm('確定要結束目前的直播模式嗎？')) return;
+
+  try {
+    const res = await fetch('/api/live_mode/toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid, enabled: false })
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || '關閉失敗');
+
+    alert('🏁 直播模式已關閉！');
+    refreshLiveModeAdminBadge();
+    openLiveModeAdminModal();
+  } catch(e) {
+    alert('❌ ' + e.message);
+  }
+}
+
+function launchLiveModePage() {
+  const uid = (currentUser && currentUser.userId) || '';
+  const url = '/live_mode.html' + (uid ? '?uid=' + encodeURIComponent(uid) : '');
+  window.location.href = url;
 }
 
 
