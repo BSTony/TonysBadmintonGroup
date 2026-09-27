@@ -128,6 +128,9 @@
   <p id="splash-no-live" style="display:none;color:var(--muted);font-size:13px;margin-top:16px;text-align:center;padding:0 32px">
     目前直播模式尚未開啟<br>請聯繫管理員輸入「開啟直播」指令
   </p>
+  <div id="splash-no-auth" style="display:none;color:#ff6b81;font-size:13px;margin-top:20px;text-align:center;padding:14px 20px;background:rgba(255,107,129,0.1);border:1px solid rgba(255,107,129,0.3);border-radius:12px;line-height:1.6">
+    🔒 <strong>僅限超級管理員使用</strong><br>此為內部測試專區，其他使用者無法操作
+  </div>
 </div>
 
 <!-- CALIBRATE -->
@@ -255,22 +258,42 @@ async function init() {
     const cfg = await r.json();
     if (cfg.liffId && window.liff) {
       await liff.init({ liffId: cfg.liffId });
-      if (liff.isLoggedIn()) uid = liff.getContext()?.userId || null;
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile().catch(() => null);
+        uid = profile?.userId || liff.getContext()?.userId || null;
+      }
     }
   } catch(e) { console.warn('LIFF:', e.message); }
+  const urlUid = new URLSearchParams(window.location.search).get('uid');
+  if (!uid && urlUid) uid = urlUid;
   checkLive();
 }
 
 async function checkLive() {
+  let isSuper = false;
   try {
-    const r = await fetch(BASE + '/api/live_mode');
+    const query = uid ? '?uid=' + encodeURIComponent(uid) : '';
+    const r = await fetch(BASE + '/api/live_mode' + query);
     liveModeState = await r.json();
+    isSuper = !!liveModeState.isSuperAdmin;
   } catch(e) { liveModeState = { enabled: false }; }
 
   document.getElementById('splash-spinner').style.display = 'none';
   const badge = document.getElementById('live-status-badge');
   const btn = document.getElementById('btn-enter-live');
   const noLive = document.getElementById('splash-no-live');
+  const noAuth = document.getElementById('splash-no-auth');
+
+  if (!isSuper) {
+    badge.textContent = '🔒 權限限制';
+    badge.className = 'splash-badge offline';
+    btn.style.display = 'none';
+    noLive.style.display = 'none';
+    if (noAuth) noAuth.style.display = 'block';
+    return;
+  }
+
+  if (noAuth) noAuth.style.display = 'none';
 
   if (liveModeState.enabled) {
     badge.textContent = '🟢 直播中';

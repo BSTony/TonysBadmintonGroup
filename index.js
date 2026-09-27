@@ -6030,6 +6030,7 @@ async function handleEvent(event) {
     }
 
     if (text === '直播狀態') {
+      if (!isSuperAdmin(uid)) return null;
       const s = liveModeState;
       const status = s.enabled ? '🟢 直播中' : '🔴 未開啟';
       const info = s.enabled
@@ -7206,9 +7207,14 @@ function saveLiveModeState() {
 
 loadLiveModeState();
 
-// GET /api/live_mode — 取得目前直播狀態（任何人可查詢）
+// GET /api/live_mode — 取得目前直播狀態（支援 uid 權限查詢）
 app.get('/api/live_mode', (req, res) => {
-  res.json(liveModeState);
+  const { uid } = req.query;
+  const isSuper = uid ? isSuperAdmin(uid) : false;
+  res.json({
+    ...liveModeState,
+    isSuperAdmin: isSuper
+  });
 });
 
 // POST /api/live_mode/toggle — 超管開關直播模式
