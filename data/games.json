@@ -9226,7 +9226,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790080194651,
-    "lastActiveTime": 1790087329003,
+    "lastActiveTime": 1790501378609,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9239,7 +9239,6 @@
       "謝東霖 Tony": true,
       "Kay": true,
       "Ong": true,
-      "憲": true,
       "Robert": true,
       "海棠": true,
       "周則鼎": true,
@@ -9270,7 +9269,6 @@
           "謝東霖 Tony",
           "Kay",
           "Ong",
-          "憲",
           "Robert",
           "海棠",
           "周則鼎",
@@ -9285,6 +9283,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/27 17:29",
+        "name": "憲",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/22 22:28",
         "name": "凱文",
