@@ -1791,11 +1791,8 @@ function detectBall(video, dest) {
   // Use Kalman prediction to create a moving "Tracking Gate" ROI
   let trackX = -1, trackY = -1;
   if (shuttlePos && kalX && kalY && (Date.now() - shuttlePos.t < 1500)) {
-    const cvs = document.getElementById('live-canvas');
-    if (cvs) {
-      trackX = kalX.getPred() * (SW / cvs.width);
-      trackY = kalY.getPred() * (SH / cvs.height);
-    }
+    trackX = kalX.getPred() * (SW / dest.width);
+    trackY = kalY.getPred() * (SH / dest.height);
   }
 
   for (let y = minRoiY; y < maxRoiY; y++) {
@@ -1812,8 +1809,8 @@ function detectBall(video, dest) {
       
       let isNearTrack = false;
       if (trackX >= 0 && Math.abs(x - trackX) < 40 && Math.abs(y - trackY) < 40) {
-        // Lower threshold near predicted ball location to hold onto slow/obscured balls
-        if ((d >= 1 && g >= 130) || g >= 160 || (r > 130 && gr > 130 && b < 150)) {
+        // Lower threshold near predicted ball location to hold onto slow balls, but STRICTLY require d >= 1 (motion)
+        if (d >= 1 && (g >= 130 || (r > 130 && gr > 130 && b < 150))) {
           isNearTrack = true;
         }
       }
@@ -1845,8 +1842,8 @@ function detectBall(video, dest) {
   for (let gy = 0; gy < gridH; gy++) {
     for (let gx = 0; gx < gridW; gx++) {
       const cell = grid[gy * gridW + gx];
-      // Shuttlecock is compact: 2 to 95 pixels. Allow larger motion streaks.
-      if (cell.length >= 2 && cell.length <= 95) {
+      // Shuttlecock is compact. Allow up to 180 pixels for massive motion streaks.
+      if (cell.length >= 2 && cell.length <= 180) {
         let sumX = 0, sumY = 0, sumG = 0, sumD = 0;
         for (const p of cell) {
           sumX += p.x; sumY += p.y; sumG += p.g; sumD += p.d;
@@ -1859,7 +1856,7 @@ function detectBall(video, dest) {
           if (d > maxD) maxD = d;
         }
         const r = Math.sqrt(maxD);
-        if (r <= 22) {
+        if (r <= 45) { // Increased from 22 to 45 to allow very long motion streaks
           const avgD = sumD / cell.length;
           const avgG = sumG / cell.length;
           let baseScore = avgD * 8.0 + avgG * 0.5 - r * 1.5;
