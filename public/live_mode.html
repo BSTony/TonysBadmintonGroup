@@ -1630,8 +1630,8 @@ function startLive() {
     const rc = canvas.getBoundingClientRect();
     const clickX = (e.clientX - rc.left) * (canvas.width / rc.width);
     const clickY = (e.clientY - rc.top) * (canvas.height / rc.height);
-    kalX = mkKalman(6, 2, 4);
-    kalY = mkKalman(6, 2, 4);
+    kalX = mkKalman(6, 2, 4, clickX);
+    kalY = mkKalman(6, 2, 4, clickY);
     const kx = kalX.update(clickX);
     const ky = kalY.update(clickY);
     prevShuttlePos = shuttlePos;
@@ -1783,6 +1783,16 @@ function detectBall(video, dest) {
 
   // 3. Fast Candidate Pixel Collection
   const candidates = [];
+  
+  let manualX = -1, manualY = -1;
+  if (shuttlePos && shuttlePos.manual && (Date.now() - shuttlePos.t < 1500)) {
+    const cvs = document.getElementById('live-canvas');
+    if (cvs) {
+      manualX = shuttlePos.x * (SW / cvs.width);
+      manualY = shuttlePos.y * (SH / cvs.height);
+    }
+  }
+
   for (let y = minRoiY; y < maxRoiY; y++) {
     for (let x = minRoiX; x < maxRoiX; x++) {
       const i = y * SW + x;
@@ -1794,9 +1804,17 @@ function detectBall(video, dest) {
       const isMotionBright = (d >= 5 && g >= 115);
       const isHighContrastWhite = (g >= 180 && d >= 3);
       const isYellowShuttle = (r > 150 && gr > 140 && b < 130 && d >= 3);
+      
+      let isNearManual = false;
+      if (manualX >= 0 && Math.abs(x - manualX) < 40 && Math.abs(y - manualY) < 40) {
+        // Drop the motion (d) requirement if near manual lock to re-acquire static or slow-moving balls
+        if (g >= 150 || (r > 130 && gr > 130 && b < 150)) {
+          isNearManual = true;
+        }
+      }
 
-      if (isMotionBright || isHighContrastWhite || isYellowShuttle) {
-        candidates.push({ x, y, g, d });
+      if (isMotionBright || isHighContrastWhite || isYellowShuttle || isNearManual) {
+        candidates.push({ x, y, g, d: Math.max(d, isNearManual ? 5 : 0) });
       }
     }
   }
@@ -2484,11 +2502,11 @@ function applyH(H,x,y) {
 }
 
 // ═══ KALMAN ═══
-function mkKalman(R,Q,P) {
-  let x=0,v=0;
+function mkKalman(R,Q,P, initX = 0) {
+  let x = initX, v = 0;
   return {
-    update(z){const K=P/(P+R);x=x+K*(z-x);v=v+K*(z-x)*0.1;P=(1-K)*P;return x;},
-    predict(){x=x+v;v*=0.9;return x;}
+    update(z) { const K = P / (P + R); x = x + K * (z - x); v = v + K * (z - x) * 0.1; P = (1 - K) * P + Q; return x; },
+    predict() { x = x + v; v *= 0.9; return x; }
   };
 }
 
