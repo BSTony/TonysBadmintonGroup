@@ -1840,8 +1840,8 @@ function detectBall(video, dest) {
   for (let gy = 0; gy < gridH; gy++) {
     for (let gx = 0; gx < gridW; gx++) {
       const cell = grid[gy * gridW + gx];
-      // Shuttlecock is compact: 2 to 65 pixels. Large bodies (>80) are filtered out!
-      if (cell.length >= 2 && cell.length <= 65) {
+      // Shuttlecock is compact: 2 to 95 pixels. Allow larger motion streaks.
+      if (cell.length >= 2 && cell.length <= 95) {
         let sumX = 0, sumY = 0, sumG = 0, sumD = 0;
         for (const p of cell) {
           sumX += p.x; sumY += p.y; sumG += p.g; sumD += p.d;
@@ -1854,10 +1854,10 @@ function detectBall(video, dest) {
           if (d > maxD) maxD = d;
         }
         const r = Math.sqrt(maxD);
-        if (r <= 12) {
+        if (r <= 22) {
           clusters.push({
             cx, cy, r, n: cell.length,
-            score: (sumD / cell.length) * 1.6 + (sumG / cell.length) * 0.9 - r * 2.0
+            score: (sumD / cell.length) * 1.6 + (sumG / cell.length) * 0.9 - r * 1.5
           });
         }
       }
@@ -1870,14 +1870,15 @@ function detectBall(video, dest) {
   let best = null, bestScore = -Infinity;
   for (const c of clusters) {
     let score = c.score;
-    if (shuttlePos) {
-      const prevX_SW = shuttlePos.x * (SW / dest.width);
-      const prevY_SW = shuttlePos.y * (SH / dest.height);
-      const dist = Math.hypot(c.cx - prevX_SW, c.cy - prevY_SW);
+    if (shuttlePos && kalX && kalY) {
+      // Use Kalman predicted position instead of stale previous position
+      const predX_SW = kalX.getPred() * (SW / dest.width);
+      const predY_SW = kalY.getPred() * (SH / dest.height);
+      const dist = Math.hypot(c.cx - predX_SW, c.cy - predY_SW);
       const isManual = shuttlePos.manual && (Date.now() - shuttlePos.t < 1500);
-      if (dist <= 50) {
-        score += (50 - dist) * 12;
-        if (isManual) score += 500;
+      if (dist <= 60) {
+        score += (60 - dist) * 12;
+        if (isManual) score += 600;
       } else {
         score -= dist * (isManual ? 8 : 2);
       }
@@ -2506,7 +2507,8 @@ function mkKalman(R,Q,P, initX = 0) {
   let x = initX, v = 0;
   return {
     update(z) { const K = P / (P + R); x = x + K * (z - x); v = v + K * (z - x) * 0.1; P = (1 - K) * P + Q; return x; },
-    predict() { x = x + v; v *= 0.9; return x; }
+    predict() { x = x + v; v *= 0.9; return x; },
+    getPred() { return x + v; }
   };
 }
 
