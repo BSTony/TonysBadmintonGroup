@@ -47,17 +47,158 @@
   .btn-secondary { padding: 10px 24px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; transition: all 0.2s; }
 
   /* CALIBRATE */
-  #screen-calibrate { background: #000; position: relative; overflow: hidden; }
+  #screen-calibrate { background: #000; position: relative; overflow: hidden; height: 100vh; width: 100vw; }
   #calib-video-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
   #calibrate-video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-  #calibrate-canvas { position: absolute; pointer-events: auto; cursor: crosshair; z-index: 10; }
-  .calibrate-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.85)); z-index: 20; }
-  .calibrate-hint { text-align: center; font-size: 15px; font-weight: 600; margin-bottom: 12px; }
-  .calibrate-steps { display: flex; justify-content: center; gap: 10px; margin-bottom: 16px; }
-  .calibrate-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); transition: all 0.3s; }
+  #calibrate-canvas { position: absolute; pointer-events: auto; cursor: crosshair; z-index: 10; touch-action: none; }
+
+  /* 浮動居中控制膠囊，底端兩側完全不遮擋點擊！ */
+  .calibrate-overlay-wrap {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    pointer-events: none; /* 外層透傳點擊，左下角/右下角完全可以直接點到球場！ */
+    z-index: 30;
+    padding: 0 16px;
+  }
+  .calibrate-overlay {
+    pointer-events: auto; /* 只有面板內部接收按鈕點擊 */
+    width: 100%;
+    max-width: 560px;
+    background: rgba(15, 23, 42, 0.93);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(99, 102, 241, 0.45);
+    border-radius: 18px;
+    padding: 12px 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .calibrate-overlay.semi-transparent {
+    opacity: 0.18;
+    pointer-events: none; /* 穿透模式下可直接點擊到底下的球場！ */
+  }
+
+  .calibrate-ghost-btn {
+    position: absolute;
+    bottom: 140px;
+    right: 18px;
+    z-index: 35;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(99, 102, 241, 0.5);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #38bdf8;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: all 0.2s;
+  }
+  .calibrate-ghost-btn:hover {
+    background: rgba(30, 41, 59, 0.95);
+    color: #fff;
+    transform: scale(1.05);
+  }
+
+  .calibrate-hint {
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .btn-calib-sub {
+    padding: 5px 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .btn-calib-sub:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  .calib-corners-selector {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .corner-chip {
+    padding: 5px 9px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .corner-chip:hover {
+    border-color: rgba(99, 102, 241, 0.6);
+    color: #e2e8f0;
+  }
+  .corner-chip.set {
+    color: #e2e8f0;
+    border-color: rgba(6, 214, 160, 0.4);
+    background: rgba(6, 214, 160, 0.08);
+  }
+  .corner-chip.active {
+    background: rgba(247, 37, 133, 0.22);
+    border-color: #ffd60a;
+    color: #ffd60a;
+    box-shadow: 0 0 10px rgba(255, 214, 10, 0.4);
+  }
+
+  .nudge-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    padding: 0;
+  }
+  .nudge-btn:hover {
+    background: #4361ee;
+    border-color: #4361ee;
+    transform: scale(1.08);
+  }
+  .nudge-btn:active {
+    transform: scale(0.92);
+  }
+
+  .calibrate-steps { display: none; }
+  .calibrate-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); }
   .calibrate-dot.done { background: var(--accent2); border-color: var(--accent2); }
-  .calibrate-dot.active { background: var(--warn); border-color: var(--warn); animation: pulseBadge 1s infinite; }
-  .calibrate-actions { display: flex; gap: 10px; }
+  .calibrate-dot.active { background: var(--warn); border-color: var(--warn); }
+  .calibrate-actions { display: flex; gap: 8px; }
 
   /* LIVE */
   #screen-live {
@@ -454,9 +595,9 @@
   </div>
 
   <!-- 影片校正控制列 (上傳影片模式顯示) -->
-  <div id="calib-video-bar" style="display:none; position:absolute; top:16px; left:16px; right:16px; z-index:25; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px); border:1px solid rgba(99,102,241,0.3); border-radius:14px; padding:10px 14px; flex-direction:column; gap:8px; box-shadow:0 8px 30px rgba(0,0,0,0.7);">
+  <div id="calib-video-bar" style="display:none; position:absolute; top:14px; left:14px; right:14px; z-index:25; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px); border:1px solid rgba(99,102,241,0.3); border-radius:14px; padding:10px 14px; flex-direction:column; gap:8px; box-shadow:0 8px 30px rgba(0,0,0,0.7);">
     <div style="display:flex; align-items:center; justify-content:space-between; font-size:12px;">
-      <span id="calib-video-filename" style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#e2e8f0; font-weight:700;">📹 影片校正</span>
+      <span id="calib-video-filename" style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#e2e8f0; font-weight:700;">📹 影片校正</span>
       <span id="calib-video-time" style="font-family:monospace; color:#38bdf8; font-weight:700;">00:00 / 00:00</span>
     </div>
     <div style="display:flex; align-items:center; gap:8px;">
@@ -466,21 +607,65 @@
       <button onclick="seekCalibVideo(1)" style="background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer;">+1s ⏩</button>
     </div>
     <div style="font-size:11px; color:#94a3b8; text-align:center;">
-      💡 提示：可暫停在<strong>清楚看到球場4個角落</strong>的畫面，依序點擊4個角落！
+      💡 提示：可暫停在<strong>清楚看到球場4個角落</strong>的畫面，依序點擊4個角落，或點擊「✨ 智慧帶入」！
     </div>
   </div>
 
-  <div class="calibrate-overlay">
-    <div class="calibrate-hint" id="calibrate-hint">👆 依序點擊球場的 4 個角落（左上→右上→右下→左下）</div>
-    <div class="calibrate-steps">
-      <div class="calibrate-dot active" id="dot-0"></div>
-      <div class="calibrate-dot" id="dot-1"></div>
-      <div class="calibrate-dot" id="dot-2"></div>
-      <div class="calibrate-dot" id="dot-3"></div>
-    </div>
-    <div class="calibrate-actions">
-      <button class="btn-secondary" id="btn-reset-calibrate" style="flex:1">↺ 重置</button>
-      <button class="btn-primary" id="btn-start-analysis" disabled style="flex:2;margin-top:0">✅ 開始分析</button>
+  <!-- 浮動穿透切換懸浮鈕 (隨時可切換) -->
+  <button class="calibrate-ghost-btn" id="btn-floating-ghost" onclick="toggleCalibOpacity()" title="切換面板半透明穿透，方便看清底下的角落">
+    <span>👁️</span> <span id="ghost-btn-text">穿透底圖</span>
+  </button>
+
+  <!-- 浮動置中控制膠囊 (左右兩側完全留空，點擊直接通往底下的畫布) -->
+  <div class="calibrate-overlay-wrap" id="calibrate-overlay-wrap">
+    <div class="calibrate-overlay" id="calibrate-overlay">
+      <!-- 頂部：提示說明與快捷按鈕 -->
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <div class="calibrate-hint" id="calibrate-hint" style="margin-bottom:0; font-size:12px; text-align:left; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+          👆 依序點擊 4 個角落（左上→右上→右下→左下）
+        </div>
+        <div style="display:flex; gap:5px; flex-shrink:0;">
+          <button class="btn-calib-sub" onclick="autoPresetCalib()" style="background:linear-gradient(135deg,rgba(16,185,129,0.3),rgba(5,150,105,0.25)); border-color:rgba(16,185,129,0.5); color:#6ee7b7;" title="一鍵智慧填入球場標準4個角落">✨ 智慧帶入</button>
+          <button class="btn-calib-sub" onclick="undoCalibPoint()" title="撤銷上一個點">↩ 撤銷</button>
+          <button class="btn-calib-sub" onclick="resetCalib()" title="清空重新標記">↺ 重置</button>
+        </div>
+      </div>
+
+      <!-- 中間：4個角落選擇標籤 & 4向方向鍵微調器 -->
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; background:rgba(0,0,0,0.35); border-radius:12px; padding:6px 10px;">
+        <!-- 4 個角落選單 (可點選直接切換目前選中的角落) -->
+        <div class="calib-corners-selector" id="calib-corners-selector">
+          <button class="corner-chip active" id="chip-0" onclick="selectCalibCorner(0)">1 左上</button>
+          <button class="corner-chip" id="chip-1" onclick="selectCalibCorner(1)">2 右上</button>
+          <button class="corner-chip" id="chip-2" onclick="selectCalibCorner(2)">3 右下</button>
+          <button class="corner-chip" id="chip-3" onclick="selectCalibCorner(3)">4 左下</button>
+        </div>
+
+        <!-- 像素級方向微調鈕 -->
+        <div class="calib-nudge-group" style="display:flex; align-items:center; gap:3px;">
+          <span style="font-size:10px; color:#94a3b8; margin-right:3px;">微調:</span>
+          <button class="nudge-btn" onclick="nudgeActivePoint(-2, 0)" title="向左微調 (鍵盤 ◀)">◀</button>
+          <button class="nudge-btn" onclick="nudgeActivePoint(0, -2)" title="向上微調 (鍵盤 ▲)">▲</button>
+          <button class="nudge-btn" onclick="nudgeActivePoint(0, 2)" title="向下微調 (鍵盤 ▼)">▼</button>
+          <button class="nudge-btn" onclick="nudgeActivePoint(2, 0)" title="向右微調 (鍵盤 ▶)">▶</button>
+        </div>
+      </div>
+
+      <!-- 底部：確認開始分析按鈕 -->
+      <div class="calibrate-actions" style="margin-top:2px;">
+        <button class="btn-primary" id="btn-start-analysis" disabled style="width:100%; margin-top:0; padding:10px 18px; font-size:14px; border-radius:12px;">
+          ✅ 確認角落並開始分析
+        </button>
+      </div>
+
+      <!-- 備用兼容用隱藏元素 -->
+      <div class="calibrate-steps" style="display:none;">
+        <div class="calibrate-dot" id="dot-0"></div>
+        <div class="calibrate-dot" id="dot-1"></div>
+        <div class="calibrate-dot" id="dot-2"></div>
+        <div class="calibrate-dot" id="dot-3"></div>
+      </div>
+      <button id="btn-reset-calibrate" style="display:none;"></button>
     </div>
   </div>
 </div>
@@ -975,6 +1160,154 @@ function alignCanvasToVideo(video, canvas) {
   canvas.height = vh;
 }
 
+let activeCalibPoint = 0;
+let calibGhostMode = false;
+let isDraggingCalib = false;
+let dragCalibIdx = -1;
+
+function selectCalibCorner(index) {
+  if (index < 0 || index >= 4) return;
+  activeCalibPoint = index;
+  updateCalibChips();
+  const cornerNames = ['左上角', '右上角', '右下角', '左下角'];
+  if (calibPoints[index]) {
+    showToast('🎯 已選取：' + (index + 1) + ' ' + cornerNames[index] + '，可直接拖曳或按微調鍵/方向鍵');
+  } else {
+    showToast('👆 請在畫面上點擊「' + cornerNames[index] + '」');
+  }
+}
+
+function updateCalibChips() {
+  const cornerNames = ['左上', '右上', '右下', '左下'];
+  for (let i = 0; i < 4; i++) {
+    const chip = document.getElementById('chip-' + i);
+    if (!chip) continue;
+    chip.className = 'corner-chip';
+    if (i < calibPoints.length) {
+      chip.classList.add('set');
+      chip.innerHTML = '<span style="color:#06d6a0;">✓</span> ' + (i + 1) + ' ' + cornerNames[i];
+    } else {
+      chip.textContent = (i + 1) + ' ' + cornerNames[i];
+    }
+    if (i === activeCalibPoint) {
+      chip.classList.add('active');
+    }
+  }
+
+  // 同步更新舊版 dot (若有)
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById('dot-' + i);
+    if (!d) continue;
+    d.className = 'calibrate-dot';
+    if (i < calibPoints.length) d.classList.add('done');
+    else if (i === calibPoints.length) d.classList.add('active');
+  }
+
+  const btn = document.getElementById('btn-start-analysis');
+  if (btn) {
+    if (calibPoints.length === 4) {
+      btn.disabled = false;
+      btn.style.background = 'linear-gradient(135deg,#06d6a0,#0a9971)';
+    } else {
+      btn.disabled = true;
+      btn.style.background = '';
+    }
+  }
+}
+
+function autoPresetCalib() {
+  const canvas = document.getElementById('calibrate-canvas');
+  const w = canvas.width || 1280;
+  const h = canvas.height || 720;
+  calibPoints = [
+    { x: Math.round(w * 0.28), y: Math.round(h * 0.44) }, // 1: 左上
+    { x: Math.round(w * 0.72), y: Math.round(h * 0.44) }, // 2: 右上
+    { x: Math.round(w * 0.88), y: Math.round(h * 0.90) }, // 3: 右下
+    { x: Math.round(w * 0.12), y: Math.round(h * 0.90) }  // 4: 左下
+  ];
+  activeCalibPoint = 3; // 直接聚焦到第4點 (左下角) 方便微調
+  updateCalibChips();
+  document.getElementById('calibrate-hint').textContent = '✨ 已智慧帶入標準角落！可拖曳圓點或按微調鍵，確認後按開始分析';
+  showToast('✨ 已帶入標準角落！目前選取「4 左下」，可直接拖曳或微調');
+}
+
+function undoCalibPoint() {
+  if (calibPoints.length > 0) {
+    calibPoints.pop();
+    activeCalibPoint = Math.max(0, calibPoints.length - 1);
+    updateCalibChips();
+    const hints = [
+      '✅ 左上角！點擊右上角 ↗',
+      '✅ 右上角！點擊右下角 ↘',
+      '✅ 右下角！點擊左下角 ↙',
+      '✅ 4個角落已標記！可拖曳圓點或方向鍵微調，確認後按開始分析'
+    ];
+    document.getElementById('calibrate-hint').textContent = calibPoints.length === 0
+      ? '👆 依序點擊 4 個角落（左上→右上→右下→左下）'
+      : hints[calibPoints.length - 1];
+    showToast('↩ 已撤銷上一個點');
+  }
+}
+
+function resetCalib() {
+  calibPoints = [];
+  activeCalibPoint = 0;
+  updateCalibChips();
+  document.getElementById('calibrate-hint').textContent = '👆 依序點擊 4 個角落（左上→右上→右下→左下）';
+  showToast('↺ 已重置校正點');
+}
+
+function toggleCalibOpacity() {
+  calibGhostMode = !calibGhostMode;
+  const overlay = document.getElementById('calibrate-overlay');
+  const ghostText = document.getElementById('ghost-btn-text');
+  if (!overlay) return;
+  if (calibGhostMode) {
+    overlay.classList.add('semi-transparent');
+    if (ghostText) ghostText.textContent = '恢復面板';
+    showToast('👁️ 面板已穿透！可直接點擊底下的球場角落');
+  } else {
+    overlay.classList.remove('semi-transparent');
+    if (ghostText) ghostText.textContent = '穿透底圖';
+  }
+}
+
+function nudgeActivePoint(dx, dy) {
+  if (activeCalibPoint < 0 || activeCalibPoint >= 4) {
+    if (calibPoints.length > 0) activeCalibPoint = calibPoints.length - 1;
+    else return;
+  }
+  const canvas = document.getElementById('calibrate-canvas');
+  if (!calibPoints[activeCalibPoint]) {
+    // 若該點尚未點擊，則在畫布預設位置建立
+    const w = canvas.width || 1280;
+    const h = canvas.height || 720;
+    const presets = [
+      { x: Math.round(w * 0.28), y: Math.round(h * 0.44) },
+      { x: Math.round(w * 0.72), y: Math.round(h * 0.44) },
+      { x: Math.round(w * 0.88), y: Math.round(h * 0.90) },
+      { x: Math.round(w * 0.12), y: Math.round(h * 0.90) }
+    ];
+    while (calibPoints.length <= activeCalibPoint) {
+      calibPoints.push({ ...presets[calibPoints.length] });
+    }
+  }
+  const p = calibPoints[activeCalibPoint];
+  p.x = Math.max(0, Math.min(canvas.width, p.x + dx));
+  p.y = Math.max(0, Math.min(canvas.height, p.y + dy));
+  updateCalibChips();
+}
+
+// 支援鍵盤方向鍵微調 (Shift 加速)
+window.addEventListener('keydown', (e) => {
+  if (currentScreen !== 'calibrate') return;
+  const step = e.shiftKey ? 10 : 2;
+  if (e.key === 'ArrowLeft') { nudgeActivePoint(-step, 0); e.preventDefault(); }
+  else if (e.key === 'ArrowRight') { nudgeActivePoint(step, 0); e.preventDefault(); }
+  else if (e.key === 'ArrowUp') { nudgeActivePoint(0, -step); e.preventDefault(); }
+  else if (e.key === 'ArrowDown') { nudgeActivePoint(0, step); e.preventDefault(); }
+});
+
 function setupCalib(video) {
   const canvas = document.getElementById('calibrate-canvas');
   const ctx = canvas.getContext('2d');
@@ -983,83 +1316,239 @@ function setupCalib(video) {
     if (currentScreen === 'calibrate') alignCanvasToVideo(video, canvas);
   });
 
-  const colors = ['#4361ee','#f72585','#06d6a0','#ffd60a'];
+  const cornerNames = ['左上', '右上', '右下', '左下'];
+  const colors = ['#4361ee', '#f72585', '#06d6a0', '#ffd60a'];
+
   function draw() {
     if (currentScreen !== 'calibrate') return;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    if (calibPoints.length < 4) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-      ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 1. 球場透視網格與連線
+    if (calibPoints.length === 4) {
+      const [p0, p1, p2, p3] = calibPoints;
+
+      // 綠色球場半透明高亮覆蓋
       ctx.beginPath();
-      ctx.moveTo(canvas.width/2,0); ctx.lineTo(canvas.width/2,canvas.height);
-      ctx.moveTo(0,canvas.height/2); ctx.lineTo(canvas.width,canvas.height/2);
-      ctx.stroke(); ctx.setLineDash([]);
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.lineTo(p3.x, p3.y);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(6, 214, 160, 0.16)';
+      ctx.fill();
+      ctx.strokeStyle = '#06d6a0';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // 球網線 (左右邊線中點連線)
+      const netLeft = { x: (p0.x + p3.x) / 2, y: (p0.y + p3.y) / 2 };
+      const netRight = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+      ctx.beginPath();
+      ctx.moveTo(netLeft.x, netLeft.y);
+      ctx.lineTo(netRight.x, netRight.y);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // 中線 (前後發球底線中點連線)
+      const topCenter = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
+      const botCenter = { x: (p3.x + p2.x) / 2, y: (p3.y + p2.y) / 2 };
+      ctx.beginPath();
+      ctx.moveTo(topCenter.x, topCenter.y);
+      ctx.lineTo(botCenter.x, botCenter.y);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    } else if (calibPoints.length >= 2) {
+      ctx.beginPath();
+      ctx.moveTo(calibPoints[0].x, calibPoints[0].y);
+      for (let i = 1; i < calibPoints.length; i++) {
+        ctx.lineTo(calibPoints[i].x, calibPoints[i].y);
+      }
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
     }
-    calibPoints.forEach((p,i) => {
-      ctx.beginPath(); ctx.arc(p.x,p.y,14,0,Math.PI*2);
-      ctx.fillStyle = colors[i]+'33'; ctx.fill();
-      ctx.strokeStyle = colors[i]; ctx.lineWidth = 2.5; ctx.stroke();
-      ctx.fillStyle = colors[i]; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
-      ctx.fillText((i+1).toString(),p.x,p.y+4);
+
+    // 2. 繪製已標記的角落圓點與指示
+    const now = Date.now();
+    calibPoints.forEach((p, i) => {
+      const isActive = (i === activeCalibPoint);
+      const col = colors[i] || '#4361ee';
+
+      // 當前選取中的點：金色脈衝外光圈與十字準星
+      if (isActive) {
+        const pulse = 3 * Math.sin(now / 160);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 22 + pulse, 0, Math.PI * 2);
+        ctx.strokeStyle = '#ffd60a';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 準星線
+        ctx.beginPath();
+        ctx.moveTo(p.x - 12, p.y); ctx.lineTo(p.x + 12, p.y);
+        ctx.moveTo(p.x, p.y - 12); ctx.lineTo(p.x, p.y + 12);
+        ctx.strokeStyle = '#ffd60a';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // 實心圓點
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 14, 0, Math.PI * 2);
+      ctx.fillStyle = col + 'dd';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // 數字
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText((i + 1).toString(), p.x, p.y);
+
+      // 角落文字徽章 (例如: "4 左下")
+      const labelText = (i + 1) + ' ' + cornerNames[i];
+      ctx.font = 'bold 11px sans-serif';
+      const tw = ctx.measureText(labelText).width;
+      const lx = p.x + (p.x > canvas.width * 0.8 ? -tw - 28 : 18);
+      const ly = p.y + (p.y > canvas.height * 0.85 ? -20 : 16);
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(lx - 4, ly - 9, tw + 8, 18, 4);
+      } else {
+        ctx.rect(lx - 4, ly - 9, tw + 8, 18);
+      }
+      ctx.fill();
+      ctx.strokeStyle = isActive ? '#ffd60a' : col;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = isActive ? '#ffd60a' : '#e2e8f0';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(labelText, lx, ly);
     });
-    if (calibPoints.length >= 2) {
-      ctx.beginPath(); ctx.moveTo(calibPoints[0].x,calibPoints[0].y);
-      calibPoints.forEach(p=>ctx.lineTo(p.x,p.y));
-      if (calibPoints.length===4) ctx.closePath();
-      ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=2; ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
-    }
-    if (calibPoints.length===4) {
-      ctx.beginPath(); ctx.moveTo(calibPoints[0].x,calibPoints[0].y);
-      calibPoints.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath();
-      ctx.fillStyle='rgba(6,214,160,0.18)'; ctx.fill();
-    }
+
     requestAnimationFrame(draw);
   }
   draw();
 
-  const hints = [
-    '✅ 左上角！點擊右上角 ↗',
-    '✅ 右上角！點擊右下角 ↘',
-    '✅ 右下角！點擊左下角 ↙',
-    '✅ 校正完成！請按下方「開始分析」'
-  ];
-  canvas.onclick = e => {
-    if (calibPoints.length >= 4) return;
+  function getCanvasPos(e) {
     const rc = canvas.getBoundingClientRect();
-    const px = (e.clientX - rc.left) * (canvas.width / rc.width);
-    const py = (e.clientY - rc.top) * (canvas.height / rc.height);
-    calibPoints.push({ x: px, y: py });
-    updateDots();
-    document.getElementById('calibrate-hint').textContent = hints[calibPoints.length-1];
-    if (calibPoints.length===4) {
-      const btn = document.getElementById('btn-start-analysis');
-      btn.disabled = false;
-      btn.style.background = 'linear-gradient(135deg,#06d6a0,#0a9971)';
+    const scaleX = canvas.width / rc.width;
+    const scaleY = canvas.height / rc.height;
+    return {
+      x: (e.clientX - rc.left) * scaleX,
+      y: (e.clientY - rc.top) * scaleY
+    };
+  }
+
+  function findNearPoint(cx, cy, thresholdPx = 36) {
+    let closestIdx = -1;
+    let minD = Infinity;
+    calibPoints.forEach((p, i) => {
+      const d = Math.hypot(p.x - cx, p.y - cy);
+      if (d < minD && d <= thresholdPx) {
+        minD = d;
+        closestIdx = i;
+      }
+    });
+    return closestIdx;
+  }
+
+  // 支援滑鼠與觸控直接拖曳角落點
+  canvas.onpointerdown = (e) => {
+    const { x, y } = getCanvasPos(e);
+    const nearIdx = findNearPoint(x, y, 42);
+
+    if (nearIdx >= 0) {
+      // 點中現有圓點，開始拖曳
+      activeCalibPoint = nearIdx;
+      isDraggingCalib = true;
+      dragCalibIdx = nearIdx;
+      try { canvas.setPointerCapture(e.pointerId); } catch(_) {}
+      updateCalibChips();
+    } else {
+      // 點在空白處
+      if (calibPoints.length < 4) {
+        calibPoints.push({ x: Math.round(x), y: Math.round(y) });
+        activeCalibPoint = calibPoints.length - 1;
+        updateCalibChips();
+        const hints = [
+          '✅ 左上角！點擊右上角 ↗',
+          '✅ 右上角！點擊右下角 ↘',
+          '✅ 右下角！點擊左下角 ↙',
+          '✅ 4個角落已標記！可拖曳圓點或方向鍵微調，確認後按開始分析'
+        ];
+        document.getElementById('calibrate-hint').textContent = hints[calibPoints.length - 1];
+      } else {
+        // 已有4個點，點擊切換選取最靠近的點並可直接拖曳
+        let closest = 0, minD = Infinity;
+        calibPoints.forEach((p, i) => {
+          const d = Math.hypot(p.x - x, p.y - y);
+          if (d < minD) { minD = d; closest = i; }
+        });
+        activeCalibPoint = closest;
+        isDraggingCalib = true;
+        dragCalibIdx = closest;
+        try { canvas.setPointerCapture(e.pointerId); } catch(_) {}
+        calibPoints[closest].x = Math.round(x);
+        calibPoints[closest].y = Math.round(y);
+        updateCalibChips();
+      }
     }
   };
-}
 
-function updateDots() {
-  for (let i=0;i<4;i++) {
-    const d = document.getElementById('dot-'+i);
-    d.className = 'calibrate-dot';
-    if (i<calibPoints.length) d.classList.add('done');
-    else if (i===calibPoints.length) d.classList.add('active');
+  canvas.onpointermove = (e) => {
+    const { x, y } = getCanvasPos(e);
+    if (isDraggingCalib && dragCalibIdx >= 0 && calibPoints[dragCalibIdx]) {
+      calibPoints[dragCalibIdx].x = Math.round(Math.max(0, Math.min(canvas.width, x)));
+      calibPoints[dragCalibIdx].y = Math.round(Math.max(0, Math.min(canvas.height, y)));
+    } else {
+      const nearIdx = findNearPoint(x, y, 42);
+      canvas.style.cursor = nearIdx >= 0 ? 'grab' : 'crosshair';
+    }
+  };
+
+  const endDrag = (e) => {
+    if (isDraggingCalib) {
+      try { if (e && e.pointerId) canvas.releasePointerCapture(e.pointerId); } catch(_) {}
+      isDraggingCalib = false;
+      dragCalibIdx = -1;
+    }
+  };
+  canvas.onpointerup = endDrag;
+  canvas.onpointercancel = endDrag;
+
+  // 開始分析按鈕事件綁定
+  const btnStart = document.getElementById('btn-start-analysis');
+  if (btnStart) {
+    btnStart.onclick = () => {
+      if (calibPoints.length < 4) {
+        showToast('⚠️ 請先完成 4 個角落標記');
+        return;
+      }
+      H = computeH(calibPoints.map(p => [p.x, p.y]), [[0, 0], [COURT_W, 0], [COURT_W, COURT_H], [0, COURT_H]]);
+      startLive();
+    };
   }
+
+  // 舊版重置按鈕相容
+  const oldResetBtn = document.getElementById('btn-reset-calibrate');
+  if (oldResetBtn) oldResetBtn.onclick = resetCalib;
 }
-
-document.getElementById('btn-reset-calibrate').onclick = () => {
-  calibPoints = [];
-  updateDots();
-  document.getElementById('calibrate-hint').textContent = '👆 依序點擊球場的 4 個角落（左上→右上→右下→左下）';
-  const btn = document.getElementById('btn-start-analysis');
-  btn.disabled = true; btn.style.background = '';
-};
-
-document.getElementById('btn-start-analysis').onclick = () => {
-  H = computeH(calibPoints.map(p=>[p.x,p.y]), [[0,0],[COURT_W,0],[COURT_W,COURT_H],[0,COURT_H]]);
-  startLive();
-};
 
 // ═══ LIVE ANALYSIS ═══
 function startLive() {
