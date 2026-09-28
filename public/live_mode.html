@@ -1861,8 +1861,8 @@ function detectBall(video, dest) {
         if (r <= 45) { // Increased from 22 to 45 to allow very long motion streaks
           const avgD = sumD / cell.length;
           const avgG = sumG / cell.length;
-          let baseScore = avgD * 8.0 + avgG * 0.5 - r * 1.5;
-          if (avgD < 2) baseScore -= 200; // Heavily penalize stationary background objects
+          // Increase r penalty slightly to prioritize compact balls over large hands/rackets
+          let baseScore = avgD * 8.0 + avgG * 0.5 - r * 3.0;
           clusters.push({
             cx, cy, r, n: cell.length,
             score: baseScore
@@ -1879,13 +1879,21 @@ function detectBall(video, dest) {
   for (const c of clusters) {
     let score = c.score;
     if (shuttlePos && kalX && kalY) {
-      // Use Kalman predicted position instead of stale previous position
       const predX_SW = kalX.getPred() * (SW / dest.width);
       const predY_SW = kalY.getPred() * (SH / dest.height);
-      const dist = Math.hypot(c.cx - predX_SW, c.cy - predY_SW);
+      const currX_SW = kalX.get() * (SW / dest.width);
+      const currY_SW = kalY.get() * (SH / dest.height);
+      
+      // Calculate distance to BOTH the predicted forward position AND the exact previous position.
+      // This is crucial: when the ball is hit, it reverses direction instantly. It will be far from 
+      // the predicted forward position, but very close to the previous position (impact point).
+      const distToPred = Math.hypot(c.cx - predX_SW, c.cy - predY_SW);
+      const distToCurr = Math.hypot(c.cx - currX_SW, c.cy - currY_SW);
+      const dist = Math.min(distToPred, distToCurr);
+      
       const isManual = shuttlePos.manual && (Date.now() - shuttlePos.t < 1500);
-      if (dist <= 80) {
-        score += (80 - dist) * 6;
+      if (dist <= 100) {
+        score += (100 - dist) * 6;
         if (isManual) score += 300;
       } else {
         score -= dist * (isManual ? 4 : 2);
