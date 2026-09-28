@@ -1725,6 +1725,8 @@ function loop() {
     kalX.predict();
     kalY.predict();
     if (shuttlePos && (Date.now() - shuttlePos.t < 1500)) {
+      shuttlePos.x = kalX.get();
+      shuttlePos.y = kalY.get();
       drawBall(trackCtx, shuttlePos.x, shuttlePos.y, 10);
     }
   }
@@ -1808,7 +1810,7 @@ function detectBall(video, dest) {
       const isYellowShuttle = (r > 150 && gr > 140 && b < 130 && d >= 3);
       
       let isNearTrack = false;
-      if (trackX >= 0 && Math.abs(x - trackX) < 40 && Math.abs(y - trackY) < 40) {
+      if (trackX >= 0 && Math.abs(x - trackX) < 60 && Math.abs(y - trackY) < 60) {
         // Lower threshold near predicted ball location to hold onto slow balls, but STRICTLY require d >= 1 (motion)
         if (d >= 1 && (g >= 130 || (r > 130 && gr > 130 && b < 150))) {
           isNearTrack = true;
@@ -2512,9 +2514,10 @@ function applyH(H,x,y) {
 function mkKalman(R,Q,P, initX = 0) {
   let x = initX, v = 0;
   return {
-    update(z) { const K = P / (P + R); x = x + K * (z - x); v = v + K * (z - x) * 0.1; P = (1 - K) * P + Q; return x; },
-    predict() { x = x + v; v *= 0.9; return x; },
-    getPred() { return x + v; }
+    update(z) { const K = P / (P + R); x = x + K * (z - x); v = v + K * (z - x) * 0.4; P = (1 - K) * P + Q; return x; },
+    predict() { x = x + v; v *= 0.98; return x; },
+    getPred() { return x + v; },
+    get() { return x; }
   };
 }
 
