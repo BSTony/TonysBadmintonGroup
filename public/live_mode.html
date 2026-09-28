@@ -1811,15 +1811,15 @@ function detectBall(video, dest) {
       const isYellowShuttle = (r > 150 && gr > 140 && b < 130 && d >= 3);
       
       let isNearTrack = false;
-      if (trackX >= 0 && Math.abs(x - trackX) < 50 && Math.abs(y - trackY) < 50) {
-        // Drastically lower threshold near predicted ball location to hold onto slow/obscured balls
-        if ((d >= 2 && g >= 130) || g >= 160 || (r > 130 && gr > 130 && b < 150)) {
+      if (trackX >= 0 && Math.abs(x - trackX) < 40 && Math.abs(y - trackY) < 40) {
+        // Lower threshold near predicted ball location to hold onto slow/obscured balls
+        if ((d >= 1 && g >= 130) || g >= 160 || (r > 130 && gr > 130 && b < 150)) {
           isNearTrack = true;
         }
       }
 
       if (isMotionBright || isHighContrastWhite || isYellowShuttle || isNearTrack) {
-        candidates.push({ x, y, g, d: Math.max(d, isNearTrack ? 5 : 0) });
+        candidates.push({ x, y, g, d }); // Push REAL motion, no faking!
       }
     }
   }
@@ -1860,9 +1860,13 @@ function detectBall(video, dest) {
         }
         const r = Math.sqrt(maxD);
         if (r <= 22) {
+          const avgD = sumD / cell.length;
+          const avgG = sumG / cell.length;
+          let baseScore = avgD * 8.0 + avgG * 0.5 - r * 1.5;
+          if (avgD < 2) baseScore -= 200; // Heavily penalize stationary background objects
           clusters.push({
             cx, cy, r, n: cell.length,
-            score: (sumD / cell.length) * 8.0 + (sumG / cell.length) * 0.5 - r * 1.5
+            score: baseScore
           });
         }
       }
@@ -1881,9 +1885,9 @@ function detectBall(video, dest) {
       const predY_SW = kalY.getPred() * (SH / dest.height);
       const dist = Math.hypot(c.cx - predX_SW, c.cy - predY_SW);
       const isManual = shuttlePos.manual && (Date.now() - shuttlePos.t < 1500);
-      if (dist <= 120) {
-        score += (120 - dist) * 4;
-        if (isManual) score += 600;
+      if (dist <= 80) {
+        score += (80 - dist) * 6;
+        if (isManual) score += 300;
       } else {
         score -= dist * (isManual ? 4 : 2);
       }
