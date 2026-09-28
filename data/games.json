@@ -9246,7 +9246,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790080194651,
-    "lastActiveTime": 1790585708245,
+    "lastActiveTime": 1790589543710,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9296,13 +9296,19 @@
           "afrahuang",
           "Sean",
           "陳呈",
-          "凱文",
-          "卡比"
+          "凱文"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/28 17:59",
+        "name": "卡比",
+        "operator": "卡比",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/28 16:55",
         "name": "卡比",
