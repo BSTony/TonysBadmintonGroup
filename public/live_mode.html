@@ -60,11 +60,300 @@
   .calibrate-actions { display: flex; gap: 10px; }
 
   /* LIVE */
-  #screen-live { flex-direction: column; background: #000; position: relative; overflow: hidden; }
-  #live-video-wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  #live-video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-  #live-canvas { position: absolute; pointer-events: auto; cursor: crosshair; z-index: 10; }
-  #court3d-canvas { position: absolute; top: 90px; right: 16px; width: 150px; height: 260px; border-radius: 12px; border: 1.5px solid rgba(6,214,160,0.7); background: rgba(13,13,26,0.92); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 15px rgba(6,214,160,0.25); z-index: 25; display: block; }
+  #screen-live {
+    flex-direction: column;
+    background: #090912;
+    position: relative;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  #live-main-container {
+    position: absolute;
+    top: 56px;
+    bottom: 74px;
+    left: 0;
+    right: 0;
+    display: flex;
+    overflow: hidden;
+    transition: all 0.25s ease;
+  }
+
+  /* 1. 左右分割 (預設) */
+  #live-main-container.layout-split-h {
+    flex-direction: row;
+    top: 56px;
+    bottom: 74px;
+  }
+  #live-main-container.layout-split-h #live-video-pane {
+    flex: 1.15;
+    min-width: 0;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    border-right: 1.5px solid rgba(67, 97, 238, 0.35);
+    overflow: hidden;
+  }
+  #live-main-container.layout-split-h #court3d-pane {
+    flex: 0.85;
+    min-width: 0;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background: radial-gradient(ellipse at 50% 30%, #15152d 0%, #0a0a16 100%);
+    padding: 10px;
+    overflow: hidden;
+  }
+
+  /* 2. 上下分割 */
+  #live-main-container.layout-split-v {
+    flex-direction: column;
+    top: 56px;
+    bottom: 74px;
+  }
+  #live-main-container.layout-split-v #live-video-pane {
+    flex: 1.1;
+    min-height: 0;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    border-bottom: 1.5px solid rgba(67, 97, 238, 0.35);
+    overflow: hidden;
+  }
+  #live-main-container.layout-split-v #court3d-pane {
+    flex: 0.9;
+    min-height: 0;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background: radial-gradient(ellipse at 50% 30%, #15152d 0%, #0a0a16 100%);
+    padding: 8px;
+    overflow: hidden;
+  }
+
+  /* 3. 子母畫面 (PIP) */
+  #live-main-container.layout-pip {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  #live-main-container.layout-pip #live-video-pane {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    border: none;
+  }
+  #live-main-container.layout-pip #court3d-pane {
+    position: absolute;
+    top: 86px;
+    right: 16px;
+    z-index: 25;
+    background: rgba(13, 13, 26, 0.94);
+    backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(6, 214, 160, 0.75);
+    border-radius: 14px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 18px rgba(6, 214, 160, 0.25);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+  #live-main-container.layout-pip .court3d-stats-bar {
+    display: none;
+  }
+
+  /* 影片區 */
+  #live-video-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #live-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+  }
+  #live-canvas {
+    position: absolute;
+    pointer-events: auto;
+    cursor: crosshair;
+    z-index: 10;
+  }
+
+  /* 3D 俯瞰面板組件 */
+  .court3d-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 6px;
+    font-size: 11px;
+    color: #e2e8f0;
+    font-weight: 700;
+  }
+  .court-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+  .court-badge.in {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+  }
+  .court-badge.out {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+  }
+  .court-badge.scan {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+  }
+
+  .court3d-canvas-box {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  #court3d-canvas {
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  }
+
+  .court3d-stats-bar {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .mini-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .stat-num {
+    font-size: 16px;
+    font-weight: 800;
+    color: #06d6a0;
+    font-family: monospace;
+  }
+  .stat-unit {
+    font-size: 9px;
+    color: #94a3b8;
+    margin-top: 1px;
+  }
+
+  /* 佈局切換按鈕群組 */
+  .layout-btn-group {
+    display: flex;
+    background: rgba(15, 23, 42, 0.75);
+    padding: 2px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    gap: 2px;
+  }
+  .btn-layout-mode {
+    padding: 6px 10px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn-layout-mode:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .btn-layout-mode.active {
+    background: #4361ee;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
+  }
+
+  /* 子母畫面大小浮動工具列 */
+  #pip-size-bar {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 16px;
+    z-index: 35;
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(6, 214, 160, 0.55);
+    border-radius: 12px;
+    padding: 6px 12px;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  }
+  .pip-sz-btn {
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pip-sz-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .pip-sz-btn.active {
+    background: #06d6a0;
+    color: #000;
+    border-color: #06d6a0;
+  }
+
   .spd-btn { padding: 4px 10px; border-radius: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; font-size: 11px; cursor: pointer; transition: all 0.2s; }
   .spd-btn:hover { background: rgba(255,255,255,0.18); }
   .spd-btn.active { background: #4361ee; color: #fff; border-color: #4361ee; font-weight: 700; box-shadow: 0 0 10px rgba(67,97,238,0.5); }
@@ -87,15 +376,14 @@
   .speed-badge { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); z-index: 20; background: rgba(13,13,26,0.85); border: 1px solid var(--accent2); border-radius: 12px; padding: 4px 14px; font-size: 13px; font-weight: 700; color: var(--accent2); display: none; }
   .speed-badge.visible { display: block; }
 
-  .live-controls { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; padding: 12px 12px 28px; background: linear-gradient(transparent, rgba(0,0,0,0.9) 40%); }
-  .control-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .live-controls { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; padding: 10px 12px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.95) 40%); }
+  .control-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 6px; }
   .score-btn { width: 44px; height: 44px; border-radius: 50%; border: none; font-size: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
   .score-btn:active { transform: scale(0.88); }
   .btn-plus { background: linear-gradient(135deg, #4361ee, #3a0ca3); color: white; }
   .btn-minus { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
   .score-label { font-size: 12px; color: var(--muted); text-align: center; width: 60px; }
-  .btn-end { padding: 10px 20px; background: rgba(247,37,133,0.2); border: 1px solid var(--warn); border-radius: 10px; color: var(--warn); font-size: 13px; font-weight: 700; cursor: pointer; }
-  .btn-toggle3d { padding: 8px 14px; background: rgba(67,97,238,0.2); border: 1px solid rgba(67,97,238,0.5); border-radius: 10px; color: var(--accent); font-size: 12px; cursor: pointer; }
+  .btn-end { padding: 8px 16px; background: rgba(247,37,133,0.2); border: 1px solid var(--warn); border-radius: 10px; color: var(--warn); font-size: 12px; font-weight: 700; cursor: pointer; }
 
   /* RESULT */
   #screen-result { align-items: center; justify-content: center; padding: 24px; background: radial-gradient(ellipse at 50% 30%, #1a1a4e 0%, #0d0d1a 70%); }
@@ -199,11 +487,64 @@
 
 <!-- LIVE -->
 <div id="screen-live" class="screen">
-  <div id="live-video-wrap">
-    <video id="live-video" autoplay muted playsinline></video>
-    <canvas id="live-canvas"></canvas>
+  <!-- Layout Container (預設 layout-split-h 左右分割) -->
+  <div id="live-main-container" class="layout-split-h">
+    <!-- Video Pane -->
+    <div id="live-video-pane">
+      <div id="live-video-wrap">
+        <video id="live-video" autoplay muted playsinline></video>
+        <canvas id="live-canvas"></canvas>
+      </div>
+
+      <!-- 影片播放控制列 (上傳影片模式顯示) -->
+      <div id="live-video-bar" style="display:none; position:absolute; bottom:12px; left:12px; right:12px; z-index:22; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px); border:1px solid rgba(99,102,241,0.3); border-radius:14px; padding:8px 12px; flex-direction:column; gap:6px; box-shadow:0 8px 30px rgba(0,0,0,0.6);">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button id="btn-live-play" onclick="toggleLivePlay()" style="background:#4361ee; border:none; color:#fff; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer;">⏸ 暫停</button>
+          <button onclick="replayLiveVideo()" style="background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer;" title="重頭播放">🔄 重放</button>
+          <input type="range" id="live-video-scrub" min="0" max="100" value="0" step="0.1" style="flex:1; cursor:pointer; accent-color:#38bdf8;" oninput="onLiveScrub(this.value)">
+          <span id="live-video-time" style="font-size:11px; font-family:monospace; color:#38bdf8; min-width:65px; text-align:right;">00:00</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:11px; margin-top:1px;">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span style="color:#94a3b8;">分析倍速:</span>
+            <button class="spd-btn active" id="spd-05" onclick="setLiveSpeed(0.5)">0.5x 慢動作</button>
+            <button class="spd-btn" id="spd-10" onclick="setLiveSpeed(1.0)">1.0x 原速</button>
+            <button class="spd-btn" id="spd-025" onclick="setLiveSpeed(0.25)">0.25x</button>
+          </div>
+          <label style="color:#94a3b8; font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+            <input type="checkbox" id="chk-live-loop" checked onchange="toggleLiveLoop(this.checked)"> 循環播放
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D Court Pane -->
+    <div id="court3d-pane">
+      <div class="court3d-header">
+        <span class="court3d-title">🗺️ 3D 空間落點俯瞰</span>
+        <span id="court3d-status-badge" class="court-badge scan">🔍 掃描中</span>
+      </div>
+      <div class="court3d-canvas-box">
+        <canvas id="court3d-canvas" width="150" height="260"></canvas>
+      </div>
+      <div class="court3d-stats-bar">
+        <div class="mini-stat"><span class="stat-num" id="pane-speed">0</span><span class="stat-unit">km/h 即時球速</span></div>
+        <div class="mini-stat"><span class="stat-num" id="pane-max-spd">0</span><span class="stat-unit">km/h 最快殺球</span></div>
+        <div class="mini-stat"><span class="stat-num" id="pane-rally">0</span><span class="stat-unit">次 本回合擊球</span></div>
+      </div>
+    </div>
   </div>
-  <canvas id="court3d-canvas" width="150" height="260"></canvas>
+
+  <!-- 子母畫面大小浮動工具列 (子母模式下顯示) -->
+  <div id="pip-size-bar">
+    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">子母大小:</span>
+    <button class="pip-sz-btn" id="pip-btn-140" onclick="setPipSizePreset(140)">小</button>
+    <button class="pip-sz-btn active" id="pip-btn-200" onclick="setPipSizePreset(200)">中</button>
+    <button class="pip-sz-btn" id="pip-btn-280" onclick="setPipSizePreset(280)">大</button>
+    <button class="pip-sz-btn" id="pip-btn-360" onclick="setPipSizePreset(360)">特大</button>
+    <input type="range" id="pip-size-slider" min="120" max="420" value="200" step="10" oninput="onPipSizeSlider(this.value)" style="width:80px; cursor:pointer; accent-color:#06d6a0;">
+    <span id="pip-size-label" style="font-size:10px; font-family:monospace; color:#06d6a0; min-width:36px;">200px</span>
+  </div>
 
   <div class="scoreboard">
     <div class="score-inner">
@@ -225,30 +566,13 @@
 
   <div class="speed-badge" id="speed-badge">⚡ 0 km/h</div>
 
-  <!-- 影片播放控制列 (上傳影片模式顯示) -->
-  <div id="live-video-bar" style="display:none; position:absolute; bottom:140px; left:12px; right:12px; z-index:22; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px); border:1px solid rgba(99,102,241,0.3); border-radius:14px; padding:10px 14px; flex-direction:column; gap:6px; box-shadow:0 8px 30px rgba(0,0,0,0.6);">
-    <div style="display:flex; align-items:center; gap:8px;">
-      <button id="btn-live-play" onclick="toggleLivePlay()" style="background:#4361ee; border:none; color:#fff; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer;">⏸ 暫停</button>
-      <button onclick="replayLiveVideo()" style="background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer;" title="重頭播放">🔄 重放</button>
-      <input type="range" id="live-video-scrub" min="0" max="100" value="0" step="0.1" style="flex:1; cursor:pointer; accent-color:#38bdf8;" oninput="onLiveScrub(this.value)">
-      <span id="live-video-time" style="font-size:11px; font-family:monospace; color:#38bdf8; min-width:70px; text-align:right;">00:00</span>
-    </div>
-    <div style="display:flex; align-items:center; justify-content:space-between; font-size:11px; margin-top:2px;">
-      <div style="display:flex; gap:6px; align-items:center;">
-        <span style="color:#94a3b8;">分析倍速:</span>
-        <button class="spd-btn active" id="spd-05" onclick="setLiveSpeed(0.5)">0.5x 慢動作</button>
-        <button class="spd-btn" id="spd-10" onclick="setLiveSpeed(1.0)">1.0x 原速</button>
-        <button class="spd-btn" id="spd-025" onclick="setLiveSpeed(0.25)">0.25x</button>
-      </div>
-      <label style="color:#94a3b8; font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer;">
-        <input type="checkbox" id="chk-live-loop" checked onchange="toggleLiveLoop(this.checked)"> 循環播放
-      </label>
-    </div>
-  </div>
-
   <div class="live-controls">
     <div class="control-row" style="flex-wrap:wrap; gap:8px;">
-      <button class="btn-opt active" id="btn-toggle3d" onclick="toggle3D()">🗺 3D俯瞰</button>
+      <div class="layout-btn-group">
+        <button class="btn-layout-mode active" id="btn-mode-split-h" onclick="setLayoutMode('split-h')" title="左右畫面分割">◫ 左右畫面</button>
+        <button class="btn-layout-mode" id="btn-mode-split-v" onclick="setLayoutMode('split-v')" title="上下畫面分割">⬒ 上下畫面</button>
+        <button class="btn-layout-mode" id="btn-mode-pip" onclick="setLayoutMode('pip')" title="子母懸浮畫面">❐ 子母畫面</button>
+      </div>
       <button class="btn-opt active" id="btn-toggle-court" onclick="toggleCourtOverlay()">📐 球場標線</button>
       <button class="btn-opt active" id="btn-toggle-hud" onclick="toggleHud()">📊 數據儀表</button>
       <button class="btn-opt" onclick="simulateRallyDemo()" style="color:#ffd60a; border-color:rgba(255,214,10,0.4);" title="點擊立即展示高科技軌跡與球速動畫">✨ 軌跡示範</button>
@@ -315,6 +639,8 @@ let animFrameId = null;
 let show3D = true;
 let showCourtOverlay = true;
 let showHud = true;
+let currentLayoutMode = 'split-h'; // 'split-h' (左右畫面) | 'split-v' (上下畫面) | 'pip' (子母畫面)
+let pipWidth = 200; // PIP width in px
 let shuttlePos = null, prevShuttlePos = null;
 let shuttleTrail = [];
 let kalX = mkKalman(1,1,0.1), kalY = mkKalman(1,1,0.1);
@@ -752,6 +1078,10 @@ function startLive() {
   const liveVideoBar = document.getElementById('live-video-bar');
   const court3dCanvas = document.getElementById('court3d-canvas');
 
+  currentLayoutMode = localStorage.getItem('live_layout_mode') || 'split-h';
+  pipWidth = parseInt(localStorage.getItem('live_pip_width') || '200', 10);
+  setLayoutMode(currentLayoutMode);
+
   // Sensible default calibrated court corners fallback if user started without 4 corners
   if (!calibPoints || calibPoints.length < 4) {
     const vw = video.videoWidth || 1280;
@@ -818,7 +1148,10 @@ function startLive() {
   video.onloadedmetadata = resize;
   resize();
   window.addEventListener('resize', () => {
-    if (currentScreen === 'live') resize();
+    if (currentScreen === 'live') {
+      resize();
+      resizeCourt3dCanvas();
+    }
   });
 
   video.ontimeupdate = () => {
@@ -1315,6 +1648,14 @@ function drawMiniMap() {
   ctx.textAlign = 'left';
   ctx.fillText('🗺️ 3D 落點俯瞰', pad + 4, pad - 3);
 
+  // Update Live Stats in 3D Pane
+  const paneSpd = document.getElementById('pane-speed');
+  if (paneSpd) paneSpd.textContent = speedKmh || 0;
+  const paneMax = document.getElementById('pane-max-spd');
+  if (paneMax) paneMax.textContent = maxSpeedKmh || 0;
+  const paneRally = document.getElementById('pane-rally');
+  if (paneRally) paneRally.textContent = rallyHitCount || 0;
+
   // Shuttlecock on Minimap
   if (shuttlePos && H) {
     for (let i = 1; i < shuttleTrail.length; i++) {
@@ -1348,6 +1689,18 @@ function drawMiniMap() {
     ctx.textAlign = 'right';
     ctx.fillText(isInside ? '● 界內 IN' : '● 界外 OUT', pad + courtW - 2, pad - 3);
 
+    // Update Status Badge on Header
+    const statusBadge = document.getElementById('court3d-status-badge');
+    if (statusBadge) {
+      if (isInside) {
+        statusBadge.className = 'court-badge in';
+        statusBadge.textContent = '● 界內 IN';
+      } else {
+        statusBadge.className = 'court-badge out';
+        statusBadge.textContent = '● 界外 OUT';
+      }
+    }
+
     ctx.beginPath();
     ctx.arc(mx, my, 5, 0, Math.PI * 2);
     ctx.fillStyle = '#ffd60a';
@@ -1364,11 +1717,114 @@ function drawMiniMap() {
   }
 }
 
+// ═══ LAYOUT MODES & PIP CONTROLS ═══
+function setLayoutMode(mode) {
+  currentLayoutMode = mode;
+  localStorage.setItem('live_layout_mode', mode);
+
+  const container = document.getElementById('live-main-container');
+  if (container) {
+    container.className = 'layout-' + mode;
+  }
+
+  // Update layout buttons
+  ['split-h', 'split-v', 'pip'].forEach(m => {
+    const btn = document.getElementById('btn-mode-' + m);
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
+
+  // PIP size bar visibility
+  const pipBar = document.getElementById('pip-size-bar');
+  if (pipBar) {
+    pipBar.style.display = (mode === 'pip') ? 'flex' : 'none';
+  }
+
+  if (mode === 'pip') {
+    updatePipControlsUI();
+  }
+
+  setTimeout(() => {
+    const v = document.getElementById('live-video');
+    const c = document.getElementById('live-canvas');
+    if (v && c) alignCanvasToVideo(v, c);
+    resizeCourt3dCanvas();
+  }, 40);
+}
+
+function updatePipControlsUI() {
+  const slider = document.getElementById('pip-size-slider');
+  const label = document.getElementById('pip-size-label');
+  if (slider) slider.value = pipWidth;
+  if (label) label.textContent = pipWidth + 'px';
+
+  [140, 200, 280, 360].forEach(sz => {
+    const btn = document.getElementById('pip-btn-' + sz);
+    if (btn) btn.classList.toggle('active', pipWidth === sz);
+  });
+}
+
+function setPipSizePreset(px) {
+  pipWidth = px;
+  localStorage.setItem('live_pip_width', px);
+  updatePipControlsUI();
+  resizeCourt3dCanvas();
+}
+
+function onPipSizeSlider(val) {
+  pipWidth = parseInt(val, 10);
+  localStorage.setItem('live_pip_width', pipWidth);
+  updatePipControlsUI();
+  resizeCourt3dCanvas();
+}
+
+function resizeCourt3dCanvas() {
+  const c3 = document.getElementById('court3d-canvas');
+  const pane = document.getElementById('court3d-pane');
+  if (!c3 || !pane) return;
+
+  const dpr = window.devicePixelRatio || 1;
+
+  if (currentLayoutMode === 'pip') {
+    pane.style.width = (pipWidth + 16) + 'px';
+    pane.style.height = 'auto';
+    const courtAspect = COURT_H / COURT_W; // 1340 / 610 ~ 2.196
+    const h = Math.round(pipWidth * courtAspect * 0.95);
+    c3.style.width = pipWidth + 'px';
+    c3.style.height = h + 'px';
+    c3.width = Math.round(pipWidth * dpr);
+    c3.height = Math.round(h * dpr);
+  } else {
+    pane.style.width = '';
+    pane.style.height = '';
+    const box = c3.parentElement;
+    const bw = (box ? box.clientWidth : 300) || 300;
+    const bh = (box ? box.clientHeight : 500) || 500;
+    const courtAspect = COURT_W / COURT_H; // ~0.4552
+
+    let targetW, targetH;
+    if (bw / bh > courtAspect) {
+      targetH = Math.max(160, bh - 8);
+      targetW = Math.round(targetH * courtAspect);
+    } else {
+      targetW = Math.max(120, bw - 8);
+      targetH = Math.round(targetW / courtAspect);
+    }
+
+    c3.style.width = targetW + 'px';
+    c3.style.height = targetH + 'px';
+    c3.width = Math.round(targetW * dpr);
+    c3.height = Math.round(targetH * dpr);
+  }
+
+  court3dCtx = c3.getContext('2d');
+  drawMiniMap();
+}
+
 // ═══ CONTROLS TOGGLES ═══
 function toggle3D() {
   show3D = !show3D;
-  const c = document.getElementById('court3d-canvas');
-  if (c) c.style.display = show3D ? 'block' : 'none';
+  const pane = document.getElementById('court3d-pane');
+  if (pane) pane.style.display = show3D ? '' : 'none';
   const b = document.getElementById('btn-toggle3d');
   if (b) b.classList.toggle('active', show3D);
   if (show3D) drawMiniMap();
