@@ -9166,7 +9166,7 @@
     "tag": "5級以上",
     "active": true,
     "startTime": 1790042432997,
-    "lastActiveTime": 1790516808693,
+    "lastActiveTime": 1790575435229,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9190,12 +9190,20 @@
         "list": [
           "曾Jim凱",
           "Ashely",
-          "陳呈"
+          "陳呈",
+          "gary"
         ],
         "fee": "260"
       }
     ],
     "history": [
+      {
+        "time": "09/28 14:03",
+        "name": "gary",
+        "operator": "gary (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/27 21:46",
         "name": "Kay",
