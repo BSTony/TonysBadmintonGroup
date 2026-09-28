@@ -517,8 +517,9 @@
   .speed-badge { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); z-index: 20; background: rgba(13,13,26,0.85); border: 1px solid var(--accent2); border-radius: 12px; padding: 4px 14px; font-size: 13px; font-weight: 700; color: var(--accent2); display: none; }
   .speed-badge.visible { display: block; }
 
-  .live-controls { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; padding: 10px 12px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.95) 40%); }
-  .control-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 6px; }
+  .live-controls { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; padding: 10px 12px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.95) 40%); pointer-events: none; }
+  .control-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 6px; pointer-events: none; }
+  .live-controls button, .live-controls .score-label, .live-controls .layout-btn-group { pointer-events: auto; }
   .score-btn { width: 44px; height: 44px; border-radius: 50%; border: none; font-size: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
   .score-btn:active { transform: scale(0.88); }
   .btn-plus { background: linear-gradient(135deg, #4361ee, #3a0ca3); color: white; }
@@ -1626,8 +1627,9 @@ function startLive() {
     const kx = kalX.update(clickX);
     const ky = kalY.update(clickY);
     prevShuttlePos = shuttlePos;
-    shuttlePos = { x: kx, y: ky, t: Date.now() };
+    shuttlePos = { x: kx, y: ky, t: Date.now(), manual: true };
     shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
+    prevGray = null; // Break false positive motion memory
     showToast('🎯 已手動鎖定羽球！', 1200);
   };
 
@@ -1710,6 +1712,9 @@ function loop() {
     }
     kalX.predict();
     kalY.predict();
+    if (shuttlePos && (Date.now() - shuttlePos.t < 1500)) {
+      drawBall(trackCtx, shuttlePos.x, shuttlePos.y, 10);
+    }
   }
 
   // 4. Top-Down 3D Minimap
@@ -1843,10 +1848,12 @@ function detectBall(video, dest) {
       const prevX_SW = shuttlePos.x * (SW / dest.width);
       const prevY_SW = shuttlePos.y * (SH / dest.height);
       const dist = Math.hypot(c.cx - prevX_SW, c.cy - prevY_SW);
+      const isManual = shuttlePos.manual && (Date.now() - shuttlePos.t < 1500);
       if (dist <= 50) {
         score += (50 - dist) * 12;
+        if (isManual) score += 500;
       } else {
-        score -= dist * 2;
+        score -= dist * (isManual ? 8 : 2);
       }
     }
     if (score > bestScore) {
