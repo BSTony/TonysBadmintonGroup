@@ -1635,7 +1635,7 @@ function startLive() {
     const kx = kalX.update(clickX);
     const ky = kalY.update(clickY);
     prevShuttlePos = shuttlePos;
-    shuttlePos = { x: kx, y: ky, t: Date.now(), manual: true };
+    shuttlePos = { x: kx, y: ky, t: Date.now(), manual: true, manualTime: Date.now() };
     shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
     prevGray = null; // Break false positive motion memory
     showToast('🎯 已手動鎖定羽球！', 1200);
@@ -1686,6 +1686,10 @@ function loop() {
     const kx = kalX.update(det.x), ky = kalY.update(det.y);
     prevShuttlePos = shuttlePos;
     shuttlePos = { x: kx, y: ky, t: Date.now() };
+    if (prevShuttlePos && prevShuttlePos.manual && (Date.now() - prevShuttlePos.manualTime < 1500)) {
+      shuttlePos.manual = true;
+      shuttlePos.manualTime = prevShuttlePos.manualTime;
+    }
     shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
     if (shuttleTrail.length > 25) shuttleTrail.shift();
 
@@ -1784,12 +1788,13 @@ function detectBall(video, dest) {
   // 3. Fast Candidate Pixel Collection
   const candidates = [];
   
-  let manualX = -1, manualY = -1;
-  if (shuttlePos && shuttlePos.manual && (Date.now() - shuttlePos.t < 1500)) {
+  // Use Kalman prediction to create a moving "Tracking Gate" ROI
+  let trackX = -1, trackY = -1;
+  if (shuttlePos && kalX && kalY && (Date.now() - shuttlePos.t < 1500)) {
     const cvs = document.getElementById('live-canvas');
     if (cvs) {
-      manualX = shuttlePos.x * (SW / cvs.width);
-      manualY = shuttlePos.y * (SH / cvs.height);
+      trackX = kalX.getPred() * (SW / cvs.width);
+      trackY = kalY.getPred() * (SH / cvs.height);
     }
   }
 
@@ -1805,16 +1810,16 @@ function detectBall(video, dest) {
       const isHighContrastWhite = (g >= 180 && d >= 3);
       const isYellowShuttle = (r > 150 && gr > 140 && b < 130 && d >= 3);
       
-      let isNearManual = false;
-      if (manualX >= 0 && Math.abs(x - manualX) < 40 && Math.abs(y - manualY) < 40) {
-        // Drop the motion (d) requirement if near manual lock to re-acquire static or slow-moving balls
-        if (g >= 150 || (r > 130 && gr > 130 && b < 150)) {
-          isNearManual = true;
+      let isNearTrack = false;
+      if (trackX >= 0 && Math.abs(x - trackX) < 50 && Math.abs(y - trackY) < 50) {
+        // Drastically lower threshold near predicted ball location to hold onto slow/obscured balls
+        if ((d >= 2 && g >= 130) || g >= 160 || (r > 130 && gr > 130 && b < 150)) {
+          isNearTrack = true;
         }
       }
 
-      if (isMotionBright || isHighContrastWhite || isYellowShuttle || isNearManual) {
-        candidates.push({ x, y, g, d: Math.max(d, isNearManual ? 5 : 0) });
+      if (isMotionBright || isHighContrastWhite || isYellowShuttle || isNearTrack) {
+        candidates.push({ x, y, g, d: Math.max(d, isNearTrack ? 5 : 0) });
       }
     }
   }
@@ -1889,7 +1894,7 @@ function detectBall(video, dest) {
     }
   }
 
-  if (!best) return null;
+  if (!best || bestScore < 0) return null;
 
   return {
     x: best.cx * (dest.width / SW),
