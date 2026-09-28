@@ -517,7 +517,10 @@
   .speed-badge { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); z-index: 20; background: rgba(13,13,26,0.85); border: 1px solid var(--accent2); border-radius: 12px; padding: 4px 14px; font-size: 13px; font-weight: 700; color: var(--accent2); display: none; }
   .speed-badge.visible { display: block; }
 
-  .live-controls { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; padding: 10px 12px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.95) 40%); pointer-events: none; }
+  .live-controls { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; padding: 10px 12px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.95) 40%); pointer-events: none; transition: transform 0.3s ease; }
+  .live-controls.hidden { transform: translateY(100%); }
+  #btn-toggle-panel { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); z-index: 30; width: 44px; height: 44px; border-radius: 50%; background: rgba(15,23,42,0.8); border: 1px solid rgba(67,97,238,0.6); color: white; font-size: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer; pointer-events: auto; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; padding-bottom: 2px; }
+  #btn-toggle-panel:hover { background: rgba(67,97,238,0.9); }
   .control-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 6px; pointer-events: none; }
   .live-controls button, .live-controls .score-label, .live-controls .layout-btn-group { pointer-events: auto; }
   .score-btn { width: 44px; height: 44px; border-radius: 50%; border: none; font-size: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
@@ -752,7 +755,9 @@
 
   <div class="speed-badge" id="speed-badge">⚡ 0 km/h</div>
 
-  <div class="live-controls">
+  <button id="btn-toggle-panel" onclick="toggleLivePanel()" title="顯示/隱藏控制面板">🔽</button>
+
+  <div class="live-controls" id="live-controls-panel">
     <div class="control-row" style="flex-wrap:wrap; gap:8px;">
       <div class="layout-btn-group">
         <button class="btn-layout-mode active" id="btn-mode-split-h" onclick="setLayoutMode('split-h')" title="左右畫面分割">◫ 左右畫面</button>
@@ -1696,7 +1701,7 @@ function loop() {
           speedHistory.push(spd);
           if (speedHistory.length > 60) speedHistory.shift();
           showSpeed(spd);
-          detectRally(ky, prevShuttlePos.y);
+          detectRally(ky, prevShuttlePos.y, spd);
         }
       }
     }
@@ -1783,9 +1788,9 @@ function detectBall(video, dest) {
       const idx = i * 4;
       const r = data[idx], gr = data[idx + 1], b = data[idx + 2];
 
-      const isMotionBright = (d >= 7 && g >= 125);
-      const isHighContrastWhite = (g >= 195 && d >= 4);
-      const isYellowShuttle = (r > 165 && gr > 145 && b < 130 && d >= 5);
+      const isMotionBright = (d >= 5 && g >= 115);
+      const isHighContrastWhite = (g >= 180 && d >= 3);
+      const isYellowShuttle = (r > 150 && gr > 140 && b < 130 && d >= 3);
 
       if (isMotionBright || isHighContrastWhite || isYellowShuttle) {
         candidates.push({ x, y, g, d });
@@ -2059,10 +2064,11 @@ function drawTrail(ctx) {
 }
 
 // ═══ RALLY ═══
-function detectRally(cy, py) {
+function detectRally(cy, py, spd) {
   const dir = cy < py ? 'up' : 'down';
   const now = Date.now();
-  if (lastDir && dir !== lastDir && now - lastHitTime > 300) {
+  // Require decent speed to filter out "picking up the ball" noise
+  if (lastDir && dir !== lastDir && now - lastHitTime > 300 && spd >= 20) {
     rallyHitCount++;
     rallyCount = Math.floor(rallyHitCount / 2);
     lastHitTime = now;
@@ -2317,6 +2323,18 @@ function resizeCourt3dCanvas() {
 }
 
 // ═══ CONTROLS TOGGLES ═══
+function toggleLivePanel() {
+  const p = document.getElementById('live-controls-panel');
+  const b = document.getElementById('btn-toggle-panel');
+  if (p.classList.contains('hidden')) {
+    p.classList.remove('hidden');
+    b.innerHTML = '🔽';
+  } else {
+    p.classList.add('hidden');
+    b.innerHTML = '👁️';
+  }
+}
+
 function toggle3D() {
   show3D = !show3D;
   const pane = document.getElementById('court3d-pane');
