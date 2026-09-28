@@ -1857,7 +1857,7 @@ function detectBall(video, dest) {
         if (r <= 22) {
           clusters.push({
             cx, cy, r, n: cell.length,
-            score: (sumD / cell.length) * 1.6 + (sumG / cell.length) * 0.9 - r * 1.5
+            score: (sumD / cell.length) * 8.0 + (sumG / cell.length) * 0.5 - r * 1.5
           });
         }
       }
@@ -1876,11 +1876,11 @@ function detectBall(video, dest) {
       const predY_SW = kalY.getPred() * (SH / dest.height);
       const dist = Math.hypot(c.cx - predX_SW, c.cy - predY_SW);
       const isManual = shuttlePos.manual && (Date.now() - shuttlePos.t < 1500);
-      if (dist <= 60) {
-        score += (60 - dist) * 12;
+      if (dist <= 120) {
+        score += (120 - dist) * 4;
         if (isManual) score += 600;
       } else {
-        score -= dist * (isManual ? 8 : 2);
+        score -= dist * (isManual ? 4 : 2);
       }
     }
     if (score > bestScore) {
