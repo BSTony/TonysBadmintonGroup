@@ -1346,22 +1346,25 @@ function setupCalib(video) {
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
+      // 計算逆向單應性矩陣，以繪製正確透視的中線
+      const invH = computeH([[0, 0], [COURT_W, 0], [COURT_W, COURT_H], [0, COURT_H]], calibPoints.map(p => [p.x, p.y]));
+
       // 球網線 (左右邊線中點連線)
-      const netLeft = { x: (p0.x + p3.x) / 2, y: (p0.y + p3.y) / 2 };
-      const netRight = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+      const [nlX, nlY] = applyH(invH, 0, COURT_H / 2);
+      const [nrX, nrY] = applyH(invH, COURT_W, COURT_H / 2);
       ctx.beginPath();
-      ctx.moveTo(netLeft.x, netLeft.y);
-      ctx.lineTo(netRight.x, netRight.y);
+      ctx.moveTo(nlX, nlY);
+      ctx.lineTo(nrX, nrY);
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
       ctx.lineWidth = 2;
       ctx.stroke();
 
       // 中線 (前後發球底線中點連線)
-      const topCenter = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
-      const botCenter = { x: (p3.x + p2.x) / 2, y: (p3.y + p2.y) / 2 };
+      const [tcX, tcY] = applyH(invH, COURT_W / 2, 0);
+      const [bcX, bcY] = applyH(invH, COURT_W / 2, COURT_H);
       ctx.beginPath();
-      ctx.moveTo(topCenter.x, topCenter.y);
-      ctx.lineTo(botCenter.x, botCenter.y);
+      ctx.moveTo(tcX, tcY);
+      ctx.lineTo(bcX, bcY);
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([6, 6]);
@@ -1899,11 +1902,10 @@ function drawCourtOverlay(ctx, canvas) {
   ctx.shadowBlur = 10;
   ctx.stroke();
 
-  // 3. Center Net Line
-  const netLx = (p0.x + p3.x) / 2;
-  const netLy = (p0.y + p3.y) / 2;
-  const netRx = (p1.x + p2.x) / 2;
-  const netRy = (p1.y + p2.y) / 2;
+  // 3. Center Net Line (Perspective Correct)
+  const invH = computeH([[0, 0], [COURT_W, 0], [COURT_W, COURT_H], [0, COURT_H]], calibPoints.map(p => [p.x, p.y]));
+  const [netLx, netLy] = applyH(invH, 0, COURT_H / 2);
+  const [netRx, netRy] = applyH(invH, COURT_W, COURT_H / 2);
   ctx.beginPath();
   ctx.moveTo(netLx, netLy);
   ctx.lineTo(netRx, netRy);
