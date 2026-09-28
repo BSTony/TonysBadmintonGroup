@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "courtType": "single",
+  "cameraMode": "fixed",
+  "teamA": "主場",
+  "teamB": "客場",
+  "scoreA": 0,
+  "scoreB": 0,
+  "rallyCount": 22,
+  "startedAt": "2026-09-28T14:29:31.136Z",
+  "sessions": []
+}

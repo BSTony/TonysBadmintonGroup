@@ -1917,7 +1917,7 @@ async function initializeLiff() {
         initLottery(currentUser.userId);
       }
       
-      currentGroupId = testParams.get('gid') || 'TEST_GROUP_1234';
+      currentGroupId = testParams.get('gid') || (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.gid) || 'default';
       const h3 = document.getElementById('group-id-display');
       if (h3) h3.innerText = '群組ID: ' + currentGroupId;
       

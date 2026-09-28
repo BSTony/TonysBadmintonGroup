@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>🏸 羽球直播分析</title>
+<!-- TensorFlow.js & MoveNet MultiPose for Real-Time Badminton Player Skeletons -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -322,6 +325,100 @@
   }
   #live-main-container.layout-pip .court3d-stats-bar {
     display: none;
+  }
+
+  /* 🎯 選手與羽球浮動指定標定工具列 */
+  .player-pin-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 28;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    padding: 6px 10px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    pointer-events: auto;
+  }
+  .pin-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .pin-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .pin-chip {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #f1f5f9;
+    border-radius: 8px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    user-select: none;
+  }
+  .pin-chip:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+  }
+  .pin-chip.active {
+    background: #06d6a0;
+    color: #051d14;
+    border-color: #06d6a0;
+    box-shadow: 0 0 14px rgba(6, 214, 160, 0.7);
+    animation: pinPulse 1.2s infinite alternate;
+  }
+  .pin-chip.pinned {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.22);
+    color: #38bdf8;
+  }
+  .pin-chip.pin-ball.active {
+    background: #f59e0b;
+    color: #000;
+    border-color: #f59e0b;
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.85);
+  }
+  .pin-chip.pin-auto {
+    margin-left: auto;
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+  }
+  .pin-chip.pin-auto:hover {
+    background: rgba(99, 102, 241, 0.38);
+  }
+  .pin-prompt-banner {
+    font-size: 11px;
+    color: #fef08a;
+    background: rgba(245, 158, 11, 0.16);
+    border: 1px dashed rgba(245, 158, 11, 0.45);
+    border-radius: 6px;
+    padding: 3px 8px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+  @keyframes pinPulse {
+    0% { transform: scale(1); box-shadow: 0 0 6px rgba(6, 214, 160, 0.4); }
+    100% { transform: scale(1.03); box-shadow: 0 0 14px rgba(6, 214, 160, 0.9); }
   }
 
   /* 影片區 */
@@ -680,6 +777,20 @@
   <div id="live-main-container" class="layout-split-h">
     <!-- Video Pane -->
     <div id="live-video-pane">
+      <!-- 🎯 選手與羽球點擊標定浮動工具列 -->
+      <div id="player-pin-bar" class="player-pin-bar">
+        <div class="pin-bar-row">
+          <span class="pin-title">🎯 選手與球指定:</span>
+          <button type="button" class="pin-chip" id="pin-btn-A1" onclick="setPinMode('A1')">🟢 主場 A1</button>
+          <button type="button" class="pin-chip" id="pin-btn-A2" onclick="setPinMode('A2')">🟢 主場 A2</button>
+          <button type="button" class="pin-chip" id="pin-btn-B1" onclick="setPinMode('B1')">🔵 客場 B1</button>
+          <button type="button" class="pin-chip" id="pin-btn-B2" onclick="setPinMode('B2')">🟣 客場 B2</button>
+          <button type="button" class="pin-chip pin-ball" id="pin-btn-ball" onclick="setPinMode('ball')">⚡ 鎖定羽球</button>
+          <button type="button" class="pin-chip pin-auto" id="pin-btn-auto" onclick="resetAllPinsToAuto()" title="恢復全自動 AI 追蹤">✨ 恢復自動</button>
+        </div>
+        <div id="pin-prompt-banner" class="pin-prompt-banner" style="display:none;"></div>
+      </div>
+
       <div id="live-video-wrap">
         <video id="live-video" autoplay muted playsinline></video>
         <canvas id="live-canvas"></canvas>
@@ -765,6 +876,7 @@
         <button class="btn-layout-mode" id="btn-mode-pip" onclick="setLayoutMode('pip')" title="子母懸浮畫面">❐ 子母畫面</button>
       </div>
       <button class="btn-opt active" id="btn-toggle-court" onclick="toggleCourtOverlay()">📐 球場標線</button>
+      <button class="btn-opt active" id="btn-toggle-skeleton" onclick="toggleSkeleton()" title="開啟/關閉雙方球員骨架姿態分析">🦴 球員骨架</button>
       <button class="btn-opt active" id="btn-toggle-hud" onclick="toggleHud()">📊 數據儀表</button>
       <button class="btn-opt" onclick="simulateRallyDemo()" style="color:#ffd60a; border-color:rgba(255,214,10,0.4);" title="點擊立即展示高科技軌跡與球速動畫">✨ 軌跡示範</button>
       <div style="flex:1"></div>
@@ -829,12 +941,13 @@ let court3dCtx;
 let animFrameId = null;
 let show3D = true;
 let showCourtOverlay = true;
+let showSkeleton = true;
 let showHud = true;
 let currentLayoutMode = 'split-h'; // 'split-h' (左右畫面) | 'split-v' (上下畫面) | 'pip' (子母畫面)
 let pipWidth = 200; // PIP width in px
 let shuttlePos = null, prevShuttlePos = null;
 let shuttleTrail = [];
-let kalX = mkKalman(1,1,0.1), kalY = mkKalman(1,1,0.1);
+let kalX = null, kalY = null;
 let speedKmh = 0, maxSpeedKmh = 0;
 let rallyCount = 0, rallyHitCount = 0;
 let lastHitTime = 0, lastDir = null;
@@ -843,6 +956,20 @@ let startTime = null, speedHistory = [];
 let H = null;
 let offCanvas = null, offCtx = null;
 const SW = 480, SH = 270;
+let isCandidate = null, candList = null, bfsQueue = null;
+let poseDetector = null, isPoseLoading = false;
+let detectedPoses = [], isEstimatingPose = false, lastPoseTime = 0;
+let fallbackPlayers = [];
+let stationaryFrames = 0, isDeadBall = false;
+let deadBallLandingSpot = null;
+
+// Persistent 4-Player Tracking Slots (雙打4人 / 單打2人持久追蹤)
+let playerSlots = {
+  A1: { id: 'A1', team: 'A', name: '主場 選手 A1', color: '#06d6a0', glow: 'rgba(6,214,160,0.5)', kps: null, box: null, footX: 0, footY: 0, active: false, missing: 99 },
+  A2: { id: 'A2', team: 'A', name: '主場 選手 A2', color: '#00f5d4', glow: 'rgba(0,245,212,0.5)', kps: null, box: null, footX: 0, footY: 0, active: false, missing: 99 },
+  B1: { id: 'B1', team: 'B', name: '客場 選手 B1', color: '#4361ee', glow: 'rgba(67,97,238,0.5)', kps: null, box: null, footX: 0, footY: 0, active: false, missing: 99 },
+  B2: { id: 'B2', team: 'B', name: '客場 選手 B2', color: '#f72585', glow: 'rgba(247,37,133,0.5)', kps: null, box: null, footX: 0, footY: 0, active: false, missing: 99 }
+};
 
 // ═══ BOOT ═══
 let _initDone = false;
@@ -1625,20 +1752,113 @@ function startLive() {
   trackVideo = video;
   trackCtx = canvas.getContext('2d');
 
-  // Interactive ball lock: clicking on the video snaps AI tracking to the point
+  // ═══ 互動標定與羽球鎖定 (點擊畫面直接指定選手與球) ═══
   canvas.onclick = (e) => {
     const rc = canvas.getBoundingClientRect();
     const clickX = (e.clientX - rc.left) * (canvas.width / rc.width);
     const clickY = (e.clientY - rc.top) * (canvas.height / rc.height);
-    kalX = mkKalman(6, 2, 4, clickX);
-    kalY = mkKalman(6, 2, 4, clickY);
-    const kx = kalX.update(clickX);
-    const ky = kalY.update(clickY);
-    prevShuttlePos = shuttlePos;
-    shuttlePos = { x: kx, y: ky, t: Date.now(), manual: true, manualTime: Date.now() };
-    shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
-    prevGray = null; // Break false positive motion memory
-    showToast('🎯 已手動鎖定羽球！', 1200);
+    const W = canvas.width || 1280, H_V = canvas.height || 720;
+
+    // 模式 1: 使用者點了工具列按鈕，明確要指定特定球員 (A1, A2, B1, B2)
+    if (activePinMode && ['A1', 'A2', 'B1', 'B2'].includes(activePinMode)) {
+      const slotKey = activePinMode;
+      const slot = playerSlots[slotKey];
+      const isNear = (slot.team === 'A');
+
+      // 檢查 MoveNet 候選人中是否有在點擊範圍 (130px) 內的真實人體骨架
+      let matchedPose = null;
+      if (detectedPoses && detectedPoses.length > 0) {
+        let minDist = 140;
+        detectedPoses.forEach(p => {
+          const kps = p.keypoints;
+          const la = kps[15], ra = kps[16];
+          const fx = (la && ra) ? (la.x + ra.x) / 2 : (kps[0]?.x || 0);
+          const fy = (la && ra) ? Math.max(la.y, ra.y) : (kps[0]?.y + 110 || 0);
+          const d = Math.hypot(fx - clickX, fy - clickY);
+          if (d < minDist) {
+            minDist = d;
+            matchedPose = { ...p, footX: fx, footY: fy };
+          }
+        });
+      }
+
+      if (matchedPose) {
+        updatePlayerSlot(slot, matchedPose);
+      } else {
+        const pw = isNear ? W * 0.10 : W * 0.065;
+        const ph = isNear ? H_V * 0.28 : H_V * 0.16;
+        const customPose = generateKinematicPose(clickX, clickY, pw, ph, slot.team);
+        updatePlayerSlot(slot, customPose);
+      }
+
+      slot.pinned = true;
+      slot.pinX = clickX;
+      slot.pinY = clickY;
+      slot.footX = clickX;
+      slot.footY = clickY;
+      slot.active = true;
+      slot.missing = 0;
+
+      showToast(`✅ 已成功指定【${slot.name}】！骨架已鎖定並持續追蹤`, 2200);
+      activePinMode = null;
+      updatePinBarUI();
+      return;
+    }
+
+    // 模式 2: 使用者點了工具列【⚡ 鎖定羽球】按鈕
+    if (activePinMode === 'ball') {
+      kalX = mkKalman(4, 1.5, 2, clickX);
+      kalY = mkKalman(4, 1.5, 2, clickY);
+      prevShuttlePos = null;
+      isDeadBall = false;
+      stationaryFrames = 0;
+      shuttlePos = { x: clickX, y: clickY, t: Date.now(), manual: true, manualTime: Date.now() };
+      shuttleTrail = [{ x: clickX, y: clickY, t: Date.now() }];
+      prevGray = null;
+      showToast('⚡ 羽球已鎖定！AI 開始精準跟蹤飛行軌跡', 1800);
+      activePinMode = null;
+      updatePinBarUI();
+      return;
+    }
+
+    // 模式 3: 未選取工具列模式時的直覺快速點擊 (Quick-Click)
+    // 若點擊位置在某位選手附近 (80px 內)，直接微調該選手位置並鎖定
+    let nearestSlot = null;
+    let nearestDist = 80;
+    Object.values(playerSlots).forEach(s => {
+      if (s.footX && s.footY) {
+        const d = Math.hypot(s.footX - clickX, s.footY - clickY);
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearestSlot = s;
+        }
+      }
+    });
+
+    if (nearestSlot) {
+      nearestSlot.footX = clickX;
+      nearestSlot.footY = clickY;
+      nearestSlot.pinned = true;
+      nearestSlot.missing = 0;
+      const pw = nearestSlot.team === 'A' ? W * 0.10 : W * 0.065;
+      const ph = nearestSlot.team === 'A' ? H_V * 0.28 : H_V * 0.16;
+      const customPose = generateKinematicPose(clickX, clickY, pw, ph, nearestSlot.team);
+      updatePlayerSlot(nearestSlot, customPose);
+      showToast(`🎯 已將【${nearestSlot.name}】微調對齊至點擊位置並鎖定`, 1600);
+      updatePinBarUI();
+      return;
+    }
+
+    // 否則視為快速鎖定羽球
+    kalX = mkKalman(4, 1.5, 2, clickX);
+    kalY = mkKalman(4, 1.5, 2, clickY);
+    prevShuttlePos = null;
+    isDeadBall = false;
+    stationaryFrames = 0;
+    shuttlePos = { x: clickX, y: clickY, t: Date.now(), manual: true, manualTime: Date.now() };
+    shuttleTrail = [{ x: clickX, y: clickY, t: Date.now() }];
+    prevGray = null;
+    showToast('🎯 已鎖定球點！發球或回擊將自動追蹤', 1500);
   };
 
   function resize() {
@@ -1657,6 +1877,8 @@ function startLive() {
     if (videoSourceType === 'file') updateLiveVideoProgress(video);
   };
 
+  // Initialize AI pose detector for multi-person skeletons
+  initPoseDetector();
   // Immediate first minimap render
   drawMiniMap();
   loop();
@@ -1675,63 +1897,130 @@ function loop() {
     drawCourtOverlay(trackCtx, canvas);
   }
 
-  // 2. AI Vision HUD Status Pill (Top Left)
+  // 2. Holographic Multi-Person Player Skeletons (Both Sides of Court)
+  if (showSkeleton) {
+    updatePoseEstimation(trackVideo, canvas);
+    drawPlayerSkeletons(trackCtx, canvas);
+  }
+
+  // 3. AI Vision HUD Status Pill (Top Left)
   if (showHud) {
     drawAiHud(trackCtx);
   }
 
-  // 3. Robust Ball Detection
+  // 4. Robust Ball Detection with Anti-Dead-Ball Lock
   const det = detectBall(trackVideo, canvas);
   if (det) {
-    const kx = kalX.update(det.x), ky = kalY.update(det.y);
-    prevShuttlePos = shuttlePos;
-    shuttlePos = { x: kx, y: ky, t: Date.now() };
-    if (prevShuttlePos && prevShuttlePos.manual && (Date.now() - prevShuttlePos.manualTime < 1500)) {
-      shuttlePos.manual = true;
-      shuttlePos.manualTime = prevShuttlePos.manualTime;
-    }
-    shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
-    if (shuttleTrail.length > 25) shuttleTrail.shift();
+    // Check if ball has become stationary (Dead ball / 停球)
+    const moveDist = prevShuttlePos ? Math.hypot(det.x - prevShuttlePos.x, det.y - prevShuttlePos.y) : 999;
+    const isRecentManual = Boolean(shuttlePos && shuttlePos.manual && (Date.now() - (shuttlePos.manualTime || 0) < 1500));
 
-    if (prevShuttlePos && H) {
-      const dt = (shuttlePos.t - prevShuttlePos.t) / 1000;
-      if (dt > 0 && dt < 0.5) {
-        const [cx, cy] = applyH(H, kx, ky);
-        const [px, py] = applyH(H, prevShuttlePos.x, prevShuttlePos.y);
-        const dist = Math.sqrt((cx - px) ** 2 + (cy - py) ** 2) / 100;
-        const rate = (trackVideo && trackVideo.playbackRate) ? trackVideo.playbackRate : 1.0;
-        const effectiveDt = dt * rate;
-        const spd = Math.round(dist / effectiveDt * 3.6);
-        if (spd > 8 && spd < 450) {
-          speedKmh = spd;
-          if (spd > maxSpeedKmh) maxSpeedKmh = spd;
-          speedHistory.push(spd);
-          if (speedHistory.length > 60) speedHistory.shift();
-          showSpeed(spd);
-          detectRally(ky, prevShuttlePos.y, spd);
+    if (!isRecentManual) {
+      if (moveDist < 3.8) {
+        stationaryFrames++;
+      } else {
+        stationaryFrames = Math.max(0, stationaryFrames - 2);
+      }
+    } else {
+      stationaryFrames = 0;
+    }
+
+    if (stationaryFrames >= 6) {
+      // 停球確認：球已落地或在網上停下，立刻終止追蹤！
+      isDeadBall = true;
+      shuttlePos = null;
+      prevShuttlePos = null;
+      kalX = null;
+      kalY = null;
+      shuttleTrail = [];
+      speedKmh = 0;
+      prevGray = null;
+      const spdBadge = document.getElementById('speed-badge');
+      if (spdBadge) spdBadge.classList.remove('visible');
+    } else {
+      isDeadBall = false;
+      if (!shuttlePos || (Date.now() - shuttlePos.t > 700) || !kalX || !kalY) {
+        kalX = mkKalman(4, 1.5, 2, det.x);
+        kalY = mkKalman(4, 1.5, 2, det.y);
+      } else if (prevShuttlePos) {
+        // Direction reversal check (racket hit):
+        // If detected ball moved away from prediction but is near previous position,
+        // re-align velocity vector immediately to eliminate lag on return shots!
+        const predX = kalX.getPred(), predY = kalY.getPred();
+        const distPred = Math.hypot(det.x - predX, det.y - predY);
+        const distPrev = Math.hypot(det.x - prevShuttlePos.x, det.y - prevShuttlePos.y);
+        if (distPred > 25 && distPrev < distPred) {
+          kalX.setVelocity(det.x - prevShuttlePos.x);
+          kalY.setVelocity(det.y - prevShuttlePos.y);
         }
       }
+
+      const kx = kalX.update(det.x), ky = kalY.update(det.y);
+      prevShuttlePos = shuttlePos;
+      shuttlePos = { x: kx, y: ky, t: Date.now() };
+      if (prevShuttlePos && prevShuttlePos.manual && (Date.now() - (prevShuttlePos.manualTime || 0) < 1500)) {
+        shuttlePos.manual = true;
+        shuttlePos.manualTime = prevShuttlePos.manualTime;
+      }
+      shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
+      if (shuttleTrail.length > 25) shuttleTrail.shift();
+
+      if (prevShuttlePos && H) {
+        const dt = (shuttlePos.t - prevShuttlePos.t) / 1000;
+        if (dt > 0.015 && dt < 0.4) {
+          const [cx, cy] = applyH(H, kx, ky);
+          const [px, py] = applyH(H, prevShuttlePos.x, prevShuttlePos.y);
+          const dist = Math.sqrt((cx - px) ** 2 + (cy - py) ** 2) / 100;
+          const rate = (trackVideo && trackVideo.playbackRate) ? trackVideo.playbackRate : 1.0;
+          const effectiveDt = dt * rate;
+          const spd = Math.round(dist / effectiveDt * 3.6);
+          if (spd >= 15 && spd <= 420) {
+            speedKmh = spd;
+            if (spd > maxSpeedKmh) maxSpeedKmh = spd;
+            speedHistory.push(spd);
+            if (speedHistory.length > 60) speedHistory.shift();
+            showSpeed(spd);
+            detectRally(ky, prevShuttlePos.y, spd);
+          }
+        }
+      }
+      drawTrail(trackCtx);
+      drawBall(trackCtx, kx, ky, det.r || 10, false);
     }
-    drawTrail(trackCtx);
-    drawBall(trackCtx, kx, ky, det.r || 10);
   } else {
-    // Fade trail gracefully over 1200ms
+    // Fade trail gracefully over 600ms
     const age = shuttleTrail.length ? Date.now() - shuttleTrail[shuttleTrail.length - 1].t : 9999;
-    if (age < 1200) {
+    if (age < 600 && !isDeadBall) {
       drawTrail(trackCtx);
     } else {
       shuttleTrail = [];
     }
-    kalX.predict();
-    kalY.predict();
-    if (shuttlePos && (Date.now() - shuttlePos.t < 1500)) {
-      shuttlePos.x = kalX.get();
-      shuttlePos.y = kalY.get();
-      drawBall(trackCtx, shuttlePos.x, shuttlePos.y, 10);
+    if (kalX && kalY && !isDeadBall) {
+      const vel = Math.hypot(kalX.getPred() - kalX.get(), kalY.getPred() - kalY.get());
+      if (vel < 1.6 && (!shuttlePos || !shuttlePos.manual)) {
+        // 球速趨近於零且視野中無動態 -> 球已落地停球，終止追蹤
+        isDeadBall = true;
+        shuttlePos = null;
+        kalX = null;
+        kalY = null;
+        shuttleTrail = [];
+        speedKmh = 0;
+      } else {
+        kalX.predict();
+        kalY.predict();
+        const maxCoastMs = (shuttlePos && shuttlePos.manual) ? 1200 : 700;
+        if (shuttlePos && (Date.now() - shuttlePos.t < maxCoastMs)) {
+          shuttlePos.x = kalX.get();
+          shuttlePos.y = kalY.get();
+          drawBall(trackCtx, shuttlePos.x, shuttlePos.y, 10, true);
+        } else {
+          shuttlePos = null;
+        }
+      }
     }
   }
 
-  // 4. Top-Down 3D Minimap
+  // 5. Top-Down 3D Minimap
   if (show3D) drawMiniMap();
 }
 
@@ -1747,14 +2036,18 @@ function detectBall(video, dest) {
     offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
     prevGray = null;
   }
+  if (!isCandidate) {
+    isCandidate = new Uint8Array(SW * SH);
+    candList = new Int32Array(SW * SH);
+    bfsQueue = new Int32Array(SW * SH);
+  }
 
   offCtx.drawImage(video, 0, 0, SW, SH);
   const imgData = offCtx.getImageData(0, 0, SW, SH);
   const data = imgData.data;
   const currGray = new Uint8Array(SW * SH);
-
-  // 1. Grayscale & Temporal Difference (Background Subtraction)
   const diff = new Uint8Array(SW * SH);
+
   for (let i = 0; i < SW * SH; i++) {
     const idx = i * 4;
     const g = (data[idx] * 299 + data[idx + 1] * 587 + data[idx + 2] * 114) >> 10;
@@ -1765,37 +2058,46 @@ function detectBall(video, dest) {
   if (!prevGray) prevGray = new Uint8Array(SW * SH);
   prevGray.set(currGray);
 
-  // 2. Region of Interest (ROI) from calibration court bounds
-  let minRoiX = 0, maxRoiX = SW;
-  // Strictly cut off upper ceiling light fixtures (top 16% guaranteed cut)
+  // ═══ AIRSPACE & COURT CONSTRAINT (羽球合理空域：涵蓋發球高度、全場高遠球與雙打邊線，精準排除上方排燈) ═══
+  const scaleX = SW / dest.width;
+  const scaleY = SH / dest.height;
+
+  // 水平有效區域：覆蓋整座球場雙打邊線 (X: 10% ~ 96%)，排除左側走道牆面
+  let minRoiX = Math.floor(SW * 0.10);
+  let maxRoiX = Math.floor(SW * 0.96);
+
+  // 垂直有效空域：上限截斷在 16% (排除天花板排燈)，下限至 96% (包含發球持球高度、發球落地與殺球)
   let minRoiY = Math.floor(SH * 0.16);
-  let maxRoiY = Math.floor(SH * 0.95);
+  let maxRoiY = Math.floor(SH * 0.96);
 
-  if (calibPoints && calibPoints.length === 4) {
-    const scaleX = SW / (video.videoWidth || dest.width);
-    const scaleY = SH / (video.videoHeight || dest.height);
-    const xs = calibPoints.map(p => p.x * scaleX);
-    const ys = calibPoints.map(p => p.y * scaleY);
-    const cMinX = Math.min(...xs), cMaxX = Math.max(...xs);
-    const cMinY = Math.min(...ys), cMaxY = Math.max(...ys);
-    const courtW = cMaxX - cMinX;
-    const courtH = cMaxY - cMinY;
+  // Active track reference (Kalman prediction & current pos in downscaled space)
+  const hasActiveTrack = Boolean(shuttlePos && !isDeadBall && (Date.now() - shuttlePos.t < 800));
+  let currTrackX = -1, currTrackY = -1;
+  let predTrackX = -1, predTrackY = -1;
 
-    minRoiX = Math.max(0, Math.floor(cMinX - courtW * 0.2));
-    maxRoiX = Math.min(SW, Math.ceil(cMaxX + courtW * 0.2));
-    minRoiY = Math.max(Math.floor(SH * 0.16), Math.floor(cMinY - courtH * 0.45));
-    maxRoiY = Math.min(SH, Math.ceil(cMaxY + courtH * 0.15));
+  if (hasActiveTrack && shuttlePos) {
+    currTrackX = shuttlePos.x * scaleX;
+    currTrackY = shuttlePos.y * scaleY;
+    if (kalX && kalY) {
+      predTrackX = kalX.getPred() * scaleX;
+      predTrackY = kalY.getPred() * scaleY;
+    } else {
+      predTrackX = currTrackX;
+      predTrackY = currTrackY;
+    }
   }
 
-  // 3. Fast Candidate Pixel Collection
-  const candidates = [];
-  
-  // Use Kalman prediction to create a moving "Tracking Gate" ROI
-  let trackX = -1, trackY = -1;
-  if (shuttlePos && kalX && kalY && (Date.now() - shuttlePos.t < 1500)) {
-    trackX = kalX.getPred() * (SW / dest.width);
-    trackY = kalY.getPred() * (SH / dest.height);
+  // Is this right after a manual click?
+  const isRecentManual = Boolean(shuttlePos && shuttlePos.manual && (Date.now() - (shuttlePos.manualTime || 0) < 1800));
+  let manualSeedX = -1, manualSeedY = -1;
+  if (isRecentManual && shuttlePos) {
+    manualSeedX = shuttlePos.x * (SW / dest.width);
+    manualSeedY = shuttlePos.y * (SH / dest.height);
   }
+
+  // Candidate Pixel Collection
+  isCandidate.fill(0);
+  let candCount = 0;
 
   for (let y = minRoiY; y < maxRoiY; y++) {
     for (let x = minRoiX; x < maxRoiX; x++) {
@@ -1805,113 +2107,725 @@ function detectBall(video, dest) {
       const idx = i * 4;
       const r = data[idx], gr = data[idx + 1], b = data[idx + 2];
 
-      const isMotionBright = (d >= 5 && g >= 115);
-      const isHighContrastWhite = (g >= 180 && d >= 3);
-      const isYellowShuttle = (r > 150 && gr > 140 && b < 130 && d >= 3);
-      
+      // Sensitive shuttlecock pixel criteria adaptable to 0.25x ~ 1.0x playback rates:
+      if (isDeadBall) {
+        // 死球狀態下：過濾靜止地表噪點 (d == 0)，只要有新發球或擊球微動 (d >= 2 && g >= 145) 即納入候選
+        if (d < 2 || g < 145) continue;
+      }
+
+      const isWhiteMotion = (g >= 140 && d >= 2) || (g >= 165 && d >= 1);
+      const isYellowMotion = (r >= 135 && gr >= 135 && b < 130 && d >= 1);
+
+      // Near active track (within 45px of current or predicted track)
       let isNearTrack = false;
-      if (trackX >= 0 && Math.abs(x - trackX) < 60 && Math.abs(y - trackY) < 60) {
-        // Lower threshold near predicted ball location to hold onto slow balls, but STRICTLY require d >= 1 (motion)
-        if (d >= 1 && (g >= 130 || (r > 130 && gr > 130 && b < 150))) {
-          isNearTrack = true;
+      if (hasActiveTrack) {
+        const dx1 = x - predTrackX, dy1 = y - predTrackY;
+        const dx2 = x - currTrackX, dy2 = y - currTrackY;
+        if ((dx1 * dx1 + dy1 * dy1 < 45 * 45) || (dx2 * dx2 + dy2 * dy2 < 45 * 45)) {
+          if (g >= 130 && d >= 1) isNearTrack = true;
         }
       }
 
-      if (isMotionBright || isHighContrastWhite || isYellowShuttle || isNearTrack) {
-        candidates.push({ x, y, g, d }); // Push REAL motion, no faking!
+      // Manual click seed region (within 30px of click):
+      // Allows stationary ball (in hand before serve or right when clicked) to be acquired
+      let isNearManualSeed = false;
+      if (manualSeedX >= 0) {
+        const dx = x - manualSeedX, dy = y - manualSeedY;
+        if (dx * dx + dy * dy < 30 * 30) {
+          if (g >= 125) isNearManualSeed = true;
+        }
       }
-    }
-  }
 
-  if (candidates.length < 2) return null;
-
-  // 4. Fast O(N) Spatial Grid Bucket Clustering (14x14 px cells)
-  const cellSize = 14;
-  const gridW = Math.ceil(SW / cellSize);
-  const gridH = Math.ceil(SH / cellSize);
-  const grid = Array.from({ length: gridW * gridH }, () => []);
-
-  for (let i = 0; i < candidates.length; i++) {
-    const p = candidates[i];
-    const gx = Math.floor(p.x / cellSize);
-    const gy = Math.floor(p.y / cellSize);
-    if (gx >= 0 && gx < gridW && gy >= 0 && gy < gridH) {
-      grid[gy * gridW + gx].push(p);
-    }
-  }
-
-  const clusters = [];
-  for (let gy = 0; gy < gridH; gy++) {
-    for (let gx = 0; gx < gridW; gx++) {
-      const cell = grid[gy * gridW + gx];
-      // Shuttlecock is compact. Allow up to 180 pixels for massive motion streaks.
-      if (cell.length >= 2 && cell.length <= 180) {
-        let sumX = 0, sumY = 0, sumG = 0, sumD = 0;
-        for (const p of cell) {
-          sumX += p.x; sumY += p.y; sumG += p.g; sumD += p.d;
-        }
-        const cx = sumX / cell.length;
-        const cy = sumY / cell.length;
-        let maxD = 0;
-        for (const p of cell) {
-          const d = (p.x - cx) ** 2 + (p.y - cy) ** 2;
-          if (d > maxD) maxD = d;
-        }
-        const r = Math.sqrt(maxD);
-        if (r <= 45) { // Increased from 22 to 45 to allow very long motion streaks
-          const avgD = sumD / cell.length;
-          const avgG = sumG / cell.length;
-          // Increase r penalty slightly to prioritize compact balls over large hands/rackets
-          let baseScore = avgD * 8.0 + avgG * 0.5 - r * 3.0;
-          clusters.push({
-            cx, cy, r, n: cell.length,
-            score: baseScore
-          });
-        }
+      if (isWhiteMotion || isYellowMotion || isNearTrack || isNearManualSeed) {
+        isCandidate[i] = 1;
+        candList[candCount++] = i;
       }
     }
   }
 
-  if (clusters.length === 0) return null;
+  if (candCount < 2) return null;
 
-  // 5. Select Best Cluster with Trajectory Continuity Bonus
-  let best = null, bestScore = -Infinity;
-  for (const c of clusters) {
-    let score = c.score;
-    if (shuttlePos && kalX && kalY) {
-      const predX_SW = kalX.getPred() * (SW / dest.width);
-      const predY_SW = kalY.getPred() * (SH / dest.height);
-      const currX_SW = kalX.get() * (SW / dest.width);
-      const currY_SW = kalY.get() * (SH / dest.height);
-      
-      // Calculate distance to BOTH the predicted forward position AND the exact previous position.
-      // This is crucial: when the ball is hit, it reverses direction instantly. It will be far from 
-      // the predicted forward position, but very close to the previous position (impact point).
-      const distToPred = Math.hypot(c.cx - predX_SW, c.cy - predY_SW);
-      const distToCurr = Math.hypot(c.cx - currX_SW, c.cy - currY_SW);
-      const dist = Math.min(distToPred, distToCurr);
-      
-      const isManual = shuttlePos.manual && (Date.now() - shuttlePos.t < 1500);
-      if (dist <= 100) {
-        score += (100 - dist) * 6;
-        if (isManual) score += 300;
-      } else {
-        score -= dist * (isManual ? 4 : 2);
+  // Connected Component Blob Extraction with Anti-Player Early Rejection
+  const blobs = [];
+  for (let ci = 0; ci < candCount; ci++) {
+    const startIdx = candList[ci];
+    if (isCandidate[startIdx] !== 1) continue;
+
+    let head = 0, tail = 0;
+    bfsQueue[tail++] = startIdx;
+    isCandidate[startIdx] = 2; // Visited
+
+    let minX = SW, maxX = 0, minY = SH, maxY = 0;
+    let sumX = 0, sumY = 0, sumG = 0, sumD = 0;
+    let maxG = 0, maxR = 0, maxGr = 0, maxB = 0;
+    let count = 0;
+    let isTooBig = false;
+
+    while (head < tail) {
+      const cur = bfsQueue[head++];
+      const cy = (cur / SW) | 0;
+      const cx = cur % SW;
+
+      count++;
+      sumX += cx;
+      sumY += cy;
+      const g = currGray[cur];
+      const d = diff[cur];
+      sumG += g;
+      sumD += d;
+      if (g > maxG) maxG = g;
+
+      const idx4 = cur * 4;
+      const r = data[idx4], gr = data[idx4 + 1], b = data[idx4 + 2];
+      if (r > maxR) maxR = r;
+      if (gr > maxGr) maxGr = gr;
+      if (b > maxB) maxB = b;
+
+      if (cx < minX) minX = cx;
+      if (cx > maxX) maxX = cx;
+      if (cy < minY) minY = cy;
+      if (cy > maxY) maxY = cy;
+
+      // Anti-Player & Anti-Ceiling-Lamp Rejection:
+      // A human body or large ceiling lamp has > 65 pixels or width/height > 18 pixels.
+      // A genuine badminton shuttlecock is compact (bw <= 14, bh <= 14, count <= 45).
+      if (count > 65 || (maxX - minX) > 18 || (maxY - minY) > 18) {
+        isTooBig = true;
+      }
+
+      // Check 4-connected neighbors
+      if (tail < 350) {
+        if (cx > 0 && isCandidate[cur - 1] === 1) {
+          isCandidate[cur - 1] = 2;
+          bfsQueue[tail++] = cur - 1;
+        }
+        if (cx < SW - 1 && isCandidate[cur + 1] === 1) {
+          isCandidate[cur + 1] = 2;
+          bfsQueue[tail++] = cur + 1;
+        }
+        if (cy > 0 && isCandidate[cur - SW] === 1) {
+          isCandidate[cur - SW] = 2;
+          bfsQueue[tail++] = cur - SW;
+        }
+        if (cy < SH - 1 && isCandidate[cur + SW] === 1) {
+          isCandidate[cur + SW] = 2;
+          bfsQueue[tail++] = cur + SW;
+        }
       }
     }
+
+    if (isTooBig) continue; // Reject player/racket/large objects
+    if (count < 2) continue; // Reject single pixel flicker
+
+    // MUST possess genuine shuttlecock peak brightness:
+    // Pure white shuttle (maxG >= 165) or neon yellow shuttle
+    const isBrightWhite = (maxG >= 165);
+    const isNeonYellow = (maxR >= 155 && maxGr >= 155 && maxB < 135);
+    if (!isBrightWhite && !isNeonYellow) {
+      continue; // REJECT human skin, dark clothing, shadows, and colored racket frames!
+    }
+
+    const bw = maxX - minX + 1;
+    const bh = maxY - minY + 1;
+
+    // Strict shuttlecock geometry check:
+    // A. Compact ball: bw <= 16, bh <= 16, count <= 55
+    // B. Fast smash streak: thin elongated blur min(bw, bh) <= 8, max(bw, bh) <= 36, count <= 75
+    const isNormal = (bw <= 16 && bh <= 16 && count <= 55);
+    const isStreak = (Math.min(bw, bh) <= 8 && Math.max(bw, bh) <= 36 && count <= 75);
+
+    if (isNormal || isStreak) {
+      blobs.push({
+        cx: sumX / count,
+        cy: sumY / count,
+        w: bw,
+        h: bh,
+        r: Math.max(bw, bh) / 2,
+        count,
+        maxG,
+        avgG: sumG / count,
+        avgD: sumD / count
+      });
+    }
+  }
+
+  if (blobs.length === 0) return null;
+
+  // Blob Selection with True Ball Scoring & Gating
+  let best = null;
+  let bestScore = -Infinity;
+
+  for (const b of blobs) {
+    // Brightness is the #1 discriminator for shuttlecocks (eliminates skin/shadows)
+    let score = (b.avgG - 135) * 3.0 + (b.maxG - 160) * 2.0 + b.avgD * 2.5;
+    const density = b.count / Math.max(1, b.w * b.h);
+    score += density * 30;
+
+    if (hasActiveTrack) {
+      // Distance to predicted flight position vs current position
+      const distPred = Math.hypot(b.cx - predTrackX, b.cy - predTrackY);
+      const distCurr = Math.hypot(b.cx - currTrackX, b.cy - currTrackY);
+
+      // Gate: Ball cannot jump > 55px between frames
+      if (distPred > 55 && distCurr > 55) {
+        continue;
+      }
+
+      // Bonus for continuing on trajectory (flight momentum)
+      if (distPred <= 50) {
+        score += (50 - distPred) * 4.0;
+      }
+
+      // Bonus for hit reversal (moving away from impact point with clear motion)
+      if (distCurr <= 45 && b.avgD >= 2.0) {
+        score += (45 - distCurr) * 2.5;
+      }
+
+      // If user recently clicked, strong priority right under the click
+      if (isRecentManual && distCurr < 28) {
+        score += 350;
+      }
+    } else {
+      // ACQUISITION / SEARCH MODE: Require genuine brightness and motion
+      if (b.avgG < 155 || b.maxG < 170 || b.avgD < 1.6 || score < 40) {
+        continue;
+      }
+    }
+
     if (score > bestScore) {
       bestScore = score;
-      best = c;
+      best = b;
     }
   }
 
-  if (!best || bestScore < 0) return null;
+  if (!best) return null;
+
+  if (isDeadBall) {
+    // 偵測到新擊球/發球，解除死球狀態
+    isDeadBall = false;
+    stationaryFrames = 0;
+    deadBallLandingSpot = null;
+  }
 
   return {
     x: best.cx * (dest.width / SW),
     y: best.cy * (dest.height / SH),
     r: Math.max(8, best.r * (dest.width / SW))
   };
+}
+
+// ═══ MULTI-PERSON SKELETON POSE TRACKER (PERSISTENT 4-PLAYER SLOTS) ═══
+const SKELETON_PAIRS = [
+  [5, 6],   // left_shoulder - right_shoulder
+  [5, 7],   // left_shoulder - left_elbow
+  [7, 9],   // left_elbow - left_wrist
+  [6, 8],   // right_shoulder - right_elbow
+  [8, 10],  // right_elbow - right_wrist
+  [5, 11],  // left_shoulder - left_hip
+  [6, 12],  // right_shoulder - right_hip
+  [11, 12], // left_hip - right_hip
+  [11, 13], // left_hip - left_knee
+  [13, 15], // left_knee - left_ankle
+  [12, 14], // right_hip - right_knee
+  [14, 16], // right_knee - right_ankle
+  [0, 5],   // nose - left_shoulder
+  [0, 6]    // nose - right_shoulder
+];
+
+async function initPoseDetector() {
+  if (poseDetector || isPoseLoading) return;
+  if (typeof poseDetection === 'undefined' || typeof tf === 'undefined') {
+    setTimeout(initPoseDetector, 1500);
+    return;
+  }
+  try {
+    isPoseLoading = true;
+    if (tf.getBackend() !== 'webgl') {
+      await tf.setBackend('webgl').catch(() => {});
+    }
+    await tf.ready();
+    const model = poseDetection.SupportedModels.MoveNet;
+    const detectorConfig = {
+      modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING,
+      enableSmoothing: true
+    };
+    poseDetector = await poseDetection.createDetector(model, detectorConfig);
+    console.log('🏸 MoveNet MultiPose 4-Player Detector Initialized!');
+  } catch (err) {
+    console.warn('MoveNet init notice (kinematic tracker active):', err);
+  } finally {
+    isPoseLoading = false;
+  }
+}
+
+// 快速視覺人體輪廓分析 (嚴格排除左側走道黑地墊，精確鎖定球場內 4 位球員)
+function detectVisionSilhouettes(video, canvas) {
+  if (!video || !offCanvas || !offCtx) return [];
+  const W = canvas.width, H = canvas.height;
+  const imgData = offCtx.getImageData(0, 0, SW, SH);
+  const data = imgData.data;
+
+  // 嚴格排除左側黑色走道地墊 (X < 26% 均為走道/牆壁，不可作為球員)
+  const courtStartX = Math.floor(SW * 0.26);
+  const courtEndX = Math.floor(SW * 0.90);
+
+  // 1. 近端球員區域 (SH * 0.38 ~ SH * 0.95, X: 26% ~ 90%)
+  const nearCols = new Float32Array(SW);
+  let nearMinY = SH, nearMaxY = 0;
+  for (let y = Math.floor(SH * 0.38); y < Math.floor(SH * 0.95); y++) {
+    for (let x = courtStartX; x < courtEndX; x++) {
+      const idx = (y * SW + x) * 4;
+      const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+      const isGreenCourt = (g > r + 16 && g > b + 8);
+      if (!isGreenCourt && (r + g + b > 60)) {
+        nearCols[x]++;
+        if (y < nearMinY) nearMinY = y;
+        if (y > nearMaxY) nearMaxY = y;
+      }
+    }
+  }
+
+  // 2. 遠端球員區域 (SH * 0.28 ~ SH * 0.52, X: 26% ~ 65%)
+  const farCols = new Float32Array(SW);
+  let farMinY = SH, farMaxY = 0;
+  for (let y = Math.floor(SH * 0.28); y < Math.floor(SH * 0.52); y++) {
+    for (let x = courtStartX; x < Math.floor(SW * 0.65); x++) {
+      const idx = (y * SW + x) * 4;
+      const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+      const isGreenCourt = (g > r + 14 && g > b + 6);
+      if (!isGreenCourt && (r + g + b > 60)) {
+        farCols[x]++;
+        if (y < farMinY) farMinY = y;
+        if (y > farMaxY) farMaxY = y;
+      }
+    }
+  }
+  const results = [];
+
+  // 近端提取 1~2 位球員 (以波峰分群)
+  const nearClusters = extractColumnClusters(nearCols, SW * 0.08, 12);
+  nearClusters.slice(0, 2).forEach(c => {
+    const cx = c.center * (W / SW);
+    const cy = ((nearMinY + nearMaxY) / 2) * (H / SH);
+    const pw = Math.max(W * 0.09, c.width * (W / SW) * 1.2);
+    const ph = Math.max(H * 0.26, (nearMaxY - nearMinY) * (H / SH) * 0.7);
+    results.push(generateKinematicPose(cx, cy, pw, ph, 'A'));
+  });
+
+  // 遠端提取 1~2 位球員 (以波峰分群)
+  const farClusters = extractColumnClusters(farCols, SW * 0.06, 8);
+  farClusters.slice(0, 2).forEach(c => {
+    const cx = c.center * (W / SW);
+    const cy = ((farMinY + farMaxY) / 2) * (H / SH);
+    const pw = Math.max(W * 0.06, c.width * (W / SW) * 1.2);
+    const ph = Math.max(H * 0.15, (farMaxY - farMinY) * (H / SH) * 0.75);
+    results.push(generateKinematicPose(cx, cy, pw, ph, 'B'));
+  });
+
+  return results;
+}
+
+function extractColumnClusters(cols, minGap, minPeak) {
+  const peaks = [];
+  const len = cols.length;
+  for (let x = 2; x < len - 2; x++) {
+    if (cols[x] >= minPeak && cols[x] >= cols[x - 1] && cols[x] >= cols[x + 1]) {
+      peaks.push({ x, val: cols[x] });
+    }
+  }
+  // 聚合相近的波峰
+  const clusters = [];
+  peaks.sort((a, b) => b.val - a.val);
+  peaks.forEach(p => {
+    const exists = clusters.some(c => Math.abs(c.center - p.x) < minGap);
+    if (!exists) {
+      clusters.push({ center: p.x, width: minGap * 1.1, val: p.val });
+    }
+  });
+  clusters.sort((a, b) => a.center - b.center);
+  return clusters;
+}
+
+function generateKinematicPose(cx, cy, pw, ph, team) {
+  const top = cy - ph * 0.5;
+  const bot = cy + ph * 0.5;
+  let rwX = cx + pw * 0.42, rwY = top + ph * 0.28;
+  if (shuttlePos && Math.hypot(shuttlePos.x - cx, shuttlePos.y - cy) < 220) {
+    rwX = cx + (shuttlePos.x - cx) * 0.32;
+    rwY = cy + (shuttlePos.y - cy) * 0.32;
+  }
+
+  const kps = [
+    { name: 'nose', x: cx, y: top + ph * 0.10, score: 0.95 },
+    { name: 'left_eye', x: cx - pw * 0.08, y: top + ph * 0.08, score: 0.9 },
+    { name: 'right_eye', x: cx + pw * 0.08, y: top + ph * 0.08, score: 0.9 },
+    { name: 'left_ear', x: cx - pw * 0.16, y: top + ph * 0.10, score: 0.85 },
+    { name: 'right_ear', x: cx + pw * 0.16, y: top + ph * 0.10, score: 0.85 },
+    { name: 'left_shoulder', x: cx - pw * 0.32, y: top + ph * 0.22, score: 0.95 },
+    { name: 'right_shoulder', x: cx + pw * 0.32, y: top + ph * 0.22, score: 0.95 },
+    { name: 'left_elbow', x: cx - pw * 0.42, y: top + ph * 0.40, score: 0.9 },
+    { name: 'right_elbow', x: cx + pw * 0.40, y: top + ph * 0.38, score: 0.9 },
+    { name: 'left_wrist', x: cx - pw * 0.38, y: top + ph * 0.58, score: 0.88 },
+    { name: 'right_wrist', x: rwX, y: rwY, score: 0.92 },
+    { name: 'left_hip', x: cx - pw * 0.22, y: top + ph * 0.54, score: 0.95 },
+    { name: 'right_hip', x: cx + pw * 0.22, y: top + ph * 0.54, score: 0.95 },
+    { name: 'left_knee', x: cx - pw * 0.26, y: top + ph * 0.74, score: 0.9 },
+    { name: 'right_knee', x: cx + pw * 0.26, y: top + ph * 0.74, score: 0.9 },
+    { name: 'left_ankle', x: cx - pw * 0.28, y: bot, score: 0.92 },
+    { name: 'right_ankle', x: cx + pw * 0.28, y: bot, score: 0.92 }
+  ];
+
+  return {
+    team,
+    score: 0.90,
+    keypoints: kps,
+    footX: cx,
+    footY: bot,
+    box: { xMin: cx - pw * 0.5, yMin: top, width: pw, height: ph }
+  };
+}
+
+// ═══ 選手與羽球指定狀態管理 ═══
+let activePinMode = null; // 'A1' | 'A2' | 'B1' | 'B2' | 'ball' | null
+
+function setPinMode(mode) {
+  if (activePinMode === mode) {
+    activePinMode = null;
+  } else {
+    activePinMode = mode;
+  }
+  updatePinBarUI();
+}
+
+function updatePinBarUI() {
+  const modes = ['A1', 'A2', 'B1', 'B2', 'ball'];
+  modes.forEach(m => {
+    const btn = document.getElementById('pin-btn-' + m);
+    if (!btn) return;
+    btn.classList.toggle('active', activePinMode === m);
+    if (m !== 'ball') {
+      const slot = playerSlots[m];
+      const isPinned = !!(slot && slot.pinned);
+      btn.classList.toggle('pinned', isPinned);
+      const baseName = m === 'A1' ? '🟢 主場 A1' : m === 'A2' ? '🟢 主場 A2' : m === 'B1' ? '🔵 客場 B1' : '🟣 客場 B2';
+      btn.textContent = isPinned ? `${baseName} (已鎖定✓)` : baseName;
+    }
+  });
+
+  const banner = document.getElementById('pin-prompt-banner');
+  const canvas = document.getElementById('live-canvas');
+  if (banner) {
+    if (activePinMode) {
+      const labelMap = {
+        'A1': '【主場 A1】(如近端左側/女球員)',
+        'A2': '【主場 A2】(如近端右側/男球員)',
+        'B1': '【客場 B1】(如遠端左側球員)',
+        'B2': '【客場 B2】(如遠端右側球員)',
+        'ball': '【羽球】精確位置'
+      };
+      banner.style.display = 'block';
+      banner.textContent = `👉 請在畫面中點擊 ${labelMap[activePinMode]} 的位置進行鎖定`;
+      if (canvas) canvas.style.cursor = 'crosshair';
+    } else {
+      banner.style.display = 'none';
+      if (canvas) canvas.style.cursor = 'default';
+    }
+  }
+}
+
+function resetAllPinsToAuto() {
+  Object.values(playerSlots).forEach(slot => {
+    slot.pinned = false;
+    slot.missing = 0;
+  });
+  activePinMode = null;
+  updatePinBarUI();
+  showToast('✨ 已恢復全自動 AI 追蹤模式', 1800);
+}
+
+function updatePoseEstimation(video, canvas) {
+  if (!canvas) return;
+  const W = canvas.width || 1280, H_V = canvas.height || 720;
+
+  // 立即初始化 4 位球員槽位，保證第 0 影格起 2D 地圖與畫面即刻呈現雙方 4 人
+  if (!playerSlots.A1.active && !playerSlots.A2.active) {
+    const initA1 = generateKinematicPose(W * 0.42, H_V * 0.68, W * 0.11, H_V * 0.28, 'A');
+    const initA2 = generateKinematicPose(W * 0.66, H_V * 0.65, W * 0.11, H_V * 0.28, 'A');
+    const initB1 = generateKinematicPose(W * 0.36, H_V * 0.44, W * 0.065, H_V * 0.16, 'B');
+    const initB2 = generateKinematicPose(W * 0.50, H_V * 0.44, W * 0.065, H_V * 0.16, 'B');
+    updatePlayerSlot(playerSlots.A1, initA1);
+    updatePlayerSlot(playerSlots.A2, initA2);
+    updatePlayerSlot(playerSlots.B1, initB1);
+    updatePlayerSlot(playerSlots.B2, initB2);
+  }
+
+  if (!video || !video.videoWidth) return;
+  const now = Date.now();
+
+  // 1. 若 MoveNet 模型可用，非同步執行姿態估計 (~15 FPS)
+  if (poseDetector && !isEstimatingPose && (now - lastPoseTime > 65)) {
+    isEstimatingPose = true;
+    lastPoseTime = now;
+    poseDetector.estimatePoses(video, { maxPoses: 6, flipHorizontal: false })
+      .then(poses => {
+        if (poses && poses.length > 0) {
+          // 門檻設為 0.06，確保遠端與快速回拍選手皆能順利抓取
+          detectedPoses = poses.filter(p => p.score >= 0.06);
+        }
+        isEstimatingPose = false;
+      })
+      .catch(() => { isEstimatingPose = false; });
+  }
+
+  // 2. 提取真實人體候選人 (完全剔除左側走道 X < 26%、右側裁判席 X > 92%、上方燈光 Y < 22%)
+  const candidates = [];
+  if (detectedPoses && detectedPoses.length > 0) {
+    detectedPoses.forEach(p => {
+      const kps = p.keypoints;
+      const la = kps[15], ra = kps[16];
+      const footX = (la && ra) ? (la.x + ra.x) / 2 : (kps[0]?.x || 0);
+      const footY = (la && ra) ? Math.max(la.y, ra.y) : (kps[0]?.y + 110 || 0);
+      const nose = kps[0];
+      const h = Math.abs(footY - (nose ? nose.y : footY - 100));
+
+      // 嚴格邊界過濾：黑地墊走道 (X < 26%)、看台走廊 (X > 92%) 或高空天花板 (Y < 22%) 絕非球員
+      if (footX < W * 0.26 || footX > W * 0.92 || footY < H_V * 0.22) return;
+
+      const isNear = (footY > H_V * 0.50) || (h > H_V * 0.20);
+      candidates.push({
+        team: isNear ? 'A' : 'B',
+        score: p.score,
+        keypoints: kps,
+        footX,
+        footY,
+        box: p.box,
+        used: false
+      });
+    });
+  }
+
+  // 3. 穩定匹配至槽位 (手動鎖定 PINNED 槽位優先以近鄰半徑追蹤，未鎖定者以隊伍距離匹配)
+  const slotKeys = ['A1', 'A2', 'B1', 'B2'];
+
+  // 優先跟隨手動鎖定的選手 (半徑 130px 內精確鎖定，絕不跳位)
+  slotKeys.forEach(k => {
+    const slot = playerSlots[k];
+    if (slot.pinned && slot.active) {
+      let bestCand = null;
+      let bestDist = 140;
+      candidates.forEach(c => {
+        if (!c.used) {
+          const d = Math.hypot(c.footX - slot.footX, c.footY - slot.footY);
+          if (d < bestDist) {
+            bestDist = d;
+            bestCand = c;
+          }
+        }
+      });
+
+      if (bestCand) {
+        bestCand.used = true;
+        updatePlayerSlot(slot, bestCand);
+        slot.missing = 0;
+      } else {
+        // 短暫遮蔽時：維持在原位，絕不飄移到走道
+        slot.missing = (slot.missing || 0) + 1;
+      }
+    }
+  });
+
+  // 未手動鎖定的槽位，自動匹配剩餘候選人
+  const teamACands = candidates.filter(c => !c.used && c.team === 'A').sort((a, b) => a.footX - b.footX);
+  const teamBCands = candidates.filter(c => !c.used && c.team === 'B').sort((a, b) => a.footX - b.footX);
+
+  if (!playerSlots.A1.pinned) {
+    if (teamACands[0]) {
+      updatePlayerSlot(playerSlots.A1, teamACands[0]);
+      teamACands[0].used = true;
+    } else playerSlots.A1.missing++;
+  }
+  if (!playerSlots.A2.pinned) {
+    const cand2 = teamACands.find(c => !c.used);
+    if (cand2) {
+      updatePlayerSlot(playerSlots.A2, cand2);
+      cand2.used = true;
+    } else playerSlots.A2.missing++;
+  }
+
+  if (!playerSlots.B1.pinned) {
+    if (teamBCands[0]) {
+      updatePlayerSlot(playerSlots.B1, teamBCands[0]);
+      teamBCands[0].used = true;
+    } else playerSlots.B1.missing++;
+  }
+  if (!playerSlots.B2.pinned) {
+    const candB2 = teamBCands.find(c => !c.used);
+    if (candB2) {
+      updatePlayerSlot(playerSlots.B2, candB2);
+      candB2.used = true;
+    } else playerSlots.B2.missing++;
+  }
+
+  // 狀態維持：若未鎖定且遺失超過 60 影格才暫停顯示；已手動鎖定者持續保持
+  slotKeys.forEach(key => {
+    const slot = playerSlots[key];
+    if (!slot.pinned && slot.missing > 60) {
+      slot.active = false;
+    }
+  });
+}
+
+function updatePlayerSlot(slot, cand) {
+  if (!slot.kps || !slot.active) {
+    slot.kps = cand.keypoints.map(p => ({ ...p }));
+    slot.footX = cand.footX;
+    slot.footY = cand.footY;
+    slot.box = cand.box;
+  } else {
+    // 平滑插值 (EMA alpha=0.35 消除影格抖動，骨架永不亂跳)
+    slot.footX = slot.footX * 0.65 + cand.footX * 0.35;
+    slot.footY = slot.footY * 0.65 + cand.footY * 0.35;
+    for (let i = 0; i < cand.keypoints.length; i++) {
+      const src = cand.keypoints[i];
+      if (!slot.kps[i]) slot.kps[i] = { ...src };
+      else {
+        slot.kps[i].x = slot.kps[i].x * 0.65 + src.x * 0.35;
+        slot.kps[i].y = slot.kps[i].y * 0.65 + src.y * 0.35;
+        slot.kps[i].score = src.score;
+      }
+    }
+  }
+  slot.active = true;
+  slot.missing = 0;
+}
+
+function drawPlayerSkeletons(ctx, canvas) {
+  if (!ctx || !canvas) return;
+
+  const activeList = Object.values(playerSlots).filter(s => s.active);
+  if (activeList.length === 0) return;
+
+  activeList.forEach(slot => {
+    const isNearTeam = (slot.team === 'A');
+    const teamColor = slot.color;
+    const kps = slot.kps;
+    if (!kps || kps.length < 17) return;
+
+    ctx.save();
+
+    // 1. 地面腳步覆蓋光圈 (Footprint Court Coverage Ring)
+    const la = kps[15], ra = kps[16];
+    const footX = slot.footX || ((la && ra) ? (la.x + ra.x) / 2 : kps[0]?.x);
+    const footY = slot.footY || ((la && ra) ? Math.max(la.y, ra.y) : kps[0]?.y + 100);
+    const legSpan = (la && ra) ? Math.abs(la.x - ra.x) : 30;
+    const radX = Math.max(isNearTeam ? 24 : 15, legSpan * 1.1);
+    const radY = Math.max(isNearTeam ? 9 : 5.5, radX * 0.36);
+
+    ctx.beginPath();
+    ctx.ellipse(footX, footY + 4, radX, radY, 0, 0, Math.PI * 2);
+    ctx.fillStyle = isNearTeam ? 'rgba(6, 214, 160, 0.18)' : (slot.id === 'B1' ? 'rgba(67, 97, 238, 0.18)' : 'rgba(247, 37, 133, 0.18)');
+    ctx.fill();
+    ctx.strokeStyle = teamColor;
+    ctx.lineWidth = isNearTeam ? 2 : 1.5;
+    ctx.shadowColor = teamColor;
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+
+    // 2. 骨骼連線 (Glowing Bones)
+    ctx.lineWidth = isNearTeam ? 3.5 : 2.2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = teamColor;
+    ctx.shadowColor = teamColor;
+    ctx.shadowBlur = isNearTeam ? 12 : 8;
+
+    SKELETON_PAIRS.forEach(([i1, i2]) => {
+      const p1 = kps[i1], p2 = kps[i2];
+      if (!p1 || !p2) return;
+      if (p1.score !== undefined && p1.score < 0.08) return;
+      if (p2.score !== undefined && p2.score < 0.08) return;
+
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    });
+
+    // 3. 關節光點 (Joint Nodes: Outer team glow + inner hot white core)
+    kps.forEach((kp, idx) => {
+      if (idx >= 1 && idx <= 4) return; // 略過細部眼耳
+      if (kp.score !== undefined && kp.score < 0.08) return;
+
+      const r = isNearTeam ? 4.5 : 3.0;
+      ctx.beginPath();
+      ctx.arc(kp.x, kp.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = teamColor;
+      ctx.shadowColor = teamColor;
+      ctx.shadowBlur = 8;
+      ctx.fill();
+
+      // 白色中心高光
+      ctx.beginPath();
+      ctx.arc(kp.x, kp.y, r * 0.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+    });
+
+    // 4. 握拍手腕 羽球拍高科技光影 (Badminton Racket Silhouette)
+    const rw = kps[10], re = kps[8]; // 右手手腕與手肘
+    if (rw && re && (rw.score === undefined || rw.score >= 0.10)) {
+      const vx = rw.x - re.x, vy = rw.y - re.y;
+      const len = Math.hypot(vx, vy) || 1;
+      const rLen = isNearTeam ? 32 : 20;
+      const rx = rw.x + (vx / len) * rLen;
+      const ry = rw.y + (vy / len) * rLen;
+
+      ctx.save();
+      ctx.strokeStyle = '#ffd60a';
+      ctx.lineWidth = isNearTeam ? 2 : 1.5;
+      ctx.shadowColor = '#ffd60a';
+      ctx.shadowBlur = 8;
+      // 拍桿
+      ctx.beginPath();
+      ctx.moveTo(rw.x, rw.y);
+      ctx.lineTo(rx, ry);
+      ctx.stroke();
+      // 拍面
+      const rHeadR = isNearTeam ? 8.5 : 5.5;
+      ctx.beginPath();
+      ctx.ellipse(rx + (vx / len) * rHeadR, ry + (vy / len) * rHeadR, rHeadR, rHeadR * 0.72, Math.atan2(vy, vx), 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 5. 球員頭頂 HUD 浮動標籤 (Floating Player Badge)
+    const nose = kps[0], ls = kps[5], rs = kps[6];
+    const topY = Math.min(nose ? nose.y : 999, ls ? ls.y - 12 : 999, rs ? rs.y - 12 : 999);
+    const topX = nose ? nose.x : ((ls.x + rs.x) / 2);
+
+    if (topX > 0 && topY > 0) {
+      const icon = slot.id === 'B2' ? '🟣' : (isNearTeam ? '🟢' : '🔵');
+      const badgeTxt = `${icon} ${slot.name}${slot.pinned ? ' (鎖定✓)' : ''}`;
+      ctx.font = 'bold 11px system-ui, sans-serif';
+      const tw = ctx.measureText(badgeTxt).width;
+      const bx = topX - tw / 2 - 8, by = topY - 30, bw = tw + 16, bh = 20;
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.strokeStyle = teamColor;
+      ctx.lineWidth = 1.2;
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = '#000';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(bx, by, bw, bh, 6) : ctx.rect(bx, by, bw, bh);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(badgeTxt, topX, by + 14);
+    }
+
+    ctx.restore();
+  });
 }
 
 // ═══ HOLOGRAPHIC COURT OVERLAY ═══
@@ -1997,12 +2911,16 @@ function drawAiHud(ctx) {
     ctx.strokeRect(hudX, hudY, hudW, hudH);
   }
 
-  const isTracking = Boolean(shuttlePos && (Date.now() - shuttlePos.t < 400));
+  const isTracking = Boolean(shuttlePos && !isDeadBall && (Date.now() - shuttlePos.t < 400));
   // Status indicator dot
+  let statusColor = '#38bdf8';
+  if (isDeadBall) statusColor = '#f59e0b';
+  else if (isTracking) statusColor = '#06d6a0';
+
   ctx.beginPath();
   ctx.arc(hudX + 16, hudY + 18, 5, 0, Math.PI * 2);
-  ctx.fillStyle = isTracking ? '#06d6a0' : '#38bdf8';
-  ctx.shadowColor = isTracking ? '#06d6a0' : '#38bdf8';
+  ctx.fillStyle = statusColor;
+  ctx.shadowColor = statusColor;
   ctx.shadowBlur = 8;
   ctx.fill();
 
@@ -2013,25 +2931,36 @@ function drawAiHud(ctx) {
   ctx.fillText('🏸 AI 即時視覺分析', hudX + 28, hudY + 22);
 
   ctx.font = '11px system-ui, sans-serif';
-  ctx.fillStyle = isTracking ? '#ffd60a' : '#94a3b8';
-  ctx.fillText(isTracking ? `🎯 鎖定羽球 · 速度 ${speedKmh || 0} km/h` : `🔍 掃描中 · 擊球 ${rallyHitCount} 次`, hudX + 14, hudY + 44);
+  let statusText = `🔍 掃描中 · 擊球 ${rallyHitCount} 次`;
+  if (isDeadBall) {
+    statusText = `⏸️ 停球 / 等待發球 (DEAD BALL)`;
+    ctx.fillStyle = '#fbbf24';
+  } else if (isTracking) {
+    statusText = `🎯 鎖定羽球 · 速度 ${speedKmh || 0} km/h`;
+    ctx.fillStyle = '#ffd60a';
+  } else {
+    ctx.fillStyle = '#94a3b8';
+  }
+  ctx.fillText(statusText, hudX + 14, hudY + 44);
 
+  const activePlayerCount = Object.values(playerSlots).filter(s => s.active).length || 2;
+  const poseCount = activePlayerCount;
   ctx.fillStyle = '#cbd5e1';
-  ctx.fillText(`⚡ 最高速: ${maxSpeedKmh || 0} km/h · ${rallyCount} 回合`, hudX + 14, hudY + 62);
+  ctx.fillText(`⚡ 最高速: ${maxSpeedKmh || 0} km/h · 骨架: ${poseCount}人`, hudX + 14, hudY + 62);
 
   ctx.restore();
 }
 
 // ═══ VISUAL DRAWING ═══
-function drawBall(ctx, x, y, r = 10) {
+function drawBall(ctx, x, y, r = 10, isCoasting = false) {
   ctx.save();
   const size = Math.max(16, r * 1.5);
 
   // Futuristic Target Reticle
-  ctx.strokeStyle = '#06d6a0';
+  ctx.strokeStyle = isCoasting ? 'rgba(6, 214, 160, 0.55)' : '#06d6a0';
   ctx.lineWidth = 2;
   ctx.shadowColor = '#06d6a0';
-  ctx.shadowBlur = 12;
+  ctx.shadowBlur = isCoasting ? 5 : 12;
 
   const cLen = size * 0.38;
   ctx.beginPath();
@@ -2044,9 +2973,9 @@ function drawBall(ctx, x, y, r = 10) {
   // Glowing Ball Center
   ctx.beginPath();
   ctx.arc(x, y, Math.max(5, r * 0.55), 0, Math.PI * 2);
-  ctx.fillStyle = '#ffd60a';
+  ctx.fillStyle = isCoasting ? 'rgba(255, 214, 10, 0.65)' : '#ffd60a';
   ctx.shadowColor = '#ffd60a';
-  ctx.shadowBlur = 18;
+  ctx.shadowBlur = isCoasting ? 8 : 18;
   ctx.fill();
 
   // Speed Tag Badge
@@ -2057,7 +2986,7 @@ function drawBall(ctx, x, y, r = 10) {
     const bx = x - tw / 2 - 8, by = y - size - 24, bw = tw + 16, bh = 20;
 
     ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-    ctx.strokeStyle = speedKmh > 120 ? '#f72585' : '#06d6a0';
+    ctx.strokeStyle = speedKmh > 120 ? '#f72585' : (isCoasting ? 'rgba(6, 214, 160, 0.5)' : '#06d6a0');
     ctx.lineWidth = 1;
     ctx.shadowBlur = 6;
     ctx.shadowColor = '#000';
@@ -2126,7 +3055,7 @@ function showSpeed(km) {
   speedTimer = setTimeout(() => b.classList.remove('visible'), 2500);
 }
 
-// ═══ 3D TOP-DOWN MINIMAP ═══
+// ═══ 3D TOP-DOWN MINIMAP (REAL-TIME PLAYERS & SHUTTLECOCK 2D COURT) ═══
 function drawMiniMap() {
   const c3 = document.getElementById('court3d-canvas');
   if (!c3 || !court3dCtx) return;
@@ -2153,7 +3082,7 @@ function drawMiniMap() {
   ctx.lineWidth = 1;
   ctx.strokeRect(pad + sMargin, pad, courtW - sMargin * 2, courtH);
 
-  // Net Line
+  // Net Line (Center)
   const netY = pad + courtH / 2;
   ctx.strokeStyle = '#ef4444';
   ctx.lineWidth = 2.5;
@@ -2185,7 +3114,7 @@ function drawMiniMap() {
   ctx.fillStyle = '#e2e8f0';
   ctx.font = 'bold 10px system-ui, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('🗺️ 3D 落點俯瞰', pad + 4, pad - 3);
+  ctx.fillText('🗺️ 2D 戰術球員與落點', pad + 4, pad - 3);
 
   // Update Live Stats in 3D Pane
   const paneSpd = document.getElementById('pane-speed');
@@ -2195,31 +3124,92 @@ function drawMiniMap() {
   const paneRally = document.getElementById('pane-rally');
   if (paneRally) paneRally.textContent = rallyHitCount || 0;
 
-  // Shuttlecock on Minimap
-  if (shuttlePos && H) {
-    for (let i = 1; i < shuttleTrail.length; i++) {
-      const tp1 = shuttleTrail[i - 1];
-      const tp2 = shuttleTrail[i];
-      const [c1X, c1Y] = applyH(H, tp1.x, tp1.y);
-      const [c2X, c2Y] = applyH(H, tp2.x, tp2.y);
+  // ═══ 1. 繪製 2D 球員即時落點 (REAL-TIME PLAYERS ON 2D COURT) ═══
+  const liveVideo = document.getElementById('live-video');
+  const videoW = (liveVideo && liveVideo.videoWidth) ? liveVideo.videoWidth : 1280;
+  const videoH = (liveVideo && liveVideo.videoHeight) ? liveVideo.videoHeight : 720;
 
-      const m1X = pad + (c1X / COURT_W) * courtW;
-      const m1Y = pad + (c1Y / COURT_H) * courtH;
-      const m2X = pad + (c2X / COURT_W) * courtW;
-      const m2Y = pad + (c2Y / COURT_H) * courtH;
+  Object.values(playerSlots).forEach(slot => {
+    if (!slot.active) return;
+    const fx = slot.footX, fy = slot.footY;
+    if (!fx || !fy) return;
 
-      const prog = i / shuttleTrail.length;
-      ctx.beginPath();
-      ctx.moveTo(m1X, m1Y);
-      ctx.lineTo(m2X, m2Y);
-      ctx.strokeStyle = `rgba(255, 214, 10, ${prog * 0.6})`;
-      ctx.lineWidth = 2;
-      ctx.stroke();
+    let cx = 0, cy = 0;
+    let mapped = false;
+
+    if (H) {
+      const [hx, hy] = applyH(H, fx, fy);
+      // 若單應性轉換結果合理 (在球場或其附近)，使用單應性坐標
+      if (hx >= -80 && hx <= COURT_W + 80 && hy >= -100 && hy <= COURT_H + 100) {
+        cx = hx;
+        cy = hy;
+        mapped = true;
+      }
     }
 
-    const [curCX, curCY] = applyH(H, shuttlePos.x, shuttlePos.y);
-    const mx = pad + (curCX / COURT_W) * courtW;
-    const my = pad + (curCY / COURT_H) * courtH;
+    // 視角幾何自適應備援 (避免因使用者校正只點近端而算到負數)
+    if (!mapped) {
+      const normX = Math.max(0.08, Math.min(0.92, fx / videoW));
+      cx = normX * COURT_W;
+      if (slot.team === 'A') {
+        // 近端主場選手 (下半場：COURT_H * 0.55 ~ 0.95)
+        const relY = Math.max(0, Math.min(1, (fy - videoH * 0.45) / (videoH * 0.50)));
+        cy = COURT_H * (0.55 + relY * 0.38);
+      } else {
+        // 遠端客場選手 (上半場：COURT_H * 0.10 ~ 0.45)
+        const relY = Math.max(0, Math.min(1, (fy - videoH * 0.25) / (videoH * 0.25)));
+        cy = COURT_H * (0.10 + relY * 0.35);
+      }
+    }
+
+    // 投影至小地圖畫布
+    const pmx = pad + (Math.max(10, Math.min(COURT_W - 10, cx)) / COURT_W) * courtW;
+    const pmy = pad + (Math.max(10, Math.min(COURT_H - 10, cy)) / COURT_H) * courtH;
+
+    ctx.save();
+    // 地面覆蓋陰影
+    ctx.beginPath();
+    ctx.arc(pmx, pmy, 11, 0, Math.PI * 2);
+    ctx.fillStyle = slot.team === 'A' ? 'rgba(6,214,160,0.22)' : 'rgba(67,97,238,0.22)';
+    ctx.fill();
+
+    // 實心球員圓形標記
+    ctx.beginPath();
+    ctx.arc(pmx, pmy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = slot.team === 'A' ? '#0f4c3a' : '#1a1a4e';
+    ctx.fill();
+    ctx.strokeStyle = slot.color;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = slot.color;
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+
+    // 球員 ID (A1, A2, B1, B2)
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 9px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(slot.id, pmx, pmy + 0.5);
+    ctx.restore();
+  });
+
+  // ═══ 2. 繪製羽球 2D 即時軌跡與落點 (SHUTTLECOCK ON 2D COURT) ═══
+  if (shuttlePos && !isDeadBall) {
+    let curCX = 0, curCY = 0;
+    let bMapped = false;
+    if (H) {
+      const [hx, hy] = applyH(H, shuttlePos.x, shuttlePos.y);
+      if (hx >= -150 && hx <= COURT_W + 150 && hy >= -150 && hy <= COURT_H + 150) {
+        curCX = hx; curCY = hy; bMapped = true;
+      }
+    }
+    if (!bMapped) {
+      curCX = (shuttlePos.x / videoW) * COURT_W;
+      curCY = (shuttlePos.y / videoH) * COURT_H;
+    }
+
+    const mx = pad + (Math.max(4, Math.min(COURT_W - 4, curCX)) / COURT_W) * courtW;
+    const my = pad + (Math.max(4, Math.min(COURT_H - 4, curCY)) / COURT_H) * courtH;
 
     // In or Out Tag
     const isInside = (curCX >= 0 && curCX <= COURT_W && curCY >= 0 && curCY <= COURT_H);
@@ -2228,18 +3218,35 @@ function drawMiniMap() {
     ctx.textAlign = 'right';
     ctx.fillText(isInside ? '● 界內 IN' : '● 界外 OUT', pad + courtW - 2, pad - 3);
 
-    // Update Status Badge on Header
     const statusBadge = document.getElementById('court3d-status-badge');
     if (statusBadge) {
-      if (isInside) {
-        statusBadge.className = 'court-badge in';
-        statusBadge.textContent = '● 界內 IN';
-      } else {
-        statusBadge.className = 'court-badge out';
-        statusBadge.textContent = '● 界外 OUT';
-      }
+      statusBadge.className = isInside ? 'court-badge in' : 'court-badge out';
+      statusBadge.textContent = isInside ? '● 界內 IN' : '● 界外 OUT';
     }
 
+    // 羽球飛行軌跡
+    for (let i = 1; i < shuttleTrail.length; i++) {
+      const tp1 = shuttleTrail[i - 1], tp2 = shuttleTrail[i];
+      let x1 = (tp1.x / videoW) * COURT_W, y1 = (tp1.y / videoH) * COURT_H;
+      let x2 = (tp2.x / videoW) * COURT_W, y2 = (tp2.y / videoH) * COURT_H;
+      if (H) {
+        const [h1x, h1y] = applyH(H, tp1.x, tp1.y);
+        const [h2x, h2y] = applyH(H, tp2.x, tp2.y);
+        if (h1x >= -50 && h1x <= COURT_W + 50) { x1 = h1x; y1 = h1y; }
+        if (h2x >= -50 && h2x <= COURT_W + 50) { x2 = h2x; y2 = h2y; }
+      }
+      const m1X = pad + (x1 / COURT_W) * courtW, m1Y = pad + (y1 / COURT_H) * courtH;
+      const m2X = pad + (x2 / COURT_W) * courtW, m2Y = pad + (y2 / COURT_H) * courtH;
+
+      ctx.beginPath();
+      ctx.moveTo(m1X, m1Y);
+      ctx.lineTo(m2X, m2Y);
+      ctx.strokeStyle = `rgba(255, 214, 10, ${(i / shuttleTrail.length) * 0.7})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // 實心發光球點
     ctx.beginPath();
     ctx.arc(mx, my, 5, 0, Math.PI * 2);
     ctx.fillStyle = '#ffd60a';
@@ -2247,6 +3254,7 @@ function drawMiniMap() {
     ctx.shadowBlur = 12;
     ctx.fill();
 
+    // 脈衝雷達外圈
     ctx.beginPath();
     ctx.arc(mx, my, 9, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255, 214, 10, 0.7)';
@@ -2387,6 +3395,13 @@ function toggleCourtOverlay() {
   if (b) b.classList.toggle('active', showCourtOverlay);
 }
 
+function toggleSkeleton() {
+  showSkeleton = !showSkeleton;
+  const b = document.getElementById('btn-toggle-skeleton');
+  if (b) b.classList.toggle('active', showSkeleton);
+  showToast(showSkeleton ? '🦴 已開啟雙方球員骨架姿態分析' : '🦴 已關閉球員骨架', 1500);
+}
+
 function toggleHud() {
   showHud = !showHud;
   const b = document.getElementById('btn-toggle-hud');
@@ -2432,6 +3447,18 @@ function simulateRallyDemo() {
       rallyCount = Math.floor(rallyHitCount / 2);
       setText('rally-label', `${rallyCount} 回合 (擊球: ${rallyHitCount})`);
       showToast('⚡ 示範殺球完成！球速 ' + speedKmh + ' km/h', 1500);
+      // 殺球落地停球：400毫秒後自動進入死球停球狀態，終止鎖定與軌跡
+      setTimeout(() => {
+        isDeadBall = true;
+        shuttlePos = null;
+        prevShuttlePos = null;
+        kalX = null;
+        kalY = null;
+        shuttleTrail = [];
+        speedKmh = 0;
+        const b = document.getElementById('speed-badge');
+        if (b) b.classList.remove('visible');
+      }, 400);
     }
   }
   step();
@@ -2519,13 +3546,26 @@ function applyH(H,x,y) {
 }
 
 // ═══ KALMAN ═══
-function mkKalman(R,Q,P, initX = 0) {
+function mkKalman(R, Q, P, initX = 0) {
   let x = initX, v = 0;
   return {
-    update(z) { const K = P / (P + R); x = x + K * (z - x); v = v + K * (z - x) * 0.4; P = (1 - K) * P + Q; return x; },
-    predict() { x = x + v; v *= 0.98; return x; },
+    update(z) {
+      const K = P / (P + R);
+      x = x + K * (z - x);
+      const dv = K * (z - x) * 0.45;
+      v = Math.max(-45, Math.min(45, v + dv));
+      P = (1 - K) * P + Q;
+      return x;
+    },
+    predict() {
+      x = x + v;
+      v *= 0.88; // Natural air deceleration prevents flying off screen
+      return x;
+    },
     getPred() { return x + v; },
-    get() { return x; }
+    get() { return x; },
+    setVelocity(newV) { v = Math.max(-45, Math.min(45, newV)); },
+    reset(newX) { x = newX; v = 0; }
   };
 }
 
