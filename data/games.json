@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790651409840,
+    "lastActiveTime": 1790651626311,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9399,7 +9399,6 @@
       "Wayne": true,
       "曾Jim凱": true,
       "Ashely": true,
-      "陳呈": true,
       "杜威霖 Andy": true
     },
     "uidMap": {
@@ -9433,7 +9432,6 @@
           "Wayne",
           "曾Jim凱",
           "Ashely",
-          "陳呈",
           "杜威霖 Andy",
           "林煥杰",
           "©️張CC～©️",
@@ -9450,6 +9448,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/29 11:13",
+        "name": "陳呈",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 11:10",
         "name": "Kay",
