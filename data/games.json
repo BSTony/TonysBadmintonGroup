@@ -9599,7 +9599,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790648394703,
-    "lastActiveTime": 1790651907316,
+    "lastActiveTime": 1790667787011,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9619,7 +9619,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569"
+      "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569",
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9635,12 +9636,20 @@
           "陳呈",
           "林煥杰",
           "Andrew Kuo",
-          "冰山葉 T.Yeh"
+          "冰山葉 T.Yeh",
+          "John"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 15:43",
+        "name": "John",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 11:18",
         "name": "冰山葉 T.Yeh",
