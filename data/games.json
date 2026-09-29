@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790659167367,
+    "lastActiveTime": 1790675138858,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9416,7 +9416,8 @@
       "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569",
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
-      "喻心平": "U0220a13b4aec2dec044ce073925f0df9"
+      "喻心平": "U0220a13b4aec2dec044ce073925f0df9",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9447,12 +9448,20 @@
           "喻心平",
           "凱文",
           "chichi",
-          "Mike"
+          "Mike",
+          "Jet"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 17:45",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 13:19",
         "name": "Mike",
