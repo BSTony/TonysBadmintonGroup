@@ -9668,7 +9668,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790664535686,
+    "lastActiveTime": 1790664787005,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9703,7 +9703,9 @@
         "backupLimit": 5,
         "fee": "190",
         "label": "",
-        "list": []
+        "list": [
+          "林淑惠"
+        ]
       },
       {
         "title": "8-12",
@@ -9719,6 +9721,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/29 14:53",
+        "name": "林淑惠",
+        "operator": "林淑惠Sophia",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/29 14:48",
         "name": "云",
