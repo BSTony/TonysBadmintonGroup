@@ -9668,7 +9668,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790664308783,
+    "lastActiveTime": 1790664314697,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9708,11 +9708,19 @@
         "fee": "300",
         "label": "",
         "list": [
-          "林淑惠Sophia"
+          "林淑惠Sophia",
+          "©️張CC～©️"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/29 14:45",
+        "name": "©️張CC～©️",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/29 14:45",
         "name": "©️張CC～©️",
