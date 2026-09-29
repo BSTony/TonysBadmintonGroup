@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790651239088,
+    "lastActiveTime": 1790651409840,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9394,7 +9394,6 @@
     "levelMap": {},
     "paidMap": {
       "謝東霖 Tony": true,
-      "Kay": true,
       "Iven": true,
       "Mina": true,
       "Wayne": true,
@@ -9429,7 +9428,6 @@
         "label": "",
         "list": [
           "謝東霖 Tony",
-          "Kay",
           "Iven",
           "Mina",
           "Wayne",
@@ -9452,6 +9450,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/29 11:10",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 11:07",
         "name": "中ㄧ",
