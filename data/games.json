@@ -9668,7 +9668,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790664304377,
+    "lastActiveTime": 1790664308783,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9691,9 +9691,7 @@
         "backupLimit": 5,
         "fee": "150",
         "label": "",
-        "list": [
-          "©️張CC～©️"
-        ]
+        "list": []
       },
       {
         "title": "10-12",
@@ -9715,6 +9713,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/29 14:45",
+        "name": "©️張CC～©️",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "09/29 14:45",
         "name": "©️張CC～©️",
