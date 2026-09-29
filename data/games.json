@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790647730209,
+    "lastActiveTime": 1790648825277,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9415,7 +9415,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569"
+      "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569",
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9439,12 +9440,20 @@
           "©️張CC～©️",
           "Emily🙈🙉🙊",
           "Winnie",
-          "冰山葉 T.Yeh"
+          "冰山葉 T.Yeh",
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 10:27",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 10:08",
         "name": "冰山葉 T.Yeh",
