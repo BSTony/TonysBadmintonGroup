@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790647471823,
+    "lastActiveTime": 1790647557882,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9412,7 +9412,8 @@
       "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
-      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9432,12 +9433,20 @@
           "Ashely",
           "陳呈",
           "杜威霖 Andy",
-          "林煥杰"
+          "林煥杰",
+          "©️張CC～©️"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 10:05",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 10:04",
         "name": "林煥杰",
