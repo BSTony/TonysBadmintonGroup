@@ -9389,7 +9389,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790675138858,
+    "lastActiveTime": 1790687355477,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9452,13 +9452,19 @@
           "喻心平",
           "凱文",
           "chichi",
-          "Mike",
-          "Jet"
+          "Mike"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 21:09",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 17:45",
         "name": "Jet",
