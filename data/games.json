@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790647677604,
+    "lastActiveTime": 1790647730209,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9414,7 +9414,8 @@
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+      "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9437,12 +9438,20 @@
           "林煥杰",
           "©️張CC～©️",
           "Emily🙈🙉🙊",
-          "Winnie"
+          "Winnie",
+          "冰山葉 T.Yeh"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 10:08",
+        "name": "冰山葉 T.Yeh",
+        "operator": "冰山葉 T.Yeh",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 10:07",
         "name": "Winnie",
