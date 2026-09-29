@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790651217588,
+    "lastActiveTime": 1790651230760,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9444,12 +9444,20 @@
           "冰山葉 T.Yeh",
           "Win Shu",
           "江こう 洋々",
-          "小白"
+          "小白",
+          "蘑菇"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 11:07",
+        "name": "蘑菇",
+        "operator": "Bravo(小白）",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 11:06",
         "name": "小白",
