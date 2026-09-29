@@ -9691,7 +9691,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790686459608,
+    "lastActiveTime": 1790686479076,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9718,8 +9718,7 @@
         "fee": "150",
         "label": "",
         "list": [
-          "云",
-          "Kevin"
+          "云"
         ]
       },
       {
@@ -9747,6 +9746,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/29 20:54",
+        "name": "Kevin",
+        "operator": "蕭庭易",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "09/29 20:54",
         "name": "Kevin",
