@@ -9691,7 +9691,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790686845382,
+    "lastActiveTime": 1790686850965,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9728,7 +9728,6 @@
         "fee": "190",
         "label": "",
         "list": [
-          "林淑惠",
           "Sammy Su"
         ]
       },
@@ -9749,6 +9748,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/29 21:00",
+        "name": "林淑惠",
+        "operator": "林淑惠Sophia",
+        "action": "-1",
+        "section": "10-12"
+      },
       {
         "time": "09/29 21:00",
         "name": "淑惠",
