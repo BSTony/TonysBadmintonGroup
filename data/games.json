@@ -9668,7 +9668,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790663879571,
+    "lastActiveTime": 1790664238270,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9676,7 +9676,9 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {},
-    "uidMap": {},
+    "uidMap": {
+      "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc"
+    },
     "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
@@ -9702,7 +9704,18 @@
         "backupLimit": 5,
         "fee": "300",
         "label": "",
-        "list": []
+        "list": [
+          "林淑惠Sophia"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "time": "09/29 14:43",
+        "name": "林淑惠Sophia",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
       }
     ]
   }
