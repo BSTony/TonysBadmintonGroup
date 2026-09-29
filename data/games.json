@@ -9668,7 +9668,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790664518690,
+    "lastActiveTime": 1790664535686,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9693,7 +9693,9 @@
         "backupLimit": 5,
         "fee": "150",
         "label": "",
-        "list": []
+        "list": [
+          "云"
+        ]
       },
       {
         "title": "10-12",
@@ -9717,6 +9719,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/29 14:48",
+        "name": "云",
+        "operator": "鄭人云",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "09/29 14:48",
         "name": "弘彬/Jason",
