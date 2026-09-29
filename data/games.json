@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790647670902,
+    "lastActiveTime": 1790647677604,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9436,12 +9436,20 @@
           "杜威霖 Andy",
           "林煥杰",
           "©️張CC～©️",
-          "Emily🙈🙉🙊"
+          "Emily🙈🙉🙊",
+          "Winnie"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 10:07",
+        "name": "Winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 10:07",
         "name": "Emily🙈🙉🙊",
