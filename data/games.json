@@ -9873,7 +9873,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790684987296,
-    "lastActiveTime": 1790684987296,
+    "lastActiveTime": 1790688646446,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9900,7 +9900,8 @@
       "Robert": "Uf35f2dc9288c3434a5a19186f900402a",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "海棠": "Ufa8dba5febf9f719da07f7e507391a21"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9918,9 +9919,19 @@
           "Robert",
           "偉舫",
           "Jet",
-          "陳呈"
+          "陳呈",
+          "海棠"
         ],
         "fee": "280"
+      }
+    ],
+    "history": [
+      {
+        "time": "09/29 21:30",
+        "name": "海棠",
+        "operator": "海棠",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
