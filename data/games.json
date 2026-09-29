@@ -9690,7 +9690,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790664787005,
+    "lastActiveTime": 1790685530087,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9704,7 +9704,8 @@
     "uidMap": {
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a"
+      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9726,7 +9727,8 @@
         "fee": "190",
         "label": "",
         "list": [
-          "林淑惠"
+          "林淑惠",
+          "Sammy Su"
         ]
       },
       {
@@ -9743,6 +9745,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/29 20:38",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/29 14:53",
         "name": "林淑惠",
