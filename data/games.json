@@ -9691,7 +9691,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790686479076,
+    "lastActiveTime": 1790686487617,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9741,11 +9741,19 @@
         "list": [
           "林淑惠Sophia",
           "©️張CC～©️",
-          "弘彬/Jason"
+          "弘彬/Jason",
+          "Kevin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/29 20:54",
+        "name": "Kevin",
+        "operator": "蕭庭易",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/29 20:54",
         "name": "Kevin",
