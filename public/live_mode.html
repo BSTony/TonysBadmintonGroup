@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+Author: Tony Hsieh
+Date: 2026-09-29
+Version: 1.9.0
+羽球影片轉 2D：校正單應性、追球地面循跡、人物圈與戰術球場落點
+-->
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -329,18 +335,13 @@
 
   /* 🎯 選手與羽球浮動指定標定工具列 */
   .player-pin-bar {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    z-index: 28;
-    background: rgba(15, 23, 42, 0.88);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 12px;
-    padding: 6px 10px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -616,10 +617,11 @@
 
   .live-controls { position: absolute; bottom: 0; left: 0; right: 0; z-index: 20; padding: 10px 12px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.95) 40%); pointer-events: none; transition: transform 0.3s ease; }
   .live-controls.hidden { transform: translateY(100%); }
-  #btn-toggle-panel { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); z-index: 30; width: 44px; height: 44px; border-radius: 50%; background: rgba(15,23,42,0.8); border: 1px solid rgba(67,97,238,0.6); color: white; font-size: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); cursor: pointer; pointer-events: auto; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; padding-bottom: 2px; }
-  #btn-toggle-panel:hover { background: rgba(67,97,238,0.9); }
+  #btn-toggle-panel { position: absolute; right: 14px; bottom: 14px; z-index: 50; height: 36px; width: auto; padding: 0 14px; border-radius: 18px; background: rgba(15,23,42,0.92); border: 1px solid rgba(56,189,248,0.7); color: #e2e8f0; font-size: 13px; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,0.45); cursor: pointer; pointer-events: auto; }
+  #btn-toggle-panel:hover { background: rgba(67,97,238,0.95); }
+  #live-video-bar { position: relative; left: auto; right: auto; bottom: auto; display: none; width: 100%; z-index: 1; margin-bottom: 6px; }
   .control-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 6px; pointer-events: none; }
-  .live-controls button, .live-controls .score-label, .live-controls .layout-btn-group { pointer-events: auto; }
+  .live-controls button, .live-controls .score-label, .live-controls .layout-btn-group, .live-controls input, .live-controls label, #live-video-bar { pointer-events: auto; }
   .score-btn { width: 44px; height: 44px; border-radius: 50%; border: none; font-size: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
   .score-btn:active { transform: scale(0.88); }
   .btn-plus { background: linear-gradient(135deg, #4361ee, #3a0ca3); color: white; }
@@ -777,44 +779,9 @@
   <div id="live-main-container" class="layout-split-h">
     <!-- Video Pane -->
     <div id="live-video-pane">
-      <!-- 🎯 選手與羽球點擊標定浮動工具列 -->
-      <div id="player-pin-bar" class="player-pin-bar">
-        <div class="pin-bar-row">
-          <span class="pin-title">🎯 選手與球指定:</span>
-          <button type="button" class="pin-chip" id="pin-btn-A1" onclick="setPinMode('A1')">🟢 主場 A1</button>
-          <button type="button" class="pin-chip" id="pin-btn-A2" onclick="setPinMode('A2')">🟢 主場 A2</button>
-          <button type="button" class="pin-chip" id="pin-btn-B1" onclick="setPinMode('B1')">🔵 客場 B1</button>
-          <button type="button" class="pin-chip" id="pin-btn-B2" onclick="setPinMode('B2')">🟣 客場 B2</button>
-          <button type="button" class="pin-chip pin-ball" id="pin-btn-ball" onclick="setPinMode('ball')">⚡ 鎖定羽球</button>
-          <button type="button" class="pin-chip pin-auto" id="pin-btn-auto" onclick="resetAllPinsToAuto()" title="恢復全自動 AI 追蹤">✨ 恢復自動</button>
-        </div>
-        <div id="pin-prompt-banner" class="pin-prompt-banner" style="display:none;"></div>
-      </div>
-
       <div id="live-video-wrap">
         <video id="live-video" autoplay muted playsinline></video>
         <canvas id="live-canvas"></canvas>
-      </div>
-
-      <!-- 影片播放控制列 (上傳影片模式顯示) -->
-      <div id="live-video-bar" style="display:none; position:absolute; bottom:12px; left:12px; right:12px; z-index:22; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px); border:1px solid rgba(99,102,241,0.3); border-radius:14px; padding:8px 12px; flex-direction:column; gap:6px; box-shadow:0 8px 30px rgba(0,0,0,0.6);">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button id="btn-live-play" onclick="toggleLivePlay()" style="background:#4361ee; border:none; color:#fff; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer;">⏸ 暫停</button>
-          <button onclick="replayLiveVideo()" style="background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer;" title="重頭播放">🔄 重放</button>
-          <input type="range" id="live-video-scrub" min="0" max="100" value="0" step="0.1" style="flex:1; cursor:pointer; accent-color:#38bdf8;" oninput="onLiveScrub(this.value)">
-          <span id="live-video-time" style="font-size:11px; font-family:monospace; color:#38bdf8; min-width:65px; text-align:right;">00:00</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between; font-size:11px; margin-top:1px;">
-          <div style="display:flex; gap:6px; align-items:center;">
-            <span style="color:#94a3b8;">分析倍速:</span>
-            <button class="spd-btn active" id="spd-05" onclick="setLiveSpeed(0.5)">0.5x 慢動作</button>
-            <button class="spd-btn" id="spd-10" onclick="setLiveSpeed(1.0)">1.0x 原速</button>
-            <button class="spd-btn" id="spd-025" onclick="setLiveSpeed(0.25)">0.25x</button>
-          </div>
-          <label style="color:#94a3b8; font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer;">
-            <input type="checkbox" id="chk-live-loop" checked onchange="toggleLiveLoop(this.checked)"> 循環播放
-          </label>
-        </div>
       </div>
     </div>
 
@@ -866,30 +833,63 @@
 
   <div class="speed-badge" id="speed-badge">⚡ 0 km/h</div>
 
-  <button id="btn-toggle-panel" onclick="toggleLivePanel()" title="顯示/隱藏控制面板">🔽</button>
+  <button id="btn-toggle-panel" onclick="toggleLivePanel()" title="收合或展開進度條與操作面板">⬇ 收合面板</button>
 
   <div class="live-controls" id="live-controls-panel">
-    <div class="control-row" style="flex-wrap:wrap; gap:8px;">
-      <div class="layout-btn-group">
-        <button class="btn-layout-mode active" id="btn-mode-split-h" onclick="setLayoutMode('split-h')" title="左右畫面分割">◫ 左右畫面</button>
-        <button class="btn-layout-mode" id="btn-mode-split-v" onclick="setLayoutMode('split-v')" title="上下畫面分割">⬒ 上下畫面</button>
-        <button class="btn-layout-mode" id="btn-mode-pip" onclick="setLayoutMode('pip')" title="子母懸浮畫面">❐ 子母畫面</button>
+    <div id="live-video-bar">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button id="btn-live-play" onclick="toggleLivePlay()" style="background:#4361ee; border:none; color:#fff; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer;">⏸ 暫停</button>
+        <button onclick="replayLiveVideo()" style="background:rgba(255,255,255,0.12); border:none; color:#fff; border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer;" title="重頭播放">🔄 重放</button>
+        <input type="range" id="live-video-scrub" min="0" max="100" value="0" step="0.1" style="flex:1; cursor:pointer; accent-color:#38bdf8;" oninput="onLiveScrub(this.value)">
+        <span id="live-video-time" style="font-size:11px; font-family:monospace; color:#38bdf8; min-width:65px; text-align:right;">00:00</span>
       </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; font-size:11px; margin-top:4px;">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span style="color:#94a3b8;">分析倍速:</span>
+          <button class="spd-btn active" id="spd-05" onclick="setLiveSpeed(0.5)">0.5x 慢動作</button>
+          <button class="spd-btn" id="spd-10" onclick="setLiveSpeed(1.0)">1.0x 原速</button>
+          <button class="spd-btn" id="spd-025" onclick="setLiveSpeed(0.25)">0.25x</button>
+        </div>
+        <label style="color:#94a3b8; font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer;">
+          <input type="checkbox" id="chk-live-loop" checked onchange="toggleLiveLoop(this.checked)"> 循環播放
+        </label>
+      </div>
+    </div>
+    <div class="control-row" style="flex-wrap:wrap; gap:8px;">
+      <button class="btn-opt active" id="btn-toggle-all" onclick="toggleAllOverlays()" title="一次隱藏或開啟畫面上的分析功能">👁 全部隱藏</button>
+      <button class="btn-opt active" id="btn-toggle-skeleton-a" onclick="toggleSkeletonSide('A')">🟢 主場人物</button>
+      <button class="btn-opt active" id="btn-toggle-skeleton-b" onclick="toggleSkeletonSide('B')">🔵 客場人物</button>
+      <button class="btn-opt active" id="btn-toggle-shuttle-box" onclick="toggleShuttleBox()" title="顯示或隱藏羽球追蹤框">▢ 羽球框</button>
+      <button class="btn-opt active" id="btn-toggle-ball" onclick="toggleBallOverlay()">⚡ 羽球軌跡</button>
       <button class="btn-opt active" id="btn-toggle-court" onclick="toggleCourtOverlay()">📐 球場標線</button>
-      <button class="btn-opt active" id="btn-toggle-skeleton" onclick="toggleSkeleton()" title="開啟/關閉雙方球員骨架姿態分析">🦴 球員骨架</button>
       <button class="btn-opt active" id="btn-toggle-hud" onclick="toggleHud()">📊 數據儀表</button>
+      <button class="btn-opt active" id="btn-toggle3d" onclick="toggle3D()">🗺️ 2D球場</button>
+      <button class="btn-opt active" id="btn-toggle-score" onclick="toggleScoreboard()">🔢 記分板</button>
+      <div class="layout-btn-group">
+        <button class="btn-layout-mode active" id="btn-mode-split-h" onclick="setLayoutMode('split-h')" title="左右畫面分割">◫ 左右</button>
+        <button class="btn-layout-mode" id="btn-mode-split-v" onclick="setLayoutMode('split-v')" title="上下畫面分割">⬒ 上下</button>
+        <button class="btn-layout-mode" id="btn-mode-pip" onclick="setLayoutMode('pip')" title="子母懸浮畫面">❐ 子母</button>
+      </div>
       <button class="btn-opt" onclick="simulateRallyDemo()" style="color:#ffd60a; border-color:rgba(255,214,10,0.4);" title="點擊立即展示高科技軌跡與球速動畫">✨ 軌跡示範</button>
       <div style="flex:1"></div>
       <button class="btn-end" id="btn-end-live">■ 結束分析</button>
     </div>
-    <div class="control-row">
-      <button class="score-btn btn-minus" onclick="adjustScore('A',-1)">−</button>
-      <div class="score-label" id="ctrl-a-name">主場</div>
-      <button class="score-btn btn-plus" onclick="adjustScore('A',1)">+</button>
-      <div style="width:20px"></div>
-      <button class="score-btn btn-plus" onclick="adjustScore('B',1)">+</button>
-      <div class="score-label" id="ctrl-b-name">客場</div>
-      <button class="score-btn btn-minus" onclick="adjustScore('B',-1)">−</button>
+    <div id="player-pin-bar" class="player-pin-bar">
+      <div class="pin-bar-row">
+        <span class="pin-title">🎯 指定:</span>
+        <button type="button" class="pin-chip" id="pin-btn-A1" onclick="setPinMode('A1')">🟢 主場 A1</button>
+        <button type="button" class="pin-chip" id="pin-btn-A2" onclick="setPinMode('A2')">🟢 主場 A2</button>
+        <button type="button" class="pin-chip" id="pin-btn-B1" onclick="setPinMode('B1')">🔵 客場 B1</button>
+        <button type="button" class="pin-chip" id="pin-btn-B2" onclick="setPinMode('B2')">🟣 客場 B2</button>
+        <button type="button" class="pin-chip pin-ball" id="pin-btn-ball" onclick="setPinMode('ball')">⚡ 鎖定羽球</button>
+        <button type="button" class="pin-chip pin-auto" id="pin-btn-auto" onclick="resetAllPinsToAuto()" title="恢復全自動 AI 追蹤">✨ 恢復自動</button>
+      </div>
+      <div id="pin-prompt-banner" class="pin-prompt-banner" style="display:none;"></div>
+    </div>
+    <div class="control-row" id="auto-score-row">
+      <span style="font-size:12px; color:#cbd5e1; font-weight:700;">🏸 每球得分 · 21分須淨勝2分</span>
+      <span id="auto-score-reason" style="font-size:12px; color:#ffd60a;">等待羽球落點</span>
+      <button type="button" class="btn-opt" onclick="undoLastPoint()" title="只在判分錯誤時撤回">↩ 撤銷上一分</button>
     </div>
   </div>
 </div>
@@ -942,11 +942,20 @@ let animFrameId = null;
 let show3D = true;
 let showCourtOverlay = true;
 let showSkeleton = true;
+let showSkeletonA = true;
+let showSkeletonB = true;
+let showBall = true;
+let showShuttleBox = true;
+let showScoreboard = true;
 let showHud = true;
 let currentLayoutMode = 'split-h'; // 'split-h' (左右畫面) | 'split-v' (上下畫面) | 'pip' (子母畫面)
 let pipWidth = 200; // PIP width in px
 let shuttlePos = null, prevShuttlePos = null;
 let shuttleTrail = [];
+let shuttleGround = null;
+let shuttleGroundTrail = [];
+let prevRawCourt = null;
+let slotsSeeded = false;
 let kalX = null, kalY = null;
 let speedKmh = 0, maxSpeedKmh = 0;
 let rallyCount = 0, rallyHitCount = 0;
@@ -959,8 +968,13 @@ const SW = 480, SH = 270;
 let isCandidate = null, candList = null, bfsQueue = null;
 let poseDetector = null, isPoseLoading = false;
 let detectedPoses = [], isEstimatingPose = false, lastPoseTime = 0;
+let cachedSilhouettes = [];
+let lastSilhouetteAt = 0;
 let fallbackPlayers = [];
 let stationaryFrames = 0, isDeadBall = false;
+let shuttleMiss = 0;
+let shuttleAge = 0;
+let shuttleSlow = 0;
 let deadBallLandingSpot = null;
 
 // Persistent 4-Player Tracking Slots (雙打4人 / 單打2人持久追蹤)
@@ -1697,6 +1711,19 @@ function startLive() {
   scoreB = liveModeState.scoreB || 0;
   rallyCount = liveModeState.rallyCount || 0;
   updateScores();
+  slotsSeeded = false;
+  Object.keys(playerSlots).forEach(k => {
+    const s = playerSlots[k];
+    s.kps = null;
+    s.box = null;
+    s.footX = 0;
+    s.footY = 0;
+    s.active = false;
+    s.missing = 99;
+    s.pinned = false;
+    s.provisional = false;
+  });
+  clearShuttleTrack();
 
   const video = document.getElementById('live-video');
   const canvas = document.getElementById('live-canvas');
@@ -1783,23 +1810,22 @@ function startLive() {
       }
 
       if (matchedPose) {
-        updatePlayerSlot(slot, matchedPose);
+        snapPlayerSlot(slot, matchedPose);
       } else {
         const pw = isNear ? W * 0.10 : W * 0.065;
         const ph = isNear ? H_V * 0.28 : H_V * 0.16;
         const customPose = generateKinematicPose(clickX, clickY, pw, ph, slot.team);
-        updatePlayerSlot(slot, customPose);
+        snapPlayerSlot(slot, customPose);
       }
 
       slot.pinned = true;
-      slot.pinX = clickX;
-      slot.pinY = clickY;
-      slot.footX = clickX;
-      slot.footY = clickY;
+      slot.pinX = slot.footX;
+      slot.pinY = slot.footY;
       slot.active = true;
       slot.missing = 0;
+      slot.provisional = false;
 
-      showToast(`✅ 已成功指定【${slot.name}】！骨架已鎖定並持續追蹤`, 2200);
+      showToast(`✅ 已成功指定【${slot.name}】！人物圈已鎖定並持續追蹤`, 2200);
       activePinMode = null;
       updatePinBarUI();
       return;
@@ -1815,6 +1841,11 @@ function startLive() {
       shuttlePos = { x: clickX, y: clickY, t: Date.now(), manual: true, manualTime: Date.now() };
       shuttleTrail = [{ x: clickX, y: clickY, t: Date.now() }];
       prevGray = null;
+      clearShuttleTrack();
+      shuttleMiss = 0;
+      shuttleAge = 1;
+      shuttleSlow = 0;
+      updateShuttleGround(clickX, clickY, false);
       showToast('⚡ 羽球已鎖定！AI 開始精準跟蹤飛行軌跡', 1800);
       activePinMode = null;
       updatePinBarUI();
@@ -1836,14 +1867,15 @@ function startLive() {
     });
 
     if (nearestSlot) {
-      nearestSlot.footX = clickX;
-      nearestSlot.footY = clickY;
       nearestSlot.pinned = true;
       nearestSlot.missing = 0;
+      nearestSlot.provisional = false;
       const pw = nearestSlot.team === 'A' ? W * 0.10 : W * 0.065;
       const ph = nearestSlot.team === 'A' ? H_V * 0.28 : H_V * 0.16;
       const customPose = generateKinematicPose(clickX, clickY, pw, ph, nearestSlot.team);
-      updatePlayerSlot(nearestSlot, customPose);
+      snapPlayerSlot(nearestSlot, customPose);
+      nearestSlot.pinX = nearestSlot.footX;
+      nearestSlot.pinY = nearestSlot.footY;
       showToast(`🎯 已將【${nearestSlot.name}】微調對齊至點擊位置並鎖定`, 1600);
       updatePinBarUI();
       return;
@@ -1858,6 +1890,11 @@ function startLive() {
     shuttlePos = { x: clickX, y: clickY, t: Date.now(), manual: true, manualTime: Date.now() };
     shuttleTrail = [{ x: clickX, y: clickY, t: Date.now() }];
     prevGray = null;
+    clearShuttleTrack();
+    shuttleMiss = 0;
+    shuttleAge = 1;
+    shuttleSlow = 0;
+    updateShuttleGround(clickX, clickY, false);
     showToast('🎯 已鎖定球點！發球或回擊將自動追蹤', 1500);
   };
 
@@ -1897,11 +1934,9 @@ function loop() {
     drawCourtOverlay(trackCtx, canvas);
   }
 
-  // 2. Holographic Multi-Person Player Skeletons (Both Sides of Court)
-  if (showSkeleton) {
-    updatePoseEstimation(trackVideo, canvas);
-    drawPlayerSkeletons(trackCtx, canvas);
-  }
+  // 2. 球員骨架追蹤（關閉疊圖時仍更新，2D 球場才不會停住）
+  updatePoseEstimation(trackVideo, canvas);
+  if (showSkeletonA || showSkeletonB) drawPlayerSkeletons(trackCtx, canvas);
 
   // 3. AI Vision HUD Status Pill (Top Left)
   if (showHud) {
@@ -1916,7 +1951,7 @@ function loop() {
     const isRecentManual = Boolean(shuttlePos && shuttlePos.manual && (Date.now() - (shuttlePos.manualTime || 0) < 1500));
 
     if (!isRecentManual) {
-      if (moveDist < 3.8) {
+      if (moveDist < 1.6) {
         stationaryFrames++;
       } else {
         stationaryFrames = Math.max(0, stationaryFrames - 2);
@@ -1925,45 +1960,75 @@ function loop() {
       stationaryFrames = 0;
     }
 
-    if (stationaryFrames >= 6) {
-      // 停球確認：球已落地或在網上停下，立刻終止追蹤！
-      isDeadBall = true;
-      shuttlePos = null;
-      prevShuttlePos = null;
-      kalX = null;
-      kalY = null;
-      shuttleTrail = [];
-      speedKmh = 0;
-      prevGray = null;
-      const spdBadge = document.getElementById('speed-badge');
-      if (spdBadge) spdBadge.classList.remove('visible');
+    if (stationaryFrames >= 22) {
+      releaseShuttleHold();
     } else {
       isDeadBall = false;
-      if (!shuttlePos || (Date.now() - shuttlePos.t > 700) || !kalX || !kalY) {
-        kalX = mkKalman(4, 1.5, 2, det.x);
-        kalY = mkKalman(4, 1.5, 2, det.y);
-      } else if (prevShuttlePos) {
-        // Direction reversal check (racket hit):
-        // If detected ball moved away from prediction but is near previous position,
-        // re-align velocity vector immediately to eliminate lag on return shots!
-        const predX = kalX.getPred(), predY = kalY.getPred();
-        const distPred = Math.hypot(det.x - predX, det.y - predY);
-        const distPrev = Math.hypot(det.x - prevShuttlePos.x, det.y - prevShuttlePos.y);
-        if (distPred > 25 && distPrev < distPred) {
-          kalX.setVelocity(det.x - prevShuttlePos.x);
-          kalY.setVelocity(det.y - prevShuttlePos.y);
-        }
+      let step = null;
+      if (shuttlePos && kalX && kalY) {
+        step = shuttleInertial(
+          shuttlePos.x, shuttlePos.y,
+          kalX.getPred() - kalX.get(), kalY.getPred() - kalY.get(),
+          det.x, det.y, shuttleAge
+        );
+      } else {
+        step = { x: det.x, y: det.y, vx: 0, vy: 0 };
       }
-
-      const kx = kalX.update(det.x), ky = kalY.update(det.y);
+      if (!step) {
+        shuttleMiss++;
+        if (coastShuttleFrame()) {
+          drawTrail(trackCtx);
+          drawBall(trackCtx, shuttlePos.x, shuttlePos.y, 10, true);
+          drawShuttleBox(trackCtx, shuttlePos.x, shuttlePos.y, 10);
+        } else if (shuttlePos && shuttleMiss > 0) {
+          const vel = (kalX && kalY) ? Math.hypot(kalX.getPred() - kalX.get(), kalY.getPred() - kalY.get()) : 0;
+          if (vel < 2) settleBadmintonPoint();
+          isDeadBall = vel < 2;
+          shuttlePos = null;
+          prevShuttlePos = null;
+          kalX = null;
+          kalY = null;
+          shuttleAge = 0;
+          shuttleSlow = 0;
+          speedKmh = 0;
+        }
+      } else {
+      const nearHand = shuttleNearPlayer(det.x, det.y);
+      const fromHand = shuttlePos ? Math.hypot(det.x - shuttlePos.x, det.y - shuttlePos.y) : 99;
+      const stepSp = Math.hypot(step.vx, step.vy);
+      if (nearHand && fromHand < 18) {
+        shuttleSlow++;
+        step.x = det.x;
+        step.y = det.y;
+        step.vx = 0;
+        step.vy = 0;
+      } else if (stepSp > 10) {
+        shuttleSlow = 0;
+      }
+      if (!shuttlePos || !kalX || !kalY) {
+        kalX = mkKalman(4, 1.5, 2, step.x);
+        kalY = mkKalman(4, 1.5, 2, step.y);
+      }
+      kalX.reset(step.x);
+      kalY.reset(step.y);
+      kalX.setVelocity(step.vx);
+      kalY.setVelocity(step.vy);
+      shuttleAge = Math.min(60, (shuttleAge || 0) + 1);
+      const kx = step.x, ky = step.y;
+      shuttleMiss = 0;
       prevShuttlePos = shuttlePos;
       shuttlePos = { x: kx, y: ky, t: Date.now() };
       if (prevShuttlePos && prevShuttlePos.manual && (Date.now() - (prevShuttlePos.manualTime || 0) < 1500)) {
         shuttlePos.manual = true;
         shuttlePos.manualTime = prevShuttlePos.manualTime;
       }
+      if (shuttleTrail.length) {
+        const last = shuttleTrail[shuttleTrail.length - 1];
+        if (Date.now() - last.t > 520 && Math.hypot(kx - last.x, ky - last.y) > 90) shuttleTrail = [];
+      }
       shuttleTrail.push({ x: kx, y: ky, t: Date.now() });
       if (shuttleTrail.length > 25) shuttleTrail.shift();
+      updateShuttleGround(kx, ky, false);
 
       if (prevShuttlePos && H) {
         const dt = (shuttlePos.t - prevShuttlePos.t) / 1000;
@@ -1980,52 +2045,378 @@ function loop() {
             speedHistory.push(spd);
             if (speedHistory.length > 60) speedHistory.shift();
             showSpeed(spd);
-            detectRally(ky, prevShuttlePos.y, spd);
+            if (spd >= 30) rallyLive = true;
           }
         }
       }
+      noteShuttleHit(kx, ky);
       drawTrail(trackCtx);
       drawBall(trackCtx, kx, ky, det.r || 10, false);
+      drawShuttleBox(trackCtx, kx, ky, det.r || 10);
+      drawHitMark(trackCtx);
+      if (shuttleSlow >= (shuttleNearPlayer(kx, ky) ? 6 : 12)) releaseShuttleHold();
+      }
     }
   } else {
-    // Fade trail gracefully over 600ms
     const age = shuttleTrail.length ? Date.now() - shuttleTrail[shuttleTrail.length - 1].t : 9999;
-    if (age < 600 && !isDeadBall) {
-      drawTrail(trackCtx);
-    } else {
-      shuttleTrail = [];
-    }
-    if (kalX && kalY && !isDeadBall) {
-      const vel = Math.hypot(kalX.getPred() - kalX.get(), kalY.getPred() - kalY.get());
-      if (vel < 1.6 && (!shuttlePos || !shuttlePos.manual)) {
-        // 球速趨近於零且視野中無動態 -> 球已落地停球，終止追蹤
-        isDeadBall = true;
-        shuttlePos = null;
-        kalX = null;
-        kalY = null;
-        shuttleTrail = [];
-        speedKmh = 0;
-      } else {
-        kalX.predict();
-        kalY.predict();
-        const maxCoastMs = (shuttlePos && shuttlePos.manual) ? 1200 : 700;
-        if (shuttlePos && (Date.now() - shuttlePos.t < maxCoastMs)) {
-          shuttlePos.x = kalX.get();
-          shuttlePos.y = kalY.get();
-          drawBall(trackCtx, shuttlePos.x, shuttlePos.y, 10, true);
-        } else {
-          shuttlePos = null;
-        }
-      }
+    if (age < 700 && !isDeadBall) drawTrail(trackCtx);
+    shuttleMiss++;
+    if (coastShuttleFrame()) {
+      drawBall(trackCtx, shuttlePos.x, shuttlePos.y, 10, true);
+      drawShuttleBox(trackCtx, shuttlePos.x, shuttlePos.y, 10);
+    } else if (shuttleMiss > 0 && shuttlePos && !isDeadBall) {
+      const vel = (kalX && kalY) ? Math.hypot(kalX.getPred() - kalX.get(), kalY.getPred() - kalY.get()) : 0;
+      if (vel < 2) settleBadmintonPoint();
+      isDeadBall = vel < 2;
+      shuttlePos = null;
+      prevShuttlePos = null;
+      kalX = null;
+      kalY = null;
+      shuttleAge = 0;
+      shuttleSlow = 0;
+      speedKmh = 0;
     }
   }
 
-  // 5. Top-Down 3D Minimap
+  // 5. 球員跑動與 2D 球場
+  updatePlayerMotion();
   if (show3D) drawMiniMap();
+}
+
+// ═══ 影像 ↔ 2D 球場（單應性地面循跡） ═══
+function courtZone(x, y, team) {
+  const fromNet = team === 'A' ? (y - COURT_H / 2) : (COURT_H / 2 - y);
+  const depth = fromNet < 198 ? '前場' : (fromNet < 450 ? '中場' : '後場');
+  const side = x < COURT_W / 2 ? '左' : '右';
+  return depth + side;
+}
+
+function teamRunMeters(team) {
+  return Object.values(playerSlots)
+    .filter(s => s.team === team && s.active && !s.provisional)
+    .reduce((sum, s) => sum + (s.rallyM || 0), 0);
+}
+
+function updatePlayerMotion() {
+  const now = Date.now();
+  if (rallyLive && !playerRallyOpen) {
+    Object.values(playerSlots).forEach(s => { s.rallyM = 0; s.courtTrail = []; });
+    playerRallyOpen = true;
+  }
+  if (!rallyLive) playerRallyOpen = false;
+
+  Object.values(playerSlots).forEach(slot => {
+    if (!slot.active || slot.provisional || !slot.footX || !slot.footY) return;
+    const court = imageToCourt(slot.footX, slot.footY);
+    if (!court) return;
+    if (court.x < -80 || court.x > COURT_W + 80 || court.y < -80 || court.y > COURT_H + 80) return;
+    const dt = slot.lastCourtT ? (now - slot.lastCourtT) / 1000 : 0;
+    if (slot.lastCourt && dt > 0.03 && dt < 0.5) {
+      const distM = Math.hypot(court.x - slot.lastCourt.x, court.y - slot.lastCourt.y) / 100;
+      const maxJump = 8 * dt + 0.05;
+      if (distM <= maxJump && distM >= 0.03) {
+        slot.runM = (slot.runM || 0) + distM;
+        slot.rallyM = (slot.rallyM || 0) + distM;
+        const spd = distM / dt * 3.6;
+        slot.speedKmh = Math.round(Math.min(36, spd));
+        if (slot.speedKmh > (slot.maxSpeedKmh || 0)) slot.maxSpeedKmh = slot.speedKmh;
+      } else if (distM < 0.03) {
+        slot.speedKmh = 0;
+      }
+    }
+    slot.lastCourt = { x: court.x, y: court.y };
+    slot.lastCourtT = now;
+    slot.zone = courtZone(court.x, court.y, slot.team);
+    if (!slot.courtTrail) slot.courtTrail = [];
+    const last = slot.courtTrail[slot.courtTrail.length - 1];
+    if (!last || Math.hypot(court.x - last.x, court.y - last.y) > 12) {
+      slot.courtTrail.push({ x: court.x, y: court.y });
+      if (slot.courtTrail.length > 36) slot.courtTrail.shift();
+    }
+  });
+}
+
+function classifyShuttleShot() {
+  const spd = speedKmh || 0;
+  const g = shuttleGround;
+  if (!g) return spd >= 200 ? '殺球' : '擊球';
+  const netDist = Math.abs(g.y - COURT_H / 2);
+  if (spd >= 200) return '殺球';
+  if (netDist < 210 && spd < 110) return '網前';
+  if (spd >= 120 && netDist < 320) return '平球';
+  if (spd < 150 && netDist > 220 && netDist < 520) return '吊球';
+  if (netDist > 380) return '高遠球';
+  return spd >= 100 ? '高遠球' : '過渡';
+}
+
+function clearShuttleTrack() {
+  shuttleGround = null;
+  shuttleGroundTrail = [];
+  prevRawCourt = null;
+}
+
+function shuttleNearPlayer(x, y) {
+  const slots = Object.values(playerSlots);
+  for (let i = 0; i < slots.length; i++) {
+    const s = slots[i];
+    if (!s.active || s.provisional || !s.footX || !s.footY) continue;
+    const nose = s.kps && s.kps[0];
+    const body = nose ? Math.abs(s.footY - nose.y) : (s.team === 'A' ? 180 : 90);
+    if (Math.hypot(s.footX - x, s.footY - y) < Math.max(72, body * 0.95)) return true;
+  }
+  return false;
+}
+
+function releaseShuttleHold() {
+  settleBadmintonPoint();
+  isDeadBall = true;
+  shuttlePos = null;
+  prevShuttlePos = null;
+  kalX = null;
+  kalY = null;
+  shuttleTrail = [];
+  clearShuttleTrack();
+  shuttleMiss = 0;
+  shuttleAge = 0;
+  shuttleSlow = 0;
+  speedKmh = 0;
+  prevGray = null;
+  const spdBadge = document.getElementById('speed-badge');
+  if (spdBadge) spdBadge.classList.remove('visible');
+}
+
+function coastShuttleFrame() {
+  if (!kalX || !kalY || !shuttlePos || isDeadBall) return false;
+  const sp = Math.hypot(kalX.getPred() - kalX.get(), kalY.getPred() - kalY.get());
+  const limit = shuttleSlow > 0 ? 3 : (sp > 12 ? 6 : 10);
+  if (shuttleMiss > limit) return false;
+  if (shuttleSlow > 0 || sp < 4) {
+    kalX.setVelocity(0);
+    kalY.setVelocity(0);
+  } else {
+    kalX.predict();
+    kalY.predict();
+  }
+  shuttlePos.x = kalX.get();
+  shuttlePos.y = kalY.get();
+  shuttlePos.t = Date.now();
+  return true;
+}
+
+function expandPolygon(pts, expand) {
+  let cx = 0, cy = 0;
+  pts.forEach(p => { cx += p.x; cy += p.y; });
+  cx /= pts.length;
+  cy /= pts.length;
+  return pts.map(p => ({
+    x: cx + (p.x - cx) * (1 + expand),
+    y: cy + (p.y - cy) * (1 + expand)
+  }));
+}
+
+function pointInPoly(x, y, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i].x, yi = poly[i].y;
+    const xj = poly[j].x, yj = poly[j].y;
+    const denom = (yj - yi) || 1e-6;
+    const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / denom + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function isInsideCourtImage(x, y, expand = 0.08) {
+  const W = (trackVideo && trackVideo.videoWidth) || 1280;
+  const Himg = (trackVideo && trackVideo.videoHeight) || 720;
+  if (!calibPoints || calibPoints.length < 4) {
+    return x > W * 0.12 && x < W * 0.94 && y > Himg * 0.20 && y < Himg * 0.96;
+  }
+  return pointInPoly(x, y, expandPolygon(calibPoints, expand));
+}
+
+function courtImageBounds(destW, destH) {
+  if (!calibPoints || calibPoints.length < 4) {
+    return {
+      minX: destW * 0.10, maxX: destW * 0.96,
+      minY: destH * 0.16, maxY: destH * 0.96,
+      netY: destH * 0.50,
+      floorMinX: destW * 0.18, floorMaxX: destW * 0.90,
+      floorMinY: destH * 0.28, floorMaxY: destH * 0.94
+    };
+  }
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  calibPoints.forEach(p => {
+    if (p.x < minX) minX = p.x;
+    if (p.x > maxX) maxX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.y > maxY) maxY = p.y;
+  });
+  const cw = Math.max(40, maxX - minX);
+  const ch = Math.max(40, maxY - minY);
+  const inv = computeH(
+    [[0, 0], [COURT_W, 0], [COURT_W, COURT_H], [0, COURT_H]],
+    calibPoints.map(p => [p.x, p.y])
+  );
+  const [, ly] = applyH(inv, 0, COURT_H / 2);
+  const [, ry] = applyH(inv, COURT_W, COURT_H / 2);
+  return {
+    minX: Math.max(0, minX - cw * 0.05),
+    maxX: Math.min(destW - 1, maxX + cw * 0.05),
+    minY: Math.max(0, minY - ch * 0.48),
+    maxY: Math.min(destH - 1, maxY + ch * 0.05),
+    netY: Math.max(0, Math.min(destH - 1, (ly + ry) / 2)),
+    floorMinX: minX, floorMaxX: maxX, floorMinY: minY, floorMaxY: maxY
+  };
+}
+
+function imageToCourt(ix, iy) {
+  if (!H || !isFinite(ix) || !isFinite(iy)) return null;
+  const [x, y] = applyH(H, ix, iy);
+  if (!isFinite(x) || !isFinite(y)) return null;
+  return { x, y };
+}
+
+function teamFromImagePoint(x, y) {
+  const court = imageToCourt(x, y);
+  if (!court) return null;
+  if (court.x < -140 || court.x > COURT_W + 140 || court.y < -100 || court.y > COURT_H + 100) return null;
+  return court.y < COURT_H / 2 ? 'B' : 'A';
+}
+
+function courtHalfPolys() {
+  if (!calibPoints || calibPoints.length < 4) return null;
+  const inv = computeH(
+    [[0, 0], [COURT_W, 0], [COURT_W, COURT_H], [0, COURT_H]],
+    calibPoints.map(p => [p.x, p.y])
+  );
+  const [nlx, nly] = applyH(inv, 0, COURT_H / 2);
+  const [nrx, nry] = applyH(inv, COURT_W, COURT_H / 2);
+  const [p0, p1, p2, p3] = calibPoints;
+  const netL = { x: nlx, y: nly };
+  const netR = { x: nrx, y: nry };
+  return {
+    far: [p0, p1, netR, netL],
+    near: [netL, netR, p2, p3]
+  };
+}
+
+function imageTeam(x, y) {
+  const halves = courtHalfPolys();
+  if (!halves) return null;
+  const netL = halves.near[0];
+  const netR = halves.near[1];
+  const farX = (halves.far[0].x + halves.far[1].x) / 2;
+  const farY = (halves.far[0].y + halves.far[1].y) / 2;
+  const vx = netR.x - netL.x;
+  const vy = netR.y - netL.y;
+  const cross = (x - netL.x) * vy - (y - netL.y) * vx;
+  const farCross = (farX - netL.x) * vy - (farY - netL.y) * vx;
+  if (Math.abs(farCross) < 1e-3) return null;
+  return (cross * farCross > 0) ? 'B' : 'A';
+}
+
+function pointInPlayer(ix, iy) {
+  const slots = Object.values(playerSlots);
+  for (let i = 0; i < slots.length; i++) {
+    const s = slots[i];
+    if (!s.active || s.provisional || !s.footX || !s.footY) continue;
+    const boxW = s.team === 'A' ? 54 : 32;
+    const boxH = s.team === 'A' ? 150 : 80;
+    const top = s.footY - boxH * 0.62;
+    const bot = s.footY - boxH * 0.22;
+    if (ix > s.footX - boxW && ix < s.footX + boxW && iy > top && iy < bot) return true;
+  }
+  return false;
+}
+
+function updateShuttleGround(ix, iy, coasting) {
+  const now = Date.now();
+  if (coasting) {
+    if (!shuttleGround) return;
+    const dt = Math.max(0.016, Math.min(0.08, (now - shuttleGround.t) / 1000));
+    shuttleGround.x += shuttleGround.vx * dt;
+    shuttleGround.y += shuttleGround.vy * dt;
+    shuttleGround.t = now;
+    shuttleGroundTrail.push({ x: shuttleGround.x, y: shuttleGround.y, t: now });
+    if (shuttleGroundTrail.length > 30) shuttleGroundTrail.shift();
+    return;
+  }
+
+  const raw = imageToCourt(ix, iy);
+  if (!raw) return;
+  if (raw.x < -80 || raw.x > COURT_W + 80 || raw.y < -80 || raw.y > COURT_H + 80) return;
+
+  let best = null, bestD = 1e9, bestScale = 160;
+  Object.values(playerSlots).forEach(s => {
+    if (!s.active || s.provisional || !s.footX) return;
+    const d = Math.hypot(s.footX - ix, s.footY - iy);
+    if (d < bestD) {
+      bestD = d;
+      best = s;
+      const nose = s.kps && s.kps[0];
+      bestScale = nose ? Math.max(48, Math.abs(s.footY - nose.y)) : (s.team === 'A' ? 180 : 90);
+    }
+  });
+
+  const abovePx = best ? (best.footY - iy) : 0;
+  const heightRatio = best ? Math.max(0, abovePx / bestScale) : 0.35;
+  const isHit = !!(best && bestD < bestScale * 1.3 && heightRatio < 1.7);
+
+  let mx = raw.x, my = raw.y;
+  if (isHit) {
+    const foot = imageToCourt(best.footX, best.footY);
+    if (foot) {
+      mx = foot.x * 0.72 + raw.x * 0.28;
+      my = foot.y * 0.72 + raw.y * 0.28;
+    }
+  }
+
+  if (!shuttleGround) {
+    shuttleGround = { x: mx, y: my, vx: 0, vy: 0, t: now, h: heightRatio };
+    prevRawCourt = { x: raw.x, y: raw.y };
+    shuttleGroundTrail = [{ x: mx, y: my, t: now }];
+    return;
+  }
+
+  const dt = Math.max(0.016, Math.min(0.12, (now - shuttleGround.t) / 1000));
+  const px = shuttleGround.x + shuttleGround.vx * dt;
+  const py = shuttleGround.y + shuttleGround.vy * dt;
+  let tx = mx, ty = my;
+  if (!isHit && heightRatio > 0.45 && prevRawCourt) {
+    const dx = raw.x - prevRawCourt.x;
+    const dy = raw.y - prevRawCourt.y;
+    const depthScale = 1 / (1 + heightRatio * 1.35);
+    tx = shuttleGround.x + dx * 0.9;
+    ty = shuttleGround.y + dy * depthScale;
+  }
+
+  const gain = (!isHit && heightRatio > 0.45) ? 0.48 : 0.64;
+  const nx = px + (tx - px) * gain;
+  const ny = py + (ty - py) * gain;
+  let vx = (nx - shuttleGround.x) / dt;
+  let vy = (ny - shuttleGround.y) / dt;
+  const sp = Math.hypot(vx, vy);
+  const maxS = 14000;
+  if (sp > maxS) {
+    vx *= maxS / sp;
+    vy *= maxS / sp;
+  }
+  shuttleGround.x = nx;
+  shuttleGround.y = ny;
+  shuttleGround.vx = vx;
+  shuttleGround.vy = vy;
+  shuttleGround.t = now;
+  shuttleGround.h = heightRatio;
+  prevRawCourt = { x: raw.x, y: raw.y };
+  shuttleGroundTrail.push({ x: nx, y: ny, t: now });
+  if (shuttleGroundTrail.length > 30) shuttleGroundTrail.shift();
 }
 
 // ═══ ROBUST TEMPORAL BALL DETECTION ═══
 let prevGray = null;
+let workGray = null;
+let diffBuf = null;
 
 function detectBall(video, dest) {
   if (!video || !video.videoWidth || video.paused || video.ended) return null;
@@ -2040,13 +2431,21 @@ function detectBall(video, dest) {
     isCandidate = new Uint8Array(SW * SH);
     candList = new Int32Array(SW * SH);
     bfsQueue = new Int32Array(SW * SH);
+    workGray = new Uint8Array(SW * SH);
+    diffBuf = new Uint8Array(SW * SH);
+    prevGray = new Uint8Array(SW * SH);
+  }
+  if (!workGray || workGray.length !== SW * SH) {
+    workGray = new Uint8Array(SW * SH);
+    diffBuf = new Uint8Array(SW * SH);
+    prevGray = new Uint8Array(SW * SH);
   }
 
   offCtx.drawImage(video, 0, 0, SW, SH);
   const imgData = offCtx.getImageData(0, 0, SW, SH);
   const data = imgData.data;
-  const currGray = new Uint8Array(SW * SH);
-  const diff = new Uint8Array(SW * SH);
+  const currGray = workGray;
+  const diff = diffBuf;
 
   for (let i = 0; i < SW * SH; i++) {
     const idx = i * 4;
@@ -2062,16 +2461,16 @@ function detectBall(video, dest) {
   const scaleX = SW / dest.width;
   const scaleY = SH / dest.height;
 
-  // 水平有效區域：覆蓋整座球場雙打邊線 (X: 10% ~ 96%)，排除左側走道牆面
-  let minRoiX = Math.floor(SW * 0.10);
-  let maxRoiX = Math.floor(SW * 0.96);
-
-  // 垂直有效空域：上限截斷在 16% (排除天花板排燈)，下限至 96% (包含發球持球高度、發球落地與殺球)
-  let minRoiY = Math.floor(SH * 0.16);
-  let maxRoiY = Math.floor(SH * 0.96);
+  // 追球空域跟校正後的球場走：左右貼雙打邊線，上方留高遠球，不再寫死左側走道百分比
+  const roi = courtImageBounds(dest.width, dest.height);
+  let minRoiX = Math.max(0, Math.floor(roi.minX * scaleX));
+  let maxRoiX = Math.min(SW - 1, Math.ceil(roi.maxX * scaleX));
+  let minRoiY = Math.max(0, Math.floor(roi.minY * scaleY));
+  let maxRoiY = Math.min(SH - 1, Math.ceil(roi.maxY * scaleY));
+  if (maxRoiX <= minRoiX + 2 || maxRoiY <= minRoiY + 2) return null;
 
   // Active track reference (Kalman prediction & current pos in downscaled space)
-  const hasActiveTrack = Boolean(shuttlePos && !isDeadBall && (Date.now() - shuttlePos.t < 800));
+  const hasActiveTrack = Boolean(shuttlePos && !isDeadBall && shuttleMiss < 18);
   let currTrackX = -1, currTrackY = -1;
   let predTrackX = -1, predTrackY = -1;
 
@@ -2085,6 +2484,10 @@ function detectBall(video, dest) {
       predTrackX = currTrackX;
       predTrackY = currTrackY;
     }
+  }
+  let trackSpd = 0;
+  if (hasActiveTrack && predTrackX >= 0) {
+    trackSpd = Math.hypot(predTrackX - currTrackX, predTrackY - currTrackY);
   }
 
   // Is this right after a manual click?
@@ -2113,17 +2516,18 @@ function detectBall(video, dest) {
         if (d < 2 || g < 145) continue;
       }
 
-      const isWhiteMotion = (g >= 140 && d >= 2) || (g >= 165 && d >= 1);
-      const isYellowMotion = (r >= 135 && gr >= 135 && b < 130 && d >= 1);
+      const isWhiteMotion = (g >= 142 && d >= 6) || (hasActiveTrack && g >= 150 && d >= 2);
+      const isYellowMotion = (r >= 135 && gr >= 125 && b < 170 && d >= 4);
 
-      // Near active track (within 45px of current or predicted track)
-      let isNearTrack = false;
+      let inFlightGate = false;
+      let inHitGate = false;
       if (hasActiveTrack) {
-        const dx1 = x - predTrackX, dy1 = y - predTrackY;
-        const dx2 = x - currTrackX, dy2 = y - currTrackY;
-        if ((dx1 * dx1 + dy1 * dy1 < 45 * 45) || (dx2 * dx2 + dy2 * dy2 < 45 * 45)) {
-          if (g >= 130 && d >= 1) isNearTrack = true;
-        }
+        const reach = shuttleAge < 5 ? 42 : Math.min(70, Math.max(24, trackSpd * 1.85 + 18));
+        const dxp = x - predTrackX, dyp = y - predTrackY;
+        if (dxp * dxp + dyp * dyp <= reach * reach && g >= 118) inFlightGate = true;
+        const hitR = shuttleAge < 5 ? 20 : 14;
+        const dxc = x - currTrackX, dyc = y - currTrackY;
+        if (dxc * dxc + dyc * dyc <= hitR * hitR && g >= 128) inHitGate = true;
       }
 
       // Manual click seed region (within 30px of click):
@@ -2136,7 +2540,13 @@ function detectBall(video, dest) {
         }
       }
 
-      if (isWhiteMotion || isYellowMotion || isNearTrack || isNearManualSeed) {
+      if (isWhiteMotion || isYellowMotion || inFlightGate || inHitGate || isNearManualSeed) {
+        const ix = x * (dest.width / SW);
+        const iy = y * (dest.height / SH);
+        const gluedToPlayer = pointInPlayer(ix, iy) && !isNearManualSeed;
+        const nearNow = hasActiveTrack && ((x - currTrackX) ** 2 + (y - currTrackY) ** 2 < 20 * 20);
+        const gluedAndNotTracked = gluedToPlayer && !nearNow && !(hasActiveTrack && ((x - predTrackX) ** 2 + (y - predTrackY) ** 2 < 18 * 18));
+        if (gluedAndNotTracked) continue;
         isCandidate[i] = 1;
         candList[candCount++] = i;
       }
@@ -2189,7 +2599,7 @@ function detectBall(video, dest) {
       // Anti-Player & Anti-Ceiling-Lamp Rejection:
       // A human body or large ceiling lamp has > 65 pixels or width/height > 18 pixels.
       // A genuine badminton shuttlecock is compact (bw <= 14, bh <= 14, count <= 45).
-      if (count > 65 || (maxX - minX) > 18 || (maxY - minY) > 18) {
+      if (count > 100 || (maxX - minX) > 42 || (maxY - minY) > 42) {
         isTooBig = true;
       }
 
@@ -2214,13 +2624,14 @@ function detectBall(video, dest) {
       }
     }
 
-    if (isTooBig) continue; // Reject player/racket/large objects
-    if (count < 2) continue; // Reject single pixel flicker
+    if (isTooBig) continue;
+    if (count < 1) continue;
 
     // MUST possess genuine shuttlecock peak brightness:
     // Pure white shuttle (maxG >= 165) or neon yellow shuttle
-    const isBrightWhite = (maxG >= 165);
-    const isNeonYellow = (maxR >= 155 && maxGr >= 155 && maxB < 135);
+    const avgD = sumD / count;
+    const isBrightWhite = (maxG >= 148) || (hasActiveTrack && maxG >= 118) || (maxG >= 128 && avgD >= 8);
+    const isNeonYellow = (maxR >= 132 && maxGr >= 120 && maxB < 175);
     if (!isBrightWhite && !isNeonYellow) {
       continue; // REJECT human skin, dark clothing, shadows, and colored racket frames!
     }
@@ -2231,8 +2642,8 @@ function detectBall(video, dest) {
     // Strict shuttlecock geometry check:
     // A. Compact ball: bw <= 16, bh <= 16, count <= 55
     // B. Fast smash streak: thin elongated blur min(bw, bh) <= 8, max(bw, bh) <= 36, count <= 75
-    const isNormal = (bw <= 16 && bh <= 16 && count <= 55);
-    const isStreak = (Math.min(bw, bh) <= 8 && Math.max(bw, bh) <= 36 && count <= 75);
+    const isNormal = (bw <= 18 && bh <= 18 && count <= 60);
+    const isStreak = (Math.min(bw, bh) <= 10 && Math.max(bw, bh) <= 40 && count <= 90);
 
     if (isNormal || isStreak) {
       blobs.push({
@@ -2251,54 +2662,67 @@ function detectBall(video, dest) {
 
   if (blobs.length === 0) return null;
 
-  // Blob Selection with True Ball Scoring & Gating
   let best = null;
-  let bestScore = -Infinity;
-
-  for (const b of blobs) {
-    // Brightness is the #1 discriminator for shuttlecocks (eliminates skin/shadows)
-    let score = (b.avgG - 135) * 3.0 + (b.maxG - 160) * 2.0 + b.avgD * 2.5;
-    const density = b.count / Math.max(1, b.w * b.h);
-    score += density * 30;
-
-    if (hasActiveTrack) {
-      // Distance to predicted flight position vs current position
+  if (hasActiveTrack) {
+    const reach = shuttleAge < 5 ? 42 : Math.min(70, Math.max(24, trackSpd * 1.85 + 18));
+    const vx = predTrackX - currTrackX;
+    const vy = predTrackY - currTrackY;
+    let forward = null;
+    let forwardD = 1e9;
+    let rebound = null;
+    let reboundD = 1e9;
+    let held = null;
+    let heldD = 1e9;
+    for (const b of blobs) {
       const distPred = Math.hypot(b.cx - predTrackX, b.cy - predTrackY);
       const distCurr = Math.hypot(b.cx - currTrackX, b.cy - currTrackY);
-
-      // Gate: Ball cannot jump > 55px between frames
-      if (distPred > 55 && distCurr > 55) {
-        continue;
+      const staticLine = trackSpd > 4 && b.avgD < 0.6 && distPred > 6;
+      if (!staticLine && distPred <= reach && b.maxG >= 120 && distPred < forwardD) {
+        forwardD = distPred;
+        forward = b;
       }
-
-      // Bonus for continuing on trajectory (flight momentum)
-      if (distPred <= 50) {
-        score += (50 - distPred) * 4.0;
+      if (distCurr <= 18 && b.maxG >= 124 && distCurr < heldD) {
+        heldD = distCurr;
+        held = b;
       }
-
-      // Bonus for hit reversal (moving away from impact point with clear motion)
-      if (distCurr <= 45 && b.avgD >= 2.0) {
-        score += (45 - distCurr) * 2.5;
-      }
-
-      // If user recently clicked, strong priority right under the click
-      if (isRecentManual && distCurr < 28) {
-        score += 350;
-      }
-    } else {
-      // ACQUISITION / SEARCH MODE: Require genuine brightness and motion
-      if (b.avgG < 155 || b.maxG < 170 || b.avgD < 1.6 || score < 40) {
-        continue;
+      if (distCurr <= (shuttleAge < 5 ? 22 : 16) && b.maxG >= 132 && b.avgD >= 0.8 && distCurr < reboundD) {
+        const ox = b.cx - currTrackX;
+        const oy = b.cy - currTrackY;
+        const reversing = trackSpd > 3 && (ox * vx + oy * vy) < 0;
+        if (shuttleAge < 5 || reversing) {
+          reboundD = distCurr;
+          rebound = b;
+        }
       }
     }
-
-    if (score > bestScore) {
-      bestScore = score;
-      best = b;
+    if (forward && forward.avgD >= 0.7) best = forward;
+    else if (held && trackSpd > 5 && held.avgD < 3) best = held;
+    else best = forward || rebound || held;
+  } else {
+    let bestScore = -Infinity;
+    for (const b of blobs) {
+      const ix = b.cx * (dest.width / SW);
+      const iy = b.cy * (dest.height / SH);
+      if (pointInPlayer(ix, iy)) continue;
+      let score = b.avgD * 8 + (b.maxG - 130) * 0.8 + Math.max(0, 14 - b.count) * 5;
+      Object.values(playerSlots).forEach(s => {
+        if (!s.active || !s.footX) return;
+        const d = Math.hypot(s.footX - ix, s.footY - iy);
+        if (d < 48) score -= 120;
+        else if (d < 240 && iy < s.footY - 24) score += 36;
+      });
+      if (b.maxG < 132 || b.avgD < 4 || b.count > 22 || score < 12) continue;
+      if (score > bestScore) {
+        bestScore = score;
+        best = b;
+      }
     }
   }
 
   if (!best) return null;
+
+  const outX = best.cx * (dest.width / SW);
+  const outY = best.cy * (dest.height / SH);
 
   if (isDeadBall) {
     // 偵測到新擊球/發球，解除死球狀態
@@ -2360,69 +2784,113 @@ async function initPoseDetector() {
 
 // 快速視覺人體輪廓分析 (嚴格排除左側走道黑地墊，精確鎖定球場內 4 位球員)
 function detectVisionSilhouettes(video, canvas) {
-  if (!video || !offCanvas || !offCtx) return [];
+  if (!video || !video.videoWidth || !canvas) return [];
+  if (!offCanvas) {
+    offCanvas = document.createElement('canvas');
+    offCanvas.width = SW;
+    offCanvas.height = SH;
+    offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+  }
+  offCtx.drawImage(video, 0, 0, SW, SH);
   const W = canvas.width, H = canvas.height;
   const imgData = offCtx.getImageData(0, 0, SW, SH);
   const data = imgData.data;
+  const halves = courtHalfPolys();
+  if (!halves) return [];
+  const sx = SW / W, sy = SH / H;
+  const toSmall = (poly) => poly.map(p => ({ x: p.x * sx, y: p.y * sy }));
+  const nearPoly = toSmall(halves.near);
+  const farBase = toSmall(halves.far);
+  const p0 = farBase[0], p1 = farBase[1], netR = farBase[2], netL = farBase[3];
+  const farPoly = [
+    { x: p0.x + (p0.x - netL.x) * 0.75, y: p0.y + (p0.y - netL.y) * 0.75 },
+    { x: p1.x + (p1.x - netR.x) * 0.75, y: p1.y + (p1.y - netR.y) * 0.75 },
+    netR,
+    netL
+  ];
 
-  // 嚴格排除左側黑色走道地墊 (X < 26% 均為走道/牆壁，不可作為球員)
-  const courtStartX = Math.floor(SW * 0.26);
-  const courtEndX = Math.floor(SW * 0.90);
-
-  // 1. 近端球員區域 (SH * 0.38 ~ SH * 0.95, X: 26% ~ 90%)
-  const nearCols = new Float32Array(SW);
-  let nearMinY = SH, nearMaxY = 0;
-  for (let y = Math.floor(SH * 0.38); y < Math.floor(SH * 0.95); y++) {
-    for (let x = courtStartX; x < courtEndX; x++) {
-      const idx = (y * SW + x) * 4;
-      const r = data[idx], g = data[idx + 1], b = data[idx + 2];
-      const isGreenCourt = (g > r + 16 && g > b + 8);
-      if (!isGreenCourt && (r + g + b > 60)) {
-        nearCols[x]++;
-        if (y < nearMinY) nearMinY = y;
-        if (y > nearMaxY) nearMaxY = y;
+  function scan(poly, maxHeightRatio, minRun) {
+    let minX = SW, maxX = 0, minY = SH, maxY = 0;
+    poly.forEach(p => {
+      minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+      minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+    });
+    const x0 = Math.max(0, Math.floor(minX));
+    const x1 = Math.min(SW - 1, Math.ceil(maxX));
+    const y0 = Math.max(0, Math.floor(minY));
+    const y1 = Math.min(SH - 1, Math.ceil(maxY));
+    const cols = new Float32Array(SW);
+    const colMin = new Int16Array(SW);
+    const colMax = new Int16Array(SW);
+    colMin.fill(SH);
+    let count = 0;
+    for (let x = x0; x < x1; x++) {
+      let run = 0, runTop = 0, bestLen = 0, bestTop = 0, bestBot = 0;
+      for (let y = y0; y < y1; y++) {
+        if (!pointInPoly(x, y, poly)) {
+          run = 0;
+          continue;
+        }
+        const idx = (y * SW + x) * 4;
+        const r = data[idx], g = data[idx + 1], bl = data[idx + 2];
+        const isGreenCourt = (g > r + 12 && g > bl + 4 && g > 40);
+        const isBody = !isGreenCourt && (r + g + bl > 45) && (r + g + bl < 680);
+        if (isBody) {
+          if (run === 0) runTop = y;
+          run++;
+          if (run > bestLen) {
+            bestLen = run;
+            bestTop = runTop;
+            bestBot = y;
+          }
+        } else {
+          run = 0;
+        }
+      }
+      if (bestLen >= minRun) {
+        cols[x] = bestLen;
+        colMin[x] = bestTop;
+        colMax[x] = bestBot;
+        count += bestLen;
       }
     }
+    return { cols, colMin, colMax, count, maxHeightRatio };
   }
 
-  // 2. 遠端球員區域 (SH * 0.28 ~ SH * 0.52, X: 26% ~ 65%)
-  const farCols = new Float32Array(SW);
-  let farMinY = SH, farMaxY = 0;
-  for (let y = Math.floor(SH * 0.28); y < Math.floor(SH * 0.52); y++) {
-    for (let x = courtStartX; x < Math.floor(SW * 0.65); x++) {
-      const idx = (y * SW + x) * 4;
-      const r = data[idx], g = data[idx + 1], b = data[idx + 2];
-      const isGreenCourt = (g > r + 14 && g > b + 6);
-      if (!isGreenCourt && (r + g + b > 60)) {
-        farCols[x]++;
-        if (y < farMinY) farMinY = y;
-        if (y > farMaxY) farMaxY = y;
+  function posesFrom(scanResult, team, minCount, minPeak, minGap, maxSlots) {
+    const out = [];
+    if (!scanResult || scanResult.count < minCount) return out;
+    extractColumnClusters(scanResult.cols, minGap, minPeak).slice(0, maxSlots).forEach(c => {
+      const xLo = Math.max(0, Math.floor(c.center - minGap * 0.45));
+      const xHi = Math.min(SW - 1, Math.ceil(c.center + minGap * 0.45));
+      let top = SH, bot = 0, weight = 0;
+      for (let x = xLo; x <= xHi; x++) {
+        if (scanResult.cols[x] < 3) continue;
+        if (scanResult.colMin[x] < top) top = scanResult.colMin[x];
+        if (scanResult.colMax[x] > bot) bot = scanResult.colMax[x];
+        weight += scanResult.cols[x];
       }
-    }
+      const height = bot - top;
+      let span = 0;
+      for (let x = xLo; x <= xHi; x++) if (scanResult.cols[x] >= 3) span++;
+      if (span < (team === 'B' ? 3 : 5)) return;
+      if (height / Math.max(1, span) > 7) return;
+      if (weight < minCount * 0.2 || height < (team === 'B' ? 5 : 8)) return;
+      if (height > SH * scanResult.maxHeightRatio) return;
+      const cx = c.center * (W / SW);
+      const footY = bot * (H / SH);
+      const pw = Math.max(W * (team === 'A' ? 0.08 : 0.045), c.width * (W / SW));
+      const ph = Math.max(H * (team === 'A' ? 0.16 : 0.08), height * (H / SH));
+      const pose = generateKinematicPose(cx, footY - ph * 0.5, pw, ph, team);
+      const side = imageTeam(pose.footX, pose.footY);
+      if (side && side !== team) return;
+      out.push(pose);
+    });
+    return out;
   }
-  const results = [];
 
-  // 近端提取 1~2 位球員 (以波峰分群)
-  const nearClusters = extractColumnClusters(nearCols, SW * 0.08, 12);
-  nearClusters.slice(0, 2).forEach(c => {
-    const cx = c.center * (W / SW);
-    const cy = ((nearMinY + nearMaxY) / 2) * (H / SH);
-    const pw = Math.max(W * 0.09, c.width * (W / SW) * 1.2);
-    const ph = Math.max(H * 0.26, (nearMaxY - nearMinY) * (H / SH) * 0.7);
-    results.push(generateKinematicPose(cx, cy, pw, ph, 'A'));
-  });
-
-  // 遠端提取 1~2 位球員 (以波峰分群)
-  const farClusters = extractColumnClusters(farCols, SW * 0.06, 8);
-  farClusters.slice(0, 2).forEach(c => {
-    const cx = c.center * (W / SW);
-    const cy = ((farMinY + farMaxY) / 2) * (H / SH);
-    const pw = Math.max(W * 0.06, c.width * (W / SW) * 1.2);
-    const ph = Math.max(H * 0.15, (farMaxY - farMinY) * (H / SH) * 0.75);
-    results.push(generateKinematicPose(cx, cy, pw, ph, 'B'));
-  });
-
-  return results;
+  return posesFrom(scan(nearPoly, 0.42, 8), 'A', 28, 10, SW * 0.08, 2)
+    .concat(posesFrom(scan(farPoly, 0.36, 5), 'B', 6, 3, SW * 0.04, 2));
 }
 
 function extractColumnClusters(cols, minGap, minPeak) {
@@ -2547,37 +3015,38 @@ function updatePoseEstimation(video, canvas) {
   if (!canvas) return;
   const W = canvas.width || 1280, H_V = canvas.height || 720;
 
-  // 立即初始化 4 位球員槽位，保證第 0 影格起 2D 地圖與畫面即刻呈現雙方 4 人
-  if (!playerSlots.A1.active && !playerSlots.A2.active) {
-    const initA1 = generateKinematicPose(W * 0.42, H_V * 0.68, W * 0.11, H_V * 0.28, 'A');
-    const initA2 = generateKinematicPose(W * 0.66, H_V * 0.65, W * 0.11, H_V * 0.28, 'A');
-    const initB1 = generateKinematicPose(W * 0.36, H_V * 0.44, W * 0.065, H_V * 0.16, 'B');
-    const initB2 = generateKinematicPose(W * 0.50, H_V * 0.44, W * 0.065, H_V * 0.16, 'B');
-    updatePlayerSlot(playerSlots.A1, initA1);
-    updatePlayerSlot(playerSlots.A2, initA2);
-    updatePlayerSlot(playerSlots.B1, initB1);
-    updatePlayerSlot(playerSlots.B2, initB2);
+  // 只播一次估計站位。偵測到真人後會被換掉，不會每秒重生走道幽靈
+  if (!slotsSeeded) {
+    slotsSeeded = true;
+    const seeds = [
+      ['A1', generateKinematicPose(W * 0.42, H_V * 0.68, W * 0.11, H_V * 0.28, 'A')],
+      ['A2', generateKinematicPose(W * 0.66, H_V * 0.65, W * 0.11, H_V * 0.28, 'A')],
+      ['B1', generateKinematicPose(W * 0.36, H_V * 0.44, W * 0.065, H_V * 0.16, 'B')],
+      ['B2', generateKinematicPose(W * 0.50, H_V * 0.44, W * 0.065, H_V * 0.16, 'B')]
+    ];
+    seeds.forEach(([k, pose]) => {
+      pose.provisional = true;
+      updatePlayerSlot(playerSlots[k], pose);
+    });
   }
 
   if (!video || !video.videoWidth) return;
   const now = Date.now();
 
   // 1. 若 MoveNet 模型可用，非同步執行姿態估計 (~15 FPS)
-  if (poseDetector && !isEstimatingPose && (now - lastPoseTime > 65)) {
+  if (poseDetector && !isEstimatingPose && (now - lastPoseTime > 40)) {
     isEstimatingPose = true;
     lastPoseTime = now;
     poseDetector.estimatePoses(video, { maxPoses: 6, flipHorizontal: false })
       .then(poses => {
-        if (poses && poses.length > 0) {
-          // 門檻設為 0.06，確保遠端與快速回拍選手皆能順利抓取
-          detectedPoses = poses.filter(p => p.score >= 0.06);
-        }
+        detectedPoses = (poses || []).filter(p => p.score >= 0.03);
         isEstimatingPose = false;
       })
       .catch(() => { isEstimatingPose = false; });
   }
 
-  // 2. 提取真實人體候選人 (完全剔除左側走道 X < 26%、右側裁判席 X > 92%、上方燈光 Y < 22%)
+  // 2. 只收下校正球場內的腳點。走道、看台、天花板在多邊形外，直接丟棄
+  const bounds = courtImageBounds(W, H_V);
   const candidates = [];
   if (detectedPoses && detectedPoses.length > 0) {
     detectedPoses.forEach(p => {
@@ -2585,244 +3054,331 @@ function updatePoseEstimation(video, canvas) {
       const la = kps[15], ra = kps[16];
       const footX = (la && ra) ? (la.x + ra.x) / 2 : (kps[0]?.x || 0);
       const footY = (la && ra) ? Math.max(la.y, ra.y) : (kps[0]?.y + 110 || 0);
-      const nose = kps[0];
-      const h = Math.abs(footY - (nose ? nose.y : footY - 100));
+      const ls = kps[5], rs = kps[6], lh = kps[11], rh = kps[12], nose = kps[0];
+      const bodyPts = [ls, rs, lh, rh, nose].filter(pt => pt && (pt.score === undefined || pt.score > 0.05));
+      let bodyX = footX, bodyY = footY;
+      if (bodyPts.length) {
+        bodyX = bodyPts.reduce((sum, pt) => sum + pt.x, 0) / bodyPts.length;
+        bodyY = bodyPts.reduce((sum, pt) => sum + pt.y, 0) / bodyPts.length;
+      }
+      const sideGuess = imageTeam(bodyX, bodyY) || imageTeam(footX, footY) || (footY >= bounds.netY ? 'A' : 'B');
+      let side = sideGuess;
+      let stuckToSlot = false;
+      let stuckD = 1e9;
+      Object.values(playerSlots).forEach(s => {
+        if (!s.active || s.provisional || !s.footX) return;
+        const anchor = slotBody(s);
+        const d = Math.hypot(bodyX - anchor.x, bodyY - anchor.y);
+        if (d < anchor.h * 0.85 && d < stuckD) {
+          stuckD = d;
+          side = s.team;
+          stuckToSlot = true;
+        }
+      });
+      if (!stuckToSlot) {
+        if (side === 'B') {
+          if ((p.score || 0) < 0.02) return;
+        } else if (!isInsideCourtImage(footX, footY, 0.22) && !isInsideCourtImage(bodyX, bodyY, 0.22)) {
+          return;
+        }
+        if ((p.score || 0) < 0.03 && side !== 'B') return;
+      }
 
-      // 嚴格邊界過濾：黑地墊走道 (X < 26%)、看台走廊 (X > 92%) 或高空天花板 (Y < 22%) 絕非球員
-      if (footX < W * 0.26 || footX > W * 0.92 || footY < H_V * 0.22) return;
-
-      const isNear = (footY > H_V * 0.50) || (h > H_V * 0.20);
       candidates.push({
-        team: isNear ? 'A' : 'B',
+        team: side,
         score: p.score,
         keypoints: kps,
         footX,
         footY,
+        torsoX: bodyX,
+        torsoY: bodyY,
         box: p.box,
-        used: false
+        used: false,
+        provisional: false,
+        source: 'movenet'
       });
     });
   }
 
   // 3. 穩定匹配至槽位 (手動鎖定 PINNED 槽位優先以近鄰半徑追蹤，未鎖定者以隊伍距離匹配)
   const slotKeys = ['A1', 'A2', 'B1', 'B2'];
+  const updated = new Set();
 
-  // 優先跟隨手動鎖定的選手 (半徑 130px 內精確鎖定，絕不跳位)
+  function sameBodyAsUsed(c) {
+    return slotKeys.some(k => {
+      const s = playerSlots[k];
+      if (!updated.has(k) || !s.footX) return false;
+      const b = slotBody(s);
+      const tx = c.torsoX || c.footX, ty = c.torsoY || c.footY;
+      return Math.hypot(b.x - tx, b.y - ty) < Math.max(48, b.h * 0.45);
+    });
+  }
+
   slotKeys.forEach(k => {
     const slot = playerSlots[k];
-    if (slot.pinned && slot.active) {
-      let bestCand = null;
-      let bestDist = 140;
-      candidates.forEach(c => {
-        if (!c.used) {
-          const d = Math.hypot(c.footX - slot.footX, c.footY - slot.footY);
-          if (d < bestDist) {
-            bestDist = d;
-            bestCand = c;
-          }
-        }
-      });
-
-      if (bestCand) {
-        bestCand.used = true;
-        updatePlayerSlot(slot, bestCand);
-        slot.missing = 0;
-      } else {
-        // 短暫遮蔽時：維持在原位，絕不飄移到走道
-        slot.missing = (slot.missing || 0) + 1;
+    if (!slot.pinned || !slot.active) return;
+    const body = slotBody(slot);
+    const predX = body.x + (slot.vx || 0);
+    const predY = body.y + (slot.vy || 0);
+    const reach = playerStepLimit(slot);
+    let bestCand = null;
+    let bestDist = reach;
+    candidates.forEach(c => {
+      if (c.used || sameBodyAsUsed(c) || c.team !== slot.team || closerToTeammate(c, slot)) return;
+      const tx = c.torsoX || c.footX, ty = c.torsoY || c.footY;
+      const d = Math.hypot(tx - predX, ty - predY);
+      if (d < bestDist) {
+        bestDist = d;
+        bestCand = c;
       }
+    });
+
+    if (bestCand && updatePlayerSlot(slot, bestCand)) {
+      bestCand.used = true;
+      slot.pinX = slot.footX;
+      slot.pinY = slot.footY;
+      slot.realPose = true;
+      slot.missRun = 0;
+      updated.add(k);
+    } else {
+      slot.missRun = (slot.missRun || 0) + 1;
+      if (slot.missRun < 4) updated.add(k);
     }
+    slot.pinned = true;
+    slot.active = true;
+    slot.missing = 0;
+    slot.provisional = false;
   });
 
   // 未手動鎖定的槽位，自動匹配剩餘候選人
   const teamACands = candidates.filter(c => !c.used && c.team === 'A').sort((a, b) => a.footX - b.footX);
   const teamBCands = candidates.filter(c => !c.used && c.team === 'B').sort((a, b) => a.footX - b.footX);
 
-  if (!playerSlots.A1.pinned) {
-    if (teamACands[0]) {
-      updatePlayerSlot(playerSlots.A1, teamACands[0]);
-      teamACands[0].used = true;
-    } else playerSlots.A1.missing++;
+  function takeAuto(slotKey, list) {
+    const slot = playerSlots[slotKey];
+    if (slot.pinned) return;
+    let cand = null;
+    if (slot.realPose && !slot.provisional) {
+      let best = playerStepLimit(slot);
+      list.forEach(c => {
+        if (c.used || c.team !== slot.team || closerToTeammate(c, slot)) return;
+        const d = Math.hypot((c.torsoX || c.footX) - slotBody(slot).x, (c.torsoY || c.footY) - slotBody(slot).y);
+        if (d < best) {
+          best = d;
+          cand = c;
+        }
+      });
+    } else {
+      cand = list.find(c => !c.used);
+    }
+    if (cand && updatePlayerSlot(slot, cand)) {
+      cand.used = true;
+      updated.add(slotKey);
+    } else {
+      slot.missing++;
+    }
   }
-  if (!playerSlots.A2.pinned) {
-    const cand2 = teamACands.find(c => !c.used);
-    if (cand2) {
-      updatePlayerSlot(playerSlots.A2, cand2);
-      cand2.used = true;
-    } else playerSlots.A2.missing++;
-  }
+  takeAuto('A1', teamACands);
+  takeAuto('A2', teamACands);
+  takeAuto('B1', teamBCands);
+  takeAuto('B2', teamBCands);
 
-  if (!playerSlots.B1.pinned) {
-    if (teamBCands[0]) {
-      updatePlayerSlot(playerSlots.B1, teamBCands[0]);
-      teamBCands[0].used = true;
-    } else playerSlots.B1.missing++;
-  }
-  if (!playerSlots.B2.pinned) {
-    const candB2 = teamBCands.find(c => !c.used);
-    if (candB2) {
-      updatePlayerSlot(playerSlots.B2, candB2);
-      candB2.used = true;
-    } else playerSlots.B2.missing++;
-  }
+  // MoveNet 沒補到的槽位，改用球場輪廓。已占用的真人附近不再塞第二個骨架
+  const sils = (now - lastSilhouetteAt > 200)
+    ? (lastSilhouetteAt = now, cachedSilhouettes = detectVisionSilhouettes(video, canvas).filter(s => isInsideCourtImage(s.footX, s.footY, 0.12)))
+    : cachedSilhouettes;
+  sils.forEach(s => { s.used = false; s.provisional = false; });
+  const nearExisting = (s) => candidates.some(c => c.used && Math.hypot(c.footX - s.footX, c.footY - s.footY) < 90);
 
-  // 狀態維持：若未鎖定且遺失超過 60 影格才暫停顯示；已手動鎖定者持續保持
+  ['A', 'B'].forEach(team => {
+    const pool = sils.filter(s => !s.used && s.team === team && !nearExisting(s))
+      .sort((a, b) => a.footX - b.footX);
+    const open = slotKeys.filter(k => {
+      if (updated.has(k) || playerSlots[k].team !== team || playerSlots[k].pinned) return false;
+      const s = playerSlots[k];
+      if (s.realPose && s.missing < 10) return false;
+      return s.provisional || !s.active || s.missing > 0;
+    }).sort((a, b) => (playerSlots[a].footX || 0) - (playerSlots[b].footX || 0));
+    open.forEach((k, i) => {
+      const cand = pool[i];
+      if (!cand || !updatePlayerSlot(playerSlots[k], cand)) return;
+      cand.used = true;
+      playerSlots[k].missing = 0;
+      updated.add(k);
+    });
+    slotKeys.filter(k => playerSlots[k].team === team && playerSlots[k].pinned && !updated.has(k)).forEach(k => {
+      const slot = playerSlots[k];
+      let best = null, bestD = playerStepLimit(slot);
+      if ((slot.missRun || 0) < 4) return;
+      pool.forEach(s => {
+        if (s.used) return;
+        const side = imageTeam(s.footX, s.footY);
+        if (side && side !== slot.team) return;
+        const d = Math.hypot(s.footX - slot.footX, s.footY - slot.footY);
+        const nearerOther = Object.values(playerSlots).some(o => {
+          if (o === slot || o.team !== slot.team || !o.footX || (o.missRun || 0) > 6) return false;
+          return Math.hypot(s.footX - o.footX, s.footY - o.footY) + 20 < d;
+        });
+        if (nearerOther) return;
+        if (d < bestD) { bestD = d; best = s; }
+      });
+      if (best && updatePlayerSlot(slot, best)) {
+        best.used = true;
+        slot.missRun = 0;
+        slot.missing = 0;
+      }
+    });
+  });
+
+  // 估計站位若一直沒被真人取代，約 1.5 秒後退出，避免幽靈一直停在 2D 球場
   slotKeys.forEach(key => {
     const slot = playerSlots[key];
-    if (!slot.pinned && slot.missing > 60) {
-      slot.active = false;
-    }
+    if (!slot.pinned && slot.missing > 90) slot.active = false;
   });
 }
 
+function snapPlayerSlot(slot, cand) {
+  slot.kps = cand.keypoints.map(p => ({ ...p }));
+  slot.footX = cand.footX;
+  slot.footY = cand.footY;
+  slot.box = cand.box || null;
+  slot.active = true;
+  slot.missing = 0;
+  slot.provisional = false;
+}
+
+function slotBody(slot) {
+  const k = slot.kps;
+  const nose = k && k[0];
+  const lh = k && k[11];
+  const rh = k && k[12];
+  const x = lh && rh ? (lh.x + rh.x) / 2 : (slot.footX || 0);
+  const y = lh && rh ? (lh.y + rh.y) / 2 : (slot.footY || 0);
+  const h = nose && slot.footY ? Math.max(40, Math.abs(slot.footY - nose.y)) : (slot.bodyH || (slot.team === 'B' ? 90 : 210));
+  return { x, y, h };
+}
+
+function closerToTeammate(cand, slot) {
+  const tx = cand.torsoX || cand.footX;
+  const ty = cand.torsoY || cand.footY;
+  const self = slotBody(slot);
+  const dSelf = Math.hypot(tx - self.x, ty - self.y);
+  return Object.values(playerSlots).some(other => {
+    if (other === slot || other.team !== slot.team || !other.active || !other.footX) return false;
+    const ob = slotBody(other);
+    return Math.hypot(tx - ob.x, ty - ob.y) + 16 < dSelf;
+  });
+}
+
+function playerStepLimit(slot) {
+  const body = slotBody(slot);
+  slot.bodyH = body.h;
+  const miss = slot.missRun || 0;
+  const grow = Math.min(body.h * 1.4, miss * body.h * 0.15);
+  return body.h * 0.95 + grow;
+}
+
 function updatePlayerSlot(slot, cand) {
-  if (!slot.kps || !slot.active) {
+  const firstLock = !slot.kps || !slot.active || slot.provisional;
+  if (!firstLock) {
+    const anchor = slotBody(slot);
+    const tx = cand.torsoX || cand.footX;
+    const ty = cand.torsoY || cand.footY;
+    const dist = Math.hypot(tx - anchor.x, ty - anchor.y);
+    if (dist > playerStepLimit(slot)) return false;
+  }
+  if (firstLock) {
     slot.kps = cand.keypoints.map(p => ({ ...p }));
     slot.footX = cand.footX;
     slot.footY = cand.footY;
     slot.box = cand.box;
+    slot.vx = 0;
+    slot.vy = 0;
   } else {
-    // 平滑插值 (EMA alpha=0.35 消除影格抖動，骨架永不亂跳)
-    slot.footX = slot.footX * 0.65 + cand.footX * 0.35;
-    slot.footY = slot.footY * 0.65 + cand.footY * 0.35;
+    const gain = 0.7;
+    const keep = 1 - gain;
+    const prevX = slot.footX;
+    const prevY = slot.footY;
+    slot.footX = prevX * keep + cand.footX * gain;
+    slot.footY = prevY * keep + cand.footY * gain;
+    slot.vx = slot.footX - prevX;
+    slot.vy = slot.footY - prevY;
     for (let i = 0; i < cand.keypoints.length; i++) {
       const src = cand.keypoints[i];
-      if (!slot.kps[i]) slot.kps[i] = { ...src };
+      if (!slot.kps[i]) slot.kps[i] = { ...src, x: src.x, y: src.y };
       else {
-        slot.kps[i].x = slot.kps[i].x * 0.65 + src.x * 0.35;
-        slot.kps[i].y = slot.kps[i].y * 0.65 + src.y * 0.35;
+        slot.kps[i].x = slot.kps[i].x * keep + src.x * gain;
+        slot.kps[i].y = slot.kps[i].y * keep + src.y * gain;
         slot.kps[i].score = src.score;
       }
     }
   }
   slot.active = true;
   slot.missing = 0;
+  slot.provisional = !!(cand && cand.provisional);
+  if (cand && cand.source === 'movenet') slot.realPose = true;
+  return true;
 }
 
 function drawPlayerSkeletons(ctx, canvas) {
   if (!ctx || !canvas) return;
 
-  const activeList = Object.values(playerSlots).filter(s => s.active);
+  const activeList = Object.values(playerSlots).filter(s => {
+    if (!s.active) return false;
+    if (s.provisional && !s.pinned) return false;
+    if (s.team === 'A' && !showSkeletonA) return false;
+    if (s.team === 'B' && !showSkeletonB) return false;
+    if (!s.pinned) {
+      const side = imageTeam(s.footX, s.footY);
+      if (side && side !== s.team) return false;
+    }
+    return true;
+  });
   if (activeList.length === 0) return;
 
   activeList.forEach(slot => {
     const isNearTeam = (slot.team === 'A');
     const teamColor = slot.color;
     const kps = slot.kps;
-    if (!kps || kps.length < 17) return;
+    const anchor = slotBody(slot);
+    const nose = kps && kps[0];
+    const headY = nose ? nose.y : (anchor.y - anchor.h * 0.45);
+    const footY = slot.footY || (anchor.y + anchor.h * 0.55);
+    const cx = anchor.x || slot.footX;
+    const top = Math.min(headY, footY);
+    const bot = Math.max(headY, footY);
+    const rh = Math.max(isNearTeam ? 36 : 18, (bot - top) / 2 + 6);
+    const rw = Math.max(isNearTeam ? 22 : 12, rh * 0.46);
+    const cy = (top + bot) / 2;
+    if (!cx || !cy) return;
 
     ctx.save();
-
-    // 1. 地面腳步覆蓋光圈 (Footprint Court Coverage Ring)
-    const la = kps[15], ra = kps[16];
-    const footX = slot.footX || ((la && ra) ? (la.x + ra.x) / 2 : kps[0]?.x);
-    const footY = slot.footY || ((la && ra) ? Math.max(la.y, ra.y) : kps[0]?.y + 100);
-    const legSpan = (la && ra) ? Math.abs(la.x - ra.x) : 30;
-    const radX = Math.max(isNearTeam ? 24 : 15, legSpan * 1.1);
-    const radY = Math.max(isNearTeam ? 9 : 5.5, radX * 0.36);
-
     ctx.beginPath();
-    ctx.ellipse(footX, footY + 4, radX, radY, 0, 0, Math.PI * 2);
-    ctx.fillStyle = isNearTeam ? 'rgba(6, 214, 160, 0.18)' : (slot.id === 'B1' ? 'rgba(67, 97, 238, 0.18)' : 'rgba(247, 37, 133, 0.18)');
-    ctx.fill();
+    ctx.ellipse(cx, cy, rw, rh, 0, 0, Math.PI * 2);
+    ctx.fillStyle = slot.team === 'A' ? 'rgba(6,214,160,0.16)' : 'rgba(67,97,238,0.16)';
     ctx.strokeStyle = teamColor;
-    ctx.lineWidth = isNearTeam ? 2 : 1.5;
+    ctx.lineWidth = isNearTeam ? 3 : 2;
     ctx.shadowColor = teamColor;
     ctx.shadowBlur = 8;
+    ctx.fill();
     ctx.stroke();
 
-    // 2. 骨骼連線 (Glowing Bones)
-    ctx.lineWidth = isNearTeam ? 3.5 : 2.2;
-    ctx.lineCap = 'round';
+    const badgeTxt = slot.id + (slot.zone ? ' ' + slot.zone : '') + (slot.pinned ? ' ✓' : '');
+    ctx.font = 'bold 12px system-ui, sans-serif';
+    ctx.shadowBlur = 0;
+    const tw = ctx.measureText(badgeTxt).width;
+    const bx = cx - tw / 2 - 6;
+    const by = cy - rh - 22;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
     ctx.strokeStyle = teamColor;
-    ctx.shadowColor = teamColor;
-    ctx.shadowBlur = isNearTeam ? 12 : 8;
-
-    SKELETON_PAIRS.forEach(([i1, i2]) => {
-      const p1 = kps[i1], p2 = kps[i2];
-      if (!p1 || !p2) return;
-      if (p1.score !== undefined && p1.score < 0.08) return;
-      if (p2.score !== undefined && p2.score < 0.08) return;
-
-      ctx.beginPath();
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.stroke();
-    });
-
-    // 3. 關節光點 (Joint Nodes: Outer team glow + inner hot white core)
-    kps.forEach((kp, idx) => {
-      if (idx >= 1 && idx <= 4) return; // 略過細部眼耳
-      if (kp.score !== undefined && kp.score < 0.08) return;
-
-      const r = isNearTeam ? 4.5 : 3.0;
-      ctx.beginPath();
-      ctx.arc(kp.x, kp.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = teamColor;
-      ctx.shadowColor = teamColor;
-      ctx.shadowBlur = 8;
-      ctx.fill();
-
-      // 白色中心高光
-      ctx.beginPath();
-      ctx.arc(kp.x, kp.y, r * 0.5, 0, Math.PI * 2);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-    });
-
-    // 4. 握拍手腕 羽球拍高科技光影 (Badminton Racket Silhouette)
-    const rw = kps[10], re = kps[8]; // 右手手腕與手肘
-    if (rw && re && (rw.score === undefined || rw.score >= 0.10)) {
-      const vx = rw.x - re.x, vy = rw.y - re.y;
-      const len = Math.hypot(vx, vy) || 1;
-      const rLen = isNearTeam ? 32 : 20;
-      const rx = rw.x + (vx / len) * rLen;
-      const ry = rw.y + (vy / len) * rLen;
-
-      ctx.save();
-      ctx.strokeStyle = '#ffd60a';
-      ctx.lineWidth = isNearTeam ? 2 : 1.5;
-      ctx.shadowColor = '#ffd60a';
-      ctx.shadowBlur = 8;
-      // 拍桿
-      ctx.beginPath();
-      ctx.moveTo(rw.x, rw.y);
-      ctx.lineTo(rx, ry);
-      ctx.stroke();
-      // 拍面
-      const rHeadR = isNearTeam ? 8.5 : 5.5;
-      ctx.beginPath();
-      ctx.ellipse(rx + (vx / len) * rHeadR, ry + (vy / len) * rHeadR, rHeadR, rHeadR * 0.72, Math.atan2(vy, vx), 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // 5. 球員頭頂 HUD 浮動標籤 (Floating Player Badge)
-    const nose = kps[0], ls = kps[5], rs = kps[6];
-    const topY = Math.min(nose ? nose.y : 999, ls ? ls.y - 12 : 999, rs ? rs.y - 12 : 999);
-    const topX = nose ? nose.x : ((ls.x + rs.x) / 2);
-
-    if (topX > 0 && topY > 0) {
-      const icon = slot.id === 'B2' ? '🟣' : (isNearTeam ? '🟢' : '🔵');
-      const badgeTxt = `${icon} ${slot.name}${slot.pinned ? ' (鎖定✓)' : ''}`;
-      ctx.font = 'bold 11px system-ui, sans-serif';
-      const tw = ctx.measureText(badgeTxt).width;
-      const bx = topX - tw / 2 - 8, by = topY - 30, bw = tw + 16, bh = 20;
-
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-      ctx.strokeStyle = teamColor;
-      ctx.lineWidth = 1.2;
-      ctx.shadowBlur = 6;
-      ctx.shadowColor = '#000';
-      ctx.beginPath();
-      ctx.roundRect ? ctx.roundRect(bx, by, bw, bh, 6) : ctx.rect(bx, by, bw, bh);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'center';
-      ctx.fillText(badgeTxt, topX, by + 14);
-    }
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(bx, by, tw + 12, 16, 5) : ctx.rect(bx, by, tw + 12, 16);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText(badgeTxt, cx, by + 12);
 
     ctx.restore();
   });
@@ -2894,7 +3450,7 @@ function drawCourtOverlay(ctx, canvas) {
 function drawAiHud(ctx) {
   if (!showHud) return;
   ctx.save();
-  const hudX = 16, hudY = 72, hudW = 210, hudH = 74;
+  const hudX = 16, hudY = 72, hudW = 248, hudH = 112;
 
   ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
   ctx.strokeStyle = 'rgba(67, 97, 238, 0.45)';
@@ -2946,13 +3502,36 @@ function drawAiHud(ctx) {
   const activePlayerCount = Object.values(playerSlots).filter(s => s.active).length || 2;
   const poseCount = activePlayerCount;
   ctx.fillStyle = '#cbd5e1';
-  ctx.fillText(`⚡ 最高速: ${maxSpeedKmh || 0} km/h · 骨架: ${poseCount}人`, hudX + 14, hudY + 62);
+  ctx.fillText(`⚡ 最高速: ${maxSpeedKmh || 0} km/h · 人物: ${poseCount}人`, hudX + 14, hudY + 62);
+  ctx.fillStyle = '#86efac';
+  const runLabel = playerRallyOpen ? '本回合' : '跑動';
+  ctx.fillText(`${runLabel} 主場 ${teamRunMeters('A').toFixed(1)}m · 客場 ${teamRunMeters('B').toFixed(1)}m`, hudX + 14, hudY + 80);
+  ctx.fillStyle = '#fde68a';
+  ctx.fillText(lastShotName ? `最近 ${lastShotName}` : '最近擊球 —', hudX + 14, hudY + 98);
 
   ctx.restore();
 }
 
 // ═══ VISUAL DRAWING ═══
+function drawShuttleBox(ctx, x, y, r = 10) {
+  if (!showShuttleBox || !ctx) return;
+  const half = Math.max(14, r * 1.35);
+  ctx.save();
+  ctx.strokeStyle = '#ffd60a';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = '#ffd60a';
+  ctx.shadowBlur = 8;
+  ctx.strokeRect(x - half, y - half, half * 2, half * 2);
+  ctx.font = 'bold 11px system-ui, sans-serif';
+  ctx.fillStyle = '#ffd60a';
+  ctx.shadowBlur = 0;
+  ctx.textAlign = 'left';
+  ctx.fillText('羽球', x - half, y - half - 4);
+  ctx.restore();
+}
+
 function drawBall(ctx, x, y, r = 10, isCoasting = false) {
+  if (!showBall) return;
   ctx.save();
   const size = Math.max(16, r * 1.5);
 
@@ -3003,7 +3582,7 @@ function drawBall(ctx, x, y, r = 10, isCoasting = false) {
 }
 
 function drawTrail(ctx) {
-  if (shuttleTrail.length < 2) return;
+  if (!showBall || shuttleTrail.length < 2) return;
   ctx.save();
   for (let i = 1; i < shuttleTrail.length; i++) {
     const p1 = shuttleTrail[i - 1];
@@ -3030,19 +3609,48 @@ function drawTrail(ctx) {
 }
 
 // ═══ RALLY ═══
-function detectRally(cy, py, spd) {
-  const dir = cy < py ? 'up' : 'down';
+let flightHist = [];
+let lastHitMark = null;
+
+function noteShuttleHit(x, y) {
   const now = Date.now();
-  // Require decent speed to filter out "picking up the ball" noise
-  if (lastDir && dir !== lastDir && now - lastHitTime > 300 && spd >= 20) {
+  flightHist.push({ x, y, t: now });
+  if (flightHist.length > 8) flightHist.shift();
+  if (flightHist.length < 5) return;
+  const a = flightHist[flightHist.length - 5];
+  const b = flightHist[flightHist.length - 3];
+  const c = flightHist[flightHist.length - 1];
+  const v1x = b.x - a.x, v1y = b.y - a.y;
+  const v2x = c.x - b.x, v2y = c.y - b.y;
+  const n1 = Math.hypot(v1x, v1y);
+  const n2 = Math.hypot(v2x, v2y);
+  if (n1 < 10 || n2 < 8) return;
+  const dot = (v1x * v2x + v1y * v2y) / (n1 * n2);
+  if (dot < -0.05 && now - lastHitTime > 260) {
     rallyHitCount++;
-    rallyCount = Math.floor(rallyHitCount / 2);
     lastHitTime = now;
-    setText('rally-label', `${rallyCount} 回合 (擊球: ${rallyHitCount})`);
-    syncSession();
+    rallyLive = true;
+    lastHitMark = { x, y, t: now, by: v2y > 0 ? '客場' : '主場' };
+    lastShotName = lastHitMark.by + ' ' + classifyShuttleShot();
+    const reasonEl = document.getElementById('auto-score-reason');
+    if (reasonEl) reasonEl.textContent = lastShotName + ' · 第 ' + rallyHitCount + ' 拍';
   }
-  lastDir = dir;
 }
+
+function drawHitMark(ctx) {
+  if (!lastHitMark || !ctx) return;
+  const age = Date.now() - lastHitMark.t;
+  if (age > 500) return;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,214,10,' + (1 - age / 500) + ')';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(lastHitMark.x, lastHitMark.y, 16 + age / 40, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function detectRally() {}
 
 // ═══ SPEED ═══
 let speedTimer = null;
@@ -3124,49 +3732,40 @@ function drawMiniMap() {
   const paneRally = document.getElementById('pane-rally');
   if (paneRally) paneRally.textContent = rallyHitCount || 0;
 
-  // ═══ 1. 繪製 2D 球員即時落點 (REAL-TIME PLAYERS ON 2D COURT) ═══
-  const liveVideo = document.getElementById('live-video');
-  const videoW = (liveVideo && liveVideo.videoWidth) ? liveVideo.videoWidth : 1280;
-  const videoH = (liveVideo && liveVideo.videoHeight) ? liveVideo.videoHeight : 720;
-
+  // ═══ 1. 球員腳點經單應性落到 2D 球場 ═══
   Object.values(playerSlots).forEach(slot => {
     if (!slot.active) return;
     const fx = slot.footX, fy = slot.footY;
     if (!fx || !fy) return;
-
-    let cx = 0, cy = 0;
-    let mapped = false;
-
-    if (H) {
-      const [hx, hy] = applyH(H, fx, fy);
-      // 若單應性轉換結果合理 (在球場或其附近)，使用單應性坐標
-      if (hx >= -80 && hx <= COURT_W + 80 && hy >= -100 && hy <= COURT_H + 100) {
-        cx = hx;
-        cy = hy;
-        mapped = true;
-      }
+    if (!slot.pinned) {
+      const side = imageTeam(fx, fy);
+      if (side && side !== slot.team) return;
     }
+    const courtPt = imageToCourt(fx, fy);
+    if (!courtPt) return;
+    const cx = courtPt.x;
+    const cy = courtPt.y;
 
-    // 視角幾何自適應備援 (避免因使用者校正只點近端而算到負數)
-    if (!mapped) {
-      const normX = Math.max(0.08, Math.min(0.92, fx / videoW));
-      cx = normX * COURT_W;
-      if (slot.team === 'A') {
-        // 近端主場選手 (下半場：COURT_H * 0.55 ~ 0.95)
-        const relY = Math.max(0, Math.min(1, (fy - videoH * 0.45) / (videoH * 0.50)));
-        cy = COURT_H * (0.55 + relY * 0.38);
-      } else {
-        // 遠端客場選手 (上半場：COURT_H * 0.10 ~ 0.45)
-        const relY = Math.max(0, Math.min(1, (fy - videoH * 0.25) / (videoH * 0.25)));
-        cy = COURT_H * (0.10 + relY * 0.35);
-      }
-    }
-
-    // 投影至小地圖畫布
     const pmx = pad + (Math.max(10, Math.min(COURT_W - 10, cx)) / COURT_W) * courtW;
     const pmy = pad + (Math.max(10, Math.min(COURT_H - 10, cy)) / COURT_H) * courtH;
 
+    if (slot.courtTrail && slot.courtTrail.length > 1) {
+      ctx.beginPath();
+      slot.courtTrail.forEach((pt, i) => {
+        const tx = pad + (Math.max(4, Math.min(COURT_W - 4, pt.x)) / COURT_W) * courtW;
+        const ty = pad + (Math.max(4, Math.min(COURT_H - 4, pt.y)) / COURT_H) * courtH;
+        if (i === 0) ctx.moveTo(tx, ty);
+        else ctx.lineTo(tx, ty);
+      });
+      ctx.strokeStyle = slot.color;
+      ctx.globalAlpha = 0.55;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
     ctx.save();
+    if (slot.provisional) ctx.globalAlpha = 0.4;
     // 地面覆蓋陰影
     ctx.beginPath();
     ctx.arc(pmx, pmy, 11, 0, Math.PI * 2);
@@ -3190,29 +3789,22 @@ function drawMiniMap() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(slot.id, pmx, pmy + 0.5);
+    ctx.shadowBlur = 0;
+    ctx.font = '8px system-ui, sans-serif';
+    ctx.fillStyle = slot.color;
+    ctx.fillText((slot.speedKmh || 0) + 'km/h', pmx, pmy + 16);
     ctx.restore();
   });
 
-  // ═══ 2. 繪製羽球 2D 即時軌跡與落點 (SHUTTLECOCK ON 2D COURT) ═══
-  if (shuttlePos && !isDeadBall) {
-    let curCX = 0, curCY = 0;
-    let bMapped = false;
-    if (H) {
-      const [hx, hy] = applyH(H, shuttlePos.x, shuttlePos.y);
-      if (hx >= -150 && hx <= COURT_W + 150 && hy >= -150 && hy <= COURT_H + 150) {
-        curCX = hx; curCY = hy; bMapped = true;
-      }
-    }
-    if (!bMapped) {
-      curCX = (shuttlePos.x / videoW) * COURT_W;
-      curCY = (shuttlePos.y / videoH) * COURT_H;
-    }
-
-    const mx = pad + (Math.max(4, Math.min(COURT_W - 4, curCX)) / COURT_W) * courtW;
-    const my = pad + (Math.max(4, Math.min(COURT_H - 4, curCY)) / COURT_H) * courtH;
-
-    // In or Out Tag
-    const isInside = (curCX >= 0 && curCX <= COURT_W && curCY >= 0 && curCY <= COURT_H);
+  // ═══ 2. 羽球地面循跡（高空時壓低縱深跳動，擊球時吸到球員腳點） ═══
+  if (shuttleGround && !isDeadBall) {
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const toMap = (x, y) => ({
+      x: pad + (clamp(x, 4, COURT_W - 4) / COURT_W) * courtW,
+      y: pad + (clamp(y, 4, COURT_H - 4) / COURT_H) * courtH
+    });
+    const cur = toMap(shuttleGround.x, shuttleGround.y);
+    const isInside = shuttleGround.x >= 0 && shuttleGround.x <= COURT_W && shuttleGround.y >= 0 && shuttleGround.y <= COURT_H;
     ctx.fillStyle = isInside ? '#10b981' : '#ef4444';
     ctx.font = 'bold 9px system-ui, sans-serif';
     ctx.textAlign = 'right';
@@ -3224,39 +3816,44 @@ function drawMiniMap() {
       statusBadge.textContent = isInside ? '● 界內 IN' : '● 界外 OUT';
     }
 
-    // 羽球飛行軌跡
-    for (let i = 1; i < shuttleTrail.length; i++) {
-      const tp1 = shuttleTrail[i - 1], tp2 = shuttleTrail[i];
-      let x1 = (tp1.x / videoW) * COURT_W, y1 = (tp1.y / videoH) * COURT_H;
-      let x2 = (tp2.x / videoW) * COURT_W, y2 = (tp2.y / videoH) * COURT_H;
-      if (H) {
-        const [h1x, h1y] = applyH(H, tp1.x, tp1.y);
-        const [h2x, h2y] = applyH(H, tp2.x, tp2.y);
-        if (h1x >= -50 && h1x <= COURT_W + 50) { x1 = h1x; y1 = h1y; }
-        if (h2x >= -50 && h2x <= COURT_W + 50) { x2 = h2x; y2 = h2y; }
-      }
-      const m1X = pad + (x1 / COURT_W) * courtW, m1Y = pad + (y1 / COURT_H) * courtH;
-      const m2X = pad + (x2 / COURT_W) * courtW, m2Y = pad + (y2 / COURT_H) * courtH;
-
+    for (let i = 1; i < shuttleGroundTrail.length; i++) {
+      const a = toMap(shuttleGroundTrail[i - 1].x, shuttleGroundTrail[i - 1].y);
+      const b = toMap(shuttleGroundTrail[i].x, shuttleGroundTrail[i].y);
       ctx.beginPath();
-      ctx.moveTo(m1X, m1Y);
-      ctx.lineTo(m2X, m2Y);
-      ctx.strokeStyle = `rgba(255, 214, 10, ${(i / shuttleTrail.length) * 0.7})`;
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = `rgba(255, 214, 10, ${(i / shuttleGroundTrail.length) * 0.75})`;
       ctx.lineWidth = 2;
       ctx.stroke();
     }
 
-    // 實心發光球點
     ctx.beginPath();
-    ctx.arc(mx, my, 5, 0, Math.PI * 2);
+    ctx.arc(cur.x, cur.y, 3.2, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 214, 10, 0.9)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    const lift = shuttleGround.h > 0.4 ? Math.min(22, shuttleGround.h * 12) : 0;
+    const bx = cur.x;
+    const by = cur.y - lift;
+    if (lift > 0) {
+      ctx.beginPath();
+      ctx.moveTo(cur.x, cur.y);
+      ctx.lineTo(bx, by);
+      ctx.strokeStyle = 'rgba(255, 214, 10, 0.85)';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(bx, by, 5, 0, Math.PI * 2);
     ctx.fillStyle = '#ffd60a';
     ctx.shadowColor = '#ffd60a';
     ctx.shadowBlur = 12;
     ctx.fill();
-
-    // 脈衝雷達外圈
     ctx.beginPath();
-    ctx.arc(mx, my, 9, 0, Math.PI * 2);
+    ctx.arc(bx, by, 9, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255, 214, 10, 0.7)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
@@ -3371,41 +3968,89 @@ function resizeCourt3dCanvas() {
 function toggleLivePanel() {
   const p = document.getElementById('live-controls-panel');
   const b = document.getElementById('btn-toggle-panel');
-  if (p.classList.contains('hidden')) {
-    p.classList.remove('hidden');
-    b.innerHTML = '🔽';
-  } else {
-    p.classList.add('hidden');
-    b.innerHTML = '👁️';
-  }
+  const hidden = p.classList.toggle('hidden');
+  b.textContent = hidden ? '⬆ 展開面板' : '⬇ 收合面板';
 }
 
 function toggle3D() {
   show3D = !show3D;
-  const pane = document.getElementById('court3d-pane');
-  if (pane) pane.style.display = show3D ? '' : 'none';
-  const b = document.getElementById('btn-toggle3d');
-  if (b) b.classList.toggle('active', show3D);
-  if (show3D) drawMiniMap();
+  applyOverlayVisibility();
 }
 
 function toggleCourtOverlay() {
   showCourtOverlay = !showCourtOverlay;
-  const b = document.getElementById('btn-toggle-court');
-  if (b) b.classList.toggle('active', showCourtOverlay);
+  applyOverlayVisibility();
 }
 
-function toggleSkeleton() {
-  showSkeleton = !showSkeleton;
-  const b = document.getElementById('btn-toggle-skeleton');
-  if (b) b.classList.toggle('active', showSkeleton);
-  showToast(showSkeleton ? '🦴 已開啟雙方球員骨架姿態分析' : '🦴 已關閉球員骨架', 1500);
+function toggleSkeletonSide(team) {
+  if (team === 'A') showSkeletonA = !showSkeletonA;
+  else showSkeletonB = !showSkeletonB;
+  showSkeleton = showSkeletonA || showSkeletonB;
+  applyOverlayVisibility();
+}
+
+function toggleShuttleBox() {
+  showShuttleBox = !showShuttleBox;
+  applyOverlayVisibility();
+}
+
+function toggleBallOverlay() {
+  showBall = !showBall;
+  if (!showBall) {
+    const b = document.getElementById('speed-badge');
+    if (b) b.classList.remove('visible');
+  }
+  applyOverlayVisibility();
+}
+
+function toggleScoreboard() {
+  showScoreboard = !showScoreboard;
+  applyOverlayVisibility();
 }
 
 function toggleHud() {
   showHud = !showHud;
-  const b = document.getElementById('btn-toggle-hud');
-  if (b) b.classList.toggle('active', showHud);
+  applyOverlayVisibility();
+}
+
+function toggleAllOverlays() {
+  const allOn = [showSkeletonA, showSkeletonB, showShuttleBox, showBall, showCourtOverlay, showHud, show3D, showScoreboard].every(Boolean);
+  const on = !allOn;
+  showSkeletonA = showSkeletonB = showShuttleBox = showBall = showCourtOverlay = showHud = show3D = showScoreboard = on;
+  showSkeleton = on;
+  if (!on) {
+    const b = document.getElementById('speed-badge');
+    if (b) b.classList.remove('visible');
+  }
+  applyOverlayVisibility();
+  showToast(on ? '已開啟全部分析顯示' : '已隱藏全部分析顯示', 1200);
+}
+
+function applyOverlayVisibility() {
+  const pane = document.getElementById('court3d-pane');
+  if (pane) pane.style.display = show3D ? '' : 'none';
+  const sb = document.querySelector('#screen-live .scoreboard');
+  if (sb) sb.style.display = showScoreboard ? '' : 'none';
+  [
+    ['btn-toggle-skeleton-a', showSkeletonA],
+    ['btn-toggle-skeleton-b', showSkeletonB],
+    ['btn-toggle-shuttle-box', showShuttleBox],
+    ['btn-toggle-ball', showBall],
+    ['btn-toggle-court', showCourtOverlay],
+    ['btn-toggle-hud', showHud],
+    ['btn-toggle3d', show3D],
+    ['btn-toggle-score', showScoreboard]
+  ].forEach(([id, on]) => {
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.toggle('active', !!on);
+  });
+  const allOn = [showSkeletonA, showSkeletonB, showShuttleBox, showBall, showCourtOverlay, showHud, show3D, showScoreboard].every(Boolean);
+  const allBtn = document.getElementById('btn-toggle-all');
+  if (allBtn) {
+    allBtn.classList.toggle('active', allOn);
+    allBtn.textContent = allOn ? '👁 全部隱藏' : '👁 全部開啟';
+  }
+  if (show3D) drawMiniMap();
 }
 
 // ═══ SIMULATE DEMO RALLY ═══
@@ -3425,15 +4070,25 @@ function simulateRallyDemo() {
   const endY = (p2.y + p3.y) / 2 - 25;
 
   shuttleTrail = [];
+  clearShuttleTrack();
+  isDeadBall = false;
   function step() {
     const elapsed = Date.now() - startTime;
     const progress = Math.min(1, elapsed / duration);
-    const curX = startX + (endX - startX) * progress;
-    const curY = startY + (endY - startY) * progress - Math.sin(progress * Math.PI) * (H_V * 0.2);
+    const groundX = startX + (endX - startX) * progress;
+    const groundY = startY + (endY - startY) * progress;
+    const curX = groundX;
+    const curY = groundY - Math.sin(progress * Math.PI) * (H_V * 0.2);
 
     shuttlePos = { x: curX, y: curY, t: Date.now() };
     shuttleTrail.push({ x: curX, y: curY, t: Date.now() });
     if (shuttleTrail.length > 25) shuttleTrail.shift();
+    const court = imageToCourt(groundX, groundY);
+    if (court) {
+      shuttleGround = { x: court.x, y: court.y, vx: 0, vy: 0, t: Date.now(), h: Math.sin(progress * Math.PI) };
+      shuttleGroundTrail.push({ x: court.x, y: court.y, t: Date.now() });
+      if (shuttleGroundTrail.length > 30) shuttleGroundTrail.shift();
+    }
 
     const spd = Math.round(150 + Math.sin(progress * Math.PI) * 90);
     speedKmh = spd;
@@ -3455,6 +4110,7 @@ function simulateRallyDemo() {
         kalX = null;
         kalY = null;
         shuttleTrail = [];
+        clearShuttleTrack();
         speedKmh = 0;
         const b = document.getElementById('speed-badge');
         if (b) b.classList.remove('visible');
@@ -3465,16 +4121,63 @@ function simulateRallyDemo() {
 }
 
 // ═══ SCORES ═══
-function adjustScore(team,d) {
-  if(team==='A') scoreA=Math.max(0,scoreA+d);
-  else scoreB=Math.max(0,scoreB+d);
+let lastPointSide = null;
+let rallyLive = false;
+let playerRallyOpen = false;
+let lastShotName = '';
+
+function settleBadmintonPoint() {
+  if (!rallyLive) return;
+  rallyLive = false;
+  const court = shuttleGround
+    ? { x: shuttleGround.x, y: shuttleGround.y }
+    : (shuttlePos ? imageToCourt(shuttlePos.x, shuttlePos.y) : null);
+  if (!court) return;
+  const inCourt = court.x >= 0 && court.x <= COURT_W && court.y >= 0 && court.y <= COURT_H;
+  const landingSide = court.y < COURT_H / 2 ? 'B' : 'A';
+  const winner = inCourt ? (landingSide === 'A' ? 'B' : 'A') : landingSide;
+  const reason = inCourt
+    ? (landingSide === 'A' ? '羽球落在主場界內，客場得分' : '羽球落在客場界內，主場得分')
+    : (winner === 'A' ? '羽球出界，主場得分' : '羽球出界，客場得分');
+  if (winner === 'A') scoreA++;
+  else scoreB++;
+  lastPointSide = winner;
+  rallyCount++;
   updateScores();
-  syncSession();
+  const reasonEl = document.getElementById('auto-score-reason');
+  if (reasonEl) reasonEl.textContent = reason;
+  showToast(reason, 1800);
+  const lead = Math.abs(scoreA - scoreB);
+  const hi = Math.max(scoreA, scoreB);
+  if ((hi >= 21 && lead >= 2) || hi >= 30) {
+    showToast((scoreA > scoreB ? '主場' : '客場') + ' 贏得這局 ' + scoreA + ' : ' + scoreB, 2600);
+  }
 }
+
+function undoLastPoint() {
+  if (!lastPointSide) {
+    showToast('目前沒有可撤銷的得分', 1200);
+    return;
+  }
+  if (lastPointSide === 'A') scoreA = Math.max(0, scoreA - 1);
+  else scoreB = Math.max(0, scoreB - 1);
+  rallyCount = Math.max(0, rallyCount - 1);
+  lastPointSide = null;
+  rallyLive = false;
+  updateScores();
+  const reasonEl = document.getElementById('auto-score-reason');
+  if (reasonEl) reasonEl.textContent = '已撤銷上一分';
+}
+
 function updateScores() {
   setText('score-a',scoreA); setText('score-b',scoreB);
   setText('res-score-a',scoreA); setText('res-score-b',scoreB);
-  setText('rally-label',rallyCount+' 回合');
+  const lead = Math.abs(scoreA - scoreB);
+  const hi = Math.max(scoreA, scoreB);
+  let tag = '每球得分';
+  if (hi >= 20 && lead < 2 && hi < 30) tag = '須淨勝 2 分';
+  if ((hi >= 21 && lead >= 2) || hi >= 30) tag = '本局結束';
+  setText('rally-label', scoreA + ' : ' + scoreB + ' · ' + tag);
 }
 async function syncSession() {
   if (!uid) return;
@@ -3546,25 +4249,87 @@ function applyH(H,x,y) {
 }
 
 // ═══ KALMAN ═══
+function shuttleInertial(px, py, vx, vy, mx, my, age) {
+  const frameW = (trackVideo && trackVideo.videoWidth) || 1280;
+  const speed = Math.hypot(vx, vy);
+  const dx = mx - px;
+  const dy = my - py;
+  const fromPos = Math.hypot(dx, dy);
+  const predX = px + vx;
+  const predY = py + vy;
+  const err = Math.hypot(mx - predX, my - predY);
+  if ((age || 0) < 5) {
+    if (fromPos > frameW * 0.18) return null;
+    return { x: mx, y: my, vx: dx, vy: dy };
+  }
+  const gate = Math.max(40, speed * 1.25 + 24);
+  if (speed > 6) {
+    const dot = vx * dx + vy * dy;
+    if (fromPos < Math.max(48, speed * 0.6) && dot < -0.12 * speed * Math.max(fromPos, 1)) {
+      return { x: mx, y: my, vx: dx, vy: dy };
+    }
+    const perp = Math.abs(dx * vy - dy * vx) / speed;
+    if (perp > Math.max(28, speed * 0.42) || err > gate) return null;
+  } else if (err > Math.max(80, frameW * 0.07)) {
+    return null;
+  }
+  const nx = predX * 0.22 + mx * 0.78;
+  const ny = predY * 0.22 + my * 0.78;
+  return {
+    x: nx,
+    y: ny,
+    vx: vx * 0.2 + (nx - px) * 0.8,
+    vy: vy * 0.2 + (ny - py) * 0.8
+  };
+}
+
+function inertialStep(px, py, vx, vy, mx, my, maxA) {
+  const predX = px + vx;
+  const predY = py + vy;
+  const errX = mx - predX;
+  const errY = my - predY;
+  const err = Math.hypot(errX, errY);
+  const speed = Math.hypot(vx, vy);
+  const fromPos = Math.hypot(mx - px, my - py);
+  const allow = speed + maxA * 2 + 8;
+  if (err > allow && fromPos > 30) return null;
+  const clamp = (v, m) => Math.max(-m, Math.min(m, v));
+  const hit = fromPos < 28 && err > 16;
+  if (hit) {
+    return {
+      x: px * 0.4 + mx * 0.6,
+      y: py * 0.4 + my * 0.6,
+      vx: mx - px,
+      vy: my - py
+    };
+  }
+  return {
+    x: predX + clamp(errX, maxA) * 0.6,
+    y: predY + clamp(errY, maxA) * 0.6,
+    vx: vx * 0.5 + (mx - px) * 0.5,
+    vy: vy * 0.5 + (my - py) * 0.5
+  };
+}
+
 function mkKalman(R, Q, P, initX = 0) {
   let x = initX, v = 0;
   return {
     update(z) {
-      const K = P / (P + R);
-      x = x + K * (z - x);
-      const dv = K * (z - x) * 0.45;
-      v = Math.max(-45, Math.min(45, v + dv));
-      P = (1 - K) * P + Q;
+      const err = z - x;
+      const K = Math.abs(err) > 16 ? 0.86 : (P / (P + R));
+      x = x + K * err;
+      v = Math.max(-140, Math.min(140, err * 0.7));
+      P = (1 - Math.min(K, 0.85)) * P + Q;
       return x;
     },
     predict() {
       x = x + v;
-      v *= 0.88; // Natural air deceleration prevents flying off screen
+      v *= 0.97;
       return x;
     },
     getPred() { return x + v; },
     get() { return x; },
-    setVelocity(newV) { v = Math.max(-45, Math.min(45, newV)); },
+    setVelocity(newV) { v = Math.max(-140, Math.min(140, newV)); },
     reset(newX) { x = newX; v = 0; }
   };
 }

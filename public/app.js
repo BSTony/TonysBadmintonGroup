@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-22
- * Version: 1.2.35
+ * Date: 2026-09-29
+ * Version: 1.2.36
  */
 let globalLobbyUsers = [];
 
@@ -4338,10 +4338,13 @@ function getCgListString() {
   let lines = [];
   rows.forEach(row => {
      const nameInput = row.querySelector('.cg-list-name');
+     if (!nameInput) return;
      const n = nameInput.value.trim();
      const u = nameInput.dataset.uuid || '';
-     const l = row.querySelector('.cg-list-level').value.trim();
-     const p = row.querySelector('.cg-list-paid').checked;
+     const levelInput = row.querySelector('.cg-list-level');
+     const l = levelInput ? levelInput.value.trim() : '';
+     const paidInput = row.querySelector('.cg-list-paid');
+     const p = !!(paidInput && paidInput.checked);
      if (!n) return;
      let line = n;
      if (u) line += `[${u}]`;
@@ -4474,10 +4477,38 @@ function addCgListRow(name = '', level = '', isPaid = false, uuid = '') {
 
 document.getElementById('btn-cg-add-row').onclick = () => addCgListRow();
 
+function isPersonalTemplateGid(gid) {
+  if (!gid || gid === 'default' || gid === 'all') return true;
+  const s = String(gid);
+  return s.charAt(0) === 'U' || s.indexOf('P_') === 0 || s.indexOf('U_GUEST') === 0;
+}
+
+function resolveRosterTemplateGid() {
+  const checked = document.querySelector('#cg-target-gids-container input[name="targetGids"]:checked');
+  if (checked && checked.value && !isPersonalTemplateGid(checked.value)) return checked.value;
+  if (currentGroupId && !isPersonalTemplateGid(currentGroupId)) return currentGroupId;
+  if (Array.isArray(globalManagedGroups)) {
+    const real = globalManagedGroups.find(g => g && g.gid && !isPersonalTemplateGid(g.gid));
+    if (real) return real.gid;
+  }
+  return (currentUser && currentUser.userId) || currentGroupId || '';
+}
+
+function alertRosterSaveError(err) {
+  const msg = err && err.message ? String(err.message) : '';
+  if (!msg || /failed to fetch|networkerror|load failed|network error/i.test(msg)) {
+    alert('網路錯誤，無法儲存至伺服器');
+  } else {
+    alert(msg);
+  }
+}
+
 async function loadTemplates() {
   try {
-    const uid = currentUser && currentUser.userId;
-    const gid = currentGroupId || uid;
+    const uid = (typeof getAdminRequestUid === 'function' && getAdminRequestUid())
+      || (currentUser && currentUser.userId)
+      || '';
+    const gid = resolveRosterTemplateGid() || uid;
     if (!gid) {
       currentGroupTemplates = {};
     } else {
@@ -4519,30 +4550,38 @@ document.getElementById('btn-save-template').onclick = async () => {
   if (!text) return alert('名單不可為空！');
   const name = prompt('請輸入此範本的名稱 (例如：週二固定咖)：');
   if (!name) return;
+
+  const uid = (typeof getAdminRequestUid === 'function' && getAdminRequestUid()) || '';
+  if (!uid) return alert('請先用 LINE 登入後再儲存名單');
+  const targetGid = resolveRosterTemplateGid() || uid;
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
+    const res = await fetch(`/api/templates/${encodeURIComponent(targetGid)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: currentUser.userId,
+        uid: uid,
         action: 'save',
         name: name,
-        content: text
+        content: text,
+        targetGid: targetGid
       })
     });
-    const data = await res.json();
-    if (res.ok && data.success) {
+    const data = await readJsonResponse(res);
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || '儲存失敗');
+    }
+    try {
       await loadTemplates();
       await loadLobbyUsers();
-      cgTemplateSelect.value = name;
-      alert('儲存成功且已同步至 Git！');
-    } else {
-      alert(data.error || '儲存失敗');
+      if (cgTemplateSelect) cgTemplateSelect.value = name;
+    } catch (reloadErr) {
+      console.error('名單已儲存，但重新載入失敗:', reloadErr);
     }
+    alert('儲存成功且已同步至 Git！');
   } catch (e) {
-    alert('網路錯誤，無法儲存至伺服器');
+    alertRosterSaveError(e);
   } finally {
     appDiv.className = '';
   }
@@ -4552,28 +4591,30 @@ document.getElementById('btn-delete-template').onclick = async () => {
   const name = cgTemplateSelect.value;
   if (!name) return alert('請先選擇一個範本！');
   if (!confirm(`確定要刪除範本「${name}」嗎？`)) return;
+
+  const uid = (typeof getAdminRequestUid === 'function' && getAdminRequestUid()) || '';
+  if (!uid) return alert('請先用 LINE 登入後再刪除名單');
+  const targetGid = resolveRosterTemplateGid() || uid;
   
   appDiv.className = 'loading';
   try {
-    const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
+    const res = await fetch(`/api/templates/${encodeURIComponent(targetGid)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        uid: currentUser.userId,
+        uid: uid,
         action: 'delete',
-        name: name
+        name: name,
+        targetGid: targetGid
       })
     });
-    const data = await res.json();
-    if (res.ok && data.success) {
-      await loadTemplates();
-      parseAndRenderCgList('');
-      alert('刪除成功且已同步至 Git！');
-    } else {
-      alert(data.error || '刪除失敗');
-    }
+    const data = await readJsonResponse(res);
+    if (!res.ok || !data.success) throw new Error(data.error || '刪除失敗');
+    await loadTemplates();
+    parseAndRenderCgList('');
+    alert('刪除成功且已同步至 Git！');
   } catch (e) {
-    alert('網路錯誤，無法刪除');
+    alertRosterSaveError(e);
   } finally {
     appDiv.className = '';
   }
@@ -4743,8 +4784,8 @@ document.getElementById('btn-submit-create').onclick = async () => {
         gid: currentGroupId,
         targetGids: targetGids,
         gameId: 'dummy',
-        uid: currentUser.userId,
-        name: currentUser.displayName,
+        uid: (typeof getAdminRequestUid === 'function' && getAdminRequestUid()) || (currentUser && currentUser.userId) || '',
+        name: (currentUser && currentUser.displayName) || '',
         action: 'createGame',
         title: document.getElementById('cg-title').value.trim(),
         date: dateStr,
@@ -4762,7 +4803,7 @@ document.getElementById('btn-submit-create').onclick = async () => {
       })
     });
     
-    const result = await res.json();
+    const result = await readJsonResponse(res);
     if (!res.ok) {
       alert(result.error || '建立失敗');
     } else {
@@ -4779,7 +4820,7 @@ document.getElementById('btn-submit-create').onclick = async () => {
       await loadGamesLobby();
     }
   } catch(e) {
-    alert('網路錯誤');
+    alertRosterSaveError(e);
   } finally {
     appDiv.className = '';
     statusMsg.style.display = 'none';
@@ -9338,29 +9379,31 @@ if (btnTaSave) {
     
     if (!content) return alert('請輸入名單內容');
     
+    const uid = (typeof getAdminRequestUid === 'function' && getAdminRequestUid()) || '';
+    if (!uid) return alert('請先用 LINE 登入後再儲存名單');
+    const targetGid = resolveRosterTemplateGid() || uid;
+    
     appDiv.className = 'loading';
     try {
-      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
+      const res = await fetch(`/api/templates/${encodeURIComponent(targetGid)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: currentUser.userId,
+          uid: uid,
           action: 'save',
           name: name,
-          content: content
+          content: content,
+          targetGid: targetGid
         })
       });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        await loadTemplates();
-        document.getElementById('ta-template-select').value = name;
-        document.getElementById('ta-template-select').dispatchEvent(new Event('change'));
-        alert('範本已儲存');
-      } else {
-        alert(data.error || '儲存失敗');
-      }
+      const data = await readJsonResponse(res);
+      if (!res.ok || !data.success) throw new Error(data.error || '儲存失敗');
+      await loadTemplates();
+      document.getElementById('ta-template-select').value = name;
+      document.getElementById('ta-template-select').dispatchEvent(new Event('change'));
+      alert('範本已儲存');
     } catch (e) {
-      alert('網路錯誤，無法儲存至伺服器');
+      alertRosterSaveError(e);
     } finally {
       appDiv.className = '';
     }
@@ -9374,28 +9417,30 @@ if (btnTaDelete) {
     if (!name) return;
     if (!confirm(`確定要刪除範本 ${name} 嗎？`)) return;
     
+    const uid = (typeof getAdminRequestUid === 'function' && getAdminRequestUid()) || '';
+    if (!uid) return alert('請先用 LINE 登入後再刪除名單');
+    const targetGid = resolveRosterTemplateGid() || uid;
+
     appDiv.className = 'loading';
     try {
-      const res = await fetch(`/api/templates/${encodeURIComponent(currentGroupId || currentUser.userId)}`, {
+      const res = await fetch(`/api/templates/${encodeURIComponent(targetGid)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          uid: currentUser.userId,
+          uid: uid,
           action: 'delete',
-          name: name
+          name: name,
+          targetGid: targetGid
         })
       });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        await loadTemplates();
-        document.getElementById('ta-template-select').value = '';
-        document.getElementById('ta-template-select').dispatchEvent(new Event('change'));
-        alert('範本已刪除');
-      } else {
-        alert(data.error || '刪除失敗');
-      }
+      const data = await readJsonResponse(res);
+      if (!res.ok || !data.success) throw new Error(data.error || '刪除失敗');
+      await loadTemplates();
+      document.getElementById('ta-template-select').value = '';
+      document.getElementById('ta-template-select').dispatchEvent(new Event('change'));
+      alert('範本已刪除');
     } catch (e) {
-      alert('網路錯誤，無法刪除');
+      alertRosterSaveError(e);
     } finally {
       appDiv.className = '';
     }

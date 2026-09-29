@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-22
- * Version: 1.3.21
+ * Date: 2026-09-29
+ * Version: 1.3.22
  */
 const express = require('express');
 const compression = require('compression');
@@ -1545,7 +1545,13 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.use((req, res, next) => {
   // Skip JSON parsing for /webhook — LINE SDK middleware needs the raw body
   if (req.path === '/webhook') return next();
-  express.json()(req, res, next);
+  express.json({ limit: '2mb' })(req, res, (err) => {
+    if (!err) return next();
+    const tooLarge = err.type === 'entity.too.large';
+    res.status(err.status || 400).json({
+      error: tooLarge ? '名單內容太大，請減少筆數後再儲存' : '請求內容無法解析'
+    });
+  });
 });
 
 const SYSTEM_LOGS_FILE = path.join(__dirname, 'data', 'systemLogs.json');
@@ -2966,11 +2972,20 @@ app.get('/api/templates/:gid', (req, res) => {
 });
 
 // 儲存/刪除名單範本：以 uid 為主鍵，讓同一帳號在手機／電腦互通
-app.post('/api/templates/:gid', express.json(), async (req, res) => {
+app.post('/api/templates/:gid', express.json({ limit: '2mb' }), async (req, res) => {
+  const body = req.body;
+  if (!body || typeof body !== 'object') {
+    return res.status(400).json({ error: '請求內容無法解析' });
+  }
   const gid = req.params.gid;
-  const { action, name, content, uid } = req.body;
+  const { action, name, content, uid } = body;
+  let storageGid = gid;
+  const targetGid = body.targetGid;
+  if (targetGid && !isPersonalLobbyGid(targetGid) && canManageRosterTemplates(uid, targetGid)) {
+    storageGid = targetGid;
+  }
   
-  if (!canManageRosterTemplates(uid, gid)) {
+  if (!canManageRosterTemplates(uid, storageGid) && !canManageRosterTemplates(uid, gid)) {
     return res.status(403).json({ error: '只有管理員能修改預設名單' });
   }
   
@@ -2978,7 +2993,7 @@ app.post('/api/templates/:gid', express.json(), async (req, res) => {
     if (!name || !content) {
       return res.status(400).json({ error: '名稱與內容不可為空' });
     }
-    for (const key of getRosterTemplateStorageKeys(uid, gid)) {
+    for (const key of getRosterTemplateStorageKeys(uid, storageGid)) {
       if (!rosterTemplates[key]) rosterTemplates[key] = {};
       rosterTemplates[key][name] = content;
     }
@@ -2987,7 +3002,7 @@ app.post('/api/templates/:gid', express.json(), async (req, res) => {
       return res.status(400).json({ error: '未指定要刪除的範本名稱' });
     }
     const seenKeys = new Set();
-    for (const key of collectRosterTemplateSourceKeys(uid, gid)) {
+    for (const key of collectRosterTemplateSourceKeys(uid, storageGid)) {
       if (!key || seenKeys.has(key)) continue;
       seenKeys.add(key);
       if (rosterTemplates[key] && rosterTemplates[key][name] !== undefined) {
@@ -3000,7 +3015,7 @@ app.post('/api/templates/:gid', express.json(), async (req, res) => {
   
   try {
     await saveRosterTemplates();
-    res.json({ success: true, templates: collectRosterTemplates(uid, gid) });
+    res.json({ success: true, templates: collectRosterTemplates(uid, storageGid) });
   } catch (e) {
     console.error('儲存範本失敗:', e);
     res.status(500).json({ error: '伺服器儲存錯誤' });
