@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790648896689,
+    "lastActiveTime": 1790651217588,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9443,12 +9443,20 @@
           "Winnie",
           "冰山葉 T.Yeh",
           "Win Shu",
-          "江こう 洋々"
+          "江こう 洋々",
+          "小白"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 11:06",
+        "name": "小白",
+        "operator": "Bravo(小白）",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 10:28",
         "name": "江こう 洋々",
