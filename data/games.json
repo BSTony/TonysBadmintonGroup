@@ -9703,7 +9703,7 @@
       },
       {
         "title": "8-12",
-        "limit": 12,
+        "limit": 10,
         "backupLimit": 5,
         "fee": "300",
         "label": "",
