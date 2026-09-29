@@ -9873,7 +9873,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790684987296,
-    "lastActiveTime": 1790689767042,
+    "lastActiveTime": 1790689825627,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9922,12 +9922,20 @@
           "Jet",
           "陳呈",
           "海棠",
-          "陳文凱"
+          "陳文凱",
+          "Sean"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "09/29 21:50",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 21:49",
         "name": "陳文凱",
