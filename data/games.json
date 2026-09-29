@@ -9668,7 +9668,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790664344769,
+    "lastActiveTime": 1790664518690,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9681,7 +9681,8 @@
     },
     "uidMap": {
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
-      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9710,11 +9711,19 @@
         "label": "",
         "list": [
           "林淑惠Sophia",
-          "©️張CC～©️"
+          "©️張CC～©️",
+          "弘彬/Jason"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/29 14:48",
+        "name": "弘彬/Jason",
+        "operator": "弘彬/Jason",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/29 14:45",
         "name": "©️張CC～©️",
