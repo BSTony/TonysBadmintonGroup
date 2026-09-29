@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790651626311,
+    "lastActiveTime": 1790651683745,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9415,7 +9415,8 @@
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569",
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "喻心平": "U0220a13b4aec2dec044ce073925f0df9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9442,12 +9443,20 @@
           "江こう 洋々",
           "小白",
           "蘑菇",
-          "中ㄧ"
+          "中ㄧ",
+          "喻心平"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 11:14",
+        "name": "喻心平",
+        "operator": "喻心平",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 11:13",
         "name": "陳呈",
