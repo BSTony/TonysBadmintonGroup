@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790653761541,
+    "lastActiveTime": 1790656101095,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9445,12 +9445,20 @@
           "蘑菇",
           "中ㄧ",
           "喻心平",
-          "凱文"
+          "凱文",
+          "chichi"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 12:28",
+        "name": "chichi",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 11:49",
         "name": "momota",
