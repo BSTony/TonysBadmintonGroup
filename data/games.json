@@ -9385,7 +9385,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790651864418,
+    "lastActiveTime": 1790653761541,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9445,13 +9445,19 @@
           "蘑菇",
           "中ㄧ",
           "喻心平",
-          "凱文",
-          "momota"
+          "凱文"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/29 11:49",
+        "name": "momota",
+        "operator": "劉櫂弘",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 11:17",
         "name": "momota",
