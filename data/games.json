@@ -9691,7 +9691,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790686501430,
+    "lastActiveTime": 1790686845382,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9743,11 +9743,19 @@
           "©️張CC～©️",
           "弘彬/Jason",
           "Kevin",
-          "Mia"
+          "Mia",
+          "淑惠"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/29 21:00",
+        "name": "淑惠",
+        "operator": "林淑惠Sophia",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/29 20:55",
         "name": "Mia",
