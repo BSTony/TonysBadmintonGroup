@@ -9663,7 +9663,7 @@
     "date": "10/3 (六)",
     "time": "08:00~12:00",
     "location": "南港高中",
-    "fee": "",
+    "fee": "150",
     "note": "",
     "tag": "",
     "active": true,
@@ -9703,7 +9703,7 @@
       },
       {
         "title": "8-12",
-        "limit": 20,
+        "limit": 12,
         "backupLimit": 5,
         "fee": "300",
         "label": "",
@@ -9742,6 +9742,7 @@
         "action": "+1",
         "section": "8-12"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
