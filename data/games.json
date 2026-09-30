@@ -9389,7 +9389,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790687355477,
+    "lastActiveTime": 1790732428761,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9444,7 +9444,6 @@
           "Emily🙈🙉🙊",
           "Winnie",
           "冰山葉 T.Yeh",
-          "Win Shu",
           "江こう 洋々",
           "小白",
           "蘑菇",
@@ -9458,6 +9457,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/30 09:40",
+        "name": "Win Shu",
+        "operator": "Win Shu (輸入框)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 21:09",
         "name": "Jet",
