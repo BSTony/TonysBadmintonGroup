@@ -9712,7 +9712,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790738459827,
+    "lastActiveTime": 1790749424346,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9766,11 +9766,19 @@
           "Mia",
           "淑惠",
           "凱文",
-          "陳呈"
+          "陳呈",
+          "J"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/30 14:23",
+        "name": "J",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/30 11:20",
         "name": "陳呈",
