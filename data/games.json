@@ -9389,7 +9389,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790732428761,
+    "lastActiveTime": 1790753401866,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9450,13 +9450,19 @@
           "中ㄧ",
           "喻心平",
           "凱文",
-          "chichi",
-          "Mike"
+          "chichi"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/30 15:30",
+        "name": "Mike",
+        "operator": "Mike (輸入框)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "09/30 09:40",
         "name": "Win Shu",
