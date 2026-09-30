@@ -9726,7 +9726,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790782583594,
+    "lastActiveTime": 1790782788887,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9786,11 +9786,19 @@
           "陳呈",
           "J",
           "Andrew Kuo",
-          "Chen H.R."
+          "Chen H.R.",
+          "Vincent"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/30 23:39",
+        "name": "Vincent",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/30 23:36",
         "name": "FB-Tina TJ Hsu",
