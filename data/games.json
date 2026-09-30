@@ -9726,7 +9726,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790782788887,
+    "lastActiveTime": 1790782809497,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9734,8 +9734,7 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {
-      "林淑惠Sophia": true,
-      "©️張CC～©️": true
+      "林淑惠Sophia": true
     },
     "uidMap": {
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
@@ -9777,7 +9776,6 @@
         "label": "",
         "list": [
           "林淑惠Sophia",
-          "©️張CC～©️",
           "弘彬/Jason",
           "Kevin",
           "Mia",
@@ -9792,6 +9790,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/30 23:40",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "09/30 23:39",
         "name": "Vincent",
