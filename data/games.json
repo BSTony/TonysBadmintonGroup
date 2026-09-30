@@ -9712,7 +9712,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790737002226,
+    "lastActiveTime": 1790738459827,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9765,11 +9765,19 @@
           "Kevin",
           "Mia",
           "淑惠",
-          "凱文"
+          "凱文",
+          "陳呈"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/30 11:20",
+        "name": "陳呈",
+        "operator": "陳呈 (輸入框)",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/30 10:56",
         "name": "凱文",
