@@ -9726,7 +9726,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790762203809,
+    "lastActiveTime": 1790782583594,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9765,7 +9765,8 @@
         "fee": "190",
         "label": "",
         "list": [
-          "Sammy Su"
+          "Sammy Su",
+          "FB-Tina TJ Hsu"
         ]
       },
       {
@@ -9790,6 +9791,13 @@
       }
     ],
     "history": [
+      {
+        "time": "09/30 23:36",
+        "name": "FB-Tina TJ Hsu",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "09/30 17:56",
         "name": "Chen H.R.",
