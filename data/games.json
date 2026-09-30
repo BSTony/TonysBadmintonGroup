@@ -9703,7 +9703,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790686850965,
+    "lastActiveTime": 1790737002226,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9755,11 +9755,19 @@
           "弘彬/Jason",
           "Kevin",
           "Mia",
-          "淑惠"
+          "淑惠",
+          "凱文"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/30 10:56",
+        "name": "凱文",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/29 21:00",
         "name": "林淑惠",
