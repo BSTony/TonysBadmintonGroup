@@ -9712,7 +9712,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790749424346,
+    "lastActiveTime": 1790751981344,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9727,7 +9727,8 @@
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
-      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9767,11 +9768,19 @@
           "淑惠",
           "凱文",
           "陳呈",
-          "J"
+          "J",
+          "Andrew Kuo"
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/30 15:06",
+        "name": "Andrew Kuo",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/30 14:23",
         "name": "J",
