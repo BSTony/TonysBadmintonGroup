@@ -9718,7 +9718,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790751981344,
+    "lastActiveTime": 1790762203809,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9734,7 +9734,8 @@
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
-      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9775,11 +9776,19 @@
           "凱文",
           "陳呈",
           "J",
-          "Andrew Kuo"
+          "Andrew Kuo",
+          "Chen H.R."
         ]
       }
     ],
     "history": [
+      {
+        "time": "09/30 17:56",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/30 15:06",
         "name": "Andrew Kuo",
