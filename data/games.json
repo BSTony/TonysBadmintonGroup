@@ -9624,7 +9624,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790648394703,
-    "lastActiveTime": 1790669689617,
+    "lastActiveTime": 1790737559452,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9646,7 +9646,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9663,12 +9664,20 @@
           "林煥杰",
           "Andrew Kuo",
           "John",
-          "冰山葉 T.Yeh"
+          "冰山葉 T.Yeh",
+          "Gary"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "09/30 11:05",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 15:43",
         "name": "John",
