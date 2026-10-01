@@ -9741,7 +9741,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790822384037,
+    "lastActiveTime": 1790835480917,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9807,11 +9807,19 @@
           "Chen H.R.",
           "Vincent",
           "Gary",
-          "FB-吳霆竣"
+          "FB-吳霆竣",
+          "林立"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/01 14:18",
+        "name": "林立",
+        "operator": "林立 (輸入框)",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/01 10:39",
         "name": "FB-吳霆竣",
