@@ -9726,7 +9726,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790782825251,
+    "lastActiveTime": 1790813750097,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9742,7 +9742,8 @@
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {
       "Vincent": "Fb-Vincent"
@@ -9787,11 +9788,19 @@
           "J",
           "Andrew Kuo",
           "Chen H.R.",
-          "Vincent"
+          "Vincent",
+          "Gary"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/01 08:15",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "09/30 23:40",
         "name": "©️張CC～©️",
