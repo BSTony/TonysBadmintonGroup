@@ -9389,7 +9389,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790647388486,
-    "lastActiveTime": 1790762638313,
+    "lastActiveTime": 1790813779496,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9421,7 +9421,8 @@
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "喻心平": "U0220a13b4aec2dec044ce073925f0df9",
-      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7",
+      "Evan": "U98e70298aa928f28a3cbf5daa199273f"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -9451,12 +9452,20 @@
           "喻心平",
           "凱文",
           "chichi",
-          "Jet"
+          "Jet",
+          "Evan"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/01 08:16",
+        "name": "Evan",
+        "operator": "Evan",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/30 18:03",
         "name": "Jet",
