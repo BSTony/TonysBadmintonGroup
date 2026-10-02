@@ -9754,7 +9754,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790835480917,
+    "lastActiveTime": 1790899532148,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9813,7 +9813,6 @@
           "Kevin",
           "Mia",
           "淑惠",
-          "凱文",
           "陳呈",
           "J",
           "Andrew Kuo",
@@ -9826,6 +9825,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/02 08:05",
+        "name": "凱文",
+        "operator": "陳文凱",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "10/01 14:18",
         "name": "林立",
