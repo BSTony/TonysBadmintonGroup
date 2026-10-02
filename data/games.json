@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790933944552,
+    "lastActiveTime": 1790940175015,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9701,7 +9701,6 @@
         "fee": "150",
         "label": "",
         "list": [
-          "云",
           "AddieWang",
           "王小成"
         ]
@@ -9742,6 +9741,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/02 19:22",
+        "name": "云",
+        "operator": "鄭人云",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "10/02 17:39",
         "name": "王小成",
