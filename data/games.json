@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790899532148,
+    "lastActiveTime": 1790921894660,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9685,7 +9685,8 @@
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
     },
     "noteMap": {
       "Vincent": "Fb-Vincent"
@@ -9699,7 +9700,8 @@
         "fee": "150",
         "label": "",
         "list": [
-          "云"
+          "云",
+          "AddieWang"
         ]
       },
       {
@@ -9737,6 +9739,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/02 14:18",
+        "name": "AddieWang",
+        "operator": "AddieWang",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "10/02 08:05",
         "name": "凱文",
