@@ -9940,7 +9940,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790684987296,
-    "lastActiveTime": 1790690202633,
+    "lastActiveTime": 1790916576511,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9992,12 +9992,20 @@
           "海棠",
           "陳文凱",
           "Sean",
-          "afrahuang"
+          "afrahuang",
+          "FB 廖子萲"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/02 12:49",
+        "name": "FB 廖子萲",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "09/29 21:56",
         "name": "afrahuang",
