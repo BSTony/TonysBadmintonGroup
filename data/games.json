@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790921894660,
+    "lastActiveTime": 1790933043136,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9686,7 +9686,8 @@
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
-      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
     },
     "noteMap": {
       "Vincent": "Fb-Vincent"
@@ -9734,11 +9735,19 @@
           "Vincent",
           "Gary",
           "FB-吳霆竣",
-          "林立"
+          "林立",
+          "黃政豪"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/02 17:24",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/02 14:18",
         "name": "AddieWang",
