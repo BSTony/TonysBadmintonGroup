@@ -9698,7 +9698,7 @@
     "sections": [
       {
         "title": "8-10",
-        "limit": 6,
+        "limit": 4,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
@@ -9709,7 +9709,7 @@
       },
       {
         "title": "10-12",
-        "limit": 6,
+        "limit": 4,
         "backupLimit": 5,
         "fee": "190",
         "label": "",
@@ -9720,7 +9720,7 @@
       },
       {
         "title": "8-12",
-        "limit": 16,
+        "limit": 18,
         "backupLimit": 5,
         "fee": "300",
         "label": "",
