@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790933043136,
+    "lastActiveTime": 1790933944552,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9702,7 +9702,8 @@
         "label": "",
         "list": [
           "云",
-          "AddieWang"
+          "AddieWang",
+          "王小成"
         ]
       },
       {
@@ -9741,6 +9742,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/02 17:39",
+        "name": "王小成",
+        "operator": "王志成",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "10/02 17:24",
         "name": "黃政豪",
