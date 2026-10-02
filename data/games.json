@@ -9666,14 +9666,15 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790951536513,
+    "lastActiveTime": 1790956152104,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {
-      "FB-吳霆竣": "0930595854"
+      "FB-吳霆竣": "0930595854",
+      "FB-Brandon": "0932307867"
     },
     "paidMap": {
       "林淑惠Sophia": true
@@ -9740,11 +9741,19 @@
           "林立",
           "黃政豪",
           "John",
-          "腳皮"
+          "腳皮",
+          "FB-Brandon"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/02 23:49",
+        "name": "FB-Brandon",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/02 22:32",
         "name": "腳皮",
