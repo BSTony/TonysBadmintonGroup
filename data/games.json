@@ -9949,7 +9949,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790684987296,
-    "lastActiveTime": 1790916576511,
+    "lastActiveTime": 1790924791023,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9981,7 +9981,9 @@
       "陳文凱": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
     },
-    "noteMap": {},
+    "noteMap": {
+      "FB 廖子萲": "雪倫"
+    },
     "allowUserNoteEdit": true,
     "sections": [
       {
