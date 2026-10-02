@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790956152104,
+    "lastActiveTime": 1790981461527,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9690,7 +9690,8 @@
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
-      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "政達": "Ub3fbddfc79aa3e5533b06da553d5bdce"
     },
     "noteMap": {
       "Vincent": "Fb-Vincent"
@@ -9742,11 +9743,19 @@
           "黃政豪",
           "John",
           "腳皮",
-          "FB-Brandon"
+          "FB-Brandon",
+          "政達"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/03 06:51",
+        "name": "政達",
+        "operator": "政達",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/02 23:49",
         "name": "FB-Brandon",
