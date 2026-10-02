@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790951348114,
+    "lastActiveTime": 1790951536513,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9688,7 +9688,8 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
     },
     "noteMap": {
       "Vincent": "Fb-Vincent"
@@ -9738,11 +9739,19 @@
           "FB-吳霆竣",
           "林立",
           "黃政豪",
-          "John"
+          "John",
+          "腳皮"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/02 22:32",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/02 22:29",
         "name": "John",
