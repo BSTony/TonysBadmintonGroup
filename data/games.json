@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790940175015,
+    "lastActiveTime": 1790951348114,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9687,7 +9687,8 @@
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
-      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "noteMap": {
       "Vincent": "Fb-Vincent"
@@ -9736,11 +9737,19 @@
           "Gary",
           "FB-吳霆竣",
           "林立",
-          "黃政豪"
+          "黃政豪",
+          "John"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/02 22:29",
+        "name": "John",
+        "operator": "John",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/02 19:22",
         "name": "云",
