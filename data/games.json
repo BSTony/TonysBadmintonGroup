@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790988326139,
+    "lastActiveTime": 1790988339023,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9692,7 +9692,8 @@
       "淑惠": true,
       "陳呈": true,
       "弘彬/Jason": true,
-      "政達": true
+      "政達": true,
+      "林立": true
     },
     "uidMap": {
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
