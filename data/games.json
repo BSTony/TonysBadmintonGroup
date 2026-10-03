@@ -9666,7 +9666,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790663879571,
-    "lastActiveTime": 1790981461527,
+    "lastActiveTime": 1790986641924,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -9677,7 +9677,8 @@
       "FB-Brandon": "0932307867"
     },
     "paidMap": {
-      "林淑惠Sophia": true
+      "林淑惠Sophia": true,
+      "J": true
     },
     "uidMap": {
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
