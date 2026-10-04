@@ -10024,7 +10024,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790684987296,
-    "lastActiveTime": 1790924791023,
+    "lastActiveTime": 1791124077385,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10035,7 +10035,6 @@
     },
     "paidMap": {
       "謝東霖 Tony": true,
-      "Kay": true,
       "Ong": true,
       "憲": true,
       "Robert": true,
@@ -10068,7 +10067,6 @@
         "label": "",
         "list": [
           "謝東霖 Tony",
-          "Kay",
           "Ong",
           "憲",
           "Robert",
@@ -10085,6 +10083,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/04 22:27",
+        "name": "Kay",
+        "operator": "Kay",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/02 12:49",
         "name": "FB 廖子萲",
