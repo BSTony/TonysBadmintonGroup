@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-09-29
- * Version: 1.3.22
+ * Date: 2026-10-05
+ * Version: 1.3.23
  */
 const express = require('express');
 const compression = require('compression');
@@ -3024,6 +3024,36 @@ app.post('/api/templates/:gid', express.json({ limit: '2mb' }), async (req, res)
 
 // 產生完整名單字串的輔助函式
 function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
+  // 雙十國慶：10/1–10/15（台北時間），與大廳網頁同一段期間
+  const isDoubleTenthSeason = (now = new Date()) => {
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Taipei',
+        month: 'numeric',
+        day: 'numeric'
+      }).formatToParts(now);
+      let month = 0;
+      let day = 0;
+      for (const part of parts) {
+        if (part.type === 'month') month = Number(part.value);
+        if (part.type === 'day') day = Number(part.value);
+      }
+      return month === 10 && day >= 1 && day <= 15;
+    } catch (e) {
+      return false;
+    }
+  };
+  const doubleTenth = isDoubleTenthSeason();
+  const brand = doubleTenth ? '#1F57B8' : '#1DB446';
+  const actionColor = doubleTenth ? '#D62538' : '#1DB446';
+  const openBadgeBg = doubleTenth ? '#E7F0FF' : '#e8f5e9';
+  const openBadgeText = doubleTenth ? '#1A4EAE' : '#1DB446';
+  const fullBadgeBg = doubleTenth ? '#FDE8EA' : '#ffebee';
+  const fullBadgeText = doubleTenth ? '#D62538' : '#ff4c4c';
+  const rowText = doubleTenth ? '#163A78' : '#333333';
+  const sepColor = doubleTenth ? '#E6EEF8' : '#f4f4f4';
+  const headerSep = doubleTenth ? '#D5E2F7' : '#eeeeee';
+  const chevron = doubleTenth ? '#B7C6DE' : '#cccccc';
   const flexContents = [];
   targetGames.forEach((g, index) => {
     if (index >= 15) return;
@@ -3057,8 +3087,8 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
 
     if (g.sections && g.sections.length > 1) {
       const titleRowContents = [
-        { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
-        { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
+        { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: rowText, flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
+        { type: "text", text: "〉", size: "sm", color: chevron, flex: 0, margin: "sm", gravity: "center" }
       ];
       const titleRowBox = {
         type: "box",
@@ -3099,11 +3129,11 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
               height: "18px",
               width: sIsFull ? (sLimit > 0 ? (sBackupCount > 0 ? "58px" : "46px") : (sBackupCount > 0 ? "36px" : "28px")) : "36px",
               cornerRadius: "sm",
-              backgroundColor: sIsFull ? "#ffebee" : "#e8f5e9",
+              backgroundColor: sIsFull ? fullBadgeBg : openBadgeBg,
               justifyContent: "center",
               alignItems: "center",
               contents: [
-                { type: "text", text: sStatusText, size: "xxs", color: sIsFull ? "#ff4c4c" : "#1DB446", align: "center" }
+                { type: "text", text: sStatusText, size: "xxs", color: sIsFull ? fullBadgeText : openBadgeText, align: "center" }
               ]
             }
           ]
@@ -3118,7 +3148,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       };
     } else {
       const rowContents = [
-        { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: "#333333", flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
+        { type: "text", text: isTarget ? `🔥 ${combinedTitle}` : combinedTitle, size: "xs", color: rowText, flex: 4, wrap: false, weight: isTarget ? "bold" : "regular" },
         {
           type: "box",
           layout: "horizontal",
@@ -3126,14 +3156,14 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
           height: "22px",
           width: isFull ? (limit > 0 ? (backupCount > 0 ? "70px" : "56px") : (backupCount > 0 ? "46px" : "36px")) : "48px",
           cornerRadius: "sm",
-          backgroundColor: isFull ? "#ffebee" : "#e8f5e9",
+          backgroundColor: isFull ? fullBadgeBg : openBadgeBg,
           justifyContent: "center",
           alignItems: "center",
           contents: [
-            { type: "text", text: statusText, size: "xxs", color: isFull ? "#ff4c4c" : "#1DB446", align: "center", weight: "bold" }
+            { type: "text", text: statusText, size: "xxs", color: isFull ? fullBadgeText : openBadgeText, align: "center", weight: "bold" }
           ]
         },
-        { type: "text", text: "〉", size: "sm", color: "#cccccc", flex: 0, margin: "sm", gravity: "center" }
+        { type: "text", text: "〉", size: "sm", color: chevron, flex: 0, margin: "sm", gravity: "center" }
       ];
 
       finalBox = {
@@ -3155,7 +3185,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     }
 
     if (index > 0 && !isTarget) {
-      flexContents.push({ type: "separator", color: "#f4f4f4" });
+      flexContents.push({ type: "separator", color: sepColor });
     }
     if (index > 0 && isTarget) {
       flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
@@ -3176,43 +3206,69 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       layout: "horizontal",
       margin: "md",
       paddingAll: "10px",
-      backgroundColor: "#e8f5e9",
+      backgroundColor: doubleTenth ? "#E7F0FF" : "#e8f5e9",
       cornerRadius: "md",
       alignItems: "center",
       contents: [
-        { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: "#1DB446", flex: 0 },
+        { type: "text", text: "🔔 最新通知", size: "xs", weight: "bold", color: brand, flex: 0 },
         { type: "text", text: cleanText, size: "xs", color: "#333333", wrap: true, margin: "sm", flex: 1 }
       ]
     });
   }
 
+  const titleRow = {
+    type: "box",
+    layout: "horizontal",
+    alignItems: "center",
+    contents: [
+      { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: brand, flex: 1 },
+      {
+        type: "button",
+        style: "primary",
+        color: actionColor,
+        height: "sm",
+        flex: 0,
+        action: { type: "uri", label: "進入大廳", uri: liffBaseUrl }
+      }
+    ]
+  };
+  const header = doubleTenth ? {
+    type: "box",
+    layout: "vertical",
+    paddingAll: "0px",
+    backgroundColor: "#F4F8FF",
+    contents: [
+      {
+        type: "box",
+        layout: "horizontal",
+        height: "6px",
+        contents: [
+          { type: "box", layout: "vertical", flex: 34, backgroundColor: "#1F57B8", contents: [{ type: "filler" }] },
+          { type: "box", layout: "vertical", flex: 10, backgroundColor: "#FFFFFF", contents: [{ type: "filler" }] },
+          { type: "box", layout: "vertical", flex: 56, backgroundColor: "#D62538", contents: [{ type: "filler" }] }
+        ]
+      },
+      {
+        type: "box",
+        layout: "vertical",
+        paddingStart: "16px",
+        paddingEnd: "16px",
+        paddingTop: "12px",
+        paddingBottom: "4px",
+        contents: [titleRow, { type: "separator", margin: "md", color: headerSep }]
+      }
+    ]
+  } : {
+    type: "box",
+    layout: "vertical",
+    paddingBottom: "none",
+    contents: [titleRow, { type: "separator", margin: "md", color: headerSep }]
+  };
+
   return {
     type: "bubble",
     size: "mega",
-    header: {
-      type: "box",
-      layout: "vertical",
-      paddingBottom: "none",
-      contents: [
-        {
-          type: "box",
-          layout: "horizontal",
-          alignItems: "center",
-          contents: [
-            { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: "#1DB446", flex: 1 },
-            {
-              type: "button",
-              style: "primary",
-              color: "#1DB446",
-              height: "sm",
-              flex: 0,
-              action: { type: "uri", label: "進入大廳", uri: liffBaseUrl }
-            }
-          ]
-        },
-        { type: "separator", margin: "md", color: "#eeeeee" }
-      ]
-    },
+    header,
     body: {
       type: "box",
       layout: "vertical",
