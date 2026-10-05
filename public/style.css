@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
-  Date: 2026-09-22
-  Version: 1.2.8
+  Date: 2026-10-05
+  Version: 1.2.9
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -31,6 +31,163 @@ body {
   color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 雙十國慶背景：10/1–10/15（台北時間）由 index.html 加上 html.double-tenth */
+html.double-tenth,
+html.double-tenth body {
+  background-color: #f7f4ef;
+}
+.dt-scene {
+  display: none;
+}
+html.double-tenth .dt-scene {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background-color: #f7f8fb;
+  background-image:
+    radial-gradient(ellipse 90px 32px at 14% 72px, rgba(255, 255, 255, 0.55), transparent 70%),
+    radial-gradient(ellipse 54px 22px at 20% 96px, rgba(255, 255, 255, 0.4), transparent 72%),
+    radial-gradient(ellipse 120px 36px at 46% 110px, rgba(255, 255, 255, 0.35), transparent 72%),
+    linear-gradient(180deg, #1f57b8 0px, #6ea4ef 110px, #e7f0fc 190px, #f7f8fb 250px, #ffffff 320px, #ffffff calc(100% - 200px), #ffd5dc calc(100% - 90px), #d62538 100%);
+}
+html.double-tenth #app {
+  z-index: 1;
+}
+html.double-tenth .dt-field {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: -12%;
+  height: 210px;
+  background: linear-gradient(180deg, rgba(214, 37, 56, 0) 0%, rgba(214, 37, 56, 0.2) 40%, rgba(176, 16, 36, 0.55) 100%);
+  border-radius: 50% 50% 0 0;
+}
+html.double-tenth .dt-sun {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  width: 168px;
+  height: 168px;
+}
+html.double-tenth .dt-sun-rays,
+html.double-tenth .dt-sun-core {
+  position: absolute;
+  display: block;
+}
+html.double-tenth .dt-sun-rays {
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from -6deg, rgba(255, 255, 255, 0.96) 0deg 7deg, transparent 7deg 30deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 21%, #000 22% 100%);
+  mask: radial-gradient(circle, transparent 0 21%, #000 22% 100%);
+  animation: dt-spin 72s linear infinite;
+}
+html.double-tenth .dt-sun-core {
+  left: 50%;
+  top: 50%;
+  width: 30%;
+  height: 30%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.9);
+}
+html.double-tenth .dt-blossom {
+  position: absolute;
+  display: block;
+  width: 54px;
+  height: 54px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g fill='%23fff8fb' stroke='%23f3a8b8' stroke-width='1.2'><ellipse cx='50' cy='22' rx='11' ry='18'/><ellipse cx='50' cy='22' rx='11' ry='18' transform='rotate(72,50,50)'/><ellipse cx='50' cy='22' rx='11' ry='18' transform='rotate(144,50,50)'/><ellipse cx='50' cy='22' rx='11' ry='18' transform='rotate(216,50,50)'/><ellipse cx='50' cy='22' rx='11' ry='18' transform='rotate(288,50,50)'/></g><circle cx='50' cy='50' r='6.5' fill='%23f2c14e' stroke='%23e2a52a' stroke-width='0.6'/><circle cx='50' cy='50' r='2.4' fill='%23fff6d4'/></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(120, 20, 40, 0.18));
+}
+html.double-tenth .dt-blossom-a { top: 18%; left: 2%; width: 62px; height: 62px; }
+html.double-tenth .dt-blossom-b { top: 34%; right: 3%; width: 46px; height: 46px; }
+html.double-tenth .dt-blossom-c { top: 58%; left: -6px; width: 40px; height: 40px; }
+html.double-tenth .dt-blossom-d { top: 72%; right: 1%; width: 70px; height: 70px; }
+html.double-tenth .dt-blossom-e { top: 86%; left: 8%; width: 36px; height: 36px; }
+html.double-tenth .dt-spark {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 -16px 0 -0.5px #fff,
+    0 16px 0 -0.5px #ffe08a,
+    16px 0 0 -0.5px #fff,
+    -16px 0 0 -0.5px #ffd5dc,
+    11px 11px 0 -0.5px #fff7d6,
+    -11px 11px 0 -0.5px #fff,
+    11px -11px 0 -0.5px #fff,
+    -11px -11px 0 -0.5px #ffe08a;
+  animation: dt-twinkle 2.8s ease-in-out infinite;
+}
+html.double-tenth .dt-spark-a { top: 11%; left: 22%; }
+html.double-tenth .dt-spark-b { top: 8%; left: 48%; animation-delay: 0.8s; }
+html.double-tenth .dt-spark-c { top: 22%; right: 28%; animation-delay: 1.4s; }
+html.double-tenth .dt-petal {
+  position: absolute;
+  display: block;
+  width: 9px;
+  height: 13px;
+  border-radius: 80% 0 80% 0;
+  background: #fff;
+  opacity: 0.9;
+  animation: dt-fall linear infinite;
+}
+html.double-tenth .dt-petal-1 { left: 12%; top: 8%; background: #fff; animation-duration: 16s; }
+html.double-tenth .dt-petal-2 { left: 28%; top: 0; background: #ffd0d8; animation-duration: 19s; animation-delay: -6s; }
+html.double-tenth .dt-petal-3 { left: 46%; top: 14%; background: #fff; animation-duration: 21s; animation-delay: -3s; }
+html.double-tenth .dt-petal-4 { left: 63%; top: 4%; background: #ffe4ea; animation-duration: 17s; animation-delay: -11s; }
+html.double-tenth .dt-petal-5 { left: 78%; top: 18%; background: #fff; animation-duration: 23s; animation-delay: -8s; }
+html.double-tenth .dt-petal-6 { left: 88%; top: 6%; background: #ffd6de; animation-duration: 18s; animation-delay: -14s; }
+@keyframes dt-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes dt-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+@keyframes dt-fall {
+  0% { transform: translate3d(0, -8vh, 0) rotate(0deg); }
+  100% { transform: translate3d(16px, 108vh, 0) rotate(260deg); }
+}
+@media (min-width: 1100px) {
+  html.double-tenth .dt-sun {
+    top: 28px;
+    right: 40px;
+    width: 220px;
+    height: 220px;
+  }
+  html.double-tenth .dt-blossom-a { left: 4vw; top: 16%; width: 84px; height: 84px; }
+  html.double-tenth .dt-blossom-d { right: 3vw; width: 96px; height: 96px; }
+}
+@media (max-width: 760px) {
+  html.double-tenth .view {
+    padding-top: 96px;
+  }
+  html.double-tenth .dt-sun {
+    top: 12px;
+    right: 14px;
+    width: 72px;
+    height: 72px;
+  }
+  html.double-tenth .dt-blossom-a { top: 108px; left: 10px; width: 42px; height: 42px; }
+  html.double-tenth .dt-blossom-b { top: 132px; right: 16px; width: 34px; height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.double-tenth .dt-sun-rays,
+  html.double-tenth .dt-spark,
+  html.double-tenth .dt-petal {
+    animation: none;
+  }
 }
 
 #app {
