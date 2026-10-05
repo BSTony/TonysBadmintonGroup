@@ -10207,5 +10207,63 @@
       }
     ],
     "isManualEnded": false
+  },
+  "17911655389822": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "17911655389822",
+    "title": "週一 港中",
+    "date": "10/12 (一)",
+    "time": "19:10~21:30",
+    "location": "南港高中",
+    "fee": "",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1791165538982,
+    "lastActiveTime": 1791165538982,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "謝東霖 Tony": true,
+      "Kay": true,
+      "陳呈": true,
+      "林煥杰": true,
+      "Andrew Kuo": true
+    },
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 19,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay",
+          "陳呈",
+          "林煥杰",
+          "Andrew Kuo"
+        ],
+        "fee": ""
+      }
+    ]
   }
 }
