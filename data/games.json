@@ -10221,7 +10221,7 @@
     "date": "10/12 (一)",
     "time": "19:10~21:30",
     "location": "南港高中",
-    "fee": "",
+    "fee": "230",
     "note": "",
     "tag": "",
     "active": true,
@@ -10262,8 +10262,9 @@
           "林煥杰",
           "Andrew Kuo"
         ],
-        "fee": ""
+        "fee": "230"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
