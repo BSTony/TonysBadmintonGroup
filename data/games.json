@@ -10237,7 +10237,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791279868039,
+    "lastActiveTime": 1791279873412,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10277,13 +10277,21 @@
           "Tank Lin",
           "花花",
           "柚子",
-          "曾Jim凱"
+          "曾Jim凱",
+          "Ashley"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/06 17:44",
+        "name": "Ashley",
+        "operator": "曾Jim凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/06 17:44",
         "name": "曾Jim凱",
