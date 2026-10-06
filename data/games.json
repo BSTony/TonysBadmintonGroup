@@ -10024,7 +10024,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790684987296,
-    "lastActiveTime": 1791281293717,
+    "lastActiveTime": 1791282481835,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10055,7 +10055,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "海棠": "Ufa8dba5febf9f719da07f7e507391a21",
       "陳文凱": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8"
+      "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {
       "FB 廖子萲": "雪倫"
@@ -10079,12 +10080,20 @@
           "陳文凱",
           "Sean",
           "afrahuang",
-          "FB 廖子萲"
+          "FB 廖子萲",
+          "©️張CC～©️"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/06 18:28",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/04 22:27",
         "name": "Kay",
