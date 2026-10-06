@@ -10237,7 +10237,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791276139065,
+    "lastActiveTime": 1791279868039,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10257,7 +10257,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
+      "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10275,13 +10276,21 @@
           "Andrew Kuo",
           "Tank Lin",
           "花花",
-          "柚子"
+          "柚子",
+          "曾Jim凱"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/06 17:44",
+        "name": "曾Jim凱",
+        "operator": "曾Jim凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/06 16:42",
         "name": "柚子",
