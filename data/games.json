@@ -10237,7 +10237,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791279873412,
+    "lastActiveTime": 1791279986825,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10258,7 +10258,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
-      "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11"
+      "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10278,13 +10279,21 @@
           "花花",
           "柚子",
           "曾Jim凱",
-          "Ashley"
+          "Ashley",
+          "King"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/06 17:46",
+        "name": "King",
+        "operator": "King",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/06 17:44",
         "name": "Ashley",
