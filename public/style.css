@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
-  Date: 2026-10-05
-  Version: 1.2.10
+  Date: 2026-10-06
+  Version: 1.2.11
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -992,6 +992,21 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
   75%, 80% { transform: translateX(4px); }
   85%, 100% { transform: translateX(0); }
 }
+
+.header-icon .pig-body { fill: #FFD3B0; }
+.header-icon .pig-ear { fill: #FFA5A8; }
+.header-icon .pig-ear-inner { fill: #FD7E89; }
+.header-icon .pig-snout { fill: #FD7E84; }
+.header-icon .pig-smile,
+.header-icon .pig-pupil,
+.header-icon .pig-nostril { fill: #2C2F31; }
+html.double-tenth .header-icon .pig-body { fill: #D62538; }
+html.double-tenth .header-icon .pig-ear { fill: #1F57B8; }
+html.double-tenth .header-icon .pig-ear-inner { fill: #FFFFFF; }
+html.double-tenth .header-icon .pig-snout { fill: #FFFFFF; }
+html.double-tenth .header-icon .pig-smile,
+html.double-tenth .header-icon .pig-pupil,
+html.double-tenth .header-icon .pig-nostril { fill: #163A78; }
 
 .pig-pupil {
   animation: pupilMove 10s infinite ease-in-out;
