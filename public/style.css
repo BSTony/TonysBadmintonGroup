@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-10-06
-  Version: 1.2.12
+  Version: 1.2.13
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -1011,11 +1011,28 @@ html.double-tenth .header-icon .pig-nostril { fill: #163A78; }
 html.double-tenth .header-icon .pig-classic { display: none; }
 html.double-tenth .header-icon .pig-abstract { display: block; }
 html.double-tenth .header-icon .pig-abs-ear,
-html.double-tenth .header-icon .pig-abs-head { fill: url(#pig-flag-wash); }
-html.double-tenth .header-icon .pig-abs-inner,
-html.double-tenth .header-icon .pig-abs-snout { fill: #FFFDFB; }
+html.double-tenth .header-icon .pig-abs-head {
+  fill: url(#pig-flag-wash);
+  stroke: #102448;
+  stroke-width: 7;
+}
+html.double-tenth .header-icon .pig-abs-inner {
+  fill: #FFFFFF;
+  stroke: #102448;
+  stroke-width: 2.6;
+}
+html.double-tenth .header-icon .pig-abs-snout {
+  fill: #FFFFFF;
+  stroke: #102448;
+  stroke-width: 4;
+}
+html.double-tenth .header-icon .pig-abs-eye-ring {
+  fill: #FFFFFF;
+  stroke: #102448;
+  stroke-width: 2.4;
+}
 html.double-tenth .header-icon .pig-abs-eye,
-html.double-tenth .header-icon .pig-abs-nostril { fill: #1A4EAE; }
+html.double-tenth .header-icon .pig-abs-nostril { fill: #071833; }
 
 .pig-pupil {
   animation: pupilMove 10s infinite ease-in-out;
