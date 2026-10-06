@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-10-06
-  Version: 1.2.13
+  Version: 1.2.14
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -1000,39 +1000,17 @@ button:disabled { opacity: 0.5; cursor: not-allowed; animation: none !important;
 .header-icon .pig-smile,
 .header-icon .pig-pupil,
 .header-icon .pig-nostril { fill: #2C2F31; }
-html.double-tenth .header-icon .pig-body { fill: #D62538; }
-html.double-tenth .header-icon .pig-ear { fill: #1F57B8; }
+.header-icon .pig-flag-overlay { display: none; }
+html.double-tenth .header-icon .pig-flag-overlay { display: block; }
+html.double-tenth .header-icon .pig-flag-overlay use {
+  fill: url(#pig-flag-wash) !important;
+  opacity: 0.82;
+}
 html.double-tenth .header-icon .pig-ear-inner { fill: #FFFFFF; }
-html.double-tenth .header-icon .pig-snout { fill: #FFFFFF; }
+html.double-tenth .header-icon .pig-snout { fill: #FFF6F4; }
 html.double-tenth .header-icon .pig-smile,
 html.double-tenth .header-icon .pig-pupil,
-html.double-tenth .header-icon .pig-nostril { fill: #163A78; }
-.header-icon .pig-abstract { display: none; }
-html.double-tenth .header-icon .pig-classic { display: none; }
-html.double-tenth .header-icon .pig-abstract { display: block; }
-html.double-tenth .header-icon .pig-abs-ear,
-html.double-tenth .header-icon .pig-abs-head {
-  fill: url(#pig-flag-wash);
-  stroke: #102448;
-  stroke-width: 7;
-}
-html.double-tenth .header-icon .pig-abs-inner {
-  fill: #FFFFFF;
-  stroke: #102448;
-  stroke-width: 2.6;
-}
-html.double-tenth .header-icon .pig-abs-snout {
-  fill: #FFFFFF;
-  stroke: #102448;
-  stroke-width: 4;
-}
-html.double-tenth .header-icon .pig-abs-eye-ring {
-  fill: #FFFFFF;
-  stroke: #102448;
-  stroke-width: 2.4;
-}
-html.double-tenth .header-icon .pig-abs-eye,
-html.double-tenth .header-icon .pig-abs-nostril { fill: #071833; }
+html.double-tenth .header-icon .pig-nostril { fill: #1A1A1A; }
 
 .pig-pupil {
   animation: pupilMove 10s infinite ease-in-out;
