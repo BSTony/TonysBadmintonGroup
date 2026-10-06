@@ -10237,7 +10237,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791259852336,
+    "lastActiveTime": 1791276084327,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10273,13 +10273,21 @@
           "陳呈",
           "林煥杰",
           "Andrew Kuo",
-          "Tank Lin"
+          "Tank Lin",
+          "花花"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/06 16:41",
+        "name": "花花",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/06 12:10",
         "name": "Tank Lin",
