@@ -10497,7 +10497,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791345016535,
+    "lastActiveTime": 1791360272893,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10524,7 +10524,8 @@
       "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
-      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582"
+      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10547,13 +10548,21 @@
           "Mile",
           "jack",
           "凱文",
-          "心平"
+          "心平",
+          "江こう 洋々"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 16:04",
+        "name": "江こう 洋々",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 11:50",
         "name": "杜威霖 Andy",
