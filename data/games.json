@@ -10535,7 +10535,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791361953978,
+    "lastActiveTime": 1791362311264,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10565,7 +10565,8 @@
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "小蔡": "U3c633bac1ead8ca7a7def805e6f58248",
-      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10593,13 +10594,21 @@
           "雪倫",
           "小蔡",
           "Emily🙈🙉🙊",
-          "Winnie"
+          "Winnie",
+          "Tank Lin"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 16:38",
+        "name": "Tank Lin",
+        "operator": "Tank Lin",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 16:32",
         "name": "Winnie",
