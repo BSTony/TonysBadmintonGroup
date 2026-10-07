@@ -10535,7 +10535,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791361932105,
+    "lastActiveTime": 1791361946716,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10564,7 +10564,8 @@
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
-      "小蔡": "U3c633bac1ead8ca7a7def805e6f58248"
+      "小蔡": "U3c633bac1ead8ca7a7def805e6f58248",
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10590,13 +10591,21 @@
           "心平",
           "江こう 洋々",
           "雪倫",
-          "小蔡"
+          "小蔡",
+          "Emily🙈🙉🙊"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 16:32",
+        "name": "Emily🙈🙉🙊",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 16:32",
         "name": "小蔡",
