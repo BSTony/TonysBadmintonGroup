@@ -10377,7 +10377,7 @@
       "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1791288206098451",
-    "title": "週二 南港運 冷氣團",
+    "title": "週二 南港運 PM 6-8",
     "date": "10/13 (二)",
     "time": "18:00~20:00",
     "location": "南港運動中心",
@@ -10453,7 +10453,8 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1791335343030922": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
