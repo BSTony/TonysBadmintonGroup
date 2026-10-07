@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5025,
+    "viewCount": 5026,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -542,8 +542,8 @@
       "U522577348e19db90574e8dd6b95de386": {
         "displayName": "Darren",
         "firstVisit": 1783631699397,
-        "count": 8,
-        "lastVisit": 1790047513089,
+        "count": 9,
+        "lastVisit": 1791363967099,
         "pictureUrl": "https://profile.line-scdn.net/0m02ed50737251d8f55f2dde7f32e3067f0b1a7dc47723"
       },
       "Uf3a2215c0fc68cd05d651ac0dddf1f27": {
@@ -1390,6 +1390,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1791363967099,
+        "userId": "U522577348e19db90574e8dd6b95de386",
+        "displayName": "Darren",
+        "pictureUrl": "https://profile.line-scdn.net/0m02ed50737251d8f55f2dde7f32e3067f0b1a7dc47723"
+      },
       {
         "time": 1791363406361,
         "userId": "U1302ddcec82bfd0d9b9eba641676ea0a",
@@ -13378,12 +13384,6 @@
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
         "displayName": "賴柚子",
         "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
-      },
-      {
-        "time": 1786881880126,
-        "userId": "U33ec3d57827236fa5ed0f2da4c6e8205",
-        "displayName": "Matt孟錡",
-        "pictureUrl": "https://profile.line-scdn.net/0hnhuiWYH1MUdYECFqNUpPOChAMi17YWhVJ3V2dD9EPyQwcHdGcnErcj4XZ35jInQQciV9dT0Yb3RUA0YhRkbNc18gbHZlIXMZcn57pA"
       }
     ]
   },
