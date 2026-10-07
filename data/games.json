@@ -10160,7 +10160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790864175964,
-    "lastActiveTime": 1791334437425,
+    "lastActiveTime": 1791342131384,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10177,11 +10177,20 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": [],
+        "list": [
+          "心平"
+        ],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "10/07 11:02",
+        "name": "心平",
+        "operator": "劉櫂弘",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 08:53",
         "name": "花花",
