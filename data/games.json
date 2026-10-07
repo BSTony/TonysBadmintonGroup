@@ -10160,7 +10160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790864175964,
-    "lastActiveTime": 1791276062988,
+    "lastActiveTime": 1791334437425,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10177,13 +10177,18 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": [
-          "花花"
-        ],
+        "list": [],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "10/07 08:53",
+        "name": "花花",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/06 16:41",
         "name": "花花",
