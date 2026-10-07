@@ -10535,7 +10535,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791361621690,
+    "lastActiveTime": 1791361932105,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10563,7 +10563,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "小蔡": "U3c633bac1ead8ca7a7def805e6f58248"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10588,13 +10589,21 @@
           "凱文",
           "心平",
           "江こう 洋々",
-          "雪倫"
+          "雪倫",
+          "小蔡"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 16:32",
+        "name": "小蔡",
+        "operator": "小蔡",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 16:27",
         "name": "雪倫",
