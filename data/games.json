@@ -10535,7 +10535,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791361946716,
+    "lastActiveTime": 1791361953978,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10592,13 +10592,21 @@
           "江こう 洋々",
           "雪倫",
           "小蔡",
-          "Emily🙈🙉🙊"
+          "Emily🙈🙉🙊",
+          "Winnie"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 16:32",
+        "name": "Winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 16:32",
         "name": "Emily🙈🙉🙊",
