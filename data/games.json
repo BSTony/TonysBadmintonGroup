@@ -10160,7 +10160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790864175964,
-    "lastActiveTime": 1791344881148,
+    "lastActiveTime": 1791361891825,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10168,7 +10168,9 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {},
-    "uidMap": {},
+    "uidMap": {
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+    },
     "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
@@ -10177,11 +10179,20 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": [],
+        "list": [
+          "Emily🙈🙉🙊"
+        ],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "10/07 16:31",
+        "name": "Emily🙈🙉🙊",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 11:48",
         "name": "心平",
