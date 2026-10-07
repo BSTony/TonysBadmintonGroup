@@ -10488,7 +10488,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791342173638,
+    "lastActiveTime": 1791345016535,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10504,7 +10504,6 @@
       "曾Jim凱": true,
       "Ashely": true,
       "陳呈": true,
-      "杜威霖 Andy": true,
       "周則鼎": true
     },
     "uidMap": {
@@ -10535,7 +10534,6 @@
           "曾Jim凱",
           "Ashely",
           "陳呈",
-          "杜威霖 Andy",
           "周則鼎",
           "Mile",
           "jack",
@@ -10547,6 +10545,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 11:50",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 11:02",
         "name": "心平",
