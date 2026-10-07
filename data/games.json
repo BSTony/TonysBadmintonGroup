@@ -10439,7 +10439,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791288206100,
-    "lastActiveTime": 1791360905852,
+    "lastActiveTime": 1791370810093,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10487,12 +10487,20 @@
           "陳呈",
           "凱文",
           "雪倫",
-          "傑森"
+          "傑森",
+          "少榮"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/07 19:00",
+        "name": "少榮",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 16:15",
         "name": "傑森",
