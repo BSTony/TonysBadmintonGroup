@@ -10483,7 +10483,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791341540750,
+    "lastActiveTime": 1791342155793,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10532,13 +10532,21 @@
           "陳呈",
           "杜威霖 Andy",
           "周則鼎",
-          "Mile"
+          "Mile",
+          "jack"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 11:02",
+        "name": "jack",
+        "operator": "劉櫂弘",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 10:52",
         "name": "Mile",
