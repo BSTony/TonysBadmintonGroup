@@ -10474,7 +10474,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791335343031,
+    "lastActiveTime": 1791341540750,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10522,11 +10522,21 @@
           "Ashely",
           "陳呈",
           "杜威霖 Andy",
-          "周則鼎"
+          "周則鼎",
+          "Mile"
         ],
         "fee": "230"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "history": [
+      {
+        "time": "10/07 10:52",
+        "name": "Mile",
+        "operator": "李智揚 Mike",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
   }
 }
