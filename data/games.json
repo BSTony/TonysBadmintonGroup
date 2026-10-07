@@ -10508,7 +10508,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 20,
+        "limit": 19,
         "backupLimit": 5,
         "label": "",
         "list": [
@@ -10525,6 +10525,7 @@
         ],
         "fee": ""
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
