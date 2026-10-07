@@ -10505,7 +10505,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791360272893,
+    "lastActiveTime": 1791361621690,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10557,13 +10557,21 @@
           "jack",
           "凱文",
           "心平",
-          "江こう 洋々"
+          "江こう 洋々",
+          "雪倫"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 16:27",
+        "name": "雪倫",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 16:04",
         "name": "江こう 洋々",
