@@ -10160,7 +10160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790864175964,
-    "lastActiveTime": 1791361926649,
+    "lastActiveTime": 1791361929032,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10179,13 +10179,18 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": [
-          "Winnie"
-        ],
+        "list": [],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "10/07 16:32",
+        "name": "Winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 16:32",
         "name": "Emily🙈🙉🙊",
