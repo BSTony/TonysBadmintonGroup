@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5008,
+    "viewCount": 5009,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -250,8 +250,8 @@
       "Ua158cf62dfd0ee9c8171a29263d9da11": {
         "displayName": "曾Jim凱",
         "firstVisit": 1783331916444,
-        "count": 74,
-        "lastVisit": 1791351213544,
+        "count": 75,
+        "lastVisit": 1791358071695,
         "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
       },
       "Ud33e6f76c7549fb90abe4440b1735805": {
@@ -1390,6 +1390,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1791358071695,
+        "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
+        "displayName": "曾Jim凱",
+        "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
+      },
       {
         "time": 1791355384370,
         "userId": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
@@ -13378,17 +13384,11 @@
         "userId": "Ubbef4e0a6cc32f9629b0d1adde897b9e",
         "displayName": "Wei",
         "pictureUrl": "https://profile.line-scdn.net/0hu8ZeKCuYKhd3HDVHsyVUKQdMKX1UbXMFXH9tc0EbfHAfLz5HCCoxdxUacSRCeT5DWS9ldUUdJCFVKCg2AHpsGhBIMWA_bxI5Gzg4HxQaIl0DMB8XXiQZGRpLAHAkVR85Hi0ZDQdHCV84ZxZdM3gEcApJE2YjTBg7GEtGQXIuRJQYHl1CWnpkdEoafCLP"
-      },
-      {
-        "time": 1786842026484,
-        "userId": "U49e2484c80056990b759e9039a74e1a6",
-        "displayName": "Kay",
-        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
       }
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 331,
+    "viewCount": 333,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13494,8 +13494,8 @@
       "U92b94dfcbb67ed1a0e4fc371b67b9aa9": {
         "displayName": "李奉喜",
         "firstVisit": 1783556008664,
-        "count": 5,
-        "lastVisit": 1791326326119,
+        "count": 6,
+        "lastVisit": 1791356439878,
         "pictureUrl": "https://profile.line-scdn.net/0hzaUWl8EZJU54LjtlQ-FbcAh-JiRbX3xcURg4eB4nc3pASjYcUhw5Kk0sK38XSzUZUElsfU96eHdaQSt-Jg04TztsHCATVX5DUkFsYRlKEDcsFxJ5NEgvSxV3Ah4-RzBcEhYjLkkoCB0_XyRvIUgRbDVsJ3k1fD1CMXlJGH0cS80XLFIbVUhrLUUoc3vA"
       },
       "U07681bd7cc8c5262b1d67edc7535152b": {
@@ -13576,8 +13576,8 @@
       "Ua158cf62dfd0ee9c8171a29263d9da11": {
         "displayName": "曾Jim凱",
         "firstVisit": 1788483801971,
-        "count": 2,
-        "lastVisit": 1788484664455,
+        "count": 3,
+        "lastVisit": 1791358043364,
         "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
       },
       "U94d0fd3752c6d2521d871658f63822b7": {
@@ -13589,6 +13589,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1791358043364,
+        "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
+        "displayName": "曾Jim凱",
+        "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
+      },
+      {
+        "time": 1791356439878,
+        "userId": "U92b94dfcbb67ed1a0e4fc371b67b9aa9",
+        "displayName": "李奉喜",
+        "pictureUrl": "https://profile.line-scdn.net/0hzaUWl8EZJU54LjtlQ-FbcAh-JiRbX3xcURg4eB4nc3pASjYcUhw5Kk0sK38XSzUZUElsfU96eHdaQSt-Jg04TztsHCATVX5DUkFsYRlKEDcsFxJ5NEgvSxV3Ah4-RzBcEhYjLkkoCB0_XyRvIUgRbDVsJ3k1fD1CMXlJGH0cS80XLFIbVUhrLUUoc3vA"
+      },
       {
         "time": 1791355410468,
         "userId": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
