@@ -10160,7 +10160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1790864175964,
-    "lastActiveTime": 1791342131384,
+    "lastActiveTime": 1791344881148,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10177,13 +10177,18 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": [
-          "心平"
-        ],
+        "list": [],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "10/07 11:48",
+        "name": "心平",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 11:02",
         "name": "心平",
