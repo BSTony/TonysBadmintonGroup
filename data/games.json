@@ -10257,7 +10257,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791279997953,
+    "lastActiveTime": 1791334878241,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10279,7 +10279,8 @@
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
-      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10301,13 +10302,21 @@
           "曾Jim凱",
           "Ashley",
           "King",
-          "Alice"
+          "Alice",
+          "Gary"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/07 09:01",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/06 17:46",
         "name": "Alice",
