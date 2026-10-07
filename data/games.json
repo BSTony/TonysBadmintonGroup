@@ -10409,7 +10409,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791288206100,
-    "lastActiveTime": 1791289750169,
+    "lastActiveTime": 1791360905852,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10456,12 +10456,20 @@
           "Jet",
           "陳呈",
           "凱文",
-          "雪倫"
+          "雪倫",
+          "傑森"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/07 16:15",
+        "name": "傑森",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/06 20:29",
         "name": "雪倫",
