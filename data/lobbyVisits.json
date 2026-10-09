@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5073,
+    "viewCount": 5074,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -162,8 +162,8 @@
       "U1302ddcec82bfd0d9b9eba641676ea0a": {
         "displayName": "King",
         "firstVisit": 1783230732630,
-        "count": 130,
-        "lastVisit": 1791561394840,
+        "count": 131,
+        "lastVisit": 1791563278713,
         "pictureUrl": "https://profile.line-scdn.net/0hAGC04Y7yHmhuSQD1SdNgFx4ZHQJNOEd6ECxTCAhAEAsGelE8QSxVCw8aRAtScF09QCsGCVhJQlliWmkOcB_iXGl5Q1lTeFw2RCdUiw"
       },
       "U1b8e0afa7df50e5e3b3a8196f54ad641": {
@@ -1404,6 +1404,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1791563278713,
+        "userId": "U1302ddcec82bfd0d9b9eba641676ea0a",
+        "displayName": "King",
+        "pictureUrl": "https://profile.line-scdn.net/0hAGC04Y7yHmhuSQD1SdNgFx4ZHQJNOEd6ECxTCAhAEAsGelE8QSxVCw8aRAtScF09QCsGCVhJQlliWmkOcB_iXGl5Q1lTeFw2RCdUiw"
+      },
       {
         "time": 1791561394840,
         "userId": "U1302ddcec82bfd0d9b9eba641676ea0a",
@@ -13393,17 +13399,11 @@
         "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
         "displayName": "Chris Chen",
         "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
-      },
-      {
-        "time": 1786947771359,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       }
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 334,
+    "viewCount": 335,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13475,8 +13475,9 @@
       "Uf077846a21900f6e03afdf8e678bc1ab": {
         "displayName": "Tank Lin",
         "firstVisit": 1783431380812,
-        "count": 3,
-        "lastVisit": 1784198195948
+        "count": 4,
+        "lastVisit": 1791563895610,
+        "pictureUrl": "https://profile.line-scdn.net/0hsLMHfiD_LGNgMTAEASNSXRBhLwlDQHVxGwVhB1UwcVZeBG5gHARmUlM1elAPBjk2RANrV1E1dgNCRiMxLA0RbAhlGyEjSHdHLi0XYylEIj0ndDdICB8cbCNFBw0JXDg9DFNjfxBVOzo1Aip2SCkNRxZpJTgceAVASGZANWUDQuAPM1s2TVdiAF03elbY"
       },
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
@@ -13604,6 +13605,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1791563895610,
+        "userId": "Uf077846a21900f6e03afdf8e678bc1ab",
+        "displayName": "Tank Lin",
+        "pictureUrl": "https://profile.line-scdn.net/0hsLMHfiD_LGNgMTAEASNSXRBhLwlDQHVxGwVhB1UwcVZeBG5gHARmUlM1elAPBjk2RANrV1E1dgNCRiMxLA0RbAhlGyEjSHdHLi0XYylEIj0ndDdICB8cbCNFBw0JXDg9DFNjfxBVOzo1Aip2SCkNRxZpJTgceAVASGZANWUDQuAPM1s2TVdiAF03elbY"
+      },
       {
         "time": 1791522513006,
         "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
