@@ -10543,7 +10543,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791362311264,
+    "lastActiveTime": 1791551286425,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10603,13 +10603,21 @@
           "小蔡",
           "Emily🙈🙉🙊",
           "Winnie",
-          "Tank Lin"
+          "Tank Lin",
+          "J"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/09 21:08",
+        "name": "J",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 16:38",
         "name": "Tank Lin",
