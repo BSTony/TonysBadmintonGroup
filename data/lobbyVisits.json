@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5053,
+    "viewCount": 5054,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -24,8 +24,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 898,
-        "lastVisit": 1791509648101,
+        "count": 899,
+        "lastVisit": 1791512385913,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -1390,6 +1390,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1791512385913,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1791509648101,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -13379,12 +13385,6 @@
         "userId": "Uf938f0344bbfe654e01bc1d893340ef8",
         "displayName": "Ray Hsieh",
         "pictureUrl": "https://profile.line-scdn.net/0hQS64ug61DnwbTRx91-JwA2sdDRY4PFduMSJHHixOUEUuek0vNCoWHSsfV00jLUwrP38RGXtOVxsXXnkaBRvySBx9U00mfEwiMSNEnw"
-      },
-      {
-        "time": 1786932545420,
-        "userId": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-        "displayName": "Emily🙈🙉🙊",
-        "pictureUrl": "https://profile.line-scdn.net/0hz-HDxm_sJQJlPTqeMoNbPBVtJmhGTHwQT19oYFg9fTBQWmZTHVhiM1Y-fDcKBWRRHgk9M1k8fGdHWRcWSVsfIwY8Z3UMRGEKCgQaNxB4fHFfCjkXCkcjHFNfJFMhBSJUOxooD1RtCVU6VWdUSAUQIgdrekFcdTsEIGpJVGAPS4EKP1JXSFtrYVg7czfd"
       }
     ]
   },
