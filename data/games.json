@@ -10301,7 +10301,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791351944916,
+    "lastActiveTime": 1791551894811,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10347,7 +10347,6 @@
           "曾Jim凱",
           "Ashley",
           "King",
-          "Alice",
           "Gary",
           "文馨Jean"
         ],
@@ -10356,6 +10355,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/09 21:18",
+        "name": "Alice",
+        "operator": "King",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/07 13:45",
         "name": "文馨Jean",
