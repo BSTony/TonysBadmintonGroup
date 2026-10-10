@@ -10555,7 +10555,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791335343031,
-    "lastActiveTime": 1791559241120,
+    "lastActiveTime": 1791646214776,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10585,7 +10585,8 @@
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "小蔡": "U3c633bac1ead8ca7a7def805e6f58248",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10614,13 +10615,21 @@
           "Emily🙈🙉🙊",
           "Winnie",
           "Tank Lin",
-          "J"
+          "J",
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/10 23:30",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/09 23:20",
         "name": "Ashely",
