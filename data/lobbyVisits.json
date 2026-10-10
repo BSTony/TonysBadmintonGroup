@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5082,
+    "viewCount": 5084,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -611,8 +611,8 @@
       "Ua7b3a92ec9d3c578d6a6711ca3353d71": {
         "displayName": "Gary",
         "firstVisit": 1783819442855,
-        "count": 101,
-        "lastVisit": 1791334821752,
+        "count": 103,
+        "lastVisit": 1791620229944,
         "pictureUrl": "https://profile.line-scdn.net/0hre1VhxdsLUocLwAkQrpTNWx_LiA_XnRYZ0oxe319J3gpTGMUNx5iKSspIH52Hj4aNRlrKi57ICgQPFosAnnRfhsfcHshHm8UNkFnqQ"
       },
       "Ua4c9b87ae0f49f0e264f14642944a52e": {
@@ -1404,6 +1404,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1791620229944,
+        "userId": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+        "displayName": "Gary",
+        "pictureUrl": "https://profile.line-scdn.net/0hre1VhxdsLUocLwAkQrpTNWx_LiA_XnRYZ0oxe319J3gpTGMUNx5iKSspIH52Hj4aNRlrKi57ICgQPFosAnnRfhsfcHshHm8UNkFnqQ"
+      },
+      {
+        "time": 1791620165517,
+        "userId": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+        "displayName": "Gary",
+        "pictureUrl": "https://profile.line-scdn.net/0hre1VhxdsLUocLwAkQrpTNWx_LiA_XnRYZ0oxe319J3gpTGMUNx5iKSspIH52Hj4aNRlrKi57ICgQPFosAnnRfhsfcHshHm8UNkFnqQ"
+      },
       {
         "time": 1791612617069,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -13387,18 +13399,6 @@
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
         "displayName": "謝東霖 Tony",
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1786962595584,
-        "userId": "U8359dca0b543da49dab9a0215b90c137",
-        "displayName": "JoeLin",
-        "pictureUrl": "https://profile.line-scdn.net/0hWPG6b8r0CH9qTyJyYSZ2ABofCxVJPlFtQHlCSVgdXxoAdh0sQ3oXGAxNUkpRLEh5RH1OSVpHX0dmXH8ZdBn0S21_VU5XfkohQCFCnA"
-      },
-      {
-        "time": 1786962355544,
-        "userId": "U4f877c526e048afcda3730edce9ba746",
-        "displayName": "楊程鈞",
-        "pictureUrl": "https://profile.line-scdn.net/0hC85nNh2uHBcYFwLgmt5iKWhHH307ZkUFNnEDdn1DRSV2c1sVNSFUI34QFSdwIFJEYyRRdX0RRi86YCc_fzE6JVJDS0J5elkmfQk6BWkXIy57QwQUTiQgdUVyGlhBbAgSdQgqDUYRN3ttL0cndig2CXQTHWVkJQs6XEBwQR0lcpR3FWtCNXFSdCURSiKg"
       }
     ]
   },
