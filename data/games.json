@@ -10301,7 +10301,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791729696376,
+    "lastActiveTime": 1791732504370,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10326,7 +10326,8 @@
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "文馨Jean": "Ucef7e83869741dd44ca6976caa0bb016",
-      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10349,13 +10350,21 @@
           "King",
           "文馨Jean",
           "FB 吳彤",
-          "黃政豪"
+          "黃政豪",
+          "©️張CC～©️"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/11 23:28",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/11 22:41",
         "name": "黃政豪",
