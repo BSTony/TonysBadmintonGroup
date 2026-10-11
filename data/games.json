@@ -10301,7 +10301,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791689882143,
+    "lastActiveTime": 1791728082569,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10346,13 +10346,21 @@
           "柚子",
           "曾Jim凱",
           "King",
-          "文馨Jean"
+          "文馨Jean",
+          "FB 吳彤"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/11 22:14",
+        "name": "FB 吳彤",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/11 11:38",
         "name": "Gary",
