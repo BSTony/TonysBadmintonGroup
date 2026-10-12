@@ -10160,7 +10160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791788945933,
+    "lastActiveTime": 1791796137897,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10214,13 +10214,21 @@
           "©️張CC～©️",
           "FB 晨",
           "FiFi",
-          "FB 丁偉翔"
+          "FB 丁偉翔",
+          "FB kabi"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/12 17:08",
+        "name": "FB kabi",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/12 15:09",
         "name": "FB 丁偉翔",
