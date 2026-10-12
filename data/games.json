@@ -10160,7 +10160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791777685555,
+    "lastActiveTime": 1791777708412,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10186,7 +10186,8 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "文馨Jean": "Ucef7e83869741dd44ca6976caa0bb016",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
-      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10211,13 +10212,21 @@
           "FB 吳彤",
           "黃政豪",
           "©️張CC～©️",
-          "FB 晨"
+          "FB 晨",
+          "FiFi"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/12 12:01",
+        "name": "FiFi",
+        "operator": "FiFi",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/12 12:01",
         "name": "FB 寧",
