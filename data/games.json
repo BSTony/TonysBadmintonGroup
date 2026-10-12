@@ -10740,7 +10740,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1791813447562,
+    "lastActiveTime": 1791814329831,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10763,7 +10763,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10780,12 +10781,20 @@
           "林煥杰",
           "Andrew Kuo",
           "黃政豪",
-          "John"
+          "John",
+          "Tank Lin"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/12 22:12",
+        "name": "Tank Lin",
+        "operator": "Tank Lin",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/12 21:57",
         "name": "John",
