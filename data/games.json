@@ -10740,7 +10740,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1791813406206,
+    "lastActiveTime": 1791813444081,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10761,7 +10761,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10777,9 +10778,19 @@
           "陳呈",
           "林煥杰",
           "Andrew Kuo",
-          "黃政豪"
+          "黃政豪",
+          "John"
         ],
         "fee": "230"
+      }
+    ],
+    "history": [
+      {
+        "time": "10/12 21:57",
+        "name": "John",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
