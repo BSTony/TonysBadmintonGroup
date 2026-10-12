@@ -10749,7 +10749,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1791821399979,
+    "lastActiveTime": 1791824386599,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10773,7 +10773,8 @@
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
-      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
+      "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10792,12 +10793,28 @@
           "黃政豪",
           "John",
           "Tank Lin",
-          "花花"
+          "花花",
+          "柚子",
+          "曾Jim凱"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/13 00:59",
+        "name": "曾Jim凱",
+        "operator": "曾Jim凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "10/13 00:10",
+        "name": "柚子",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 00:09",
         "name": "花花",
