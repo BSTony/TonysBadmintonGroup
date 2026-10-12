@@ -10160,7 +10160,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791165538982,
-    "lastActiveTime": 1791777708412,
+    "lastActiveTime": 1791788945933,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10213,13 +10213,21 @@
           "黃政豪",
           "©️張CC～©️",
           "FB 晨",
-          "FiFi"
+          "FiFi",
+          "FB 丁偉翔"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/12 15:09",
+        "name": "FB 丁偉翔",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/12 12:01",
         "name": "FiFi",
