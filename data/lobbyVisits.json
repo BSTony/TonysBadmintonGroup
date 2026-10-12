@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5153,
+    "viewCount": 5154,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1378,8 +1378,8 @@
       "Uf7da4aefac728b8a08dabe0a7078323c": {
         "displayName": "田震寰",
         "firstVisit": 1791289777842,
-        "count": 10,
-        "lastVisit": 1791759887699,
+        "count": 11,
+        "lastVisit": 1791802357692,
         "pictureUrl": "https://profile.line-scdn.net/0m04bf271372511cdbf4ec4f89397dc1065c3878d0b577"
       },
       "U09a1aa508e86556361cca6333ee4190e": {
@@ -1412,6 +1412,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1791802357692,
+        "userId": "Uf7da4aefac728b8a08dabe0a7078323c",
+        "displayName": "田震寰",
+        "pictureUrl": "https://profile.line-scdn.net/0m04bf271372511cdbf4ec4f89397dc1065c3878d0b577"
+      },
       {
         "time": 1791797336960,
         "userId": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
@@ -13403,11 +13409,6 @@
         "userId": "U17eaf2f1e1b41288876d992044d9bdf9",
         "displayName": "張建發",
         "pictureUrl": "https://profile.line-scdn.net/0h3mi51NhKbEJETH0nPTYSPTQcbyhnPTVQan92cXZFNSF6KyhDb3h3JHgfMHUqeS0XbXkhcyZOMCBIXxskWhqQdkN8MXN5fS4cbiImoQ"
-      },
-      {
-        "time": 1787067679494,
-        "userId": "U2d79ed164c2f54f816c74f467908679e",
-        "displayName": "雅雯 Olivia"
       }
     ]
   },
