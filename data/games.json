@@ -10998,7 +10998,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1791898251534,
+    "lastActiveTime": 1791899779537,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11049,13 +11049,21 @@
           "杜威霖 Andy",
           "周則鼎",
           "Emily🙈🙉🙊",
-          "Winnie"
+          "Winnie",
+          "J"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/13 21:56",
+        "name": "J",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 21:30",
         "name": "Winnie",
