@@ -10401,7 +10401,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791288206100,
-    "lastActiveTime": 1791885495603,
+    "lastActiveTime": 1791899530383,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10419,7 +10419,10 @@
       "Jet": true,
       "陳呈": true,
       "雪倫": true,
-      "少榮": true
+      "少榮": true,
+      "凱文": true,
+      "傑森": true,
+      "afrahuang": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
