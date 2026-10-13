@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-05
- * Version: 1.3.23
+ * Date: 2026-10-13
+ * Version: 1.3.24
  */
 const express = require('express');
 const compression = require('compression');
@@ -3024,8 +3024,8 @@ app.post('/api/templates/:gid', express.json({ limit: '2mb' }), async (req, res)
 
 // 產生完整名單字串的輔助函式
 function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
-  // 雙十國慶：10/1–10/15（台北時間），與大廳網頁同一段期間
-  const isDoubleTenthSeason = (now = new Date()) => {
+  // 雙十 10/1–10/12、萬聖節 10/13–11/2（台北時間），與大廳網頁同一段期間
+  const taipeiMonthDay = (now = new Date()) => {
     try {
       const parts = new Intl.DateTimeFormat('en-US', {
         timeZone: 'Asia/Taipei',
@@ -3038,22 +3038,25 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
         if (part.type === 'month') month = Number(part.value);
         if (part.type === 'day') day = Number(part.value);
       }
-      return month === 10 && day >= 1 && day <= 15;
+      return { month, day };
     } catch (e) {
-      return false;
+      return { month: 0, day: 0 };
     }
   };
-  const doubleTenth = isDoubleTenthSeason();
-  const brand = doubleTenth ? '#1F57B8' : '#1DB446';
-  const actionColor = doubleTenth ? '#D62538' : '#1DB446';
-  const openBadgeBg = doubleTenth ? '#E7F0FF' : '#e8f5e9';
-  const openBadgeText = doubleTenth ? '#1A4EAE' : '#1DB446';
-  const fullBadgeBg = doubleTenth ? '#FDE8EA' : '#ffebee';
-  const fullBadgeText = doubleTenth ? '#D62538' : '#ff4c4c';
-  const rowText = doubleTenth ? '#163A78' : '#333333';
-  const sepColor = doubleTenth ? '#E6EEF8' : '#f4f4f4';
-  const headerSep = doubleTenth ? '#D5E2F7' : '#eeeeee';
-  const chevron = doubleTenth ? '#B7C6DE' : '#cccccc';
+  const { month, day } = taipeiMonthDay();
+  const doubleTenth = month === 10 && day >= 1 && day <= 12;
+  const halloween = (month === 10 && day >= 13) || (month === 11 && day <= 2);
+  const brand = halloween ? '#7C3AED' : doubleTenth ? '#1F57B8' : '#1DB446';
+  const actionColor = halloween ? '#F97316' : doubleTenth ? '#D62538' : '#1DB446';
+  const openBadgeBg = halloween ? '#F3E8FF' : doubleTenth ? '#E7F0FF' : '#e8f5e9';
+  const openBadgeText = halloween ? '#6D28D9' : doubleTenth ? '#1A4EAE' : '#1DB446';
+  const fullBadgeBg = halloween ? '#FFEDD5' : doubleTenth ? '#FDE8EA' : '#ffebee';
+  const fullBadgeText = halloween ? '#C2410C' : doubleTenth ? '#D62538' : '#ff4c4c';
+  const rowText = halloween ? '#2A1840' : doubleTenth ? '#163A78' : '#333333';
+  const sepColor = halloween ? '#EDE4F7' : doubleTenth ? '#E6EEF8' : '#f4f4f4';
+  const headerSep = halloween ? '#E9D5FF' : doubleTenth ? '#D5E2F7' : '#eeeeee';
+  const chevron = halloween ? '#C4B5FD' : doubleTenth ? '#B7C6DE' : '#cccccc';
+  const lobbyTitle = halloween ? '🎃 羽球接龍大廳' : '🏸 羽球接龍大廳';
   const flexContents = [];
   targetGames.forEach((g, index) => {
     if (index >= 15) return;
@@ -3206,7 +3209,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       layout: "horizontal",
       margin: "md",
       paddingAll: "10px",
-      backgroundColor: doubleTenth ? "#E7F0FF" : "#e8f5e9",
+      backgroundColor: halloween ? "#F3E8FF" : doubleTenth ? "#E7F0FF" : "#e8f5e9",
       cornerRadius: "md",
       alignItems: "center",
       contents: [
@@ -3221,7 +3224,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     layout: "horizontal",
     alignItems: "center",
     contents: [
-      { type: "text", text: "🏸 羽球接龍大廳", weight: "bold", size: "md", color: brand, flex: 1 },
+      { type: "text", text: lobbyTitle, weight: "bold", size: "md", color: brand, flex: 1 },
       {
         type: "button",
         style: "primary",
@@ -3232,17 +3235,22 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       }
     ]
   };
-  const header = doubleTenth ? {
+  const festive = doubleTenth || halloween;
+  const header = festive ? {
     type: "box",
     layout: "vertical",
     paddingAll: "0px",
-    backgroundColor: "#F4F8FF",
+    backgroundColor: halloween ? "#FFF7ED" : "#F4F8FF",
     contents: [
       {
         type: "box",
         layout: "horizontal",
         height: "6px",
-        contents: [
+        contents: halloween ? [
+          { type: "box", layout: "vertical", flex: 34, backgroundColor: "#F97316", contents: [{ type: "filler" }] },
+          { type: "box", layout: "vertical", flex: 33, backgroundColor: "#7C3AED", contents: [{ type: "filler" }] },
+          { type: "box", layout: "vertical", flex: 33, backgroundColor: "#1A1024", contents: [{ type: "filler" }] }
+        ] : [
           { type: "box", layout: "vertical", flex: 34, backgroundColor: "#1F57B8", contents: [{ type: "filler" }] },
           { type: "box", layout: "vertical", flex: 10, backgroundColor: "#FFFFFF", contents: [{ type: "filler" }] },
           { type: "box", layout: "vertical", flex: 56, backgroundColor: "#D62538", contents: [{ type: "filler" }] }

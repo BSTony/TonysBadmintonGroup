@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
-  Date: 2026-10-06
-  Version: 1.2.14
+  Date: 2026-10-13
+  Version: 1.2.15
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -234,6 +234,90 @@ html.double-tenth .game-card .btn-primary {
   0% { box-shadow: 0 0 0 0 rgba(214, 37, 56, 0.4); }
   70% { box-shadow: 0 0 0 10px rgba(214, 37, 56, 0); }
   100% { box-shadow: 0 0 0 0 rgba(214, 37, 56, 0); }
+}
+
+/* 萬聖節：10/13–11/2（台北時間） */
+.hw-scene { display: none; }
+html.halloween,
+html.halloween body {
+  background-color: #1a1024;
+  background-image:
+    radial-gradient(ellipse 70% 36% at 18% 8%, rgba(249, 115, 22, 0.38), transparent 70%),
+    radial-gradient(ellipse 55% 40% at 86% 18%, rgba(168, 85, 247, 0.32), transparent 72%),
+    radial-gradient(ellipse 80% 30% at 50% 100%, rgba(249, 115, 22, 0.22), transparent 70%),
+    linear-gradient(180deg, #3a215c 0%, #1b122c 46%, #120c18 78%, #3a1d12 100%);
+  background-attachment: fixed;
+}
+html.halloween .hw-scene {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+  background: none;
+}
+html.halloween #app { z-index: 1; }
+html.halloween .hw-float {
+  position: absolute;
+  display: block;
+  width: 52px;
+  height: 52px;
+  animation: hw-drift 14s ease-in-out infinite;
+}
+html.halloween .hw-float svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 8px rgba(18, 8, 32, 0.28)); }
+html.halloween .hw-g1 { top: 9%; left: 3%; width: 58px; height: 70px; animation-duration: 15s; }
+html.halloween .hw-b1 { top: 14%; right: 4%; width: 72px; height: 40px; animation-duration: 12s; animation-delay: -3s; }
+html.halloween .hw-s1 { top: 44%; left: 2%; width: 48px; height: 56px; animation-duration: 17s; animation-delay: -6s; }
+html.halloween .hw-g2 { top: 40%; right: 3%; width: 50px; height: 62px; animation-duration: 13s; animation-delay: -2s; }
+html.halloween .hw-b2 { top: 72%; left: 5%; width: 64px; height: 36px; animation-duration: 16s; animation-delay: -8s; }
+html.halloween .hw-s2 { top: 76%; right: 5%; width: 44px; height: 52px; animation-duration: 18s; animation-delay: -4s; }
+html.halloween .hw-g3 { top: 88%; left: 42%; width: 40px; height: 50px; animation-duration: 19s; animation-delay: -9s; }
+@keyframes hw-drift {
+  0% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+  50% { transform: translate3d(16px, -18px, 0) rotate(7deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+}
+html.halloween .lobby-header,
+html.halloween .game-card {
+  --text-main: #2a1840;
+  --text-muted: #6d5a7a;
+  --badge-bg: #f3e8ff;
+  --badge-text: #6d28d9;
+  --progress-bg: #ffedd5;
+  --primary-color: #f97316;
+  --primary-hover: #ea580c;
+  background-color: #fffaf5;
+  background-image:
+    linear-gradient(90deg, #f97316 0 34%, #7c3aed 34% 67%, #1a1024 67% 100%),
+    linear-gradient(180deg, #fff7ed 0%, #ffffff 42%, #faf5ff 100%);
+  background-size: 100% 6px, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: top, center;
+  border: 1px solid rgba(124, 58, 237, 0.22);
+  box-shadow: 0 8px 18px rgba(26, 16, 36, 0.16);
+}
+html.halloween .game-card .badge.default { background-color: #f5f3ff; color: #5b4574; }
+html.halloween .game-card .progress-container { border-top-color: #f3e8ff; }
+html.halloween .game-card .info-icon { color: #f97316; }
+html.halloween .game-card .name-input { background-color: #fff7ed; border-color: #fdba74; }
+html.halloween .game-card .btn-primary {
+  background-color: #f97316;
+  background-image: linear-gradient(135deg, #f97316, #7c3aed);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+}
+html.halloween .empty-state p { color: #f6f0ff; }
+html.halloween .empty-state .hint { color: #e9d5ff; }
+@media (max-width: 760px) {
+  html.halloween .hw-g1, html.halloween .hw-b1, html.halloween .hw-s1,
+  html.halloween .hw-g2, html.halloween .hw-b2, html.halloween .hw-s2 { opacity: 0.9; }
+  html.halloween .hw-g1 { width: 42px; height: 52px; }
+  html.halloween .hw-b1 { width: 52px; height: 30px; }
+  html.halloween .hw-s1, html.halloween .hw-s2 { width: 36px; }
+  html.halloween .hw-g3 { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.halloween .hw-float { animation: none; }
 }
 
 #app {
@@ -1011,6 +1095,17 @@ html.double-tenth .header-icon .pig-snout { fill: #FFF6F4; }
 html.double-tenth .header-icon .pig-smile,
 html.double-tenth .header-icon .pig-pupil,
 html.double-tenth .header-icon .pig-nostril { fill: #1A1A1A; }
+.header-icon .pig-hw-overlay { display: none; }
+html.halloween .header-icon .pig-hw-overlay { display: block; }
+html.halloween .header-icon .pig-hw-overlay use {
+  fill: url(#pig-hw-wash) !important;
+  opacity: 0.84;
+}
+html.halloween .header-icon .pig-ear-inner { fill: #FFF3E4; }
+html.halloween .header-icon .pig-snout { fill: #FFF6F0; }
+html.halloween .header-icon .pig-smile,
+html.halloween .header-icon .pig-pupil,
+html.halloween .header-icon .pig-nostril { fill: #1A1024; }
 
 .pig-pupil {
   animation: pupilMove 10s infinite ease-in-out;
