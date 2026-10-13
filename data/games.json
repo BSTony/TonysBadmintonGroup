@@ -10998,7 +10998,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1791900350430,
+    "lastActiveTime": 1791902600910,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11051,13 +11051,21 @@
           "Emily🙈🙉🙊",
           "Winnie",
           "J",
-          "雪倫"
+          "雪倫",
+          "小白"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/13 22:43",
+        "name": "小白",
+        "operator": "Bravo(小白）",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 22:05",
         "name": "雪倫",
