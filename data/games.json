@@ -10801,7 +10801,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 19,
+        "limit": 20,
         "backupLimit": 5,
         "label": "",
         "list": [
