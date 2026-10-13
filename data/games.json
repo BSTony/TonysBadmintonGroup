@@ -10890,7 +10890,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791893784737,
-    "lastActiveTime": 1791893784737,
+    "lastActiveTime": 1791894446886,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10935,9 +10935,19 @@
           "Robert",
           "偉舫",
           "Jet",
-          "陳呈"
+          "陳呈",
+          "雪倫"
         ],
         "fee": "280"
+      }
+    ],
+    "history": [
+      {
+        "time": "10/13 20:27",
+        "name": "雪倫",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
