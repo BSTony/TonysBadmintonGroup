@@ -10589,7 +10589,7 @@
         "fee": "230"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "history": [
       {
         "time": "10/12 23:51",
