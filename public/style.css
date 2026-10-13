@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-10-13
-  Version: 1.2.15
+  Version: 1.2.17
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -263,20 +263,52 @@ html.halloween .hw-float {
   display: block;
   width: 52px;
   height: 52px;
-  animation: hw-drift 14s ease-in-out infinite;
+  opacity: 0.62;
+  pointer-events: none;
+  animation: hw-sweep 4.8s ease-in-out infinite;
 }
-html.halloween .hw-float svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 8px rgba(18, 8, 32, 0.28)); }
-html.halloween .hw-g1 { top: 9%; left: 3%; width: 58px; height: 70px; animation-duration: 15s; }
-html.halloween .hw-b1 { top: 14%; right: 4%; width: 72px; height: 40px; animation-duration: 12s; animation-delay: -3s; }
-html.halloween .hw-s1 { top: 44%; left: 2%; width: 48px; height: 56px; animation-duration: 17s; animation-delay: -6s; }
-html.halloween .hw-g2 { top: 40%; right: 3%; width: 50px; height: 62px; animation-duration: 13s; animation-delay: -2s; }
-html.halloween .hw-b2 { top: 72%; left: 5%; width: 64px; height: 36px; animation-duration: 16s; animation-delay: -8s; }
-html.halloween .hw-s2 { top: 76%; right: 5%; width: 44px; height: 52px; animation-duration: 18s; animation-delay: -4s; }
-html.halloween .hw-g3 { top: 88%; left: 42%; width: 40px; height: 50px; animation-duration: 19s; animation-delay: -9s; }
-@keyframes hw-drift {
-  0% { transform: translate3d(0, 0, 0) rotate(-6deg); }
-  50% { transform: translate3d(16px, -18px, 0) rotate(7deg); }
-  100% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+html.halloween .hw-float svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 8px rgba(18, 8, 32, 0.28));
+}
+html.halloween .hw-g1 { top: 9%; left: 8%; width: 58px; height: 70px; animation-duration: 4.2s; }
+html.halloween .hw-b1 { top: 18%; right: 6%; width: 72px; height: 40px; animation-name: hw-sweep-back; animation-duration: 3.6s; animation-delay: -1.2s; }
+html.halloween .hw-s1 { top: 46%; left: 4%; width: 48px; height: 56px; animation-duration: 5.1s; animation-delay: -2.4s; }
+html.halloween .hw-g2 { top: 38%; right: 2%; width: 50px; height: 62px; animation-name: hw-sweep-back; animation-duration: 4.6s; animation-delay: -0.6s; }
+html.halloween .hw-b2 { top: 68%; left: 10%; width: 64px; height: 36px; animation-duration: 3.8s; animation-delay: -1.8s; }
+html.halloween .hw-s2 { top: 74%; right: 8%; width: 44px; height: 52px; animation-name: hw-sweep-back; animation-duration: 5.4s; animation-delay: -3s; }
+html.halloween .hw-g3 { top: 86%; left: 36%; width: 40px; height: 50px; animation-duration: 4.4s; animation-delay: -2s; }
+html.halloween .hw-big-skull {
+  position: absolute;
+  left: 50%;
+  bottom: 2vh;
+  width: min(92vw, 560px);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-50%, 120%, 0);
+  animation: hw-skull-pop 16s linear infinite;
+  animation-delay: -12.6s;
+  filter: drop-shadow(0 18px 24px rgba(18, 8, 32, 0.35));
+}
+html.halloween .hw-big-skull svg { width: 100%; height: auto; display: block; pointer-events: none; }
+@keyframes hw-skull-pop {
+  0%, 74% { transform: translate3d(-50%, 120%, 0) rotate(-6deg); opacity: 0; }
+  80% { transform: translate3d(-50%, 0, 0) rotate(3deg); opacity: 1; }
+  87% { transform: translate3d(-50%, 0, 0) rotate(-2deg); opacity: 1; }
+  100% { transform: translate3d(-50%, 125%, 0) rotate(5deg); opacity: 0; }
+}
+@keyframes hw-sweep {
+  0% { transform: translate3d(-24vw, 0, 0) rotate(-8deg); }
+  50% { transform: translate3d(28vw, -10px, 0) rotate(8deg); }
+  100% { transform: translate3d(-24vw, 0, 0) rotate(-8deg); }
+}
+@keyframes hw-sweep-back {
+  0% { transform: translate3d(26vw, 0, 0) rotate(7deg); }
+  50% { transform: translate3d(-30vw, 8px, 0) rotate(-8deg); }
+  100% { transform: translate3d(26vw, 0, 0) rotate(7deg); }
 }
 html.halloween .lobby-header,
 html.halloween .game-card {
@@ -309,15 +341,14 @@ html.halloween .game-card .btn-primary {
 html.halloween .empty-state p { color: #f6f0ff; }
 html.halloween .empty-state .hint { color: #e9d5ff; }
 @media (max-width: 760px) {
-  html.halloween .hw-g1, html.halloween .hw-b1, html.halloween .hw-s1,
-  html.halloween .hw-g2, html.halloween .hw-b2, html.halloween .hw-s2 { opacity: 0.9; }
   html.halloween .hw-g1 { width: 42px; height: 52px; }
   html.halloween .hw-b1 { width: 52px; height: 30px; }
   html.halloween .hw-s1, html.halloween .hw-s2 { width: 36px; }
-  html.halloween .hw-g3 { display: none; }
+  html.halloween .hw-g3 { width: 34px; height: 42px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  html.halloween .hw-float { animation: none; }
+  html.halloween .hw-float,
+  html.halloween .hw-big-skull { animation: none; }
 }
 
 #app {
