@@ -10890,7 +10890,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791893784737,
-    "lastActiveTime": 1791894446886,
+    "lastActiveTime": 1791894500833,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10917,7 +10917,8 @@
       "Robert": "Uf35f2dc9288c3434a5a19186f900402a",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "Wei": "Ubbef4e0a6cc32f9629b0d1adde897b9e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10936,12 +10937,20 @@
           "偉舫",
           "Jet",
           "陳呈",
-          "雪倫"
+          "雪倫",
+          "Wei"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/13 20:28",
+        "name": "Wei",
+        "operator": "Wei",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 20:27",
         "name": "雪倫",
