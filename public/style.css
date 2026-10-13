@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-10-13
-  Version: 1.2.18
+  Version: 1.2.19
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -281,7 +281,7 @@ html.halloween .hw-g2 { top: 38%; right: 2%; width: 75px; height: 93px; animatio
 html.halloween .hw-b2 { top: 68%; left: 10%; width: 96px; height: 54px; animation-duration: 2.6s; animation-delay: -0.8s; }
 html.halloween .hw-s2 { top: 74%; right: 8%; width: 66px; height: 78px; animation-name: hw-pace-c; animation-duration: 9.4s; animation-delay: -4.2s; }
 html.halloween .hw-g3 { top: 86%; left: 36%; width: 60px; height: 75px; animation-name: hw-pace-a; animation-duration: 4.7s; animation-delay: -2s; }
-html.halloween .hw-big-skull {
+html.halloween .hw-big-pumpkin {
   position: absolute;
   left: 50%;
   bottom: 2vh;
@@ -293,7 +293,7 @@ html.halloween .hw-big-skull {
   animation-delay: -12.6s;
   filter: drop-shadow(0 18px 24px rgba(18, 8, 32, 0.35));
 }
-html.halloween .hw-big-skull svg { width: 100%; height: auto; display: block; pointer-events: none; }
+html.halloween .hw-big-pumpkin svg { width: 100%; height: auto; display: block; pointer-events: none; }
 @keyframes hw-skull-pop {
   0%, 74% { transform: translate3d(-50%, 120%, 0) rotate(-6deg); opacity: 0; }
   80% { transform: translate3d(-50%, 0, 0) rotate(3deg); opacity: 1; }
@@ -360,7 +360,7 @@ html.halloween .empty-state .hint { color: #e9d5ff; }
 }
 @media (prefers-reduced-motion: reduce) {
   html.halloween .hw-float,
-  html.halloween .hw-big-skull { animation: none; }
+  html.halloween .hw-big-pumpkin { animation: none; }
 }
 
 #app {
