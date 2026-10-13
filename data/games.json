@@ -10995,7 +10995,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1791898243975,
+    "lastActiveTime": 1791898251534,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11045,13 +11045,21 @@
           "陳呈",
           "杜威霖 Andy",
           "周則鼎",
-          "Emily🙈🙉🙊"
+          "Emily🙈🙉🙊",
+          "Winnie"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/13 21:30",
+        "name": "Winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 21:30",
         "name": "Emily🙈🙉🙊",
