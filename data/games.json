@@ -10890,7 +10890,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791893784737,
-    "lastActiveTime": 1791894500833,
+    "lastActiveTime": 1791895242302,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10938,12 +10938,20 @@
           "Jet",
           "陳呈",
           "雪倫",
-          "Wei"
+          "Wei",
+          "凱文"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/13 20:40",
+        "name": "凱文",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 20:28",
         "name": "Wei",
