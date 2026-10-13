@@ -10998,7 +10998,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1791902600910,
+    "lastActiveTime": 1791902607399,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11052,13 +11052,21 @@
           "Winnie",
           "J",
           "雪倫",
-          "小白"
+          "小白",
+          "蘑菇"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/13 22:43",
+        "name": "蘑菇",
+        "operator": "Bravo(小白）",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 22:43",
         "name": "小白",
