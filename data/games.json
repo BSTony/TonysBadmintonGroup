@@ -10998,7 +10998,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1791899779537,
+    "lastActiveTime": 1791900350430,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11050,13 +11050,21 @@
           "周則鼎",
           "Emily🙈🙉🙊",
           "Winnie",
-          "J"
+          "J",
+          "雪倫"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/13 22:05",
+        "name": "雪倫",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 21:56",
         "name": "J",
