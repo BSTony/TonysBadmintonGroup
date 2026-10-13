@@ -10998,7 +10998,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1791902607399,
+    "lastActiveTime": 1791902775010,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11053,13 +11053,21 @@
           "J",
           "雪倫",
           "小白",
-          "蘑菇"
+          "蘑菇",
+          "momota"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/13 22:46",
+        "name": "momota",
+        "operator": "喻心平",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 22:43",
         "name": "蘑菇",
