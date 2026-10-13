@@ -10998,7 +10998,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1791904333721,
+    "lastActiveTime": 1791905639902,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11028,7 +11028,8 @@
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11058,13 +11059,21 @@
           "momota",
           "凱文",
           "平",
-          "Tank Lin"
+          "Tank Lin",
+          "Gary"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/13 23:33",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 23:12",
         "name": "Tank Lin",
