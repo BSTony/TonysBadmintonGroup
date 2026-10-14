@@ -10926,7 +10926,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791893784737,
-    "lastActiveTime": 1791971317512,
+    "lastActiveTime": 1791971388051,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10980,13 +10980,19 @@
           "Wei",
           "凱文",
           "海棠",
-          "afrahuang",
-          "李奉喜"
+          "afrahuang"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/14 17:49",
+        "name": "李奉喜",
+        "operator": "李奉喜",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/14 17:48",
         "name": "李奉喜",
