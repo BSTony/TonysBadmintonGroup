@@ -10768,7 +10768,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1791847819176,
+    "lastActiveTime": 1791957286593,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10794,7 +10794,8 @@
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "冰山葉 T.Yeh": "Uf8415487a969f368a6f20cd7eb33b569"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -10817,12 +10818,20 @@
           "柚子",
           "曾Jim凱",
           "ashley",
-          "楊程鈞"
+          "楊程鈞",
+          "冰山葉 T.Yeh"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/14 13:54",
+        "name": "冰山葉 T.Yeh",
+        "operator": "冰山葉 T.Yeh",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 07:30",
         "name": "楊程鈞",
