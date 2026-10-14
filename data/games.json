@@ -11007,7 +11007,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1791905639902,
+    "lastActiveTime": 1791944641817,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11069,13 +11069,21 @@
           "凱文",
           "平",
           "Tank Lin",
-          "Gary"
+          "Gary",
+          "Mike"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/14 10:24",
+        "name": "Mike",
+        "operator": "Mike (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/13 23:33",
         "name": "Gary",
