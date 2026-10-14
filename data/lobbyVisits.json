@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5243,
+    "viewCount": 5246,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -24,8 +24,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 929,
-        "lastVisit": 1791936210358,
+        "count": 930,
+        "lastVisit": 1791956169562,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -536,8 +536,8 @@
       "U7c381eceb3dee900bbd30b986a0f8357": {
         "displayName": "陳宜蓁",
         "firstVisit": 1783609656924,
-        "count": 106,
-        "lastVisit": 1791725133083,
+        "count": 107,
+        "lastVisit": 1791957334161,
         "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
       },
       "U522577348e19db90574e8dd6b95de386": {
@@ -1343,8 +1343,8 @@
       "Uf8415487a969f368a6f20cd7eb33b569": {
         "displayName": "冰山葉 T.Yeh",
         "firstVisit": 1789889995665,
-        "count": 3,
-        "lastVisit": 1790176735693,
+        "count": 4,
+        "lastVisit": 1791957276023,
         "pictureUrl": "https://profile.line-scdn.net/0hvb2CkKZQKU0fOj3pvrxXMm9qKic8S3BfMVU1LH5pJXUlC28ZYwtkKS0-JXorA2hOOw9keHg8IyoTKV4rAWzVeRgKdHwiC2sTNVRjrg"
       },
       "U48e8f8b571a117bd2475e0920b4d514e": {
@@ -1432,6 +1432,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1791957334161,
+        "userId": "U7c381eceb3dee900bbd30b986a0f8357",
+        "displayName": "陳宜蓁",
+        "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
+      },
+      {
+        "time": 1791957276023,
+        "userId": "Uf8415487a969f368a6f20cd7eb33b569",
+        "displayName": "冰山葉 T.Yeh",
+        "pictureUrl": "https://profile.line-scdn.net/0hvb2CkKZQKU0fOj3pvrxXMm9qKic8S3BfMVU1LH5pJXUlC28ZYwtkKS0-JXorA2hOOw9keHg8IyoTKV4rAWzVeRgKdHwiC2sTNVRjrg"
+      },
+      {
+        "time": 1791956169562,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1791949109841,
         "userId": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
@@ -13411,24 +13429,6 @@
         "userId": "U07da54f66d0a500df5b2db748bde73a9",
         "displayName": "JOJO👆✌️🖖🤘👐💪",
         "pictureUrl": "https://profile.line-scdn.net/0hkcIttYrsNExkDSOHnbNKMxRdNyZHfG1eQGorIwNZb3xfb3BOSmsuKFRdOHUKPycaTGJ4flgIaX9oHkMqelvIeGM9aX1ZPHYSTmN-rw"
-      },
-      {
-        "time": 1787232467031,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1787229894432,
-        "userId": "Ubbef4e0a6cc32f9629b0d1adde897b9e",
-        "displayName": "Wei",
-        "pictureUrl": "https://profile.line-scdn.net/0hu8ZeYPsEKhd3HDb1LnFUKQdMKX1UbXMFXH9tc0EbfHAfLz5HCCoxdxUacSRCeT5DWS9ldUUdJCFVKCg2AHpsGhBIMWA_bxI5Gzg4HxQaIl0DMB8XXiQZGRpLAHAkVR85Hi0ZDQdHCV84ZxZdM3gEcApJE2YjTBg7GEtGQXIuRJQYHl1CWnpkdEoafCLP"
-      },
-      {
-        "time": 1787229852632,
-        "userId": "U47573cf563cc67d5fc00dbb48a51092a",
-        "displayName": "兔兔(玉儒)",
-        "pictureUrl": "https://profile.line-scdn.net/0hwOdjz548KGBJEzcDixVWXjlDKwpqYnFyYnxlUXUUJVN0JmdiZyEwVngRcVcjd28yYCFjUi5BcwBrcDFqbB0xZX50dRt1fg81OwUzZDl0FVISRBJOPDI1QQRbMjYKdxpdGRdhWSlhPTYsYhZ9BgknZgdbEAgkfyp1JERENkwhRuMmEV81ZHVmA3QVflXx"
       }
     ]
   },
