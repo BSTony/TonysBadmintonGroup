@@ -10728,7 +10728,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791776926360,
-    "lastActiveTime": 1791776926360,
+    "lastActiveTime": 1791959608414,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10745,8 +10745,19 @@
         "limit": 1,
         "backupLimit": 5,
         "label": "",
-        "list": [],
+        "list": [
+          "林立"
+        ],
         "fee": ""
+      }
+    ],
+    "history": [
+      {
+        "time": "10/14 14:33",
+        "name": "林立",
+        "operator": "林立 (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   },
