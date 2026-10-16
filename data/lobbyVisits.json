@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5263,
+    "viewCount": 5266,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -142,8 +142,8 @@
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
         "firstVisit": 1783229231612,
-        "count": 129,
-        "lastVisit": 1791972742330,
+        "count": 130,
+        "lastVisit": 1792130478686,
         "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
       },
       "U9a1ff0a8477529c49db5bca1e7313bd0": {
@@ -251,8 +251,8 @@
       "Ua158cf62dfd0ee9c8171a29263d9da11": {
         "displayName": "曾Jim凱",
         "firstVisit": 1783331916444,
-        "count": 86,
-        "lastVisit": 1791906360405,
+        "count": 87,
+        "lastVisit": 1792132992310,
         "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
       },
       "Ud33e6f76c7549fb90abe4440b1735805": {
@@ -1315,8 +1315,8 @@
       "U0220a13b4aec2dec044ce073925f0df9": {
         "displayName": "喻心平",
         "firstVisit": 1789460439964,
-        "count": 21,
-        "lastVisit": 1791907192954,
+        "count": 22,
+        "lastVisit": 1792130470289,
         "pictureUrl": "https://profile.line-scdn.net/0hwshDCQjnKFxFPTqVt8dWIzVtKzZmTHFOPVM3anA6Im17CToPYFlkaHJtfm17WTsPPA81anFtcjlJLl86W2vUaEINdW14DGoCb1Nivw"
       },
       "U9797aabca4e9dbd9b5227c37b6eeace1": {
@@ -1439,6 +1439,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1792132992310,
+        "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
+        "displayName": "曾Jim凱",
+        "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
+      },
+      {
+        "time": 1792130478686,
+        "userId": "U04307fbd1087e54ce656086b653a60fd",
+        "displayName": "黃政豪",
+        "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
+      },
+      {
+        "time": 1792130470289,
+        "userId": "U0220a13b4aec2dec044ce073925f0df9",
+        "displayName": "喻心平",
+        "pictureUrl": "https://profile.line-scdn.net/0hwshDCQjnKFxFPTqVt8dWIzVtKzZmTHFOPVM3anA6Im17CToPYFlkaHJtfm17WTsPPA81anFtcjlJLl86W2vUaEINdW14DGoCb1Nivw"
+      },
       {
         "time": 1792130273195,
         "userId": "U1a05e97623cee1f79b0876626e88f0ab",
@@ -13418,24 +13436,6 @@
         "userId": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
         "displayName": "陳文凱",
         "pictureUrl": "https://profile.line-scdn.net/0hHYlydU1zF3ZBAAiI9CVpSDFQFBxicU5kaGMIRXZSQE55Y1YkP2EMGXEFTkB_NVIgOmBbQHYJHkBjdRh_KTMrQB9JCicgQBJ8BhhZTgYDJxV4Rz4pZGctbChDDDMMQgdQJCEubS9BHS4JSVl2Oh45dQtuFyAEUhlSJFd7IEQyefUuAmAjbGZZFXwGQUP5"
-      },
-      {
-        "time": 1787278089977,
-        "userId": "U037afe342197214125f95fd00ebc1f0c",
-        "displayName": "徐偉強",
-        "pictureUrl": "https://profile.line-scdn.net/0huMoSsYw0KmJCKjtzyt9UHTJ6KQhhW3Nwak1tAnB-fQEoTj1nPEhnVyd-J1B5TWtgOU1kVyV_J1FOOV0EXHzWVkUad1N_G2g8aERggQ"
-      },
-      {
-        "time": 1787274880742,
-        "userId": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
-        "displayName": "John",
-        "pictureUrl": "https://profile.line-scdn.net/0hgE71bnyJOGoaSCnunEtGVGoYOwA5OWF4ZClyWylMZFggKis7MicjDn9PMw4kf307Ni10XClANVk4DCdaXXs1a1Q1OSp0PA9LblgqTCs3Zy9DDitCYV4lC3EjYB1BHQlsTC8VdkYsGyZFJis-dnYfWkdUOFh5GXY5QR9UPB96Vul1Sk8_Ny52CSdObl-i"
-      },
-      {
-        "time": 1787274202666,
-        "userId": "U9904ed725b1f420b8718791594e3756b",
-        "displayName": "偉舫",
-        "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
       }
     ]
   },
