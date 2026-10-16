@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5272,
+    "viewCount": 5273,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1231,8 +1231,8 @@
       "Ub064417033c16920c8adeae18d2c3c50": {
         "displayName": "尸比尸比",
         "firstVisit": 1788448104528,
-        "count": 4,
-        "lastVisit": 1790235542863,
+        "count": 5,
+        "lastVisit": 1792157780966,
         "pictureUrl": "https://profile.line-scdn.net/0hRNLCR6igDWFhOh5zx9FzHhFqDgtCS1RzT18RAF07VQYJWk9nTlhCBFBoVVFfCkk3SllEBgY-VgJtKXoHf2zxVWYKUFBcC08_S1RHgg"
       },
       "Ue8b80741d20979ceca51de03721d1184": {
@@ -1439,6 +1439,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1792157780966,
+        "userId": "Ub064417033c16920c8adeae18d2c3c50",
+        "displayName": "尸比尸比",
+        "pictureUrl": "https://profile.line-scdn.net/0hRNLCR6igDWFhOh5zx9FzHhFqDgtCS1RzT18RAF07VQYJWk9nTlhCBFBoVVFfCkk3SllEBgY-VgJtKXoHf2zxVWYKUFBcC08_S1RHgg"
+      },
       {
         "time": 1792154420463,
         "userId": "U98e70298aa928f28a3cbf5daa199273f",
@@ -13430,12 +13436,6 @@
         "userId": "U7c381eceb3dee900bbd30b986a0f8357",
         "displayName": "陳宜蓁",
         "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
-      },
-      {
-        "time": 1787280184795,
-        "userId": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-        "displayName": "陳文凱",
-        "pictureUrl": "https://profile.line-scdn.net/0hHYlydU1zF3ZBAAiI9CVpSDFQFBxicU5kaGMIRXZSQE55Y1YkP2EMGXEFTkB_NVIgOmBbQHYJHkBjdRh_KTMrQB9JCicgQBJ8BhhZTgYDJxV4Rz4pZGctbChDDDMMQgdQJCEubS9BHS4JSVl2Oh45dQtuFyAEUhlSJFd7IEQyefUuAmAjbGZZFXwGQUP5"
       }
     ]
   },
