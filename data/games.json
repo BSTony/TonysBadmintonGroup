@@ -10784,7 +10784,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1791958966775,
+    "lastActiveTime": 1792130293440,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10836,12 +10836,20 @@
           "ashley",
           "楊程鈞",
           "冰山葉 T.Yeh",
-          "CCCCCCCCC"
+          "CCCCCCCCC",
+          "wayne"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/16 13:58",
+        "name": "wayne",
+        "operator": "Wayne",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/14 14:22",
         "name": "CCCCCCCCC",
