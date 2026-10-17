@@ -10710,62 +10710,6 @@
       }
     ]
   },
-  "1791776926360287": {
-    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-    "targetGids": [
-      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C073dd061239f9bc2df13af0a1ecb4bdb",
-      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-      "C73ead06e46f4c3a00a3f87d946c7d18a"
-    ],
-    "gameId": "1791776926360287",
-    "title": "週六 港中 沒開",
-    "date": "10/17 (六)",
-    "time": "20:00~12:00",
-    "location": "南港高中",
-    "fee": "",
-    "note": "",
-    "tag": "",
-    "active": true,
-    "startTime": 1791776926360,
-    "lastActiveTime": 1791959634641,
-    "scheduleTime": null,
-    "reminderTime": null,
-    "scheduleInput": null,
-    "anonymous": [],
-    "anonymousCount": 0,
-    "levelMap": {},
-    "paidMap": {},
-    "uidMap": {},
-    "noteMap": {},
-    "allowUserNoteEdit": true,
-    "sections": [
-      {
-        "title": "報名名單",
-        "limit": 1,
-        "backupLimit": 5,
-        "label": "",
-        "list": [],
-        "fee": ""
-      }
-    ],
-    "history": [
-      {
-        "time": "10/14 14:33",
-        "name": "林立",
-        "operator": "林立 (輸入框)",
-        "action": "-1",
-        "section": "報名名單"
-      },
-      {
-        "time": "10/14 14:33",
-        "name": "林立",
-        "operator": "林立 (輸入框)",
-        "action": "+1",
-        "section": "報名名單"
-      }
-    ]
-  },
   "1791813406202256": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
