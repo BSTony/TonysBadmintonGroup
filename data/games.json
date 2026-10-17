@@ -10728,7 +10728,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1792248925514,
+    "lastActiveTime": 1792250314846,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10775,7 +10775,6 @@
           "黃政豪",
           "John",
           "Tank Lin",
-          "花花",
           "柚子",
           "曾Jim凱",
           "ashley",
@@ -10788,6 +10787,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/17 23:18",
+        "name": "花花",
+        "operator": "賴柚子",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/17 22:55",
         "name": "wayne",
