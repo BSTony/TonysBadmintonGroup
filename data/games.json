@@ -10728,7 +10728,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1792315390904,
+    "lastActiveTime": 1792325461800,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10782,12 +10782,20 @@
           "冰山葉 T.Yeh",
           "CCCCCCCCC",
           "Gary",
-          "FB 周猷翔"
+          "FB 周猷翔",
+          "FB chirs"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/18 20:11",
+        "name": "FB chirs",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/18 17:23",
         "name": "FB 周猷翔",
