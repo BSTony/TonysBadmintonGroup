@@ -11028,7 +11028,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1792236792657,
+    "lastActiveTime": 1792287670841,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11089,14 +11089,20 @@
           "momota",
           "凱文",
           "平",
-          "Gary",
-          "Mike"
+          "Gary"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/18 09:41",
+        "name": "Mike",
+        "operator": "Mike (輸入框)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/17 19:33",
         "name": "Tank Lin",
