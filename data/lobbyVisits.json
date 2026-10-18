@@ -13448,7 +13448,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 366,
+    "viewCount": 367,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13535,8 +13535,8 @@
       "Uf35f2dc9288c3434a5a19186f900402a": {
         "displayName": "Robert",
         "firstVisit": 1783433164456,
-        "count": 29,
-        "lastVisit": 1791987129543,
+        "count": 30,
+        "lastVisit": 1792303180085,
         "pictureUrl": "https://profile.line-scdn.net/0hIqo_ip_nFl5CJgCKawhoITJ2FTRhV09MbxBYPXMiH2x_QQRaO0ZbOyAnS2ovQ1kKahJQbSUuSj1ONWE4XHDqakUWS29_F1QAaEhcvQ"
       },
       "U0134503a2d79a5bb7f92d876393b2fd8": {
@@ -13651,6 +13651,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1792303180085,
+        "userId": "Uf35f2dc9288c3434a5a19186f900402a",
+        "displayName": "Robert",
+        "pictureUrl": "https://profile.line-scdn.net/0hIqo_ip_nFl5CJgCKawhoITJ2FTRhV09MbxBYPXMiH2x_QQRaO0ZbOyAnS2ovQ1kKahJQbSUuSj1ONWE4XHDqakUWS29_F1QAaEhcvQ"
+      },
       {
         "time": 1792298848250,
         "userId": "Uf339b049e09a02f0796afb22f5de2e7e",
