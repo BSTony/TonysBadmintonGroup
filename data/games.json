@@ -10728,7 +10728,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1792325461800,
+    "lastActiveTime": 1792325620567,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10783,12 +10783,20 @@
           "CCCCCCCCC",
           "Gary",
           "FB 周猷翔",
-          "FB chirs"
+          "FB chirs",
+          "FB abby"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/18 20:13",
+        "name": "FB abby",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/18 20:11",
         "name": "FB chirs",
