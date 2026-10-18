@@ -10899,7 +10899,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791893784737,
-    "lastActiveTime": 1791971388051,
+    "lastActiveTime": 1792295533164,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10911,7 +10911,6 @@
     "paidMap": {
       "謝東霖 Tony": true,
       "Kay": true,
-      "Ong": true,
       "憲": true,
       "Robert": true,
       "偉舫": true,
@@ -10943,7 +10942,6 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "Ong",
           "憲",
           "Robert",
           "偉舫",
@@ -10959,6 +10957,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/18 11:52",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/14 17:49",
         "name": "李奉喜",
