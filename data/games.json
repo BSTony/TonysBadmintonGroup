@@ -11358,7 +11358,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792418962846,
+    "lastActiveTime": 1792419988762,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11366,7 +11366,9 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {},
-    "uidMap": {},
+    "uidMap": {
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
+    },
     "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
@@ -11384,7 +11386,9 @@
         "backupLimit": 5,
         "fee": "190",
         "label": "",
-        "list": []
+        "list": [
+          "Tank Lin"
+        ]
       },
       {
         "title": "8-12",
@@ -11393,6 +11397,15 @@
         "fee": "300",
         "label": "",
         "list": []
+      }
+    ],
+    "history": [
+      {
+        "time": "10/19 22:26",
+        "name": "Tank Lin",
+        "operator": "Tank Lin",
+        "action": "+1",
+        "section": "10-12"
       }
     ]
   }
