@@ -10728,7 +10728,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1792411300501,
+    "lastActiveTime": 1792411303919,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10745,7 +10745,8 @@
       "John": true,
       "FB 島主": true,
       "FB abby": true,
-      "FB 晨": true
+      "FB 晨": true,
+      "柚子": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
