@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
-  Date: 2026-10-13
-  Version: 1.2.19
+  Date: 2026-10-19
+  Version: 1.2.20
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -281,24 +281,43 @@ html.halloween .hw-g2 { top: 38%; right: 2%; width: 75px; height: 93px; animatio
 html.halloween .hw-b2 { top: 68%; left: 10%; width: 96px; height: 54px; animation-duration: 2.6s; animation-delay: -0.8s; }
 html.halloween .hw-s2 { top: 74%; right: 8%; width: 66px; height: 78px; animation-name: hw-pace-c; animation-duration: 9.4s; animation-delay: -4.2s; }
 html.halloween .hw-g3 { top: 86%; left: 36%; width: 60px; height: 75px; animation-name: hw-pace-a; animation-duration: 4.7s; animation-delay: -2s; }
-html.halloween .hw-big-pumpkin {
+html.halloween .hw-bat-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+html.halloween .hw-bat-swarm {
   position: absolute;
   left: 50%;
-  bottom: 2vh;
-  width: min(92vw, 560px);
+  bottom: 10vh;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+html.halloween .hw-swarm {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 78px;
+  height: 46px;
+  margin-left: -39px;
+  color: #3B2463;
   pointer-events: none;
   opacity: 0;
-  transform: translate3d(-50%, 120%, 0);
-  animation: hw-skull-pop 16s linear infinite;
-  animation-delay: -12.6s;
-  filter: drop-shadow(0 18px 24px rgba(18, 8, 32, 0.35));
+  animation: hw-bat-burst 16s linear infinite;
+  animation-delay: -12.4s;
 }
-html.halloween .hw-big-pumpkin svg { width: 100%; height: auto; display: block; pointer-events: none; }
-@keyframes hw-skull-pop {
-  0%, 74% { transform: translate3d(-50%, 120%, 0) rotate(-6deg); opacity: 0; }
-  80% { transform: translate3d(-50%, 0, 0) rotate(3deg); opacity: 1; }
-  87% { transform: translate3d(-50%, 0, 0) rotate(-2deg); opacity: 1; }
-  100% { transform: translate3d(-50%, 125%, 0) rotate(5deg); opacity: 0; }
+html.halloween .hw-swarm svg { width: 100%; height: 100%; display: block; pointer-events: none; overflow: visible; }
+html.halloween .hw-swarm-1 { --bx: -42vw; --by: -22vh; --br: -18deg; width: 92px; height: 54px; animation-duration: 15s; }
+html.halloween .hw-swarm-2 { --bx: 38vw; --by: -18vh; --br: 16deg; color: #241433; width: 70px; animation-delay: -12.2s; }
+html.halloween .hw-swarm-3 { --bx: -16vw; --by: -62vh; --br: -8deg; width: 64px; animation-delay: -12.1s; }
+html.halloween .hw-swarm-4 { --bx: 18vw; --by: -68vh; --br: 10deg; color: #241433; width: 86px; height: 50px; animation-delay: -12.3s; }
+html.halloween .hw-swarm-5 { --bx: -48vw; --by: -46vh; --br: -24deg; width: 58px; animation-delay: -12s; }
+html.halloween .hw-swarm-6 { --bx: 50vw; --by: -50vh; --br: 22deg; color: #4C1D95; width: 74px; animation-delay: -12.5s; }
+html.halloween .hw-swarm-7 { --bx: -6vw; --by: -78vh; --br: -4deg; width: 68px; animation-delay: -12.15s; }
+html.halloween .hw-swarm-8 { --bx: 8vw; --by: -34vh; --br: 12deg; color: #241433; width: 100px; height: 58px; animation-delay: -12.35s; }
+@keyframes hw-bat-burst {
+  0%, 72% { transform: translate3d(0, 48px, 0) scale(0.35) rotate(0deg); opacity: 0; }
+  78% { transform: translate3d(0, -6vh, 0) scale(1) rotate(-4deg); opacity: 1; }
+  88% { transform: translate3d(var(--bx), var(--by), 0) scale(1) rotate(var(--br)); opacity: 1; }
+  97% { transform: translate3d(calc(var(--bx) * 1.25), calc(var(--by) * 1.15), 0) scale(0.8) rotate(var(--br)); opacity: 0; }
+  100% { transform: translate3d(0, 48px, 0) scale(0.35) rotate(0deg); opacity: 0; }
 }
 @keyframes hw-pace-a {
   0% { transform: translate3d(-28vw, 0, 0) rotate(-8deg); }
@@ -360,7 +379,7 @@ html.halloween .empty-state .hint { color: #e9d5ff; }
 }
 @media (prefers-reduced-motion: reduce) {
   html.halloween .hw-float,
-  html.halloween .hw-big-pumpkin { animation: none; }
+  html.halloween .hw-swarm { animation: none; }
 }
 
 #app {
