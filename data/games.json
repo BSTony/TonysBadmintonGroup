@@ -11358,7 +11358,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792421650058,
+    "lastActiveTime": 1792423274899,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11368,7 +11368,8 @@
     "paidMap": {},
     "uidMap": {
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
-      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11398,11 +11399,19 @@
         "fee": "300",
         "label": "",
         "list": [
-          "Chen H.R."
+          "Chen H.R.",
+          "©️張CC～©️"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/19 23:21",
+        "name": "©️張CC～©️",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/19 22:54",
         "name": "Chen H.R.",
