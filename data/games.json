@@ -11358,7 +11358,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792419988762,
+    "lastActiveTime": 1792421650058,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11367,7 +11367,8 @@
     "levelMap": {},
     "paidMap": {},
     "uidMap": {
-      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11396,10 +11397,19 @@
         "backupLimit": 5,
         "fee": "300",
         "label": "",
-        "list": []
+        "list": [
+          "Chen H.R."
+        ]
       }
     ],
     "history": [
+      {
+        "time": "10/19 22:54",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/19 22:26",
         "name": "Tank Lin",
