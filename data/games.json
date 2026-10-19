@@ -10728,7 +10728,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791813406206,
-    "lastActiveTime": 1792325631111,
+    "lastActiveTime": 1792396679276,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10785,12 +10785,20 @@
           "FB 周猷翔",
           "FB chirs",
           "FB abby",
-          "FB 島主"
+          "FB 島主",
+          "Edward"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/19 15:57",
+        "name": "Edward",
+        "operator": "Edwardエドワード 에드워드 Ëd",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/18 20:13",
         "name": "FB 島主",
