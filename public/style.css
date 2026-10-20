@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
-  Date: 2026-10-19
-  Version: 1.2.20
+  Date: 2026-10-20
+  Version: 1.2.21
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -312,6 +312,14 @@ html.halloween .hw-swarm-5 { --bx: -48vw; --by: -46vh; --br: -24deg; width: 58px
 html.halloween .hw-swarm-6 { --bx: 50vw; --by: -50vh; --br: 22deg; color: #4C1D95; width: 74px; animation-delay: -12.5s; }
 html.halloween .hw-swarm-7 { --bx: -6vw; --by: -78vh; --br: -4deg; width: 68px; animation-delay: -12.15s; }
 html.halloween .hw-swarm-8 { --bx: 8vw; --by: -34vh; --br: 12deg; color: #241433; width: 100px; height: 58px; animation-delay: -12.35s; }
+html.halloween .hw-swarm-9 { --bx: -30vw; --by: -36vh; --br: -14deg; color: #4C1D95; width: 84px; height: 50px; animation-delay: -12.05s; }
+html.halloween .hw-swarm-10 { --bx: 28vw; --by: -40vh; --br: 18deg; width: 76px; animation-delay: -12.55s; }
+html.halloween .hw-swarm-11 { --bx: -58vw; --by: -14vh; --br: -28deg; color: #241433; width: 66px; animation-delay: -11.9s; }
+html.halloween .hw-swarm-12 { --bx: 56vw; --by: -12vh; --br: 26deg; width: 88px; height: 52px; animation-delay: -12.7s; }
+html.halloween .hw-swarm-13 { --bx: -24vw; --by: -82vh; --br: -6deg; color: #5B21B6; width: 62px; animation-delay: -12.25s; }
+html.halloween .hw-swarm-14 { --bx: 26vw; --by: -76vh; --br: 8deg; width: 80px; height: 48px; animation-delay: -12.45s; }
+html.halloween .hw-swarm-15 { --bx: -8vw; --by: -48vh; --br: -10deg; color: #241433; width: 96px; height: 56px; animation-delay: -12.08s; }
+html.halloween .hw-swarm-16 { --bx: 4vw; --by: -88vh; --br: 4deg; color: #4C1D95; width: 72px; animation-delay: -12.62s; }
 @keyframes hw-bat-burst {
   0%, 72% { transform: translate3d(0, 48px, 0) scale(0.35) rotate(0deg); opacity: 0; }
   78% { transform: translate3d(0, -6vh, 0) scale(1) rotate(-4deg); opacity: 1; }
