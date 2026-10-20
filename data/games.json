@@ -10958,7 +10958,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791893784737,
-    "lastActiveTime": 1792499090327,
+    "lastActiveTime": 1792499090984,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10978,7 +10978,8 @@
       "雪倫": true,
       "Wei": true,
       "凱文": false,
-      "海棠": true
+      "海棠": true,
+      "afrahuang": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -11091,7 +11092,8 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": true
   },
   "1791896353405453": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
