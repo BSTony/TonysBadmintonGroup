@@ -11379,7 +11379,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792499229609,
+    "lastActiveTime": 1792499236712,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11425,11 +11425,19 @@
         "list": [
           "Chen H.R.",
           "©️張CC～©️",
-          "Kevin"
+          "Kevin",
+          "Mia"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/20 20:27",
+        "name": "Mia",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/20 20:27",
         "name": "Kevin",
