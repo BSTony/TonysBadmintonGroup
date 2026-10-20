@@ -11358,7 +11358,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792423274899,
+    "lastActiveTime": 1792460701990,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11369,7 +11369,8 @@
     "uidMap": {
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
-      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11380,7 +11381,9 @@
         "backupLimit": 5,
         "fee": "150",
         "label": "",
-        "list": []
+        "list": [
+          "AddieWang"
+        ]
       },
       {
         "title": "10-12",
@@ -11405,6 +11408,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/20 09:45",
+        "name": "AddieWang",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "10/19 23:21",
         "name": "©️張CC～©️",
