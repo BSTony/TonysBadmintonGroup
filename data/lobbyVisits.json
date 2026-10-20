@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5399,
+    "viewCount": 5401,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1443,9 +1443,28 @@
         "count": 2,
         "lastVisit": 1792238886759,
         "pictureUrl": "https://profile.line-scdn.net/0hBoKy_ExCHUBmAAIZ1O1jfhZQHipFcURST2cHIVYJSicLM1MVQ2YAdFRXFyBdY1MVTG9ULlMEEHJENAITLQ9bZyN6BDYiNRhJHw8RJgZYEDA6Uh9lS2IxQhpkMys7bSdjDgUgLjdyIiodQhFTLzUBJQgFPnkMU1hxIVdxFmMyc8MJAmoVS2ZTI1sGS3Xe"
+      },
+      "Ude1132beecd5ae53606bf1a04f22167b": {
+        "displayName": "Kevin 何榮煌",
+        "firstVisit": 1792492379646,
+        "count": 2,
+        "lastVisit": 1792492443041,
+        "pictureUrl": "https://profile.line-scdn.net/0m01b593797251f6cff9ad935da48e64019b571f88684d"
       }
     },
     "logs": [
+      {
+        "time": 1792492443041,
+        "userId": "Ude1132beecd5ae53606bf1a04f22167b",
+        "displayName": "Kevin 何榮煌",
+        "pictureUrl": "https://profile.line-scdn.net/0m01b593797251f6cff9ad935da48e64019b571f88684d"
+      },
+      {
+        "time": 1792492379646,
+        "userId": "Ude1132beecd5ae53606bf1a04f22167b",
+        "displayName": "Kevin 何榮煌",
+        "pictureUrl": "https://profile.line-scdn.net/0m01b593797251f6cff9ad935da48e64019b571f88684d"
+      },
       {
         "time": 1792489941102,
         "userId": "U7977ee57751b21a1fb17ddbb180444b3",
@@ -13432,18 +13451,6 @@
         "userId": "U532d12783f207181c2d0f9d9ecc8724a",
         "displayName": "林俊佑",
         "pictureUrl": "https://profile.line-scdn.net/0hz8wiwhEyJRdaEDQI9I5baCpAJn15YXwFIXZudmcWfyNlJDdGcnc9IjxDKHBkJ2UUc3E_cjsQe3RWA1JxREbZI10geCZnIWdJcH5v9A"
-      },
-      {
-        "time": 1787543290490,
-        "userId": "U7c381eceb3dee900bbd30b986a0f8357",
-        "displayName": "陳宜蓁",
-        "pictureUrl": "https://profile.line-scdn.net/0hoOMxg2S1MGBgAS9rlsROXhBRMwpDcGlyS2Z8VFIEPgVdM3ZlRDArAVMJagQKNX82TW98AwVVZ1FCNARqRDgGDhx5Di9ZQx41BGYYZAF0NycJV3UxRWUERSJyLBUESgw1DQEreAZ9CjQpQQRQFCAUdg9hPgYuWQlYGFZcNmUzXuMPA0c1TWd-A10HZlXY"
-      },
-      {
-        "time": 1787543145036,
-        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
-        "displayName": "©️張CC～©️",
-        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
       }
     ]
   },
