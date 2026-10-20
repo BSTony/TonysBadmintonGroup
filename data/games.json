@@ -11379,7 +11379,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792460701990,
+    "lastActiveTime": 1792499229609,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11424,11 +11424,19 @@
         "label": "",
         "list": [
           "Chen H.R.",
-          "©️張CC～©️"
+          "©️張CC～©️",
+          "Kevin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/20 20:27",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/20 09:45",
         "name": "AddieWang",
