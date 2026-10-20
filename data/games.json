@@ -10958,7 +10958,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791893784737,
-    "lastActiveTime": 1792461964763,
+    "lastActiveTime": 1792461966652,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11011,13 +11011,19 @@
           "Wei",
           "凱文",
           "海棠",
-          "afrahuang",
-          "AddieWang"
+          "afrahuang"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/20 10:06",
+        "name": "AddieWang",
+        "operator": "AddieWang",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/20 10:06",
         "name": "AddieWang",
