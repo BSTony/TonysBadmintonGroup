@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-13
- * Version: 1.3.24
+ * Date: 2026-10-20
+ * Version: 1.3.26
  */
 const express = require('express');
 const compression = require('compression');
@@ -3021,6 +3021,33 @@ app.post('/api/templates/:gid', express.json({ limit: '2mb' }), async (req, res)
     res.status(500).json({ error: '伺服器儲存錯誤' });
   }
 });
+
+// 聊天室 +1／-1 若有點名場次，先比對進行中的團，對到才發字卡
+function extractPlusMinusHint(cleanText) {
+  if (!cleanText || /🔄順序更新|💰繳費更新/.test(cleanText)) return '';
+  return cleanText
+    .replace(/[+＋]\s*[1-9]/g, ' ')
+    .replace(/[-－]\s*[1-9]/g, ' ')
+    .replace(/\[系統代發\]/g, ' ')
+    .replace(/[()（）]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function hintLooksLikeSession(hint) {
+  return /週[一二三四五六日天]|\d{1,2}\s*[\/月\-]\s*\d{1,2}|團|場次|港中|南港|冷氣/.test(hint);
+}
+
+function sessionHintMatches(game, hint) {
+  const title = String(game.title || '').trim();
+  if (title.length > 1 && (hint.includes(title) || title.includes(hint))) return true;
+  const week = title.match(/週[一二三四五六日天]/);
+  if (week && hint.includes(week[0])) return true;
+  const dateText = String(game.date || '');
+  const date = dateText.match(/(\d{1,2})\s*[\/\-月]\s*(\d{1,2})/);
+  if (!date) return false;
+  return hint.includes(`${date[1]}/${date[2]}`) || hint.includes(`${date[1]}月${date[2]}`) || hint.includes(`${date[1]}-${date[2]}`);
+}
 
 // 產生完整名單字串的輔助函式
 function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
@@ -6286,8 +6313,21 @@ async function handleEvent(event) {
       if (keyword) {
           groupGames = groupGames.filter(g => g.title.includes(keyword));
       }
+
+      if (isPlusMinus) {
+          const hint = extractPlusMinusHint(cleanText);
+          if (hint) {
+              const matchedGames = groupGames.filter(g => sessionHintMatches(g, hint));
+              if (matchedGames.length > 0) {
+                  groupGames = matchedGames;
+              } else if (hintLooksLikeSession(hint)) {
+                  return null;
+              }
+          }
+      }
       
       if (groupGames.length === 0) {
+          if (isPlusMinus) return null;
           const emptyText = keyword ? `找不到包含「${keyword}」的場次喔！` : `目前群組內沒有正在進行的場次喔！`;
           return client.replyMessage(event.replyToken, { type: 'text', text: emptyText });
       }
