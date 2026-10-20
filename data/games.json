@@ -11493,7 +11493,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792499642517,
-    "lastActiveTime": 1792503216543,
+    "lastActiveTime": 1792503945622,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11541,12 +11541,20 @@
           "Jet",
           "陳呈",
           "凱文",
-          "afrahuang"
+          "afrahuang",
+          "Afra2"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/20 21:45",
+        "name": "Afra2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/20 21:33",
         "name": "afrahuang",
