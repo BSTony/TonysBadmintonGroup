@@ -11113,7 +11113,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1792387326801,
+    "lastActiveTime": 1792504749212,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11146,7 +11146,8 @@
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "Robert": "Uf35f2dc9288c3434a5a19186f900402a",
-      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11178,13 +11179,21 @@
           "平",
           "Gary",
           "Robert",
-          "Win Shu"
+          "Win Shu",
+          "©️張CC～©️"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/20 21:59",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/19 13:22",
         "name": "Win Shu",
