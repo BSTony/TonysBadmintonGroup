@@ -10958,7 +10958,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791893784737,
-    "lastActiveTime": 1792295533164,
+    "lastActiveTime": 1792461964763,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -10988,7 +10988,8 @@
       "Wei": "Ubbef4e0a6cc32f9629b0d1adde897b9e",
       "海棠": "Ufa8dba5febf9f719da07f7e507391a21",
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
-      "李奉喜": "U92b94dfcbb67ed1a0e4fc371b67b9aa9"
+      "李奉喜": "U92b94dfcbb67ed1a0e4fc371b67b9aa9",
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11010,12 +11011,20 @@
           "Wei",
           "凱文",
           "海棠",
-          "afrahuang"
+          "afrahuang",
+          "AddieWang"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/20 10:06",
+        "name": "AddieWang",
+        "operator": "AddieWang",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/18 11:52",
         "name": "Ong",
