@@ -11517,7 +11517,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792499642517,
-    "lastActiveTime": 1792503945622,
+    "lastActiveTime": 1792596986977,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11564,7 +11564,6 @@
           "偉舫",
           "Jet",
           "陳呈",
-          "凱文",
           "afrahuang",
           "Afra2"
         ],
@@ -11572,6 +11571,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/21 23:36",
+        "name": "凱文",
+        "operator": "凱文 (輸入框)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/20 21:45",
         "name": "Afra2",
