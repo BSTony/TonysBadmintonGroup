@@ -11113,7 +11113,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1792504749212,
+    "lastActiveTime": 1792553248397,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11124,7 +11124,6 @@
       "謝東霖 Tony": true,
       "Kay": true,
       "Iven": true,
-      "Mina": true,
       "Wayne": true,
       "曾Jim凱": true,
       "Ashely": true,
@@ -11161,7 +11160,6 @@
           "謝東霖 Tony",
           "Kay",
           "Iven",
-          "Mina",
           "Wayne",
           "曾Jim凱",
           "Ashely",
@@ -11187,6 +11185,13 @@
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/21 11:27",
+        "name": "Mina",
+        "operator": "Mina",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/20 21:59",
         "name": "©️張CC～©️",
