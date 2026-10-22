@@ -11434,11 +11434,11 @@
       "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1792418962846267",
-    "title": "港中 週六 下次是10/31",
+    "title": "港中 週六 早上",
     "date": "10/31 (六)",
     "time": "08:00~12:00",
     "location": "南港高中",
-    "fee": "",
+    "fee": "150",
     "note": "",
     "tag": "",
     "active": true,
@@ -11546,7 +11546,8 @@
         "action": "+1",
         "section": "10-12"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "1792499642512887": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
