@@ -11659,7 +11659,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792678517529,
+    "lastActiveTime": 1792678519890,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11711,7 +11711,6 @@
           "杜威霖 Andy",
           "周則鼎",
           "Chen H.R.",
-          "小羅友2",
           "小羅",
           "柯大",
           "簡",
@@ -11723,6 +11722,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/22 22:15",
+        "name": "小羅友2",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 22:15",
         "name": "羅小羅🦝",
