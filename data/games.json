@@ -11686,7 +11686,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792690906724,
+    "lastActiveTime": 1792691387882,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11719,7 +11719,8 @@
       "Jason": "Ud4719ef94e51a0dcda65b4dd01279f5d",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11752,12 +11753,20 @@
           "楊程鈞",
           "Emily🙈🙉🙊",
           "winnie",
-          "江こう 洋々"
+          "江こう 洋々",
+          "Gary"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/23 01:49",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/23 01:41",
         "name": "江こう 洋々",
