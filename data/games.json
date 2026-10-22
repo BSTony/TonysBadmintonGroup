@@ -11659,7 +11659,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792678478769,
+    "lastActiveTime": 1792678487994,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11714,12 +11714,20 @@
           "羅小羅🦝",
           "小羅友2",
           "小羅",
-          "柯大"
+          "柯大",
+          "簡"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/22 22:14",
+        "name": "簡",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 22:14",
         "name": "柯大",
