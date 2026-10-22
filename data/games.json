@@ -11659,7 +11659,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792678589471,
+    "lastActiveTime": 1792678984032,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11689,7 +11689,8 @@
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
-      "羅小羅🦝": "U6d9e099c518efa25fd881c87e6e72dd7"
+      "羅小羅🦝": "U6d9e099c518efa25fd881c87e6e72dd7",
+      "Jason": "Ud4719ef94e51a0dcda65b4dd01279f5d"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11717,12 +11718,20 @@
           "林明德",
           "雪倫",
           "李文濤",
-          "海灘哥"
+          "海灘哥",
+          "Jason"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/22 22:23",
+        "name": "Jason",
+        "operator": "Jason",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 22:16",
         "name": "海灘哥",
