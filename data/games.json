@@ -11659,7 +11659,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792678497075,
+    "lastActiveTime": 1792678499191,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11716,12 +11716,20 @@
           "小羅",
           "柯大",
           "簡",
-          "林明德"
+          "林明德",
+          "雪倫"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/22 22:14",
+        "name": "雪倫",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 22:14",
         "name": "林明德",
