@@ -11659,7 +11659,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792678499191,
+    "lastActiveTime": 1792678504286,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11717,12 +11717,20 @@
           "柯大",
           "簡",
           "林明德",
-          "雪倫"
+          "雪倫",
+          "李文濤"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/22 22:15",
+        "name": "李文濤",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 22:14",
         "name": "雪倫",
