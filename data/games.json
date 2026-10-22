@@ -11659,7 +11659,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792678519890,
+    "lastActiveTime": 1792678589471,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11716,12 +11716,20 @@
           "簡",
           "林明德",
           "雪倫",
-          "李文濤"
+          "李文濤",
+          "海灘哥"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/22 22:16",
+        "name": "海灘哥",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 22:15",
         "name": "小羅友2",
