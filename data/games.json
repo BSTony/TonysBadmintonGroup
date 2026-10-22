@@ -11686,7 +11686,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792679570239,
+    "lastActiveTime": 1792690734548,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11717,7 +11717,8 @@
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "羅小羅🦝": "U6d9e099c518efa25fd881c87e6e72dd7",
       "Jason": "Ud4719ef94e51a0dcda65b4dd01279f5d",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11747,12 +11748,20 @@
           "海灘哥",
           "Jason",
           "Mike",
-          "楊程鈞"
+          "楊程鈞",
+          "Emily🙈🙉🙊"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/23 01:38",
+        "name": "Emily🙈🙉🙊",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 22:32",
         "name": "楊程鈞",
