@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792683098973,
+    "lastActiveTime": 1792683184250,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11456,7 +11456,8 @@
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11493,11 +11494,19 @@
           "Kevin",
           "Mia",
           "楊程鈞",
-          "林淑惠"
+          "林淑惠",
+          "林淑惠Sophia"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/22 23:33",
+        "name": "林淑惠Sophia",
+        "operator": "林淑惠Sophia",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/22 23:31",
         "name": "林淑惠",
