@@ -11113,7 +11113,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1792651436156,
+    "lastActiveTime": 1792658170016,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11173,14 +11173,20 @@
           "平",
           "Gary",
           "Robert",
-          "Win Shu",
-          "©️張CC～©️"
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/22 16:36",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 14:43",
         "name": "Mike",
