@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792693835736,
+    "lastActiveTime": 1792710270287,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11459,7 +11459,8 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
       "Irene": "Uc92b4c526f0fbbbd95ccd456657f4956",
-      "吳霆竣 Chad Wu": "Ue1594129b605feab81c213ba981fc0fd"
+      "吳霆竣 Chad Wu": "Ue1594129b605feab81c213ba981fc0fd",
+      "小高": "U4cbba92203148484d06d213547203e35"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11499,11 +11500,19 @@
           "林淑惠",
           "林淑惠Sophia",
           "Irene",
-          "吳霆竣 Chad Wu"
+          "吳霆竣 Chad Wu",
+          "小高"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/23 07:04",
+        "name": "小高",
+        "operator": "小高",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/23 02:30",
         "name": "吳霆竣 Chad Wu",
