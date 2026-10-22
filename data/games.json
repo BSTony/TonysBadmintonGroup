@@ -11659,7 +11659,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792678425280,
+    "lastActiveTime": 1792678464936,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11712,9 +11712,19 @@
           "周則鼎",
           "Chen H.R.",
           "羅小羅🦝",
-          "小羅友2"
+          "小羅友2",
+          "小羅"
         ],
         "fee": "220"
+      }
+    ],
+    "history": [
+      {
+        "time": "10/22 22:14",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
