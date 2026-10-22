@@ -11668,7 +11668,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792679216868,
+    "lastActiveTime": 1792679557823,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11726,12 +11726,20 @@
           "雪倫",
           "李文濤",
           "海灘哥",
-          "Jason"
+          "Jason",
+          "Mike"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/22 22:32",
+        "name": "Mike",
+        "operator": "Mike (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 22:26",
         "name": "Mina",
