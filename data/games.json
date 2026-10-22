@@ -11686,7 +11686,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792690734548,
+    "lastActiveTime": 1792690745926,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11749,12 +11749,20 @@
           "Jason",
           "Mike",
           "楊程鈞",
-          "Emily🙈🙉🙊"
+          "Emily🙈🙉🙊",
+          "winnie"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/23 01:39",
+        "name": "winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/23 01:38",
         "name": "Emily🙈🙉🙊",
