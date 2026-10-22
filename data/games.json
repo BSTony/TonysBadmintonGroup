@@ -11113,7 +11113,7 @@
     "tag": "",
     "active": true,
     "startTime": 1791896353406,
-    "lastActiveTime": 1792658170016,
+    "lastActiveTime": 1792665130919,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11144,7 +11144,8 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "Robert": "Uf35f2dc9288c3434a5a19186f900402a",
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
-      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "Ray Hsieh": "Uf938f0344bbfe654e01bc1d893340ef8"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11173,13 +11174,21 @@
           "平",
           "Gary",
           "Robert",
-          "Win Shu"
+          "Win Shu",
+          "Ray Hsieh"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/22 18:32",
+        "name": "Ray Hsieh",
+        "operator": "Ray Hsieh",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/22 16:36",
         "name": "©️張CC～©️",
