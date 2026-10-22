@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792679409650,
+    "lastActiveTime": 1792683098973,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11492,11 +11492,19 @@
           "©️張CC～©️",
           "Kevin",
           "Mia",
-          "楊程鈞"
+          "楊程鈞",
+          "林淑惠"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/22 23:31",
+        "name": "林淑惠",
+        "operator": "林淑惠Sophia",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/22 22:30",
         "name": "楊程鈞",
