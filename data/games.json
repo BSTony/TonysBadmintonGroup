@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792499236712,
+    "lastActiveTime": 1792679409650,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11455,7 +11455,8 @@
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11490,11 +11491,19 @@
           "Chen H.R.",
           "©️張CC～©️",
           "Kevin",
-          "Mia"
+          "Mia",
+          "楊程鈞"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/22 22:30",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/20 20:27",
         "name": "Mia",
