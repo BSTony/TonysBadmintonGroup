@@ -13477,7 +13477,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 394,
+    "viewCount": 395,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13627,8 +13627,8 @@
       "Ufa8dba5febf9f719da07f7e507391a21": {
         "displayName": "海棠",
         "firstVisit": 1785219366699,
-        "count": 23,
-        "lastVisit": 1791895359358,
+        "count": 24,
+        "lastVisit": 1792749701564,
         "pictureUrl": "https://profile.line-scdn.net/0hfZ2I34STOXUfMCiEe0hHCm9gOh88QWBnYwF2RiNjYUcnAHglYwUiEH5nb0AjVS12M1B3ECliYUQTI04TAWbFQRgAZEQiAXsrNV5zlg"
       },
       "U7f77be92586dcd1fc68a033961662de3": {
@@ -13680,6 +13680,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1792749701564,
+        "userId": "Ufa8dba5febf9f719da07f7e507391a21",
+        "displayName": "海棠",
+        "pictureUrl": "https://profile.line-scdn.net/0hfZ2I34STOXUfMCiEe0hHCm9gOh88QWBnYwF2RiNjYUcnAHglYwUiEH5nb0AjVS12M1B3ECliYUQTI04TAWbFQRgAZEQiAXsrNV5zlg"
+      },
       {
         "time": 1792739098536,
         "userId": "U49e2484c80056990b759e9039a74e1a6",
