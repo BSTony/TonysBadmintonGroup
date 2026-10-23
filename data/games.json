@@ -11611,7 +11611,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792499642517,
-    "lastActiveTime": 1792726995528,
+    "lastActiveTime": 1792727119506,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11659,13 +11659,19 @@
           "Jet",
           "陳呈",
           "afrahuang",
-          "Afra2",
-          "perry"
+          "Afra2"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/23 11:45",
+        "name": "perry",
+        "operator": "憲(派瑞-Perry)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/23 11:43",
         "name": "perry",
