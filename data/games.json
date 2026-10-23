@@ -11634,7 +11634,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792499642517,
-    "lastActiveTime": 1792727838226,
+    "lastActiveTime": 1792727859655,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11683,13 +11683,19 @@
           "Jet",
           "陳呈",
           "afrahuang",
-          "Afra2",
-          "顏鎧霖"
+          "Afra2"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/23 11:57",
+        "name": "顏鎧霖",
+        "operator": "顏鎧霖",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/23 11:57",
         "name": "顏鎧霖",
