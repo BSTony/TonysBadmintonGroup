@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792727797390,
+    "lastActiveTime": 1792727845523,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11502,11 +11502,19 @@
           "林淑惠Sophia",
           "Irene",
           "小高",
-          "Andrew Kuo"
+          "Andrew Kuo",
+          "吳霆竣 Chad Wu"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/23 11:57",
+        "name": "吳霆竣 Chad Wu",
+        "operator": "吳霆竣 Chad Wu",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/23 11:56",
         "name": "吳霆竣 Chad Wu",
