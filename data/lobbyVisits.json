@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5546,
+    "viewCount": 5547,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -93,8 +93,8 @@
       "Ua5ba1a0ad7f4687b4075563e722331c5": {
         "displayName": "©️張CC～©️",
         "firstVisit": 1783217875055,
-        "count": 50,
-        "lastVisit": 1792658167635,
+        "count": 51,
+        "lastVisit": 1792740558618,
         "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
       },
       "U47573cf563cc67d5fc00dbb48a51092a": {
@@ -1474,6 +1474,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1792740558618,
+        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
+        "displayName": "©️張CC～©️",
+        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
+      },
       {
         "time": 1792733259125,
         "userId": "Ucef7e83869741dd44ca6976caa0bb016",
@@ -13467,17 +13473,11 @@
         "userId": "U09e4f0126678f203e0b139a474c17637",
         "displayName": "詹敬智(胞弟)",
         "pictureUrl": "https://profile.line-scdn.net/0hz3QOSLMUJRx8NjRT4J9bYwxmJnZfR3wOBQc4f05ieHtBVmVNUwRrKh01e3sRATZDVgc4KR00cnhwJVJ6YmDZKHsGeC1BB2dCVlhv_w"
-      },
-      {
-        "time": 1787832736577,
-        "userId": "Uc92b4c526f0fbbbd95ccd456657f4956",
-        "displayName": "Irene",
-        "pictureUrl": "https://profile.line-scdn.net/0haJ0E7tZZPmUdPCKI5mxAW21sPQ8-TWd3NQ0jC3poM1EjBXs0ZQ13AXxuZgcmCnEwMw8kAyg8aVI_bX9Pel4qAip5O0khbi5ARi0iWH9LPzQmTBxYMFo5fWNOCAJVDjlOdxMkU2hBfBNaDDJlVzhwend-FhB8Vw10cmtSMxgOUOZyPkkwMFpwBiA6aFCl"
       }
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 393,
+    "viewCount": 394,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13557,8 +13557,8 @@
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
         "firstVisit": 1783432297046,
-        "count": 16,
-        "lastVisit": 1790515577500,
+        "count": 17,
+        "lastVisit": 1792739098536,
         "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
       },
       "Uf35f2dc9288c3434a5a19186f900402a": {
@@ -13680,6 +13680,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1792739098536,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
       {
         "time": 1792730688718,
         "userId": "Uf339b049e09a02f0796afb22f5de2e7e",
