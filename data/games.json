@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792710270287,
+    "lastActiveTime": 1792727467718,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11460,7 +11460,8 @@
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
       "Irene": "Uc92b4c526f0fbbbd95ccd456657f4956",
       "吳霆竣 Chad Wu": "Ue1594129b605feab81c213ba981fc0fd",
-      "小高": "U4cbba92203148484d06d213547203e35"
+      "小高": "U4cbba92203148484d06d213547203e35",
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11501,11 +11502,19 @@
           "林淑惠Sophia",
           "Irene",
           "吳霆竣 Chad Wu",
-          "小高"
+          "小高",
+          "Andrew Kuo"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/23 11:51",
+        "name": "Andrew Kuo",
+        "operator": "Andrew Kuo",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/23 07:04",
         "name": "小高",
