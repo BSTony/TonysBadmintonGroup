@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5552,
+    "viewCount": 5553,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1378,8 +1378,8 @@
       "Uf7da4aefac728b8a08dabe0a7078323c": {
         "displayName": "田震寰",
         "firstVisit": 1791289777842,
-        "count": 17,
-        "lastVisit": 1792714891472,
+        "count": 18,
+        "lastVisit": 1792806581584,
         "pictureUrl": "https://profile.line-scdn.net/0m04bf271372511cdbf4ec4f89397dc1065c3878d0b577"
       },
       "U09a1aa508e86556361cca6333ee4190e": {
@@ -1474,6 +1474,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1792806581584,
+        "userId": "Uf7da4aefac728b8a08dabe0a7078323c",
+        "displayName": "田震寰",
+        "pictureUrl": "https://profile.line-scdn.net/0m04bf271372511cdbf4ec4f89397dc1065c3878d0b577"
+      },
       {
         "time": 1792759287929,
         "userId": "Ue57d1fac54652a450bff80297813c93a",
@@ -13467,12 +13473,6 @@
         "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
         "displayName": "腳皮",
         "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
-      },
-      {
-        "time": 1787839762359,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       }
     ]
   },
