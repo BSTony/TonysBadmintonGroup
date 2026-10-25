@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792727885584,
+    "lastActiveTime": 1792939565303,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11505,11 +11505,19 @@
           "小高",
           "Andrew Kuo",
           "吳霆竣 Chad Wu",
-          "顏鎧霖"
+          "顏鎧霖",
+          "Vincent"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/25 22:46",
+        "name": "Vincent",
+        "operator": "Yuanlung,Chang",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/23 11:58",
         "name": "顏鎧霖",
