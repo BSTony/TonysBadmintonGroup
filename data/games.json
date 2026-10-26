@@ -11858,7 +11858,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1793022460797,
+    "lastActiveTime": 1793022994104,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11926,12 +11926,20 @@
           "Emily🙈🙉🙊",
           "winnie",
           "江こう 洋々",
-          "Gary"
+          "Gary",
+          "花🥀"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/26 21:56",
+        "name": "花🥀",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/26 21:47",
         "name": "Vincent",
