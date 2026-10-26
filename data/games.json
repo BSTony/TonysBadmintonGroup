@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793032588078,
+    "lastActiveTime": 1793032961973,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11465,7 +11465,8 @@
       "顏鎧霖": "U5a101f4a1e77575eb002302374838d5b",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
       "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
-      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11512,11 +11513,19 @@
           "顏鎧霖",
           "Sammy Su",
           "弘彬/Jason",
-          "Ray"
+          "Ray",
+          "Jet"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/27 00:42",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/27 00:36",
         "name": "Ray",
