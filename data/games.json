@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793022501869,
+    "lastActiveTime": 1793032588078,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11511,11 +11511,19 @@
           "吳霆竣 Chad Wu",
           "顏鎧霖",
           "Sammy Su",
-          "弘彬/Jason"
+          "弘彬/Jason",
+          "Ray"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/27 00:36",
+        "name": "Ray",
+        "operator": "Raymond 權權",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/26 21:48",
         "name": "Vincent",
