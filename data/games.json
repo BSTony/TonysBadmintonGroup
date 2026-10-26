@@ -11852,7 +11852,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1792939357817,
+    "lastActiveTime": 1793022460797,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11920,13 +11920,19 @@
           "Emily🙈🙉🙊",
           "winnie",
           "江こう 洋々",
-          "Gary",
-          "Vincent"
+          "Gary"
         ],
         "fee": "220"
       }
     ],
     "history": [
+      {
+        "time": "10/26 21:47",
+        "name": "Vincent",
+        "operator": "Yuanlung,Chang",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/25 22:42",
         "name": "Vincent",
