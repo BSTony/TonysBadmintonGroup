@@ -11660,7 +11660,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792499642517,
-    "lastActiveTime": 1792899080182,
+    "lastActiveTime": 1792974182209,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11707,12 +11707,20 @@
           "陳呈",
           "afrahuang",
           "Afra2",
-          "海棠"
+          "海棠",
+          "FB kao chien kang"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/26 08:23",
+        "name": "FB kao chien kang",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/25 11:31",
         "name": "Ong",
