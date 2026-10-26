@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792940164223,
+    "lastActiveTime": 1792978378456,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11463,7 +11463,8 @@
       "小高": "U4cbba92203148484d06d213547203e35",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "顏鎧霖": "U5a101f4a1e77575eb002302374838d5b",
-      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
+      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11508,11 +11509,19 @@
           "吳霆竣 Chad Wu",
           "顏鎧霖",
           "Vincent",
-          "Sammy Su"
+          "Sammy Su",
+          "弘彬/Jason"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/26 09:32",
+        "name": "弘彬/Jason",
+        "operator": "弘彬/Jason",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/25 22:56",
         "name": "Sammy Su",
