@@ -11678,7 +11678,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792499642517,
-    "lastActiveTime": 1792981835739,
+    "lastActiveTime": 1792985956778,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11727,12 +11727,20 @@
           "Afra2",
           "海棠",
           "FB kao chien kang",
-          "FB 林麒"
+          "FB 林麒",
+          "FB 許育嘉"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/26 11:39",
+        "name": "FB 許育嘉",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/26 10:30",
         "name": "FB 林麒",
