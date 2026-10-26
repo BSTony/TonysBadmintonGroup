@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792978378456,
+    "lastActiveTime": 1792978692614,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11464,7 +11464,8 @@
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "顏鎧霖": "U5a101f4a1e77575eb002302374838d5b",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
-      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a"
+      "弘彬/Jason": "Ufb502013876bb82ccf9ef635bf1fbb9a",
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11476,7 +11477,8 @@
         "fee": "150",
         "label": "",
         "list": [
-          "AddieWang"
+          "AddieWang",
+          "Sean柏宏"
         ]
       },
       {
@@ -11515,6 +11517,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/26 09:38",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "10/26 09:32",
         "name": "弘彬/Jason",
