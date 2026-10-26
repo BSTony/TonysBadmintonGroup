@@ -11443,7 +11443,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1792978692614,
+    "lastActiveTime": 1793022501869,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11510,13 +11510,19 @@
           "Andrew Kuo",
           "吳霆竣 Chad Wu",
           "顏鎧霖",
-          "Vincent",
           "Sammy Su",
           "弘彬/Jason"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/26 21:48",
+        "name": "Vincent",
+        "operator": "Yuanlung,Chang",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "10/26 09:38",
         "name": "Sean柏宏",
