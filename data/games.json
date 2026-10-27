@@ -11381,7 +11381,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418777969,
-    "lastActiveTime": 1793092172130,
+    "lastActiveTime": 1793094022130,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11404,7 +11404,8 @@
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
-      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11422,13 +11423,21 @@
           "Andrew Kuo",
           "黃政豪",
           "楊程鈞",
-          "©️張CC～©️"
+          "©️張CC～©️",
+          "賴柚子"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/27 17:40",
+        "name": "賴柚子",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/27 17:09",
         "name": "©️張CC～©️",
