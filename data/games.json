@@ -12239,7 +12239,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793106234508,
-    "lastActiveTime": 1793118262515,
+    "lastActiveTime": 1793145219388,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12285,12 +12285,20 @@
           "Jet",
           "陳呈",
           "afrahuang",
-          "雪倫"
+          "雪倫",
+          "Sean"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/28 07:53",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/28 00:24",
         "name": "雪倫",
