@@ -11480,7 +11480,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793111182789,
+    "lastActiveTime": 1793118440816,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11505,7 +11505,8 @@
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11558,11 +11559,19 @@
           "陳呈",
           "康",
           "Jojo",
-          "Jojo2"
+          "Jojo2",
+          "John"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/28 00:27",
+        "name": "John",
+        "operator": "John",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/27 22:26",
         "name": "Jojo2",
