@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-20
- * Version: 1.3.26
+ * Date: 2026-10-27
+ * Version: 1.3.27
  */
 const express = require('express');
 const compression = require('compression');
@@ -6316,13 +6316,9 @@ async function handleEvent(event) {
 
       if (isPlusMinus) {
           const hint = extractPlusMinusHint(cleanText);
-          if (hint) {
-              const matchedGames = groupGames.filter(g => sessionHintMatches(g, hint));
-              if (matchedGames.length > 0) {
-                  groupGames = matchedGames;
-              } else if (hintLooksLikeSession(hint)) {
-                  return null;
-              }
+          // 場次比對只決定要不要回覆，字卡仍須列出全部場次（同「接龍狀況」）
+          if (hint && hintLooksLikeSession(hint) && !groupGames.some(g => sessionHintMatches(g, hint))) {
+              return null;
           }
       }
       
