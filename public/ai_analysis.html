@@ -1,0 +1,220 @@
+<!--
+  Author: Tony Hsieh
+  Date: 2026-10-27
+  Version: 1.0.0
+-->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 羽球影片分析</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏸</text></svg>">
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #111a2e;
+      --panel-2: #0f172a;
+      --line: rgba(148, 163, 184, 0.18);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; }
+    .hidden { display: none !important; }
+
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 24px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand .logo { font-size: 32px; }
+    .brand h1 { margin: 0; font-size: 20px; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+    .status-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { font-size: 12px; padding: 5px 10px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); color: var(--muted); }
+    .chip-ok { color: #86efac; border-color: rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.1); }
+    .chip-warn { color: #fcd34d; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.1); }
+    .chip-err { color: #fca5a5; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); }
+    .banner { margin: 12px 24px 0; padding: 10px 14px; border-radius: 10px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: #fde68a; font-size: 13px; line-height: 1.7; }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; padding: 16px 24px; align-items: start; }
+    @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+    .panel + .panel { margin-top: 16px; }
+    .panel-title { font-weight: 700; margin-bottom: 10px; }
+
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .step { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+    .step-title { font-size: 13px; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .num { display: inline-flex; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #052e16; font-size: 12px; align-items: center; justify-content: center; }
+    .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .btn { appearance: none; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; user-select: none; }
+    .btn:hover:not(:disabled):not(.disabled) { border-color: rgba(148, 163, 184, 0.5); }
+    .btn:disabled, .btn.disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #052e16; }
+    .btn-primary:hover:not(:disabled) { background: #4ade80; }
+    .btn-ghost { background: transparent; }
+    .btn-small { padding: 5px 10px; font-size: 12px; }
+    .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .seg-btn { appearance: none; background: transparent; color: var(--muted); border: none; padding: 7px 14px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 13px; }
+    .seg-btn.active { background: rgba(34, 197, 94, 0.18); color: #bbf7d0; }
+    .seg-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+    .seg.small .seg-btn { padding: 5px 10px; font-size: 12px; }
+    select { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-family: inherit; }
+    .inline { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 13px; }
+    .muted { color: var(--muted); font-size: 13px; }
+
+    .drop-zone { margin-top: 16px; border: 2px dashed rgba(148, 163, 184, 0.35); border-radius: 14px; min-height: 320px; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); padding: 24px; line-height: 1.7; }
+    .drop-zone.dragging { border-color: var(--accent); background: rgba(34, 197, 94, 0.06); }
+    .drop-icon { font-size: 48px; }
+    /* 不可用 overflow: hidden 裁圓角，否則畫面邊角的球場角點會點不到 */
+    .video-wrap { position: relative; margin-top: 16px; width: 100%; background: #000; }
+    .video-wrap video { display: block; width: 100%; height: 100%; object-fit: contain; }
+    #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    #overlay.clickable { pointer-events: auto; cursor: crosshair; }
+    .calib-hint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(250, 204, 21, 0.5); color: #fde68a; padding: 8px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 10px; align-items: center; white-space: nowrap; }
+
+    .run { margin-top: 16px; }
+    .run-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .progress { height: 8px; background: var(--panel-2); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+    .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, #22c55e, #84cc16); transition: width 0.2s; }
+
+    #court { display: block; width: 100%; height: auto; border-radius: 10px; margin-top: 10px; }
+    .court-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .player-stats { display: flex; flex-direction: column; gap: 10px; }
+    .player-card { border: 1px solid var(--line); border-left: 4px solid var(--pc); border-radius: 10px; padding: 10px 12px; background: var(--panel-2); }
+    .pc-head { font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .pc-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--pc); }
+    .pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .pc-val { font-size: 22px; font-weight: 800; }
+    .pc-unit { font-size: 12px; color: var(--muted); margin-left: 4px; }
+    .pc-label { font-size: 12px; color: var(--muted); }
+    .zone-bar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--panel); }
+    .z-front { background: #38bdf8; }
+    .z-mid { background: #a78bfa; }
+    .z-rear { background: #f472b6; }
+    .zone-legend { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .zone-legend b { font-weight: 700; }
+
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1e293b; border: 1px solid rgba(239, 68, 68, 0.5); color: #fecaca; padding: 10px 16px; border-radius: 10px; font-size: 14px; max-width: 90vw; z-index: 10; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+    .footer { padding: 4px 24px 24px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+    .footer p { margin: 0; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🏸</span>
+      <div>
+        <h1>AI 羽球影片分析</h1>
+        <p>影片只在你的電腦上分析，不會上傳到伺服器</p>
+      </div>
+    </div>
+    <div class="status-chips">
+      <span id="env-status" class="chip">檢查電腦環境中…</span>
+      <span id="model-status" class="chip">準備載入模型…</span>
+    </div>
+  </header>
+
+  <div id="env-warning" class="banner hidden"></div>
+
+  <main class="layout">
+    <section>
+      <div class="panel steps">
+        <div class="step">
+          <div class="step-title"><span class="num">1</span>選擇影片</div>
+          <label id="btn-pick-file" class="btn btn-primary" for="file-input">📂 選擇影片檔</label>
+          <input id="file-input" type="file" accept="video/*" hidden>
+          <span id="file-name" class="muted">尚未選擇</span>
+        </div>
+        <div class="step">
+          <div class="step-title"><span class="num">2</span>比賽設定</div>
+          <div class="seg" role="group" aria-label="比賽類型">
+            <button type="button" id="mode-singles" class="seg-btn active">單打</button>
+            <button type="button" id="mode-doubles" class="seg-btn">雙打</button>
+          </div>
+          <label class="inline">每秒分析
+            <select id="sample-fps">
+              <option value="5">5 張（較快）</option>
+              <option value="10" selected>10 張</option>
+              <option value="15">15 張（較精細）</option>
+            </select>
+          </label>
+        </div>
+        <div class="step">
+          <div class="step-title"><span class="num">3</span>分析範圍</div>
+          <span id="range-text" class="mono">--:-- ～ --:--</span>
+          <div class="row">
+            <button type="button" id="btn-set-start" class="btn btn-ghost btn-small">目前位置設為開始</button>
+            <button type="button" id="btn-set-end" class="btn btn-ghost btn-small">設為結束</button>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-title"><span class="num">4</span>球場校正</div>
+          <div class="row">
+            <button type="button" id="btn-calibrate" class="btn">📐 點選球場四角</button>
+            <button type="button" id="btn-reuse-calib" class="btn btn-ghost btn-small hidden">套用上次的校正</button>
+          </div>
+          <span id="calib-status" class="muted">尚未校正</span>
+        </div>
+      </div>
+
+      <div id="drop-zone" class="drop-zone">
+        <div>
+          <div class="drop-icon">🎬</div>
+          <p>把影片拖到這裡，或按上方「選擇影片檔」</p>
+          <p class="muted">拍攝建議：鏡頭固定在近端底線後方的高處、拍到完整球場，解析度 1080p 以上</p>
+        </div>
+      </div>
+      <div id="video-wrap" class="video-wrap hidden">
+        <video id="video" playsinline muted preload="auto" controls></video>
+        <canvas id="overlay"></canvas>
+        <div id="calib-hint" class="calib-hint hidden">
+          <span id="calib-hint-text"></span>
+          <button type="button" id="btn-calib-cancel" class="btn btn-ghost btn-small">取消</button>
+        </div>
+      </div>
+
+      <div class="panel run">
+        <div class="run-buttons">
+          <button type="button" id="btn-detect" class="btn">🔍 偵測目前畫面</button>
+          <button type="button" id="btn-analyze" class="btn btn-primary">▶ 開始分析</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">清除結果</button>
+        </div>
+        <div class="progress"><div id="progress-bar" class="progress-bar"></div></div>
+        <div id="progress-text" class="muted mono">請先選擇影片</div>
+      </div>
+    </section>
+
+    <aside>
+      <div class="panel">
+        <div class="panel-title">俯視球場</div>
+        <div id="heat-tabs" class="seg small hidden"></div>
+        <canvas id="court"></canvas>
+        <div class="court-actions">
+          <button type="button" id="btn-export-png" class="btn btn-ghost btn-small">下載熱圖</button>
+          <button type="button" id="btn-export-json" class="btn btn-ghost btn-small">下載分析結果</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">球員統計</div>
+        <div id="player-stats" class="player-stats">
+          <p class="muted">完成球場校正並開始分析後，這裡會顯示每位球員的跑動距離與站位分布。</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <p>分析期間請保持這個分頁在前景；切到其他分頁時會自動暫停，回來後繼續。</p>
+    <p>骨架模型：Ultralytics YOLOv8n-pose（AGPL-3.0）· 推論引擎：ONNX Runtime Web</p>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
+  <script src="ai_pose_core.js?v=20261027"></script>
+  <script src="ai_analysis.js?v=20261027"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.2.37
+ * Version: 1.2.38
  */
 let globalLobbyUsers = [];
 
@@ -9523,6 +9523,7 @@ function bootApp() {
   } catch(e) {}
 
   initGroupBuyEvents();
+  initAiAnalysisEntry();
   initializeLiff().then(() => {
     setupSSE();
   });
@@ -9530,6 +9531,24 @@ function bootApp() {
   // 替各種管理員手動新增輸入框加上自動完成下拉選單功能
   if (typeof lotteryManualName !== 'undefined' && lotteryManualName) setupAutocomplete(lotteryManualName);
   if (typeof inputPinballName !== 'undefined' && inputPinballName) setupAutocomplete(inputPinballName);
+}
+
+// AI 影片分析要用電腦的顯示卡運算，手機不顯示入口
+function initAiAnalysisEntry() {
+  const btn = document.getElementById('btn-ai-analysis');
+  if (!btn) return;
+  const ua = navigator.userAgent || '';
+  const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+  if (isMobile) return;
+  btn.classList.remove('hidden');
+  btn.addEventListener('click', () => {
+    const url = new URL('/ai_analysis.html', window.location.origin).href;
+    if (isLiffInClient()) {
+      liff.openWindow({ url, external: true });
+    } else {
+      window.open(url, '_blank', 'noopener');
+    }
+  });
 }
 
 if (document.readyState === 'loading') {
