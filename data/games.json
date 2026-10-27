@@ -11710,7 +11710,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792499642517,
-    "lastActiveTime": 1793072104129,
+    "lastActiveTime": 1793080514906,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11760,12 +11760,20 @@
           "海棠",
           "FB kao chien kang",
           "FB 林麒",
-          "FB 許育嘉"
+          "FB 許育嘉",
+          "test"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/27 13:55",
+        "name": "test",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/27 11:35",
         "name": "test",
