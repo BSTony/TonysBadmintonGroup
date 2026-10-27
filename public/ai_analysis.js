@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.1.0
+ * Version: 1.2.0
  */
 (function () {
   'use strict';
@@ -38,6 +38,8 @@
   const els = {};
   const state = {
     uid: '',
+    isPublic: false,
+    savingAccess: false,
     session: null,
     backend: '',
     inputName: 'images',
@@ -174,29 +176,36 @@
   }
 
   function renderPublicStatus(isPublic) {
-    els.togglePublic.checked = isPublic;
+    state.isPublic = isPublic;
+    els.accessSuper.classList.toggle('active', !isPublic);
+    els.accessPublic.classList.toggle('active', isPublic);
+    els.accessSuper.setAttribute('aria-checked', String(!isPublic));
+    els.accessPublic.setAttribute('aria-checked', String(isPublic));
     els.publicStatus.textContent = isPublic
-      ? '目前：所有使用者都能從大廳進入使用'
-      : '目前：只有超級管理員看得到、用得到';
+      ? '所有使用者都能在電腦版大廳看到入口並使用'
+      : '只有超級管理員看得到入口；其他人開啟網址只會看到「僅開放超級管理員試用」';
   }
 
-  async function onTogglePublic() {
-    const next = els.togglePublic.checked;
-    els.togglePublic.disabled = true;
+  async function setAccess(isPublic) {
+    if (state.savingAccess || isPublic === state.isPublic) return;
+    state.savingAccess = true;
+    els.accessSuper.disabled = true;
+    els.accessPublic.disabled = true;
     try {
       const res = await fetch('/api/admin/ai_analysis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: state.uid, isPublic: next })
+        body: JSON.stringify({ uid: state.uid, isPublic })
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) throw new Error(data.error || `HTTP ${res.status}`);
       renderPublicStatus(!!data.isPublic);
     } catch (e) {
-      renderPublicStatus(!next);
-      showError('變更開放設定失敗：' + (e && e.message ? e.message : e));
+      showError('變更使用權限失敗：' + (e && e.message ? e.message : e));
     } finally {
-      els.togglePublic.disabled = false;
+      state.savingAccess = false;
+      els.accessSuper.disabled = false;
+      els.accessPublic.disabled = false;
     }
   }
 
@@ -1055,7 +1064,7 @@
       progressBar: 'progress-bar', progressText: 'progress-text',
       heatTabs: 'heat-tabs', court: 'court', btnExportPng: 'btn-export-png', btnExportJson: 'btn-export-json',
       playerStats: 'player-stats', toast: 'toast',
-      adminBar: 'admin-bar', togglePublic: 'toggle-public', publicStatus: 'public-status',
+      adminBar: 'admin-bar', accessSuper: 'access-super', accessPublic: 'access-public', publicStatus: 'public-status',
       locked: 'locked', mainLayout: 'main-layout'
     };
     for (const key of Object.keys(ids)) els[key] = document.getElementById(ids[key]);
@@ -1137,7 +1146,8 @@
     });
     els.btnExportJson.addEventListener('click', exportJson);
     els.btnExportPng.addEventListener('click', exportPng);
-    els.togglePublic.addEventListener('change', onTogglePublic);
+    els.accessSuper.addEventListener('click', () => setAccess(false));
+    els.accessPublic.addEventListener('click', () => setAccess(true));
 
     document.addEventListener('visibilitychange', () => {
       if (!state.running) return;

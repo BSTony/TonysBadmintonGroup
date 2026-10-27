@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-27
-  Version: 1.1.0
+  Version: 1.2.0
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -48,7 +48,7 @@
     .num { display: inline-flex; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #052e16; font-size: 12px; align-items: center; justify-content: center; }
     .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-    .btn { appearance: none; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; user-select: none; }
+    .btn { appearance: none; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; user-select: none; text-decoration: none; }
     .btn:hover:not(:disabled):not(.disabled) { border-color: rgba(148, 163, 184, 0.5); }
     .btn:disabled, .btn.disabled { opacity: 0.45; cursor: not-allowed; }
     .btn-primary { background: var(--accent); border-color: var(--accent); color: #052e16; }
@@ -103,14 +103,7 @@
 
     .admin-bar { margin: 12px 24px 0; padding: 10px 14px; border-radius: 10px; background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(167, 139, 250, 0.35); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
     .admin-bar .admin-title { font-weight: 700; color: #ddd6fe; }
-    .switch { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
-    .switch input { position: absolute; opacity: 0; width: 0; height: 0; }
-    .switch .track { width: 42px; height: 24px; border-radius: 999px; background: #334155; position: relative; transition: background 0.2s; flex-shrink: 0; }
-    .switch .track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
-    .switch input:checked + .track { background: var(--accent); }
-    .switch input:checked + .track::after { transform: translateX(18px); }
-    .switch input:disabled + .track { opacity: 0.5; }
-    .switch input:focus-visible + .track { outline: 2px solid #a78bfa; outline-offset: 2px; }
+    .admin-bar .seg { background: var(--panel-2); }
     .locked { display: flex; justify-content: center; padding: 64px 24px; }
     .locked-card { max-width: 520px; text-align: center; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 32px 28px; line-height: 1.8; }
     .locked-card h2 { margin: 8px 0; font-size: 20px; }
@@ -133,12 +126,11 @@
   </header>
 
   <div id="admin-bar" class="admin-bar hidden">
-    <span class="admin-title">👑 超級管理員設定</span>
-    <label class="switch">
-      <input type="checkbox" id="toggle-public">
-      <span class="track"></span>
-      <span>開放所有使用者使用</span>
-    </label>
+    <span class="admin-title">👑 超級管理員設定・使用權限</span>
+    <div class="seg" role="radiogroup" aria-label="AI 影片分析使用權限">
+      <button type="button" id="access-super" class="seg-btn" role="radio">🔒 只有超級管理員</button>
+      <button type="button" id="access-public" class="seg-btn" role="radio">🌐 公開給所有使用者</button>
+    </div>
     <span id="public-status" class="muted"></span>
   </div>
 
@@ -148,7 +140,8 @@
     <div class="locked-card">
       <div class="locked-icon">🔒</div>
       <h2>AI 影片分析目前僅開放超級管理員試用</h2>
-      <p class="muted">開放給所有使用者之後就能使用。如果你是超級管理員，請從羽球接龍大廳右上角的「🎥 AI 影片分析」按鈕進入。</p>
+      <p class="muted">開放給所有使用者之後就能使用。如果你是超級管理員，請先在羽球接龍大廳用 LINE 登入，再按右上角的「🎥 AI 影片分析」進來。</p>
+      <a class="btn btn-primary" href="/">前往羽球接龍大廳</a>
     </div>
   </div>
 
@@ -248,6 +241,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
   <script src="ai_pose_core.js?v=20261027"></script>
-  <script src="ai_analysis.js?v=20261027b"></script>
+  <script src="ai_analysis.js?v=20261027c"></script>
 </body>
 </html>
