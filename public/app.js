@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.2.38
+ * Version: 1.2.39
  */
 let globalLobbyUsers = [];
 
@@ -387,6 +387,7 @@ let currentDetailGame = null;
 let gamesList = [];
 let globalIsAdmin = false;
 let globalIsSuperAdmin = false;
+let globalAiAnalysisPublic = false;
 let lastKnownSuperAdminUid = '';
 let easterEggEnabled = false;
 let easterEggActiveGame = 'piggy_run';
@@ -2068,6 +2069,7 @@ async function loadGamesLobby(silent = false) {
     lastGamesJson = newGamesJson;
     globalIsAdmin = !!data.isAdmin;
     globalIsSuperAdmin = !!data.isSuperAdmin;
+    globalAiAnalysisPublic = !!data.aiAnalysisPublic;
     if (globalIsSuperAdmin && uid && !isWeakVisitUid(uid)) lastKnownSuperAdminUid = uid;
     globalManagedGroups = data.managedGroups || [];
     globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
@@ -2246,6 +2248,8 @@ function renderLobby(forceCards = true) {
     } else if (btnPartyAdmin) {
       btnPartyAdmin.classList.add('hidden');
     }
+
+    updateAiAnalysisEntry(effIsSuperAdmin);
 
     const btnLineLogin = document.getElementById('btn-line-login');
     const userStatusBadge = document.getElementById('user-status-badge');
@@ -9460,6 +9464,7 @@ function tryRenderOptimisticLobby() {
         lastGamesJson = JSON.stringify(gamesList);
         globalIsAdmin = !!data.isAdmin;
         globalIsSuperAdmin = !!data.isSuperAdmin;
+        globalAiAnalysisPublic = !!data.aiAnalysisPublic;
         if (globalIsSuperAdmin && currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId)) {
           lastKnownSuperAdminUid = currentUser.userId;
         }
@@ -9490,6 +9495,7 @@ function bootApp() {
     if (window.__INITIAL_DATA__.lobbyTitle) globalLobbyTitle = window.__INITIAL_DATA__.lobbyTitle;
     if (window.__INITIAL_DATA__.lobbyDesc) globalLobbyDesc = window.__INITIAL_DATA__.lobbyDesc;
     if (window.__INITIAL_DATA__.gid) currentGroupId = window.__INITIAL_DATA__.gid;
+    globalAiAnalysisPublic = !!window.__INITIAL_DATA__.aiAnalysisPublic;
   }
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -9533,22 +9539,32 @@ function bootApp() {
   if (typeof inputPinballName !== 'undefined' && inputPinballName) setupAutocomplete(inputPinballName);
 }
 
-// AI 影片分析要用電腦的顯示卡運算，手機不顯示入口
-function initAiAnalysisEntry() {
+// AI 影片分析要用電腦的顯示卡運算，手機不顯示入口；未公開時只有超級管理員看得到
+function updateAiAnalysisEntry(effIsSuperAdmin) {
   const btn = document.getElementById('btn-ai-analysis');
   if (!btn) return;
   const ua = navigator.userAgent || '';
   const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-  if (isMobile) return;
-  btn.classList.remove('hidden');
+  btn.classList.toggle('hidden', isMobile || !(globalAiAnalysisPublic || effIsSuperAdmin));
+  const label = btn.querySelector('span');
+  if (label) label.textContent = globalAiAnalysisPublic ? '🎥 AI 影片分析' : '🎥 AI 影片分析（超管）';
+}
+
+function initAiAnalysisEntry() {
+  const btn = document.getElementById('btn-ai-analysis');
+  if (!btn) return;
   btn.addEventListener('click', () => {
-    const url = new URL('/ai_analysis.html', window.location.origin).href;
+    // 從 LINE 開到外部瀏覽器時拿不到大廳的登入狀態，所以把 uid 帶過去做權限檢查
+    const url = new URL('/ai_analysis.html', window.location.origin);
+    const uid = (currentUser && currentUser.userId) || '';
+    if (uid) url.searchParams.set('uid', uid);
     if (isLiffInClient()) {
-      liff.openWindow({ url, external: true });
+      liff.openWindow({ url: url.href, external: true });
     } else {
-      window.open(url, '_blank', 'noopener');
+      window.open(url.href, '_blank', 'noopener');
     }
   });
+  updateAiAnalysisEntry(getEffectiveRole().isSuperAdmin);
 }
 
 if (document.readyState === 'loading') {

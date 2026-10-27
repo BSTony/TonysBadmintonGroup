@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-27
-  Version: 1.0.0
+  Version: 1.1.0
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -100,6 +100,21 @@
     .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1e293b; border: 1px solid rgba(239, 68, 68, 0.5); color: #fecaca; padding: 10px 16px; border-radius: 10px; font-size: 14px; max-width: 90vw; z-index: 10; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
     .footer { padding: 4px 24px 24px; color: var(--muted); font-size: 12px; line-height: 1.8; }
     .footer p { margin: 0; }
+
+    .admin-bar { margin: 12px 24px 0; padding: 10px 14px; border-radius: 10px; background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(167, 139, 250, 0.35); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
+    .admin-bar .admin-title { font-weight: 700; color: #ddd6fe; }
+    .switch { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+    .switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .switch .track { width: 42px; height: 24px; border-radius: 999px; background: #334155; position: relative; transition: background 0.2s; flex-shrink: 0; }
+    .switch .track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+    .switch input:checked + .track { background: var(--accent); }
+    .switch input:checked + .track::after { transform: translateX(18px); }
+    .switch input:disabled + .track { opacity: 0.5; }
+    .switch input:focus-visible + .track { outline: 2px solid #a78bfa; outline-offset: 2px; }
+    .locked { display: flex; justify-content: center; padding: 64px 24px; }
+    .locked-card { max-width: 520px; text-align: center; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 32px 28px; line-height: 1.8; }
+    .locked-card h2 { margin: 8px 0; font-size: 20px; }
+    .locked-icon { font-size: 44px; }
   </style>
 </head>
 <body>
@@ -112,14 +127,32 @@
       </div>
     </div>
     <div class="status-chips">
-      <span id="env-status" class="chip">檢查電腦環境中…</span>
+      <span id="env-status" class="chip">確認使用權限中…</span>
       <span id="model-status" class="chip">準備載入模型…</span>
     </div>
   </header>
 
+  <div id="admin-bar" class="admin-bar hidden">
+    <span class="admin-title">👑 超級管理員設定</span>
+    <label class="switch">
+      <input type="checkbox" id="toggle-public">
+      <span class="track"></span>
+      <span>開放所有使用者使用</span>
+    </label>
+    <span id="public-status" class="muted"></span>
+  </div>
+
   <div id="env-warning" class="banner hidden"></div>
 
-  <main class="layout">
+  <div id="locked" class="locked hidden">
+    <div class="locked-card">
+      <div class="locked-icon">🔒</div>
+      <h2>AI 影片分析目前僅開放超級管理員試用</h2>
+      <p class="muted">開放給所有使用者之後就能使用。如果你是超級管理員，請從羽球接龍大廳右上角的「🎥 AI 影片分析」按鈕進入。</p>
+    </div>
+  </div>
+
+  <main id="main-layout" class="layout hidden">
     <section>
       <div class="panel steps">
         <div class="step">
@@ -215,6 +248,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
   <script src="ai_pose_core.js?v=20261027"></script>
-  <script src="ai_analysis.js?v=20261027"></script>
+  <script src="ai_analysis.js?v=20261027b"></script>
 </body>
 </html>

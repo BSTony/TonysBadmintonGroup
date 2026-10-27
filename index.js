@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.3.29
+ * Version: 1.3.30
  */
 const express = require('express');
 const compression = require('compression');
@@ -35,6 +35,7 @@ const REG_CSV_FILE = path.join(DATA_DIR, 'registrations.csv');
 const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const LOBBY_VISITS_FILE = path.join(DATA_DIR, 'lobbyVisits.json');
 const EASTER_EGG_FILE = path.join(DATA_DIR, 'easterEggSettings.json');
+const FEATURE_SETTINGS_FILE = path.join(DATA_DIR, 'featureSettings.json');
 const GROUP_BUY_FILE = path.join(DATA_DIR, 'groupBuy.json');
 const GROUP_BUY_ORDERS_FILE = path.join(DATA_DIR, 'groupBuyOrders.json');
 const DEFAULT_MENU_FILE = path.join(DATA_DIR, 'defaultMenu.json');
@@ -472,6 +473,8 @@ function isWeakVisitUserId(userId) {
   return userId === 'U_LOCAL_TEST' || String(userId).startsWith('U_GUEST_') || String(userId).startsWith('U_LOCAL') || String(userId).startsWith('P_');
 }
 let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
+// 功能開關：aiAnalysisPublic 為 false 時，AI 影片分析只給超級管理員使用
+let featureSettings = { aiAnalysisPublic: false };
 
 // 讀取既有設定
 let adminsSha = null;
@@ -482,6 +485,7 @@ let templatesSha = null;
 let gamesSha = null; // GitHub games.json 的 SHA
 let visitsSha = null; // GitHub lobbyVisits.json 的 SHA
 let easterEggSha = null; // GitHub easterEggSettings.json 的 SHA
+let featureSettingsSha = null; // GitHub featureSettings.json 的 SHA
 let groupBuySha = null; // GitHub groupBuy.json 的 SHA
 let groupBuyOrdersSha = null; // GitHub groupBuyOrders.json 的 SHA
 let gamesSaveChain = Promise.resolve(); // 防併發串行保存
@@ -529,6 +533,11 @@ async function loadData() {
       easterEggSettings = JSON.parse(fs.readFileSync(EASTER_EGG_FILE, 'utf8'));
       if (!easterEggSettings.activeGame) easterEggSettings.activeGame = 'piggy_run';
       if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
+    } catch(e) {}
+  }
+  if (fs.existsSync(FEATURE_SETTINGS_FILE)) {
+    try {
+      featureSettings = { ...featureSettings, ...JSON.parse(fs.readFileSync(FEATURE_SETTINGS_FILE, 'utf8')) };
     } catch(e) {}
   }
   loadGroupBuyStorage();
@@ -624,6 +633,15 @@ async function loadData() {
         if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
       }
     } catch(e) { console.error('無法從 GitHub 讀取 easterEggSettings.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 featureSettings.json...');
+      const fsRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/featureSettings.json?ref=${GITHUB_BRANCH}`);
+      if (fsRes.content) {
+        featureSettingsSha = fsRes.sha;
+        featureSettings = { ...featureSettings, ...JSON.parse(Buffer.from(fsRes.content, 'base64').toString('utf8')) };
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 featureSettings.json:', e.message); }
 
     try {
       console.log('從 GitHub 讀取 groupBuy.json...');
@@ -783,6 +801,24 @@ async function saveEasterEggSettings() {
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/easterEggSettings.json`, payload);
       if (res.content && res.content.sha) easterEggSha = res.content.sha;
     } catch(e) { console.error('備份 easterEggSettings 至 GitHub 失敗:', e.message); }
+  }
+}
+
+async function saveFeatureSettings() {
+  const jsonStr = JSON.stringify(featureSettings, null, 2);
+  await fs.promises.writeFile(FEATURE_SETTINGS_FILE, jsonStr, 'utf8');
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update featureSettings',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (featureSettingsSha) payload.sha = featureSettingsSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/featureSettings.json`, payload);
+      if (res.content && res.content.sha) featureSettingsSha = res.content.sha;
+    } catch(e) { console.error('備份 featureSettings 至 GitHub 失敗:', e.message); }
   }
 }
 
@@ -1462,7 +1498,8 @@ function getInitialDataForReq(req) {
     gameId: gameId,
     games: list,
     lobbyTitle: gTitle,
-    lobbyDesc: gDesc
+    lobbyDesc: gDesc,
+    aiAnalysisPublic: !!featureSettings.aiAnalysisPublic
   };
 }
 
@@ -2625,7 +2662,7 @@ app.get('/api/game/:gid', async (req, res) => {
 
 
   if (groupGames.length === 0) {
-      return res.json({ games: [], isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc }); // 不報錯，回傳空陣列
+      return res.json({ games: [], isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc, aiAnalysisPublic: !!featureSettings.aiAnalysisPublic }); // 不報錯，回傳空陣列
   }
   
   // 深拷貝以避免污染記憶體中的 games 物件
@@ -2670,7 +2707,7 @@ app.get('/api/game/:gid', async (req, res) => {
   });
   
   // 回傳結果
-  res.json({ games: groupGames, isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc });
+  res.json({ games: groupGames, isAdmin: !!isAdmin, isSuperAdmin: !!superAdmin, managedGroups, lobbyTitle, lobbyDesc, aiAnalysisPublic: !!featureSettings.aiAnalysisPublic });
 });
 
 // 取得特定群組的預設名單範本
@@ -4095,6 +4132,34 @@ app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
     }
   }
   return res.json({ success: true, quota: easterEggSettings.quota, enabled: easterEggSettings.enabled });
+});
+
+// AI 影片分析：未公開時只有超級管理員能用
+app.get('/api/ai_analysis/access', (req, res) => {
+  const uid = typeof req.query.uid === 'string' ? req.query.uid : '';
+  const isPublic = !!featureSettings.aiAnalysisPublic;
+  const canManage = isSuperAdmin(uid);
+  res.json({ allowed: isPublic || canManage, isPublic, canManage });
+});
+
+app.post('/api/admin/ai_analysis', express.json(), async (req, res) => {
+  const { uid } = req.body || {};
+  if (!uid || !isTrueSuperAdmin(uid)) {
+    return res.status(403).json({ error: '只有超級管理員能變更 AI 影片分析的開放設定' });
+  }
+  if (typeof req.body.isPublic !== 'boolean') {
+    return res.status(400).json({ error: '缺少 isPublic 設定' });
+  }
+  featureSettings.aiAnalysisPublic = req.body.isPublic;
+  try {
+    await Promise.race([
+      saveFeatureSettings(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('功能設定寫入逾時')), 8000))
+    ]);
+  } catch (e) {
+    console.error('saveFeatureSettings failed:', e);
+  }
+  res.json({ success: true, isPublic: featureSettings.aiAnalysisPublic });
 });
 // ------------------
 

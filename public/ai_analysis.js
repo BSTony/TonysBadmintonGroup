@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.0.0
+ * Version: 1.1.0
  */
 (function () {
   'use strict';
@@ -13,6 +13,7 @@
   const IOU_THRESHOLD = 0.5;
   const KEYPOINT_MIN_SCORE = 0.3;
   const CALIBRATION_KEY = 'aiAnalysis.calibration.v1';
+  const UID_SESSION_KEY = 'aiAnalysis.uid';
   const PPM = 40;
   const TRAIL_SECONDS = 3;
 
@@ -36,6 +37,7 @@
 
   const els = {};
   const state = {
+    uid: '',
     session: null,
     backend: '',
     inputName: 'images',
@@ -141,6 +143,61 @@
   function baseName() {
     const name = state.file ? state.file.name.replace(/\.[^.]+$/, '') : 'badminton';
     return name.replace(/[\\/:*?"<>|]+/g, '_');
+  }
+
+  // ---------- 使用權限 ----------
+
+  // 大廳帶來的 uid 存進分頁後就從網址移除，避免連同網址分享出去
+  function resolveUid() {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get('uid');
+    if (fromUrl) {
+      try { sessionStorage.setItem(UID_SESSION_KEY, fromUrl); } catch (e) { /* 無痕模式可能無法寫入 */ }
+      params.delete('uid');
+      const rest = params.toString();
+      history.replaceState(null, '', window.location.pathname + (rest ? '?' + rest : '') + window.location.hash);
+      return fromUrl;
+    }
+    try {
+      const saved = sessionStorage.getItem(UID_SESSION_KEY);
+      if (saved) return saved;
+      const profile = JSON.parse(localStorage.getItem('gb_cached_user_profile') || 'null');
+      if (profile && profile.userId) return profile.userId;
+    } catch (e) { /* 讀不到就當訪客處理 */ }
+    return '';
+  }
+
+  async function checkAccess() {
+    const res = await fetch('/api/ai_analysis/access' + (state.uid ? '?uid=' + encodeURIComponent(state.uid) : ''), { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
+  function renderPublicStatus(isPublic) {
+    els.togglePublic.checked = isPublic;
+    els.publicStatus.textContent = isPublic
+      ? '目前：所有使用者都能從大廳進入使用'
+      : '目前：只有超級管理員看得到、用得到';
+  }
+
+  async function onTogglePublic() {
+    const next = els.togglePublic.checked;
+    els.togglePublic.disabled = true;
+    try {
+      const res = await fetch('/api/admin/ai_analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: state.uid, isPublic: next })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.error || `HTTP ${res.status}`);
+      renderPublicStatus(!!data.isPublic);
+    } catch (e) {
+      renderPublicStatus(!next);
+      showError('變更開放設定失敗：' + (e && e.message ? e.message : e));
+    } finally {
+      els.togglePublic.disabled = false;
+    }
   }
 
   // ---------- 環境與模型 ----------
@@ -997,7 +1054,9 @@
       btnDetect: 'btn-detect', btnAnalyze: 'btn-analyze', btnReset: 'btn-reset',
       progressBar: 'progress-bar', progressText: 'progress-text',
       heatTabs: 'heat-tabs', court: 'court', btnExportPng: 'btn-export-png', btnExportJson: 'btn-export-json',
-      playerStats: 'player-stats', toast: 'toast'
+      playerStats: 'player-stats', toast: 'toast',
+      adminBar: 'admin-bar', togglePublic: 'toggle-public', publicStatus: 'public-status',
+      locked: 'locked', mainLayout: 'main-layout'
     };
     for (const key of Object.keys(ids)) els[key] = document.getElementById(ids[key]);
   }
@@ -1078,6 +1137,7 @@
     });
     els.btnExportJson.addEventListener('click', exportJson);
     els.btnExportPng.addEventListener('click', exportPng);
+    els.togglePublic.addEventListener('change', onTogglePublic);
 
     document.addEventListener('visibilitychange', () => {
       if (!state.running) return;
@@ -1101,6 +1161,31 @@
   async function init() {
     bindElements();
     bindEvents();
+    state.uid = resolveUid();
+    let access;
+    try {
+      access = await checkAccess();
+    } catch (e) {
+      console.error('[AI] 權限確認失敗', e);
+      setChip(els.envStatus, '無法確認使用權限', 'err');
+      setChip(els.modelStatus, '未載入模型', 'err');
+      showError('無法連線到伺服器確認使用權限，請稍後重新整理');
+      return;
+    }
+    // 沒有權限就不顯示操作介面，也不下載模型
+    if (!access.allowed) {
+      setChip(els.envStatus, '尚未開放', 'warn');
+      setChip(els.modelStatus, '未載入模型');
+      els.locked.classList.remove('hidden');
+      return;
+    }
+    if (access.canManage) {
+      renderPublicStatus(!!access.isPublic);
+      els.adminBar.classList.remove('hidden');
+    }
+    els.mainLayout.classList.remove('hidden');
+    setChip(els.envStatus, '檢查電腦環境中…');
+
     els.court.width = Math.round((COURT.width + 2 * BOUNDS.side) * PPM);
     els.court.height = Math.round((COURT.length + 2 * BOUNDS.back) * PPM);
     drawCourt();
