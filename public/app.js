@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.2.39
+ * Version: 1.2.40
  */
 let globalLobbyUsers = [];
 
@@ -9541,6 +9541,9 @@ function bootApp() {
 
 // AI 影片分析要用電腦的顯示卡運算，手機不顯示入口；未公開時只有超級管理員看得到
 function updateAiAnalysisEntry(effIsSuperAdmin) {
+  document.querySelectorAll('#ai-access-admin [data-ai-access]').forEach((el) => {
+    el.classList.toggle('active', (el.dataset.aiAccess === 'public') === globalAiAnalysisPublic);
+  });
   const btn = document.getElementById('btn-ai-analysis');
   if (!btn) return;
   const ua = navigator.userAgent || '';
@@ -9550,7 +9553,35 @@ function updateAiAnalysisEntry(effIsSuperAdmin) {
   if (label) label.textContent = globalAiAnalysisPublic ? '🎥 AI 影片分析' : '🎥 AI 影片分析（超管）';
 }
 
+async function setAiAnalysisAccess(isPublic) {
+  if (isPublic === globalAiAnalysisPublic) return;
+  const buttons = document.querySelectorAll('#ai-access-admin [data-ai-access]');
+  buttons.forEach((b) => { b.disabled = true; });
+  try {
+    const res = await fetch('/api/admin/ai_analysis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid: getAdminRequestUid(), isPublic })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) throw new Error(data.error || '變更失敗');
+    globalAiAnalysisPublic = !!data.isPublic;
+    updateAiAnalysisEntry(getEffectiveRole().isSuperAdmin);
+  } catch (e) {
+    alert('❌ AI 影片分析權限變更失敗：' + e.message);
+  } finally {
+    buttons.forEach((b) => { b.disabled = false; });
+  }
+}
+
 function initAiAnalysisEntry() {
+  const accessBox = document.getElementById('ai-access-admin');
+  if (accessBox) {
+    accessBox.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-ai-access]');
+      if (el) setAiAnalysisAccess(el.dataset.aiAccess === 'public');
+    });
+  }
   const btn = document.getElementById('btn-ai-analysis');
   if (!btn) return;
   btn.addEventListener('click', () => {
