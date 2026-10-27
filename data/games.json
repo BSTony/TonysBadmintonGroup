@@ -11381,7 +11381,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418777969,
-    "lastActiveTime": 1793090313790,
+    "lastActiveTime": 1793092172130,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11403,7 +11403,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11420,13 +11421,21 @@
           "林煥杰",
           "Andrew Kuo",
           "黃政豪",
-          "楊程鈞"
+          "楊程鈞",
+          "©️張CC～©️"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/27 17:09",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/27 16:38",
         "name": "楊程鈞",
