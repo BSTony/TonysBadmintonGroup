@@ -12230,7 +12230,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793106234508,
-    "lastActiveTime": 1793116679768,
+    "lastActiveTime": 1793118262515,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12275,12 +12275,20 @@
           "Robert",
           "Jet",
           "陳呈",
-          "afrahuang"
+          "afrahuang",
+          "雪倫"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/28 00:24",
+        "name": "雪倫",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/27 23:57",
         "name": "偉舫",
