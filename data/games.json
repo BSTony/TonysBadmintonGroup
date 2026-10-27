@@ -11463,7 +11463,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793080997939,
+    "lastActiveTime": 1793092593837,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11538,11 +11538,19 @@
           "弘彬/Jason",
           "Ray",
           "Jet",
-          "陳呈"
+          "陳呈",
+          "康"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/27 17:16",
+        "name": "康",
+        "operator": "康 (輸入框)",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/27 14:03",
         "name": "周哲儁",
