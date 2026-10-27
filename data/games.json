@@ -11480,7 +11480,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793111163783,
+    "lastActiveTime": 1793111182789,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11557,11 +11557,19 @@
           "Jet",
           "陳呈",
           "康",
-          "Jojo"
+          "Jojo",
+          "Jojo2"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/27 22:26",
+        "name": "Jojo2",
+        "operator": "JOJO👆✌️🖖🤘👐💪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/27 22:26",
         "name": "Jojo",
