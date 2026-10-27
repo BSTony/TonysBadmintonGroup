@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.3.30
+ * Version: 1.3.31
  */
 const express = require('express');
 const compression = require('compression');
@@ -1570,7 +1570,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
       res.setHeader('Cache-Control', 'no-cache');
     } else if (filePath.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
       res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
-    } else if (filePath.endsWith('.onnx')) {
+    } else if (/\.onnx(\.part\d+)?$/.test(filePath)) {
       // 模型檔設為永久快取：更新模型時必須改檔名或網址的版本號
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     }

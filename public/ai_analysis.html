@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-27
-  Version: 1.2.0
+  Version: 1.3.0
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -122,6 +122,7 @@
     <div class="status-chips">
       <span id="env-status" class="chip">確認使用權限中…</span>
       <span id="model-status" class="chip">準備載入模型…</span>
+      <span id="shuttle-status" class="chip">追球模型等待中</span>
     </div>
   </header>
 
@@ -166,6 +167,9 @@
               <option value="10" selected>10 張</option>
               <option value="15">15 張（較精細）</option>
             </select>
+          </label>
+          <label class="inline" title="每一格畫面都要分析，需要顯示卡（WebGPU），速度會比只分析骨架慢">
+            <input type="checkbox" id="shuttle-toggle" checked> 追蹤羽球軌跡
           </label>
         </div>
         <div class="step">
@@ -234,13 +238,13 @@
 
   <footer class="footer">
     <p>分析期間請保持這個分頁在前景；切到其他分頁時會自動暫停，回來後繼續。</p>
-    <p>骨架模型：Ultralytics YOLOv8n-pose（AGPL-3.0）· 推論引擎：ONNX Runtime Web</p>
+    <p>骨架模型：Ultralytics YOLOv8n-pose（AGPL-3.0）· 追球模型：TrackNetV3（MIT）· 推論引擎：ONNX Runtime Web · 全部運算都在你的電腦上進行</p>
   </footer>
 
   <div id="toast" class="toast hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
-  <script src="ai_pose_core.js?v=20261027"></script>
-  <script src="ai_analysis.js?v=20261027c"></script>
+  <script src="ai_pose_core.js?v=20261027d"></script>
+  <script src="ai_analysis.js?v=20261027d"></script>
 </body>
 </html>

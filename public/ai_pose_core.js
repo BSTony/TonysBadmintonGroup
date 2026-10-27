@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.0.0
+ * Version: 1.1.0
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -231,6 +231,43 @@
     return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
   }
 
+  // 遠端球員在畫面中很小、腳又常被球網擋住，所以遠半場另外裁一塊放大偵測；放大不到 1.25 倍就不值得多算一次
+  function farCourtCrop(Hinv, frameW, frameH, courtCropRect, opts = {}) {
+    const side = opts.side ?? 1.0;
+    const back = opts.back ?? 2.0;
+    const pastNet = opts.pastNet ?? 0.8;
+    const bodyHeight = opts.bodyHeight ?? 2.4;
+    const W = COURT.width;
+    const pts = [[-side, -back], [W + side, -back], [W + side, COURT.netY + pastNet], [-side, COURT.netY + pastNet]]
+      .map(([x, y]) => applyHomography(Hinv, x, y));
+    const farL = applyHomography(Hinv, 0, 0);
+    const farR = applyHomography(Hinv, W, 0);
+    if (pts.some((p) => !p) || !farL || !farR) return null;
+    const pxPerMeter = Math.hypot(farR.x - farL.x, farR.y - farL.y) / W;
+    const x1 = Math.max(0, Math.floor(Math.min(...pts.map((p) => p.x))));
+    const x2 = Math.min(frameW, Math.ceil(Math.max(...pts.map((p) => p.x))));
+    const y1 = Math.max(0, Math.floor(Math.min(...pts.map((p) => p.y)) - bodyHeight * pxPerMeter));
+    const y2 = Math.min(frameH, Math.ceil(Math.max(...pts.map((p) => p.y))));
+    if (x2 - x1 < 16 || y2 - y1 < 16) return null;
+    const crop = { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+    if (courtCropRect) {
+      const gain = Math.min(INPUT_SIZE / crop.w, INPUT_SIZE / crop.h) /
+        Math.min(INPUT_SIZE / courtCropRect.w, INPUT_SIZE / courtCropRect.h);
+      if (gain < 1.25) return null;
+    }
+    return crop;
+  }
+
+  // 合併多次裁切的偵測結果，重疊的人只保留分數最高的那一筆
+  function mergeDetections(lists, iouThreshold = 0.5) {
+    const all = [].concat(...lists).sort((a, b) => b.score - a.score);
+    const kept = [];
+    for (const d of all) {
+      if (!kept.some((k) => iou(k.box, d.box) > iouThreshold)) kept.push(d);
+    }
+    return kept;
+  }
+
   function footPoint(det, minScore = 0.3) {
     const ankles = [det.keypoints[15], det.keypoints[16]].filter((k) => k.score >= minScore);
     if (ankles.length) {
@@ -404,6 +441,88 @@
     return { grid, cols, rows, cell, x0, y0, max };
   }
 
+  // ---------- 羽球追蹤（TrackNetV3：背景中位數 + 連續 8 格，各 3 通道，512x288） ----------
+
+  const SHUTTLE = { width: 512, height: 288, seqLen: 8, threshold: 0.5 };
+
+  // 與官方相同取逐像素中位數；偶數張時取中間兩張平均後無條件捨去
+  function medianImage(frames) {
+    const n = frames.length;
+    const len = frames[0].length;
+    const out = new Uint8ClampedArray(len);
+    const tmp = new Uint8Array(n);
+    const mid = n >> 1;
+    for (let i = 0; i < len; i++) {
+      if ((i & 3) === 3) { out[i] = 255; continue; }
+      for (let k = 0; k < n; k++) tmp[k] = frames[k][i];
+      tmp.sort();
+      out[i] = n % 2 ? tmp[mid] : (tmp[mid - 1] + tmp[mid]) >> 1;
+    }
+    return out;
+  }
+
+  // 通道順序：背景 RGB 在最前面，接著第 1～8 格的 RGB
+  function buildTrackNetInput(median, frames, out) {
+    const area = SHUTTLE.width * SHUTTLE.height;
+    const images = [median].concat(frames);
+    const t = out && out.length === images.length * 3 * area ? out : new Float32Array(images.length * 3 * area);
+    const inv = 1 / 255;
+    for (let f = 0; f < images.length; f++) {
+      const src = images[f];
+      const o = f * 3 * area;
+      for (let i = 0, p = 0; i < area; i++, p += 4) {
+        t[o + i] = src[p] * inv;
+        t[o + area + i] = src[p + 1] * inv;
+        t[o + 2 * area + i] = src[p + 2] * inv;
+      }
+    }
+    return t;
+  }
+
+  // 與官方 predict_location 相同：門檻以上的連通區塊取外框面積最大者，回傳外框中心
+  function decodeShuttleHeatmap(data, index, w = SHUTTLE.width, h = SHUTTLE.height, threshold = SHUTTLE.threshold, visited) {
+    const area = w * h;
+    const base = index * area;
+    const seen = visited && visited.length === area ? visited.fill(0) : new Uint8Array(area);
+    const stack = [];
+    let best = null;
+    for (let i = 0; i < area; i++) {
+      if (seen[i] || !(data[base + i] > threshold)) continue;
+      let minX = w;
+      let maxX = -1;
+      let minY = h;
+      let maxY = -1;
+      seen[i] = 1;
+      stack.push(i);
+      while (stack.length) {
+        const p = stack.pop();
+        const x = p % w;
+        const y = (p - x) / w;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+        for (let dy = -1; dy <= 1; dy++) {
+          const ny = y + dy;
+          if (ny < 0 || ny >= h) continue;
+          for (let dx = -1; dx <= 1; dx++) {
+            const nx = x + dx;
+            if (nx < 0 || nx >= w) continue;
+            const q = ny * w + nx;
+            if (!seen[q] && data[base + q] > threshold) {
+              seen[q] = 1;
+              stack.push(q);
+            }
+          }
+        }
+      }
+      const bw = maxX - minX + 1;
+      const bh = maxY - minY + 1;
+      if (!best || bw * bh > best.area) best = { area: bw * bh, x: minX + bw / 2, y: minY + bh / 2 };
+    }
+    return best ? { x: best.x, y: best.y } : null;
+  }
+
   return {
     INPUT_SIZE,
     NUM_KEYPOINTS,
@@ -422,6 +541,8 @@
     courtCorners,
     courtLines,
     courtCrop,
+    farCourtCrop,
+    mergeDetections,
     footPoint,
     inCourtArea,
     insideLines,
@@ -429,6 +550,10 @@
     createTracker,
     smoothSamples,
     playerStats,
-    heatmapGrid
+    heatmapGrid,
+    SHUTTLE,
+    medianImage,
+    buildTrackNetInput,
+    decodeShuttleHeatmap
   };
 });

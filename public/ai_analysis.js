@@ -1,15 +1,26 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-27
- * Version: 1.2.0
+ * Version: 1.3.0
  */
 (function () {
   'use strict';
 
   const ORT_VERSION = '1.31.1';
-  const MODEL_URL = '/models/yolov8n-pose.onnx?v=1';
+  // 模型從 jsDelivr 依 commit 鎖定版本下載，不佔用伺服器流量；CDN 失敗才改由伺服器提供
+  const MODEL_SOURCES = [
+    'https://cdn.jsdelivr.net/gh/BSTony/TonysBadmintonGroup@095ffc696559a465d6e293c023b129f91f1bdc59/public/models/',
+    '/models/'
+  ];
+  const POSE_MODEL_FILES = ['yolov8n-pose.onnx'];
+  const TRACKNET_MODEL_FILES = ['tracknetv3.onnx.part0', 'tracknetv3.onnx.part1', 'tracknetv3.onnx.part2', 'tracknetv3.onnx.part3'];
   const PLAYBACK_RATE = 2;
+  // TrackNet 以 30fps 訓練：60fps 影片隔一格取一格
+  const SHUTTLE_INTERVAL = 1 / 30;
+  const SHUTTLE_TRAIL_SECONDS = 0.6;
+  const BACKGROUND_SAMPLES = 40;
   const CONF_THRESHOLD = 0.3;
+  const FAR_CONF_THRESHOLD = 0.25;
   const IOU_THRESHOLD = 0.5;
   const KEYPOINT_MIN_SCORE = 0.3;
   const CALIBRATION_KEY = 'aiAnalysis.calibration.v1';
@@ -68,14 +79,30 @@
     heatTarget: 'all',
     statsAt: 0,
     resumePlayback: null,
-    toastTimer: 0
+    toastTimer: 0,
+    tracknet: null,
+    tracknetLoading: null,
+    shuttleEnabled: true,
+    shuttleBg: null,
+    shuttleFrames: [],
+    shuttle: [],
+    lastShuttleT: -Infinity,
+    frameDelta: Infinity,
+    shuttleMs: 0,
+    shuttleBatches: 0
   };
 
   const prepCanvas = document.createElement('canvas');
   prepCanvas.width = Core.INPUT_SIZE;
   prepCanvas.height = Core.INPUT_SIZE;
   const prepCtx = prepCanvas.getContext('2d', { willReadFrequently: true });
-  let tensorBuffer = null;
+  const tensorBuffers = [null, null];
+  const shuttleCanvas = document.createElement('canvas');
+  shuttleCanvas.width = Core.SHUTTLE.width;
+  shuttleCanvas.height = Core.SHUTTLE.height;
+  const shuttleCtx = shuttleCanvas.getContext('2d', { willReadFrequently: true });
+  let shuttleInputBuffer = null;
+  const shuttleVisited = new Uint8Array(Core.SHUTTLE.width * Core.SHUTTLE.height);
 
   // ---------- 小工具 ----------
 
@@ -113,7 +140,15 @@
   }
 
   function hasSamples() {
-    return Object.keys(state.samples).some((id) => state.samples[id].length > 0);
+    return state.shuttle.length > 0 || Object.keys(state.samples).some((id) => state.samples[id].length > 0);
+  }
+
+  // ONNX Runtime Web 同一時間只能有一個推論或建立模型在進行（不同模型也一樣），同時呼叫會卡死，所以一律排隊
+  let ortQueue = Promise.resolve();
+  function withOrt(task) {
+    const run = ortQueue.then(task, task);
+    ortQueue = run.catch(() => {});
+    return run;
   }
 
   function disposeOutputs(outputs) {
@@ -249,20 +284,30 @@
     return gpuOk;
   }
 
-  async function fetchModel(url, onProgress) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`下載模型失敗（HTTP ${res.status}）`);
-    const total = Number(res.headers.get('Content-Length')) || 0;
-    if (!res.body || !total) return new Uint8Array(await res.arrayBuffer());
-    const reader = res.body.getReader();
+  async function fetchParts(urls, onProgress) {
     const chunks = [];
     let received = 0;
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(value);
-      received += value.length;
-      onProgress(Math.min(1, received / total));
+    for (let i = 0; i < urls.length; i++) {
+      const res = await fetch(urls[i]);
+      if (!res.ok) throw new Error(`下載模型失敗（HTTP ${res.status}）`);
+      const total = Number(res.headers.get('Content-Length')) || 0;
+      if (!res.body || !total) {
+        const buf = new Uint8Array(await res.arrayBuffer());
+        chunks.push(buf);
+        received += buf.length;
+        onProgress((i + 1) / urls.length);
+        continue;
+      }
+      const reader = res.body.getReader();
+      let partReceived = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        received += value.length;
+        partReceived += value.length;
+        onProgress((i + Math.min(1, partReceived / total)) / urls.length);
+      }
     }
     const out = new Uint8Array(received);
     let offset = 0;
@@ -273,20 +318,33 @@
     return out;
   }
 
+  async function fetchModelFiles(files, onProgress) {
+    let lastErr = null;
+    for (const base of MODEL_SOURCES) {
+      try {
+        return await fetchParts(files.map((f) => base + f), onProgress);
+      } catch (e) {
+        lastErr = e;
+        console.warn(`[AI] 從 ${base} 下載模型失敗，改用下一個來源`, e);
+      }
+    }
+    throw lastErr;
+  }
+
   async function loadModel(preferGpu) {
     if (typeof ort === 'undefined') throw new Error('推論引擎載入失敗，請檢查網路後重新整理');
     ort.env.wasm.wasmPaths = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`;
     ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
 
-    setChip(els.modelStatus, '下載模型 0%');
-    const bytes = await fetchModel(MODEL_URL, (p) => setChip(els.modelStatus, `下載模型 ${Math.round(p * 100)}%`));
+    setChip(els.modelStatus, '下載骨架模型 0%');
+    const bytes = await fetchModelFiles(POSE_MODEL_FILES, (p) => setChip(els.modelStatus, `下載骨架模型 ${Math.round(p * 100)}%`));
     setChip(els.modelStatus, '初始化模型…');
 
     const providers = preferGpu ? ['webgpu', 'wasm'] : ['wasm'];
     let lastErr = null;
     for (const ep of providers) {
       try {
-        state.session = await ort.InferenceSession.create(bytes, { executionProviders: [ep], graphOptimizationLevel: 'all' });
+        state.session = await withOrt(() => ort.InferenceSession.create(bytes, { executionProviders: [ep], graphOptimizationLevel: 'all' }));
         state.backend = ep;
         break;
       } catch (e) {
@@ -301,42 +359,146 @@
     // 先用空白畫面跑一次，讓顯示卡先把運算程式編譯好
     const size = Core.INPUT_SIZE;
     const t0 = performance.now();
-    const warm = await state.session.run({ [state.inputName]: new ort.Tensor('float32', new Float32Array(3 * size * size), [1, 3, size, size]) });
+    const warm = await withOrt(() => state.session.run({ [state.inputName]: new ort.Tensor('float32', new Float32Array(3 * size * size), [1, 3, size, size]) }));
     disposeOutputs(warm);
     console.log(`[AI] backend=${state.backend} warmup=${(performance.now() - t0).toFixed(0)}ms`);
     setChip(els.modelStatus, `模型就緒（${state.backend === 'webgpu' ? '顯示卡' : 'CPU'}）`, 'ok');
     if (state.backend !== 'webgpu' && preferGpu) {
       showError('顯示卡初始化失敗，已改用 CPU 計算，速度會比較慢。');
     }
+    syncShuttleToggle();
     refreshIdleText();
     updateButtons();
   }
 
+  // ---------- 羽球追蹤 ----------
+
+  function shuttleActive() {
+    return state.shuttleEnabled && state.backend === 'webgpu' && !!state.tracknet && !!state.shuttleBg;
+  }
+
+  function syncShuttleToggle() {
+    const gpu = state.backend === 'webgpu';
+    if (!gpu) {
+      state.shuttleEnabled = false;
+      els.shuttleToggle.checked = false;
+      els.shuttleToggle.disabled = true;
+      setChip(els.shuttleStatus, '追球需要顯示卡（WebGPU）', 'warn');
+      return;
+    }
+    els.shuttleToggle.disabled = state.running;
+    if (state.shuttleEnabled && !state.tracknet && !state.tracknetLoading) {
+      state.tracknetLoading = loadTrackNet().catch((e) => {
+        console.error('[AI] 追球模型載入失敗', e);
+        setChip(els.shuttleStatus, '追球模型載入失敗', 'err');
+        state.tracknetLoading = null;
+      });
+    } else if (!state.shuttleEnabled && !state.tracknet) {
+      setChip(els.shuttleStatus, '追球未啟用');
+    }
+  }
+
+  async function loadTrackNet() {
+    setChip(els.shuttleStatus, '下載追球模型 0%');
+    const bytes = await fetchModelFiles(TRACKNET_MODEL_FILES, (p) => setChip(els.shuttleStatus, `下載追球模型 ${Math.round(p * 100)}%`));
+    setChip(els.shuttleStatus, '初始化追球模型…');
+    // onnxruntime-web 1.31.1 的 WebGPU 預設 NHWC 排列會把 TrackNet 算錯（與 CPU 差距近 100%），必須指定 NCHW
+    const session = await withOrt(() => ort.InferenceSession.create(bytes, {
+      executionProviders: [{ name: 'webgpu', preferredLayout: 'NCHW' }],
+      graphOptimizationLevel: 'all'
+    }));
+    const { width: w, height: h, seqLen } = Core.SHUTTLE;
+    const channels = (seqLen + 1) * 3;
+    const t0 = performance.now();
+    const warm = await withOrt(() => session.run({ [session.inputNames[0]]: new ort.Tensor('float32', new Float32Array(channels * w * h), [1, channels, h, w]) }));
+    disposeOutputs(warm);
+    console.log(`[AI] tracknet warmup=${(performance.now() - t0).toFixed(0)}ms`);
+    state.tracknet = { session, inputName: session.inputNames[0], outputName: session.outputNames[0] };
+    setChip(els.shuttleStatus, '追球模型就緒', 'ok');
+    refreshIdleText();
+    updateButtons();
+  }
+
+  function captureShuttleRgba() {
+    shuttleCtx.drawImage(els.video, 0, 0, Core.SHUTTLE.width, Core.SHUTTLE.height);
+    return shuttleCtx.getImageData(0, 0, Core.SHUTTLE.width, Core.SHUTTLE.height).data;
+  }
+
+  // 背景中位數讓模型分得出「會動的球」與固定不動的場地
+  async function buildShuttleBackground() {
+    const { start, end } = state.range;
+    const frames = [];
+    for (let i = 0; i < BACKGROUND_SAMPLES && state.running; i++) {
+      await seekTo(els.video, start + ((end - start) * (i + 0.5)) / BACKGROUND_SAMPLES);
+      frames.push(captureShuttleRgba());
+      setProgressText(`建立追球用的背景影像 ${i + 1} / ${BACKGROUND_SAMPLES}…`);
+    }
+    if (frames.length === BACKGROUND_SAMPLES) state.shuttleBg = Core.medianImage(frames);
+  }
+
+  async function processShuttleBatch() {
+    const { width: w, height: h, seqLen } = Core.SHUTTLE;
+    const batch = state.shuttleFrames.splice(0, seqLen);
+    if (!batch.length) return;
+    const images = batch.map((f) => f.rgba);
+    while (images.length < seqLen) images.push(images[images.length - 1]);
+    shuttleInputBuffer = Core.buildTrackNetInput(state.shuttleBg, images, shuttleInputBuffer);
+    const t0 = performance.now();
+    const outputs = await withOrt(() => state.tracknet.session.run({
+      [state.tracknet.inputName]: new ort.Tensor('float32', shuttleInputBuffer, [1, (seqLen + 1) * 3, h, w])
+    }));
+    state.shuttleMs += performance.now() - t0;
+    state.shuttleBatches++;
+    const out = outputs[state.tracknet.outputName];
+    const sx = els.video.videoWidth / w;
+    const sy = els.video.videoHeight / h;
+    batch.forEach((f, i) => {
+      const p = Core.decodeShuttleHeatmap(out.data, i, w, h, Core.SHUTTLE.threshold, shuttleVisited);
+      state.shuttle.push(p ? { t: f.t, x: p.x * sx, y: p.y * sy } : { t: f.t, x: null, y: null });
+    });
+    disposeOutputs(outputs);
+    drawOverlay();
+  }
+
   // ---------- 推論 ----------
 
-  function captureTensor() {
-    const v = els.video;
-    const crop = state.calib ? state.calib.crop : { x: 0, y: 0, w: v.videoWidth, h: v.videoHeight };
+  function captureTensor(crop, slot) {
     const lb = Core.letterbox(crop.w, crop.h);
     const size = Core.INPUT_SIZE;
     prepCtx.fillStyle = `rgb(${Core.PAD_VALUE},${Core.PAD_VALUE},${Core.PAD_VALUE})`;
     prepCtx.fillRect(0, 0, size, size);
-    prepCtx.drawImage(v, crop.x, crop.y, crop.w, crop.h, lb.padX, lb.padY, lb.w, lb.h);
+    prepCtx.drawImage(els.video, crop.x, crop.y, crop.w, crop.h, lb.padX, lb.padY, lb.w, lb.h);
     const img = prepCtx.getImageData(0, 0, size, size);
-    tensorBuffer = Core.rgbaToTensor(img.data, size, tensorBuffer);
-    return { tensor: new ort.Tensor('float32', tensorBuffer, [1, 3, size, size]), lb, crop };
+    tensorBuffers[slot] = Core.rgbaToTensor(img.data, size, tensorBuffers[slot]);
+    return { tensor: new ort.Tensor('float32', tensorBuffers[slot], [1, 3, size, size]), lb, crop };
   }
 
-  // 畫面擷取必須在呼叫當下同步完成，之後影片才能繼續播放
-  async function detect() {
-    const { tensor, lb, crop } = captureTensor();
-    const t0 = performance.now();
-    const outputs = await state.session.run({ [state.inputName]: tensor });
-    const ms = performance.now() - t0;
+  async function runPose(input, confThreshold) {
+    const outputs = await withOrt(() => state.session.run({ [state.inputName]: input.tensor }));
     const out = outputs[state.outputName];
-    const dets = Core.decodePose(out.data, out.dims, lb, crop, { confThreshold: CONF_THRESHOLD, iouThreshold: IOU_THRESHOLD });
+    const dets = Core.decodePose(out.data, out.dims, input.lb, input.crop, { confThreshold, iouThreshold: IOU_THRESHOLD });
     disposeOutputs(outputs);
-    return { dets, ms };
+    return dets;
+  }
+
+  // 兩塊裁切都必須在第一個 await 之前擷取完，之後影片才能繼續播放
+  function capturePoseInputs() {
+    const v = els.video;
+    const main = captureTensor(state.calib ? state.calib.crop : { x: 0, y: 0, w: v.videoWidth, h: v.videoHeight }, 0);
+    const far = state.calib && state.calib.farCrop ? captureTensor(state.calib.farCrop, 1) : null;
+    return { main, far };
+  }
+
+  async function runDetection(inputs) {
+    const t0 = performance.now();
+    const lists = [await runPose(inputs.main, CONF_THRESHOLD)];
+    if (inputs.far) lists.push(await runPose(inputs.far, FAR_CONF_THRESHOLD));
+    const ms = performance.now() - t0;
+    return { dets: inputs.far ? Core.mergeDetections(lists, IOU_THRESHOLD) : lists[0], ms };
+  }
+
+  function detect() {
+    return runDetection(capturePoseInputs());
   }
 
   function toCandidates(dets) {
@@ -351,8 +513,8 @@
     return list;
   }
 
-  async function processFrame(t) {
-    const { dets, ms } = await detect();
+  async function processPose(t, inputs) {
+    const { dets, ms } = await runDetection(inputs);
     state.frames++;
     state.inferMs += ms;
     const assigned = state.tracker.update(t, toCandidates(dets));
@@ -373,10 +535,14 @@
     }
   }
 
-  // 每次擷取畫面就暫停影片，算完再播放，讓骨架疊圖和畫面對得上
+  // 需要推論時先暫停影片、算完再播放，讓疊圖和畫面對得上；追球只擷取畫面時不暫停
   function analyzeWithFrameCallback(end) {
     const video = els.video;
-    const interval = 1 / state.sampleFps;
+    const poseInterval = 1 / state.sampleFps;
+    const tracking = shuttleActive();
+    let rate = tracking ? 1 : PLAYBACK_RATE;
+    let steadyFrames = 0;
+    let lastMediaT = -Infinity;
     return new Promise((resolve, reject) => {
       let done = false;
       const finish = (err) => {
@@ -403,14 +569,36 @@
         if (!state.running) return finish();
         const t = meta.mediaTime;
         if (t >= end) return finish();
-        if (t - state.lastT < interval * 0.98) {
+        if (t - lastMediaT > 0.001) state.frameDelta = Math.min(state.frameDelta, t - lastMediaT);
+        lastMediaT = t;
+        const shuttleStep = Math.max(SHUTTLE_INTERVAL, isFinite(state.frameDelta) ? state.frameDelta : 0);
+        const needPose = t - state.lastT >= poseInterval * 0.98;
+        const needShuttle = tracking && t - state.lastShuttleT >= shuttleStep * 0.98;
+        if (needShuttle) {
+          // 追球要連續畫面：發現跳格就放慢播放，穩定一段時間再加速
+          if (state.lastShuttleT !== -Infinity && t - state.lastShuttleT > shuttleStep * 1.6) {
+            rate = Math.max(0.25, rate * 0.7);
+            steadyFrames = 0;
+            video.playbackRate = rate;
+          } else if (++steadyFrames > 90 && rate < 2) {
+            rate = Math.min(2, rate * 1.25);
+            steadyFrames = 0;
+            video.playbackRate = rate;
+          }
+          state.shuttleFrames.push({ t, rgba: captureShuttleRgba() });
+          state.lastShuttleT = t;
+        }
+        const poseInputs = needPose ? capturePoseInputs() : null;
+        if (needPose) state.lastT = t;
+        const batchReady = tracking && state.shuttleFrames.length >= Core.SHUTTLE.seqLen;
+        if (!poseInputs && !batchReady) {
           video.requestVideoFrameCallback(onFrame);
           return;
         }
         video.pause();
-        state.lastT = t;
         try {
-          await processFrame(t);
+          if (poseInputs) await processPose(t, poseInputs);
+          if (batchReady) await processShuttleBatch();
         } catch (e) {
           finish(e);
           return;
@@ -420,7 +608,7 @@
         play();
       };
       video.addEventListener('ended', onEnded);
-      video.playbackRate = PLAYBACK_RATE;
+      video.playbackRate = rate;
       video.requestVideoFrameCallback(onFrame);
       play();
     });
@@ -432,7 +620,7 @@
     while (state.running && t < end) {
       await seekTo(els.video, t);
       state.lastT = t;
-      await processFrame(t);
+      await processPose(t, capturePoseInputs());
       t += interval;
     }
   }
@@ -450,22 +638,32 @@
     if (!state.tracker) state.tracker = Core.createTracker(state.mode);
 
     const resume = state.lastT !== -Infinity;
-    const start = resume ? state.analyzedUntil : state.range.start;
+    const start = resume ? Math.max(state.analyzedUntil, state.lastShuttleT) : state.range.start;
+    const wantShuttle = state.shuttleEnabled && state.backend === 'webgpu';
     state.running = true;
-    state.runStartedAt = performance.now();
-    state.runStartT = start;
     els.video.controls = false;
     els.video.muted = true;
     updateButtons();
     let completed = false;
     try {
-      await seekTo(els.video, start);
-      if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
-        await analyzeWithFrameCallback(state.range.end);
-      } else {
-        await analyzeWithSeeking(state.range.end);
+      if (wantShuttle && !state.tracknet && state.tracknetLoading) {
+        setProgressText('等待追球模型下載完成…');
+        await state.tracknetLoading;
       }
-      completed = state.running;
+      if (wantShuttle && state.tracknet && !state.shuttleBg) await buildShuttleBackground();
+      if (state.running) {
+        state.runStartedAt = performance.now();
+        state.runStartT = start;
+        await seekTo(els.video, start);
+        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+          await analyzeWithFrameCallback(state.range.end);
+        } else {
+          await analyzeWithSeeking(state.range.end);
+        }
+        completed = state.running;
+      }
+      // 不足 8 格的尾巴也要算完，暫停後繼續時才不會重複或漏格
+      if (state.shuttleFrames.length && state.tracknet && state.shuttleBg) await processShuttleBatch();
     } catch (e) {
       console.error('[AI] 分析中斷', e);
       showError('分析中斷：' + (e && e.message ? e.message : e));
@@ -514,6 +712,12 @@
     state.lastDets = [];
     state.lastAssigned = {};
     state.heatTarget = 'all';
+    state.shuttleBg = null;
+    state.shuttleFrames = [];
+    state.shuttle = [];
+    state.lastShuttleT = -Infinity;
+    state.shuttleMs = 0;
+    state.shuttleBatches = 0;
     renderStats();
     drawCourt();
     drawOverlay();
@@ -582,7 +786,8 @@
       return false;
     }
     const v = els.video;
-    state.calib = { points: ordered, H, Hinv, crop: Core.courtCrop(ordered, v.videoWidth, v.videoHeight) };
+    const crop = Core.courtCrop(ordered, v.videoWidth, v.videoHeight);
+    state.calib = { points: ordered, H, Hinv, crop, farCrop: Core.farCourtCrop(Hinv, v.videoWidth, v.videoHeight, crop) };
     if (save) {
       try {
         localStorage.setItem(CALIBRATION_KEY, JSON.stringify({ w: v.videoWidth, h: v.videoHeight, points: ordered }));
@@ -666,6 +871,11 @@
     ctx.setLineDash([lw * 4, lw * 3]);
     ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)';
     ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
+    if (state.calib.farCrop) {
+      const f = state.calib.farCrop;
+      ctx.strokeStyle = 'rgba(244, 114, 182, 0.75)';
+      ctx.strokeRect(f.x, f.y, f.w, f.h);
+    }
     ctx.restore();
   }
 
@@ -707,6 +917,38 @@
       drawSkeleton(ctx, det, color, id ? lw * 1.5 : lw);
       if (id) drawLabel(ctx, det, PLAYER_STYLE[id].label, color, lw);
     }
+    drawShuttle(ctx, lw);
+  }
+
+  // 分析中畫最近擷取到的軌跡；分析完拖動影片時，畫目前時間點附近的軌跡
+  function drawShuttle(ctx, lw) {
+    if (!state.shuttle.length) return;
+    const now = state.running ? state.lastShuttleT : els.video.currentTime;
+    const pts = [];
+    for (let i = state.shuttle.length - 1; i >= 0; i--) {
+      const s = state.shuttle[i];
+      if (s.t > now + 0.001) continue;
+      if (now - s.t > SHUTTLE_TRAIL_SECONDS) break;
+      if (s.x !== null) pts.push(s);
+    }
+    if (!pts.length) return;
+    pts.reverse();
+    ctx.save();
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)';
+    ctx.lineWidth = lw * 1.5;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+    ctx.stroke();
+    const last = pts[pts.length - 1];
+    ctx.fillStyle = '#facc15';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = lw;
+    ctx.beginPath();
+    ctx.arc(last.x, last.y, lw * 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
   }
 
   function courtToCanvas(x, y) {
@@ -862,18 +1104,37 @@
     els.heatTabs.classList.remove('hidden');
   }
 
+  function shuttleSummary() {
+    const found = state.shuttle.filter((s) => s.x !== null).length;
+    return { total: state.shuttle.length, found };
+  }
+
+  function shuttleCardHtml() {
+    const { total, found } = shuttleSummary();
+    if (!total) return '';
+    return `
+      <div class="player-card" style="--pc:#facc15">
+        <div class="pc-head"><span class="pc-dot"></span>羽球軌跡</div>
+        <div class="pc-grid">
+          <div><span class="pc-val">${Math.round((found / total) * 100)}%</span><div class="pc-label">畫面中找到球的比例</div></div>
+          <div><span class="pc-val">${found}</span><span class="pc-unit">點</span><div class="pc-label">記錄到的球位置</div></div>
+        </div>
+        <div class="zone-legend">分析完可拖動影片，畫面上會顯示黃色的球軌跡</div>
+      </div>`;
+  }
+
   function renderStats() {
     const stats = computeStats();
     const ids = statIds();
     renderHeatTabs(ids);
     if (!ids.length) {
-      els.playerStats.innerHTML = state.frames > 0
+      els.playerStats.innerHTML = shuttleCardHtml() + (state.frames > 0
         ? '<p class="muted">還沒有偵測到球場內的球員。請確認綠色球場線有貼齊、球員有完整入鏡。</p>'
-        : '<p class="muted">完成球場校正並開始分析後，這裡會顯示每位球員的跑動距離與站位分布。</p>';
+        : '<p class="muted">完成球場校正並開始分析後，這裡會顯示每位球員的跑動距離與站位分布。</p>');
       return;
     }
     const pct = (v) => Math.round(v * 100);
-    els.playerStats.innerHTML = ids.map((id) => {
+    els.playerStats.innerHTML = shuttleCardHtml() + ids.map((id) => {
       const s = stats[id];
       const st = PLAYER_STYLE[id];
       return `
@@ -916,6 +1177,7 @@
     }
     const avgMs = state.inferMs / state.frames;
     let text = `已分析 ${fmtTime(done)} / ${fmtTime(total)} · ${state.frames} 張 · 平均每張 ${avgMs.toFixed(0)} ms`;
+    if (state.shuttleBatches) text += ` · 追球每 8 格 ${(state.shuttleMs / state.shuttleBatches).toFixed(0)} ms`;
     if (state.running) {
       const elapsed = (performance.now() - state.runStartedAt) / 1000;
       const speed = (state.analyzedUntil - state.runStartT) / Math.max(0.001, elapsed);
@@ -945,6 +1207,7 @@
     els.modeSingles.disabled = !idle;
     els.modeDoubles.disabled = !idle;
     els.sampleFps.disabled = !idle;
+    els.shuttleToggle.disabled = !idle || state.backend !== 'webgpu';
     els.fileInput.disabled = !idle;
     els.btnPickFile.classList.toggle('disabled', !idle);
   }
@@ -973,6 +1236,13 @@
       model: { name: 'yolov8n-pose', backend: state.backend },
       court: { width: COURT.width, length: COURT.length, netY: COURT.netY, axis: 'x：由左到右；y：由遠端底線到近端底線（公尺）' },
       calibration: state.calib ? { imagePoints: state.calib.points.map((p) => [r(p.x, 1), r(p.y, 1)]) } : null,
+      shuttle: state.shuttle.length ? {
+        model: 'TrackNetV3',
+        coordinate: '影片像素座標（x 向右、y 向下）',
+        frames: state.shuttle.length,
+        detected: shuttleSummary().found,
+        samples: state.shuttle.filter((s) => s.x !== null).map((s) => [r(s.t, 3), r(s.x, 1), r(s.y, 1)])
+      } : null,
       players: Object.keys(stats).map((id) => ({
         id,
         label: PLAYER_STYLE[id].label,
@@ -1008,6 +1278,7 @@
     state.file = file;
     state.videoUrl = URL.createObjectURL(file);
     state.calib = null;
+    state.frameDelta = Infinity;
     setCalibStatus('尚未校正');
     els.fileName.textContent = file.name;
     els.dropZone.classList.add('hidden');
@@ -1063,7 +1334,7 @@
       btnDetect: 'btn-detect', btnAnalyze: 'btn-analyze', btnReset: 'btn-reset',
       progressBar: 'progress-bar', progressText: 'progress-text',
       heatTabs: 'heat-tabs', court: 'court', btnExportPng: 'btn-export-png', btnExportJson: 'btn-export-json',
-      playerStats: 'player-stats', toast: 'toast',
+      playerStats: 'player-stats', toast: 'toast', shuttleToggle: 'shuttle-toggle', shuttleStatus: 'shuttle-status',
       adminBar: 'admin-bar', accessSuper: 'access-super', accessPublic: 'access-public', publicStatus: 'public-status',
       locked: 'locked', mainLayout: 'main-layout'
     };
@@ -1088,6 +1359,13 @@
 
     els.video.addEventListener('loadedmetadata', onLoadedMetadata);
     els.video.addEventListener('error', () => showError('影片無法播放，請改用 MP4（H.264）格式。iPhone 可到「設定 > 相機 > 格式」選「最相容」。'));
+    ['seeked', 'timeupdate'].forEach((type) => els.video.addEventListener(type, () => {
+      if (!state.running && state.shuttle.length) drawOverlay();
+    }));
+    els.shuttleToggle.addEventListener('change', () => {
+      state.shuttleEnabled = els.shuttleToggle.checked;
+      syncShuttleToggle();
+    });
     els.video.addEventListener('seeking', () => {
       if (state.running || state.busy || !state.lastDets.length) return;
       state.lastDets = [];
@@ -1186,6 +1464,7 @@
     if (!access.allowed) {
       setChip(els.envStatus, '尚未開放', 'warn');
       setChip(els.modelStatus, '未載入模型');
+      els.shuttleStatus.classList.add('hidden');
       els.locked.classList.remove('hidden');
       return;
     }
