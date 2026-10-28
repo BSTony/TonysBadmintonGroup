@@ -11480,7 +11480,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793118440816,
+    "lastActiveTime": 1793160666925,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11553,7 +11553,6 @@
           "吳霆竣 Chad Wu",
           "顏鎧霖",
           "Sammy Su",
-          "弘彬/Jason",
           "Ray",
           "Jet",
           "陳呈",
@@ -11565,6 +11564,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/28 12:11",
+        "name": "弘彬/Jason",
+        "operator": "弘彬/Jason",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "10/28 00:27",
         "name": "John",
