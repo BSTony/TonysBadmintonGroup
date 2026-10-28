@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.6.1
+ * Version: 1.6.2
  */
 (function () {
   'use strict';
@@ -539,6 +539,7 @@
     state.poseFrames.push({ t, dets: packDets(dets, assigned) });
     state.analyzedUntil = t;
     updateProgress(false);
+    if (!previewOpen()) drawCourt(t);
   }
 
   function sampleStep() {
@@ -1095,6 +1096,7 @@
     const frame = state.detectFrame || findPoseFrame(t);
     if (frame) drawFrameDets(ctx, frame.dets, lw);
     drawShuttle(ctx, lw, t);
+    if (!previewOpen()) drawCourt(t);
   }
 
   function drawShuttle(ctx, lw, now) {
@@ -1205,7 +1207,7 @@
     ctx.restore();
   }
 
-  function drawCourt() {
+  function drawCourt(atTime) {
     const canvas = els.court;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = '#14532d';
@@ -1224,15 +1226,8 @@
     ctx.textBaseline = 'bottom';
     ctx.fillText('近端（鏡頭這一側）', 8, canvas.height - 8);
 
-    if (state.running) {
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-      ctx.fillRect(0, canvas.height / 2 - 26, canvas.width, 52);
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = 'bold 15px "Noto Sans TC", "Microsoft JhengHei", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('分析完成後顯示熱圖', canvas.width / 2, canvas.height / 2);
-      ctx.textAlign = 'start';
+    if (typeof atTime === 'number') {
+      drawLivePositions(ctx, atTime);
       return;
     }
 
@@ -1240,6 +1235,50 @@
     for (const id of ids) {
       const st = state.stats[id];
       if (st && st.avg) drawDot(ctx, courtToCanvas(st.avg.x, st.avg.y), PLAYER_STYLE[id].color, 9, true);
+    }
+  }
+
+  // 找出最接近這個時間的站位，讓俯視圖和正在看的畫面是同一瞬間
+  function nearestSample(list, t) {
+    if (!list || !list.length) return null;
+    let lo = 0;
+    let hi = list.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (list[mid].t < t) lo = mid + 1;
+      else hi = mid;
+    }
+    let best = list[lo];
+    if (lo > 0 && Math.abs(list[lo - 1].t - t) < Math.abs(best.t - t)) best = list[lo - 1];
+    return Math.abs(best.t - t) <= Math.max(0.25, 1.5 / state.sampleFps) ? best : null;
+  }
+
+  function drawLivePositions(ctx, t) {
+    for (const id of Object.keys(state.samples)) {
+      const list = state.samples[id];
+      const style = PLAYER_STYLE[id];
+      if (!style) continue;
+      const trail = [];
+      for (let i = list.length - 1; i >= 0; i--) {
+        if (list[i].t > t + 0.02) continue;
+        if (t - list[i].t > 1.2) break;
+        trail.push(list[i]);
+      }
+      trail.reverse();
+      ctx.save();
+      ctx.strokeStyle = style.color;
+      ctx.globalAlpha = 0.45;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      trail.forEach((p, i) => {
+        const q = courtToCanvas(p.x, p.y);
+        if (i) ctx.lineTo(q.x, q.y);
+        else ctx.moveTo(q.x, q.y);
+      });
+      ctx.stroke();
+      ctx.restore();
+      const cur = nearestSample(list, t);
+      if (cur) drawDot(ctx, courtToCanvas(cur.x, cur.y), style.color, 8, false);
     }
   }
 
@@ -1414,8 +1453,13 @@
     openPreview(Math.min(t, done));
   }
 
+  function previewOpen() {
+    return els.previewBox && !els.previewBox.classList.contains('hidden');
+  }
+
   function drawPreviewAt(t) {
     drawResultsAt(els.previewOverlay, t);
+    drawCourt(t);
     els.previewTime.textContent = `預覽 ${fmtTime(t)}`;
     showTimelineCursor(t);
   }
@@ -1434,6 +1478,7 @@
     els.previewBox.classList.add('hidden');
     els.coverStatus.classList.remove('hidden');
     els.timelineCursor.classList.add('hidden');
+    drawCourt(state.running ? state.analyzedUntil : els.video.currentTime);
   }
 
   function togglePreviewPlay() {
