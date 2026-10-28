@@ -1,3 +1,4 @@
 {
-  "aiAnalysisPublic": false
+  "aiAnalysisPublic": true,
+  "aiAnalysisUsers": []
 }
