@@ -12410,7 +12410,7 @@
     "tag": "中階以上/爆汗多拍來回💦",
     "active": true,
     "startTime": 1793194561233,
-    "lastActiveTime": 1793194561233,
+    "lastActiveTime": 1793196674465,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12418,7 +12418,9 @@
     "anonymousCount": 0,
     "levelMap": {},
     "paidMap": {},
-    "uidMap": {},
+    "uidMap": {
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+    },
     "noteMap": {},
     "allowUserNoteEdit": true,
     "sections": [
@@ -12433,11 +12435,21 @@
           "Tank Lin",
           "謝東霖 Tony",
           "Kay",
-          "©️張CC～©️"
+          "©️張CC～©️",
+          "Gary"
         ],
         "fee": "260"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "history": [
+      {
+        "time": "10/28 22:11",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
   }
 }
