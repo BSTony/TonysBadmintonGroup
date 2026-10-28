@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.5.0
+ * Version: 1.6.0
  */
 (function () {
   'use strict';
@@ -83,7 +83,7 @@
     exportStop: null,
     heatTarget: 'all',
     statsAt: 0,
-    resumePlayback: null,
+    interruptPlayback: null,
     toastTimer: 0,
     tracknet: null,
     tracknetLoading: null,
@@ -536,48 +536,72 @@
     updateProgress(false);
   }
 
-  // 需要推論時先暫停影片、算完再播放，讓疊圖和畫面對得上；追球只擷取畫面時不暫停
+  function sampleStep() {
+    return Math.max(SHUTTLE_INTERVAL, isFinite(state.frameDelta) ? state.frameDelta : 0);
+  }
+
+  // 下一個該擷取的時間。視窗在前景時靠播放推進；縮到背景時改用這個時間逐格跳。
+  function nextSampleTime() {
+    const poseAt = state.lastT === -Infinity ? state.range.start : state.lastT + 1 / state.sampleFps;
+    if (!shuttleActive()) return poseAt;
+    const shuttleAt = state.lastShuttleT === -Infinity ? state.range.start : state.lastShuttleT + sampleStep();
+    return Math.min(poseAt, shuttleAt);
+  }
+
+  // 先把這一格需要的畫面抓下來，再送去推論。呼叫端決定影片要不要暫停。
+  async function ingestFrame(t) {
+    const tracking = shuttleActive();
+    const step = sampleStep();
+    const needPose = state.lastT === -Infinity || t - state.lastT >= (1 / state.sampleFps) * 0.98;
+    const needShuttle = tracking && (state.lastShuttleT === -Infinity || t - state.lastShuttleT >= step * 0.98);
+    if (needShuttle) {
+      state.shuttleFrames.push({ t, rgba: captureShuttleRgba() });
+      state.lastShuttleT = t;
+    }
+    const poseInputs = needPose ? capturePoseInputs() : null;
+    if (needPose) state.lastT = t;
+    if (poseInputs) await processPose(t, poseInputs);
+    if (state.running && tracking && state.shuttleFrames.length >= Core.SHUTTLE.seqLen) await processShuttleBatch();
+  }
+
+  // 前景：播放影片，需要推論時才暫停，讓疊圖和畫面對得上
   function analyzeWithFrameCallback(end) {
     const video = els.video;
-    const poseInterval = 1 / state.sampleFps;
     const tracking = shuttleActive();
     let rate = tracking ? 1 : PLAYBACK_RATE;
     let steadyFrames = 0;
     let lastMediaT = -Infinity;
     return new Promise((resolve, reject) => {
       let done = false;
-      const finish = (err) => {
+      const finish = (result, err) => {
         if (done) return;
         done = true;
-        state.resumePlayback = null;
+        state.interruptPlayback = null;
         video.removeEventListener('ended', onEnded);
         video.pause();
         if (err) reject(err);
-        else resolve();
+        else resolve(result);
       };
-      const onEnded = () => finish();
+      const onEnded = () => finish('done');
       const play = () => {
         if (done) return;
-        if (document.hidden) {
-          state.resumePlayback = play;
-          return;
-        }
-        state.resumePlayback = null;
-        video.play().catch((e) => { if (e.name !== 'AbortError') finish(e); });
+        if (document.hidden) return finish('hidden');
+        video.play().catch((e) => { if (!done && e.name !== 'AbortError') finish('done', e); });
       };
       const onFrame = async (_now, meta) => {
         if (done) return;
-        if (!state.running) return finish();
+        if (!state.running) return finish('stopped');
+        if (document.hidden) return finish('hidden');
         const t = meta.mediaTime;
-        if (t >= end) return finish();
+        if (t >= end) return finish('done');
         if (t - lastMediaT > 0.001) state.frameDelta = Math.min(state.frameDelta, t - lastMediaT);
         lastMediaT = t;
-        const shuttleStep = Math.max(SHUTTLE_INTERVAL, isFinite(state.frameDelta) ? state.frameDelta : 0);
-        const needPose = t - state.lastT >= poseInterval * 0.98;
-        const needShuttle = tracking && t - state.lastShuttleT >= shuttleStep * 0.98;
+        const step = sampleStep();
+        const needPose = state.lastT === -Infinity || t - state.lastT >= (1 / state.sampleFps) * 0.98;
+        const needShuttle = tracking && (state.lastShuttleT === -Infinity || t - state.lastShuttleT >= step * 0.98);
         if (needShuttle) {
           // 追球要連續畫面：發現跳格就放慢播放，穩定一段時間再加速
-          if (state.lastShuttleT !== -Infinity && t - state.lastShuttleT > shuttleStep * 1.6) {
+          if (state.lastShuttleT !== -Infinity && t - state.lastShuttleT > step * 1.6) {
             rate = Math.max(0.25, rate * 0.7);
             steadyFrames = 0;
             video.playbackRate = rate;
@@ -586,28 +610,31 @@
             steadyFrames = 0;
             video.playbackRate = rate;
           }
-          state.shuttleFrames.push({ t, rgba: captureShuttleRgba() });
-          state.lastShuttleT = t;
         }
-        const poseInputs = needPose ? capturePoseInputs() : null;
-        if (needPose) state.lastT = t;
-        const batchReady = tracking && state.shuttleFrames.length >= Core.SHUTTLE.seqLen;
-        if (!poseInputs && !batchReady) {
+        if (!needPose && !(needShuttle && state.shuttleFrames.length + 1 >= Core.SHUTTLE.seqLen)) {
+          if (needShuttle) {
+            state.shuttleFrames.push({ t, rgba: captureShuttleRgba() });
+            state.lastShuttleT = t;
+          }
+          if (document.hidden) return finish('hidden');
           video.requestVideoFrameCallback(onFrame);
           return;
         }
         video.pause();
         try {
-          if (poseInputs) await processPose(t, poseInputs);
-          if (batchReady) await processShuttleBatch();
+          await ingestFrame(t);
         } catch (e) {
-          finish(e);
+          finish('done', e);
           return;
         }
-        if (!state.running) return finish();
+        if (done) return;
+        if (!state.running) return finish('stopped');
+        if (document.hidden) return finish('hidden');
         video.requestVideoFrameCallback(onFrame);
         play();
       };
+      // 縮到背景時瀏覽器不再送畫面回呼，要立刻改走逐格，不能乾等
+      state.interruptPlayback = () => finish('hidden');
       video.addEventListener('ended', onEnded);
       video.playbackRate = rate;
       video.requestVideoFrameCallback(onFrame);
@@ -615,14 +642,34 @@
     });
   }
 
-  async function analyzeWithSeeking(end) {
-    const interval = 1 / state.sampleFps;
-    let t = state.lastT === -Infinity ? state.range.start : state.lastT + interval;
-    while (state.running && t < end) {
-      await seekTo(els.video, t);
-      state.lastT = t;
-      await processPose(t, capturePoseInputs());
-      t += interval;
+  // 背景：瀏覽器會停掉播放中的畫面回呼，所以改成自己跳到每一格再擷取
+  async function analyzeBySeeking(end) {
+    const video = els.video;
+    const canPlay = () => 'requestVideoFrameCallback' in video && !document.hidden;
+    video.pause();
+    video.playbackRate = 1;
+    while (state.running) {
+      if (canPlay()) return 'visible';
+      const scheduled = nextSampleTime();
+      if (scheduled >= end - 0.001) return 'done';
+      await seekTo(video, Math.min(scheduled, Math.max(0, (isFinite(video.duration) ? video.duration : end) - 0.04)));
+      if (!state.running) return 'stopped';
+      await ingestFrame(video.currentTime);
+      if (!state.running) return 'stopped';
+      // 這格定位失敗時把時鐘往前推，避免一直卡在同一個時間
+      if (nextSampleTime() <= scheduled + 1e-4) {
+        if (!(state.lastT > scheduled)) state.lastT = scheduled;
+        if (shuttleActive() && !(state.lastShuttleT > scheduled)) state.lastShuttleT = scheduled;
+      }
+    }
+    return 'stopped';
+  }
+
+  async function analyzeAdaptive(end) {
+    const canPlay = () => 'requestVideoFrameCallback' in HTMLVideoElement.prototype && !document.hidden;
+    while (state.running) {
+      const result = canPlay() ? await analyzeWithFrameCallback(end) : await analyzeBySeeking(end);
+      if (result !== 'hidden' && result !== 'visible') return;
     }
   }
 
@@ -660,11 +707,7 @@
         state.runStartedAt = performance.now();
         state.runStartT = start;
         await seekTo(els.video, start);
-        if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
-          await analyzeWithFrameCallback(state.range.end);
-        } else {
-          await analyzeWithSeeking(state.range.end);
-        }
+        await analyzeAdaptive(state.range.end);
         completed = state.running;
       }
       // 不足 8 格的尾巴也要算完，暫停後繼續時才不會重複或漏格
@@ -1325,11 +1368,12 @@
       const speed = (readT - state.runStartT) / Math.max(0.001, elapsed);
       if (speed > 0 && elapsed > 2) eta = `預估剩餘 ${fmtTime((end - readT) / speed)}`;
       if (eta) text += ` · ${eta}`;
-      if (document.hidden) text += ' · 分頁在背景，已暫停';
+      if (document.hidden) text += ' · 視窗在背景，改用逐格繼續分析';
     } else {
       text += completed ? ' · 分析完成，可以播放或點進度條看結果' : ' · 已暫停，可以先看已分析的部分';
     }
-    els.coverText.textContent = state.running ? `已分析 ${fmtTime(doneT - start)} / ${fmtTime(total)}${eta ? ' · ' + eta : ''}` : '';
+    const bg = state.running && document.hidden ? ' · 背景繼續中' : '';
+    els.coverText.textContent = state.running ? `已分析 ${fmtTime(doneT - start)} / ${fmtTime(total)}${eta ? ' · ' + eta : ''}${bg}` : '';
     setProgressText(text);
   }
 
@@ -1919,16 +1963,11 @@
         }
         return;
       }
-      if (!state.running) return;
-      if (document.hidden) {
-        els.video.pause();
-        if (!state.resumePlayback) state.resumePlayback = () => els.video.play().catch(() => {});
-        updateProgress(false);
-      } else if (state.resumePlayback) {
-        const resume = state.resumePlayback;
-        state.resumePlayback = null;
-        resume();
-      }
+      if (!state.running || !document.hidden) return;
+      // 先停掉播放，時間軸才不會在沒有畫面回呼的情況下往前跑
+      els.video.pause();
+      if (state.interruptPlayback) state.interruptPlayback();
+      updateProgress(false);
     });
     window.addEventListener('beforeunload', (e) => {
       if (!state.running && !state.exporting) return;
