@@ -12023,7 +12023,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1793187333712,
+    "lastActiveTime": 1793188896215,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12085,7 +12085,6 @@
           "簡",
           "林明德",
           "雪倫",
-          "李文濤",
           "海灘哥",
           "Jason",
           "Mike",
@@ -12100,6 +12099,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/28 20:01",
+        "name": "李文濤",
+        "operator": "羅小羅🦝",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/28 19:35",
         "name": "winnie",
