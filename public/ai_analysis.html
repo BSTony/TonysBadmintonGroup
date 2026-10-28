@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.7.8
+  Version: 1.7.9
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -81,6 +81,8 @@
     .video-wrap video { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
     #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
     #overlay.clickable { pointer-events: auto; cursor: crosshair; }
+    .video-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 6; width: 88px; height: 88px; border: 0; border-radius: 50%; background: rgba(15, 23, 42, 0.88); color: #fff; font-size: 34px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45); }
+    .video-play:hover { background: #22c55e; color: #052e16; }
     /* 校正時影片外一圈可以點，角沒拍到也能把點放在畫面外 */
     .calib-pad { position: absolute; left: -35%; top: -35%; width: 170%; height: 170%; z-index: 0; cursor: crosshair; border: 1px dashed rgba(250, 204, 21, 0.7); background: rgba(250, 204, 21, 0.08); }
     .calib-hint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(250, 204, 21, 0.5); color: #fde68a; padding: 8px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 10px; align-items: center; max-width: min(92%, 640px); text-align: center; z-index: 5; }
@@ -244,6 +246,7 @@
       <div class="panel run">
         <div class="run-buttons">
           <button type="button" id="btn-analyze" class="btn btn-primary btn-big">▶ 開始分析</button>
+          <button type="button" id="btn-play-result" class="btn" disabled>▶ 播放結果</button>
           <button type="button" id="btn-detect" class="btn">🔍 偵測目前畫面</button>
           <button type="button" id="btn-export-video" class="btn" title="把骨架、球場線、球路和右側俯視球場做進影片，存在你的電腦，不會上傳。輸出時以原速播放一次，請留在這個分頁。">⬇ 下載分析影片</button>
           <button type="button" id="btn-reset" class="btn btn-ghost">清除結果</button>
@@ -273,6 +276,7 @@
             <div id="calib-pad" class="calib-pad hidden" title="角沒拍到時，點這裡把點放到畫面外"></div>
             <video id="video" playsinline muted preload="auto" controls></video>
             <canvas id="overlay"></canvas>
+            <button type="button" id="btn-video-play" class="video-play hidden" aria-label="播放結果">▶</button>
             <div id="calib-handles"></div>
             <div id="calib-hint" class="calib-hint hidden">
               <span id="calib-hint-text"></span>
@@ -339,6 +343,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
   <script src="ai_pose_core.js?v=20261028m"></script>
-  <script src="ai_analysis.js?v=20261028n"></script>
+  <script src="ai_analysis.js?v=20261028o"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.8
+ * Version: 1.7.9
  */
 (function () {
   'use strict';
@@ -1124,7 +1124,7 @@
     ctx.moveTo(pts[0].x, pts[0].y);
     for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(8, 12, 22, 0.92)';
+    ctx.fillStyle = 'rgba(8, 12, 22, 0.72)';
     ctx.fill('evenodd');
     ctx.globalCompositeOperation = 'destination-out';
     ctx.fillStyle = '#000';
@@ -1738,6 +1738,29 @@
     v.requestVideoFrameCallback(step);
   }
 
+  function syncPlayButtons() {
+    const v = els.video;
+    const can = !!(v && videoReady() && !state.running && !state.calibrating && !state.busy);
+    const playing = can && !v.paused && !v.ended;
+    if (els.btnPlayResult) {
+      els.btnPlayResult.disabled = !can;
+      els.btnPlayResult.textContent = playing ? '⏸ 暫停' : '▶ 播放結果';
+    }
+    if (els.btnVideoPlay) els.btnVideoPlay.classList.toggle('hidden', !can || !v.paused);
+  }
+
+  function toggleResultPlayback() {
+    const v = els.video;
+    if (!videoReady() || state.running || state.calibrating || state.busy) return;
+    if (v.paused || v.ended) {
+      const end = isFinite(v.duration) ? v.duration : 0;
+      if (v.ended || (end && v.currentTime >= end - 0.05)) v.currentTime = state.range.start || 0;
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  }
+
   function updateButtons() {
     const ready = videoReady();
     const idle = !state.running && !state.calibrating && !state.busy;
@@ -1755,6 +1778,7 @@
     els.btnReset.disabled = !(hasSamples() && idle);
     els.btnExportVideo.disabled = !(hasSamples() && !state.running && !state.calibrating && (!state.busy || state.exporting));
     if (!state.exporting) els.btnExportVideo.textContent = '⬇ 下載分析影片';
+    syncPlayButtons();
     els.modeSingles.disabled = !idle;
     els.modeDoubles.disabled = !idle;
     els.sampleFps.disabled = !idle;
@@ -2137,7 +2161,7 @@
       btnCalibrate: 'btn-calibrate', btnReuseCalib: 'btn-reuse-calib', calibStatus: 'calib-status',
       dropZone: 'drop-zone', videoWrap: 'video-wrap', video: 'video', overlay: 'overlay',
       calibHint: 'calib-hint', calibHintText: 'calib-hint-text', btnCalibCancel: 'btn-calib-cancel',
-      btnDetect: 'btn-detect', btnAnalyze: 'btn-analyze', btnReset: 'btn-reset', btnExportVideo: 'btn-export-video',
+      btnDetect: 'btn-detect', btnAnalyze: 'btn-analyze', btnPlayResult: 'btn-play-result', btnVideoPlay: 'btn-video-play', btnReset: 'btn-reset', btnExportVideo: 'btn-export-video',
       progressText: 'progress-text', timeline: 'timeline', timelineRead: 'timeline-read', timelineDone: 'timeline-done',
       timelineCursor: 'timeline-cursor', calibHandles: 'calib-handles', calibPad: 'calib-pad', analysisCover: 'analysis-cover',
       coverStatus: 'cover-status', coverPercent: 'cover-percent', coverText: 'cover-text', previewBox: 'preview-box',
@@ -2174,7 +2198,9 @@
     ['seeked', 'timeupdate'].forEach((type) => els.video.addEventListener(type, () => {
       if (!state.running && (state.poseFrames.length || state.shuttle.length)) drawOverlay();
     }));
-    els.video.addEventListener('play', startResultPlayback);
+    els.video.addEventListener('play', () => { syncPlayButtons(); startResultPlayback(); });
+    els.video.addEventListener('pause', syncPlayButtons);
+    els.video.addEventListener('ended', syncPlayButtons);
     els.shuttleToggle.addEventListener('change', () => {
       state.shuttleEnabled = els.shuttleToggle.checked;
       syncShuttleToggle();
@@ -2245,6 +2271,8 @@
 
     els.btnDetect.addEventListener('click', detectCurrentFrame);
     els.btnAnalyze.addEventListener('click', toggleAnalysis);
+    els.btnPlayResult.addEventListener('click', toggleResultPlayback);
+    els.btnVideoPlay.addEventListener('click', toggleResultPlayback);
     els.btnReset.addEventListener('click', () => {
       if (confirm('確定要清除目前的分析結果嗎？')) resetTracking();
     });
