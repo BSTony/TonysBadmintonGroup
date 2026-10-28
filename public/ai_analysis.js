@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.4.0
+ * Version: 1.5.0
  */
 (function () {
   'use strict';
@@ -78,6 +78,9 @@
     detectFrame: null,
     dragCalib: null,
     trackingRun: false,
+    exporting: false,
+    exportRecorder: null,
+    exportStop: null,
     heatTarget: 'all',
     statsAt: 0,
     resumePlayback: null,
@@ -169,7 +172,7 @@
     });
   }
 
-  function download(blob, filename) {
+  function download(blob, filename, revokeMs) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -177,7 +180,7 @@
     document.body.appendChild(a);
     a.click();
     a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => URL.revokeObjectURL(url), revokeMs || 1000);
   }
 
   function baseName() {
@@ -962,16 +965,20 @@
     return Math.abs(best.t - t) <= Math.max(0.08, 0.75 / state.sampleFps) ? best : null;
   }
 
+  // 畫某個時間點的校正線、骨架與球軌跡；呼叫端決定要不要先清畫面
+  function paintResults(ctx, t, lw) {
+    if (state.calib) drawCourtOnVideo(ctx, lw, state.calib);
+    const frame = findPoseFrame(t);
+    if (frame) drawFrameDets(ctx, frame.dets, lw);
+    drawShuttle(ctx, lw, t);
+  }
+
   // 主畫面與預覽畫面共用：畫出某個時間點的分析結果
   function drawResultsAt(canvas, t) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!canvas.width) return;
-    const lw = Math.max(2, canvas.width / 640);
-    if (state.calib) drawCourtOnVideo(ctx, lw, state.calib);
-    const frame = findPoseFrame(t);
-    if (frame) drawFrameDets(ctx, frame.dets, lw);
-    drawShuttle(ctx, lw, t);
+    paintResults(ctx, t, Math.max(2, canvas.width / 640));
   }
 
   function drawLabel(ctx, det, text, color, lw) {
@@ -1430,8 +1437,10 @@
     els.rangeStart.disabled = !(ready && idle);
     els.rangeEnd.disabled = !(ready && idle);
     els.btnReset.disabled = !(hasSamples() && idle);
-    els.btnExportJson.disabled = !(hasSamples() && !state.running);
-    els.btnExportPng.disabled = !(hasSamples() && !state.running);
+    els.btnExportJson.disabled = !(hasSamples() && !state.running && !state.busy);
+    els.btnExportPng.disabled = !(hasSamples() && !state.running && !state.busy);
+    els.btnExportVideo.disabled = !(hasSamples() && !state.running && !state.calibrating && (!state.busy || state.exporting));
+    if (!state.exporting) els.btnExportVideo.textContent = '⬇ 下載分析影片';
     els.modeSingles.disabled = !idle;
     els.modeDoubles.disabled = !idle;
     els.sampleFps.disabled = !idle;
@@ -1493,10 +1502,201 @@
     }, 'image/png');
   }
 
+  // 分析完成輸出到結尾；暫停過則只輸出已經分析到的時間
+  function exportSpan() {
+    const start = state.range.start;
+    const finished = state.analyzedUntil >= state.range.end - 0.05;
+    return { start, end: finished ? state.range.end : state.analyzedUntil };
+  }
+
+  function recorderCandidates(hasAudio) {
+    const video = ['video/mp4;codecs=avc1.640028', 'video/mp4;codecs=avc1.42E01E', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    const both = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+    return (hasAudio ? both : video).filter((mime) => {
+      try { return MediaRecorder.isTypeSupported(mime); } catch (e) { return false; }
+    });
+  }
+
+  function openRecorder(stream, hasAudio, videoBitsPerSecond) {
+    const mimes = recorderCandidates(hasAudio);
+    for (const mimeType of mimes) {
+      try {
+        return new MediaRecorder(stream, { mimeType, videoBitsPerSecond });
+      } catch (e) { /* 這個格式的音訊軌道不相容，試下一個 */ }
+    }
+    return new MediaRecorder(stream, { videoBitsPerSecond });
+  }
+
+  function stopRecorder(recorder) {
+    try {
+      if (recorder && recorder.state !== 'inactive') recorder.stop();
+    } catch (e) { /* 已經在停止 */ }
+  }
+
+  // 把目前畫面畫進輸出畫布。畫布尺寸取偶數，H.264 才不會拒絕
+  function paintExportFrame(ctx, canvas, video, t) {
+    const sx = canvas.width / video.videoWidth;
+    const sy = canvas.height / video.videoHeight;
+    ctx.setTransform(sx, 0, 0, sy, 0, 0);
+    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+    paintResults(ctx, t, Math.max(2, video.videoWidth / 640));
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  function exportAnalyzedVideo() {
+    if (state.exporting) {
+      state.exporting = false;
+      if (state.exportStop) state.exportStop();
+      return;
+    }
+    if (state.busy || state.running || state.calibrating || !hasSamples() || !videoReady()) return;
+    const span = exportSpan();
+    if (!(span.end - span.start >= 0.5)) {
+      showError('已分析的片段太短，無法輸出影片');
+      return;
+    }
+    if (typeof MediaRecorder !== 'function') {
+      showError('這個瀏覽器不能在本機輸出影片，請改用 Chrome 或 Edge');
+      return;
+    }
+    runExport(span);
+  }
+
+  // 輸出全程不送出任何網路請求：播放本機影片、把骨架畫上去、存成檔案
+  async function runExport(span) {
+    const v = els.video;
+    const canvas = document.createElement('canvas');
+    canvas.width = v.videoWidth - (v.videoWidth % 2);
+    canvas.height = v.videoHeight - (v.videoHeight % 2);
+    const ctx = canvas.getContext('2d');
+    const prevRate = v.playbackRate;
+    const prevMuted = v.muted;
+    const prevControls = v.controls;
+    let recorder = null;
+    let audioTrack = null;
+    let cancelled = false;
+    state.exportStop = () => { cancelled = true; };
+    state.busy = true;
+    state.exporting = true;
+    updateButtons();
+    els.btnExportVideo.textContent = '⏹ 取消輸出';
+    v.pause();
+    v.controls = false;
+    v.playbackRate = 1;
+    const partial = span.end < state.range.end - 0.2;
+    setProgressText(partial
+      ? `正在輸出已分析的 ${fmtTime(span.start)}–${fmtTime(span.end)}（存在你的電腦，不會上傳）`
+      : '正在輸出分析影片（存在你的電腦，不會上傳，請留在這個分頁）');
+    try {
+      await seekTo(v, span.start);
+      if (cancelled || !state.exporting) {
+        setProgressText('已取消輸出影片');
+        return;
+      }
+      paintExportFrame(ctx, canvas, v, span.start);
+      const canvasStream = canvas.captureStream(30);
+      v.muted = false;
+      try {
+        const captured = v.captureStream();
+        captured.getVideoTracks().forEach((track) => track.stop());
+        audioTrack = captured.getAudioTracks()[0] || null;
+        if (audioTrack) canvasStream.addTrack(audioTrack);
+      } catch (e) { audioTrack = null; }
+      const bits = Math.round(Math.min(16e6, Math.max(2.5e6, canvas.width * canvas.height * 4)));
+      try {
+        recorder = openRecorder(canvasStream, !!audioTrack, bits);
+      } catch (e) {
+        if (audioTrack) {
+          canvasStream.removeTrack(audioTrack);
+          audioTrack.stop();
+          audioTrack = null;
+        }
+        recorder = openRecorder(canvasStream, false, bits);
+      }
+      state.exportRecorder = recorder;
+      const chunks = [];
+      const stopped = new Promise((resolve, reject) => {
+        recorder.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+        recorder.onstop = () => resolve();
+        recorder.onerror = () => reject(new Error('瀏覽器無法寫入影片'));
+      });
+      let finish = () => {};
+      const played = new Promise((resolve) => {
+        finish = resolve;
+        state.exportStop = () => { cancelled = true; resolve(); };
+        const step = (_now, meta) => {
+          if (cancelled || !state.exporting) return resolve();
+          const t = meta.mediaTime;
+          paintExportFrame(ctx, canvas, v, Math.min(t, span.end));
+          const p = Math.max(0, Math.min(1, (t - span.start) / (span.end - span.start)));
+          els.btnExportVideo.textContent = `⏹ 取消 ${Math.round(p * 100)}%`;
+          if (document.hidden) setProgressText('分頁在背景，輸出已暫停，回到這個分頁會繼續');
+          else setProgressText(`正在輸出影片 ${Math.round(p * 100)}%（存在你的電腦，不會上傳）`);
+          if (t >= span.end - 0.04) return resolve();
+          v.requestVideoFrameCallback(step);
+        };
+        const onTime = () => {
+          if (cancelled || !state.exporting || v.currentTime >= span.end - 0.04) {
+            v.removeEventListener('timeupdate', onTime);
+            paintExportFrame(ctx, canvas, v, Math.min(v.currentTime, span.end));
+            return resolve();
+          }
+          paintExportFrame(ctx, canvas, v, v.currentTime);
+        };
+        v.addEventListener('ended', finish, { once: true });
+        if ('requestVideoFrameCallback' in v) v.requestVideoFrameCallback(step);
+        else v.addEventListener('timeupdate', onTime);
+      });
+
+      try {
+        await v.play();
+      } catch (e) {
+        v.muted = true;
+        await v.play();
+      }
+      if (cancelled || !state.exporting) {
+        setProgressText('已取消輸出影片');
+        return;
+      }
+      // 等播放真正開始再錄，避免檔案開頭多一段靜止畫面
+      recorder.start(1000);
+      await played;
+      v.pause();
+      stopRecorder(recorder);
+      await stopped;
+      state.exportRecorder = null;
+      if (cancelled || !state.exporting) {
+        setProgressText('已取消輸出影片');
+        return;
+      }
+      const blob = new Blob(chunks, { type: (recorder.mimeType || 'video/webm').split(';')[0] });
+      if (blob.size < 1000) throw new Error('沒有錄到畫面');
+      const ext = /mp4/i.test(recorder.mimeType) ? 'mp4' : 'webm';
+      download(blob, `${baseName()}_analysis.${ext}`, 120000);
+      setProgressText(`已存到你的下載資料夾（${ext.toUpperCase()}），這支影片沒有上傳到伺服器`);
+    } catch (e) {
+      console.error('[AI] 輸出影片失敗', e);
+      showError('輸出影片失敗：' + (e && e.message ? e.message : e));
+    } finally {
+      stopRecorder(recorder);
+      if (audioTrack) audioTrack.stop();
+      state.exportRecorder = null;
+      state.exportStop = null;
+      v.pause();
+      v.playbackRate = prevRate;
+      v.muted = prevMuted;
+      v.controls = prevControls;
+      state.exporting = false;
+      state.busy = false;
+      drawOverlay();
+      updateButtons();
+    }
+  }
+
   // ---------- 影片 ----------
 
   function loadVideo(file) {
-    if (!file || state.running) return;
+    if (!file || state.running || state.busy) return;
     if (!/^video\//.test(file.type) && !/\.(mp4|mov|m4v|webm|mkv)$/i.test(file.name)) {
       showError('請選擇影片檔（建議 MP4）');
       return;
@@ -1591,7 +1791,7 @@
       btnCalibrate: 'btn-calibrate', btnReuseCalib: 'btn-reuse-calib', calibStatus: 'calib-status',
       dropZone: 'drop-zone', videoWrap: 'video-wrap', video: 'video', overlay: 'overlay',
       calibHint: 'calib-hint', calibHintText: 'calib-hint-text', btnCalibCancel: 'btn-calib-cancel',
-      btnDetect: 'btn-detect', btnAnalyze: 'btn-analyze', btnReset: 'btn-reset',
+      btnDetect: 'btn-detect', btnAnalyze: 'btn-analyze', btnReset: 'btn-reset', btnExportVideo: 'btn-export-video',
       progressText: 'progress-text', timeline: 'timeline', timelineRead: 'timeline-read', timelineDone: 'timeline-done',
       timelineCursor: 'timeline-cursor', calibHandles: 'calib-handles', analysisCover: 'analysis-cover',
       coverStatus: 'cover-status', coverPercent: 'cover-percent', coverText: 'cover-text', previewBox: 'preview-box',
@@ -1703,10 +1903,22 @@
     });
     els.btnExportJson.addEventListener('click', exportJson);
     els.btnExportPng.addEventListener('click', exportPng);
+    els.btnExportVideo.addEventListener('click', exportAnalyzedVideo);
     els.accessSuper.addEventListener('click', () => setAccess(false));
     els.accessPublic.addEventListener('click', () => setAccess(true));
 
     document.addEventListener('visibilitychange', () => {
+      if (state.exporting && state.exportRecorder) {
+        const rec = state.exportRecorder;
+        if (document.hidden) {
+          els.video.pause();
+          if (rec.state === 'recording') rec.pause();
+          setProgressText('分頁在背景，輸出已暫停，回到這個分頁會繼續');
+        } else if (state.exporting && rec.state === 'paused') {
+          els.video.play().then(() => { if (state.exporting && rec.state === 'paused') rec.resume(); }).catch(() => {});
+        }
+        return;
+      }
       if (!state.running) return;
       if (document.hidden) {
         els.video.pause();
@@ -1719,7 +1931,7 @@
       }
     });
     window.addEventListener('beforeunload', (e) => {
-      if (!state.running) return;
+      if (!state.running && !state.exporting) return;
       e.preventDefault();
       e.returnValue = '';
     });

@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.4.0
+  Version: 1.5.0
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -219,6 +219,7 @@
         <div class="run-buttons">
           <button type="button" id="btn-analyze" class="btn btn-primary btn-big">▶ 開始分析</button>
           <button type="button" id="btn-detect" class="btn">🔍 偵測目前畫面</button>
+          <button type="button" id="btn-export-video" class="btn" title="把骨架、球場線和球路做進影片，存在你的電腦，不會上傳。輸出時以原速播放一次，請留在這個分頁。">⬇ 下載分析影片</button>
           <button type="button" id="btn-reset" class="btn btn-ghost">清除結果</button>
         </div>
         <div id="timeline" class="timeline" title="亮色是已分析完成的部分，點一下就能看那個時間點的結果">
@@ -291,13 +292,13 @@
 
   <footer class="footer">
     <p>分析期間請保持這個分頁在前景；切到其他分頁時會自動暫停，回來後繼續。</p>
-    <p>骨架模型：Ultralytics YOLOv8n-pose（AGPL-3.0）· 追球模型：TrackNetV3（MIT）· 推論引擎：ONNX Runtime Web · 全部運算都在你的電腦上進行</p>
+    <p>骨架模型：Ultralytics YOLOv8n-pose（AGPL-3.0）· 追球模型：TrackNetV3（MIT）· 推論引擎：ONNX Runtime Web · 分析與下載的影片都在你的電腦上完成，不會上傳到伺服器</p>
   </footer>
 
   <div id="toast" class="toast hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
   <script src="ai_pose_core.js?v=20261027d"></script>
-  <script src="ai_analysis.js?v=20261028a"></script>
+  <script src="ai_analysis.js?v=20261028b"></script>
 </body>
 </html>
