@@ -12394,42 +12394,5 @@
         "section": "報名名單"
       }
     ]
-  },
-  "1793193658157210": {
-    "gid": "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-    "targetGids": [
-      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
-    ],
-    "gameId": "1793193658157210",
-    "title": "週一中山國中星耀樓 1830-2030",
-    "date": "11/2 (一)",
-    "time": "18:30~20:30",
-    "location": "中山國中星耀樓",
-    "fee": "260",
-    "note": "C場地。\n⚠️場內禁止飲食，運動飲料可。",
-    "tag": "中階以上/爆汗多拍來回💦",
-    "active": true,
-    "startTime": 1793193658157,
-    "lastActiveTime": 1793193658157,
-    "scheduleTime": null,
-    "reminderTime": null,
-    "scheduleInput": null,
-    "anonymous": [],
-    "anonymousCount": 0,
-    "levelMap": {},
-    "paidMap": {},
-    "uidMap": {},
-    "noteMap": {},
-    "allowUserNoteEdit": true,
-    "sections": [
-      {
-        "title": "報名名單",
-        "limit": 2,
-        "backupLimit": 3,
-        "label": "",
-        "list": [],
-        "fee": "260"
-      }
-    ]
   }
 }
