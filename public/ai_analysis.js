@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.10
+ * Version: 1.7.11
  */
 (function () {
   'use strict';
@@ -59,6 +59,7 @@
     videoUrl: '',
     mode: 'singles',
     sampleFps: 5,
+    poseSide: 'both',
     range: { start: 0, end: 0 },
     calib: null,
     calibrating: false,
@@ -498,8 +499,10 @@
   // 兩塊裁切都必須在第一個 await 之前擷取完，之後影片才能繼續播放
   function capturePoseInputs() {
     const v = els.video;
-    const main = captureTensor(state.calib ? state.calib.crop : { x: 0, y: 0, w: v.videoWidth, h: v.videoHeight }, 0);
-    const far = state.calib && state.calib.farCrop ? captureTensor(state.calib.farCrop, 1) : null;
+    const full = state.calib ? state.calib.crop : { x: 0, y: 0, w: v.videoWidth, h: v.videoHeight };
+    const farOnly = state.poseSide === 'far' && state.calib && state.calib.farCrop;
+    const main = captureTensor(farOnly ? state.calib.farCrop : full, 0);
+    const far = state.poseSide === 'both' && state.calib && state.calib.farCrop ? captureTensor(state.calib.farCrop, 1) : null;
     return { main, far };
   }
 
@@ -521,7 +524,7 @@
     for (const det of dets) {
       const foot = Core.footPoint(det, KEYPOINT_MIN_SCORE);
       const court = Core.applyHomography(state.calib.H, foot.x, foot.y);
-      if (!court || !Core.inCourtArea(court)) continue;
+      if (!court || !Core.inCourtArea(court) || !poseSideKeeps(court)) continue;
       list.push({ det, court, foot });
     }
     return list;
@@ -1080,7 +1083,7 @@
     ctx.setLineDash([lw * 4, lw * 3]);
     ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)';
     ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
-    if (farCrop) {
+    if (farCrop && state.poseSide !== 'near') {
       ctx.strokeStyle = 'rgba(244, 114, 182, 0.75)';
       ctx.strokeRect(farCrop.x, farCrop.y, farCrop.w, farCrop.h);
     }
@@ -1781,6 +1784,9 @@
     syncPlayButtons();
     els.modeSingles.disabled = !idle;
     els.modeDoubles.disabled = !idle;
+    els.poseNear.disabled = !idle;
+    els.poseFar.disabled = !idle;
+    els.poseBoth.disabled = !idle;
     els.sampleFps.disabled = !idle;
     els.shuttleToggle.disabled = !idle || state.backend !== 'webgpu';
     els.fileInput.disabled = !idle;
@@ -1793,6 +1799,23 @@
     state.mode = mode;
     els.modeSingles.classList.toggle('active', mode === 'singles');
     els.modeDoubles.classList.toggle('active', mode === 'doubles');
+    resetTracking();
+  }
+
+  // 只分析一端時骨架只跑一次；兩端會再把遠端放大算一次
+  function poseSideKeeps(court) {
+    if (state.poseSide === 'both') return true;
+    const onNear = court.y >= COURT.netY;
+    return state.poseSide === 'near' ? onNear : !onNear;
+  }
+
+  function setPoseSide(side) {
+    if (side === state.poseSide || state.running) return;
+    if (!confirmDiscard()) return;
+    state.poseSide = side;
+    els.poseNear.classList.toggle('active', side === 'near');
+    els.poseFar.classList.toggle('active', side === 'far');
+    els.poseBoth.classList.toggle('active', side === 'both');
     resetTracking();
   }
 
@@ -2157,6 +2180,7 @@
       envStatus: 'env-status', modelStatus: 'model-status', envWarning: 'env-warning',
       fileInput: 'file-input', btnPickFile: 'btn-pick-file', fileName: 'file-name',
       modeSingles: 'mode-singles', modeDoubles: 'mode-doubles', sampleFps: 'sample-fps',
+      poseNear: 'pose-near', poseFar: 'pose-far', poseBoth: 'pose-both',
       rangeStart: 'range-start', rangeEnd: 'range-end', btnSetStart: 'btn-set-start', btnSetEnd: 'btn-set-end',
       btnCalibrate: 'btn-calibrate', btnReuseCalib: 'btn-reuse-calib', calibStatus: 'calib-status',
       dropZone: 'drop-zone', videoWrap: 'video-wrap', video: 'video', overlay: 'overlay',
@@ -2228,6 +2252,9 @@
 
     els.modeSingles.addEventListener('click', () => setMode('singles'));
     els.modeDoubles.addEventListener('click', () => setMode('doubles'));
+    els.poseNear.addEventListener('click', () => setPoseSide('near'));
+    els.poseFar.addEventListener('click', () => setPoseSide('far'));
+    els.poseBoth.addEventListener('click', () => setPoseSide('both'));
     els.sampleFps.addEventListener('change', () => {
       const fps = Number(els.sampleFps.value) || 5;
       if (!confirmDiscard()) {
