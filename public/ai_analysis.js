@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.11
+ * Version: 1.7.12
  */
 (function () {
   'use strict';
@@ -98,6 +98,7 @@
     shuttleMs: 0,
     shuttleBatches: 0
   };
+  loadTiming();
 
   const prepCanvas = document.createElement('canvas');
   prepCanvas.width = Core.INPUT_SIZE;
@@ -1598,7 +1599,79 @@
     if (!state.file) setProgressText('請先選擇影片');
     else if (!state.session) setProgressText('模型載入中，請稍候…');
     else if (!state.calib) setProgressText('請先完成球場校正，就能開始分析');
-    else setProgressText('準備就緒，按「開始分析」');
+    else setProgressText('準備就緒。' + estimateText());
+  }
+
+  const TIMING_KEY = 'aiAnalysis.timing.v1';
+  const DEFAULT_POSE_MS = 170;
+  const DEFAULT_SHUTTLE_BATCH_MS = 3200;
+
+  function loadTiming() {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(TIMING_KEY) || 'null');
+      if (saved && saved.poseMsPerPass > 20) state.poseMsPerPass = saved.poseMsPerPass;
+      if (saved && saved.shuttleMsPerBatch > 50) state.shuttleMsPerBatch = saved.shuttleMsPerBatch;
+    } catch (e) { /* 沒有紀錄就用粗估 */ }
+  }
+
+  function saveTiming() {
+    if (!(state.poseMsPerPass > 20) && !(state.shuttleMsPerBatch > 50)) return;
+    try {
+      sessionStorage.setItem(TIMING_KEY, JSON.stringify({
+        poseMsPerPass: state.poseMsPerPass || 0,
+        shuttleMsPerBatch: state.shuttleMsPerBatch || 0
+      }));
+    } catch (e) { /* 存不到時這次分析仍會顯示預估 */ }
+  }
+
+  function rememberTiming() {
+    const passes = state.poseSide === 'both' && state.calib && state.calib.farCrop ? 2 : 1;
+    if (state.frames >= 4 && state.inferMs > 0) state.poseMsPerPass = state.inferMs / (state.frames * passes);
+    if (state.shuttleBatches >= 1 && state.shuttleMs > 0) state.shuttleMsPerBatch = state.shuttleMs / state.shuttleBatches;
+    saveTiming();
+  }
+
+  function fmtEstimate(sec) {
+    if (!(sec > 0)) return '';
+    if (sec < 50) return '不到 1 分鐘';
+    const minutes = Math.max(1, Math.round(sec / 60));
+    if (minutes < 60) return `${minutes} 分鐘`;
+    const hours = Math.floor(minutes / 60);
+    const rest = minutes % 60;
+    return rest ? `${hours} 小時 ${rest} 分鐘` : `${hours} 小時`;
+  }
+
+  function estimateAnalysis() {
+    const span = state.range.end - state.range.start;
+    if (!(span >= 1) || !state.calib) return null;
+    const measured = state.poseMsPerPass > 20 || state.shuttleMsPerBatch > 50;
+    const passes = state.poseSide === 'both' ? (state.calib.farCrop ? 2 : 1) : 1;
+    const poseMs = state.poseMsPerPass > 20 ? state.poseMsPerPass : DEFAULT_POSE_MS;
+    const poseSeconds = span * state.sampleFps * passes * poseMs / 1000;
+    let shuttleSeconds = 0;
+    const track = state.shuttleEnabled && state.backend !== 'wasm';
+    if (track) {
+      const batchMs = state.shuttleMsPerBatch > 50 ? state.shuttleMsPerBatch : DEFAULT_SHUTTLE_BATCH_MS;
+      shuttleSeconds = span / (8 / 30) * batchMs / 1000;
+    }
+    const playback = span / (track ? 1 : 2);
+    return {
+      seconds: Math.max(poseSeconds + shuttleSeconds, playback),
+      poseSeconds,
+      shuttleSeconds,
+      measured
+    };
+  }
+
+  function estimateText() {
+    const est = estimateAnalysis();
+    if (!est) return '按「開始分析」';
+    const parts = [];
+    if (est.poseSeconds >= 45) parts.push(`骨架 ${fmtEstimate(est.poseSeconds)}`);
+    if (est.shuttleSeconds >= 45) parts.push(`追球 ${fmtEstimate(est.shuttleSeconds)}`);
+    const detail = parts.length ? `（${parts.join('、')}）` : '';
+    const basis = est.measured ? '依這台電腦目前的速度' : '粗估，開始後會依這台電腦修正';
+    return `預估約 ${fmtEstimate(est.seconds)}${detail}，${basis}`;
   }
 
   // 讀取：影片已擷取到的時間；完成：骨架與追球都已算完的時間（追球每 8 格才出一次結果）
@@ -1626,6 +1699,7 @@
       return;
     }
     const avgMs = state.inferMs / state.frames;
+    rememberTiming();
     let text = `已分析 ${fmtTime(doneT - start)} / ${fmtTime(total)} · 平均每張 ${avgMs.toFixed(0)} ms`;
     if (state.shuttleBatches) text += ` · 追球每 8 格 ${(state.shuttleMs / state.shuttleBatches).toFixed(0)} ms`;
     let eta = '';
@@ -2228,6 +2302,7 @@
     els.shuttleToggle.addEventListener('change', () => {
       state.shuttleEnabled = els.shuttleToggle.checked;
       syncShuttleToggle();
+      refreshIdleText();
     });
     els.maskOutside.addEventListener('change', () => {
       state.maskOutside = els.maskOutside.checked;
