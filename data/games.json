@@ -12394,5 +12394,49 @@
         "section": "報名名單"
       }
     ]
+  },
+  "1793194561232480": {
+    "gid": "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+    "targetGids": [
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "1793194561232480",
+    "title": "週一中山國中星耀樓 1830-2030",
+    "date": "11/2 (一)",
+    "time": "18:30~20:30",
+    "location": "中山國中星耀樓（C場）",
+    "fee": "260",
+    "note": "⚠️ 場內禁止飲食，運動飲料可／\n🗺️ https://maps.app.goo.gl/F3iGu7kxT5ovYwAv5",
+    "tag": "中階以上/爆汗多拍來回💦",
+    "active": true,
+    "startTime": 1793194561233,
+    "lastActiveTime": 1793194561233,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "uidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 8,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "Ashley",
+          "曾Jim凱",
+          "Tank Lin",
+          "謝東霖 Tony",
+          "Kay",
+          "©️張CC～©️"
+        ],
+        "fee": "260"
+      }
+    ]
   }
 }
