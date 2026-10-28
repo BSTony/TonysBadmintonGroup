@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
-  Date: 2026-10-27
-  Version: 1.3.0
+  Date: 2026-10-28
+  Version: 1.4.0
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -77,8 +77,29 @@
 
     .run { margin-top: 16px; }
     .run-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-    .progress { height: 8px; background: var(--panel-2); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
-    .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, #22c55e, #84cc16); transition: width 0.2s; }
+    .btn-big { font-size: 16px; padding: 10px 22px; }
+    .time-input { width: 76px; background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+    .timeline { position: relative; height: 18px; background: #1e293b; border-radius: 999px; overflow: hidden; cursor: pointer; margin-bottom: 6px; }
+    .tl-read { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: rgba(148, 163, 184, 0.35); }
+    .tl-done { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, #22c55e, #a3e635); box-shadow: 0 0 10px rgba(163, 230, 53, 0.6); }
+    .tl-cursor { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; background: #ffffff; }
+    .tl-legend { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); }
+    .tl-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+    .lg-done { background: #84cc16; }
+    .lg-read { background: rgba(148, 163, 184, 0.6); }
+    /* 固定一行，文字長短變化時下方的影片才不會跟著上下跳 */
+    #progress-text { flex: 1 1 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #calib-handles { position: absolute; inset: 0; pointer-events: none; }
+    .calib-handle { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; border: 2px solid #0f172a; background: #facc15; box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.35); cursor: grab; pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #0f172a; }
+    .calib-handle.dragging { cursor: grabbing; transform: scale(1.25); }
+    .analysis-cover { position: absolute; inset: 0; background: #0b1220; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 16px; z-index: 3; }
+    .cover-percent { font-size: 42px; font-weight: 800; color: #a3e635; }
+    /* 預覽蓋滿整個影片區，和主影片同比例，疊圖才會對齊 */
+    .preview-box { position: absolute; inset: 0; background: #000; }
+    .preview-media { position: absolute; inset: 0; }
+    .preview-media video { display: block; width: 100%; height: 100%; object-fit: contain; }
+    #preview-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .preview-bar { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.88); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; white-space: nowrap; }
 
     #court { display: block; width: 100%; height: auto; border-radius: 10px; margin-top: 10px; }
     .court-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
@@ -174,11 +195,15 @@
         </div>
         <div class="step">
           <div class="step-title"><span class="num">3</span>分析範圍</div>
-          <span id="range-text" class="mono">--:-- ～ --:--</span>
           <div class="row">
-            <button type="button" id="btn-set-start" class="btn btn-ghost btn-small">目前位置設為開始</button>
-            <button type="button" id="btn-set-end" class="btn btn-ghost btn-small">設為結束</button>
+            <label class="inline">開始 <input id="range-start" class="time-input" type="text" inputmode="decimal" placeholder="0:00" autocomplete="off"></label>
+            <label class="inline">結束 <input id="range-end" class="time-input" type="text" inputmode="decimal" placeholder="0:00" autocomplete="off"></label>
           </div>
+          <div class="row">
+            <button type="button" id="btn-set-start" class="btn btn-ghost btn-small">開始＝目前位置</button>
+            <button type="button" id="btn-set-end" class="btn btn-ghost btn-small">結束＝目前位置</button>
+          </div>
+          <span class="muted">直接輸入「分:秒」，例如 1:30</span>
         </div>
         <div class="step">
           <div class="step-title"><span class="num">4</span>球場校正</div>
@@ -187,6 +212,24 @@
             <button type="button" id="btn-reuse-calib" class="btn btn-ghost btn-small hidden">套用上次的校正</button>
           </div>
           <span id="calib-status" class="muted">尚未校正</span>
+        </div>
+      </div>
+
+      <div class="panel run">
+        <div class="run-buttons">
+          <button type="button" id="btn-analyze" class="btn btn-primary btn-big">▶ 開始分析</button>
+          <button type="button" id="btn-detect" class="btn">🔍 偵測目前畫面</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost">清除結果</button>
+        </div>
+        <div id="timeline" class="timeline" title="亮色是已分析完成的部分，點一下就能看那個時間點的結果">
+          <div id="timeline-read" class="tl-read"></div>
+          <div id="timeline-done" class="tl-done"></div>
+          <div id="timeline-cursor" class="tl-cursor hidden"></div>
+        </div>
+        <div class="tl-legend">
+          <span><i class="lg-done"></i>已分析</span>
+          <span><i class="lg-read"></i>已讀取影片</span>
+          <span id="progress-text" class="mono">請先選擇影片</span>
         </div>
       </div>
 
@@ -200,20 +243,30 @@
       <div id="video-wrap" class="video-wrap hidden">
         <video id="video" playsinline muted preload="auto" controls></video>
         <canvas id="overlay"></canvas>
+        <div id="calib-handles"></div>
         <div id="calib-hint" class="calib-hint hidden">
           <span id="calib-hint-text"></span>
           <button type="button" id="btn-calib-cancel" class="btn btn-ghost btn-small">取消</button>
         </div>
-      </div>
-
-      <div class="panel run">
-        <div class="run-buttons">
-          <button type="button" id="btn-detect" class="btn">🔍 偵測目前畫面</button>
-          <button type="button" id="btn-analyze" class="btn btn-primary">▶ 開始分析</button>
-          <button type="button" id="btn-reset" class="btn btn-ghost">清除結果</button>
+        <!-- 分析時影片仍要在底下播放才能逐格擷取，所以用不透明遮罩蓋住而不是隱藏 -->
+        <div id="analysis-cover" class="analysis-cover hidden">
+          <div id="cover-status" class="cover-status">
+            <div id="cover-percent" class="cover-percent">0%</div>
+            <div id="cover-text" class="muted">分析中…</div>
+            <div class="muted">完成後就能看結果；想先看，可以點上方進度條的亮色部分預覽</div>
+          </div>
+          <div id="preview-box" class="preview-box hidden">
+            <div class="preview-media">
+              <video id="preview-video" muted playsinline preload="auto"></video>
+              <canvas id="preview-overlay"></canvas>
+            </div>
+            <div class="preview-bar">
+              <button type="button" id="btn-preview-play" class="btn btn-small">▶ 播放預覽</button>
+              <span id="preview-time" class="mono"></span>
+              <button type="button" id="btn-preview-close" class="btn btn-ghost btn-small">關閉預覽</button>
+            </div>
+          </div>
         </div>
-        <div class="progress"><div id="progress-bar" class="progress-bar"></div></div>
-        <div id="progress-text" class="muted mono">請先選擇影片</div>
       </div>
     </section>
 
@@ -245,6 +298,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
   <script src="ai_pose_core.js?v=20261027d"></script>
-  <script src="ai_analysis.js?v=20261027d"></script>
+  <script src="ai_analysis.js?v=20261028a"></script>
 </body>
 </html>

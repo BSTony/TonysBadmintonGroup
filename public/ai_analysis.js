@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-27
- * Version: 1.3.0
+ * Date: 2026-10-28
+ * Version: 1.4.0
  */
 (function () {
   'use strict';
@@ -74,8 +74,10 @@
     inferMs: 0,
     runStartedAt: 0,
     runStartT: 0,
-    lastDets: [],
-    lastAssigned: {},
+    poseFrames: [],
+    detectFrame: null,
+    dragCalib: null,
+    trackingRun: false,
     heatTarget: 'all',
     statsAt: 0,
     resumePlayback: null,
@@ -133,6 +135,7 @@
 
   function setProgressText(text) {
     els.progressText.textContent = text;
+    els.progressText.title = text;
   }
 
   function videoReady() {
@@ -431,7 +434,9 @@
     for (let i = 0; i < BACKGROUND_SAMPLES && state.running; i++) {
       await seekTo(els.video, start + ((end - start) * (i + 0.5)) / BACKGROUND_SAMPLES);
       frames.push(captureShuttleRgba());
-      setProgressText(`建立追球用的背景影像 ${i + 1} / ${BACKGROUND_SAMPLES}…`);
+      const msg = `建立追球用的背景影像 ${i + 1} / ${BACKGROUND_SAMPLES}…`;
+      setProgressText(msg);
+      els.coverText.textContent = msg;
     }
     if (frames.length === BACKGROUND_SAMPLES) state.shuttleBg = Core.medianImage(frames);
   }
@@ -457,7 +462,7 @@
       state.shuttle.push(p ? { t: f.t, x: p.x * sx, y: p.y * sy } : { t: f.t, x: null, y: null });
     });
     disposeOutputs(outputs);
-    drawOverlay();
+    updateProgress(false);
   }
 
   // ---------- 推論 ----------
@@ -523,16 +528,9 @@
       if (!state.samples[id]) state.samples[id] = [];
       state.samples[id].push({ t, x: c.x, y: c.y });
     }
-    state.lastDets = dets;
-    state.lastAssigned = assigned;
+    state.poseFrames.push({ t, dets: packDets(dets, assigned) });
     state.analyzedUntil = t;
-    drawOverlay();
-    drawCourt();
     updateProgress(false);
-    if (performance.now() - state.statsAt > 1000) {
-      state.statsAt = performance.now();
-      renderStats();
-    }
   }
 
   // 需要推論時先暫停影片、算完再播放，讓疊圖和畫面對得上；追球只擷取畫面時不暫停
@@ -641,8 +639,11 @@
     const start = resume ? Math.max(state.analyzedUntil, state.lastShuttleT) : state.range.start;
     const wantShuttle = state.shuttleEnabled && state.backend === 'webgpu';
     state.running = true;
+    state.detectFrame = null;
+    state.trackingRun = false;
     els.video.controls = false;
     els.video.muted = true;
+    setAnalysisCover(true);
     updateButtons();
     let completed = false;
     try {
@@ -651,6 +652,7 @@
         await state.tracknetLoading;
       }
       if (wantShuttle && state.tracknet && !state.shuttleBg) await buildShuttleBackground();
+      state.trackingRun = shuttleActive();
       if (state.running) {
         state.runStartedAt = performance.now();
         state.runStartT = start;
@@ -672,11 +674,29 @@
       els.video.pause();
       els.video.playbackRate = 1;
       els.video.controls = true;
-      if (completed) state.analyzedUntil = state.range.end;
+      if (completed) {
+        state.analyzedUntil = state.range.end;
+        await seekTo(els.video, state.range.start);
+      }
+      setAnalysisCover(false);
       renderStats();
       drawCourt();
+      drawOverlay();
       updateProgress(completed);
       updateButtons();
+    }
+  }
+
+  // 分析時用不透明遮罩蓋住影片與校正點，右側結果也先不更新，畫面才不會一直跳動
+  function setAnalysisCover(on) {
+    els.analysisCover.classList.toggle('hidden', !on);
+    if (!on) closePreview();
+    renderCalibHandles();
+    if (on) {
+      els.coverStatus.classList.remove('hidden');
+      els.playerStats.innerHTML = '<p class="muted">分析中，完成後會顯示每位球員的跑動距離與站位分布。</p>';
+      els.heatTabs.classList.add('hidden');
+      drawCourt();
     }
   }
 
@@ -687,10 +707,10 @@
     updateButtons();
     try {
       const { dets, ms } = await detect();
-      state.lastDets = dets;
-      state.lastAssigned = state.calib ? Core.createTracker(state.mode).update(0, toCandidates(dets)) : {};
+      const assigned = state.calib ? Core.createTracker(state.mode).update(0, toCandidates(dets)) : {};
+      state.detectFrame = { t: els.video.currentTime, dets: packDets(dets, assigned) };
       drawOverlay();
-      const players = Object.keys(state.lastAssigned).length;
+      const players = Object.keys(assigned).length;
       setProgressText(`這個畫面偵測到 ${dets.length} 人` + (state.calib ? `，其中 ${players} 位在球場內` : '') + `，耗時 ${ms.toFixed(0)} ms`);
     } catch (e) {
       console.error('[AI] 偵測失敗', e);
@@ -709,8 +729,8 @@
     state.analyzedUntil = 0;
     state.frames = 0;
     state.inferMs = 0;
-    state.lastDets = [];
-    state.lastAssigned = {};
+    state.poseFrames = [];
+    state.detectFrame = null;
     state.heatTarget = 'all';
     state.shuttleBg = null;
     state.shuttleFrames = [];
@@ -755,11 +775,11 @@
     els.video.pause();
     state.calibrating = true;
     state.clicks = [];
-    state.lastDets = [];
-    state.lastAssigned = {};
+    state.detectFrame = null;
     els.video.controls = false;
     els.overlay.classList.add('clickable');
     showCalibHint();
+    renderCalibHandles();
     drawOverlay();
     updateButtons();
   }
@@ -770,32 +790,100 @@
     els.overlay.classList.remove('clickable');
     els.video.controls = true;
     els.calibHint.classList.add('hidden');
+    renderCalibHandles();
   }
 
-  function applyCalibration(points, save) {
+  function makeCalib(points) {
     const ordered = Core.orderCorners(points);
-    if (!ordered || !Core.isConvexQuad(ordered)) {
-      setCalibStatus('四個點無法組成球場，請重新點選外框四個角' + (state.calib ? '（目前仍沿用先前的校正）' : ''), 'warn');
-      return false;
-    }
+    if (!ordered || !Core.isConvexQuad(ordered)) return null;
     const corners = Core.courtCorners();
     const H = Core.computeHomography(ordered, corners);
     const Hinv = Core.computeHomography(corners, ordered);
-    if (!H || !Hinv) {
-      setCalibStatus('校正失敗，請重新點選', 'warn');
-      return false;
-    }
+    if (!H || !Hinv) return null;
     const v = els.video;
     const crop = Core.courtCrop(ordered, v.videoWidth, v.videoHeight);
-    state.calib = { points: ordered, H, Hinv, crop, farCrop: Core.farCourtCrop(Hinv, v.videoWidth, v.videoHeight, crop) };
+    return { points: ordered, H, Hinv, crop, farCrop: Core.farCourtCrop(Hinv, v.videoWidth, v.videoHeight, crop) };
+  }
+
+  function applyCalibration(points, save) {
+    const calib = makeCalib(points);
+    if (!calib) {
+      setCalibStatus('四個點無法組成球場，請重新點選外框四個角' + (state.calib ? '（目前仍沿用先前的校正）' : ''), 'warn');
+      renderCalibHandles();
+      return false;
+    }
+    state.calib = calib;
     if (save) {
+      const v = els.video;
       try {
-        localStorage.setItem(CALIBRATION_KEY, JSON.stringify({ w: v.videoWidth, h: v.videoHeight, points: ordered }));
+        localStorage.setItem(CALIBRATION_KEY, JSON.stringify({ w: v.videoWidth, h: v.videoHeight, points: calib.points }));
       } catch (e) { /* 無法儲存時下次重新點選即可 */ }
     }
-    setCalibStatus('已校正 ✓ 綠線應該貼齊球場線', 'ok');
+    setCalibStatus('已校正 ✓ 可拖曳黃色圓點微調，綠線要貼齊球場線', 'ok');
     resetTracking();
+    renderCalibHandles();
     return true;
+  }
+
+  function handlePoints() {
+    if (state.running || !videoReady()) return [];
+    if (state.calibrating) return state.clicks;
+    if (state.dragCalib) return state.dragCalib.points;
+    return state.calib ? state.calib.points : [];
+  }
+
+  function renderCalibHandles() {
+    const v = els.video;
+    els.calibHandles.innerHTML = handlePoints().map((p, i) =>
+      `<div class="calib-handle" data-i="${i}" title="拖曳微調" style="left:${(p.x / v.videoWidth) * 100}%; top:${(p.y / v.videoHeight) * 100}%">${state.calibrating ? i + 1 : ''}</div>`
+    ).join('');
+  }
+
+  // 拖曳中即時預覽球場線，放開才正式套用（會清除舊結果）
+  function bindCalibHandleDrag() {
+    let drag = null;
+    els.calibHandles.addEventListener('pointerdown', (e) => {
+      const el = e.target.closest('.calib-handle');
+      if (!el || state.running) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (!state.calibrating) {
+        if (!state.calib || !confirmDiscard()) return;
+        state.dragCalib = { points: state.calib.points.map((p) => ({ x: p.x, y: p.y })), preview: state.calib };
+      }
+      drag = { i: Number(el.dataset.i), el, id: e.pointerId };
+      // 確認視窗期間若已放開滑鼠，指標已不存在，捕捉會丟例外
+      try { el.setPointerCapture(e.pointerId); } catch (err) { /* 交給 pointerup 收尾 */ }
+      el.classList.add('dragging');
+    });
+    els.calibHandles.addEventListener('pointermove', (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const rect = els.videoWrap.getBoundingClientRect();
+      const v = els.video;
+      const x = Math.min(v.videoWidth, Math.max(0, ((e.clientX - rect.left) / rect.width) * v.videoWidth));
+      const y = Math.min(v.videoHeight, Math.max(0, ((e.clientY - rect.top) / rect.height) * v.videoHeight));
+      const pts = state.calibrating ? state.clicks : state.dragCalib.points;
+      pts[drag.i] = { x, y };
+      drag.el.style.left = `${(x / v.videoWidth) * 100}%`;
+      drag.el.style.top = `${(y / v.videoHeight) * 100}%`;
+      if (state.dragCalib) state.dragCalib.preview = makeCalib(pts) || state.dragCalib.preview;
+      drawOverlay();
+    });
+    const endDrag = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      drag.el.classList.remove('dragging');
+      drag = null;
+      if (state.dragCalib) {
+        const pts = state.dragCalib.points;
+        state.dragCalib = null;
+        applyCalibration(pts, true);
+        updateButtons();
+      }
+      renderCalibHandles();
+      drawOverlay();
+    };
+    els.calibHandles.addEventListener('pointerup', endDrag);
+    els.calibHandles.addEventListener('pointercancel', endDrag);
   }
 
   function onOverlayClick(e) {
@@ -806,6 +894,7 @@
     state.clicks.push({ x, y });
     if (state.clicks.length < 4) {
       showCalibHint();
+      renderCalibHandles();
       drawOverlay();
       return;
     }
@@ -818,25 +907,71 @@
 
   // ---------- 繪圖 ----------
 
-  function drawSkeleton(ctx, det, color, lw) {
-    const kp = det.keypoints;
+  // 每格只留框與 17 點（x, y, 分數）的 Float32Array，長影片也不會吃太多記憶體
+  function packDets(dets, assigned) {
+    const owner = new Map();
+    for (const id of Object.keys(assigned || {})) owner.set(assigned[id].det, id);
+    return dets.map((d) => {
+      const kp = new Float32Array(Core.NUM_KEYPOINTS * 3);
+      d.keypoints.forEach((k, i) => { kp[i * 3] = k.x; kp[i * 3 + 1] = k.y; kp[i * 3 + 2] = k.score; });
+      return { box: d.box, kp, id: owner.get(d) || '' };
+    });
+  }
+
+  function drawSkeleton(ctx, kp, color, lw) {
+    const ok = (i) => kp[i * 3 + 2] >= KEYPOINT_MIN_SCORE;
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
     ctx.lineWidth = lw;
     ctx.lineCap = 'round';
     for (const [a, b] of Core.SKELETON) {
-      if (kp[a].score < KEYPOINT_MIN_SCORE || kp[b].score < KEYPOINT_MIN_SCORE) continue;
+      if (!ok(a) || !ok(b)) continue;
       ctx.beginPath();
-      ctx.moveTo(kp[a].x, kp[a].y);
-      ctx.lineTo(kp[b].x, kp[b].y);
+      ctx.moveTo(kp[a * 3], kp[a * 3 + 1]);
+      ctx.lineTo(kp[b * 3], kp[b * 3 + 1]);
       ctx.stroke();
     }
-    for (const p of kp) {
-      if (p.score < KEYPOINT_MIN_SCORE) continue;
+    for (let i = 0; i < Core.NUM_KEYPOINTS; i++) {
+      if (!ok(i)) continue;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, lw * 1.2, 0, Math.PI * 2);
+      ctx.arc(kp[i * 3], kp[i * 3 + 1], lw * 1.2, 0, Math.PI * 2);
       ctx.fill();
     }
+  }
+
+  function drawFrameDets(ctx, dets, lw) {
+    for (const d of dets) {
+      const color = d.id ? PLAYER_STYLE[d.id].color : 'rgba(226, 232, 240, 0.55)';
+      drawSkeleton(ctx, d.kp, color, d.id ? lw * 1.5 : lw);
+      if (d.id) drawLabel(ctx, d, PLAYER_STYLE[d.id].label, color, lw);
+    }
+  }
+
+  function findPoseFrame(t) {
+    const arr = state.poseFrames;
+    if (!arr.length) return null;
+    let lo = 0;
+    let hi = arr.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (arr[mid].t < t) lo = mid + 1;
+      else hi = mid;
+    }
+    let best = arr[lo];
+    if (lo > 0 && Math.abs(arr[lo - 1].t - t) < Math.abs(best.t - t)) best = arr[lo - 1];
+    return Math.abs(best.t - t) <= Math.max(0.08, 0.75 / state.sampleFps) ? best : null;
+  }
+
+  // 主畫面與預覽畫面共用：畫出某個時間點的分析結果
+  function drawResultsAt(canvas, t) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!canvas.width) return;
+    const lw = Math.max(2, canvas.width / 640);
+    if (state.calib) drawCourtOnVideo(ctx, lw, state.calib);
+    const frame = findPoseFrame(t);
+    if (frame) drawFrameDets(ctx, frame.dets, lw);
+    drawShuttle(ctx, lw, t);
   }
 
   function drawLabel(ctx, det, text, color, lw) {
@@ -854,8 +989,8 @@
     ctx.fillText(text, x + pad, y + boxH / 2);
   }
 
-  function drawCourtOnVideo(ctx, lw) {
-    const { Hinv, crop } = state.calib;
+  function drawCourtOnVideo(ctx, lw, calib) {
+    const { Hinv, crop, farCrop } = calib;
     ctx.save();
     ctx.lineWidth = lw;
     for (const line of Core.courtLines()) {
@@ -871,63 +1006,49 @@
     ctx.setLineDash([lw * 4, lw * 3]);
     ctx.strokeStyle = 'rgba(148, 163, 184, 0.7)';
     ctx.strokeRect(crop.x, crop.y, crop.w, crop.h);
-    if (state.calib.farCrop) {
-      const f = state.calib.farCrop;
+    if (farCrop) {
       ctx.strokeStyle = 'rgba(244, 114, 182, 0.75)';
-      ctx.strokeRect(f.x, f.y, f.w, f.h);
+      ctx.strokeRect(farCrop.x, farCrop.y, farCrop.w, farCrop.h);
     }
     ctx.restore();
   }
 
+  // 點的位置由可拖曳的圓點顯示，這裡只畫連線
   function drawClicks(ctx, lw) {
+    if (state.clicks.length < 2) return;
     ctx.save();
     ctx.lineWidth = lw;
-    if (state.clicks.length > 1) {
-      ctx.strokeStyle = 'rgba(250, 204, 21, 0.8)';
-      ctx.beginPath();
-      state.clicks.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-      ctx.stroke();
-    }
-    ctx.font = `bold ${Math.round(lw * 9)}px sans-serif`;
-    state.clicks.forEach((p, i) => {
-      ctx.fillStyle = '#facc15';
-      ctx.strokeStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, lw * 4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillText(String(i + 1), p.x + lw * 6, p.y - lw * 6);
-    });
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.8)';
+    ctx.beginPath();
+    state.clicks.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+    ctx.stroke();
     ctx.restore();
   }
 
+  // 分析中主畫面被遮住，不必重畫；其他時候畫校正線與目前時間點的結果
   function drawOverlay() {
+    if (state.running) return;
     const c = els.overlay;
     const ctx = c.getContext('2d');
     ctx.clearRect(0, 0, c.width, c.height);
     if (!c.width) return;
     const lw = Math.max(2, c.width / 640);
-    if (state.calib && !state.calibrating) drawCourtOnVideo(ctx, lw);
+    const calib = state.dragCalib ? state.dragCalib.preview : state.calib;
+    if (calib && !state.calibrating) drawCourtOnVideo(ctx, lw, calib);
     if (state.calibrating) drawClicks(ctx, lw);
-    const owner = new Map();
-    for (const id of Object.keys(state.lastAssigned)) owner.set(state.lastAssigned[id].det, id);
-    for (const det of state.lastDets) {
-      const id = owner.get(det);
-      const color = id ? PLAYER_STYLE[id].color : 'rgba(226, 232, 240, 0.55)';
-      drawSkeleton(ctx, det, color, id ? lw * 1.5 : lw);
-      if (id) drawLabel(ctx, det, PLAYER_STYLE[id].label, color, lw);
-    }
-    drawShuttle(ctx, lw);
+    const t = els.video.currentTime;
+    const frame = state.detectFrame || findPoseFrame(t);
+    if (frame) drawFrameDets(ctx, frame.dets, lw);
+    drawShuttle(ctx, lw, t);
   }
 
-  // 分析中畫最近擷取到的軌跡；分析完拖動影片時，畫目前時間點附近的軌跡
-  function drawShuttle(ctx, lw) {
+  function drawShuttle(ctx, lw, now) {
     if (!state.shuttle.length) return;
-    const now = state.running ? state.lastShuttleT : els.video.currentTime;
     const pts = [];
-    for (let i = state.shuttle.length - 1; i >= 0; i--) {
+    let i = state.shuttle.length - 1;
+    while (i >= 0 && state.shuttle[i].t > now + 0.001) i--;
+    for (; i >= 0; i--) {
       const s = state.shuttle[i];
-      if (s.t > now + 0.001) continue;
       if (now - s.t > SHUTTLE_TRAIL_SECONDS) break;
       if (s.x !== null) pts.push(s);
     }
@@ -1049,26 +1170,14 @@
     ctx.fillText('近端（鏡頭這一側）', 8, canvas.height - 8);
 
     if (state.running) {
-      for (const id of Object.keys(state.samples)) {
-        const list = state.samples[id];
-        const color = PLAYER_STYLE[id].color;
-        ctx.save();
-        ctx.strokeStyle = color;
-        ctx.globalAlpha = 0.6;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        let started = false;
-        for (let i = Math.max(0, list.length - 200); i < list.length; i++) {
-          if (state.analyzedUntil - list[i].t > TRAIL_SECONDS) continue;
-          const q = courtToCanvas(list[i].x, list[i].y);
-          if (started) ctx.lineTo(q.x, q.y);
-          else { ctx.moveTo(q.x, q.y); started = true; }
-        }
-        ctx.stroke();
-        ctx.restore();
-        const cur = state.lastAssigned[id];
-        if (cur) drawDot(ctx, courtToCanvas(cur.court.x, cur.court.y), color, 7, false);
-      }
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+      ctx.fillRect(0, canvas.height / 2 - 26, canvas.width, 52);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 15px "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('分析完成後顯示熱圖', canvas.width / 2, canvas.height / 2);
+      ctx.textAlign = 'start';
       return;
     }
 
@@ -1154,8 +1263,18 @@
     }).join('');
   }
 
-  function updateRangeText() {
-    els.rangeText.textContent = `${fmtTime(state.range.start)} ～ ${fmtTime(state.range.end)}`;
+  // 有小數時保留一位，避免重新套用時範圍被捨去
+  function fmtRangeTime(sec) {
+    if (!isFinite(sec)) return '';
+    const tenths = Math.round(sec * 10);
+    const whole = Math.floor(tenths / 10);
+    const frac = tenths % 10;
+    return fmtTime(whole) + (frac ? `.${frac}` : '');
+  }
+
+  function updateRangeInputs() {
+    els.rangeStart.value = fmtRangeTime(state.range.start);
+    els.rangeEnd.value = fmtRangeTime(state.range.end);
   }
 
   function refreshIdleText() {
@@ -1166,27 +1285,134 @@
     else setProgressText('準備就緒，按「開始分析」');
   }
 
+  // 讀取：影片已擷取到的時間；完成：骨架與追球都已算完的時間（追球每 8 格才出一次結果）
+  function progressTimes() {
+    const { start, end } = state.range;
+    const read = Math.max(state.analyzedUntil, state.lastShuttleT);
+    let done = state.analyzedUntil;
+    if (state.trackingRun) done = Math.min(done, state.shuttle.length ? state.shuttle[state.shuttle.length - 1].t : start);
+    const clamp = (x) => Math.min(end, Math.max(start, x));
+    return { read: clamp(read), done: clamp(done) };
+  }
+
   function updateProgress(completed) {
-    const total = Math.max(0.001, state.range.end - state.range.start);
-    const done = Math.min(total, Math.max(0, state.analyzedUntil - state.range.start));
-    els.progressBar.style.width = `${(completed ? 1 : done / total) * 100}%`;
+    const { start, end } = state.range;
+    const total = Math.max(0.001, end - start);
+    const frac = (x) => Math.max(0, Math.min(1, (x - start) / total));
+    const times = progressTimes();
+    const doneT = completed ? end : times.done;
+    const readT = completed ? end : times.read;
+    els.timelineRead.style.width = `${(state.frames || state.shuttle.length ? frac(readT) : 0) * 100}%`;
+    els.timelineDone.style.width = `${(state.frames ? frac(doneT) : 0) * 100}%`;
+    els.coverPercent.textContent = `${Math.round(frac(doneT) * 100)}%`;
     if (!state.frames) {
-      els.progressBar.style.width = '0%';
       refreshIdleText();
       return;
     }
     const avgMs = state.inferMs / state.frames;
-    let text = `已分析 ${fmtTime(done)} / ${fmtTime(total)} · ${state.frames} 張 · 平均每張 ${avgMs.toFixed(0)} ms`;
+    let text = `已分析 ${fmtTime(doneT - start)} / ${fmtTime(total)} · 平均每張 ${avgMs.toFixed(0)} ms`;
     if (state.shuttleBatches) text += ` · 追球每 8 格 ${(state.shuttleMs / state.shuttleBatches).toFixed(0)} ms`;
+    let eta = '';
     if (state.running) {
       const elapsed = (performance.now() - state.runStartedAt) / 1000;
-      const speed = (state.analyzedUntil - state.runStartT) / Math.max(0.001, elapsed);
-      if (speed > 0 && elapsed > 2) text += ` · 預估剩餘 ${fmtTime((state.range.end - state.analyzedUntil) / speed)}`;
+      const speed = (readT - state.runStartT) / Math.max(0.001, elapsed);
+      if (speed > 0 && elapsed > 2) eta = `預估剩餘 ${fmtTime((end - readT) / speed)}`;
+      if (eta) text += ` · ${eta}`;
       if (document.hidden) text += ' · 分頁在背景，已暫停';
     } else {
-      text += completed ? ' · 分析完成' : ' · 已暫停';
+      text += completed ? ' · 分析完成，可以播放或點進度條看結果' : ' · 已暫停，可以先看已分析的部分';
     }
+    els.coverText.textContent = state.running ? `已分析 ${fmtTime(doneT - start)} / ${fmtTime(total)}${eta ? ' · ' + eta : ''}` : '';
     setProgressText(text);
+  }
+
+  // ---------- 進度條與預覽 ----------
+
+  function timelineTime(e) {
+    const rect = els.timeline.getBoundingClientRect();
+    const f = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    return state.range.start + f * (state.range.end - state.range.start);
+  }
+
+  function showTimelineCursor(t) {
+    const { start, end } = state.range;
+    els.timelineCursor.style.left = `${((t - start) / Math.max(0.001, end - start)) * 100}%`;
+    els.timelineCursor.classList.remove('hidden');
+  }
+
+  // 分析中主影片被分析流程占用，所以另外開一個影片元件預覽已算完的部分
+  function onTimelineClick(e) {
+    if (!videoReady()) return;
+    const t = timelineTime(e);
+    if (!state.running) {
+      els.video.pause();
+      els.video.currentTime = t;
+      showTimelineCursor(t);
+      return;
+    }
+    const done = progressTimes().done;
+    if (!state.frames || done <= state.range.start) {
+      showError('還沒有分析完成的部分，請稍候再點亮色的地方');
+      return;
+    }
+    openPreview(Math.min(t, done));
+  }
+
+  function drawPreviewAt(t) {
+    drawResultsAt(els.previewOverlay, t);
+    els.previewTime.textContent = `預覽 ${fmtTime(t)}`;
+    showTimelineCursor(t);
+  }
+
+  function openPreview(t) {
+    const pv = els.previewVideo;
+    if (pv.src !== state.videoUrl) pv.src = state.videoUrl;
+    pv.pause();
+    els.coverStatus.classList.add('hidden');
+    els.previewBox.classList.remove('hidden');
+    seekTo(pv, t).then(() => drawPreviewAt(t));
+  }
+
+  function closePreview() {
+    els.previewVideo.pause();
+    els.previewBox.classList.add('hidden');
+    els.coverStatus.classList.remove('hidden');
+    els.timelineCursor.classList.add('hidden');
+  }
+
+  function togglePreviewPlay() {
+    const pv = els.previewVideo;
+    if (!pv.paused) {
+      pv.pause();
+      return;
+    }
+    // 預覽只播到已分析完成的位置
+    const step = (_now, meta) => {
+      if (pv.paused) return;
+      const limit = progressTimes().done;
+      if (meta.mediaTime >= limit) {
+        pv.pause();
+        drawPreviewAt(limit);
+        return;
+      }
+      drawPreviewAt(meta.mediaTime);
+      pv.requestVideoFrameCallback(step);
+    };
+    pv.play().then(() => {
+      if ('requestVideoFrameCallback' in pv) pv.requestVideoFrameCallback(step);
+    }).catch(() => {});
+  }
+
+  // 分析完成或暫停後播放主影片，逐格畫上骨架與球軌跡
+  function startResultPlayback() {
+    const v = els.video;
+    if (state.running || !('requestVideoFrameCallback' in v)) return;
+    const step = () => {
+      if (state.running || v.paused) return;
+      drawOverlay();
+      v.requestVideoFrameCallback(step);
+    };
+    v.requestVideoFrameCallback(step);
   }
 
   function updateButtons() {
@@ -1201,6 +1427,8 @@
     els.btnReuseCalib.disabled = !(ready && idle);
     els.btnSetStart.disabled = !(ready && idle);
     els.btnSetEnd.disabled = !(ready && idle);
+    els.rangeStart.disabled = !(ready && idle);
+    els.rangeEnd.disabled = !(ready && idle);
     els.btnReset.disabled = !(hasSamples() && idle);
     els.btnExportJson.disabled = !(hasSamples() && !state.running);
     els.btnExportPng.disabled = !(hasSamples() && !state.running);
@@ -1274,11 +1502,15 @@
       return;
     }
     if (state.calibrating) endCalibrationMode();
+    closePreview();
+    els.previewVideo.removeAttribute('src');
+    els.previewVideo.load();
     if (state.videoUrl) URL.revokeObjectURL(state.videoUrl);
     state.file = file;
     state.videoUrl = URL.createObjectURL(file);
     state.calib = null;
     state.frameDelta = Infinity;
+    renderCalibHandles();
     setCalibStatus('尚未校正');
     els.fileName.textContent = file.name;
     els.dropZone.classList.add('hidden');
@@ -1295,10 +1527,12 @@
     }
     els.overlay.width = v.videoWidth;
     els.overlay.height = v.videoHeight;
+    els.previewOverlay.width = v.videoWidth;
+    els.previewOverlay.height = v.videoHeight;
     els.videoWrap.style.aspectRatio = `${v.videoWidth} / ${v.videoHeight}`;
     state.range = { start: 0, end: isFinite(v.duration) ? v.duration : 0 };
     if (!state.range.end) showError('讀不到影片長度，請改用 MP4 格式');
-    updateRangeText();
+    updateRangeInputs();
     const saved = loadSavedCalibration();
     const sameSize = saved && saved.w === v.videoWidth && saved.h === v.videoHeight && Array.isArray(saved.points);
     els.btnReuseCalib.classList.toggle('hidden', !sameSize);
@@ -1307,17 +1541,43 @@
     updateButtons();
   }
 
+  // 接受「秒」、「分:秒」、「時:分:秒」，可帶小數
+  function parseTimeInput(text) {
+    const s = String(text || '').trim();
+    if (!s) return NaN;
+    const parts = s.split(/[:：]/).map(Number);
+    if (parts.length > 3 || parts.some((n) => !isFinite(n) || n < 0)) return NaN;
+    return parts.reduce((acc, n) => acc * 60 + n, 0);
+  }
+
+  function applyRange(next) {
+    const duration = isFinite(els.video.duration) ? els.video.duration : state.range.end;
+    if (!(next.start >= 0 && next.end <= duration + 0.1 && next.end - next.start >= 1)) {
+      showError('分析範圍不正確：結束要比開始晚至少 1 秒，而且不能超過影片長度 ' + fmtTime(duration));
+      updateRangeInputs();
+      return;
+    }
+    if (next.start === state.range.start && next.end === state.range.end) return updateRangeInputs();
+    if (!confirmDiscard()) return updateRangeInputs();
+    state.range = { start: next.start, end: Math.min(next.end, duration) };
+    updateRangeInputs();
+    resetTracking();
+  }
+
   function setRange(which) {
     if (!videoReady() || state.running) return;
     const t = els.video.currentTime;
-    const next = { ...state.range };
-    if (which === 'start') next.start = Math.min(t, Math.max(0, next.end - 1));
-    else next.end = Math.max(t, next.start + 1);
-    if (next.start === state.range.start && next.end === state.range.end) return;
-    if (!confirmDiscard()) return;
-    state.range = next;
-    updateRangeText();
-    resetTracking();
+    applyRange(which === 'start' ? { start: t, end: state.range.end } : { start: state.range.start, end: t });
+  }
+
+  function onRangeInput(which) {
+    if (!videoReady() || state.running) return;
+    const value = parseTimeInput(which === 'start' ? els.rangeStart.value : els.rangeEnd.value);
+    if (!isFinite(value)) {
+      showError('時間格式請輸入「分:秒」，例如 1:30');
+      return updateRangeInputs();
+    }
+    applyRange(which === 'start' ? { start: value, end: state.range.end } : { start: state.range.start, end: value });
   }
 
   // ---------- 初始化 ----------
@@ -1327,12 +1587,16 @@
       envStatus: 'env-status', modelStatus: 'model-status', envWarning: 'env-warning',
       fileInput: 'file-input', btnPickFile: 'btn-pick-file', fileName: 'file-name',
       modeSingles: 'mode-singles', modeDoubles: 'mode-doubles', sampleFps: 'sample-fps',
-      rangeText: 'range-text', btnSetStart: 'btn-set-start', btnSetEnd: 'btn-set-end',
+      rangeStart: 'range-start', rangeEnd: 'range-end', btnSetStart: 'btn-set-start', btnSetEnd: 'btn-set-end',
       btnCalibrate: 'btn-calibrate', btnReuseCalib: 'btn-reuse-calib', calibStatus: 'calib-status',
       dropZone: 'drop-zone', videoWrap: 'video-wrap', video: 'video', overlay: 'overlay',
       calibHint: 'calib-hint', calibHintText: 'calib-hint-text', btnCalibCancel: 'btn-calib-cancel',
       btnDetect: 'btn-detect', btnAnalyze: 'btn-analyze', btnReset: 'btn-reset',
-      progressBar: 'progress-bar', progressText: 'progress-text',
+      progressText: 'progress-text', timeline: 'timeline', timelineRead: 'timeline-read', timelineDone: 'timeline-done',
+      timelineCursor: 'timeline-cursor', calibHandles: 'calib-handles', analysisCover: 'analysis-cover',
+      coverStatus: 'cover-status', coverPercent: 'cover-percent', coverText: 'cover-text', previewBox: 'preview-box',
+      previewVideo: 'preview-video', previewOverlay: 'preview-overlay', btnPreviewPlay: 'btn-preview-play',
+      btnPreviewClose: 'btn-preview-close', previewTime: 'preview-time',
       heatTabs: 'heat-tabs', court: 'court', btnExportPng: 'btn-export-png', btnExportJson: 'btn-export-json',
       playerStats: 'player-stats', toast: 'toast', shuttleToggle: 'shuttle-toggle', shuttleStatus: 'shuttle-status',
       adminBar: 'admin-bar', accessSuper: 'access-super', accessPublic: 'access-public', publicStatus: 'public-status',
@@ -1360,18 +1624,28 @@
     els.video.addEventListener('loadedmetadata', onLoadedMetadata);
     els.video.addEventListener('error', () => showError('影片無法播放，請改用 MP4（H.264）格式。iPhone 可到「設定 > 相機 > 格式」選「最相容」。'));
     ['seeked', 'timeupdate'].forEach((type) => els.video.addEventListener(type, () => {
-      if (!state.running && state.shuttle.length) drawOverlay();
+      if (!state.running && (state.poseFrames.length || state.shuttle.length)) drawOverlay();
     }));
+    els.video.addEventListener('play', startResultPlayback);
     els.shuttleToggle.addEventListener('change', () => {
       state.shuttleEnabled = els.shuttleToggle.checked;
       syncShuttleToggle();
     });
     els.video.addEventListener('seeking', () => {
-      if (state.running || state.busy || !state.lastDets.length) return;
-      state.lastDets = [];
-      state.lastAssigned = {};
+      if (state.running || state.busy || !state.detectFrame) return;
+      state.detectFrame = null;
       drawOverlay();
     });
+
+    els.timeline.addEventListener('click', onTimelineClick);
+    els.btnPreviewPlay.addEventListener('click', togglePreviewPlay);
+    els.btnPreviewClose.addEventListener('click', closePreview);
+    els.previewVideo.addEventListener('play', () => { els.btnPreviewPlay.textContent = '⏸ 暫停'; });
+    els.previewVideo.addEventListener('pause', () => { els.btnPreviewPlay.textContent = '▶ 播放預覽'; });
+    els.previewVideo.addEventListener('seeked', () => {
+      if (els.previewVideo.paused) drawPreviewAt(els.previewVideo.currentTime);
+    });
+    bindCalibHandleDrag();
 
     els.modeSingles.addEventListener('click', () => setMode('singles'));
     els.modeDoubles.addEventListener('click', () => setMode('doubles'));
@@ -1383,6 +1657,11 @@
       }
       state.sampleFps = fps;
       resetTracking();
+    });
+    ['start', 'end'].forEach((which) => {
+      const input = which === 'start' ? els.rangeStart : els.rangeEnd;
+      input.addEventListener('change', () => onRangeInput(which));
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur(); });
     });
     els.btnSetStart.addEventListener('click', () => setRange('start'));
     els.btnSetEnd.addEventListener('click', () => setRange('end'));
