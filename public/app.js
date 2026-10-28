@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.41
+ * Version: 1.2.42
  */
 let globalLobbyUsers = [];
 
@@ -2069,7 +2069,7 @@ async function loadGamesLobby(silent = false) {
     lastGamesJson = newGamesJson;
     globalIsAdmin = !!data.isAdmin;
     globalIsSuperAdmin = !!data.isSuperAdmin;
-    globalAiAnalysisPublic = !!data.aiAnalysisPublic;
+    noteAiAnalysisPublic(!!data.aiAnalysisPublic);
     if (globalIsSuperAdmin && uid && !isWeakVisitUid(uid)) lastKnownSuperAdminUid = uid;
     globalManagedGroups = data.managedGroups || [];
     globalLobbyTitle = data.lobbyTitle || '羽球接龍大廳';
@@ -9481,7 +9481,7 @@ function tryRenderOptimisticLobby() {
         lastGamesJson = JSON.stringify(gamesList);
         globalIsAdmin = !!data.isAdmin;
         globalIsSuperAdmin = !!data.isSuperAdmin;
-        globalAiAnalysisPublic = !!data.aiAnalysisPublic;
+        noteAiAnalysisPublic(!!data.aiAnalysisPublic);
         if (globalIsSuperAdmin && currentUser && currentUser.userId && !isWeakVisitUid(currentUser.userId)) {
           lastKnownSuperAdminUid = currentUser.userId;
         }
@@ -9512,7 +9512,7 @@ function bootApp() {
     if (window.__INITIAL_DATA__.lobbyTitle) globalLobbyTitle = window.__INITIAL_DATA__.lobbyTitle;
     if (window.__INITIAL_DATA__.lobbyDesc) globalLobbyDesc = window.__INITIAL_DATA__.lobbyDesc;
     if (window.__INITIAL_DATA__.gid) currentGroupId = window.__INITIAL_DATA__.gid;
-    globalAiAnalysisPublic = !!window.__INITIAL_DATA__.aiAnalysisPublic;
+    noteAiAnalysisPublic(!!window.__INITIAL_DATA__.aiAnalysisPublic);
   }
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -9548,6 +9548,7 @@ function bootApp() {
   initGroupBuyEvents();
   initAiAnalysisEntry();
   initGroupAdminSettings();
+  initAiUserSettings();
   initializeLiff().then(() => {
     setupSSE();
   });
@@ -9775,18 +9776,66 @@ function initGroupAdminSettings() {
   });
 }
 
-// AI 影片分析要用電腦的顯示卡運算，手機不顯示入口；未公開時只有超級管理員看得到
+// 未公開時，超級管理員與指定名單都能用；公開旗標一變就要重新問伺服器
+let globalAiAnalysisGranted = false;
+let globalAiAnalysisUserCount = 0;
+let aiAccessCache = { uid: '', at: 0 };
+
+function noteAiAnalysisPublic(isPublic) {
+  const next = !!isPublic;
+  if (next !== globalAiAnalysisPublic) aiAccessCache.at = 0;
+  globalAiAnalysisPublic = next;
+}
+
 function updateAiAnalysisEntry(effIsSuperAdmin) {
   document.querySelectorAll('#ai-access-admin [data-ai-access]').forEach((el) => {
     el.classList.toggle('active', (el.dataset.aiAccess === 'public') === globalAiAnalysisPublic);
   });
+  const count = document.getElementById('ai-access-count');
+  if (count) count.textContent = globalAiAnalysisUserCount ? String(globalAiAnalysisUserCount) : '';
   const btn = document.getElementById('btn-ai-analysis');
-  if (!btn) return;
-  const ua = navigator.userAgent || '';
-  const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-  btn.classList.toggle('hidden', isMobile || !(globalAiAnalysisPublic || effIsSuperAdmin));
-  const label = btn.querySelector('span');
-  if (label) label.textContent = globalAiAnalysisPublic ? '🎥 AI 影片分析' : '🎥 AI 影片分析（超管）';
+  if (btn) {
+    const ua = navigator.userAgent || '';
+    const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+    const allowed = globalAiAnalysisPublic || effIsSuperAdmin || globalAiAnalysisGranted;
+    btn.classList.toggle('hidden', isMobile || !allowed);
+    const label = btn.querySelector('span');
+    if (label) label.textContent = globalAiAnalysisPublic ? '🎥 AI 影片分析' : (effIsSuperAdmin ? '🎥 AI 影片分析（超管）' : '🎥 AI 影片分析');
+  }
+  refreshAiAnalysisAccess();
+}
+
+function refreshAiAnalysisAccess() {
+  const uid = (currentUser && currentUser.userId) || '';
+  if (!uid) {
+    globalAiAnalysisGranted = false;
+    return;
+  }
+  if (aiAccessCache.uid === uid && Date.now() - aiAccessCache.at < 15000) return;
+  aiAccessCache = { uid, at: Date.now() };
+  const token = uid;
+  fetch('/api/ai_analysis/access?uid=' + encodeURIComponent(uid) + '&_t=' + Date.now(), { cache: 'no-store' })
+    .then((res) => res.ok ? res.json() : null)
+    .then((data) => {
+      if (!data || aiAccessCache.uid !== token) return;
+      noteAiAnalysisPublic(!!data.isPublic);
+      globalAiAnalysisUserCount = data.userCount || 0;
+      globalAiAnalysisGranted = !!data.allowed && !data.isPublic && !getEffectiveRole().isSuperAdmin;
+      const count = document.getElementById('ai-access-count');
+      if (count) count.textContent = globalAiAnalysisUserCount ? String(globalAiAnalysisUserCount) : '';
+      const btn = document.getElementById('btn-ai-analysis');
+      if (!btn) return;
+      const ua = navigator.userAgent || '';
+      const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+      const allowed = !!data.allowed && !isMobile;
+      btn.classList.toggle('hidden', !allowed);
+      const label = btn.querySelector('span');
+      if (label) label.textContent = data.isPublic ? '🎥 AI 影片分析' : (getEffectiveRole().isSuperAdmin ? '🎥 AI 影片分析（超管）' : '🎥 AI 影片分析');
+      document.querySelectorAll('#ai-access-admin [data-ai-access]').forEach((el) => {
+        el.classList.toggle('active', (el.dataset.aiAccess === 'public') === !!data.isPublic);
+      });
+    })
+    .catch(() => { aiAccessCache.at = 0; });
 }
 
 async function setAiAnalysisAccess(isPublic) {
@@ -9801,7 +9850,9 @@ async function setAiAnalysisAccess(isPublic) {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.success) throw new Error(data.error || '變更失敗');
-    globalAiAnalysisPublic = !!data.isPublic;
+    noteAiAnalysisPublic(!!data.isPublic);
+    if (typeof data.userCount === 'number') globalAiAnalysisUserCount = data.userCount;
+    aiAccessCache.at = 0;
     updateAiAnalysisEntry(getEffectiveRole().isSuperAdmin);
   } catch (e) {
     alert('❌ AI 影片分析權限變更失敗：' + e.message);
@@ -9818,6 +9869,8 @@ function initAiAnalysisEntry() {
       if (el) setAiAnalysisAccess(el.dataset.aiAccess === 'public');
     });
   }
+  const usersBtn = document.getElementById('btn-ai-users');
+  if (usersBtn) usersBtn.addEventListener('click', openAiUserSettings);
   const btn = document.getElementById('btn-ai-analysis');
   if (!btn) return;
   btn.addEventListener('click', () => {
@@ -9832,6 +9885,160 @@ function initAiAnalysisEntry() {
     }
   });
   updateAiAnalysisEntry(getEffectiveRole().isSuperAdmin);
+}
+
+// ==========================================
+// 🎥 AI 影片分析名單（超級管理員指定誰可以用）
+// ==========================================
+let aiUsersAll = [];
+let aiUsersSelected = new Set();
+let aiUsersSearch = '';
+let aiUsersOnlySelected = false;
+
+function aiUsersVisible() {
+  const q = aiUsersSearch.trim().toLowerCase();
+  return aiUsersAll.filter((u) => {
+    if (aiUsersOnlySelected && !aiUsersSelected.has(u.uid)) return false;
+    if (!q) return true;
+    return (u.name || '').toLowerCase().includes(q) || u.uid.toLowerCase().includes(q);
+  }).sort((a, b) => {
+    const as = aiUsersSelected.has(a.uid);
+    const bs = aiUsersSelected.has(b.uid);
+    if (as !== bs) return as ? -1 : 1;
+    return (a.name || a.uid).localeCompare(b.name || b.uid, 'zh-Hant');
+  });
+}
+
+function aiUserRowsHtml() {
+  const visible = aiUsersVisible();
+  if (!visible.length) return '<p class="ai-user-empty">沒有符合的人</p>';
+  return visible.map((u) => {
+    const name = u.name || '（沒有顯示名稱）';
+    const pic = /^https:\/\//.test(u.pictureUrl || '')
+      ? `<img src="${escapeHTML(u.pictureUrl)}" alt="">`
+      : `<span class="ai-user-fallback">${escapeHTML(name.slice(0, 1))}</span>`;
+    return `<label class="ai-user-row">
+      <input type="checkbox" data-ai-user="${escapeHTML(u.uid)}" ${aiUsersSelected.has(u.uid) ? 'checked' : ''}>
+      ${pic}
+      <span class="ai-user-name">${escapeHTML(name)}<small>${escapeHTML(u.uid.slice(0, 6))}…${escapeHTML(u.uid.slice(-4))}</small></span>
+    </label>`;
+  }).join('');
+}
+
+function paintAiUserList() {
+  const list = document.getElementById('ai-users-box');
+  const count = document.getElementById('ai-users-count');
+  const hint = document.getElementById('ai-users-hint');
+  if (count) count.textContent = `已選 ${aiUsersSelected.size} 人`;
+  if (list) list.innerHTML = aiUserRowsHtml();
+  if (hint) hint.textContent = `這個框裡有 ${aiUsersVisible().length} 人，可直接勾選。名單來自曾打開過大廳的人。`;
+}
+
+function renderAiUsers() {
+  const box = document.getElementById('ai-users-content');
+  if (!box) return;
+  box.innerHTML = `<div style="${GAS_CARD}">
+    <p style="margin:0 0 8px;color:#334155;line-height:1.6;">按「不公開」時，只有超級管理員和下面勾選的人可以在電腦上使用。按「公開」則所有人都能用，這份名單會保留。超級管理員不用勾。</p>
+    <div id="ai-users-count" style="font-weight:bold;margin-bottom:8px;"></div>
+    <input id="ai-users-search" type="search" placeholder="搜尋姓名或 ID" value="${escapeHTML(aiUsersSearch)}" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;box-sizing:border-box;">
+    <div class="ai-user-tools">
+      <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="ai-users-only" ${aiUsersOnlySelected ? 'checked' : ''}>只看已勾選</label>
+      <button type="button" id="ai-users-all" class="btn-secondary" style="${GAS_SMALL_BTN}">全選搜尋結果</button>
+      <button type="button" id="ai-users-none" class="btn-secondary" style="${GAS_SMALL_BTN}">取消搜尋結果</button>
+      <button type="button" id="ai-users-save" class="btn btn-primary" style="${GAS_SMALL_BTN}background:#0f172a;color:#fff;">儲存名單</button>
+    </div>
+    <div id="ai-users-box" class="ai-user-box"></div>
+    <p id="ai-users-hint" style="margin:8px 0 0;color:#64748b;font-size:12px;"></p>
+  </div>`;
+  paintAiUserList();
+  const input = document.getElementById('ai-users-search');
+  if (input) {
+    input.focus();
+    const end = input.value.length;
+    input.setSelectionRange(end, end);
+  }
+}
+
+async function openAiUserSettings() {
+  const view = document.getElementById('ai-users-view');
+  const box = document.getElementById('ai-users-content');
+  if (!view || !box) return;
+  showAppView(view);
+  box.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">讀取中...</p>';
+  try {
+    const res = await fetch('/api/admin/ai_analysis/users?uid=' + encodeURIComponent(getAdminRequestUid()) + '&_t=' + Date.now());
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) throw new Error(data.error || '讀取失敗');
+    aiUsersAll = Array.isArray(data.users) ? data.users : [];
+    aiUsersSelected = new Set(aiUsersAll.filter((u) => u.selected).map((u) => u.uid));
+    aiUsersSearch = '';
+    aiUsersOnlySelected = false;
+    globalAiAnalysisUserCount = aiUsersSelected.size;
+    renderAiUsers();
+  } catch (e) {
+    box.innerHTML = `<p style="text-align:center;color:#e53935;padding:20px;">❌ ${escapeHTML(e.message)}</p>`;
+  }
+}
+
+function initAiUserSettings() {
+  const back = document.getElementById('btn-back-ai-users');
+  if (back) back.addEventListener('click', () => showAppView(lobbyView));
+  const box = document.getElementById('ai-users-content');
+  if (!box) return;
+  box.addEventListener('input', (e) => {
+    if (e.target.id !== 'ai-users-search') return;
+    aiUsersSearch = e.target.value;
+    paintAiUserList();
+  });
+  box.addEventListener('change', (e) => {
+    if (e.target.id === 'ai-users-only') {
+      aiUsersOnlySelected = e.target.checked;
+      paintAiUserList();
+      return;
+    }
+    const uid = e.target.dataset && e.target.dataset.aiUser;
+    if (!uid) return;
+    if (e.target.checked) aiUsersSelected.add(uid);
+    else aiUsersSelected.delete(uid);
+    paintAiUserCountOnly();
+    if (aiUsersOnlySelected) paintAiUserList();
+  });
+  box.addEventListener('click', async (e) => {
+    const el = e.target.closest('button');
+    if (!el) return;
+    const visible = aiUsersVisible();
+    if (el.id === 'ai-users-all') {
+      visible.forEach((u) => aiUsersSelected.add(u.uid));
+      paintAiUserList();
+    } else if (el.id === 'ai-users-none') {
+      visible.forEach((u) => aiUsersSelected.delete(u.uid));
+      paintAiUserList();
+    } else if (el.id === 'ai-users-save') {
+      el.disabled = true;
+      try {
+        const res = await fetch('/api/admin/ai_analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: getAdminRequestUid(), users: [...aiUsersSelected] })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.success) throw new Error(data.error || '儲存失敗');
+        globalAiAnalysisUserCount = data.userCount || aiUsersSelected.size;
+        aiAccessCache.at = 0;
+        updateAiAnalysisEntry(getEffectiveRole().isSuperAdmin);
+        alert(`✅ 已儲存，目前指定 ${globalAiAnalysisUserCount} 人`);
+      } catch (err) {
+        alert('❌ ' + err.message);
+      } finally {
+        el.disabled = false;
+      }
+    }
+  });
+}
+
+function paintAiUserCountOnly() {
+  const count = document.getElementById('ai-users-count');
+  if (count) count.textContent = `已選 ${aiUsersSelected.size} 人`;
 }
 
 if (document.readyState === 'loading') {

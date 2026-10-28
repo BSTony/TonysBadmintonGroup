@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.3.32
+ * Version: 1.3.33
  */
 const express = require('express');
 const compression = require('compression');
@@ -474,8 +474,8 @@ function isWeakVisitUserId(userId) {
   return userId === 'U_LOCAL_TEST' || String(userId).startsWith('U_GUEST_') || String(userId).startsWith('U_LOCAL') || String(userId).startsWith('P_');
 }
 let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
-// 功能開關：aiAnalysisPublic 為 false 時，AI 影片分析只給超級管理員使用
-let featureSettings = { aiAnalysisPublic: false };
+// 功能開關：未公開時，AI 影片分析只給超級管理員與 aiAnalysisUsers 名單
+let featureSettings = { aiAnalysisPublic: false, aiAnalysisUsers: [] };
 // 群組管理員可看到的名單：{ uid: { templates: [名單名稱], name } }；沒有設定 templates 的人沿用「依管理的群組」舊規則
 let adminPermissions = {};
 
@@ -542,6 +542,7 @@ async function loadData() {
   if (fs.existsSync(FEATURE_SETTINGS_FILE)) {
     try {
       featureSettings = { ...featureSettings, ...JSON.parse(fs.readFileSync(FEATURE_SETTINGS_FILE, 'utf8')) };
+      normalizeFeatureSettings();
     } catch(e) {}
   }
   if (fs.existsSync(ADMIN_PERMISSIONS_FILE)) {
@@ -649,6 +650,7 @@ async function loadData() {
       if (fsRes.content) {
         featureSettingsSha = fsRes.sha;
         featureSettings = { ...featureSettings, ...JSON.parse(Buffer.from(fsRes.content, 'base64').toString('utf8')) };
+        normalizeFeatureSettings();
       }
     } catch(e) { console.error('無法從 GitHub 讀取 featureSettings.json:', e.message); }
 
@@ -1783,6 +1785,33 @@ function parseIntOrDefault(v, fallback) {
 function parsePositiveInt(v, fallback) {
   const n = parseIntOrDefault(v, NaN);
   return n > 0 ? n : fallback;
+}
+
+// 名單只收 LINE 使用者 ID，避免把測試帳號或任意字串寫進設定
+function normalizeAiAnalysisUsers(list) {
+  const out = [];
+  const seen = new Set();
+  if (!Array.isArray(list)) return out;
+  for (const raw of list) {
+    if (typeof raw !== 'string') continue;
+    const uid = raw.trim();
+    if (!/^U[0-9a-f]{32}$/i.test(uid) || seen.has(uid) || isTrueSuperAdmin(uid)) continue;
+    seen.add(uid);
+    out.push(uid);
+    if (out.length >= 2000) break;
+  }
+  return out;
+}
+
+function normalizeFeatureSettings() {
+  featureSettings.aiAnalysisPublic = !!featureSettings.aiAnalysisPublic;
+  featureSettings.aiAnalysisUsers = normalizeAiAnalysisUsers(featureSettings.aiAnalysisUsers);
+}
+
+function canUseAiAnalysis(uid) {
+  if (featureSettings.aiAnalysisPublic) return true;
+  if (uid && isSuperAdmin(uid)) return true;
+  return !!(uid && featureSettings.aiAnalysisUsers.includes(uid));
 }
 
 function isTrueSuperAdmin(uid) {
@@ -4219,12 +4248,61 @@ app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
   return res.json({ success: true, quota: easterEggSettings.quota, enabled: easterEggSettings.enabled });
 });
 
-// AI 影片分析：未公開時只有超級管理員能用
+function aiAnalysisAccessPayload(uid) {
+  return {
+    allowed: canUseAiAnalysis(uid),
+    isPublic: !!featureSettings.aiAnalysisPublic,
+    canManage: isSuperAdmin(uid),
+    userCount: featureSettings.aiAnalysisUsers.length
+  };
+}
+
+// 曾進過大廳的人，加上已經在名單上但近期沒出現的人
+function buildAiAnalysisUserOptions() {
+  const users = knownLineUsers();
+  const selected = new Set(featureSettings.aiAnalysisUsers);
+  for (const uid of selected) {
+    if (!users[uid]) users[uid] = { displayName: '', pictureUrl: '', lastVisit: 0 };
+  }
+  const ranked = Object.entries(users).sort((a, b) => (b[1].lastVisit || 0) - (a[1].lastVisit || 0));
+  const keep = new Set(selected);
+  for (const [uid] of ranked) {
+    if (keep.size >= 1200) break;
+    keep.add(uid);
+  }
+  const list = [];
+  for (const [uid, info] of ranked) {
+    if (!keep.has(uid) || isTrueSuperAdmin(uid)) continue;
+    list.push({
+      uid,
+      name: info.displayName || '',
+      pictureUrl: info.pictureUrl || '',
+      selected: selected.has(uid)
+    });
+  }
+  list.sort((a, b) => {
+    if (a.selected !== b.selected) return a.selected ? -1 : 1;
+    return (a.name || a.uid).localeCompare(b.name || b.uid, 'zh-Hant');
+  });
+  return list;
+}
+
+// AI 影片分析：未公開時只有超級管理員與指定名單能用
 app.get('/api/ai_analysis/access', (req, res) => {
   const uid = typeof req.query.uid === 'string' ? req.query.uid : '';
-  const isPublic = !!featureSettings.aiAnalysisPublic;
-  const canManage = isSuperAdmin(uid);
-  res.json({ allowed: isPublic || canManage, isPublic, canManage });
+  res.json(aiAnalysisAccessPayload(uid));
+});
+
+app.get('/api/admin/ai_analysis/users', (req, res) => {
+  if (!isTrueSuperAdmin(req.query.uid)) {
+    return res.status(403).json({ error: '只有超級管理員能管理 AI 影片分析名單' });
+  }
+  res.json({
+    success: true,
+    isPublic: !!featureSettings.aiAnalysisPublic,
+    userCount: featureSettings.aiAnalysisUsers.length,
+    users: buildAiAnalysisUserOptions()
+  });
 });
 
 app.post('/api/admin/ai_analysis', express.json(), async (req, res) => {
@@ -4232,10 +4310,13 @@ app.post('/api/admin/ai_analysis', express.json(), async (req, res) => {
   if (!uid || !isTrueSuperAdmin(uid)) {
     return res.status(403).json({ error: '只有超級管理員能變更 AI 影片分析的開放設定' });
   }
-  if (typeof req.body.isPublic !== 'boolean') {
-    return res.status(400).json({ error: '缺少 isPublic 設定' });
+  const hasPublic = typeof req.body.isPublic === 'boolean';
+  const hasUsers = Array.isArray(req.body.users);
+  if (!hasPublic && !hasUsers) {
+    return res.status(400).json({ error: '缺少權限設定' });
   }
-  featureSettings.aiAnalysisPublic = req.body.isPublic;
+  if (hasPublic) featureSettings.aiAnalysisPublic = req.body.isPublic;
+  if (hasUsers) featureSettings.aiAnalysisUsers = normalizeAiAnalysisUsers(req.body.users);
   try {
     await Promise.race([
       saveFeatureSettings(),
@@ -4244,7 +4325,7 @@ app.post('/api/admin/ai_analysis', express.json(), async (req, res) => {
   } catch (e) {
     console.error('saveFeatureSettings failed:', e);
   }
-  res.json({ success: true, isPublic: featureSettings.aiAnalysisPublic });
+  res.json({ success: true, ...aiAnalysisAccessPayload(uid) });
 });
 
 // ---------- 群組管理員設定（超級管理員專用） ----------

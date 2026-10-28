@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.2.54
+  Version: 1.2.55
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -151,8 +151,9 @@
         <!-- 🎥 AI 影片分析使用權限：手機也能切換（只有超級管理員看得到） -->
         <div id="ai-access-admin" class="hidden" style="margin-top: 8px; display: flex; align-items: center; gap: 6px; background-color: #0f172a; color: #fff; border-radius: 12px; padding: 8px 10px;">
           <span style="flex: 1; min-width: 0; font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🎥 AI 影片分析權限</span>
-          <button type="button" class="ai-access-btn" data-ai-access="super">🔒 只有超管</button>
+          <button type="button" class="ai-access-btn" data-ai-access="super">🔒 不公開</button>
           <button type="button" class="ai-access-btn" data-ai-access="public">🌐 公開</button>
+          <button type="button" id="btn-ai-users" class="ai-access-btn">👥 名單 <span id="ai-access-count"></span></button>
         </div>
       </div>
 
@@ -616,6 +617,17 @@
       </header>
       <div id="gas-content" style="margin-top: 15px; padding-bottom: 24px;">
         <!-- JS 動態渲染群組管理員與權限 -->
+      </div>
+    </div>
+
+    <!-- AI 影片分析使用名單（僅超級管理員） -->
+    <div id="ai-users-view" class="view hidden">
+      <header class="detail-header" style="display:flex; justify-content:flex-start; align-items:center;">
+        <button id="btn-back-ai-users" class="btn-icon">⬅ 返回</button>
+        <h2 style="margin-left: 10px; margin-bottom: 0;">AI 影片分析名單</h2>
+      </header>
+      <div id="ai-users-content" style="margin-top: 15px; padding-bottom: 24px;">
+        <!-- JS 動態渲染可勾選的使用者 -->
       </div>
     </div>
     
@@ -1284,6 +1296,17 @@
     }
     .ai-access-btn { flex: 0 0 auto; border: 1px solid rgba(255,255,255,0.25); background: transparent; color: #cbd5e1; border-radius: 999px; padding: 6px 10px; font-size: 12px; white-space: nowrap; }
     .ai-access-btn.active { background: #22c55e; border-color: #22c55e; color: #052e16; }
+    #ai-access-admin { flex-wrap: wrap; }
+    .ai-user-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+    .ai-user-box { max-height: min(62vh, 560px); overflow: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; }
+    .ai-user-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; min-height: 52px; }
+    .ai-user-row:last-child { border-bottom: 0; }
+    .ai-user-row input { width: 18px; height: 18px; flex: 0 0 auto; }
+    .ai-user-row img, .ai-user-fallback { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #e2e8f0; flex: 0 0 auto; }
+    .ai-user-fallback { display: flex; align-items: center; justify-content: center; font-weight: bold; color: #334155; }
+    .ai-user-name { display: flex; flex-direction: column; min-width: 0; color: #0f172a; font-weight: 700; }
+    .ai-user-name small { font-weight: 500; color: #64748b; }
+    .ai-user-empty { margin: 0; padding: 18px; text-align: center; color: #64748b; }
   </style>
 
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
@@ -1292,7 +1315,7 @@
   <script defer src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script defer src="lottery.js?v=20260711_15"></script>
   <script defer src="pinball_v2.js?v=20260902_pure60fps"></script>
-  <script defer src="app.js?v=V20261028_group_admins"></script>
+  <script defer src="app.js?v=V20261028_ai_users"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>

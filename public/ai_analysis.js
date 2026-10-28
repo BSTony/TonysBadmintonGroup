@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.6.0
+ * Version: 1.6.1
  */
 (function () {
   'use strict';
@@ -216,15 +216,20 @@
     return res.json();
   }
 
-  function renderPublicStatus(isPublic) {
+  function renderPublicStatus(isPublic, userCount) {
     state.isPublic = isPublic;
+    state.aiUserCount = userCount || 0;
     els.accessSuper.classList.toggle('active', !isPublic);
     els.accessPublic.classList.toggle('active', isPublic);
     els.accessSuper.setAttribute('aria-checked', String(!isPublic));
     els.accessPublic.setAttribute('aria-checked', String(isPublic));
-    els.publicStatus.textContent = isPublic
-      ? '所有使用者都能在電腦版大廳看到入口並使用'
-      : '只有超級管理員看得到入口；其他人開啟網址只會看到「僅開放超級管理員試用」';
+    if (isPublic) {
+      els.publicStatus.textContent = '所有使用者都能在電腦版大廳看到入口並使用';
+    } else if (state.aiUserCount) {
+      els.publicStatus.textContent = `超級管理員，以及另外 ${state.aiUserCount} 位指定使用者可以使用。名單請到位大廳按「👥 名單」調整。`;
+    } else {
+      els.publicStatus.textContent = '目前只有超級管理員可以使用。要開放給特定的人，請到位大廳按「👥 名單」。';
+    }
   }
 
   async function setAccess(isPublic) {
@@ -240,7 +245,7 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) throw new Error(data.error || `HTTP ${res.status}`);
-      renderPublicStatus(!!data.isPublic);
+      renderPublicStatus(!!data.isPublic, data.userCount);
     } catch (e) {
       showError('變更使用權限失敗：' + (e && e.message ? e.message : e));
     } finally {
@@ -1999,7 +2004,7 @@
       return;
     }
     if (access.canManage) {
-      renderPublicStatus(!!access.isPublic);
+      renderPublicStatus(!!access.isPublic, access.userCount);
       els.adminBar.classList.remove('hidden');
     }
     els.mainLayout.classList.remove('hidden');
