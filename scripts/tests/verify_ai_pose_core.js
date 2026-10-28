@@ -38,6 +38,17 @@ function testDecode() {
   close(d.keypoints[16].y, (320 + 16 - 140) / 0.5 + 50, 1e-6, 'keypoint y');
   close(d.keypoints[16].score, 0.66, 1e-6, 'keypoint score');
   assert.throws(() => PoseCore.decodePose(data, [1, 84, n], lb, null), /模型輸出維度不符/);
+
+  const cols = 57;
+  const e2e = new Float32Array(2 * cols);
+  e2e[0] = 270; e2e[1] = 220; e2e[2] = 370; e2e[3] = 420; e2e[4] = 0.9; e2e[5] = 0;
+  e2e[6 + 16 * 3] = 336; e2e[6 + 16 * 3 + 1] = 336; e2e[6 + 16 * 3 + 2] = 0.66;
+  e2e[cols + 4] = 0.1;
+  const e2eDets = PoseCore.decodePose(e2e, [1, 2, cols], lb, crop, { confThreshold: 0.3, iouThreshold: 0.5 });
+  assert.strictEqual(e2eDets.length, 1, 'end-to-end low score filtered');
+  close(e2eDets[0].box.x1, (270 - 0) / 0.5 + 100, 1e-6, 'e2e box x1');
+  close(e2eDets[0].keypoints[16].x, 336 / 0.5 + 100, 1e-6, 'e2e keypoint x');
+  close(e2eDets[0].keypoints[16].score, 0.66, 1e-6, 'e2e keypoint score');
   console.log('✅ decodePose / letterbox');
 }
 

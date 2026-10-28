@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.3
+ * Version: 1.2.4
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -67,13 +67,20 @@
     return union > 0 ? inter / union : 0;
   }
 
-  // 解析 YOLOv8-pose 輸出 [1, 56, N]：4 個框座標、1 個人物分數、17 點 × (x, y, 可信度)
+  // 解析骨架模型輸出。YOLOv8 是 [1, 56, N]；YOLO26 端到端是 [1, 人數, 57]
   function decodePose(data, dims, lb, crop, opts = {}) {
     const confThreshold = opts.confThreshold ?? 0.3;
     const iouThreshold = opts.iouThreshold ?? 0.5;
     const maxDetections = opts.maxDetections ?? 30;
-    const channels = dims[1];
-    const n = dims[2];
+    const d1 = dims[1];
+    const d2 = dims[2];
+    const e2eCols = 6 + NUM_KEYPOINTS * 3;
+    if (d2 === e2eCols || d1 === e2eCols) {
+      const rowMajor = d2 === e2eCols;
+      return decodePoseEnd2End(data, rowMajor ? d1 : d2, e2eCols, rowMajor, lb, crop, confThreshold, iouThreshold, maxDetections);
+    }
+    const channels = d1;
+    const n = d2;
     if (channels !== 5 + NUM_KEYPOINTS * 3) {
       throw new Error(`模型輸出維度不符：${dims.join('x')}`);
     }
@@ -88,8 +95,39 @@
       const h = data[3 * n + i];
       cands.push({ i, score, x1: cx - w / 2, y1: cy - h / 2, x2: cx + w / 2, y2: cy + h / 2 });
     }
-    cands.sort((a, b) => b.score - a.score);
+    return finishPoseCandidates(cands, (c, toX, toY) => {
+      const keypoints = new Array(NUM_KEYPOINTS);
+      for (let k = 0; k < NUM_KEYPOINTS; k++) {
+        const base = (5 + k * 3) * n + c.i;
+        keypoints[k] = { x: toX(data[base]), y: toY(data[base + n]), score: data[base + 2 * n] };
+      }
+      return keypoints;
+    }, lb, crop, iouThreshold, maxDetections);
+  }
 
+  // YOLO26 端到端：每一列是 x1,y1,x2,y2,分數,類別，接著 17 個點的 x,y,可信度。座標在補邊後的 640 畫面裡
+  function decodePoseEnd2End(data, count, cols, rowMajor, lb, crop, confThreshold, iouThreshold, maxDetections) {
+    const at = rowMajor
+      ? (det, col) => data[det * cols + col]
+      : (det, col) => data[col * count + det];
+    const cands = [];
+    for (let i = 0; i < count; i++) {
+      const score = at(i, 4);
+      if (!(score >= confThreshold)) continue;
+      cands.push({ i, score, x1: at(i, 0), y1: at(i, 1), x2: at(i, 2), y2: at(i, 3) });
+    }
+    return finishPoseCandidates(cands, (c, toX, toY) => {
+      const keypoints = new Array(NUM_KEYPOINTS);
+      for (let k = 0; k < NUM_KEYPOINTS; k++) {
+        const base = 6 + k * 3;
+        keypoints[k] = { x: toX(at(c.i, base)), y: toY(at(c.i, base + 1)), score: at(c.i, base + 2) };
+      }
+      return keypoints;
+    }, lb, crop, iouThreshold, maxDetections);
+  }
+
+  function finishPoseCandidates(cands, keypointsOf, lb, crop, iouThreshold, maxDetections) {
+    cands.sort((a, b) => b.score - a.score);
     const kept = [];
     for (const c of cands) {
       let suppressed = false;
@@ -101,23 +139,15 @@
         if (kept.length >= maxDetections) break;
       }
     }
-
     const ox = crop ? crop.x : 0;
     const oy = crop ? crop.y : 0;
     const toX = (x) => (x - lb.padX) / lb.scaleX + ox;
     const toY = (y) => (y - lb.padY) / lb.scaleY + oy;
-    return kept.map((c) => {
-      const keypoints = new Array(NUM_KEYPOINTS);
-      for (let k = 0; k < NUM_KEYPOINTS; k++) {
-        const base = (5 + k * 3) * n + c.i;
-        keypoints[k] = { x: toX(data[base]), y: toY(data[base + n]), score: data[base + 2 * n] };
-      }
-      return {
-        score: c.score,
-        box: { x1: toX(c.x1), y1: toY(c.y1), x2: toX(c.x2), y2: toY(c.y2) },
-        keypoints
-      };
-    });
+    return kept.map((c) => ({
+      score: c.score,
+      box: { x1: toX(c.x1), y1: toY(c.y1), x2: toX(c.x2), y2: toY(c.y2) },
+      keypoints: keypointsOf(c, toX, toY)
+    }));
   }
 
   function solveLinear(A, b) {

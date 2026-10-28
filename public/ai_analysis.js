@@ -1,18 +1,18 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.9
+ * Version: 1.7.10
  */
 (function () {
   'use strict';
 
   const ORT_VERSION = '1.31.1';
-  // 模型從 jsDelivr 依 commit 鎖定版本下載，不佔用伺服器流量；CDN 失敗才改由伺服器提供
+  // 先向自己的網站要模型，推上 GitHub 後再由 jsDelivr 依 commit 備援
   const MODEL_SOURCES = [
-    'https://cdn.jsdelivr.net/gh/BSTony/TonysBadmintonGroup@095ffc696559a465d6e293c023b129f91f1bdc59/public/models/',
-    '/models/'
+    '/models/',
+    'https://cdn.jsdelivr.net/gh/BSTony/TonysBadmintonGroup@095ffc696559a465d6e293c023b129f91f1bdc59/public/models/'
   ];
-  const POSE_MODEL_FILES = ['yolov8n-pose.onnx'];
+  const POSE_MODEL_FILES = ['yolo26x-pose.onnx.part0', 'yolo26x-pose.onnx.part1', 'yolo26x-pose.onnx.part2', 'yolo26x-pose.onnx.part3', 'yolo26x-pose.onnx.part4', 'yolo26x-pose.onnx.part5'];
   const TRACKNET_MODEL_FILES = ['tracknetv3.onnx.part0', 'tracknetv3.onnx.part1', 'tracknetv3.onnx.part2', 'tracknetv3.onnx.part3'];
   const PLAYBACK_RATE = 2;
   // TrackNet 以 30fps 訓練：60fps 影片隔一格取一格
@@ -266,7 +266,7 @@
     }
     const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
     if (isMobile) {
-      warnings.push('建議用電腦開啟：手機的運算能力和記憶體不足以分析整段影片。');
+      warnings.push('這版骨架是 YOLO26x，約 220MB，請用有顯示卡的電腦。手機記憶體不夠，可能載入失敗。');
     }
 
     let gpuOk = false;
@@ -348,8 +348,8 @@
     ort.env.wasm.wasmPaths = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`;
     ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
 
-    setChip(els.modelStatus, '下載骨架模型 0%');
-    const bytes = await fetchModelFiles(POSE_MODEL_FILES, (p) => setChip(els.modelStatus, `下載骨架模型 ${Math.round(p * 100)}%`));
+    setChip(els.modelStatus, '下載 YOLO26x 骨架 0%');
+    const bytes = await fetchModelFiles(POSE_MODEL_FILES, (p) => setChip(els.modelStatus, `下載 YOLO26x 骨架 ${Math.round(p * 100)}%`));
     setChip(els.modelStatus, '初始化模型…');
 
     const providers = preferGpu ? ['webgpu', 'wasm'] : ['wasm'];
@@ -374,7 +374,7 @@
     const warm = await withOrt(() => state.session.run({ [state.inputName]: new ort.Tensor('float32', new Float32Array(3 * size * size), [1, 3, size, size]) }));
     disposeOutputs(warm);
     console.log(`[AI] backend=${state.backend} warmup=${(performance.now() - t0).toFixed(0)}ms`);
-    setChip(els.modelStatus, `模型就緒（${state.backend === 'webgpu' ? '顯示卡' : 'CPU'}）`, 'ok');
+    setChip(els.modelStatus, `YOLO26x 就緒（${state.backend === 'webgpu' ? '顯示卡' : 'CPU'}）`, 'ok');
     if (state.backend !== 'webgpu' && preferGpu) {
       showError('顯示卡初始化失敗，已改用 CPU 計算，速度會比較慢。');
     }
