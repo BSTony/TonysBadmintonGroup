@@ -11480,7 +11480,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793160666925,
+    "lastActiveTime": 1793181649940,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11554,7 +11554,6 @@
           "顏鎧霖",
           "Sammy Su",
           "Ray",
-          "Jet",
           "陳呈",
           "康",
           "Jojo",
@@ -11564,6 +11563,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/28 18:00",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "10/28 12:11",
         "name": "弘彬/Jason",
