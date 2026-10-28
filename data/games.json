@@ -12268,7 +12268,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793106234508,
-    "lastActiveTime": 1793145219388,
+    "lastActiveTime": 1793182043118,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12315,12 +12315,20 @@
           "陳呈",
           "afrahuang",
           "雪倫",
-          "Sean"
+          "Sean",
+          "wei"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/28 18:07",
+        "name": "wei",
+        "operator": "Wei",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/28 07:53",
         "name": "Sean",
