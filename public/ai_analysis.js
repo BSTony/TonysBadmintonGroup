@@ -7,10 +7,10 @@
   'use strict';
 
   const ORT_VERSION = '1.31.1';
-  // 先向自己的網站要模型，推上 GitHub 後再由 jsDelivr 依 commit 備援
+  // 模型從 jsDelivr 依 commit 鎖定版本下載，不佔用伺服器流量；CDN 失敗才改由伺服器提供
   const MODEL_SOURCES = [
-    '/models/',
-    'https://cdn.jsdelivr.net/gh/BSTony/TonysBadmintonGroup@095ffc696559a465d6e293c023b129f91f1bdc59/public/models/'
+    'https://cdn.jsdelivr.net/gh/BSTony/TonysBadmintonGroup@9fd45aef1c23d1581a633d134c05ee28f3dd263c/public/models/',
+    '/models/'
   ];
   const POSE_MODEL_FILES = ['yolo26x-pose.onnx.part0', 'yolo26x-pose.onnx.part1', 'yolo26x-pose.onnx.part2', 'yolo26x-pose.onnx.part3', 'yolo26x-pose.onnx.part4', 'yolo26x-pose.onnx.part5'];
   const TRACKNET_MODEL_FILES = ['tracknetv3.onnx.part0', 'tracknetv3.onnx.part1', 'tracknetv3.onnx.part2', 'tracknetv3.onnx.part3'];
