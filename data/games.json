@@ -12014,7 +12014,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1793187322241,
+    "lastActiveTime": 1793187333712,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12081,7 +12081,6 @@
           "Jason",
           "Mike",
           "楊程鈞",
-          "winnie",
           "江こう 洋々",
           "Gary",
           "花🥀",
@@ -12092,6 +12091,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/28 19:35",
+        "name": "winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/28 19:35",
         "name": "Emily🙈🙉🙊",
