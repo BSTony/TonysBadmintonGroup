@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-27
- * Version: 1.1.0
+ * Date: 2026-10-28
+ * Version: 1.2.0
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -523,6 +523,144 @@
     return best ? { x: best.x, y: best.y } : null;
   }
 
+  // 用球場平面座標估計球速。球在空中時，這個數字會比真實球速低。
+  // project(x, y) 把影片像素轉成球場公尺；沒有校正就無法估計。
+  function shuttlePace(samples, project) {
+    const points = [];
+    const flights = [];
+    const GAP = 0.18;
+    let prev = null;
+    let speeds = null;
+    let t0 = 0;
+    const closeFlight = (t1) => {
+      if (!speeds || !speeds.length) { speeds = null; return; }
+      const peak = Math.max.apply(null, speeds);
+      const head = speeds.slice(0, Math.min(3, speeds.length));
+      const start = head.reduce((a, b) => a + b, 0) / head.length;
+      const end = speeds[speeds.length - 1];
+      flights.push({ t0, t1, peak, start, end, hold: peak > 1 ? end / peak : 0 });
+      speeds = null;
+    };
+    (samples || []).forEach((s) => {
+      if (!s || s.x == null || s.y == null || typeof project !== 'function') {
+        prev = null;
+        closeFlight(s && s.t);
+        return;
+      }
+      const p = project(s.x, s.y);
+      if (!p || !isFinite(p.x) || !isFinite(p.y)) {
+        prev = null;
+        closeFlight(s.t);
+        return;
+      }
+      if (prev && s.t - prev.t > GAP) {
+        closeFlight(prev.t);
+        prev = null;
+      }
+      if (prev) {
+        const dt = s.t - prev.t;
+        if (dt >= 1 / 90 && dt <= GAP) {
+          const kmh = Math.hypot(p.x - prev.p.x, p.y - prev.p.y) / dt * 3.6;
+          if (!speeds) { speeds = []; t0 = prev.t; }
+          speeds.push(kmh);
+          points.push({ t: s.t, kmh, flight: flights.length });
+        }
+      }
+      prev = { t: s.t, p };
+    });
+    closeFlight(prev && prev.t);
+    const max = flights.reduce((m, f) => Math.max(m, f.peak), 0);
+    const avg = points.length ? points.reduce((a, p) => a + p.kmh, 0) / points.length : 0;
+    const hold = flights.length ? flights.reduce((a, f) => a + f.hold, 0) / flights.length : 0;
+    return { points, flights, max, avg, hold };
+  }
+
+  // 殺球／進攻／控球只依估計球速粗分，方便看這拍的節奏
+  function shuttleRhythm(kmh) {
+    if (!(kmh > 0)) return '';
+    if (kmh >= 140) return '殺球';
+    if (kmh >= 80) return '進攻';
+    return '控球';
+  }
+
+  // Chrome 的 MP4 錄製會把「網頁開了多久」寫成影片長度。這裡改回實際秒數。
+  function patchMp4Duration(bytes, durationSec) {
+    if (!bytes || bytes.length < 16 || !(durationSec > 0)) return null;
+    const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+    let movieScale = 1000;
+    const containers = { moov: 1, trak: 1, mdia: 1, minf: 1, stbl: 1, edts: 1 };
+
+    function walk(start, end) {
+      let p = start;
+      while (p + 8 <= end) {
+        let size = view.getUint32(p);
+        let header = 8;
+        if (size === 1) {
+          if (p + 16 > end) return;
+          size = Number(view.getBigUint64(p + 8));
+          header = 16;
+        } else if (size === 0) size = end - p;
+        if (size < header || p + size > end) return;
+        const type = String.fromCharCode(data[p + 4], data[p + 5], data[p + 6], data[p + 7]);
+        if (type === 'mvhd' || type === 'mdhd') patchMediaHeader(p, header, type === 'mvhd');
+        else if (type === 'tkhd') patchTrackHeader(p, header);
+        else if (type === 'elst') patchEditList(p, header, p + size);
+        else if (containers[type]) walk(p + header, p + size);
+        p += size;
+      }
+    }
+
+    function setU32(pos, value) {
+      view.setUint32(pos, Math.max(0, Math.min(0xffffffff, Math.round(value))));
+    }
+
+    function patchMediaHeader(box, header, isMovie) {
+      const ver = data[box + header];
+      if (ver === 0) {
+        const scale = view.getUint32(box + header + 12);
+        if (isMovie) movieScale = scale || movieScale;
+        setU32(box + header + 16, durationSec * scale);
+      } else if (ver === 1 && box + header + 32 <= data.length) {
+        const scale = view.getUint32(box + header + 20);
+        if (isMovie) movieScale = scale || movieScale;
+        view.setBigUint64(box + header + 24, BigInt(Math.round(durationSec * scale)));
+      }
+    }
+
+    function patchTrackHeader(box, header) {
+      const ver = data[box + header];
+      const ticks = durationSec * movieScale;
+      if (ver === 0) setU32(box + header + 20, ticks);
+      else if (ver === 1) view.setBigUint64(box + header + 28, BigInt(Math.round(ticks)));
+    }
+
+    function patchEditList(box, header, end) {
+      const ver = data[box + header];
+      const count = view.getUint32(box + header + 4);
+      let cursor = box + header + 8;
+      const ticks = Math.round(durationSec * movieScale);
+      for (let i = 0; i < count; i++) {
+        if (ver === 0) {
+          if (cursor + 12 > end) break;
+          setU32(cursor, ticks);
+          cursor += 12;
+        } else {
+          if (cursor + 20 > end) break;
+          view.setBigUint64(cursor, BigInt(ticks));
+          cursor += 20;
+        }
+      }
+    }
+
+    try {
+      walk(0, data.length);
+    } catch (e) {
+      return null;
+    }
+    return data;
+  }
+
   return {
     INPUT_SIZE,
     NUM_KEYPOINTS,
@@ -554,6 +692,9 @@
     SHUTTLE,
     medianImage,
     buildTrackNetInput,
-    decodeShuttleHeatmap
+    decodeShuttleHeatmap,
+    shuttlePace,
+    shuttleRhythm,
+    patchMp4Duration
   };
 });

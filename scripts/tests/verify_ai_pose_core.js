@@ -139,9 +139,47 @@ function testShuttle() {
   console.log('✅ shuttle background / input / heatmap decode');
 }
 
+function testShuttlePace() {
+  const samples = [];
+  for (let i = 0; i <= 4; i++) samples.push({ t: i * 0.1, x: i * 10, y: 0 });
+  samples.push({ t: 2, x: 0, y: 0 });
+  samples.push({ t: 2.1, x: 1, y: 0 });
+  const pace = PoseCore.shuttlePace(samples, (x, y) => ({ x, y }));
+  assert.strictEqual(pace.flights.length, 2, 'a time gap starts a new flight');
+  close(pace.flights[0].peak, 360, 0.1, '10 m in 0.1 s is 360 km/h');
+  close(pace.max, 360, 0.1, 'max speed');
+  assert.strictEqual(PoseCore.shuttleRhythm(pace.flights[0].peak), '殺球');
+  assert.strictEqual(PoseCore.shuttleRhythm(36), '控球');
+  assert.strictEqual(PoseCore.shuttlePace([{ t: 0, x: null, y: null }], (x, y) => ({ x, y })).points.length, 0);
+  console.log('✅ shuttle pace');
+}
+
+function u32(view, offset, value) {
+  view.setUint32(offset, value);
+}
+
+function testPatchMp4Duration() {
+  const mvhd = new Uint8Array(8 + 20);
+  const mv = new DataView(mvhd.buffer);
+  u32(mv, 0, mvhd.length);
+  mvhd.set([109, 118, 104, 100], 4); // mvhd
+  u32(mv, 20, 1000); // timescale at content+12 → file offset 8+12=20
+  u32(mv, 24, 1566794000); // bogus duration
+  const moov = new Uint8Array(8 + mvhd.length);
+  const mo = new DataView(moov.buffer);
+  u32(mo, 0, moov.length);
+  moov.set([109, 111, 111, 118], 4); // moov
+  moov.set(mvhd, 8);
+  const fixed = PoseCore.patchMp4Duration(moov, 60);
+  assert.strictEqual(new DataView(fixed.buffer).getUint32(8 + 24), 60000, 'duration rewritten to 60s at timescale 1000');
+  console.log('✅ mp4 duration patch');
+}
+
 testDecode();
 testHomography();
 testTrackerAndStats();
 testFarCrop();
 testShuttle();
+testShuttlePace();
+testPatchMp4Duration();
 console.log('\n🎉 AI pose core checks passed');

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.6.2
+ * Version: 1.7.0
  */
 (function () {
   'use strict';
@@ -1126,7 +1126,45 @@
     ctx.arc(last.x, last.y, lw * 3.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
+    const pace = paceAtTime(now);
+    if (pace) {
+      const text = `${Math.round(pace.kmh)} km/h  ${pace.rhythm}`;
+      ctx.font = `bold ${Math.round(lw * 8)}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
+      const tw = ctx.measureText(text).width;
+      const x = Math.min(last.x + lw * 8, ctx.canvas.width - tw - lw * 4);
+      const y = Math.max(lw * 10, last.y - lw * 8);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+      ctx.fillRect(x - lw * 2, y - lw * 7, tw + lw * 4, lw * 10);
+      ctx.fillStyle = '#facc15';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, x, y - lw * 2);
+    }
     ctx.restore();
+  }
+
+  function shuttlePaceData() {
+    if (!state.calib || !state.shuttle.length) return null;
+    if (state._pace && state._paceN === state.shuttle.length) return state._pace;
+    state._pace = Core.shuttlePace(state.shuttle, (x, y) => Core.applyHomography(state.calib.H, x, y));
+    state._paceN = state.shuttle.length;
+    return state._pace;
+  }
+
+  function paceAtTime(t) {
+    const pace = shuttlePaceData();
+    if (!pace || !pace.points.length) return null;
+    let lo = 0;
+    let hi = pace.points.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (pace.points[mid].t < t) lo = mid + 1;
+      else hi = mid;
+    }
+    let best = pace.points[lo];
+    if (lo > 0 && Math.abs(pace.points[lo - 1].t - t) < Math.abs(best.t - t)) best = pace.points[lo - 1];
+    if (Math.abs(best.t - t) > 0.2) return null;
+    const flight = pace.flights[best.flight];
+    return { kmh: best.kmh, rhythm: Core.shuttleRhythm(flight ? flight.peak : best.kmh) };
   }
 
   function courtToCanvas(x, y) {
@@ -1315,6 +1353,22 @@
   function shuttleCardHtml() {
     const { total, found } = shuttleSummary();
     if (!total) return '';
+    const pace = shuttlePaceData();
+    let paceHtml = '<div class="zone-legend">完成球場校正後，才能用球場尺寸估計球速。</div>';
+    if (state.calib && pace && pace.points.length) {
+      paceHtml = `
+        <div class="pc-grid">
+          <div><span class="pc-val">${Math.round(pace.max)}</span><span class="pc-unit">km/h</span><div class="pc-label">最快球速</div></div>
+          <div><span class="pc-val">${Math.round(pace.avg)}</span><span class="pc-unit">km/h</span><div class="pc-label">平均球速</div></div>
+        </div>
+        <div class="pc-grid">
+          <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>
+          <div><span class="pc-val">${pace.flights.length}</span><span class="pc-unit">段</span><div class="pc-label">飛行段數</div></div>
+        </div>
+        <div class="zone-legend">速度維持是一段飛行最後還留下的最快速度比例，越高代表球速掉得少。這是球場平面上的估計，球飛得越高，數字會比實際球速低。拖動影片時，球旁邊會顯示當時球速和節奏（殺球、進攻、控球）。</div>`;
+    } else if (state.calib) {
+      paceHtml = '<div class="zone-legend">這段還沒有足夠的連續球點來估計球速。</div>';
+    }
     return `
       <div class="player-card" style="--pc:#facc15">
         <div class="pc-head"><span class="pc-dot"></span>羽球軌跡</div>
@@ -1322,7 +1376,7 @@
           <div><span class="pc-val">${Math.round((found / total) * 100)}%</span><div class="pc-label">畫面中找到球的比例</div></div>
           <div><span class="pc-val">${found}</span><span class="pc-unit">點</span><div class="pc-label">記錄到的球位置</div></div>
         </div>
-        <div class="zone-legend">分析完可拖動影片，畫面上會顯示黃色的球軌跡</div>
+        ${paceHtml}
       </div>`;
   }
 
@@ -1688,14 +1742,8 @@
         return;
       }
       paintExportFrame(ctx, canvas, v, span.start);
+      // 不接原片音軌。分析時影片被反覆跳格，音軌時間會變成幾萬小時，播放器就壞掉。
       const canvasStream = canvas.captureStream(30);
-      v.muted = false;
-      try {
-        const captured = v.captureStream();
-        captured.getVideoTracks().forEach((track) => track.stop());
-        audioTrack = captured.getAudioTracks()[0] || null;
-        if (audioTrack) canvasStream.addTrack(audioTrack);
-      } catch (e) { audioTrack = null; }
       const bits = Math.round(Math.min(16e6, Math.max(2.5e6, canvas.width * canvas.height * 4)));
       try {
         recorder = openRecorder(canvasStream, !!audioTrack, bits);
@@ -1763,11 +1811,15 @@
         setProgressText('已取消輸出影片');
         return;
       }
-      const blob = new Blob(chunks, { type: (recorder.mimeType || 'video/webm').split(';')[0] });
+      let blob = new Blob(chunks, { type: (recorder.mimeType || 'video/webm').split(';')[0] });
       if (blob.size < 1000) throw new Error('沒有錄到畫面');
       const ext = /mp4/i.test(recorder.mimeType) ? 'mp4' : 'webm';
+      if (ext === 'mp4') {
+        const fixed = Core.patchMp4Duration(new Uint8Array(await blob.arrayBuffer()), span.end - span.start);
+        if (fixed) blob = new Blob([fixed], { type: 'video/mp4' });
+      }
       download(blob, `${baseName()}_analysis.${ext}`, 120000);
-      setProgressText(`已存到你的下載資料夾（${ext.toUpperCase()}），這支影片沒有上傳到伺服器`);
+      setProgressText(`已存到你的下載資料夾（${ext.toUpperCase()}，不含原片聲音）。長度是分析的那一段，不會再出現幾萬小時。`);
     } catch (e) {
       console.error('[AI] 輸出影片失敗', e);
       showError('輸出影片失敗：' + (e && e.message ? e.message : e));
