@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.7.1
+  Version: 1.7.8
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -78,10 +78,12 @@
     /* 不可用 overflow: hidden 裁圓角，否則畫面邊角的球場角點會點不到 */
     /* 高度跟視窗一起縮，右側整張俯視球場才跟得上、不用往下捲 */
     .video-wrap { position: relative; margin: 0; width: auto; max-width: 100%; max-height: calc(100dvh - 180px); background: #000; }
-    .video-wrap video { display: block; width: 100%; height: 100%; object-fit: contain; }
-    #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .video-wrap video { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
+    #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
     #overlay.clickable { pointer-events: auto; cursor: crosshair; }
-    .calib-hint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(250, 204, 21, 0.5); color: #fde68a; padding: 8px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 10px; align-items: center; white-space: nowrap; }
+    /* 校正時影片外一圈可以點，角沒拍到也能把點放在畫面外 */
+    .calib-pad { position: absolute; left: -35%; top: -35%; width: 170%; height: 170%; z-index: 0; cursor: crosshair; border: 1px dashed rgba(250, 204, 21, 0.7); background: rgba(250, 204, 21, 0.08); }
+    .calib-hint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(250, 204, 21, 0.5); color: #fde68a; padding: 8px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 10px; align-items: center; max-width: min(92%, 640px); text-align: center; z-index: 5; }
 
     .run { margin-top: 16px; }
     .run-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
@@ -97,7 +99,7 @@
     .lg-read { background: rgba(148, 163, 184, 0.6); }
     /* 固定一行，文字長短變化時下方的影片才不會跟著上下跳 */
     #progress-text { flex: 1 1 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #calib-handles { position: absolute; inset: 0; pointer-events: none; }
+    #calib-handles { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
     .calib-handle { position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; border: 2px solid #0f172a; background: #facc15; box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.35); cursor: grab; pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #0f172a; }
     .calib-handle.dragging { cursor: grabbing; transform: scale(1.25); }
     .analysis-cover { position: absolute; inset: 0; background: #0b1220; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 16px; z-index: 3; }
@@ -109,8 +111,21 @@
     #preview-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
     .preview-bar { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.88); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; white-space: nowrap; }
 
-    #court { display: block; width: auto; height: auto; max-width: 100%; max-height: min(68dvh, calc(100dvh - 190px)); object-fit: contain; border-radius: 10px; }
-    .court-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .live-pace { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; padding: 10px 12px; border-radius: 12px; background: #0b1220; border: 1px solid rgba(250, 204, 21, 0.4); }
+    .live-row { display: grid; grid-template-columns: 3em minmax(0, 1fr); align-items: baseline; gap: 8px; min-height: 1.45em; }
+    .live-kicker { font-size: 13px; color: var(--muted); line-height: 1.2; }
+    .live-val { font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 1.15em; }
+    .live-speed { font-size: 28px; color: #facc15; }
+    .live-unit { font-size: 13px; font-weight: 700; color: var(--muted); margin-left: 4px; }
+    #live-kmh { display: inline-block; min-width: 3.2ch; text-align: right; }
+    .live-rhythm { font-size: 20px; color: var(--muted); }
+    .live-rhythm[data-kind="殺球"] { color: #fb7185; }
+    .live-rhythm[data-kind="進攻"] { color: #facc15; }
+    .live-rhythm[data-kind="控球"] { color: #86efac; }
+    .live-shot { font-size: 16px; color: #e2e8f0; }
+    #court { display: block; width: auto; height: auto; max-width: 100%; max-height: min(52dvh, calc(100dvh - 330px)); object-fit: contain; border-radius: 10px; }
+    .shot-log { max-height: 180px; overflow: auto; display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+    .shot-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
     .player-stats { display: flex; flex-direction: column; gap: 10px; }
     .player-card { border: 1px solid var(--line); border-left: 4px solid var(--pc); border-radius: 10px; padding: 10px 12px; background: var(--panel-2); }
     .pc-head { font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -220,6 +235,9 @@
             <button type="button" id="btn-reuse-calib" class="btn btn-ghost btn-small hidden">套用上次的校正</button>
           </div>
           <span id="calib-status" class="muted">尚未校正</span>
+          <label class="inline" title="把四個角以外的畫面遮住，旁邊球場的人就不會干擾。球和場上球員會留白，球飛到場外也看得到。">
+            <input type="checkbox" id="mask-outside" checked> 遮住場外
+          </label>
         </div>
       </div>
 
@@ -227,7 +245,7 @@
         <div class="run-buttons">
           <button type="button" id="btn-analyze" class="btn btn-primary btn-big">▶ 開始分析</button>
           <button type="button" id="btn-detect" class="btn">🔍 偵測目前畫面</button>
-          <button type="button" id="btn-export-video" class="btn" title="把骨架、球場線和球路做進影片，存在你的電腦，不會上傳。輸出時以原速播放一次，請留在這個分頁。">⬇ 下載分析影片</button>
+          <button type="button" id="btn-export-video" class="btn" title="把骨架、球場線、球路和右側俯視球場做進影片，存在你的電腦，不會上傳。輸出時以原速播放一次，請留在這個分頁。">⬇ 下載分析影片</button>
           <button type="button" id="btn-reset" class="btn btn-ghost">清除結果</button>
         </div>
         <div id="timeline" class="timeline" title="亮色是已分析完成的部分，點一下就能看那個時間點的結果">
@@ -252,6 +270,7 @@
             </div>
           </div>
           <div id="video-wrap" class="video-wrap hidden">
+            <div id="calib-pad" class="calib-pad hidden" title="角沒拍到時，點這裡把點放到畫面外"></div>
             <video id="video" playsinline muted preload="auto" controls></video>
             <canvas id="overlay"></canvas>
             <div id="calib-handles"></div>
@@ -281,14 +300,24 @@
           </div>
         </div>
         <div class="panel court-panel">
+          <div id="live-pace" class="live-pace">
+            <div class="live-row">
+              <span class="live-kicker">球速</span>
+              <span class="live-val live-speed"><span id="live-kmh">—</span><span class="live-unit">km/h</span></span>
+            </div>
+            <div class="live-row">
+              <span class="live-kicker">球質</span>
+              <span id="live-rhythm" class="live-val live-rhythm">—</span>
+            </div>
+            <div class="live-row">
+              <span class="live-kicker">球路</span>
+              <span id="live-shot" class="live-val live-shot">—</span>
+            </div>
+          </div>
           <div class="panel-title">俯視球場</div>
           <div id="heat-tabs" class="seg small hidden"></div>
           <div class="court-fit">
             <canvas id="court"></canvas>
-          </div>
-          <div class="court-actions">
-            <button type="button" id="btn-export-png" class="btn btn-ghost btn-small">下載熱圖</button>
-            <button type="button" id="btn-export-json" class="btn btn-ghost btn-small">下載分析結果</button>
           </div>
         </div>
       </div>
@@ -309,7 +338,7 @@
   <div id="toast" class="toast hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
-  <script src="ai_pose_core.js?v=20261028f"></script>
-  <script src="ai_analysis.js?v=20261028g"></script>
+  <script src="ai_pose_core.js?v=20261028m"></script>
+  <script src="ai_analysis.js?v=20261028n"></script>
 </body>
 </html>

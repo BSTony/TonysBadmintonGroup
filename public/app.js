@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.43
+ * Version: 1.2.44
  */
 let globalLobbyUsers = [];
 
@@ -9779,6 +9779,7 @@ function initGroupAdminSettings() {
 // 未公開時，超級管理員與指定名單都能用；公開旗標一變就要重新問伺服器
 let globalAiAnalysisGranted = false;
 let globalAiAnalysisUserCount = 0;
+let globalAiAnalysisGroupCount = 0;
 let aiAccessListed = false;
 let aiAccessCache = { uid: '', at: 0 };
 let aiAccessSeq = 0;
@@ -9794,13 +9795,22 @@ function aiEntryAllowed(effIsSuperAdmin) {
   return !!(effIsSuperAdmin || globalAiAnalysisPublic || (aiAccessListed && !effIsSuperAdmin));
 }
 
+function aiAccessBadge() {
+  const groups = globalAiAnalysisGroupCount || 0;
+  const users = globalAiAnalysisUserCount || 0;
+  if (groups && users) return `${groups}群+${users}人`;
+  if (groups) return `${groups}群`;
+  if (users) return String(users);
+  return '';
+}
+
 function paintAiEntry(effIsSuperAdmin) {
   globalAiAnalysisGranted = aiAccessListed && !effIsSuperAdmin;
   document.querySelectorAll('#ai-access-admin [data-ai-access]').forEach((el) => {
     el.classList.toggle('active', (el.dataset.aiAccess === 'public') === globalAiAnalysisPublic);
   });
   const count = document.getElementById('ai-access-count');
-  if (count) count.textContent = globalAiAnalysisUserCount ? String(globalAiAnalysisUserCount) : '';
+  if (count) count.textContent = aiAccessBadge();
   const btn = document.getElementById('btn-ai-analysis');
   if (!btn) return;
   btn.classList.toggle('hidden', !aiEntryAllowed(effIsSuperAdmin));
@@ -9828,6 +9838,7 @@ function refreshAiAnalysisAccess() {
       if (!data || seq !== aiAccessSeq) return;
       noteAiAnalysisPublic(!!data.isPublic);
       globalAiAnalysisUserCount = data.userCount || 0;
+      globalAiAnalysisGroupCount = data.groupCount || 0;
       aiAccessListed = !!data.listed;
       paintAiEntry(getEffectiveRole().isSuperAdmin);
     })
@@ -9848,6 +9859,7 @@ async function setAiAnalysisAccess(isPublic) {
     if (!res.ok || !data.success) throw new Error(data.error || '變更失敗');
     noteAiAnalysisPublic(!!data.isPublic);
     if (typeof data.userCount === 'number') globalAiAnalysisUserCount = data.userCount;
+    if (typeof data.groupCount === 'number') globalAiAnalysisGroupCount = data.groupCount;
     aiAccessCache.at = 0;
     updateAiAnalysisEntry(getEffectiveRole().isSuperAdmin);
   } catch (e) {
@@ -9888,6 +9900,8 @@ function initAiAnalysisEntry() {
 // ==========================================
 let aiUsersAll = [];
 let aiUsersSelected = new Set();
+let aiGroupsAll = [];
+let aiGroupsSelected = new Set();
 let aiUsersSearch = '';
 let aiUsersOnlySelected = false;
 
@@ -9903,6 +9917,28 @@ function aiUsersVisible() {
     if (as !== bs) return as ? -1 : 1;
     return (a.name || a.uid).localeCompare(b.name || b.uid, 'zh-Hant');
   });
+}
+
+function aiGroupsVisible() {
+  const q = aiUsersSearch.trim().toLowerCase();
+  return aiGroupsAll.filter((g) => {
+    if (aiUsersOnlySelected && !aiGroupsSelected.has(g.gid)) return false;
+    if (!q) return true;
+    return (g.name || '').toLowerCase().includes(q) || g.gid.toLowerCase().includes(q);
+  });
+}
+
+function aiGroupRowsHtml() {
+  const visible = aiGroupsVisible();
+  if (!aiGroupsAll.length) return '<p class="ai-user-empty">還沒有可選的群組。群組要先有人打開過大廳。</p>';
+  if (!visible.length) return '<p class="ai-user-empty">沒有符合的群組</p>';
+  return visible.map((g) => {
+    const name = g.name || '（未命名群組）';
+    return `<label class="ai-user-row">
+      <input type="checkbox" data-ai-group="${escapeHTML(g.gid)}" ${aiGroupsSelected.has(g.gid) ? 'checked' : ''}>
+      <span class="ai-user-name">${escapeHTML(name)}<small>曾進大廳 ${g.memberCount || 0} 人</small></span>
+    </label>`;
+  }).join('');
 }
 
 function aiUserRowsHtml() {
@@ -9923,26 +9959,31 @@ function aiUserRowsHtml() {
 
 function paintAiUserList() {
   const list = document.getElementById('ai-users-box');
+  const groups = document.getElementById('ai-groups-box');
   const count = document.getElementById('ai-users-count');
   const hint = document.getElementById('ai-users-hint');
-  if (count) count.textContent = `已選 ${aiUsersSelected.size} 人`;
+  if (count) count.textContent = `已開放 ${aiGroupsSelected.size} 個群組、另外指定 ${aiUsersSelected.size} 人`;
+  if (groups) groups.innerHTML = aiGroupRowsHtml();
   if (list) list.innerHTML = aiUserRowsHtml();
-  if (hint) hint.textContent = `這個框裡有 ${aiUsersVisible().length} 人，可直接勾選。名單來自曾打開過大廳的人。`;
+  if (hint) hint.textContent = `群組 ${aiGroupsVisible().length} 個、個人 ${aiUsersVisible().length} 人。群組成員要先在該群組打開過大廳，才會被認到。`;
 }
 
 function renderAiUsers() {
   const box = document.getElementById('ai-users-content');
   if (!box) return;
   box.innerHTML = `<div style="${GAS_CARD}">
-    <p style="margin:0 0 8px;color:#334155;line-height:1.6;">按「不公開」時，只有超級管理員和下面勾選的人可以在電腦上使用。按「公開」則所有人都能用，這份名單會保留。超級管理員不用勾。</p>
+    <p style="margin:0 0 8px;color:#334155;line-height:1.6;">按「不公開」時，超級管理員、下面勾選的整個群組，以及另外勾選的個人可以使用。群組和個人可以一起用。按「公開」則所有人都能用，這些勾選會保留。超級管理員不用勾。</p>
     <div id="ai-users-count" style="font-weight:bold;margin-bottom:8px;"></div>
-    <input id="ai-users-search" type="search" placeholder="搜尋姓名或 ID" value="${escapeHTML(aiUsersSearch)}" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;box-sizing:border-box;">
+    <input id="ai-users-search" type="search" placeholder="搜尋群組、姓名或 ID" value="${escapeHTML(aiUsersSearch)}" style="width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;box-sizing:border-box;">
     <div class="ai-user-tools">
       <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="ai-users-only" ${aiUsersOnlySelected ? 'checked' : ''}>只看已勾選</label>
       <button type="button" id="ai-users-all" class="btn-secondary" style="${GAS_SMALL_BTN}">全選搜尋結果</button>
       <button type="button" id="ai-users-none" class="btn-secondary" style="${GAS_SMALL_BTN}">取消搜尋結果</button>
-      <button type="button" id="ai-users-save" class="btn btn-primary" style="${GAS_SMALL_BTN}background:#0f172a;color:#fff;">儲存名單</button>
+      <button type="button" id="ai-users-save" class="btn btn-primary" style="${GAS_SMALL_BTN}background:#0f172a;color:#fff;">儲存</button>
     </div>
+    <div style="font-weight:700;margin:4px 0;">群組</div>
+    <div id="ai-groups-box" class="ai-user-box ai-group-box"></div>
+    <div style="font-weight:700;margin:4px 0;">個人</div>
     <div id="ai-users-box" class="ai-user-box"></div>
     <p id="ai-users-hint" style="margin:8px 0 0;color:#64748b;font-size:12px;"></p>
   </div>`;
@@ -9967,9 +10008,12 @@ async function openAiUserSettings() {
     if (!res.ok || !data.success) throw new Error(data.error || '讀取失敗');
     aiUsersAll = Array.isArray(data.users) ? data.users : [];
     aiUsersSelected = new Set(aiUsersAll.filter((u) => u.selected).map((u) => u.uid));
+    aiGroupsAll = Array.isArray(data.groups) ? data.groups : [];
+    aiGroupsSelected = new Set(aiGroupsAll.filter((g) => g.selected).map((g) => g.gid));
     aiUsersSearch = '';
     aiUsersOnlySelected = false;
     globalAiAnalysisUserCount = aiUsersSelected.size;
+    globalAiAnalysisGroupCount = aiGroupsSelected.size;
     renderAiUsers();
   } catch (e) {
     box.innerHTML = `<p style="text-align:center;color:#e53935;padding:20px;">❌ ${escapeHTML(e.message)}</p>`;
@@ -9992,6 +10036,14 @@ function initAiUserSettings() {
       paintAiUserList();
       return;
     }
+    const gid = e.target.dataset && e.target.dataset.aiGroup;
+    if (gid) {
+      if (e.target.checked) aiGroupsSelected.add(gid);
+      else aiGroupsSelected.delete(gid);
+      paintAiUserCountOnly();
+      if (aiUsersOnlySelected) paintAiUserList();
+      return;
+    }
     const uid = e.target.dataset && e.target.dataset.aiUser;
     if (!uid) return;
     if (e.target.checked) aiUsersSelected.add(uid);
@@ -10003,11 +10055,14 @@ function initAiUserSettings() {
     const el = e.target.closest('button');
     if (!el) return;
     const visible = aiUsersVisible();
+    const visibleGroups = aiGroupsVisible();
     if (el.id === 'ai-users-all') {
       visible.forEach((u) => aiUsersSelected.add(u.uid));
+      visibleGroups.forEach((g) => aiGroupsSelected.add(g.gid));
       paintAiUserList();
     } else if (el.id === 'ai-users-none') {
       visible.forEach((u) => aiUsersSelected.delete(u.uid));
+      visibleGroups.forEach((g) => aiGroupsSelected.delete(g.gid));
       paintAiUserList();
     } else if (el.id === 'ai-users-save') {
       el.disabled = true;
@@ -10015,14 +10070,15 @@ function initAiUserSettings() {
         const res = await fetch('/api/admin/ai_analysis', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uid: getAdminRequestUid(), users: [...aiUsersSelected] })
+          body: JSON.stringify({ uid: getAdminRequestUid(), users: [...aiUsersSelected], groups: [...aiGroupsSelected] })
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data.success) throw new Error(data.error || '儲存失敗');
         globalAiAnalysisUserCount = data.userCount || aiUsersSelected.size;
+        globalAiAnalysisGroupCount = data.groupCount || aiGroupsSelected.size;
         aiAccessCache.at = 0;
         updateAiAnalysisEntry(getEffectiveRole().isSuperAdmin);
-        alert(`✅ 已儲存，目前指定 ${globalAiAnalysisUserCount} 人`);
+        alert(`✅ 已儲存，開放 ${globalAiAnalysisGroupCount} 個群組、另外指定 ${globalAiAnalysisUserCount} 人`);
       } catch (err) {
         alert('❌ ' + err.message);
       } finally {
@@ -10034,7 +10090,7 @@ function initAiUserSettings() {
 
 function paintAiUserCountOnly() {
   const count = document.getElementById('ai-users-count');
-  if (count) count.textContent = `已選 ${aiUsersSelected.size} 人`;
+  if (count) count.textContent = `已開放 ${aiGroupsSelected.size} 個群組、另外指定 ${aiUsersSelected.size} 人`;
 }
 
 if (document.readyState === 'loading') {

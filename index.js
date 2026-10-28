@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.3.34
+ * Version: 1.3.35
  */
 const express = require('express');
 const compression = require('compression');
@@ -474,8 +474,8 @@ function isWeakVisitUserId(userId) {
   return userId === 'U_LOCAL_TEST' || String(userId).startsWith('U_GUEST_') || String(userId).startsWith('U_LOCAL') || String(userId).startsWith('P_');
 }
 let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
-// 功能開關：未公開時，AI 影片分析只給超級管理員與 aiAnalysisUsers 名單
-let featureSettings = { aiAnalysisPublic: false, aiAnalysisUsers: [] };
+// 功能開關：未公開時，AI 影片分析給超級管理員、指定的人，以及指定群組裡曾打開過大廳的人
+let featureSettings = { aiAnalysisPublic: false, aiAnalysisUsers: [], aiAnalysisGroups: [] };
 // 群組管理員可看到的名單：{ uid: { templates: [名單名稱], name } }；沒有設定 templates 的人沿用「依管理的群組」舊規則
 let adminPermissions = {};
 
@@ -1803,15 +1803,42 @@ function normalizeAiAnalysisUsers(list) {
   return out;
 }
 
+function normalizeAiAnalysisGroups(list) {
+  const out = [];
+  const seen = new Set();
+  if (!Array.isArray(list)) return out;
+  for (const raw of list) {
+    if (typeof raw !== 'string') continue;
+    const gid = raw.trim();
+    if (!/^[CR][0-9a-f]{32}$/i.test(gid) || seen.has(gid)) continue;
+    seen.add(gid);
+    out.push(gid);
+    if (out.length >= 200) break;
+  }
+  return out;
+}
+
 function normalizeFeatureSettings() {
   featureSettings.aiAnalysisPublic = !!featureSettings.aiAnalysisPublic;
   featureSettings.aiAnalysisUsers = normalizeAiAnalysisUsers(featureSettings.aiAnalysisUsers);
+  featureSettings.aiAnalysisGroups = normalizeAiAnalysisGroups(featureSettings.aiAnalysisGroups);
+}
+
+function aiAnalysisGroupHit(uid) {
+  if (!uid || !Array.isArray(featureSettings.aiAnalysisGroups)) return false;
+  for (const gid of featureSettings.aiAnalysisGroups) {
+    const viewers = lobbyVisits[gid] && lobbyVisits[gid].uniqueViewers;
+    if (viewers && viewers[uid] && !isWeakVisitUserId(uid)) return true;
+    if (groupAdmins[gid] && groupAdmins[gid].has(uid)) return true;
+  }
+  return false;
 }
 
 function canUseAiAnalysis(uid) {
   if (featureSettings.aiAnalysisPublic) return true;
   if (uid && isSuperAdmin(uid)) return true;
-  return !!(uid && featureSettings.aiAnalysisUsers.includes(uid));
+  if (uid && featureSettings.aiAnalysisUsers.includes(uid)) return true;
+  return aiAnalysisGroupHit(uid);
 }
 
 function isTrueSuperAdmin(uid) {
@@ -4249,13 +4276,15 @@ app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
 });
 
 function aiAnalysisAccessPayload(uid) {
+  const personal = !!(uid && featureSettings.aiAnalysisUsers.includes(uid));
   return {
     allowed: canUseAiAnalysis(uid),
     isPublic: !!featureSettings.aiAnalysisPublic,
     canManage: isSuperAdmin(uid),
     // 跟「是不是超管」分開，大廳預覽一般使用者時才不會把超管本人當成已開放
-    listed: !!(uid && featureSettings.aiAnalysisUsers.includes(uid)),
-    userCount: featureSettings.aiAnalysisUsers.length
+    listed: personal || aiAnalysisGroupHit(uid),
+    userCount: featureSettings.aiAnalysisUsers.length,
+    groupCount: featureSettings.aiAnalysisGroups.length
   };
 }
 
@@ -4289,6 +4318,33 @@ function buildAiAnalysisUserOptions() {
   return list;
 }
 
+function aiGroupVisitorCount(gid) {
+  const viewers = (lobbyVisits[gid] && lobbyVisits[gid].uniqueViewers) || {};
+  return Object.keys(viewers).filter((uid) => !isWeakVisitUserId(uid)).length;
+}
+
+function buildAiAnalysisGroupOptions() {
+  const selected = new Set(featureSettings.aiAnalysisGroups);
+  const list = knownGroups()
+    .filter((g) => /^[CR][0-9a-f]{32}$/i.test(g.gid))
+    .map((g) => ({
+      gid: g.gid,
+      name: g.name || '',
+      memberCount: aiGroupVisitorCount(g.gid),
+      selected: selected.has(g.gid)
+    }));
+  for (const gid of selected) {
+    if (!list.some((g) => g.gid === gid)) {
+      list.push({ gid, name: '', memberCount: aiGroupVisitorCount(gid), selected: true });
+    }
+  }
+  list.sort((a, b) => {
+    if (a.selected !== b.selected) return a.selected ? -1 : 1;
+    return (a.name || a.gid).localeCompare(b.name || b.gid, 'zh-Hant');
+  });
+  return list;
+}
+
 // AI 影片分析：未公開時只有超級管理員與指定名單能用
 app.get('/api/ai_analysis/access', (req, res) => {
   const uid = typeof req.query.uid === 'string' ? req.query.uid : '';
@@ -4303,7 +4359,9 @@ app.get('/api/admin/ai_analysis/users', (req, res) => {
     success: true,
     isPublic: !!featureSettings.aiAnalysisPublic,
     userCount: featureSettings.aiAnalysisUsers.length,
-    users: buildAiAnalysisUserOptions()
+    groupCount: featureSettings.aiAnalysisGroups.length,
+    users: buildAiAnalysisUserOptions(),
+    groups: buildAiAnalysisGroupOptions()
   });
 });
 
@@ -4314,11 +4372,13 @@ app.post('/api/admin/ai_analysis', express.json(), async (req, res) => {
   }
   const hasPublic = typeof req.body.isPublic === 'boolean';
   const hasUsers = Array.isArray(req.body.users);
-  if (!hasPublic && !hasUsers) {
+  const hasGroups = Array.isArray(req.body.groups);
+  if (!hasPublic && !hasUsers && !hasGroups) {
     return res.status(400).json({ error: '缺少權限設定' });
   }
   if (hasPublic) featureSettings.aiAnalysisPublic = req.body.isPublic;
   if (hasUsers) featureSettings.aiAnalysisUsers = normalizeAiAnalysisUsers(req.body.users);
+  if (hasGroups) featureSettings.aiAnalysisGroups = normalizeAiAnalysisGroups(req.body.groups);
   try {
     await Promise.race([
       saveFeatureSettings(),

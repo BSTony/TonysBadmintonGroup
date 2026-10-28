@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.1
+ * Version: 1.7.8
  */
 (function () {
   'use strict';
@@ -88,6 +88,7 @@
     tracknet: null,
     tracknetLoading: null,
     shuttleEnabled: true,
+    maskOutside: true,
     shuttleBg: null,
     shuttleFrames: [],
     shuttle: [],
@@ -790,6 +791,10 @@
     state.lastShuttleT = -Infinity;
     state.shuttleMs = 0;
     state.shuttleBatches = 0;
+    state._pace = null;
+    state._paceN = 0;
+    state._rally = null;
+    state._rallyKey = '';
     renderStats();
     drawCourt();
     drawOverlay();
@@ -817,7 +822,7 @@
   }
 
   function showCalibHint() {
-    els.calibHintText.textContent = `請點選球場外框（雙打邊線與底線）的四個角，順序不拘：第 ${state.clicks.length + 1} / 4 點`;
+    els.calibHintText.textContent = `請點四個角，順序不拘：第 ${state.clicks.length + 1} / 4 點。角沒拍到時，點影片外面的虛線區，讓綠線貼齊看得到的邊線`;
     els.calibHint.classList.remove('hidden');
   }
 
@@ -830,6 +835,7 @@
     state.detectFrame = null;
     els.video.controls = false;
     els.overlay.classList.add('clickable');
+    els.calibPad.classList.remove('hidden');
     showCalibHint();
     renderCalibHandles();
     drawOverlay();
@@ -840,6 +846,7 @@
     state.calibrating = false;
     state.clicks = [];
     els.overlay.classList.remove('clickable');
+    els.calibPad.classList.add('hidden');
     els.video.controls = true;
     els.calibHint.classList.add('hidden');
     renderCalibHandles();
@@ -910,10 +917,8 @@
     });
     els.calibHandles.addEventListener('pointermove', (e) => {
       if (!drag || e.pointerId !== drag.id) return;
-      const rect = els.videoWrap.getBoundingClientRect();
+      const { x, y } = clientToVideoPoint(e.clientX, e.clientY);
       const v = els.video;
-      const x = Math.min(v.videoWidth, Math.max(0, ((e.clientX - rect.left) / rect.width) * v.videoWidth));
-      const y = Math.min(v.videoHeight, Math.max(0, ((e.clientY - rect.top) / rect.height) * v.videoHeight));
       const pts = state.calibrating ? state.clicks : state.dragCalib.points;
       pts[drag.i] = { x, y };
       drag.el.style.left = `${(x / v.videoWidth) * 100}%`;
@@ -938,11 +943,23 @@
     els.calibHandles.addEventListener('pointercancel', endDrag);
   }
 
+  // 允許點到影片外面，角沒入鏡時才能把四邊形拉到跟看得見的邊線重合
+  const CALIB_OUTSIDE = 0.35;
+
+  function clientToVideoPoint(clientX, clientY) {
+    const rect = els.videoWrap.getBoundingClientRect();
+    const v = els.video;
+    const rawX = ((clientX - rect.left) / rect.width) * v.videoWidth;
+    const rawY = ((clientY - rect.top) / rect.height) * v.videoHeight;
+    return {
+      x: Math.min(v.videoWidth * (1 + CALIB_OUTSIDE), Math.max(-v.videoWidth * CALIB_OUTSIDE, rawX)),
+      y: Math.min(v.videoHeight * (1 + CALIB_OUTSIDE), Math.max(-v.videoHeight * CALIB_OUTSIDE, rawY))
+    };
+  }
+
   function onOverlayClick(e) {
     if (!state.calibrating) return;
-    const rect = els.overlay.getBoundingClientRect();
-    const x = (e.clientX - rect.left) * (els.overlay.width / rect.width);
-    const y = (e.clientY - rect.top) * (els.overlay.height / rect.height);
+    const { x, y } = clientToVideoPoint(e.clientX, e.clientY);
     state.clicks.push({ x, y });
     if (state.clicks.length < 4) {
       showCalibHint();
@@ -1016,6 +1033,7 @@
 
   // 畫某個時間點的校正線、骨架與球軌跡；呼叫端決定要不要先清畫面
   function paintResults(ctx, t, lw) {
+    if (state.calib) drawOutsideMask(ctx, state.calib, t, lw);
     if (state.calib) drawCourtOnVideo(ctx, lw, state.calib);
     const frame = findPoseFrame(t);
     if (frame) drawFrameDets(ctx, frame.dets, lw);
@@ -1081,6 +1099,61 @@
     ctx.restore();
   }
 
+  function shuttlePointsUntil(now) {
+    const pts = [];
+    let i = state.shuttle.length - 1;
+    while (i >= 0 && state.shuttle[i].t > now + 0.001) i--;
+    for (; i >= 0; i--) {
+      const s = state.shuttle[i];
+      if (now - s.t > SHUTTLE_TRAIL_SECONDS) break;
+      if (s.x !== null) pts.push(s);
+    }
+    pts.reverse();
+    return pts;
+  }
+
+  // 四角以外塗暗，旁邊球場的人就被蓋住。球的軌跡和場上球員的範圍挖空，飛出場外仍看得到
+  function drawOutsideMask(ctx, calib, t, lw) {
+    if (!state.maskOutside || !calib || !calib.points || calib.points.length < 4) return;
+    const pts = calib.points;
+    const w = ctx.canvas.width;
+    const h = ctx.canvas.height;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, w, h);
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(8, 12, 22, 0.92)';
+    ctx.fill('evenodd');
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = '#000';
+    ctx.strokeStyle = '#000';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    const frame = state.detectFrame || findPoseFrame(t);
+    if (frame) {
+      const pad = Math.max(36, lw * 16);
+      frame.dets.forEach((d) => {
+        if (!d.id || !d.box) return;
+        ctx.fillRect(d.box.x1 - pad, d.box.y1 - pad, d.box.x2 - d.box.x1 + pad * 2, d.box.y2 - d.box.y1 + pad * 2);
+      });
+    }
+    const shuttle = shuttlePointsUntil(t);
+    if (shuttle.length) {
+      const radius = Math.max(34, lw * 20);
+      ctx.lineWidth = radius * 1.7;
+      ctx.beginPath();
+      shuttle.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.stroke();
+      const last = shuttle[shuttle.length - 1];
+      ctx.beginPath();
+      ctx.arc(last.x, last.y, radius * 1.15, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   // 分析中主畫面被遮住，不必重畫；其他時候畫校正線與目前時間點的結果
   function drawOverlay() {
     if (state.running) return;
@@ -1090,27 +1163,22 @@
     if (!c.width) return;
     const lw = Math.max(2, c.width / 640);
     const calib = state.dragCalib ? state.dragCalib.preview : state.calib;
+    const t = els.video.currentTime;
+    if (calib && !state.calibrating && !state.dragCalib) drawOutsideMask(ctx, calib, t, lw);
     if (calib && !state.calibrating) drawCourtOnVideo(ctx, lw, calib);
     if (state.calibrating) drawClicks(ctx, lw);
-    const t = els.video.currentTime;
     const frame = state.detectFrame || findPoseFrame(t);
     if (frame) drawFrameDets(ctx, frame.dets, lw);
     drawShuttle(ctx, lw, t);
-    if (!previewOpen()) drawCourt(t);
+    if (!previewOpen()) {
+      drawCourt(t);
+      updateLivePace(t);
+    }
   }
 
   function drawShuttle(ctx, lw, now) {
-    if (!state.shuttle.length) return;
-    const pts = [];
-    let i = state.shuttle.length - 1;
-    while (i >= 0 && state.shuttle[i].t > now + 0.001) i--;
-    for (; i >= 0; i--) {
-      const s = state.shuttle[i];
-      if (now - s.t > SHUTTLE_TRAIL_SECONDS) break;
-      if (s.x !== null) pts.push(s);
-    }
+    const pts = shuttlePointsUntil(now);
     if (!pts.length) return;
-    pts.reverse();
     ctx.save();
     ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)';
     ctx.lineWidth = lw * 1.5;
@@ -1126,26 +1194,29 @@
     ctx.arc(last.x, last.y, lw * 3.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-    const pace = paceAtTime(now);
-    if (pace) {
-      const text = `${Math.round(pace.kmh)} km/h  ${pace.rhythm}`;
-      ctx.font = `bold ${Math.round(lw * 8)}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
-      const tw = ctx.measureText(text).width;
-      const x = Math.min(last.x + lw * 8, ctx.canvas.width - tw - lw * 4);
-      const y = Math.max(lw * 10, last.y - lw * 8);
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
-      ctx.fillRect(x - lw * 2, y - lw * 7, tw + lw * 4, lw * 10);
-      ctx.fillStyle = '#facc15';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(text, x, y - lw * 2);
-    }
     ctx.restore();
+  }
+
+  // 投影到球場外太遠的點多半是追錯，拿去算會出現幾千公里的假球速
+  function projectShuttle(x, y) {
+    const p = Core.applyHomography(state.calib.H, x, y);
+    if (!p || !isFinite(p.x) || !isFinite(p.y)) return null;
+    if (!Core.inCourtArea(p, { side: BOUNDS.side + 2, back: BOUNDS.back + 2 })) return null;
+    return p;
+  }
+
+  // 落點可以在線外，所以比球速放寬，但仍丟掉飛到球場很遠以外的錯點
+  function projectRally(x, y) {
+    const p = Core.applyHomography(state.calib.H, x, y);
+    if (!p || !isFinite(p.x) || !isFinite(p.y)) return null;
+    if (p.x < -8 || p.x > COURT.width + 8 || p.y < -8 || p.y > COURT.length + 8) return null;
+    return p;
   }
 
   function shuttlePaceData() {
     if (!state.calib || !state.shuttle.length) return null;
     if (state._pace && state._paceN === state.shuttle.length) return state._pace;
-    state._pace = Core.shuttlePace(state.shuttle, (x, y) => Core.applyHomography(state.calib.H, x, y));
+    state._pace = Core.shuttlePace(state.shuttle, projectShuttle, { maxMetersPerPixel: 0.18 });
     state._paceN = state.shuttle.length;
     return state._pace;
   }
@@ -1162,9 +1233,66 @@
     }
     let best = pace.points[lo];
     if (lo > 0 && Math.abs(pace.points[lo - 1].t - t) < Math.abs(best.t - t)) best = pace.points[lo - 1];
-    if (Math.abs(best.t - t) > 0.2) return null;
+    if (Math.abs(best.t - t) > 0.12 || !(best.kmh > 0) || best.kmh > 400) return null;
     const flight = pace.flights[best.flight];
-    return { kmh: best.kmh, rhythm: Core.shuttleRhythm(flight ? flight.peak : best.kmh) };
+    return { kmh: best.kmh, rhythm: Core.shuttleRhythm(best.kmh), peak: flight ? flight.peak : best.kmh };
+  }
+
+  // 球速、球質、球路都寫在右側固定框，不跟球在畫面上跑
+  function updateLivePace(t) {
+    if (!els.liveKmh) return;
+    const pace = typeof t === 'number' ? paceAtTime(t) : null;
+    const shot = typeof t === 'number' ? shotAtTime(t) : null;
+    if (!pace) {
+      els.liveKmh.textContent = '—';
+      els.liveRhythm.textContent = state.calib ? '—' : '需校正';
+      els.liveRhythm.removeAttribute('data-kind');
+    } else {
+      els.liveKmh.textContent = String(Math.round(pace.kmh));
+      els.liveRhythm.textContent = pace.rhythm || '—';
+      if (pace.rhythm) els.liveRhythm.dataset.kind = pace.rhythm;
+      else els.liveRhythm.removeAttribute('data-kind');
+    }
+    if (els.liveShot) els.liveShot.textContent = formatShot(shot);
+  }
+
+  function rallyData() {
+    if (!state.calib || !state.shuttle.length) return null;
+    const key = `${state.shuttle.length}:${state.poseFrames.length}:${state.mode}`;
+    if (state._rally && state._rallyKey === key) return state._rally;
+    const poses = [];
+    state.poseFrames.forEach((frame) => {
+      (frame.dets || []).forEach((d) => {
+        if (d.id) poses.push({ t: frame.t, id: d.id, kp: d.kp });
+      });
+    });
+    state._rally = Core.rallyReport({
+      shuttle: state.shuttle,
+      project: projectRally,
+      feet: state.samples,
+      poses,
+      mode: state.mode
+    });
+    state._rallyKey = key;
+    return state._rally;
+  }
+
+  function shotAtTime(t) {
+    const report = rallyData();
+    if (!report) return null;
+    let shot = null;
+    for (let i = 0; i < report.shots.length; i++) {
+      const s = report.shots[i];
+      if (t + 0.08 >= s.t0 && t <= s.t1 + 0.15) shot = s;
+    }
+    return shot;
+  }
+
+  function formatShot(shot) {
+    if (!shot) return '—';
+    const short = { near: '近端', far: '遠端', near1: '近A', near2: '近B', far1: '遠A', far2: '遠B' };
+    const who = shot.hitter ? (short[shot.hitter] || '球員') : '未對上';
+    return `${who} · ${shot.line} · ${shot.zone}${shot.out ? ' · 出界' : ''}`;
   }
 
   function courtToCanvas(x, y) {
@@ -1350,6 +1478,46 @@
     return { total: state.shuttle.length, found };
   }
 
+  function rallyCardHtml() {
+    const report = rallyData();
+    if (!report || !report.counts.shots) return '';
+    const c = report.counts;
+    const rows = report.shots.map((s) => {
+      const who = s.hitter && PLAYER_STYLE[s.hitter] ? PLAYER_STYLE[s.hitter].label : '未對上';
+      const detail = `${s.line} · ${s.zone}${s.out ? ' · 出界' : ''} · ${s.action}`;
+      return `<div class="shot-row"><span>${fmtTime(s.t0)} ${escapeHtml(who)}</span><span>${escapeHtml(detail)}</span></div>`;
+    }).join('');
+    return `
+      <div class="player-card" style="--pc:#38bdf8">
+        <div class="pc-head"><span class="pc-dot"></span>擊球與落點</div>
+        <div class="pc-grid">
+          <div><span class="pc-val">${c.shots}</span><span class="pc-unit">拍</span><div class="pc-label">分出的擊球</div></div>
+          <div><span class="pc-val">${c.out}</span><span class="pc-unit">拍</span><div class="pc-label">落點出界</div></div>
+        </div>
+        <div class="zone-legend">直線 ${c.straight} · 斜線 ${c.cross} · 放短 ${c.drop} · 高舉手 ${c.overhead} · 放網 ${c.net} · 防守 ${c.defense}</div>
+        <div class="shot-log">${rows}</div>
+        <div class="zone-legend">高舉手是手臂舉過肩並伸直，看不出拍面，所以不把殺球和高球分開。出界依單打或雙打的邊線。單打用內側邊線。</div>
+      </div>`;
+  }
+
+  function playerRallyHtml(id) {
+    const report = rallyData();
+    const p = report && report.players[id];
+    if (!p) return '';
+    const stance = p.stance == null ? '—' : p.stance.toFixed(2);
+    const move = p.move == null ? '—' : p.move.toFixed(1);
+    return `
+      <div class="pc-grid">
+        <div><span class="pc-val">${p.shots}</span><span class="pc-unit">拍</span><div class="pc-label">擊球</div></div>
+        <div><span class="pc-val">${Math.round(p.netRate * 100)}%</span><div class="pc-label">站在前場</div></div>
+      </div>
+      <div class="pc-grid">
+        <div><span class="pc-val">${stance}</span><span class="pc-unit">公尺</span><div class="pc-label">平均站距</div></div>
+        <div><span class="pc-val">${move}</span><span class="pc-unit">公尺</span><div class="pc-label">每拍移動</div></div>
+      </div>
+      <div class="zone-legend">高舉手 ${p.overhead} · 放網 ${p.net} · 防守 ${p.defense}</div>`;
+  }
+
   function shuttleCardHtml() {
     const { total, found } = shuttleSummary();
     if (!total) return '';
@@ -1365,11 +1533,11 @@
           <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>
           <div><span class="pc-val">${pace.flights.length}</span><span class="pc-unit">段</span><div class="pc-label">飛行段數</div></div>
         </div>
-        <div class="zone-legend">速度維持是一段飛行最後還留下的最快速度比例，越高代表球速掉得少。這是球場平面上的估計，球飛得越高，數字會比實際球速低。拖動影片時，球旁邊會顯示當時球速和節奏（殺球、進攻、控球）。</div>`;
+        <div class="zone-legend">速度維持是一段飛行最後還留下的最快速度比例，越高代表球速掉得少。這是球場平面上的估計，球飛得越高，數字會比實際球速低。播放或拖動影片時，右側固定框會顯示這一刻的球速和這一拍。</div>`;
     } else if (state.calib) {
       paceHtml = '<div class="zone-legend">這段還沒有足夠的連續球點來估計球速。</div>';
     }
-    return `
+    return rallyCardHtml() + `
       <div class="player-card" style="--pc:#facc15">
         <div class="pc-head"><span class="pc-dot"></span>羽球軌跡</div>
         <div class="pc-grid">
@@ -1407,6 +1575,7 @@
             <span class="z-rear" style="width:${pct(s.zones.rear)}%"></span>
           </div>
           <div class="zone-legend"><b style="color:#38bdf8">前場</b> ${pct(s.zones.front)}% · <b style="color:#a78bfa">中場</b> ${pct(s.zones.mid)}% · <b style="color:#f472b6">後場</b> ${pct(s.zones.rear)}%</div>
+          ${playerRallyHtml(id)}
         </div>`;
     }).join('');
   }
@@ -1510,6 +1679,7 @@
   function drawPreviewAt(t) {
     drawResultsAt(els.previewOverlay, t);
     drawCourt(t);
+    updateLivePace(t);
     els.previewTime.textContent = `預覽 ${fmtTime(t)}`;
     showTimelineCursor(t);
   }
@@ -1528,7 +1698,9 @@
     els.previewBox.classList.add('hidden');
     els.coverStatus.classList.remove('hidden');
     els.timelineCursor.classList.add('hidden');
-    drawCourt(state.running ? state.analyzedUntil : els.video.currentTime);
+    const t = state.running ? state.analyzedUntil : els.video.currentTime;
+    drawCourt(t);
+    updateLivePace(t);
   }
 
   function togglePreviewPlay() {
@@ -1581,8 +1753,6 @@
     els.rangeStart.disabled = !(ready && idle);
     els.rangeEnd.disabled = !(ready && idle);
     els.btnReset.disabled = !(hasSamples() && idle);
-    els.btnExportJson.disabled = !(hasSamples() && !state.running && !state.busy);
-    els.btnExportPng.disabled = !(hasSamples() && !state.running && !state.busy);
     els.btnExportVideo.disabled = !(hasSamples() && !state.running && !state.calibrating && (!state.busy || state.exporting));
     if (!state.exporting) els.btnExportVideo.textContent = '⬇ 下載分析影片';
     els.modeSingles.disabled = !idle;
@@ -1604,46 +1774,35 @@
 
   // ---------- 匯出 ----------
 
-  function exportJson() {
-    const stats = computeStats();
-    const r = (v, d) => Math.round(v * 10 ** d) / 10 ** d;
-    const v = els.video;
-    const data = {
-      app: 'TonysBadminton AI 羽球影片分析',
-      formatVersion: 1,
-      createdAt: new Date().toISOString(),
-      video: { name: state.file ? state.file.name : '', duration: r(v.duration || 0, 3), width: v.videoWidth, height: v.videoHeight },
-      settings: { mode: state.mode, sampleFps: state.sampleFps, range: { start: r(state.range.start, 3), end: r(state.range.end, 3) } },
-      model: { name: 'yolov8n-pose', backend: state.backend },
-      court: { width: COURT.width, length: COURT.length, netY: COURT.netY, axis: 'x：由左到右；y：由遠端底線到近端底線（公尺）' },
-      calibration: state.calib ? { imagePoints: state.calib.points.map((p) => [r(p.x, 1), r(p.y, 1)]) } : null,
-      shuttle: state.shuttle.length ? {
-        model: 'TrackNetV3',
-        coordinate: '影片像素座標（x 向右、y 向下）',
-        frames: state.shuttle.length,
-        detected: shuttleSummary().found,
-        samples: state.shuttle.filter((s) => s.x !== null).map((s) => [r(s.t, 3), r(s.x, 1), r(s.y, 1)])
-      } : null,
-      players: Object.keys(stats).map((id) => ({
-        id,
-        label: PLAYER_STYLE[id].label,
-        stats: {
-          distance: r(stats[id].distance, 2),
-          activeTime: r(stats[id].activeTime, 2),
-          zones: { front: r(stats[id].zones.front, 3), mid: r(stats[id].zones.mid, 3), rear: r(stats[id].zones.rear, 3) },
-          avg: stats[id].avg ? { x: r(stats[id].avg.x, 2), y: r(stats[id].avg.y, 2) } : null
-        },
-        samples: state.samples[id].map((p) => [r(p.t, 3), r(p.x, 2), r(p.y, 2)])
-      }))
+  // 輸出畫面：左邊是原片，右邊留一條跟俯視球場同比例的直欄。寬高取偶數，並限制在編碼器吃得下的尺寸
+  function exportLayout(video) {
+    const even = (n) => {
+      const v = Math.max(2, Math.round(n));
+      return v - (v % 2);
     };
-    download(new Blob([JSON.stringify(data)], { type: 'application/json' }), `${baseName()}_analysis.json`);
-  }
-
-  function exportPng() {
-    drawCourt();
-    els.court.toBlob((blob) => {
-      if (blob) download(blob, `${baseName()}_heatmap${state.heatTarget === 'all' ? '' : '_' + state.heatTarget}.png`);
-    }, 'image/png');
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    const cw = els.court.width || 324;
+    const ch = els.court.height || 696;
+    const gap = Math.max(8, Math.round(Math.min(vw, vh) * 0.016));
+    const readH0 = Math.max(96, vh * 0.12);
+    const courtH0 = Math.max(2, vh - readH0);
+    const panelW = (cw / ch) * courtH0;
+    const fit = Math.min(1, 3840 / (vw + gap + panelW), 2160 / vh);
+    const videoW = even(vw * fit);
+    const videoH = even(vh * fit);
+    const outGap = even(gap * fit);
+    const readH = even(Math.max(88, videoH * 0.12));
+    const courtH = Math.max(2, videoH - readH);
+    let outPanelW = even(courtH * (cw / ch));
+    let width = videoW + outGap + outPanelW;
+    if (width > 3840) {
+      outPanelW = Math.max(2, outPanelW - (width - 3840));
+      if (outPanelW % 2) outPanelW -= 1;
+      width = videoW + outGap + outPanelW;
+    }
+    if (width % 2) width += 1;
+    return { width, height: videoH, videoW, videoH, gap: outGap, panelW: outPanelW, panelH: courtH, readH };
   }
 
   // 分析完成輸出到結尾；暫停過則只輸出已經分析到的時間
@@ -1677,14 +1836,58 @@
     } catch (e) { /* 已經在停止 */ }
   }
 
-  // 把目前畫面畫進輸出畫布。畫布尺寸取偶數，H.264 才不會拒絕
-  function paintExportFrame(ctx, canvas, video, t) {
-    const sx = canvas.width / video.videoWidth;
-    const sy = canvas.height / video.videoHeight;
-    ctx.setTransform(sx, 0, 0, sy, 0, 0);
-    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-    paintResults(ctx, t, Math.max(2, video.videoWidth / 640));
+  // 左邊畫原片與骨架，右邊畫同一時刻的俯視球場
+  function paintExportFrame(ctx, canvas, video, t, layout) {
+    const L = layout;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = '#0b1220';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, L.videoW, L.videoH);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, L.videoW, L.videoH);
+    ctx.clip();
+    ctx.setTransform(L.videoW / video.videoWidth, 0, 0, L.videoH / video.videoHeight, 0, 0);
+    paintResults(ctx, t, Math.max(2, video.videoWidth / 640));
+    ctx.restore();
+    drawCourt(t);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const panelX = L.videoW + L.gap;
+    drawExportReadout(ctx, panelX, L, t);
+    ctx.drawImage(els.court, panelX, L.readH, L.panelW, L.panelH);
+  }
+
+  // 下載影片的右側上方也固定寫球速、球質、球路，不跟著球移動
+  function drawExportReadout(ctx, x, L, t) {
+    const pace = paceAtTime(t);
+    const shot = shotAtTime(t);
+    const quality = pace && pace.rhythm ? pace.rhythm : '—';
+    const qualityColor = quality === '殺球' ? '#fb7185' : quality === '進攻' ? '#facc15' : quality === '控球' ? '#86efac' : '#94a3b8';
+    const rows = [
+      ['球速', pace ? `${Math.round(pace.kmh)} km/h` : '—', '#facc15'],
+      ['球質', quality, qualityColor],
+      ['球路', formatShot(shot), '#e2e8f0']
+    ];
+    ctx.fillStyle = '#0b1220';
+    ctx.fillRect(x, 0, L.panelW, L.readH);
+    const rowH = L.readH / 3;
+    const fs = Math.max(18, Math.round(rowH * 0.46));
+    ctx.font = `700 ${fs}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
+    ctx.textBaseline = 'middle';
+    rows.forEach((row, i) => {
+      const y = rowH * i + rowH / 2;
+      ctx.fillStyle = '#94a3b8';
+      ctx.textAlign = 'left';
+      ctx.fillText(row[0], x + 12, y);
+      ctx.fillStyle = row[2];
+      ctx.textAlign = 'right';
+      const labelW = ctx.measureText(row[0]).width + 24;
+      let text = row[1];
+      const maxW = Math.max(20, L.panelW - labelW - 24);
+      while (text.length > 1 && ctx.measureText(text).width > maxW) text = text.slice(0, -1);
+      ctx.fillText(text, x + L.panelW - 12, y);
+    });
+    ctx.textAlign = 'left';
   }
 
   function exportAnalyzedVideo() {
@@ -1709,9 +1912,10 @@
   // 輸出全程不送出任何網路請求：播放本機影片、把骨架畫上去、存成檔案
   async function runExport(span) {
     const v = els.video;
+    const layout = exportLayout(v);
     const canvas = document.createElement('canvas');
-    canvas.width = v.videoWidth - (v.videoWidth % 2);
-    canvas.height = v.videoHeight - (v.videoHeight % 2);
+    canvas.width = layout.width;
+    canvas.height = layout.height;
     const ctx = canvas.getContext('2d');
     const prevRate = v.playbackRate;
     const prevMuted = v.muted;
@@ -1737,7 +1941,7 @@
         setProgressText('已取消輸出影片');
         return;
       }
-      paintExportFrame(ctx, canvas, v, span.start);
+      paintExportFrame(ctx, canvas, v, span.start, layout);
       // 不接原片音軌。分析時影片被反覆跳格，音軌時間會變成幾萬小時，播放器就壞掉。
       const canvasStream = canvas.captureStream(30);
       const bits = Math.round(Math.min(16e6, Math.max(2.5e6, canvas.width * canvas.height * 4)));
@@ -1765,7 +1969,7 @@
         const step = (_now, meta) => {
           if (cancelled || !state.exporting) return resolve();
           const t = meta.mediaTime;
-          paintExportFrame(ctx, canvas, v, Math.min(t, span.end));
+          paintExportFrame(ctx, canvas, v, Math.min(t, span.end), layout);
           const p = Math.max(0, Math.min(1, (t - span.start) / (span.end - span.start)));
           els.btnExportVideo.textContent = `⏹ 取消 ${Math.round(p * 100)}%`;
           if (document.hidden) setProgressText('分頁在背景，輸出已暫停，回到這個分頁會繼續');
@@ -1776,10 +1980,10 @@
         const onTime = () => {
           if (cancelled || !state.exporting || v.currentTime >= span.end - 0.04) {
             v.removeEventListener('timeupdate', onTime);
-            paintExportFrame(ctx, canvas, v, Math.min(v.currentTime, span.end));
+            paintExportFrame(ctx, canvas, v, Math.min(v.currentTime, span.end), layout);
             return resolve();
           }
-          paintExportFrame(ctx, canvas, v, v.currentTime);
+          paintExportFrame(ctx, canvas, v, v.currentTime, layout);
         };
         v.addEventListener('ended', finish, { once: true });
         if ('requestVideoFrameCallback' in v) v.requestVideoFrameCallback(step);
@@ -1815,7 +2019,7 @@
         if (fixed) blob = new Blob([fixed], { type: 'video/mp4' });
       }
       download(blob, `${baseName()}_analysis.${ext}`, 120000);
-      setProgressText(`已存到你的下載資料夾（${ext.toUpperCase()}，不含原片聲音）。長度是分析的那一段，不會再出現幾萬小時。`);
+      setProgressText(`已存到你的下載資料夾（${ext.toUpperCase()}，右側有俯視球場，不含原片聲音）。長度是分析的那一段。`);
     } catch (e) {
       console.error('[AI] 輸出影片失敗', e);
       showError('輸出影片失敗：' + (e && e.message ? e.message : e));
@@ -1935,12 +2139,14 @@
       calibHint: 'calib-hint', calibHintText: 'calib-hint-text', btnCalibCancel: 'btn-calib-cancel',
       btnDetect: 'btn-detect', btnAnalyze: 'btn-analyze', btnReset: 'btn-reset', btnExportVideo: 'btn-export-video',
       progressText: 'progress-text', timeline: 'timeline', timelineRead: 'timeline-read', timelineDone: 'timeline-done',
-      timelineCursor: 'timeline-cursor', calibHandles: 'calib-handles', analysisCover: 'analysis-cover',
+      timelineCursor: 'timeline-cursor', calibHandles: 'calib-handles', calibPad: 'calib-pad', analysisCover: 'analysis-cover',
       coverStatus: 'cover-status', coverPercent: 'cover-percent', coverText: 'cover-text', previewBox: 'preview-box',
       previewVideo: 'preview-video', previewOverlay: 'preview-overlay', btnPreviewPlay: 'btn-preview-play',
       btnPreviewClose: 'btn-preview-close', previewTime: 'preview-time',
-      heatTabs: 'heat-tabs', court: 'court', btnExportPng: 'btn-export-png', btnExportJson: 'btn-export-json',
+      heatTabs: 'heat-tabs', court: 'court',
       playerStats: 'player-stats', toast: 'toast', shuttleToggle: 'shuttle-toggle', shuttleStatus: 'shuttle-status',
+      maskOutside: 'mask-outside',
+      liveKmh: 'live-kmh', liveRhythm: 'live-rhythm', liveShot: 'live-shot',
       adminBar: 'admin-bar', accessSuper: 'access-super', accessPublic: 'access-public', publicStatus: 'public-status',
       locked: 'locked', mainLayout: 'main-layout'
     };
@@ -1972,6 +2178,11 @@
     els.shuttleToggle.addEventListener('change', () => {
       state.shuttleEnabled = els.shuttleToggle.checked;
       syncShuttleToggle();
+    });
+    els.maskOutside.addEventListener('change', () => {
+      state.maskOutside = els.maskOutside.checked;
+      drawOverlay();
+      if (previewOpen()) drawPreviewAt(els.previewVideo.currentTime);
     });
     els.video.addEventListener('seeking', () => {
       if (state.running || state.busy || !state.detectFrame) return;
@@ -2023,6 +2234,7 @@
       }
     });
     els.overlay.addEventListener('click', onOverlayClick);
+    els.calibPad.addEventListener('click', onOverlayClick);
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && state.calibrating) {
         endCalibrationMode();
@@ -2043,8 +2255,6 @@
       renderHeatTabs(statIds());
       drawCourt();
     });
-    els.btnExportJson.addEventListener('click', exportJson);
-    els.btnExportPng.addEventListener('click', exportPng);
     els.btnExportVideo.addEventListener('click', exportAnalyzedVideo);
     els.accessSuper.addEventListener('click', () => setAccess(false));
     els.accessPublic.addEventListener('click', () => setAccess(true));

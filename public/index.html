@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.2.56
+  Version: 1.2.57
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -624,7 +624,7 @@
     <div id="ai-users-view" class="view hidden">
       <header class="detail-header" style="display:flex; justify-content:flex-start; align-items:center;">
         <button id="btn-back-ai-users" class="btn-icon">⬅ 返回</button>
-        <h2 style="margin-left: 10px; margin-bottom: 0;">AI 影片分析名單</h2>
+        <h2 style="margin-left: 10px; margin-bottom: 0;">AI 開放群組與名單</h2>
       </header>
       <div id="ai-users-content" style="margin-top: 15px; padding-bottom: 24px;">
         <!-- JS 動態渲染可勾選的使用者 -->
@@ -1299,6 +1299,7 @@
     #ai-access-admin { flex-wrap: wrap; }
     .ai-user-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
     .ai-user-box { max-height: min(62vh, 560px); overflow: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; }
+    .ai-group-box { max-height: 220px; margin-bottom: 12px; }
     .ai-user-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; min-height: 52px; }
     .ai-user-row:last-child { border-bottom: 0; }
     .ai-user-row input { width: 18px; height: 18px; flex: 0 0 auto; }
@@ -1315,7 +1316,7 @@
   <script defer src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script defer src="lottery.js?v=20260711_15"></script>
   <script defer src="pinball_v2.js?v=20260902_pure60fps"></script>
-  <script defer src="app.js?v=V20261028_ai_entry"></script>
+  <script defer src="app.js?v=V20261028_ai_groups"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>

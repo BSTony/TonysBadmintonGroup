@@ -151,6 +151,24 @@ function testShuttlePace() {
   assert.strictEqual(PoseCore.shuttleRhythm(pace.flights[0].peak), '殺球');
   assert.strictEqual(PoseCore.shuttleRhythm(36), '控球');
   assert.strictEqual(PoseCore.shuttlePace([{ t: 0, x: null, y: null }], (x, y) => ({ x, y })).points.length, 0);
+
+  const steady = [];
+  for (let i = 0; i <= 20; i++) steady.push({ t: i / 30, x: i * 0.4, y: 0 });
+  steady.push({ t: 21 / 30, x: 80, y: 0 });
+  const filtered = PoseCore.shuttlePace(steady, (x, y) => ({ x, y }));
+  assert.ok(filtered.max < 80, 'a one-frame jump must not become the reported speed, got ' + filtered.max);
+  assert.ok(filtered.max > 30, 'steady motion is still measured, got ' + filtered.max);
+
+  const teleport = [];
+  for (let i = 0; i <= 20; i++) teleport.push({ t: i / 30, x: i * 0.25, y: 6 });
+  teleport[10] = { t: 10 / 30, x: 0.25 * 10 + 15, y: 6 };
+  const spiked = PoseCore.shuttlePace(teleport, (x, y) => ({ x, y }));
+  assert.ok(spiked.max < 80, 'a 15 m one-frame jump must not show as ~1600 km/h, got ' + spiked.max);
+
+  const drive = [];
+  for (let i = 0; i <= 15; i++) drive.push({ t: i / 30, x: i * (200 / 3.6) / 30, y: 0 });
+  const kept = PoseCore.shuttlePace(drive, (x, y) => ({ x, y }));
+  close(kept.max, 200, 15, 'a real 200 km/h segment is kept');
   console.log('✅ shuttle pace');
 }
 
@@ -175,11 +193,135 @@ function testPatchMp4Duration() {
   console.log('✅ mp4 duration patch');
 }
 
+function kp(points) {
+  const data = new Float32Array(17 * 3);
+  Object.keys(points).forEach((index) => {
+    const i = Number(index);
+    data[i * 3] = points[i][0];
+    data[i * 3 + 1] = points[i][1];
+    data[i * 3 + 2] = points[i][2] == null ? 0.9 : points[i][2];
+  });
+  return data;
+}
+
+function flight(x0, y0, x1, y1, t0) {
+  const samples = [];
+  for (let i = 0; i <= 8; i++) {
+    samples.push({ t: t0 + i * 0.05, x: x0 + (x1 - x0) * i / 8, y: y0 + (y1 - y0) * i / 8 });
+  }
+  return samples;
+}
+
+function testRallyReport() {
+  const id = (x, y) => ({ x, y });
+  const straight = PoseCore.rallyReport({
+    shuttle: flight(1.7, 11.6, 1.7, 1.0, 0),
+    project: id,
+    feet: { near: [{ t: 0, x: 1.7, y: 12 }] },
+    poses: [{
+      t: 0,
+      id: 'near',
+      kp: kp({
+        5: [1.3, 12.4],
+        6: [1.7, 12.4],
+        8: [1.7, 12.05],
+        10: [1.7, 11.65]
+      })
+    }],
+    mode: 'singles'
+  });
+  assert.strictEqual(straight.shots.length, 1);
+  assert.strictEqual(straight.shots[0].hitter, 'near');
+  assert.strictEqual(straight.shots[0].line, '直線');
+  assert.strictEqual(straight.shots[0].zone, '後場');
+  assert.strictEqual(straight.shots[0].out, false);
+  assert.strictEqual(straight.shots[0].action, '高舉手');
+
+  const cross = PoseCore.rallyReport({
+    shuttle: flight(1, 11, 5, 2, 1),
+    project: id,
+    feet: { near: [{ t: 1, x: 1, y: 12 }] },
+    poses: [],
+    mode: 'doubles'
+  });
+  assert.strictEqual(cross.shots[0].line, '斜線');
+  assert.strictEqual(cross.shots[0].out, false);
+
+  const drop = PoseCore.rallyReport({
+    shuttle: flight(3, 7.5, 3.2, 6.2, 2),
+    project: id,
+    feet: { near: [{ t: 2, x: 3, y: 8 }] },
+    poses: [],
+    mode: 'doubles'
+  });
+  assert.strictEqual(drop.shots[0].line, '放短');
+  assert.strictEqual(drop.shots[0].zone, '前場');
+
+  const out = PoseCore.rallyReport({
+    shuttle: flight(3, 12, 0.2, 2, 3),
+    project: id,
+    feet: {},
+    poses: [],
+    mode: 'singles'
+  });
+  assert.strictEqual(out.shots[0].out, true);
+  const doublesIn = PoseCore.rallyReport({
+    shuttle: flight(3, 12, 0.2, 2, 3),
+    project: id,
+    feet: {},
+    poses: [],
+    mode: 'doubles'
+  });
+  assert.strictEqual(doublesIn.shots[0].out, false);
+
+  const wrist = PoseCore.rallyReport({
+    shuttle: flight(2, 11, 2, 2, 4),
+    project: id,
+    feet: {
+      near1: [{ t: 4, x: 4.2, y: 12 }],
+      near2: [{ t: 4, x: 2.0, y: 12 }]
+    },
+    poses: [
+      { t: 4, id: 'near1', kp: kp({ 5: [1.8, 11.5], 6: [2.2, 11.5], 8: [2.1, 11.3], 10: [2.05, 11.05] }) },
+      { t: 4, id: 'near2', kp: kp({ 5: [4.4, 11.5], 6: [4.8, 11.5], 8: [4.6, 11.3], 10: [4.6, 11.0] }) }
+    ],
+    mode: 'doubles'
+  });
+  assert.strictEqual(wrist.shots[0].hitter, 'near1', 'wrist closer than the other foot');
+
+  const feet = [];
+  for (let i = 0; i < 4; i++) feet.push({ t: i, x: 3, y: 6.6 });
+  const stance = PoseCore.rallyReport({
+    shuttle: [],
+    project: id,
+    feet: { near: feet },
+    poses: [{ t: 0, id: 'near', kp: kp({ 15: [2.7, 12], 16: [3.3, 12] }) }],
+    mode: 'singles'
+  });
+  assert.strictEqual(stance.players.near.netRate, 1);
+  close(stance.players.near.stance, 0.6, 0.05, 'stance width');
+
+  const moved = [];
+  for (let i = 0; i < 6; i++) moved.push({ t: i * 0.2, x: 1 + i * 0.4, y: 12 });
+  const travel = PoseCore.rallyReport({
+    shuttle: flight(1, 11.5, 1, 2, 0).concat(flight(3, 11.5, 3, 2, 1)),
+    project: id,
+    feet: { near: moved },
+    poses: [],
+    mode: 'singles'
+  });
+  assert.strictEqual(travel.shots.length, 2);
+  assert.ok(travel.players.near.move > 1.5 && travel.players.near.move < 2.5, 'move ' + travel.players.near.move);
+
+  console.log('✅ rally report');
+}
+
 testDecode();
 testHomography();
 testTrackerAndStats();
 testFarCrop();
 testShuttle();
 testShuttlePace();
+testRallyReport();
 testPatchMp4Duration();
 console.log('\n🎉 AI pose core checks passed');

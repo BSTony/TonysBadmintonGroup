@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.0
+ * Version: 1.2.3
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -524,55 +524,337 @@
   }
 
   // 用球場平面座標估計球速。球在空中時，這個數字會比真實球速低。
-  // project(x, y) 把影片像素轉成球場公尺；沒有校正就無法估計。
-  function shuttlePace(samples, project) {
-    const points = [];
-    const flights = [];
+  // 追蹤偶爾會把球跳到畫面另一頭，單格位移會變成一千多公里。先取位置中位數抹掉跳點，
+  // 再用約 0.1 秒的位移。投影每像素超過合理公尺數的也不算。
+  function shuttlePace(samples, project, opts) {
     const GAP = 0.18;
-    let prev = null;
-    let speeds = null;
-    let t0 = 0;
-    const closeFlight = (t1) => {
-      if (!speeds || !speeds.length) { speeds = null; return; }
-      const peak = Math.max.apply(null, speeds);
-      const head = speeds.slice(0, Math.min(3, speeds.length));
-      const start = head.reduce((a, b) => a + b, 0) / head.length;
-      const end = speeds[speeds.length - 1];
-      flights.push({ t0, t1, peak, start, end, hold: peak > 1 ? end / peak : 0 });
-      speeds = null;
+    const BASE_DT = 0.1;
+    const MAX_DT = 0.22;
+    const MAX_KMH = 400;
+    const maxMpp = opts && opts.maxMetersPerPixel;
+    const groups = [];
+    let cur = [];
+    const closeCur = () => {
+      if (cur.length) groups.push(cur);
+      cur = [];
     };
     (samples || []).forEach((s) => {
       if (!s || s.x == null || s.y == null || typeof project !== 'function') {
-        prev = null;
-        closeFlight(s && s.t);
+        closeCur();
         return;
       }
       const p = project(s.x, s.y);
       if (!p || !isFinite(p.x) || !isFinite(p.y)) {
-        prev = null;
-        closeFlight(s.t);
+        closeCur();
         return;
       }
-      if (prev && s.t - prev.t > GAP) {
-        closeFlight(prev.t);
-        prev = null;
-      }
-      if (prev) {
+      if (cur.length && s.t - cur[cur.length - 1].t > GAP) closeCur();
+      cur.push({ t: s.t, ix: s.x, iy: s.y, x: p.x, y: p.y });
+    });
+    closeCur();
+
+    const points = [];
+    const flights = [];
+    const medianOf = (vals) => {
+      const sorted = vals.slice().sort((a, b) => a - b);
+      return sorted[sorted.length >> 1];
+    };
+    groups.forEach((raw) => {
+      const smooth = raw.map((p, i) => {
+        const xs = [];
+        const ys = [];
+        for (let j = Math.max(0, i - 2); j <= Math.min(raw.length - 1, i + 2); j++) {
+          if (Math.abs(raw[j].t - p.t) <= 0.12) {
+            xs.push(raw[j].x);
+            ys.push(raw[j].y);
+          }
+        }
+        return { t: p.t, ix: p.ix, iy: p.iy, x: medianOf(xs), y: medianOf(ys) };
+      });
+      const speeds = [];
+      smooth.forEach((p, i) => {
+        let anchor = null;
+        for (let j = i - 1; j >= 0; j--) {
+          const dt = p.t - smooth[j].t;
+          if (dt > MAX_DT) break;
+          if (dt + 1e-6 >= BASE_DT) { anchor = smooth[j]; break; }
+        }
+        if (!anchor) return;
+        const dt = p.t - anchor.t;
+        const courtDist = Math.hypot(p.x - anchor.x, p.y - anchor.y);
+        const imgDist = Math.hypot(p.ix - anchor.ix, p.iy - anchor.iy);
+        if (maxMpp && imgDist >= 1 && courtDist / imgDist > maxMpp) return;
+        const kmh = courtDist / dt * 3.6;
+        if (!(kmh >= 0) || kmh > MAX_KMH) return;
+        speeds.push(kmh);
+        points.push({ t: p.t, kmh, flight: flights.length });
+      });
+      if (!speeds.length) return;
+      flights.push(null);
+    });
+
+    const rawKmh = points.map((p) => p.kmh);
+    for (let i = 0; i < points.length; i++) {
+      const bucket = [];
+      const id = points[i].flight;
+      for (let j = i; j >= 0 && points[i].t - points[j].t <= 0.2 && points[j].flight === id; j--) bucket.push(rawKmh[j]);
+      for (let j = i + 1; j < points.length && points[j].t - points[i].t <= 0.2 && points[j].flight === id; j++) bucket.push(rawKmh[j]);
+      points[i].kmh = medianOf(bucket);
+    }
+    let built = 0;
+    const byFlight = [];
+    points.forEach((p) => {
+      if (!byFlight[p.flight]) byFlight[p.flight] = [];
+      byFlight[p.flight].push(p);
+    });
+    const packed = [];
+    byFlight.forEach((group) => {
+      if (!group || !group.length) return;
+      group.forEach((p) => { p.flight = built; });
+      const speeds = group.map((p) => p.kmh);
+      const peak = speeds.reduce((m, v) => Math.max(m, v), 0);
+      const head = speeds.slice(0, Math.min(3, speeds.length));
+      const start = head.reduce((a, b) => a + b, 0) / head.length;
+      const end = speeds[speeds.length - 1];
+      packed.push({ t0: group[0].t, t1: group[group.length - 1].t, peak, start, end, hold: peak > 1 ? end / peak : 0 });
+      built++;
+    });
+    const max = packed.reduce((m, f) => Math.max(m, f.peak), 0);
+    const avg = points.length ? points.reduce((a, p) => a + p.kmh, 0) / points.length : 0;
+    const hold = packed.length ? packed.reduce((a, f) => a + f.hold, 0) / packed.length : 0;
+    return { points, flights: packed, max, avg, hold };
+  }
+
+  function kpPoint(kp, index, minScore) {
+    if (!kp || kp.length < (index + 1) * 3) return null;
+    const score = kp[index * 3 + 2];
+    if (!(score >= minScore)) return null;
+    return { x: kp[index * 3], y: kp[index * 3 + 1] };
+  }
+
+  function jointAngle(a, b, c) {
+    const v1x = a.x - b.x;
+    const v1y = a.y - b.y;
+    const v2x = c.x - b.x;
+    const v2y = c.y - b.y;
+    const denom = Math.hypot(v1x, v1y) * Math.hypot(v2x, v2y);
+    if (denom < 1e-6) return null;
+    const cos = Math.min(1, Math.max(-1, (v1x * v2x + v1y * v2y) / denom));
+    return Math.acos(cos) * 180 / Math.PI;
+  }
+
+  function playerSide(id) {
+    if (id === 'near' || id === 'near1' || id === 'near2') return 'near';
+    if (id === 'far' || id === 'far1' || id === 'far2') return 'far';
+    return '';
+  }
+
+  // 用球的飛行段，加上腳的位置和手腕，估計每一拍是誰打、直線或斜線、落點、出手
+  function rallyReport(input) {
+    const shuttle = (input && input.shuttle) || [];
+    const project = input && input.project;
+    const feet = (input && input.feet) || {};
+    const poses = (input && input.poses) || [];
+    const mode = input && input.mode === 'doubles' ? 'doubles' : 'singles';
+    const shots = [];
+    const counts = { shots: 0, straight: 0, cross: 0, drop: 0, in: 0, out: 0, overhead: 0, net: 0, defense: 0 };
+    if (typeof project !== 'function') return { shots, players: playerRallyStats(feet, poses, shots, project), counts };
+
+    const GAP = 0.18;
+    const trails = [];
+    let trail = [];
+    const closeTrail = () => {
+      if (trail.length >= 2) trails.push(trail);
+      trail = [];
+    };
+    shuttle.forEach((s) => {
+      if (!s || s.x == null || s.y == null) { closeTrail(); return; }
+      const p = project(s.x, s.y);
+      if (!p || !isFinite(p.x) || !isFinite(p.y)) { closeTrail(); return; }
+      if (trail.length) {
+        const prev = trail[trail.length - 1];
         const dt = s.t - prev.t;
-        if (dt >= 1 / 90 && dt <= GAP) {
+        if (dt > GAP) closeTrail();
+        else if (dt > 0.02) {
           const kmh = Math.hypot(p.x - prev.p.x, p.y - prev.p.y) / dt * 3.6;
-          if (!speeds) { speeds = []; t0 = prev.t; }
-          speeds.push(kmh);
-          points.push({ t: s.t, kmh, flight: flights.length });
+          if (kmh > 480) return;
         }
       }
-      prev = { t: s.t, p };
+      trail.push({ t: s.t, img: { x: s.x, y: s.y }, p });
     });
-    closeFlight(prev && prev.t);
-    const max = flights.reduce((m, f) => Math.max(m, f.peak), 0);
-    const avg = points.length ? points.reduce((a, p) => a + p.kmh, 0) / points.length : 0;
-    const hold = flights.length ? flights.reduce((a, f) => a + f.hold, 0) / flights.length : 0;
-    return { points, flights, max, avg, hold };
+    closeTrail();
+
+    trails.forEach((points) => {
+      const start = points[0];
+      const end = points[points.length - 1];
+      const dx = end.p.x - start.p.x;
+      const dy = end.p.y - start.p.y;
+      const dist = Math.hypot(dx, dy);
+      if (end.t - start.t < 0.08 || dist < 0.45) return;
+      const line = dist < 2.4 ? '放短' : Math.abs(dx) >= 1.7 ? '斜線' : '直線';
+      const landing = landingOf(end.p, mode);
+      const hit = hitterAt(start, poses, feet);
+      const action = actionAt(hit && hit.arms, dist);
+      shots.push({
+        t0: start.t,
+        t1: end.t,
+        hitter: hit ? hit.id : '',
+        line,
+        zone: landing.zone,
+        out: landing.out,
+        side: landing.side,
+        action
+      });
+      counts.shots++;
+      if (line === '直線') counts.straight++;
+      else if (line === '斜線') counts.cross++;
+      else counts.drop++;
+      if (landing.out) counts.out++;
+      else counts.in++;
+      if (action === '高舉手') counts.overhead++;
+      else if (action === '放網') counts.net++;
+      else if (action === '防守') counts.defense++;
+    });
+
+    return { shots, players: playerRallyStats(feet, poses, shots, project), counts };
+  }
+
+  function landingOf(p, mode) {
+    const inset = mode === 'singles' ? COURT.singlesInset : 0;
+    const inside = p.x >= inset && p.x <= COURT.width - inset && p.y >= 0 && p.y <= COURT.length;
+    const third = COURT.netY / 3;
+    const fromNet = Math.abs(p.y - COURT.netY);
+    const zone = fromNet < third ? '前場' : fromNet < third * 2 ? '中場' : '後場';
+    return { zone, out: !inside, side: p.y >= COURT.netY ? 'near' : 'far' };
+  }
+
+  function nearestFoot(list, t) {
+    if (!list || !list.length) return null;
+    let best = null;
+    let bestDt = 0.45;
+    for (let i = 0; i < list.length; i++) {
+      const dt = Math.abs(list[i].t - t);
+      if (dt < bestDt) { bestDt = dt; best = list[i]; }
+    }
+    return best;
+  }
+
+  function strikingArm(kp, shuttleImg) {
+    const minScore = 0.3;
+    const left = [kpPoint(kp, 5, minScore), kpPoint(kp, 7, minScore), kpPoint(kp, 9, minScore)];
+    const right = [kpPoint(kp, 6, minScore), kpPoint(kp, 8, minScore), kpPoint(kp, 10, minScore)];
+    const ls = left[0];
+    const rs = right[0];
+    const shoulderWidth = ls && rs ? Math.hypot(ls.x - rs.x, ls.y - rs.y) : 0;
+    const arms = [];
+    [left, right].forEach((joints) => {
+      if (!joints[0] || !joints[1] || !joints[2]) return;
+      arms.push({
+        shoulder: joints[0],
+        wrist: joints[2],
+        angle: jointAngle(joints[0], joints[1], joints[2])
+      });
+    });
+    if (!arms.length) return null;
+    arms.sort((a, b) => {
+      const da = Math.hypot(a.wrist.x - shuttleImg.x, a.wrist.y - shuttleImg.y);
+      const db = Math.hypot(b.wrist.x - shuttleImg.x, b.wrist.y - shuttleImg.y);
+      return da - db;
+    });
+    const arm = arms[0];
+    const dist = Math.hypot(arm.wrist.x - shuttleImg.x, arm.wrist.y - shuttleImg.y);
+    const reach = shoulderWidth > 8 ? shoulderWidth * 3.2 : 2.2;
+    return {
+      dist,
+      reach,
+      angle: arm.angle,
+      wristAbove: arm.wrist.y < arm.shoulder.y - Math.max(shoulderWidth * 0.15, 0.05)
+    };
+  }
+
+  function hitterAt(start, poses, feet) {
+    const side = start.p.y >= COURT.netY ? 'near' : 'far';
+    let wristHit = null;
+    poses.forEach((pose) => {
+      if (!pose || playerSide(pose.id) !== side || Math.abs(pose.t - start.t) > 0.35) return;
+      const arms = strikingArm(pose.kp, start.img);
+      if (!arms || arms.dist > arms.reach) return;
+      if (!wristHit || arms.dist < wristHit.arms.dist) wristHit = { id: pose.id, arms };
+    });
+    if (wristHit) return wristHit;
+    let best = null;
+    let bestD = 2.8;
+    Object.keys(feet).forEach((id) => {
+      if (playerSide(id) !== side) return;
+      const foot = nearestFoot(feet[id], start.t);
+      if (!foot) return;
+      const d = Math.hypot(foot.x - start.p.x, foot.y - start.p.y);
+      if (d < bestD) { bestD = d; best = id; }
+    });
+    return best ? { id: best, arms: null } : null;
+  }
+
+  function actionAt(arms, dist) {
+    if (!arms || arms.angle == null) return '不明';
+    if (arms.wristAbove && arms.angle >= 145) return '高舉手';
+    if (!arms.wristAbove && arms.angle <= 120 && dist < 3.2) return '放網';
+    if (!arms.wristAbove && arms.angle <= 135) return '防守';
+    return '不明';
+  }
+
+  function playerRallyStats(feet, poses, shots, project) {
+    const ids = {};
+    Object.keys(feet).forEach((id) => { ids[id] = true; });
+    shots.forEach((s) => { if (s.hitter) ids[s.hitter] = true; });
+    const players = {};
+    const prevFoot = {};
+    const move = {};
+    shots.forEach((s) => {
+      if (!s.hitter) return;
+      const foot = nearestFoot(feet[s.hitter], s.t0);
+      const prev = prevFoot[s.hitter];
+      if (prev && foot) {
+        const d = Math.hypot(foot.x - prev.x, foot.y - prev.y);
+        if (d <= 8) {
+          if (!move[s.hitter]) move[s.hitter] = { sum: 0, n: 0 };
+          move[s.hitter].sum += d;
+          move[s.hitter].n++;
+        }
+      }
+      if (foot) prevFoot[s.hitter] = foot;
+    });
+    Object.keys(ids).forEach((id) => {
+      const list = feet[id] || [];
+      let net = 0;
+      const front = COURT.netY / 3;
+      list.forEach((p) => { if (Math.abs(p.y - COURT.netY) <= front) net++; });
+      let stanceSum = 0;
+      let stanceN = 0;
+      if (typeof project === 'function') {
+        poses.forEach((pose) => {
+          if (!pose || pose.id !== id) return;
+          const a = kpPoint(pose.kp, 15, 0.3);
+          const b = kpPoint(pose.kp, 16, 0.3);
+          if (!a || !b) return;
+          const pa = project(a.x, a.y);
+          const pb = project(b.x, b.y);
+          if (!pa || !pb || !isFinite(pa.x) || !isFinite(pb.x)) return;
+          const w = Math.hypot(pa.x - pb.x, pa.y - pb.y);
+          if (w >= 0.2 && w <= 1.8) { stanceSum += w; stanceN++; }
+        });
+      }
+      const own = shots.filter((s) => s.hitter === id);
+      players[id] = {
+        shots: own.length,
+        netRate: list.length ? net / list.length : 0,
+        stance: stanceN ? stanceSum / stanceN : null,
+        move: move[id] ? move[id].sum / move[id].n : null,
+        overhead: own.filter((s) => s.action === '高舉手').length,
+        net: own.filter((s) => s.action === '放網').length,
+        defense: own.filter((s) => s.action === '防守').length
+      };
+    });
+    return players;
   }
 
   // 殺球／進攻／控球只依估計球速粗分，方便看這拍的節奏
@@ -695,6 +977,7 @@
     decodeShuttleHeatmap,
     shuttlePace,
     shuttleRhythm,
+    rallyReport,
     patchMp4Duration
   };
 });
