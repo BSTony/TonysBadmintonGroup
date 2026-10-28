@@ -12304,7 +12304,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793106234508,
-    "lastActiveTime": 1793193483613,
+    "lastActiveTime": 1793228676556,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12332,7 +12332,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
-      "海棠": "Ufa8dba5febf9f719da07f7e507391a21"
+      "海棠": "Ufa8dba5febf9f719da07f7e507391a21",
+      "Leo Hu": "Ub4c61778cb877af5a3023fa5a98b811a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12354,12 +12355,20 @@
           "雪倫",
           "Sean",
           "wei",
-          "海棠"
+          "海棠",
+          "Leo Hu"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "10/29 07:04",
+        "name": "Leo Hu",
+        "operator": "Leo Hu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/28 21:18",
         "name": "海棠",
