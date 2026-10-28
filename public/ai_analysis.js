@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.0
+ * Version: 1.7.1
  */
 (function () {
   'use strict';
@@ -58,7 +58,7 @@
     file: null,
     videoUrl: '',
     mode: 'singles',
-    sampleFps: 10,
+    sampleFps: 5,
     range: { start: 0, end: 0 },
     calib: null,
     calibrating: false,
@@ -1411,13 +1411,9 @@
     }).join('');
   }
 
-  // 有小數時保留一位，避免重新套用時範圍被捨去
+  // 時間只顯示到秒
   function fmtRangeTime(sec) {
-    if (!isFinite(sec)) return '';
-    const tenths = Math.round(sec * 10);
-    const whole = Math.floor(tenths / 10);
-    const frac = tenths % 10;
-    return fmtTime(whole) + (frac ? `.${frac}` : '');
+    return fmtTime(sec);
   }
 
   function updateRangeInputs() {
@@ -1887,13 +1883,13 @@
     updateButtons();
   }
 
-  // 接受「秒」、「分:秒」、「時:分:秒」，可帶小數
+  // 接受「秒」、「分:秒」、「時:分:秒」，結果四捨五入到秒
   function parseTimeInput(text) {
     const s = String(text || '').trim();
     if (!s) return NaN;
     const parts = s.split(/[:：]/).map(Number);
     if (parts.length > 3 || parts.some((n) => !isFinite(n) || n < 0)) return NaN;
-    return parts.reduce((acc, n) => acc * 60 + n, 0);
+    return Math.round(parts.reduce((acc, n) => acc * 60 + n, 0));
   }
 
   function applyRange(next) {
@@ -1912,7 +1908,7 @@
 
   function setRange(which) {
     if (!videoReady() || state.running) return;
-    const t = els.video.currentTime;
+    const t = Math.floor(els.video.currentTime);
     applyRange(which === 'start' ? { start: t, end: state.range.end } : { start: state.range.start, end: t });
   }
 
@@ -1996,7 +1992,7 @@
     els.modeSingles.addEventListener('click', () => setMode('singles'));
     els.modeDoubles.addEventListener('click', () => setMode('doubles'));
     els.sampleFps.addEventListener('change', () => {
-      const fps = Number(els.sampleFps.value) || 10;
+      const fps = Number(els.sampleFps.value) || 5;
       if (!confirmDiscard()) {
         els.sampleFps.value = String(state.sampleFps);
         return;

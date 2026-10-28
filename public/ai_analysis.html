@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.7.0
+  Version: 1.7.1
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -36,10 +36,15 @@
     .chip-err { color: #fca5a5; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); }
     .banner { margin: 12px 24px 0; padding: 10px 14px; border-radius: 10px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: #fde68a; font-size: 13px; line-height: 1.7; }
 
-    .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); gap: 16px; padding: 16px 24px 24px; align-items: start; }
-    @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
-    .court-panel { position: sticky; top: 12px; }
-    .court-fit { height: min(72dvh, calc(100dvh - 150px)); min-height: 240px; display: flex; align-items: center; justify-content: center; }
+    .layout { padding: 16px 24px 24px; }
+    /* 俯視球場跟影片同一列，緊貼在影片右邊 */
+    .watch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: 16px; align-items: stretch; margin-top: 16px; }
+    @media (max-width: 1100px) { .watch { grid-template-columns: 1fr; } }
+    .watch-main { min-width: 0; }
+    /* 高度跟影片同一列，不要被球場圖的原始尺寸撐高 */
+    .court-panel { position: sticky; top: 12px; margin-top: 0; display: flex; flex-direction: column; height: 100%; min-height: 0; max-height: calc(100dvh - 24px); overflow: hidden; }
+    .court-fit { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; }
+    .watch + .panel { margin-top: 16px; }
     .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
     .panel + .panel { margin-top: 16px; }
     .panel-title { font-weight: 700; margin-bottom: 10px; }
@@ -67,12 +72,12 @@
     .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 13px; }
     .muted { color: var(--muted); font-size: 13px; }
 
-    .drop-zone { margin-top: 16px; border: 2px dashed rgba(148, 163, 184, 0.35); border-radius: 14px; min-height: 320px; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); padding: 24px; line-height: 1.7; }
+    .drop-zone { border: 2px dashed rgba(148, 163, 184, 0.35); border-radius: 14px; min-height: 320px; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); padding: 24px; line-height: 1.7; }
     .drop-zone.dragging { border-color: var(--accent); background: rgba(34, 197, 94, 0.06); }
     .drop-icon { font-size: 48px; }
     /* 不可用 overflow: hidden 裁圓角，否則畫面邊角的球場角點會點不到 */
     /* 高度跟視窗一起縮，右側整張俯視球場才跟得上、不用往下捲 */
-    .video-wrap { position: relative; margin: 16px auto 0; width: auto; max-width: 100%; max-height: calc(100dvh - 230px); background: #000; }
+    .video-wrap { position: relative; margin: 0; width: auto; max-width: 100%; max-height: calc(100dvh - 180px); background: #000; }
     .video-wrap video { display: block; width: 100%; height: 100%; object-fit: contain; }
     #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
     #overlay.clickable { pointer-events: auto; cursor: crosshair; }
@@ -104,7 +109,7 @@
     #preview-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
     .preview-bar { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.88); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; white-space: nowrap; }
 
-    #court { display: block; width: auto; height: 100%; max-width: 100%; object-fit: contain; border-radius: 10px; }
+    #court { display: block; width: auto; height: auto; max-width: 100%; max-height: min(68dvh, calc(100dvh - 190px)); object-fit: contain; border-radius: 10px; }
     .court-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
     .player-stats { display: flex; flex-direction: column; gap: 10px; }
     .player-card { border: 1px solid var(--line); border-left: 4px solid var(--pc); border-radius: 10px; padding: 10px 12px; background: var(--panel-2); }
@@ -187,8 +192,8 @@
           </div>
           <label class="inline">每秒分析
             <select id="sample-fps">
-              <option value="5">5 張（較快）</option>
-              <option value="10" selected>10 張</option>
+              <option value="5" selected>5 張（較快）</option>
+              <option value="10">10 張</option>
               <option value="15">15 張（較精細）</option>
             </select>
           </label>
@@ -237,53 +242,54 @@
         </div>
       </div>
 
-      <div id="drop-zone" class="drop-zone">
-        <div>
-          <div class="drop-icon">🎬</div>
-          <p>把影片拖到這裡，或按上方「選擇影片檔」</p>
-          <p class="muted">拍攝建議：鏡頭固定在近端底線後方的高處、拍到完整球場，解析度 1080p 以上</p>
-        </div>
-      </div>
-      <div id="video-wrap" class="video-wrap hidden">
-        <video id="video" playsinline muted preload="auto" controls></video>
-        <canvas id="overlay"></canvas>
-        <div id="calib-handles"></div>
-        <div id="calib-hint" class="calib-hint hidden">
-          <span id="calib-hint-text"></span>
-          <button type="button" id="btn-calib-cancel" class="btn btn-ghost btn-small">取消</button>
-        </div>
-        <!-- 分析時影片仍要在底下播放才能逐格擷取，所以用不透明遮罩蓋住而不是隱藏 -->
-        <div id="analysis-cover" class="analysis-cover hidden">
-          <div id="cover-status" class="cover-status">
-            <div id="cover-percent" class="cover-percent">0%</div>
-            <div id="cover-text" class="muted">分析中…</div>
-            <div class="muted">完成後就能看結果；想先看，可以點上方進度條的亮色部分預覽</div>
-          </div>
-          <div id="preview-box" class="preview-box hidden">
-            <div class="preview-media">
-              <video id="preview-video" muted playsinline preload="auto"></video>
-              <canvas id="preview-overlay"></canvas>
-            </div>
-            <div class="preview-bar">
-              <button type="button" id="btn-preview-play" class="btn btn-small">▶ 播放預覽</button>
-              <span id="preview-time" class="mono"></span>
-              <button type="button" id="btn-preview-close" class="btn btn-ghost btn-small">關閉預覽</button>
+      <div class="watch">
+        <div class="watch-main">
+          <div id="drop-zone" class="drop-zone">
+            <div>
+              <div class="drop-icon">🎬</div>
+              <p>把影片拖到這裡，或按上方「選擇影片檔」</p>
+              <p class="muted">拍攝建議：鏡頭固定在近端底線後方的高處、拍到完整球場，解析度 1080p 以上</p>
             </div>
           </div>
+          <div id="video-wrap" class="video-wrap hidden">
+            <video id="video" playsinline muted preload="auto" controls></video>
+            <canvas id="overlay"></canvas>
+            <div id="calib-handles"></div>
+            <div id="calib-hint" class="calib-hint hidden">
+              <span id="calib-hint-text"></span>
+              <button type="button" id="btn-calib-cancel" class="btn btn-ghost btn-small">取消</button>
+            </div>
+            <!-- 分析時影片仍要在底下播放才能逐格擷取，所以用不透明遮罩蓋住而不是隱藏 -->
+            <div id="analysis-cover" class="analysis-cover hidden">
+              <div id="cover-status" class="cover-status">
+                <div id="cover-percent" class="cover-percent">0%</div>
+                <div id="cover-text" class="muted">分析中…</div>
+                <div class="muted">完成後就能看結果；想先看，可以點上方進度條的亮色部分預覽</div>
+              </div>
+              <div id="preview-box" class="preview-box hidden">
+                <div class="preview-media">
+                  <video id="preview-video" muted playsinline preload="auto"></video>
+                  <canvas id="preview-overlay"></canvas>
+                </div>
+                <div class="preview-bar">
+                  <button type="button" id="btn-preview-play" class="btn btn-small">▶ 播放預覽</button>
+                  <span id="preview-time" class="mono"></span>
+                  <button type="button" id="btn-preview-close" class="btn btn-ghost btn-small">關閉預覽</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <aside>
-      <div class="panel court-panel">
-        <div class="panel-title">俯視球場</div>
-        <div id="heat-tabs" class="seg small hidden"></div>
-        <div class="court-fit">
-          <canvas id="court"></canvas>
-        </div>
-        <div class="court-actions">
-          <button type="button" id="btn-export-png" class="btn btn-ghost btn-small">下載熱圖</button>
-          <button type="button" id="btn-export-json" class="btn btn-ghost btn-small">下載分析結果</button>
+        <div class="panel court-panel">
+          <div class="panel-title">俯視球場</div>
+          <div id="heat-tabs" class="seg small hidden"></div>
+          <div class="court-fit">
+            <canvas id="court"></canvas>
+          </div>
+          <div class="court-actions">
+            <button type="button" id="btn-export-png" class="btn btn-ghost btn-small">下載熱圖</button>
+            <button type="button" id="btn-export-json" class="btn btn-ghost btn-small">下載分析結果</button>
+          </div>
         </div>
       </div>
       <div class="panel">
@@ -292,7 +298,7 @@
           <p class="muted">完成球場校正並開始分析後，這裡會顯示每位球員的跑動距離與站位分布。</p>
         </div>
       </div>
-    </aside>
+    </section>
   </main>
 
   <footer class="footer">
@@ -304,6 +310,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
   <script src="ai_pose_core.js?v=20261028f"></script>
-  <script src="ai_analysis.js?v=20261028f"></script>
+  <script src="ai_analysis.js?v=20261028g"></script>
 </body>
 </html>
