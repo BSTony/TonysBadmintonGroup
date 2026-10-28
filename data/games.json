@@ -11480,7 +11480,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793181649940,
+    "lastActiveTime": 1793181937868,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11519,7 +11519,8 @@
         "label": "",
         "list": [
           "AddieWang",
-          "Sean柏宏"
+          "Sean柏宏",
+          "AK"
         ]
       },
       {
@@ -11563,6 +11564,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/28 18:05",
+        "name": "AK",
+        "operator": "(AK) Seth Hu",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "10/28 18:00",
         "name": "Jet",
