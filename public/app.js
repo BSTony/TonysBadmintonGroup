@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.42
+ * Version: 1.2.43
  */
 let globalLobbyUsers = [];
 
@@ -9779,7 +9779,9 @@ function initGroupAdminSettings() {
 // 未公開時，超級管理員與指定名單都能用；公開旗標一變就要重新問伺服器
 let globalAiAnalysisGranted = false;
 let globalAiAnalysisUserCount = 0;
+let aiAccessListed = false;
 let aiAccessCache = { uid: '', at: 0 };
+let aiAccessSeq = 0;
 
 function noteAiAnalysisPublic(isPublic) {
   const next = !!isPublic;
@@ -9787,21 +9789,27 @@ function noteAiAnalysisPublic(isPublic) {
   globalAiAnalysisPublic = next;
 }
 
-function updateAiAnalysisEntry(effIsSuperAdmin) {
+// 視角切到一般使用者時，不能再用「本人是超管」來決定按鈕；公開或在名單上才看得到
+function aiEntryAllowed(effIsSuperAdmin) {
+  return !!(effIsSuperAdmin || globalAiAnalysisPublic || (aiAccessListed && !effIsSuperAdmin));
+}
+
+function paintAiEntry(effIsSuperAdmin) {
+  globalAiAnalysisGranted = aiAccessListed && !effIsSuperAdmin;
   document.querySelectorAll('#ai-access-admin [data-ai-access]').forEach((el) => {
     el.classList.toggle('active', (el.dataset.aiAccess === 'public') === globalAiAnalysisPublic);
   });
   const count = document.getElementById('ai-access-count');
   if (count) count.textContent = globalAiAnalysisUserCount ? String(globalAiAnalysisUserCount) : '';
   const btn = document.getElementById('btn-ai-analysis');
-  if (btn) {
-    const ua = navigator.userAgent || '';
-    const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-    const allowed = globalAiAnalysisPublic || effIsSuperAdmin || globalAiAnalysisGranted;
-    btn.classList.toggle('hidden', isMobile || !allowed);
-    const label = btn.querySelector('span');
-    if (label) label.textContent = globalAiAnalysisPublic ? '🎥 AI 影片分析' : (effIsSuperAdmin ? '🎥 AI 影片分析（超管）' : '🎥 AI 影片分析');
-  }
+  if (!btn) return;
+  btn.classList.toggle('hidden', !aiEntryAllowed(effIsSuperAdmin));
+  const label = btn.querySelector('span');
+  if (label) label.textContent = globalAiAnalysisPublic ? '🎥 AI 影片分析' : (effIsSuperAdmin ? '🎥 AI 影片分析（超管）' : '🎥 AI 影片分析');
+}
+
+function updateAiAnalysisEntry(effIsSuperAdmin) {
+  paintAiEntry(effIsSuperAdmin);
   refreshAiAnalysisAccess();
 }
 
@@ -9813,27 +9821,15 @@ function refreshAiAnalysisAccess() {
   }
   if (aiAccessCache.uid === uid && Date.now() - aiAccessCache.at < 15000) return;
   aiAccessCache = { uid, at: Date.now() };
-  const token = uid;
+  const seq = ++aiAccessSeq;
   fetch('/api/ai_analysis/access?uid=' + encodeURIComponent(uid) + '&_t=' + Date.now(), { cache: 'no-store' })
     .then((res) => res.ok ? res.json() : null)
     .then((data) => {
-      if (!data || aiAccessCache.uid !== token) return;
+      if (!data || seq !== aiAccessSeq) return;
       noteAiAnalysisPublic(!!data.isPublic);
       globalAiAnalysisUserCount = data.userCount || 0;
-      globalAiAnalysisGranted = !!data.allowed && !data.isPublic && !getEffectiveRole().isSuperAdmin;
-      const count = document.getElementById('ai-access-count');
-      if (count) count.textContent = globalAiAnalysisUserCount ? String(globalAiAnalysisUserCount) : '';
-      const btn = document.getElementById('btn-ai-analysis');
-      if (!btn) return;
-      const ua = navigator.userAgent || '';
-      const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-      const allowed = !!data.allowed && !isMobile;
-      btn.classList.toggle('hidden', !allowed);
-      const label = btn.querySelector('span');
-      if (label) label.textContent = data.isPublic ? '🎥 AI 影片分析' : (getEffectiveRole().isSuperAdmin ? '🎥 AI 影片分析（超管）' : '🎥 AI 影片分析');
-      document.querySelectorAll('#ai-access-admin [data-ai-access]').forEach((el) => {
-        el.classList.toggle('active', (el.dataset.aiAccess === 'public') === !!data.isPublic);
-      });
+      aiAccessListed = !!data.listed;
+      paintAiEntry(getEffectiveRole().isSuperAdmin);
     })
     .catch(() => { aiAccessCache.at = 0; });
 }

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.3.33
+ * Version: 1.3.34
  */
 const express = require('express');
 const compression = require('compression');
@@ -4253,6 +4253,8 @@ function aiAnalysisAccessPayload(uid) {
     allowed: canUseAiAnalysis(uid),
     isPublic: !!featureSettings.aiAnalysisPublic,
     canManage: isSuperAdmin(uid),
+    // 跟「是不是超管」分開，大廳預覽一般使用者時才不會把超管本人當成已開放
+    listed: !!(uid && featureSettings.aiAnalysisUsers.includes(uid)),
     userCount: featureSettings.aiAnalysisUsers.length
   };
 }

@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.2.55
+  Version: 1.2.56
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -220,8 +220,8 @@
               <button id="btn-easter-egg" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="彩蛋設定">🎁</button>
               <button id="btn-group-admin-settings" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="群組管理員設定" onclick="openGroupAdminSettings()">👥</button>
             </div>
-            <div id="user-auth-container" style="display:flex; align-items:center; gap:6px; margin-left:auto;">
-              <button id="btn-ai-analysis" type="button" class="hidden" style="background-color:#0f172a; color:white; border:none; border-radius:18px; font-size:12px; font-weight:bold; padding:5px 12px; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(0,0,0,0.15);" title="用電腦的顯示卡分析羽球影片，影片不會上傳">
+            <div id="user-auth-container" style="display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-left:auto;">
+              <button id="btn-ai-analysis" type="button" class="hidden" style="background-color:#0f172a; color:white; border:none; border-radius:18px; font-size:12px; font-weight:bold; padding:5px 12px; cursor:pointer; display:flex; align-items:center; gap:4px; flex:0 0 auto; white-space:nowrap; box-shadow:0 1px 4px rgba(0,0,0,0.15);" title="公開或在名單上就看得到。手機可以開啟，但速度會比電腦慢很多">
                 <span>🎥 AI 影片分析</span>
               </button>
               <button id="btn-line-login" class="hidden" style="background-color:#06C755; color:white; border:none; border-radius:18px; font-size:12px; font-weight:bold; padding:5px 12px; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(0,0,0,0.15);" onclick="handleUserLoginClick()">
@@ -1315,7 +1315,7 @@
   <script defer src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script defer src="lottery.js?v=20260711_15"></script>
   <script defer src="pinball_v2.js?v=20260902_pure60fps"></script>
-  <script defer src="app.js?v=V20261028_ai_users"></script>
+  <script defer src="app.js?v=V20261028_ai_entry"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>
