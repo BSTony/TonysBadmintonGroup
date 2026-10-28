@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-27
- * Version: 1.2.40
+ * Date: 2026-10-28
+ * Version: 1.2.41
  */
 let globalLobbyUsers = [];
 
@@ -2307,14 +2307,17 @@ function renderLobby(forceCards = true) {
       }
     }
     
+    // 群組管理員可以開團與編輯名單；團購管理與 AI 權限只給超級管理員
     const createContainer = document.getElementById('admin-create-game-container');
     if (createContainer) {
-      if (effIsSuperAdmin) {
-        createContainer.classList.remove('hidden');
-      } else {
-        createContainer.classList.add('hidden');
-      }
+      createContainer.classList.toggle('hidden', !(effIsAdmin || effIsSuperAdmin));
+      ['btn-admin-group-buy', 'ai-access-admin'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !effIsSuperAdmin);
+      });
     }
+    const btnGroupAdminSettings = document.getElementById('btn-group-admin-settings');
+    if (btnGroupAdminSettings) btnGroupAdminSettings.classList.toggle('hidden', !effIsSuperAdmin);
     
     // 🚀 如果不需強制重算卡片，且卡片已經在畫面上，直接保留現有 DOM，絕不閃爍二次載入！
     if (!forceCards && gamesContainer && gamesContainer.children.length > 0) {
@@ -4325,6 +4328,7 @@ const createGameView = document.getElementById('create-game-view');
 const cgTemplateSelect = document.getElementById('cg-template-select');
 
 let currentGroupTemplates = {};
+let currentTemplateMeta = { restricted: false, own: [] };
 
 // === 預設名單動態 UI ===
 function getCgListString() {
@@ -4461,12 +4465,21 @@ function addCgListRow(name = '', level = '', isPaid = false, uuid = '') {
   
   row.appendChild(avatarImg);
   row.appendChild(nameInput);
-  setupAutocomplete(nameInput, avatarImg);
+  attachRosterNameInput(nameInput, avatarImg);
   row.appendChild(levelInput);
   row.appendChild(paidLabel);
   row.appendChild(delBtn);
   
   container.appendChild(row);
+}
+
+// 群組管理員輸入預設名單的姓名時不給下拉選單，避免看到其他群組的成員名字
+function attachRosterNameInput(nameInput, avatarImg) {
+  if (getEffectiveRole().isSuperAdmin) {
+    setupAutocomplete(nameInput, avatarImg);
+  } else {
+    disableBrowserCredentialSave(nameInput);
+  }
 }
 
 document.getElementById('btn-cg-add-row').onclick = () => addCgListRow();
@@ -4511,6 +4524,7 @@ async function loadTemplates() {
       if (res.ok) {
         const data = await res.json();
         currentGroupTemplates = data.templates || {};
+        currentTemplateMeta = { restricted: !!data.restricted, own: Array.isArray(data.own) ? data.own : [] };
       } else {
         currentGroupTemplates = {};
       }
@@ -4658,7 +4672,8 @@ function showCreateGameForm() {
     cgTargetGidsContainer.innerHTML = '<p>無法取得您的管理群組</p>';
   }
   
-  const savedCg = JSON.parse(localStorage.getItem('savedTargetGroups') || '[]');
+  // 群組管理員只能選超管指定給他的群組，不帶入過去用過的其他群組
+  const savedCg = getEffectiveRole().isSuperAdmin ? JSON.parse(localStorage.getItem('savedTargetGroups') || '[]') : [];
   if (savedCg.length > 0 && cgTargetGidsContainer.innerHTML.includes('<p>')) {
     cgTargetGidsContainer.innerHTML = '';
   }
@@ -9178,7 +9193,7 @@ async function showTemplateAdminView() {
   document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
   document.getElementById('template-admin-view').classList.remove('hidden');
   window.scrollTo(0, 0);
-  if (globalLobbyUsers.length === 0) {
+  if (globalLobbyUsers.length === 0 && getEffectiveRole().isSuperAdmin) {
     await loadLobbyUsers();
   }
   loadTemplates();
@@ -9290,7 +9305,7 @@ function addTaListRow(name = '', level = '', isPaid = false, uuid = '') {
   
   row.appendChild(avatarImg);
   row.appendChild(nameInput);
-  setupAutocomplete(nameInput, avatarImg);
+  attachRosterNameInput(nameInput, avatarImg);
   row.appendChild(levelInput);
   row.appendChild(paidLabel);
   row.appendChild(delBtn);
@@ -9335,7 +9350,9 @@ if (taTemplateSelect) {
           addTaListRow(parsed.name, parsed.level, parsed.isPaid, parsed.uuid);
         }
       });
-      deleteBtn.style.display = 'block';
+      // 超管指定給群組管理員的名單只能套用、修改，不能刪除
+      const canDelete = !currentTemplateMeta.restricted || currentTemplateMeta.own.includes(name);
+      deleteBtn.style.display = canDelete ? 'block' : 'none';
     } else {
       nameInput.value = '';
       container.innerHTML = '';
@@ -9530,6 +9547,7 @@ function bootApp() {
 
   initGroupBuyEvents();
   initAiAnalysisEntry();
+  initGroupAdminSettings();
   initializeLiff().then(() => {
     setupSSE();
   });
@@ -9537,6 +9555,224 @@ function bootApp() {
   // 替各種管理員手動新增輸入框加上自動完成下拉選單功能
   if (typeof lotteryManualName !== 'undefined' && lotteryManualName) setupAutocomplete(lotteryManualName);
   if (typeof inputPinballName !== 'undefined' && inputPinballName) setupAutocomplete(inputPinballName);
+}
+
+// ==========================================
+// 👥 群組管理員設定（超級管理員專用）
+// ==========================================
+const GAS_CARD = 'background:#fff; border-radius:12px; padding:12px; margin-bottom:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);';
+const GAS_SMALL_BTN = 'width:auto; padding:6px 10px; font-size:13px; margin:0; border-radius:8px;';
+let gasData = null;
+let gasEditing = null;
+let gasSearch = '';
+
+async function openGroupAdminSettings() {
+  showAppView(document.getElementById('group-admin-settings-view'));
+  gasEditing = null;
+  const box = document.getElementById('gas-content');
+  box.innerHTML = '<p style="text-align:center;color:#888;padding:20px;">讀取中...</p>';
+  try {
+    const res = await fetch('/api/admin/group_admins?uid=' + encodeURIComponent(getAdminRequestUid()) + '&_t=' + Date.now());
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) throw new Error(data.error || '讀取失敗');
+    gasData = data;
+    renderGroupAdminSettings();
+  } catch (e) {
+    box.innerHTML = `<p style="text-align:center;color:#e53935;padding:20px;">❌ ${escapeHTML(e.message)}</p>`;
+  }
+}
+window.openGroupAdminSettings = openGroupAdminSettings;
+
+function gasGroupLabel(g) {
+  return (g.name || '未命名群組') + (g.codes.length ? `（代碼 ${g.codes.join('、')}）` : '');
+}
+
+function gasCheckbox(kind, value, label, checked, sub) {
+  return `<label style="display:flex; align-items:flex-start; gap:8px; padding:7px 0; border-bottom:1px solid #f1f1f1; cursor:pointer; margin:0;">
+    <input type="checkbox" data-gas-kind="${kind}" value="${escapeHTML(value)}" ${checked ? 'checked' : ''} style="width:18px; height:18px; margin:2px 0 0; flex-shrink:0;">
+    <span style="flex:1; min-width:0;"><span style="font-size:14px;">${escapeHTML(label)}</span>${sub ? `<span style="display:block; font-size:11px; color:#999;">${escapeHTML(sub)}</span>` : ''}</span>
+  </label>`;
+}
+
+function gasCandidatesHtml() {
+  const q = gasSearch.trim().toLowerCase();
+  if (!q) return '';
+  const adminUids = new Set(gasData.admins.map((a) => a.uid));
+  const list = gasData.users.filter((u) => !adminUids.has(u.uid) && u.name.toLowerCase().includes(q)).slice(0, 20);
+  if (!list.length) return '<p style="color:#888; font-size:13px; margin:8px 0 0;">找不到符合的使用者（對方需要先開過大廳）</p>';
+  return list.map((u) => `<button type="button" data-gas-add="${escapeHTML(u.uid)}" style="width:100%; justify-content:flex-start; background:#f8fafc; color:#333; font-size:14px; font-weight:normal; padding:8px; margin-top:6px; border-radius:8px;">${avatarImgHtml(u.pictureUrl)}<span>${escapeHTML(u.name)}</span></button>`).join('');
+}
+
+function gasAdminCardHtml(a) {
+  const groupName = (gid) => {
+    const g = gasData.groups.find((x) => x.gid === gid);
+    return g ? (g.name || '未命名群組') : gid.slice(0, 8);
+  };
+  const groups = a.groups.length
+    ? escapeHTML(a.groups.map(groupName).join('、'))
+    : '<span style="color:#e53935;">沒有指定群組（目前沒有管理權限）</span>';
+  const templates = a.templates
+    ? (a.templates.length ? escapeHTML(a.templates.join('、')) : '不開放任何名單')
+    : `尚未設定（目前依群組看得到 ${a.visibleTemplates.length} 份）`;
+  return `<div style="${GAS_CARD}">
+    <div style="display:flex; align-items:center; gap:8px;">${avatarImgHtml(a.pictureUrl)}<div style="flex:1; min-width:0;"><div style="font-weight:bold;">${escapeHTML(a.name || '（未知名稱）')}</div><div style="font-size:11px; color:#999; word-break:break-all;">${escapeHTML(a.uid)}</div></div></div>
+    <div style="font-size:13px; color:#555; margin-top:6px; line-height:1.7;">🏸 群組：${groups}<br>📝 名單：${templates}</div>
+    <div style="display:flex; gap:8px; margin-top:8px;">
+      <button type="button" data-gas-edit="${escapeHTML(a.uid)}" style="flex:1; background:#10b981; color:#fff; font-size:14px; padding:8px; margin:0; border-radius:8px;">編輯權限</button>
+      <button type="button" data-gas-remove="${escapeHTML(a.uid)}" style="${GAS_SMALL_BTN} background:#fee2e2; color:#dc2626;">移除</button>
+    </div>
+  </div>`;
+}
+
+function gasEditorHtml() {
+  const e = gasEditing;
+  const groups = gasData.groups.map((g) => gasCheckbox('group', g.gid, gasGroupLabel(g), e.groups.has(g.gid))).join('')
+    || '<p style="color:#888;">目前沒有任何群組</p>';
+  const templates = gasData.templates.map((t) => gasCheckbox('template', t.name, t.name, e.templates.has(t.name), t.sources.join('、'))).join('')
+    || '<p style="color:#888;">目前沒有任何名單</p>';
+  return `<div style="${GAS_CARD}">
+      <div style="display:flex; align-items:center; gap:8px;">${avatarImgHtml(e.pictureUrl)}<div style="min-width:0;"><div style="font-weight:bold;">${escapeHTML(e.name || '（未知名稱）')}</div><div style="font-size:11px; color:#999; word-break:break-all;">${escapeHTML(e.uid)}</div></div></div>
+    </div>
+    <div style="${GAS_CARD}">
+      <div style="font-weight:bold;">1. 可以管理的群組</div>
+      <div style="font-size:12px; color:#888; margin:2px 0 6px;">勾選的群組才會出現在他的開團選單，他也只能管理這些群組的場次</div>
+      ${groups}
+    </div>
+    <div style="${GAS_CARD}">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <div style="font-weight:bold;">2. 可以看到的名單</div>
+        <div style="display:flex; gap:6px;">
+          <button type="button" data-gas-all="1" style="${GAS_SMALL_BTN} background:#e2e8f0; color:#334155;">全選</button>
+          <button type="button" data-gas-all="0" style="${GAS_SMALL_BTN} background:#e2e8f0; color:#334155;">全不選</button>
+        </div>
+      </div>
+      <div style="font-size:12px; color:#888; margin:2px 0 6px;">只有勾選的名單會出現在他的「選擇群組範本」與「編輯名單」；他自己建立的名單一律看得到</div>
+      ${templates}
+    </div>
+    <div style="${GAS_CARD} background:#f8fafc;">
+      <div style="font-weight:bold;">3. 輸入預設名單的姓名</div>
+      <div style="font-size:13px; color:#555; margin-top:4px;">群組管理員的姓名欄不會出現下拉選單，看不到其他名單或群組的成員名字（所有群組管理員都適用）</div>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px;">
+      <button type="button" id="gas-save" style="flex:1; background:#FF9800; color:#fff; padding:12px; margin:0; border-radius:12px;">💾 儲存權限</button>
+      <button type="button" id="gas-cancel" style="${GAS_SMALL_BTN} padding:12px 16px; background:#e2e8f0; color:#334155;">取消</button>
+    </div>`;
+}
+
+function renderGroupAdminSettings() {
+  const box = document.getElementById('gas-content');
+  if (!gasData) return;
+  if (gasEditing) {
+    box.innerHTML = gasEditorHtml();
+    return;
+  }
+  box.innerHTML = `<div style="${GAS_CARD}">
+      <div style="font-weight:bold; margin-bottom:8px;">➕ 新增群組管理員</div>
+      <input id="gas-search" type="text" placeholder="輸入 LINE 名稱搜尋（需要開過大廳）" value="${escapeHTML(gasSearch)}" ${credentialSaveBlockAttrs('gas-search')} style="width:100%; box-sizing:border-box; margin:0;">
+      <div id="gas-candidates">${gasCandidatesHtml()}</div>
+      <details style="margin-top:10px;">
+        <summary style="font-size:13px; color:#666; cursor:pointer;">或直接輸入 LINE 使用者 ID</summary>
+        <div style="display:flex; gap:6px; margin-top:6px;">
+          <input id="gas-manual-uid" type="text" placeholder="U 開頭共 33 碼" ${credentialSaveBlockAttrs('gas-manual-uid')} style="flex:1; min-width:0; margin:0;">
+          <button type="button" id="gas-manual-add" style="${GAS_SMALL_BTN} background:#10b981; color:#fff;">新增</button>
+        </div>
+      </details>
+    </div>
+    <div style="${GAS_CARD} margin-top:16px; padding:10px 12px; font-weight:bold;">目前的群組管理員（${gasData.admins.length} 位）</div>
+    ${gasData.admins.length ? gasData.admins.map(gasAdminCardHtml).join('') : '<p style="color:#888;">目前沒有群組管理員</p>'}`;
+}
+
+function gasStartEdit(uid, isNew) {
+  const admin = gasData.admins.find((a) => a.uid === uid);
+  const user = gasData.users.find((u) => u.uid === uid);
+  gasEditing = {
+    uid,
+    name: (admin && admin.name) || (user && user.name) || '',
+    pictureUrl: (admin && admin.pictureUrl) || (user && user.pictureUrl) || '',
+    groups: new Set(admin ? admin.groups : []),
+    // 尚未設定過名單的人，預先勾選他目前看得到的名單，儲存後才改為指定制
+    templates: new Set(admin ? (admin.templates || admin.visibleTemplates) : []),
+    isNew
+  };
+  renderGroupAdminSettings();
+  window.scrollTo(0, 0);
+}
+
+async function gasPost(path, body) {
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ uid: getAdminRequestUid() }, body))
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) throw new Error(data.error || '儲存失敗');
+  gasData = data;
+}
+
+function initGroupAdminSettings() {
+  const back = document.getElementById('btn-back-group-admins');
+  if (back) back.addEventListener('click', () => showAppView(lobbyView));
+  const box = document.getElementById('gas-content');
+  if (!box) return;
+  box.addEventListener('input', (e) => {
+    if (e.target.id !== 'gas-search') return;
+    gasSearch = e.target.value;
+    document.getElementById('gas-candidates').innerHTML = gasCandidatesHtml();
+  });
+  box.addEventListener('change', (e) => {
+    const kind = e.target.dataset && e.target.dataset.gasKind;
+    if (!kind || !gasEditing) return;
+    const set = kind === 'group' ? gasEditing.groups : gasEditing.templates;
+    if (e.target.checked) set.add(e.target.value);
+    else set.delete(e.target.value);
+  });
+  box.addEventListener('click', async (e) => {
+    const el = e.target.closest('button');
+    if (!el) return;
+    if (el.dataset.gasAdd) {
+      gasStartEdit(el.dataset.gasAdd, true);
+    } else if (el.id === 'gas-manual-add') {
+      const uid = (document.getElementById('gas-manual-uid').value || '').trim();
+      if (!/^U[0-9a-f]{32}$/i.test(uid)) return alert('LINE 使用者 ID 格式不正確（應為 U 開頭加 32 碼）');
+      gasStartEdit(uid, !gasData.admins.some((a) => a.uid === uid));
+    } else if (el.dataset.gasEdit) {
+      gasStartEdit(el.dataset.gasEdit, false);
+    } else if (el.dataset.gasRemove) {
+      const admin = gasData.admins.find((a) => a.uid === el.dataset.gasRemove);
+      if (!confirm(`確定要移除「${(admin && admin.name) || el.dataset.gasRemove}」的群組管理員權限嗎？`)) return;
+      try {
+        await gasPost('/api/admin/group_admins/remove', { target: el.dataset.gasRemove });
+        renderGroupAdminSettings();
+      } catch (err) {
+        alert('❌ ' + err.message);
+      }
+    } else if (el.dataset.gasAll && gasEditing) {
+      const on = el.dataset.gasAll === '1';
+      gasEditing.templates = new Set(on ? gasData.templates.map((t) => t.name) : []);
+      box.querySelectorAll('input[data-gas-kind="template"]').forEach((cb) => { cb.checked = on; });
+    } else if (el.id === 'gas-cancel') {
+      gasEditing = null;
+      renderGroupAdminSettings();
+    } else if (el.id === 'gas-save' && gasEditing) {
+      if (!gasEditing.groups.size && !confirm('沒有勾選任何群組，他將沒有任何管理權限，確定要儲存嗎？')) return;
+      el.disabled = true;
+      try {
+        await gasPost('/api/admin/group_admins', {
+          target: gasEditing.uid,
+          name: gasEditing.name,
+          groups: [...gasEditing.groups],
+          templates: [...gasEditing.templates]
+        });
+        gasEditing = null;
+        gasSearch = '';
+        renderGroupAdminSettings();
+        alert('✅ 已儲存群組管理員權限');
+      } catch (err) {
+        el.disabled = false;
+        alert('❌ ' + err.message);
+      }
+    }
+  });
 }
 
 // AI 影片分析要用電腦的顯示卡運算，手機不顯示入口；未公開時只有超級管理員看得到

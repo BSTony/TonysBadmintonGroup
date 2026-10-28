@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
-  Date: 2026-10-27
-  Version: 1.2.53
+  Date: 2026-10-28
+  Version: 1.2.54
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -144,12 +144,12 @@
           <button class="btn btn-primary" style="flex: 1; background-color: #10b981; font-weight: bold; border-radius: 12px; font-size: 14px; padding: 12px 2px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" onclick="showTemplateAdminView()">
             📝 編輯名單
           </button>
-          <button class="btn btn-primary" style="flex: 1; background-color: #2563eb; font-weight: bold; border-radius: 12px; font-size: 14px; padding: 12px 2px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" onclick="openGroupBuyPage('default')">
+          <button id="btn-admin-group-buy" class="btn btn-primary hidden" style="flex: 1; background-color: #2563eb; font-weight: bold; border-radius: 12px; font-size: 14px; padding: 12px 2px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" onclick="openGroupBuyPage('default')">
             🛒 團購管理
           </button>
         </div>
-        <!-- 🎥 AI 影片分析使用權限：手機也能切換（外層區塊只有超級管理員看得到） -->
-        <div id="ai-access-admin" style="margin-top: 8px; display: flex; align-items: center; gap: 6px; background-color: #0f172a; color: #fff; border-radius: 12px; padding: 8px 10px;">
+        <!-- 🎥 AI 影片分析使用權限：手機也能切換（只有超級管理員看得到） -->
+        <div id="ai-access-admin" class="hidden" style="margin-top: 8px; display: flex; align-items: center; gap: 6px; background-color: #0f172a; color: #fff; border-radius: 12px; padding: 8px 10px;">
           <span style="flex: 1; min-width: 0; font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🎥 AI 影片分析權限</span>
           <button type="button" class="ai-access-btn" data-ai-access="super">🔒 只有超管</button>
           <button type="button" class="ai-access-btn" data-ai-access="public">🌐 公開</button>
@@ -217,6 +217,7 @@
               <button id="btn-system-logs" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="系統錯誤 LOG">📜</button>
               <button id="btn-party-admin" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="派對大廳控制台">🎮</button>
               <button id="btn-easter-egg" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="彩蛋設定">🎁</button>
+              <button id="btn-group-admin-settings" class="btn-icon hidden" style="margin-left:8px; font-size:16px;" title="群組管理員設定" onclick="openGroupAdminSettings()">👥</button>
             </div>
             <div id="user-auth-container" style="display:flex; align-items:center; gap:6px; margin-left:auto;">
               <button id="btn-ai-analysis" type="button" class="hidden" style="background-color:#0f172a; color:white; border:none; border-radius:18px; font-size:12px; font-weight:bold; padding:5px 12px; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 1px 4px rgba(0,0,0,0.15);" title="用電腦的顯示卡分析羽球影片，影片不會上傳">
@@ -604,6 +605,17 @@
       
       <div id="system-logs-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px;">
         <!-- JS 動態渲染系統錯誤 LOG -->
+      </div>
+    </div>
+
+    <!-- 群組管理員設定（僅超級管理員） -->
+    <div id="group-admin-settings-view" class="view hidden">
+      <header class="detail-header" style="display:flex; justify-content:flex-start; align-items:center;">
+        <button id="btn-back-group-admins" class="btn-icon">⬅ 返回</button>
+        <h2 style="margin-left: 10px; margin-bottom: 0;">群組管理員設定</h2>
+      </header>
+      <div id="gas-content" style="margin-top: 15px; padding-bottom: 24px;">
+        <!-- JS 動態渲染群組管理員與權限 -->
       </div>
     </div>
     
@@ -1280,7 +1292,7 @@
   <script defer src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script defer src="lottery.js?v=20260711_15"></script>
   <script defer src="pinball_v2.js?v=20260902_pure60fps"></script>
-  <script defer src="app.js?v=V20261027_ai_mobile"></script>
+  <script defer src="app.js?v=V20261028_group_admins"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>

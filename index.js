@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-27
- * Version: 1.3.31
+ * Date: 2026-10-28
+ * Version: 1.3.32
  */
 const express = require('express');
 const compression = require('compression');
@@ -36,6 +36,7 @@ const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const LOBBY_VISITS_FILE = path.join(DATA_DIR, 'lobbyVisits.json');
 const EASTER_EGG_FILE = path.join(DATA_DIR, 'easterEggSettings.json');
 const FEATURE_SETTINGS_FILE = path.join(DATA_DIR, 'featureSettings.json');
+const ADMIN_PERMISSIONS_FILE = path.join(DATA_DIR, 'adminPermissions.json');
 const GROUP_BUY_FILE = path.join(DATA_DIR, 'groupBuy.json');
 const GROUP_BUY_ORDERS_FILE = path.join(DATA_DIR, 'groupBuyOrders.json');
 const DEFAULT_MENU_FILE = path.join(DATA_DIR, 'defaultMenu.json');
@@ -475,6 +476,8 @@ function isWeakVisitUserId(userId) {
 let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
 // 功能開關：aiAnalysisPublic 為 false 時，AI 影片分析只給超級管理員使用
 let featureSettings = { aiAnalysisPublic: false };
+// 群組管理員可看到的名單：{ uid: { templates: [名單名稱], name } }；沒有設定 templates 的人沿用「依管理的群組」舊規則
+let adminPermissions = {};
 
 // 讀取既有設定
 let adminsSha = null;
@@ -486,6 +489,7 @@ let gamesSha = null; // GitHub games.json 的 SHA
 let visitsSha = null; // GitHub lobbyVisits.json 的 SHA
 let easterEggSha = null; // GitHub easterEggSettings.json 的 SHA
 let featureSettingsSha = null; // GitHub featureSettings.json 的 SHA
+let adminPermissionsSha = null; // GitHub adminPermissions.json 的 SHA
 let groupBuySha = null; // GitHub groupBuy.json 的 SHA
 let groupBuyOrdersSha = null; // GitHub groupBuyOrders.json 的 SHA
 let gamesSaveChain = Promise.resolve(); // 防併發串行保存
@@ -538,6 +542,11 @@ async function loadData() {
   if (fs.existsSync(FEATURE_SETTINGS_FILE)) {
     try {
       featureSettings = { ...featureSettings, ...JSON.parse(fs.readFileSync(FEATURE_SETTINGS_FILE, 'utf8')) };
+    } catch(e) {}
+  }
+  if (fs.existsSync(ADMIN_PERMISSIONS_FILE)) {
+    try {
+      adminPermissions = JSON.parse(fs.readFileSync(ADMIN_PERMISSIONS_FILE, 'utf8')) || {};
     } catch(e) {}
   }
   loadGroupBuyStorage();
@@ -642,6 +651,15 @@ async function loadData() {
         featureSettings = { ...featureSettings, ...JSON.parse(Buffer.from(fsRes.content, 'base64').toString('utf8')) };
       }
     } catch(e) { console.error('無法從 GitHub 讀取 featureSettings.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 adminPermissions.json...');
+      const apRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/adminPermissions.json?ref=${GITHUB_BRANCH}`);
+      if (apRes.content) {
+        adminPermissionsSha = apRes.sha;
+        adminPermissions = JSON.parse(Buffer.from(apRes.content, 'base64').toString('utf8')) || {};
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 adminPermissions.json:', e.message); }
 
     try {
       console.log('從 GitHub 讀取 groupBuy.json...');
@@ -819,6 +837,24 @@ async function saveFeatureSettings() {
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/featureSettings.json`, payload);
       if (res.content && res.content.sha) featureSettingsSha = res.content.sha;
     } catch(e) { console.error('備份 featureSettings 至 GitHub 失敗:', e.message); }
+  }
+}
+
+async function saveAdminPermissions() {
+  const jsonStr = JSON.stringify(adminPermissions, null, 2);
+  await fs.promises.writeFile(ADMIN_PERMISSIONS_FILE, jsonStr, 'utf8');
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update adminPermissions',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (adminPermissionsSha) payload.sha = adminPermissionsSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/adminPermissions.json`, payload);
+      if (res.content && res.content.sha) adminPermissionsSha = res.content.sha;
+    } catch(e) { console.error('備份 adminPermissions 至 GitHub 失敗:', e.message); }
   }
 }
 
@@ -1826,7 +1862,44 @@ function collectRosterTemplateSourceKeys(uid, gid) {
   return keys;
 }
 
+// 回傳超管指定給這位群組管理員的名單名稱；null 代表尚未設定（沿用依群組顯示的舊規則）
+function getTemplateAllowList(uid) {
+  if (!uid || isTrueSuperAdmin(uid)) return null;
+  const perm = adminPermissions[uid];
+  return perm && Array.isArray(perm.templates) ? perm.templates : null;
+}
+
+function findRosterTemplateContent(name, preferKeys) {
+  const keys = preferKeys.concat(Object.keys(rosterTemplates).sort());
+  for (const key of keys) {
+    if (key && rosterTemplates[key] && rosterTemplates[key][name] !== undefined) return rosterTemplates[key][name];
+  }
+  return undefined;
+}
+
+function listAllRosterTemplates() {
+  const sources = {};
+  for (const [key, entries] of Object.entries(rosterTemplates)) {
+    for (const name of Object.keys(entries || {})) {
+      (sources[name] = sources[name] || []).push(key);
+    }
+  }
+  return Object.keys(sources).sort((a, b) => a.localeCompare(b, 'zh-Hant')).map((name) => ({ name, sources: sources[name] }));
+}
+
 function collectRosterTemplates(uid, gid) {
+  const allow = getTemplateAllowList(uid);
+  if (allow) {
+    // 自己建立或修改過的名單存在自己的 uid 底下，優先顯示
+    const own = { ...(rosterTemplates[uid] || {}) };
+    const prefer = [gid].concat(getAdminGroupIds(uid));
+    for (const name of allow) {
+      if (own[name] !== undefined) continue;
+      const content = findRosterTemplateContent(name, prefer);
+      if (content !== undefined) own[name] = content;
+    }
+    return own;
+  }
   const templates = {};
   const seenKeys = new Set();
   for (const key of collectRosterTemplateSourceKeys(uid, gid)) {
@@ -2999,10 +3072,14 @@ app.get('/api/users/:gid', (req, res) => {
     }
 });
 
+function templateOwnership(uid) {
+  return { restricted: !!getTemplateAllowList(uid), own: uid ? Object.keys(rosterTemplates[uid] || {}) : [] };
+}
+
 app.get('/api/templates/:gid', (req, res) => {
   const gid = req.params.gid;
   const uid = req.query.uid;
-  res.json({ success: true, templates: collectRosterTemplates(uid, gid) });
+  res.json({ success: true, templates: collectRosterTemplates(uid, gid), ...templateOwnership(uid) });
 });
 
 // 儲存/刪除名單範本：以 uid 為主鍵，讓同一帳號在手機／電腦互通
@@ -3023,11 +3100,13 @@ app.post('/api/templates/:gid', express.json({ limit: '2mb' }), async (req, res)
     return res.status(403).json({ error: '只有管理員能修改預設名單' });
   }
   
+  // 被限定名單的群組管理員只能改自己 uid 底下的副本，不會動到超管指定給大家的原始名單
+  const restricted = !!getTemplateAllowList(uid);
   if (action === 'save') {
     if (!name || !content) {
       return res.status(400).json({ error: '名稱與內容不可為空' });
     }
-    for (const key of getRosterTemplateStorageKeys(uid, storageGid)) {
+    for (const key of restricted ? [uid] : getRosterTemplateStorageKeys(uid, storageGid)) {
       if (!rosterTemplates[key]) rosterTemplates[key] = {};
       rosterTemplates[key][name] = content;
     }
@@ -3035,8 +3114,14 @@ app.post('/api/templates/:gid', express.json({ limit: '2mb' }), async (req, res)
     if (!name) {
       return res.status(400).json({ error: '未指定要刪除的範本名稱' });
     }
+    if (restricted) {
+      if (!rosterTemplates[uid] || rosterTemplates[uid][name] === undefined) {
+        return res.status(403).json({ error: '這份名單是超級管理員指定給你的，不能刪除' });
+      }
+      delete rosterTemplates[uid][name];
+    }
     const seenKeys = new Set();
-    for (const key of collectRosterTemplateSourceKeys(uid, storageGid)) {
+    for (const key of restricted ? [] : collectRosterTemplateSourceKeys(uid, storageGid)) {
       if (!key || seenKeys.has(key)) continue;
       seenKeys.add(key);
       if (rosterTemplates[key] && rosterTemplates[key][name] !== undefined) {
@@ -3049,7 +3134,7 @@ app.post('/api/templates/:gid', express.json({ limit: '2mb' }), async (req, res)
   
   try {
     await saveRosterTemplates();
-    res.json({ success: true, templates: collectRosterTemplates(uid, storageGid) });
+    res.json({ success: true, templates: collectRosterTemplates(uid, storageGid), ...templateOwnership(uid) });
   } catch (e) {
     console.error('儲存範本失敗:', e);
     res.status(500).json({ error: '伺服器儲存錯誤' });
@@ -4161,6 +4246,135 @@ app.post('/api/admin/ai_analysis', express.json(), async (req, res) => {
   }
   res.json({ success: true, isPublic: featureSettings.aiAnalysisPublic });
 });
+
+// ---------- 群組管理員設定（超級管理員專用） ----------
+
+function knownLineUsers() {
+  const users = {};
+  for (const stats of Object.values(lobbyVisits || {})) {
+    for (const [userId, info] of Object.entries((stats && stats.uniqueViewers) || {})) {
+      if (!info || !info.displayName || isWeakVisitUserId(userId)) continue;
+      const prev = users[userId];
+      if (!prev || (info.lastVisit || 0) > (prev.lastVisit || 0)) {
+        users[userId] = { displayName: info.displayName, pictureUrl: info.pictureUrl || (prev && prev.pictureUrl) || '', lastVisit: info.lastVisit || 0 };
+      }
+    }
+  }
+  return users;
+}
+
+function knownGroups() {
+  const gids = new Set([...Object.values(groupCodes), ...Object.keys(groupAdmins), ...Object.keys(groupSettings)]);
+  return [...gids]
+    .filter((g) => typeof g === 'string' && /^[CR]/.test(g))
+    .map((g) => ({
+      gid: g,
+      name: (groupSettings[g] && groupSettings[g].groupName) || '',
+      codes: Object.keys(groupCodes).filter((c) => groupCodes[c] === g)
+    }))
+    .sort((a, b) => (a.name || a.gid).localeCompare(b.name || b.gid, 'zh-Hant'));
+}
+
+function rosterSourceLabel(key, users) {
+  if (/^[CR]/.test(key)) return '群組：' + ((groupSettings[key] && groupSettings[key].groupName) || key.slice(0, 8));
+  if (users[key]) return '個人：' + users[key].displayName;
+  return key === 'default' ? '大廳' : '個人：' + key.slice(0, 8) + '…';
+}
+
+function buildGroupAdminOverview() {
+  const users = knownLineUsers();
+  const adminUids = new Set(Object.keys(adminPermissions));
+  for (const g of Object.keys(groupAdmins)) for (const u of groupAdmins[g]) adminUids.add(u);
+  const admins = [...adminUids].filter((u) => !isTrueSuperAdmin(u)).map((u) => {
+    const groups = getAdminGroupIds(u);
+    const perm = adminPermissions[u] || {};
+    return {
+      uid: u,
+      name: (users[u] && users[u].displayName) || perm.name || '',
+      pictureUrl: (users[u] && users[u].pictureUrl) || '',
+      groups,
+      templates: Array.isArray(perm.templates) ? perm.templates : null,
+      visibleTemplates: Object.keys(collectRosterTemplates(u, groups[0] || ''))
+    };
+  }).sort((a, b) => (a.name || a.uid).localeCompare(b.name || b.uid, 'zh-Hant'));
+  return {
+    admins,
+    groups: knownGroups(),
+    templates: listAllRosterTemplates().map((t) => ({ name: t.name, sources: [...new Set(t.sources.map((k) => rosterSourceLabel(k, users)))] })),
+    users: Object.entries(users)
+      .sort((a, b) => (b[1].lastVisit || 0) - (a[1].lastVisit || 0))
+      .slice(0, 500)
+      .map(([userId, info]) => ({ uid: userId, name: info.displayName, pictureUrl: info.pictureUrl }))
+  };
+}
+
+async function saveGroupAdminSettings() {
+  try {
+    await Promise.race([
+      Promise.all([saveAdmins(), saveAdminPermissions()]),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('群組管理員設定寫入逾時')), 8000))
+    ]);
+  } catch (e) {
+    console.error('saveGroupAdminSettings failed:', e);
+  }
+}
+
+app.get('/api/admin/group_admins', (req, res) => {
+  if (!isTrueSuperAdmin(req.query.uid)) {
+    return res.status(403).json({ error: '只有超級管理員能管理群組管理員' });
+  }
+  res.json({ success: true, ...buildGroupAdminOverview() });
+});
+
+app.post('/api/admin/group_admins', express.json(), async (req, res) => {
+  const { uid, target, name } = req.body || {};
+  if (!isTrueSuperAdmin(uid)) {
+    return res.status(403).json({ error: '只有超級管理員能管理群組管理員' });
+  }
+  if (typeof target !== 'string' || !/^U[0-9a-f]{32}$/i.test(target)) {
+    return res.status(400).json({ error: 'LINE 使用者 ID 格式不正確（應為 U 開頭加 32 碼）' });
+  }
+  if (isTrueSuperAdmin(target)) {
+    return res.status(400).json({ error: '這位已經是超級管理員，本來就有全部權限' });
+  }
+  const groups = Array.isArray(req.body.groups) ? req.body.groups : null;
+  const templates = Array.isArray(req.body.templates) ? req.body.templates.filter((n) => typeof n === 'string') : null;
+  if (!groups || !templates) {
+    return res.status(400).json({ error: '缺少群組或名單設定' });
+  }
+  const valid = new Set(knownGroups().map((g) => g.gid));
+  for (const g of Object.keys(groupAdmins)) {
+    if (!groups.includes(g)) groupAdmins[g].delete(target);
+  }
+  for (const g of groups) {
+    if (!valid.has(g)) continue;
+    if (!groupAdmins[g]) groupAdmins[g] = new Set();
+    groupAdmins[g].add(target);
+  }
+  const prev = adminPermissions[target] || {};
+  adminPermissions[target] = {
+    ...prev,
+    templates: [...new Set(templates)],
+    name: (typeof name === 'string' && name.trim()) ? name.trim().slice(0, 50) : (prev.name || ''),
+    updatedAt: Date.now()
+  };
+  await saveGroupAdminSettings();
+  res.json({ success: true, ...buildGroupAdminOverview() });
+});
+
+app.post('/api/admin/group_admins/remove', express.json(), async (req, res) => {
+  const { uid, target } = req.body || {};
+  if (!isTrueSuperAdmin(uid)) {
+    return res.status(403).json({ error: '只有超級管理員能管理群組管理員' });
+  }
+  if (typeof target !== 'string' || !target) {
+    return res.status(400).json({ error: '未指定要移除的群組管理員' });
+  }
+  for (const g of Object.keys(groupAdmins)) groupAdmins[g].delete(target);
+  delete adminPermissions[target];
+  await saveGroupAdminSettings();
+  res.json({ success: true, ...buildGroupAdminOverview() });
+});
 // ------------------
 
 let globalRoom = {
@@ -4919,17 +5133,18 @@ app.post('/api/action', express.json(), async (req, res) => {
     let triggerBumpMsg = null;
     
     if (action === 'createGame') {
-      if (!isSuperAdminUser) {
-        return res.status(403).json({ error: '只有超級管理員能建立場次' });
-      }
-      
       const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, initialListStr, targetGid, targetGids } = req.body;
+      const requestedGids = (Array.isArray(targetGids) && targetGids.length > 0) ? targetGids : [targetGid || gid];
+      if (!isSuperAdminUser && !requestedGids.every((g) => g && isGroupAdmin(uid, g))) {
+        return res.status(403).json({ error: '只能在超級管理員指定給你的群組開團' });
+      }
       const actualGid = (targetGids && targetGids.length > 0) ? targetGids[0] : (targetGid || gid);
       
       const newGameId = Date.now().toString() + Math.floor(Math.random()*1000);
       
+      // 定時發布與提醒都會用到推播額度，只保留給超級管理員
       let pPublish = null;
-      if (publish) {
+      if (publish && isSuperAdminUser) {
          let ptStr = publish.replace('T', ' ');
          if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
          const dt = new Date(ptStr);
@@ -4937,7 +5152,7 @@ app.post('/api/action', express.json(), async (req, res) => {
       }
       
       let pReminder = null;
-      if (reminder) {
+      if (reminder && isSuperAdminUser) {
          let rtStr = reminder.replace('T', ' ');
          if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
          const dt = new Date(rtStr);
@@ -5109,10 +5324,19 @@ app.post('/api/action', express.json(), async (req, res) => {
         return res.status(404).json({ error: '找不到該場次' });
       }
       
-      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, targetGids, isManualEnded } = req.body;
+      const { title, date, time, loc, fee, limit, backupLimit, note, tag, publish, reminder, isManualEnded } = req.body;
+      let targetGids = req.body.targetGids;
       const game = games[gameId];
       
       const oldTargetGids = game.targetGids || [game.gid];
+      // 群組管理員只能增減自己管理的群組，其他群組維持原樣
+      if (!isSuperAdminUser && Array.isArray(targetGids)) {
+        if (targetGids.some((g) => !oldTargetGids.includes(g) && !isGroupAdmin(uid, g))) {
+          return res.status(403).json({ error: '只能把場次開放到超級管理員指定給你的群組' });
+        }
+        const kept = oldTargetGids.filter((g) => !isGroupAdmin(uid, g) && !targetGids.includes(g));
+        targetGids = targetGids.concat(kept);
+      }
       if (targetGids && Array.isArray(targetGids) && targetGids.length > 0) {
         const newlyAdded = targetGids.filter(g => !oldTargetGids.includes(g));
         game.targetGids = targetGids;
@@ -5164,7 +5388,7 @@ app.post('/api/action', express.json(), async (req, res) => {
          const dt = new Date(ptStr);
          if (!isNaN(dt.getTime())) pPublish = dt.getTime();
       }
-      game.scheduleTime = pPublish;
+      if (isSuperAdminUser) game.scheduleTime = pPublish;
       
       let pReminder = null;
       if (reminder) {
@@ -5173,7 +5397,7 @@ app.post('/api/action', express.json(), async (req, res) => {
          const dt = new Date(rtStr);
          if (!isNaN(dt.getTime())) pReminder = dt.getTime();
       }
-      game.reminderTime = pReminder;
+      if (isSuperAdminUser) game.reminderTime = pReminder;
       
       try {
         await saveGame(gameId, true);
