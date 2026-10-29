@@ -12558,7 +12558,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793286206547,
+    "lastActiveTime": 1793291385118,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12627,12 +12627,20 @@
           "林煥杰",
           "gary",
           "賴柚子",
-          "花花"
+          "花花",
+          "雪倫"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/30 00:29",
+        "name": "雪倫",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/29 23:03",
         "name": "花花",
