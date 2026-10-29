@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.18
+ * Version: 1.7.19
  */
 (function () {
   'use strict';
@@ -1109,7 +1109,8 @@
       if (prev) {
         const dt = p.t - prev.t;
         const d = Math.hypot(p.x - prev.x, p.y - prev.y);
-        if (dt > 0 && dt <= 0.8 && d > 0.04 && d <= 2.2) sum += d;
+        // 超過約 8 m/s 的單格位移當成追錯人。場上衝刺很少比這更快。
+        if (dt > 0 && dt <= 0.8 && d > 0.04 && d / dt <= 8) sum += d;
       }
       prev = p;
     }
@@ -1339,7 +1340,7 @@
     return { kmh: best.kmh, rhythm: Core.shuttleRhythm(best.kmh), peak: flight ? flight.peak : best.kmh };
   }
 
-  // 這一拍的最快速度。同一拍內不跟著每一格跳動，下一拍才換數字
+  // 這一拍離拍後的速度。BWF 賽事測速量的是球離開球拍的速度，不是整段飛行的平均。
   function shotSpeedAt(t) {
     const pace = shuttlePaceData();
     if (!pace || !pace.points.length || typeof t !== 'number') return null;
@@ -1353,17 +1354,21 @@
       }
     }
     if (shot) {
-      let peak = 0;
+      const earlyEnd = shot.t0 + 0.12;
+      let early = 0;
+      let later = 0;
       for (let i = 0; i < pace.points.length; i++) {
         const p = pace.points[i];
-        if (p.t < shot.t0 - 0.04) continue;
+        if (p.t < shot.t0 - 0.02) continue;
         if (p.t > shot.t1 + 0.08) break;
-        if (p.kmh > peak) peak = p.kmh;
+        if (p.t <= earlyEnd) early = Math.max(early, p.kmh);
+        else if (!early) later = Math.max(later, p.kmh);
       }
-      if (peak > 0) return Math.round(peak);
+      const kmh = early || later;
+      if (kmh > 0) return Math.round(kmh);
     }
     const live = paceAtTime(t);
-    return live && live.peak > 0 ? Math.round(live.peak) : null;
+    return live && live.kmh > 0 ? Math.round(live.kmh) : null;
   }
 
   function rallyCountAt(t) {
@@ -1614,7 +1619,7 @@
         </div>
         <div class="zone-legend">直線 ${c.straight} · 斜線 ${c.cross} · 放短 ${c.drop} · 高舉手 ${c.overhead} · 放網 ${c.net} · 防守 ${c.defense}</div>
         <div class="shot-log">${rows}</div>
-        <div class="zone-legend">高舉手是手臂舉過肩並伸直，看不出拍面，所以不把殺球和高球分開。出界依單打或雙打的邊線。單打用內側邊線。</div>
+        <div class="zone-legend">壓線算界內。單打看內側邊線（寬 5.18 公尺），雙打看外側邊線（寬 6.10 公尺）。前場是網到前發球線 1.98 公尺，後場是底線往前同樣的深度。</div>
       </div>`;
   }
 
@@ -1652,7 +1657,7 @@
           <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>
           <div><span class="pc-val">${pace.flights.length}</span><span class="pc-unit">段</span><div class="pc-label">飛行段數</div></div>
         </div>
-        <div class="zone-legend">球速用畫面上的移動，搭配校正後的球場尺寸換算；球飛得很高時會有誤差。右側的擊球時速會停在這一拍的最快速度，來回是到目前為止打出去的拍數。</div>`;
+        <div class="zone-legend">擊球時速取這一拍離拍後約 0.12 秒，不是整段飛行的平均，也會低於賽事雷達。來回是擊球次數，從這一球的第一拍算起。</div>`;
     } else if (state.calib) {
       paceHtml = '<div class="zone-legend">這段還沒有足夠的連續球點來估計球速。</div>';
     }
@@ -1693,7 +1698,7 @@
             <span class="z-mid" style="width:${pct(s.zones.mid)}%"></span>
             <span class="z-rear" style="width:${pct(s.zones.rear)}%"></span>
           </div>
-          <div class="zone-legend"><b style="color:#38bdf8">前場</b> ${pct(s.zones.front)}% · <b style="color:#a78bfa">中場</b> ${pct(s.zones.mid)}% · <b style="color:#f472b6">後場</b> ${pct(s.zones.rear)}%</div>
+          <div class="zone-legend"><b style="color:#38bdf8">前場</b> ${pct(s.zones.front)}% · <b style="color:#a78bfa">中場</b> ${pct(s.zones.mid)}% · <b style="color:#f472b6">後場</b> ${pct(s.zones.rear)}% · 前場算到前發球線</div>
           ${playerRallyHtml(id)}
         </div>`;
     }).join('');

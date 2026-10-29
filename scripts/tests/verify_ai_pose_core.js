@@ -251,6 +251,9 @@ function testRallyReport() {
   assert.strictEqual(straight.shots[0].hitter, 'near');
   assert.strictEqual(straight.shots[0].line, '直線');
   assert.strictEqual(straight.shots[0].zone, '後場');
+  assert.strictEqual(PoseCore.courtZone(6.7), 'front', 'the net is the front court');
+  assert.strictEqual(PoseCore.courtZone(6.7 + 1.98), 'front', 'short service line is still the front court');
+  assert.strictEqual(PoseCore.courtZone(0.5), 'rear', 'near the baseline is the rear court');
   assert.strictEqual(straight.shots[0].out, false);
   assert.strictEqual(straight.shots[0].action, '高舉手');
 

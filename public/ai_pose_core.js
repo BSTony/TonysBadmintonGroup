@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.5
+ * Version: 1.2.6
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -24,11 +24,15 @@
     [0, 1], [0, 2], [1, 3], [2, 4]
   ];
 
-  // 羽球場標準尺寸（公尺）；y 軸從遠端底線 0 到近端底線 13.4
+  // BWF 羽球規則（Laws of Badminton）球場尺寸，單位公尺。
+  // 全場 13.40×6.10；單打寬 5.18，所以兩側各內縮 0.46。線寬 40mm，線本身算在界內。
+  // 前發球線離網 1.98；雙打後發球線離底線 0.76。網在正中央。
   const COURT = {
     length: 13.4,
     width: 6.1,
+    singlesWidth: 5.18,
     singlesInset: 0.46,
+    lineWidth: 0.04,
     netY: 6.7,
     shortService: 1.98,
     doublesLongService: 0.76
@@ -420,7 +424,6 @@
     const maxGap = opts.maxGap ?? 1.0;
     const maxSpeed = opts.maxSpeed ?? 8;
     const s = smoothSamples(samples, opts.smoothWindow ?? 0.3);
-    const third = COURT.netY / 3;
     const zones = { front: 0, mid: 0, rear: 0 };
     let distance = 0;
     let activeTime = 0;
@@ -430,9 +433,9 @@
       const p = s[i];
       sumX += p.x;
       sumY += p.y;
-      const fromNet = Math.abs(p.y - COURT.netY);
-      if (fromNet < third) zones.front++;
-      else if (fromNet < 2 * third) zones.mid++;
+      const zone = courtZone(p.y);
+      if (zone === 'front') zones.front++;
+      else if (zone === 'mid') zones.mid++;
       else zones.rear++;
       if (i > 0) {
         const q = s[i - 1];
@@ -695,7 +698,22 @@
     return '';
   }
 
-  // 用球的飛行段，加上腳的位置和手腕，估計每一拍是誰打、直線或斜線、落點、出手
+  // 前場到前發球線（離網 1.98m）。後場取同樣深度，雙打後發球線（離底線 0.76m）落在後場裡。
+  function courtZone(y) {
+    const fromNet = Math.abs(y - COURT.netY);
+    if (fromNet <= COURT.shortService) return 'front';
+    if (fromNet >= COURT.netY - COURT.shortService) return 'rear';
+    return 'mid';
+  }
+
+  function zoneLabel(zone) {
+    if (zone === 'front') return '前場';
+    if (zone === 'rear') return '後場';
+    return '中場';
+  }
+
+  // 用球的飛行段，加上腳的位置和手腕，估計每一拍是誰打、直線或斜線、落點、出手。
+  // 一拍就是一次擊球（BWF：rally 由連續的 stroke 組成，從發球算到球不再比賽）。
   function rallyReport(input) {
     const shuttle = (input && input.shuttle) || [];
     const project = input && input.project;
@@ -736,7 +754,10 @@
       const dx = end.p.x - start.p.x;
       const dy = end.p.y - start.p.y;
       const dist = Math.hypot(dx, dy);
+      const crossed = (start.p.y - COURT.netY) * (end.p.y - COURT.netY) <= 0;
+      // 過網，或沿著球場往前飛超過一小段，才算一次擊球；原地亂跳不算
       if (end.t - start.t < 0.08 || dist < 0.45) return;
+      if (!crossed && Math.abs(dy) < 0.8) return;
       const line = dist < 2.4 ? '放短' : Math.abs(dx) >= 1.7 ? '斜線' : '直線';
       const landing = landingOf(end.p, mode);
       const hit = hitterAt(start, poses, feet);
@@ -766,12 +787,10 @@
   }
 
   function landingOf(p, mode) {
-    const inset = mode === 'singles' ? COURT.singlesInset : 0;
+    // 單打界內寬 5.18m（內側邊線），雙打 6.10m。線屬於該區，壓線算界內。
+    const inset = mode === 'singles' ? (COURT.width - COURT.singlesWidth) / 2 : 0;
     const inside = p.x >= inset && p.x <= COURT.width - inset && p.y >= 0 && p.y <= COURT.length;
-    const third = COURT.netY / 3;
-    const fromNet = Math.abs(p.y - COURT.netY);
-    const zone = fromNet < third ? '前場' : fromNet < third * 2 ? '中場' : '後場';
-    return { zone, out: !inside, side: p.y >= COURT.netY ? 'near' : 'far' };
+    return { zone: zoneLabel(courtZone(p.y)), out: !inside, side: p.y >= COURT.netY ? 'near' : 'far' };
   }
 
   function nearestFoot(list, t) {
@@ -872,7 +891,7 @@
     Object.keys(ids).forEach((id) => {
       const list = feet[id] || [];
       let net = 0;
-      const front = COURT.netY / 3;
+      const front = COURT.shortService;
       list.forEach((p) => { if (Math.abs(p.y - COURT.netY) <= front) net++; });
       let stanceSum = 0;
       let stanceN = 0;
@@ -1023,6 +1042,7 @@
     decodeShuttleHeatmap,
     shuttlePace,
     shuttleRhythm,
+    courtZone,
     rallyReport,
     patchMp4Duration
   };
