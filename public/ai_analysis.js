@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.17
+ * Version: 1.7.18
  */
 (function () {
   'use strict';
@@ -1089,12 +1089,31 @@
   }
 
   function paintPlayerLegend() {
-    const box = document.getElementById('player-legend');
+    const box = document.getElementById('move-list');
     if (!box) return;
     box.innerHTML = playerLegendIds().map((id) => {
       const st = PLAYER_STYLE[id];
-      return `<span><i style="background:${st.color}"></i>${st.label}</span>`;
+      return `<div class="move-row"><i style="background:${st.color}"></i><span class="name">${st.label}</span><b data-move="${id}">—</b><span class="unit">公尺</span></div>`;
     }).join('');
+  }
+
+  // 腳的連續位移加總。單格跳太遠的是追錯人，不計入跑動距離
+  function distanceUntil(id, t) {
+    const list = state.samples[id] || [];
+    const limit = typeof t === 'number' ? t : Infinity;
+    let sum = 0;
+    let prev = null;
+    for (let i = 0; i < list.length; i++) {
+      const p = list[i];
+      if (p.t > limit) break;
+      if (prev) {
+        const dt = p.t - prev.t;
+        const d = Math.hypot(p.x - prev.x, p.y - prev.y);
+        if (dt > 0 && dt <= 0.8 && d > 0.04 && d <= 2.2) sum += d;
+      }
+      prev = p;
+    }
+    return sum;
   }
 
   function drawCourtOnVideo(ctx, lw, calib) {
@@ -1320,22 +1339,57 @@
     return { kmh: best.kmh, rhythm: Core.shuttleRhythm(best.kmh), peak: flight ? flight.peak : best.kmh };
   }
 
-  // 球速、球質、球路都寫在右側固定框，不跟球在畫面上跑
+  // 這一拍的最快速度。同一拍內不跟著每一格跳動，下一拍才換數字
+  function shotSpeedAt(t) {
+    const pace = shuttlePaceData();
+    if (!pace || !pace.points.length || typeof t !== 'number') return null;
+    const report = rallyData();
+    let shot = null;
+    if (report) {
+      for (let i = 0; i < report.shots.length; i++) {
+        const s = report.shots[i];
+        if (s.t0 <= t + 0.05) shot = s;
+        else break;
+      }
+    }
+    if (shot) {
+      let peak = 0;
+      for (let i = 0; i < pace.points.length; i++) {
+        const p = pace.points[i];
+        if (p.t < shot.t0 - 0.04) continue;
+        if (p.t > shot.t1 + 0.08) break;
+        if (p.kmh > peak) peak = p.kmh;
+      }
+      if (peak > 0) return Math.round(peak);
+    }
+    const live = paceAtTime(t);
+    return live && live.peak > 0 ? Math.round(live.peak) : null;
+  }
+
+  function rallyCountAt(t) {
+    const report = rallyData();
+    if (!report || typeof t !== 'number') return null;
+    let n = 0;
+    for (let i = 0; i < report.shots.length; i++) {
+      if (report.shots[i].t0 <= t + 0.05) n++;
+      else break;
+    }
+    return n;
+  }
+
+  // 右側固定顯示這一拍的時速、到目前的來回拍數，以及每人跑了多遠
   function updateLivePace(t) {
     if (!els.liveKmh) return;
-    const pace = typeof t === 'number' ? paceAtTime(t) : null;
-    const shot = typeof t === 'number' ? shotAtTime(t) : null;
-    if (!pace) {
-      els.liveKmh.textContent = '—';
-      els.liveRhythm.textContent = state.calib ? '—' : '需校正';
-      els.liveRhythm.removeAttribute('data-kind');
-    } else {
-      els.liveKmh.textContent = String(Math.round(pace.kmh));
-      els.liveRhythm.textContent = pace.rhythm || '—';
-      if (pace.rhythm) els.liveRhythm.dataset.kind = pace.rhythm;
-      else els.liveRhythm.removeAttribute('data-kind');
-    }
-    if (els.liveShot) els.liveShot.textContent = formatShot(shot);
+    const kmh = shotSpeedAt(t);
+    const rallies = rallyCountAt(t);
+    els.liveKmh.textContent = kmh ? String(kmh) : '—';
+    if (els.liveRallies) els.liveRallies.textContent = rallies == null ? '—' : String(rallies);
+    const nodes = document.querySelectorAll('#move-list [data-move]');
+    nodes.forEach((node) => {
+      const id = node.getAttribute('data-move');
+      const meters = distanceUntil(id, t);
+      node.textContent = meters >= 0.1 ? meters.toFixed(1) : '—';
+    });
   }
 
   function rallyData() {
@@ -1357,24 +1411,6 @@
     });
     state._rallyKey = key;
     return state._rally;
-  }
-
-  function shotAtTime(t) {
-    const report = rallyData();
-    if (!report) return null;
-    let shot = null;
-    for (let i = 0; i < report.shots.length; i++) {
-      const s = report.shots[i];
-      if (t + 0.08 >= s.t0 && t <= s.t1 + 0.15) shot = s;
-    }
-    return shot;
-  }
-
-  function formatShot(shot) {
-    if (!shot) return '—';
-    const short = { near: '近端', far: '遠端', near1: '近A', near2: '近B', far1: '遠A', far2: '遠B' };
-    const who = shot.hitter ? (short[shot.hitter] || '球員') : '未對上';
-    return `${who} · ${shot.line} · ${shot.zone}${shot.out ? ' · 出界' : ''}`;
   }
 
   function courtToCanvas(x, y) {
@@ -1587,15 +1623,16 @@
     const p = report && report.players[id];
     if (!p) return '';
     const stance = p.stance == null ? '—' : p.stance.toFixed(2);
-    const move = p.move == null ? '—' : p.move.toFixed(1);
+    const moved = distanceUntil(id);
+    const move = moved >= 0.1 ? moved.toFixed(1) : '—';
     return `
       <div class="pc-grid">
         <div><span class="pc-val">${p.shots}</span><span class="pc-unit">拍</span><div class="pc-label">擊球</div></div>
-        <div><span class="pc-val">${Math.round(p.netRate * 100)}%</span><div class="pc-label">站在前場</div></div>
+        <div><span class="pc-val">${move}</span><span class="pc-unit">公尺</span><div class="pc-label">跑動距離</div></div>
       </div>
       <div class="pc-grid">
         <div><span class="pc-val">${stance}</span><span class="pc-unit">公尺</span><div class="pc-label">平均站距</div></div>
-        <div><span class="pc-val">${move}</span><span class="pc-unit">公尺</span><div class="pc-label">每拍移動</div></div>
+        <div><span class="pc-val">${Math.round(p.netRate * 100)}%</span><div class="pc-label">站在前場</div></div>
       </div>
       <div class="zone-legend">高舉手 ${p.overhead} · 放網 ${p.net} · 防守 ${p.defense}</div>`;
   }
@@ -1615,7 +1652,7 @@
           <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>
           <div><span class="pc-val">${pace.flights.length}</span><span class="pc-unit">段</span><div class="pc-label">飛行段數</div></div>
         </div>
-        <div class="zone-legend">速度維持是一段飛行最後還留下的最快速度比例，越高代表球速掉得少。球速用畫面上的移動，搭配校正後的球場尺寸換算；球飛得很高時會有誤差。播放或拖動影片時，右側固定框會顯示這一刻的球速和這一拍。</div>`;
+        <div class="zone-legend">球速用畫面上的移動，搭配校正後的球場尺寸換算；球飛得很高時會有誤差。右側的擊球時速會停在這一拍的最快速度，來回是到目前為止打出去的拍數。</div>`;
     } else if (state.calib) {
       paceHtml = '<div class="zone-legend">這段還沒有足夠的連續球點來估計球速。</div>';
     }
@@ -1986,14 +2023,14 @@
     const cw = els.court.width || 324;
     const ch = els.court.height || 696;
     const gap = Math.max(8, Math.round(Math.min(vw, vh) * 0.016));
-    const readH0 = Math.max(96, vh * 0.12);
+    const readH0 = Math.max(108, vh * 0.16);
     const courtH0 = Math.max(2, vh - readH0);
     const panelW = (cw / ch) * courtH0;
     const fit = Math.min(1, 3840 / (vw + gap + panelW), 2160 / vh);
     const videoW = even(vw * fit);
     const videoH = even(vh * fit);
     const outGap = even(gap * fit);
-    const readH = even(Math.max(88, videoH * 0.12));
+    const readH = even(Math.max(100, videoH * 0.16));
     const courtH = Math.max(2, videoH - readH);
     let outPanelW = even(courtH * (cw / ch));
     let width = videoW + outGap + outPanelW;
@@ -2058,21 +2095,18 @@
     ctx.drawImage(els.court, panelX, L.readH, L.panelW, L.panelH);
   }
 
-  // 下載影片的右側上方也固定寫球速、球質、球路，不跟著球移動
+  // 下載影片的右側上方寫這一拍的時速、來回拍數，以及每人跑動距離
   function drawExportReadout(ctx, x, L, t) {
-    const pace = paceAtTime(t);
-    const shot = shotAtTime(t);
-    const quality = pace && pace.rhythm ? pace.rhythm : '—';
-    const qualityColor = quality === '殺球' ? '#fb7185' : quality === '進攻' ? '#facc15' : quality === '控球' ? '#86efac' : '#94a3b8';
+    const kmh = shotSpeedAt(t);
+    const rallies = rallyCountAt(t);
     const rows = [
-      ['球速', pace ? `${Math.round(pace.kmh)} km/h` : '—', '#facc15'],
-      ['球質', quality, qualityColor],
-      ['球路', formatShot(shot), '#e2e8f0']
+      ['擊球時速', kmh ? `${kmh} km/h` : '—', '#facc15'],
+      ['來回', rallies == null ? '—' : `${rallies} 拍`, '#e2e8f0']
     ];
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(x, 0, L.panelW, L.readH);
-    const rowH = L.readH / 4;
-    const fs = Math.max(18, Math.round(rowH * 0.46));
+    const rowH = L.readH / 3;
+    const fs = Math.max(16, Math.round(rowH * 0.42));
     ctx.font = `700 ${fs}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
     ctx.textBaseline = 'middle';
     rows.forEach((row, i) => {
@@ -2082,28 +2116,27 @@
       ctx.fillText(row[0], x + 12, y);
       ctx.fillStyle = row[2];
       ctx.textAlign = 'right';
-      const labelW = ctx.measureText(row[0]).width + 24;
-      let text = row[1];
-      const maxW = Math.max(20, L.panelW - labelW - 24);
-      while (text.length > 1 && ctx.measureText(text).width > maxW) text = text.slice(0, -1);
-      ctx.fillText(text, x + L.panelW - 12, y);
+      ctx.fillText(row[1], x + L.panelW - 12, y);
     });
-    const legendY = rowH * 3 + rowH / 2;
+    const legendY = rowH * 2 + rowH / 2;
     let lx = x + 12;
-    const dot = Math.max(10, Math.round(rowH * 0.28));
+    const dot = Math.max(8, Math.round(rowH * 0.22));
     ctx.textAlign = 'left';
-    ctx.font = `700 ${Math.max(13, Math.round(rowH * 0.36))}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
+    ctx.font = `700 ${Math.max(12, Math.round(rowH * 0.32))}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
+    const shortName = { near: '近', far: '遠', near1: '近A', near2: '近B', far1: '遠A', far2: '遠B' };
     playerLegendIds().forEach((id) => {
       const st = PLAYER_STYLE[id];
-      const short = { near: '近端', far: '遠端', near1: '近A', near2: '近B', far1: '遠A', far2: '遠B' }[id] || st.label;
-      if (lx + dot + ctx.measureText(short).width + 16 > x + L.panelW) return;
+      const meters = distanceUntil(id, t);
+      const text = `${shortName[id] || ''} ${meters >= 0.1 ? meters.toFixed(1) : '—'}m`;
+      const width = dot + 4 + ctx.measureText(text).width + 12;
+      if (lx + width > x + L.panelW - 8) return;
       ctx.fillStyle = st.color;
       ctx.beginPath();
       ctx.arc(lx + dot / 2, legendY, dot / 2, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#e2e8f0';
-      ctx.fillText(short, lx + dot + 4, legendY);
-      lx += dot + ctx.measureText(short).width + 16;
+      ctx.fillText(text, lx + dot + 4, legendY);
+      lx += width;
     });
     ctx.textAlign = 'left';
   }
@@ -2365,7 +2398,7 @@
       heatTabs: 'heat-tabs', court: 'court',
       playerStats: 'player-stats', toast: 'toast', shuttleToggle: 'shuttle-toggle', shuttleStatus: 'shuttle-status',
       maskOutside: 'mask-outside',
-      liveKmh: 'live-kmh', liveRhythm: 'live-rhythm', liveShot: 'live-shot',
+      liveKmh: 'live-kmh', liveRallies: 'live-rallies',
       adminBar: 'admin-bar', accessSuper: 'access-super', accessPublic: 'access-public',
       locked: 'locked', mainLayout: 'main-layout'
     };
