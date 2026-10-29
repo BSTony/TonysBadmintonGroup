@@ -12549,7 +12549,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793284312654,
+    "lastActiveTime": 1793284411965,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12581,7 +12581,8 @@
       "喻心平": "U0220a13b4aec2dec044ce073925f0df9",
       "陳文凱": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12609,12 +12610,20 @@
           "蘑菇",
           "momota",
           "江こう 洋々",
-          "Mike"
+          "Mike",
+          "楊程鈞"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/29 22:33",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/29 22:31",
         "name": "Mike",
