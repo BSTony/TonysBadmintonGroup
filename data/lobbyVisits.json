@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5771,
+    "viewCount": 5772,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -1470,12 +1470,18 @@
       "U5a101f4a1e77575eb002302374838d5b": {
         "displayName": "顏鎧霖",
         "firstVisit": 1792727812375,
-        "count": 1,
-        "lastVisit": 1792727812375,
+        "count": 2,
+        "lastVisit": 1793249678091,
         "pictureUrl": "https://profile.line-scdn.net/0hGFMPb0mCGGlgKQv2RP9mFhB5GwNDWEF7HxheWgZ8RwldH1s8TBheDFItTlBfTApoTktXCFEoRVBsOm8Pfn_kXWcZRVhdGFo3SkdSig"
       }
     },
     "logs": [
+      {
+        "time": 1793249678091,
+        "userId": "U5a101f4a1e77575eb002302374838d5b",
+        "displayName": "顏鎧霖",
+        "pictureUrl": "https://profile.line-scdn.net/0hGFMPb0mCGGlgKQv2RP9mFhB5GwNDWEF7HxheWgZ8RwldH1s8TBheDFItTlBfTApoTktXCFEoRVBsOm8Pfn_kXWcZRVhdGFo3SkdSig"
+      },
       {
         "time": 1793246083633,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -13469,12 +13475,6 @@
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
         "displayName": "謝東霖 Tony",
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1788275053896,
-        "userId": "U092196c10fe7e15591482c6b7942a147",
-        "displayName": "Sammy Su",
-        "pictureUrl": "https://profile.line-scdn.net/0hLDaGz3uSE2tMPgxb931tFDxuEAFvT0p5aVhYD3A7H192WlI6YFtZCHFrSll2XF1qZFBdCX4_RAhALWQNUmjvX0sOTlpxD1E1ZlBZiA"
       }
     ]
   },
