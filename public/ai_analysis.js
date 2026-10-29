@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.15
+ * Version: 1.7.16
  */
 (function () {
   'use strict';
@@ -260,6 +260,7 @@
       warnings.push('目前是在 LINE 內建瀏覽器開啟，請複製網址改用電腦的 Chrome 或 Edge 開啟，才能使用顯示卡加速。');
     }
     const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+    state.deviceKind = isMobile ? 'phone' : 'pc';
     if (isMobile) {
       warnings.push('這版骨架是 YOLO26x，約 220MB，請用有顯示卡的電腦。手機記憶體不夠，可能載入失敗。');
     }
@@ -272,7 +273,9 @@
         if (adapter) {
           gpuOk = true;
           const info = adapter.info || {};
-          gpuName = [info.vendor, info.architecture || info.description].filter(Boolean).join(' ');
+          gpuName = [info.vendor, info.architecture || info.description || info.device].filter(Boolean).join(' ');
+          state.gpuName = gpuName;
+          state.gpuClass = classifyGpu(gpuName, isMobile);
         }
       } catch (e) {
         console.warn('[AI] 取得顯示卡失敗', e);
@@ -282,6 +285,7 @@
       setChip(els.envStatus, '顯示卡加速 WebGPU' + (gpuName ? `（${gpuName}）` : ''), 'ok');
     } else {
       setChip(els.envStatus, '不支援 WebGPU，改用 CPU', 'warn');
+      state.gpuClass = '無';
       warnings.push('這個瀏覽器無法使用顯示卡（WebGPU），會改用 CPU 計算，速度會慢很多。建議使用最新版 Chrome 或 Edge。');
     }
     if (warnings.length) {
@@ -289,6 +293,38 @@
       els.envWarning.classList.remove('hidden');
     }
     return gpuOk;
+  }
+
+  function classifyGpu(name, isMobile) {
+    const n = String(name || '').toLowerCase();
+    if (/nvidia|geforce|rtx|gtx|quadro|radeon|rx\s?\d|arc\b/.test(n)) return '獨立顯卡';
+    if (isMobile || /adreno|mali|apple|powervr|immortalis/.test(n)) return '手機顯卡';
+    if (/intel|uhd|iris|vega/.test(n)) return '內顯';
+    return '有顯卡';
+  }
+
+  // 只回報使用狀況，不傳送影片內容
+  function reportAiUsage(kind, error) {
+    if (!state.uid) return;
+    const v = els.video;
+    const videoSec = v && isFinite(v.duration) ? v.duration : 0;
+    fetch('/api/ai_analysis/usage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uid: state.uid,
+        kind,
+        videoSec,
+        rangeSec: Math.max(0, state.range.end - state.range.start),
+        device: state.deviceKind || 'pc',
+        gpu: state.gpuName || '',
+        gpuClass: state.gpuClass || '無',
+        fps: state.sampleFps,
+        side: state.poseSide,
+        shuttle: !!(state.shuttleEnabled && state.backend === 'webgpu'),
+        error: error ? String(error).slice(0, 160) : ''
+      })
+    }).catch(() => {});
   }
 
   async function fetchParts(urls, onProgress) {
@@ -693,6 +729,7 @@
     const start = resume ? Math.max(state.analyzedUntil, state.lastShuttleT) : state.range.start;
     const wantShuttle = state.shuttleEnabled && state.backend === 'webgpu';
     state.running = true;
+    if (!resume) reportAiUsage('start');
     state.detectFrame = null;
     state.trackingRun = false;
     els.video.controls = false;
@@ -718,6 +755,7 @@
       if (state.shuttleFrames.length && state.tracknet && state.shuttleBg) await processShuttleBatch();
     } catch (e) {
       console.error('[AI] 分析中斷', e);
+      reportAiUsage('fail', e && e.message ? e.message : e);
       showError('分析中斷：' + (e && e.message ? e.message : e));
     } finally {
       state.running = false;
@@ -725,6 +763,7 @@
       els.video.playbackRate = 1;
       els.video.controls = true;
       if (completed) {
+        reportAiUsage('success');
         state.analyzedUntil = state.range.end;
         await seekTo(els.video, state.range.start);
       }

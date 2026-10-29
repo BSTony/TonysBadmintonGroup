@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.44
+ * Version: 1.2.45
  */
 let globalLobbyUsers = [];
 
@@ -5101,6 +5101,74 @@ document.getElementById('btn-submit-edit').onclick = async () => {
 document.addEventListener('click', (e) => { if (activeMinusOneDodge) return; if (!e.target.closest('.btn-danger')) { document.querySelectorAll('.btn-danger').forEach(b => { if (b.dataset.dodged === 'true') { b.dataset.dodged = 'false'; b.style.transition = 'transform 1s ease'; b.style.transform = 'translate(0px, 0px)'; } }); } });
 
 // 大廳分析邏輯
+function fmtAiFilm(sec) {
+  const s = Math.max(0, Math.round(Number(sec) || 0));
+  if (s < 60) return s + ' 秒';
+  const m = Math.round(s / 60);
+  if (m < 60) return m + ' 分';
+  const h = Math.floor(m / 60);
+  const rest = m % 60;
+  return rest ? h + ' 小時 ' + rest + ' 分' : h + ' 小時';
+}
+
+function buildAiUsageCard(data) {
+  const card = document.createElement('div');
+  card.className = 'game-card';
+  card.style.marginBottom = '20px';
+  card.style.border = '2px solid #0f172a';
+  const users = Array.isArray(data.users) ? data.users : [];
+  const rows = users.length ? users.map((u) => {
+    const name = escapeHTML(u.name || '（沒有顯示名稱）');
+    const avatar = (u.pictureUrl && /^https:\/\//i.test(u.pictureUrl))
+      ? `<img referrerpolicy="no-referrer" alt="" src="${escapeHTML(u.pictureUrl)}" style="width:18px;height:18px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;">`
+      : '';
+    const when = u.lastAt ? new Date(u.lastAt).toLocaleString('zh-TW', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }) : '—';
+    const device = u.device === 'phone' ? '手機' : '電腦';
+    const gpu = escapeHTML(u.gpuClass || '無');
+    const gpuTitle = escapeHTML(u.gpu || '');
+    const film = u.videoSec || u.rangeSec || 0;
+    return `<tr style="border-bottom:1px solid #eee;">
+      <td style="padding:6px 8px; max-width:140px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${name}">${avatar}${name}</td>
+      <td style="padding:6px 8px;">${u.uses || 0}</td>
+      <td style="padding:6px 8px; color:#15803d;">${u.success || 0}</td>
+      <td style="padding:6px 8px; color:#b91c1c;">${u.fail || 0}</td>
+      <td style="padding:6px 8px;">${fmtAiFilm(film)}</td>
+      <td style="padding:6px 8px;">${device}</td>
+      <td style="padding:6px 8px;" title="${gpuTitle}">${gpu}</td>
+      <td style="padding:6px 8px;">${when}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="8" style="padding:12px; text-align:center; color:#888;">還沒有人用過 AI 影片分析</td></tr>';
+  card.innerHTML = `
+    <h3 style="margin:0 0 10px 0; color:#0f172a; text-align:center;">🎥 AI 影片分析</h3>
+    <div class="detail-stats" style="margin-top:0; margin-bottom:10px;">
+      <div class="stat-box" style="flex:1;"><span class="stat-label">使用次數</span><span class="stat-value">${data.starts || 0}</span></div>
+      <div class="stat-box" style="flex:1;"><span class="stat-label">成功</span><span class="stat-value" style="color:#15803d;">${data.successCount || 0}</span></div>
+      <div class="stat-box" style="flex:1;"><span class="stat-label">失敗</span><span class="stat-value" style="color:#b91c1c;">${data.failCount || 0}</span></div>
+      <div class="stat-box" style="flex:1;"><span class="stat-label">影片長度</span><span class="stat-value">${fmtAiFilm(data.videoSec || data.rangeSec)}</span></div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; border-collapse:collapse; font-size:12px;">
+        <thead>
+          <tr style="background:rgba(0,0,0,0.05); text-align:left;">
+            <th style="padding:8px;">名稱</th>
+            <th style="padding:8px;">次數</th>
+            <th style="padding:8px;">成功</th>
+            <th style="padding:8px;">失敗</th>
+            <th style="padding:8px;">影片</th>
+            <th style="padding:8px;">裝置</th>
+            <th style="padding:8px;">顯卡</th>
+            <th style="padding:8px;">最後使用</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <p style="margin:8px 0 0; color:#64748b; font-size:12px;">只記錄使用狀況，不會上傳影片。影片長度是選取的影片本身。中途暫停不算成功或失敗。</p>
+  `;
+  return card;
+}
+
+// 大廳分析邏輯
 if (btnLobbyStats) {
   btnLobbyStats.addEventListener('click', async () => {
     const { isSuperAdmin: effIsSuperAdmin } = (typeof getEffectiveRole === 'function') ? getEffectiveRole() : { isSuperAdmin: false };
@@ -5115,6 +5183,15 @@ if (btnLobbyStats) {
       const data = await fetchJson(`/api/admin/all_stats?uid=${encodeURIComponent(uid)}`, {}, 25000, '分析資料載入逾時');
       
       statsGroupsContainer.innerHTML = '';
+      try {
+        const ai = await fetchJson(`/api/admin/ai_usage?uid=${encodeURIComponent(uid)}`, {}, 20000, 'AI 使用紀錄載入逾時');
+        statsGroupsContainer.appendChild(buildAiUsageCard(ai));
+      } catch (aiErr) {
+        const note = document.createElement('div');
+        note.style.cssText = 'text-align:center; padding:8px; color:#c0392b;';
+        note.textContent = aiErr && aiErr.message ? aiErr.message : 'AI 使用紀錄讀不到';
+        statsGroupsContainer.appendChild(note);
+      }
       
       if (data.allStats && data.allStats.length > 0) {
         let totalViews = data.totalViews || 0;
@@ -5502,7 +5579,10 @@ if (btnLobbyStats) {
           statsGroupsContainer.appendChild(card);
         });
       } else {
-        statsGroupsContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">目前沒有任何群組的分析資料。</div>';
+        const empty = document.createElement('div');
+        empty.style.cssText = 'text-align:center; padding:20px; color:#888;';
+        empty.textContent = '目前沒有任何群組的分析資料。';
+        statsGroupsContainer.appendChild(empty);
       }
       
       showAppView(statsView);

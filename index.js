@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.3.35
+ * Version: 1.3.36
  */
 const express = require('express');
 const compression = require('compression');
@@ -36,6 +36,7 @@ const REG_CSV_BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const LOBBY_VISITS_FILE = path.join(DATA_DIR, 'lobbyVisits.json');
 const EASTER_EGG_FILE = path.join(DATA_DIR, 'easterEggSettings.json');
 const FEATURE_SETTINGS_FILE = path.join(DATA_DIR, 'featureSettings.json');
+const AI_USAGE_FILE = path.join(DATA_DIR, 'aiUsage.json');
 const ADMIN_PERMISSIONS_FILE = path.join(DATA_DIR, 'adminPermissions.json');
 const GROUP_BUY_FILE = path.join(DATA_DIR, 'groupBuy.json');
 const GROUP_BUY_ORDERS_FILE = path.join(DATA_DIR, 'groupBuyOrders.json');
@@ -489,6 +490,8 @@ let gamesSha = null; // GitHub games.json 的 SHA
 let visitsSha = null; // GitHub lobbyVisits.json 的 SHA
 let easterEggSha = null; // GitHub easterEggSettings.json 的 SHA
 let featureSettingsSha = null; // GitHub featureSettings.json 的 SHA
+let aiUsage = { events: [] };
+let aiUsageSha = null;
 let adminPermissionsSha = null; // GitHub adminPermissions.json 的 SHA
 let groupBuySha = null; // GitHub groupBuy.json 的 SHA
 let groupBuyOrdersSha = null; // GitHub groupBuyOrders.json 的 SHA
@@ -543,6 +546,12 @@ async function loadData() {
     try {
       featureSettings = { ...featureSettings, ...JSON.parse(fs.readFileSync(FEATURE_SETTINGS_FILE, 'utf8')) };
       normalizeFeatureSettings();
+    } catch(e) {}
+  }
+  if (fs.existsSync(AI_USAGE_FILE)) {
+    try {
+      const loadedUsage = JSON.parse(fs.readFileSync(AI_USAGE_FILE, 'utf8'));
+      if (loadedUsage && Array.isArray(loadedUsage.events)) aiUsage = loadedUsage;
     } catch(e) {}
   }
   if (fs.existsSync(ADMIN_PERMISSIONS_FILE)) {
@@ -653,6 +662,16 @@ async function loadData() {
         normalizeFeatureSettings();
       }
     } catch(e) { console.error('無法從 GitHub 讀取 featureSettings.json:', e.message); }
+
+    try {
+      console.log('從 GitHub 讀取 aiUsage.json...');
+      const usageRes = await githubApiRequest('GET', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/aiUsage.json?ref=${GITHUB_BRANCH}`);
+      if (usageRes.content) {
+        aiUsageSha = usageRes.sha;
+        const loadedUsage = JSON.parse(Buffer.from(usageRes.content, 'base64').toString('utf8'));
+        if (loadedUsage && Array.isArray(loadedUsage.events)) aiUsage = loadedUsage;
+      }
+    } catch(e) { console.error('無法從 GitHub 讀取 aiUsage.json:', e.message); }
 
     try {
       console.log('從 GitHub 讀取 adminPermissions.json...');
@@ -839,6 +858,26 @@ async function saveFeatureSettings() {
       const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/featureSettings.json`, payload);
       if (res.content && res.content.sha) featureSettingsSha = res.content.sha;
     } catch(e) { console.error('備份 featureSettings 至 GitHub 失敗:', e.message); }
+  }
+}
+
+async function saveAiUsage() {
+  if (!Array.isArray(aiUsage.events)) aiUsage.events = [];
+  if (aiUsage.events.length > 4000) aiUsage.events = aiUsage.events.slice(-4000);
+  const jsonStr = JSON.stringify(aiUsage);
+  await fs.promises.writeFile(AI_USAGE_FILE, jsonStr, 'utf8');
+  if (USE_GITHUB) {
+    try {
+      const encodedContent = Buffer.from(jsonStr, 'utf8').toString('base64');
+      const payload = {
+        message: 'chore: update aiUsage',
+        content: encodedContent,
+        branch: GITHUB_BRANCH
+      };
+      if (aiUsageSha) payload.sha = aiUsageSha;
+      const res = await githubApiRequest('PUT', `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/aiUsage.json`, payload);
+      if (res.content && res.content.sha) aiUsageSha = res.content.sha;
+    } catch(e) { console.error('備份 aiUsage 至 GitHub 失敗:', e.message); }
   }
 }
 
@@ -4388,6 +4427,99 @@ app.post('/api/admin/ai_analysis', express.json(), async (req, res) => {
     console.error('saveFeatureSettings failed:', e);
   }
   res.json({ success: true, ...aiAnalysisAccessPayload(uid) });
+});
+
+function isAiUsageUid(uid) {
+  return typeof uid === 'string' && (/^U[0-9a-f]{32}$/i.test(uid) || uid.startsWith('U_SUPER_ADMIN_TEST_ID'));
+}
+
+function summarizeAiUsage() {
+  const names = knownLineUsers();
+  const users = new Map();
+  let starts = 0;
+  let success = 0;
+  let fail = 0;
+  let rangeSec = 0;
+  let videoSec = 0;
+  for (const ev of aiUsage.events || []) {
+    if (!ev || !ev.uid) continue;
+    if (ev.kind === 'start') {
+      starts++;
+      rangeSec += Number(ev.rangeSec) || 0;
+      videoSec += Number(ev.videoSec) || 0;
+    } else if (ev.kind === 'success') success++;
+    else if (ev.kind === 'fail') fail++;
+    let row = users.get(ev.uid);
+    if (!row) {
+      row = {
+        uid: ev.uid,
+        name: (names[ev.uid] && names[ev.uid].displayName) || ev.name || '',
+        pictureUrl: (names[ev.uid] && names[ev.uid].pictureUrl) || '',
+        uses: 0,
+        success: 0,
+        fail: 0,
+        rangeSec: 0,
+        videoSec: 0,
+        device: '',
+        gpu: '',
+        gpuClass: '',
+        lastAt: 0
+      };
+      users.set(ev.uid, row);
+    }
+    if (ev.name && !row.name) row.name = ev.name;
+    if (ev.kind === 'start') {
+      row.uses++;
+      row.rangeSec += Number(ev.rangeSec) || 0;
+      row.videoSec += Number(ev.videoSec) || 0;
+    } else if (ev.kind === 'success') row.success++;
+    else if (ev.kind === 'fail') row.fail++;
+    if ((ev.at || 0) >= row.lastAt) {
+      row.lastAt = ev.at || 0;
+      if (ev.device) row.device = ev.device;
+      if (ev.gpu) row.gpu = ev.gpu;
+      if (ev.gpuClass) row.gpuClass = ev.gpuClass;
+    }
+  }
+  const list = [...users.values()].sort((a, b) => b.lastAt - a.lastAt);
+  return { starts, successCount: success, failCount: fail, rangeSec, videoSec, users: list };
+}
+
+app.post('/api/ai_analysis/usage', express.json({ limit: '8kb' }), async (req, res) => {
+  const body = req.body || {};
+  const uid = typeof body.uid === 'string' ? body.uid.trim() : '';
+  if (!isAiUsageUid(uid) || isWeakVisitUserId(uid) || !canUseAiAnalysis(uid)) {
+    return res.status(403).json({ error: '沒有紀錄權限' });
+  }
+  const kind = body.kind === 'success' || body.kind === 'fail' ? body.kind : 'start';
+  const now = Date.now();
+  const last = [...(aiUsage.events || [])].reverse().find((ev) => ev && ev.uid === uid && ev.kind === kind);
+  if (last && now - last.at < 4000) return res.json({ success: true, skipped: true });
+  const names = knownLineUsers();
+  aiUsage.events.push({
+    at: now,
+    uid,
+    name: (names[uid] && names[uid].displayName) || '',
+    kind,
+    videoSec: Math.max(0, Math.min(86400, Math.round(Number(body.videoSec) || 0))),
+    rangeSec: Math.max(0, Math.min(86400, Math.round(Number(body.rangeSec) || 0))),
+    device: body.device === 'phone' ? 'phone' : 'pc',
+    gpu: String(body.gpu || '').slice(0, 80),
+    gpuClass: String(body.gpuClass || '').slice(0, 12),
+    fps: Math.max(1, Math.min(30, Math.round(Number(body.fps) || 0))),
+    side: ['near', 'far', 'both'].includes(body.side) ? body.side : 'both',
+    shuttle: !!body.shuttle,
+    error: kind === 'fail' ? String(body.error || '').slice(0, 160) : ''
+  });
+  res.json({ success: true });
+  saveAiUsage().catch((e) => console.error('saveAiUsage failed:', e));
+});
+
+app.get('/api/admin/ai_usage', (req, res) => {
+  if (!isTrueSuperAdmin(req.query.uid)) {
+    return res.status(403).json({ error: '只有超級管理員能查看 AI 使用紀錄' });
+  }
+  res.json({ success: true, ...summarizeAiUsage() });
 });
 
 // ---------- 群組管理員設定（超級管理員專用） ----------
