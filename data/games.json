@@ -11381,7 +11381,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418777969,
-    "lastActiveTime": 1793257471492,
+    "lastActiveTime": 1793291340391,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11407,7 +11407,8 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "Sharon": "U2f34481ad7c75487414b97ec63623fba"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11428,13 +11429,21 @@
           "©️張CC～©️",
           "楊程鈞",
           "賴柚子",
-          "花花"
+          "花花",
+          "Sharon"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/30 00:29",
+        "name": "Sharon",
+        "operator": "Sharon",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/28 23:11",
         "name": "John",
