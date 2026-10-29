@@ -12041,7 +12041,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792678425280,
-    "lastActiveTime": 1793271487168,
+    "lastActiveTime": 1793273336706,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12051,7 +12051,6 @@
     "paidMap": {
       "謝東霖 Tony": true,
       "Kay": true,
-      "Iven": true,
       "Wayne": true,
       "曾Jim凱": true,
       "Ashely": true,
@@ -12092,7 +12091,6 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "Iven",
           "Wayne",
           "曾Jim凱",
           "Ashely",
@@ -12118,6 +12116,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/29 19:28",
+        "name": "Iven",
+        "operator": "Iven",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/29 10:28",
         "name": "Tank Lin",
