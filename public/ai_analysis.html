@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.7.19
+  Version: 1.7.20
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -150,9 +150,6 @@
     .footer { padding: 4px 24px 24px; color: var(--muted); font-size: 12px; line-height: 1.8; }
     .footer p { margin: 0; }
 
-    .admin-bar { margin: 12px 24px 0; padding: 10px 14px; border-radius: 10px; background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(167, 139, 250, 0.35); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
-    .admin-bar .admin-title { font-weight: 700; color: #ddd6fe; }
-    .admin-bar .seg { background: var(--panel-2); }
     .locked { display: flex; justify-content: center; padding: 64px 24px; }
     .locked-card { max-width: 520px; text-align: center; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 32px 28px; line-height: 1.8; }
     .locked-card h2 { margin: 8px 0; font-size: 20px; }
@@ -174,14 +171,6 @@
       <span id="shuttle-status" class="chip">追球模型等待中</span>
     </div>
   </header>
-
-  <div id="admin-bar" class="admin-bar hidden">
-    <span class="admin-title">👑 超級管理員設定・使用權限</span>
-    <div class="seg" role="radiogroup" aria-label="AI 影片分析使用權限">
-      <button type="button" id="access-super" class="seg-btn" role="radio">🔒 不公開</button>
-      <button type="button" id="access-public" class="seg-btn" role="radio">🌐 公開給所有使用者</button>
-    </div>
-  </div>
 
   <div id="env-warning" class="banner hidden"></div>
 
@@ -346,6 +335,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
   <script src="ai_pose_core.js?v=20261029f"></script>
-  <script src="ai_analysis.js?v=20261029f"></script>
+  <script src="ai_analysis.js?v=20261029g"></script>
 </body>
 </html>

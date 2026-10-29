@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.19
+ * Version: 1.7.20
  */
 (function () {
   'use strict';
@@ -49,8 +49,6 @@
   const els = {};
   const state = {
     uid: '',
-    isPublic: false,
-    savingAccess: false,
     session: null,
     backend: '',
     inputName: 'images',
@@ -217,38 +215,6 @@
     const res = await fetch('/api/ai_analysis/access' + (state.uid ? '?uid=' + encodeURIComponent(state.uid) : ''), { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return res.json();
-  }
-
-  function renderPublicStatus(isPublic, userCount) {
-    state.isPublic = isPublic;
-    state.aiUserCount = userCount || 0;
-    els.accessSuper.classList.toggle('active', !isPublic);
-    els.accessPublic.classList.toggle('active', isPublic);
-    els.accessSuper.setAttribute('aria-checked', String(!isPublic));
-    els.accessPublic.setAttribute('aria-checked', String(isPublic));
-  }
-
-  async function setAccess(isPublic) {
-    if (state.savingAccess || isPublic === state.isPublic) return;
-    state.savingAccess = true;
-    els.accessSuper.disabled = true;
-    els.accessPublic.disabled = true;
-    try {
-      const res = await fetch('/api/admin/ai_analysis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: state.uid, isPublic })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.success) throw new Error(data.error || `HTTP ${res.status}`);
-      renderPublicStatus(!!data.isPublic, data.userCount);
-    } catch (e) {
-      showError('變更使用權限失敗：' + (e && e.message ? e.message : e));
-    } finally {
-      state.savingAccess = false;
-      els.accessSuper.disabled = false;
-      els.accessPublic.disabled = false;
-    }
   }
 
   // ---------- 環境與模型 ----------
@@ -2404,7 +2370,6 @@
       playerStats: 'player-stats', toast: 'toast', shuttleToggle: 'shuttle-toggle', shuttleStatus: 'shuttle-status',
       maskOutside: 'mask-outside',
       liveKmh: 'live-kmh', liveRallies: 'live-rallies',
-      adminBar: 'admin-bar', accessSuper: 'access-super', accessPublic: 'access-public',
       locked: 'locked', mainLayout: 'main-layout'
     };
     for (const key of Object.keys(ids)) els[key] = document.getElementById(ids[key]);
@@ -2521,8 +2486,6 @@
       drawCourt();
     });
     els.btnExportVideo.addEventListener('click', exportAnalyzedVideo);
-    els.accessSuper.addEventListener('click', () => setAccess(false));
-    els.accessPublic.addEventListener('click', () => setAccess(true));
 
     document.addEventListener('visibilitychange', () => {
       if (state.exporting && state.exportRecorder) {
@@ -2570,10 +2533,6 @@
       els.shuttleStatus.classList.add('hidden');
       els.locked.classList.remove('hidden');
       return;
-    }
-    if (access.canManage) {
-      renderPublicStatus(!!access.isPublic, access.userCount);
-      els.adminBar.classList.remove('hidden');
     }
     els.mainLayout.classList.remove('hidden');
     setChip(els.envStatus, '檢查電腦環境中…');
