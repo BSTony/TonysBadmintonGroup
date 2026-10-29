@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.6
+ * Version: 1.2.7
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -556,6 +556,85 @@
     return best ? { x: best.x, y: best.y } : null;
   }
 
+  // 球要連續往前飛，被打到才轉向。跳到畫面別處再跳回來的點是追錯，不能連成閃電。
+  function cleanShuttleTrack(samples) {
+    const out = (samples || []).map((s) => (s ? { t: s.t, x: s.x, y: s.y } : s));
+    let anchor = null;
+    const turnOf = (vx, vy, nx, ny) => {
+      const a = Math.hypot(vx, vy);
+      const b = Math.hypot(nx, ny);
+      if (a < 1 || b < 1) return 0;
+      const cos = Math.min(1, Math.max(-1, (vx * nx + vy * ny) / (a * b)));
+      return Math.acos(cos);
+    };
+    const kill = (i) => {
+      if (out[i]) { out[i].x = null; out[i].y = null; }
+    };
+    for (let i = 0; i < out.length; i++) {
+      const p = out[i];
+      if (!p || p.x == null || p.y == null) continue;
+      if (!anchor) {
+        anchor = { t: p.t, x: p.x, y: p.y, vx: 0, vy: 0, n: 1, lastTurn: 0 };
+        continue;
+      }
+      const dt = p.t - anchor.t;
+      if (!(dt > 0)) { kill(i); continue; }
+      if (dt > 0.4) {
+        anchor = { t: p.t, x: p.x, y: p.y, vx: 0, vy: 0, n: 1, lastTurn: 0 };
+        continue;
+      }
+      const step = Math.hypot(p.x - anchor.x, p.y - anchor.y);
+      const speed = Math.hypot(anchor.vx, anchor.vy);
+      const expect = speed * dt;
+      const maxStep = Math.min(160, Math.max(48, expect * 2.3));
+      if (anchor.n < 2) {
+        if (step > 120) { kill(i); continue; }
+      } else if (step > maxStep) {
+        kill(i);
+        continue;
+      }
+      const vx = (p.x - anchor.x) / dt;
+      const vy = (p.y - anchor.y) / dt;
+      const turn = turnOf(anchor.vx, anchor.vy, vx, vy);
+      // 連續兩格都大轉彎是亂跳。真正的擊球只轉一次，之後又沿著新方向飛。
+      if (anchor.n >= 3 && speed > 60 && turn > 1.15 && anchor.lastTurn > 0.9) {
+        kill(i);
+        continue;
+      }
+      const blend = anchor.n < 2 ? 1 : 0.5;
+      anchor = {
+        t: p.t,
+        x: p.x,
+        y: p.y,
+        vx: anchor.vx * (1 - blend) + vx * blend,
+        vy: anchor.vy * (1 - blend) + vy * blend,
+        n: anchor.n + 1,
+        lastTurn: turn
+      };
+    }
+    dropSpokes(out);
+    dropSpokes(out);
+    return out;
+  }
+
+  // 從真球射出去又立刻回到真球的點，連起來就是圖上那種放射狀黃線
+  function dropSpokes(out) {
+    const idx = [];
+    out.forEach((p, i) => { if (p && p.x != null && p.y != null) idx.push(i); });
+    const kill = [];
+    for (let k = 1; k < idx.length - 1; k++) {
+      const a = out[idx[k - 1]];
+      const b = out[idx[k]];
+      const c = out[idx[k + 1]];
+      if (b.t - a.t > 0.25 || c.t - b.t > 0.25) continue;
+      const ab = Math.hypot(b.x - a.x, b.y - a.y);
+      const bc = Math.hypot(c.x - b.x, c.y - b.y);
+      const ac = Math.hypot(c.x - a.x, c.y - a.y);
+      if (ab > 36 && bc > 36 && ac < Math.min(ab, bc) * 0.5) kill.push(idx[k]);
+    }
+    kill.forEach((i) => { out[i].x = null; out[i].y = null; });
+  }
+
   // 用畫面上的移動乘上該處的球場比例來估計球速。
   // 球在空中時不能直接拿地面投影的位移，否則高球會被丟光，只剩下很慢的落地段。
   // 單格跳到畫面另一頭的點先拿掉，避免出現一千多公里。
@@ -783,7 +862,21 @@
       else if (action === '防守') counts.defense++;
     });
 
-    return { shots, players: playerRallyStats(feet, poses, shots, project), counts };
+    return { shots, players: playerRallyStats(feet, poses, shots, project), counts, dead: rallyDeadIntervals(shuttle) };
+  }
+
+  // 超過約 1 秒沒有球，這一回合就結束了。下一次看到球之前，拍數要維持 0。
+  function rallyDeadIntervals(shuttle) {
+    const seen = [];
+    (shuttle || []).forEach((s) => {
+      if (s && s.x != null && s.y != null) seen.push(s.t);
+    });
+    const dead = [];
+    for (let i = 1; i < seen.length; i++) {
+      if (seen[i] - seen[i - 1] > 1) dead.push({ t0: seen[i - 1] + 0.5, t1: seen[i] });
+    }
+    if (seen.length) dead.push({ t0: seen[seen.length - 1] + 0.8, t1: Infinity });
+    return dead;
   }
 
   function landingOf(p, mode) {
@@ -1040,6 +1133,7 @@
     medianImage,
     buildTrackNetInput,
     decodeShuttleHeatmap,
+    cleanShuttleTrack,
     shuttlePace,
     shuttleRhythm,
     courtZone,

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.20
+ * Version: 1.7.21
  */
 (function () {
   'use strict';
@@ -795,6 +795,8 @@
     state.shuttleBatches = 0;
     state._pace = null;
     state._paceN = 0;
+    state._clean = null;
+    state._cleanN = 0;
     state._rally = null;
     state._rallyKey = '';
     renderStats();
@@ -1119,17 +1121,48 @@
     ctx.restore();
   }
 
+  function cleanedShuttle() {
+    if (state._clean && state._cleanN === state.shuttle.length) return state._clean;
+    state._clean = Core.cleanShuttleTrack(state.shuttle);
+    state._cleanN = state.shuttle.length;
+    state._pace = null;
+    state._rally = null;
+    return state._clean;
+  }
+
   function shuttlePointsUntil(now) {
     const pts = [];
-    let i = state.shuttle.length - 1;
-    while (i >= 0 && state.shuttle[i].t > now + 0.001) i--;
+    const shuttle = cleanedShuttle();
+    let i = shuttle.length - 1;
+    while (i >= 0 && shuttle[i].t > now + 0.001) i--;
     for (; i >= 0; i--) {
-      const s = state.shuttle[i];
+      const s = shuttle[i];
       if (now - s.t > SHUTTLE_TRAIL_SECONDS) break;
       if (s.x !== null) pts.push(s);
     }
     pts.reverse();
     return pts;
+  }
+
+  // 中間斷掉或跳太遠就分開畫，避免兩段不相干的點被連成一條線
+  function trailSegments(pts) {
+    const segs = [];
+    let cur = [];
+    const flush = () => {
+      if (cur.length) segs.push(cur);
+      cur = [];
+    };
+    pts.forEach((p) => {
+      if (cur.length) {
+        const prev = cur[cur.length - 1];
+        const dt = p.t - prev.t;
+        const dist = Math.hypot(p.x - prev.x, p.y - prev.y);
+        if (dt > 0.18 || dist > 110) flush();
+      }
+      cur.push(p);
+    });
+    flush();
+    return segs;
   }
 
   // 四角以外塗暗，旁邊球場的人就被蓋住。球的軌跡和場上球員的範圍挖空，飛出場外仍看得到
@@ -1163,9 +1196,12 @@
     if (shuttle.length) {
       const radius = Math.max(34, lw * 20);
       ctx.lineWidth = radius * 1.7;
-      ctx.beginPath();
-      shuttle.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-      ctx.stroke();
+      trailSegments(shuttle).forEach((seg) => {
+        if (seg.length < 2) return;
+        ctx.beginPath();
+        seg.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+        ctx.stroke();
+      });
       const last = shuttle[shuttle.length - 1];
       ctx.beginPath();
       ctx.arc(last.x, last.y, radius * 1.15, 0, Math.PI * 2);
@@ -1203,9 +1239,13 @@
     ctx.strokeStyle = 'rgba(250, 204, 21, 0.85)';
     ctx.lineWidth = lw * 1.5;
     ctx.lineJoin = 'round';
-    ctx.beginPath();
-    pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-    ctx.stroke();
+    ctx.lineCap = 'round';
+    trailSegments(pts).forEach((seg) => {
+      if (seg.length < 2) return;
+      ctx.beginPath();
+      seg.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.stroke();
+    });
     const last = pts[pts.length - 1];
     ctx.fillStyle = '#facc15';
     ctx.strokeStyle = '#0f172a';
@@ -1282,9 +1322,10 @@
   }
 
   function shuttlePaceData() {
-    if (!state.calib || !state.shuttle.length) return null;
+    const shuttle = cleanedShuttle();
+    if (!state.calib || !shuttle.length) return null;
     if (state._pace && state._paceN === state.shuttle.length) return state._pace;
-    state._pace = Core.shuttlePace(state.shuttle, projectShuttle, { metersPerPixel: courtMetersPerPixel });
+    state._pace = Core.shuttlePace(shuttle, projectShuttle, { metersPerPixel: courtMetersPerPixel });
     state._paceN = state.shuttle.length;
     return state._pace;
   }
@@ -1308,6 +1349,7 @@
 
   // 這一拍離拍後的速度。BWF 賽事測速量的是球離開球拍的速度，不是整段飛行的平均。
   function shotSpeedAt(t) {
+    if (rallyIsDead(t)) return null;
     const pace = shuttlePaceData();
     if (!pace || !pace.points.length || typeof t !== 'number') return null;
     const report = rallyData();
@@ -1321,28 +1363,46 @@
     }
     if (shot) {
       const earlyEnd = shot.t0 + 0.12;
-      let early = 0;
+      const early = [];
       let later = 0;
       for (let i = 0; i < pace.points.length; i++) {
         const p = pace.points[i];
         if (p.t < shot.t0 - 0.02) continue;
         if (p.t > shot.t1 + 0.08) break;
-        if (p.t <= earlyEnd) early = Math.max(early, p.kmh);
-        else if (!early) later = Math.max(later, p.kmh);
+        if (p.t <= earlyEnd) early.push(p.kmh);
+        else if (!early.length && p.kmh > later) later = p.kmh;
       }
-      const kmh = early || later;
+      const kmh = early.length ? early.slice().sort((a, b) => a - b)[early.length >> 1] : later;
       if (kmh > 0) return Math.round(kmh);
     }
     const live = paceAtTime(t);
     return live && live.kmh > 0 ? Math.round(live.kmh) : null;
   }
 
+  function rallyIsDead(t) {
+    const report = rallyData();
+    if (!report || !report.dead || typeof t !== 'number') return false;
+    for (let i = 0; i < report.dead.length; i++) {
+      const d = report.dead[i];
+      if (t >= d.t0 && t < d.t1) return true;
+    }
+    return false;
+  }
+
   function rallyCountAt(t) {
     const report = rallyData();
     if (!report || typeof t !== 'number') return null;
+    if (rallyIsDead(t)) return 0;
+    let start = -Infinity;
+    const dead = report.dead || [];
+    for (let i = 0; i < dead.length; i++) {
+      if (dead[i].t1 <= t + 0.001) start = dead[i].t1;
+    }
     let n = 0;
     for (let i = 0; i < report.shots.length; i++) {
-      if (report.shots[i].t0 <= t + 0.05) n++;
+      const s = report.shots[i];
+      if (s.t0 + 1e-3 < start) continue;
+      if (s.t0 <= t + 0.05) n++;
       else break;
     }
     return n;
@@ -1374,7 +1434,7 @@
       });
     });
     state._rally = Core.rallyReport({
-      shuttle: state.shuttle,
+      shuttle: cleanedShuttle(),
       project: projectRally,
       feet: state.samples,
       poses,
@@ -1623,7 +1683,7 @@
           <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>
           <div><span class="pc-val">${pace.flights.length}</span><span class="pc-unit">段</span><div class="pc-label">飛行段數</div></div>
         </div>
-        <div class="zone-legend">擊球時速取這一拍離拍後約 0.12 秒，不是整段飛行的平均，也會低於賽事雷達。來回是擊球次數，從這一球的第一拍算起。</div>`;
+        <div class="zone-legend">擊球時速取這一拍離拍後約 0.12 秒的中間值。來回是這一回合的擊球次數，球停下來之後會歸零。</div>`;
     } else if (state.calib) {
       paceHtml = '<div class="zone-legend">這段還沒有足夠的連續球點來估計球速。</div>';
     }

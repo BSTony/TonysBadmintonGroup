@@ -186,6 +186,30 @@ function testShuttlePace() {
   const airborne = PoseCore.shuttlePace(air, () => null, { metersPerPixel: () => 0.05 });
   close(airborne.max, 8 / (1 / 30) * 0.05 * 3.6, 8, 'screen motion still has a speed when the ground projection is unusable');
   assert.ok(airborne.points.length > 8, 'airborne samples are not dropped');
+
+  const smooth = [];
+  for (let i = 0; i <= 10; i++) smooth.push({ t: i / 30, x: 100 + i * 20, y: 200 });
+  for (let i = 1; i <= 6; i++) smooth.push({ t: (10 + i) / 30, x: 300 - i * 18, y: 200 + i * 3 });
+  const turned = PoseCore.cleanShuttleTrack(smooth);
+  assert.ok(turned.every((p) => p.x != null), 'a straight flight that turns once on a hit is kept');
+
+  const bolt = [];
+  for (let i = 0; i <= 8; i++) bolt.push({ t: i / 30, x: 100 + i * 15, y: 300 });
+  bolt.push({ t: 9 / 30, x: 520, y: 40 });
+  bolt.push({ t: 10 / 30, x: 100 + 9 * 15, y: 300 });
+  bolt.push({ t: 11 / 30, x: 100 + 10 * 15, y: 300 });
+  const cleaned = PoseCore.cleanShuttleTrack(bolt);
+  assert.strictEqual(cleaned[9].x, null, 'a teleport is not part of the trail');
+  assert.ok(cleaned[10].x != null && cleaned[11].x != null, 'the real flight continues after the bad point');
+
+  const fan = [];
+  for (let i = 0; i < 8; i++) {
+    fan.push({ t: i / 15, x: 900, y: 420 });
+    fan.push({ t: i / 15 + 0.02, x: 900 - 80 - i * 40, y: 420 - 30 - i * 35 });
+  }
+  const cleanedFan = PoseCore.cleanShuttleTrack(fan);
+  const spokes = cleanedFan.filter((p) => p.x != null && p.x < 780);
+  assert.strictEqual(spokes.length, 0, 'fan spokes around the shuttle are removed');
   console.log('✅ shuttle pace');
 }
 
@@ -276,6 +300,19 @@ function testRallyReport() {
   });
   assert.strictEqual(drop.shots[0].line, '放短');
   assert.strictEqual(drop.shots[0].zone, '前場');
+
+  const first = flight(2, 11, 2, 2, 0);
+  const second = flight(2, 2, 2, 11, 4);
+  const two = PoseCore.rallyReport({
+    shuttle: first.concat(second),
+    project: id,
+    feet: {},
+    poses: [],
+    mode: 'doubles'
+  });
+  const gap = two.dead.find((d) => d.t1 < Infinity);
+  assert.ok(gap && gap.t0 < 2 && gap.t1 === 4, 'a long gap ends the rally');
+  assert.ok(two.dead.some((d) => d.t0 > 4 && d.t1 === Infinity), 'after the last shot the count stays at zero');
 
   const out = PoseCore.rallyReport({
     shuttle: flight(3, 12, 0.2, 2, 3),
