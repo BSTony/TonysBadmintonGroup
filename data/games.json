@@ -12549,7 +12549,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793285683581,
+    "lastActiveTime": 1793286200002,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12583,7 +12583,8 @@
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
-      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
+      "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12615,12 +12616,20 @@
           "楊程鈞",
           "小扉",
           "林煥杰",
-          "gary"
+          "gary",
+          "賴柚子"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/29 23:03",
+        "name": "賴柚子",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/29 22:54",
         "name": "gary",
