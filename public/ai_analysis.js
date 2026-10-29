@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.16
+ * Version: 1.7.17
  */
 (function () {
   'use strict';
@@ -1231,6 +1231,54 @@
     ctx.restore();
   }
 
+  // 校正點對到的球場，每一格在畫面上大約幾公尺。球在空中時用離它最近的球場比例，不再用失真的地面投影。
+  function courtScaleCells() {
+    if (!state.calib || !state.calib.Hinv) return [];
+    if (state.calib.scaleCells) return state.calib.scaleCells;
+    const cells = [];
+    const step = 0.4;
+    for (let y = 0; y <= COURT.length + 1e-6; y += step) {
+      for (let x = 0; x <= COURT.width + 1e-6; x += step) {
+        const dx = x >= COURT.width - 0.2 ? -0.25 : 0.25;
+        const dy = y >= COURT.length - 0.2 ? -0.25 : 0.25;
+        const p = Core.applyHomography(state.calib.Hinv, x, y);
+        const px = Core.applyHomography(state.calib.Hinv, x + dx, y);
+        const py = Core.applyHomography(state.calib.Hinv, x, y + dy);
+        if (!p || !px || !py) continue;
+        const pix = (Math.hypot(px.x - p.x, px.y - p.y) + Math.hypot(py.x - p.x, py.y - p.y)) / 2;
+        if (!(pix > 0.5)) continue;
+        const mpp = 0.25 / pix;
+        if (mpp > 0.0015 && mpp < 0.35) cells.push({ x: p.x, y: p.y, mpp });
+      }
+    }
+    state.calib.scaleCells = cells;
+    cells.fallbackMpp = medianOfCells(cells);
+    return cells;
+  }
+
+  function medianOfCells(cells) {
+    const vals = cells.map((c) => c.mpp).sort((a, b) => a - b);
+    if (!vals.length) return null;
+    return vals[vals.length >> 1];
+  }
+
+  // 兩端都落在球場內時，用這一段的實際公尺數；球在畫面球場外時地面投影不可靠，改用全場中位比例。
+  function courtMetersPerPixel(x0, y0, x1, y1) {
+    const cells = courtScaleCells();
+    if (!cells.length || !state.calib) return null;
+    const g0 = Core.applyHomography(state.calib.H, x0, y0);
+    const g1 = Core.applyHomography(state.calib.H, x1, y1);
+    const margin = { side: 0.4, back: 0.4 };
+    if (g0 && g1 && Core.inCourtArea(g0, margin) && Core.inCourtArea(g1, margin)) {
+      const img = Math.hypot(x1 - x0, y1 - y0);
+      if (img >= 1) {
+        const mpp = Math.hypot(g1.x - g0.x, g1.y - g0.y) / img;
+        if (mpp > 0.0015 && mpp < 0.2) return mpp;
+      }
+    }
+    return cells.fallbackMpp || null;
+  }
+
   // 投影到球場外太遠的點多半是追錯，拿去算會出現幾千公里的假球速
   function projectShuttle(x, y) {
     const p = Core.applyHomography(state.calib.H, x, y);
@@ -1250,7 +1298,7 @@
   function shuttlePaceData() {
     if (!state.calib || !state.shuttle.length) return null;
     if (state._pace && state._paceN === state.shuttle.length) return state._pace;
-    state._pace = Core.shuttlePace(state.shuttle, projectShuttle, { maxMetersPerPixel: 0.18 });
+    state._pace = Core.shuttlePace(state.shuttle, projectShuttle, { metersPerPixel: courtMetersPerPixel });
     state._paceN = state.shuttle.length;
     return state._pace;
   }
@@ -1267,7 +1315,7 @@
     }
     let best = pace.points[lo];
     if (lo > 0 && Math.abs(pace.points[lo - 1].t - t) < Math.abs(best.t - t)) best = pace.points[lo - 1];
-    if (Math.abs(best.t - t) > 0.12 || !(best.kmh > 0) || best.kmh > 400) return null;
+    if (Math.abs(best.t - t) > 0.2 || !(best.kmh > 0) || best.kmh > 400) return null;
     const flight = pace.flights[best.flight];
     return { kmh: best.kmh, rhythm: Core.shuttleRhythm(best.kmh), peak: flight ? flight.peak : best.kmh };
   }
@@ -1567,7 +1615,7 @@
           <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>
           <div><span class="pc-val">${pace.flights.length}</span><span class="pc-unit">段</span><div class="pc-label">飛行段數</div></div>
         </div>
-        <div class="zone-legend">速度維持是一段飛行最後還留下的最快速度比例，越高代表球速掉得少。這是球場平面上的估計，球飛得越高，數字會比實際球速低。播放或拖動影片時，右側固定框會顯示這一刻的球速和這一拍。</div>`;
+        <div class="zone-legend">速度維持是一段飛行最後還留下的最快速度比例，越高代表球速掉得少。球速用畫面上的移動，搭配校正後的球場尺寸換算；球飛得很高時會有誤差。播放或拖動影片時，右側固定框會顯示這一刻的球速和這一拍。</div>`;
     } else if (state.calib) {
       paceHtml = '<div class="zone-legend">這段還沒有足夠的連續球點來估計球速。</div>';
     }

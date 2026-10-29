@@ -180,6 +180,12 @@ function testShuttlePace() {
   for (let i = 0; i <= 15; i++) drive.push({ t: i / 30, x: i * (200 / 3.6) / 30, y: 0 });
   const kept = PoseCore.shuttlePace(drive, (x, y) => ({ x, y }));
   close(kept.max, 200, 15, 'a real 200 km/h segment is kept');
+
+  const air = [];
+  for (let i = 0; i <= 12; i++) air.push({ t: i / 30, x: 100 + i * 8, y: 40 });
+  const airborne = PoseCore.shuttlePace(air, () => null, { metersPerPixel: () => 0.05 });
+  close(airborne.max, 8 / (1 / 30) * 0.05 * 3.6, 8, 'screen motion still has a speed when the ground projection is unusable');
+  assert.ok(airborne.points.length > 8, 'airborne samples are not dropped');
   console.log('✅ shuttle pace');
 }
 

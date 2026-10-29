@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.4
+ * Version: 1.2.5
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -553,15 +553,14 @@
     return best ? { x: best.x, y: best.y } : null;
   }
 
-  // 用球場平面座標估計球速。球在空中時，這個數字會比真實球速低。
-  // 追蹤偶爾會把球跳到畫面另一頭，單格位移會變成一千多公里。先取位置中位數抹掉跳點，
-  // 再用約 0.1 秒的位移。投影每像素超過合理公尺數的也不算。
+  // 用畫面上的移動乘上該處的球場比例來估計球速。
+  // 球在空中時不能直接拿地面投影的位移，否則高球會被丟光，只剩下很慢的落地段。
+  // 單格跳到畫面另一頭的點先拿掉，避免出現一千多公里。
   function shuttlePace(samples, project, opts) {
-    const GAP = 0.18;
-    const BASE_DT = 0.1;
-    const MAX_DT = 0.22;
+    const GAP = 0.2;
+    const BASE_DT = 0.08;
+    const MAX_DT = 0.18;
     const MAX_KMH = 400;
-    const maxMpp = opts && opts.maxMetersPerPixel;
     const groups = [];
     let cur = [];
     const closeCur = () => {
@@ -569,17 +568,12 @@
       cur = [];
     };
     (samples || []).forEach((s) => {
-      if (!s || s.x == null || s.y == null || typeof project !== 'function') {
-        closeCur();
-        return;
-      }
-      const p = project(s.x, s.y);
-      if (!p || !isFinite(p.x) || !isFinite(p.y)) {
+      if (!s || s.x == null || s.y == null) {
         closeCur();
         return;
       }
       if (cur.length && s.t - cur[cur.length - 1].t > GAP) closeCur();
-      cur.push({ t: s.t, ix: s.x, iy: s.y, x: p.x, y: p.y });
+      cur.push({ t: s.t, ix: s.x, iy: s.y });
     });
     closeCur();
 
@@ -589,33 +583,55 @@
       const sorted = vals.slice().sort((a, b) => a - b);
       return sorted[sorted.length >> 1];
     };
+    // 沿著這一段的飛行方向換算每像素幾公尺。呼叫端可提供校正比例；沒有時才用投影。
+    const scaleAt = (x0, y0, x1, y1) => {
+      if (opts && typeof opts.metersPerPixel === 'function') {
+        const given = opts.metersPerPixel(x0, y0, x1, y1);
+        if (given > 0.001 && given < 2) return given;
+      }
+      if (typeof project !== 'function') return null;
+      const a = project(x0, y0);
+      const b = project(x1, y1);
+      if (!a || !b || !isFinite(a.x) || !isFinite(b.x)) return null;
+      const img = Math.hypot(x1 - x0, y1 - y0);
+      if (!(img >= 0.5)) return null;
+      const mpp = Math.hypot(b.x - a.x, b.y - a.y) / img;
+      if (!(mpp > 0.001 && mpp < 2)) return null;
+      return mpp;
+    };
+    // 前後都跳很遠、但前後兩點彼此很近，就是單格追錯
+    const dropSpikes = (raw) => {
+      if (raw.length < 3) return raw;
+      const keep = raw.map(() => true);
+      for (let i = 1; i < raw.length - 1; i++) {
+        const prev = raw[i - 1];
+        const p = raw[i];
+        const next = raw[i + 1];
+        if (p.t - prev.t > 0.12 || next.t - p.t > 0.12) continue;
+        const jumpIn = Math.hypot(p.ix - prev.ix, p.iy - prev.iy);
+        const jumpOut = Math.hypot(next.ix - p.ix, next.iy - p.iy);
+        const bridge = Math.hypot(next.ix - prev.ix, next.iy - prev.iy);
+        if (jumpIn > 8 && jumpOut > 8 && bridge < Math.min(jumpIn, jumpOut) * 0.5) keep[i] = false;
+      }
+      return raw.filter((_, i) => keep[i]);
+    };
     groups.forEach((raw) => {
-      const smooth = raw.map((p, i) => {
-        const xs = [];
-        const ys = [];
-        for (let j = Math.max(0, i - 2); j <= Math.min(raw.length - 1, i + 2); j++) {
-          if (Math.abs(raw[j].t - p.t) <= 0.12) {
-            xs.push(raw[j].x);
-            ys.push(raw[j].y);
-          }
-        }
-        return { t: p.t, ix: p.ix, iy: p.iy, x: medianOf(xs), y: medianOf(ys) };
-      });
+      const cleaned = dropSpikes(raw);
       const speeds = [];
-      smooth.forEach((p, i) => {
+      cleaned.forEach((p, i) => {
         let anchor = null;
         for (let j = i - 1; j >= 0; j--) {
-          const dt = p.t - smooth[j].t;
+          const dt = p.t - cleaned[j].t;
           if (dt > MAX_DT) break;
-          if (dt + 1e-6 >= BASE_DT) { anchor = smooth[j]; break; }
+          if (dt + 1e-6 >= BASE_DT) { anchor = cleaned[j]; break; }
         }
         if (!anchor) return;
         const dt = p.t - anchor.t;
-        const courtDist = Math.hypot(p.x - anchor.x, p.y - anchor.y);
         const imgDist = Math.hypot(p.ix - anchor.ix, p.iy - anchor.iy);
-        if (maxMpp && imgDist >= 1 && courtDist / imgDist > maxMpp) return;
-        const kmh = courtDist / dt * 3.6;
-        if (!(kmh >= 0) || kmh > MAX_KMH) return;
+        const mpp = scaleAt(anchor.ix, anchor.iy, p.ix, p.iy);
+        if (!mpp) return;
+        const kmh = imgDist / dt * mpp * 3.6;
+        if (!(kmh > 0) || kmh > MAX_KMH) return;
         speeds.push(kmh);
         points.push({ t: p.t, kmh, flight: flights.length });
       });
@@ -627,8 +643,8 @@
     for (let i = 0; i < points.length; i++) {
       const bucket = [];
       const id = points[i].flight;
-      for (let j = i; j >= 0 && points[i].t - points[j].t <= 0.2 && points[j].flight === id; j--) bucket.push(rawKmh[j]);
-      for (let j = i + 1; j < points.length && points[j].t - points[i].t <= 0.2 && points[j].flight === id; j++) bucket.push(rawKmh[j]);
+      for (let j = i; j >= 0 && points[i].t - points[j].t <= 0.08 && points[j].flight === id; j--) bucket.push(rawKmh[j]);
+      for (let j = i + 1; j < points.length && points[j].t - points[i].t <= 0.08 && points[j].flight === id; j++) bucket.push(rawKmh[j]);
       points[i].kmh = medianOf(bucket);
     }
     let built = 0;
