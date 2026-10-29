@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.13
+ * Version: 1.7.14
  */
 (function () {
   'use strict';
@@ -226,13 +226,6 @@
     els.accessPublic.classList.toggle('active', isPublic);
     els.accessSuper.setAttribute('aria-checked', String(!isPublic));
     els.accessPublic.setAttribute('aria-checked', String(isPublic));
-    if (isPublic) {
-      els.publicStatus.textContent = '所有使用者都能在電腦版大廳看到入口並使用';
-    } else if (state.aiUserCount) {
-      els.publicStatus.textContent = `超級管理員，以及另外 ${state.aiUserCount} 位指定使用者可以使用。名單請到位大廳按「👥 名單」調整。`;
-    } else {
-      els.publicStatus.textContent = '目前只有超級管理員可以使用。要開放給特定的人，請到位大廳按「👥 名單」。';
-    }
   }
 
   async function setAccess(isPublic) {
@@ -2286,7 +2279,7 @@
       playerStats: 'player-stats', toast: 'toast', shuttleToggle: 'shuttle-toggle', shuttleStatus: 'shuttle-status',
       maskOutside: 'mask-outside',
       liveKmh: 'live-kmh', liveRhythm: 'live-rhythm', liveShot: 'live-shot',
-      adminBar: 'admin-bar', accessSuper: 'access-super', accessPublic: 'access-public', publicStatus: 'public-status',
+      adminBar: 'admin-bar', accessSuper: 'access-super', accessPublic: 'access-public',
       locked: 'locked', mainLayout: 'main-layout'
     };
     for (const key of Object.keys(ids)) els[key] = document.getElementById(ids[key]);
