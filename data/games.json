@@ -12549,7 +12549,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793284742260,
+    "lastActiveTime": 1793285483665,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12614,12 +12614,20 @@
           "Mike",
           "楊程鈞",
           "小扉",
-          "林煥杰"
+          "林煥杰",
+          "Tank"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/29 22:51",
+        "name": "Tank",
+        "operator": "曾Jim凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/29 22:39",
         "name": "林煥杰",
