@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.22
+ * Version: 1.7.23
  */
 (function () {
   'use strict';
@@ -1822,14 +1822,18 @@
     return `預估約 ${fmtEstimate(est.seconds)}${detail}，${basis}`;
   }
 
-  // 讀取：影片已擷取到的時間；完成：骨架與追球都已算完的時間（追球每 8 格才出一次結果）
+  // 讀取：影片已擷取到的時間。
+  // 可預覽：骨架算到哪就能先看，不必等追球 8 格一批補齊。
   function progressTimes() {
     const { start, end } = state.range;
-    const read = Math.max(state.analyzedUntil, state.lastShuttleT);
-    let done = state.analyzedUntil;
-    if (state.trackingRun) done = Math.min(done, state.shuttle.length ? state.shuttle[state.shuttle.length - 1].t : start);
+    const read = Math.max(state.analyzedUntil, state.lastShuttleT === -Infinity ? start : state.lastShuttleT);
+    const done = state.analyzedUntil;
     const clamp = (x) => Math.min(end, Math.max(start, x));
     return { read: clamp(read), done: clamp(done) };
+  }
+
+  function canPreviewNow() {
+    return videoReady() && state.frames > 0 && progressTimes().done > state.range.start + 0.05;
   }
 
   function updateProgress(completed) {
@@ -1862,6 +1866,11 @@
     }
     const bg = state.running && document.hidden ? ' · 背景繼續中' : '';
     els.coverText.textContent = state.running ? `已分析 ${fmtTime(doneT - start)} / ${fmtTime(total)}${eta ? ' · ' + eta : ''}${bg}` : '';
+    if (els.btnPreviewNow) {
+      const ready = canPreviewNow();
+      els.btnPreviewNow.disabled = !ready;
+      els.btnPreviewNow.textContent = ready ? `👁 預覽已分析（${fmtTime(doneT - start)}）` : '👁 預覽已分析';
+    }
     setProgressText(text);
   }
 
@@ -1887,14 +1896,23 @@
       els.video.pause();
       els.video.currentTime = t;
       showTimelineCursor(t);
+      drawOverlay();
+      updateLivePace(t);
       return;
     }
-    const done = progressTimes().done;
-    if (!state.frames || done <= state.range.start) {
-      showError('還沒有分析完成的部分，請稍候再點亮色的地方');
+    if (!canPreviewNow()) {
+      showError('還沒有可預覽的部分，等進度條出現亮色後再點，或按「預覽已分析」');
       return;
     }
-    openPreview(Math.min(t, done));
+    openPreview(Math.min(t, progressTimes().done));
+  }
+
+  function previewAnalyzedNow() {
+    if (!canPreviewNow()) {
+      showError('還沒有可預覽的部分，請稍候');
+      return;
+    }
+    openPreview(state.range.start);
   }
 
   function previewOpen() {
@@ -1910,12 +1928,35 @@
   }
 
   function openPreview(t) {
+    if (!state.running) {
+      // 沒在分析時直接看主影片就好
+      els.video.pause();
+      seekTo(els.video, t).then(() => {
+        showTimelineCursor(t);
+        drawOverlay();
+        updateLivePace(t);
+      });
+      return;
+    }
     const pv = els.previewVideo;
-    if (pv.src !== state.videoUrl) pv.src = state.videoUrl;
+    const url = state.videoUrl || '';
+    if (!url) {
+      showError('找不到影片，無法預覽');
+      return;
+    }
+    if (pv.getAttribute('src') !== url && pv.src !== url) {
+      pv.src = url;
+      try { pv.load(); } catch (e) { /* 某些瀏覽器換 blob 時會抱怨 */ }
+    }
     pv.pause();
     els.coverStatus.classList.add('hidden');
     els.previewBox.classList.remove('hidden');
-    seekTo(pv, t).then(() => drawPreviewAt(t));
+    const limit = progressTimes().done;
+    const at = Math.min(Math.max(t, state.range.start), limit);
+    seekTo(pv, at).then(() => drawPreviewAt(at)).catch((e) => {
+      console.error('[AI] 預覽定位失敗', e);
+      showError('預覽失敗，請再試一次');
+    });
   }
 
   function closePreview() {
@@ -2427,7 +2468,7 @@
       timelineCursor: 'timeline-cursor', calibHandles: 'calib-handles', calibPad: 'calib-pad', analysisCover: 'analysis-cover',
       coverStatus: 'cover-status', coverPercent: 'cover-percent', coverText: 'cover-text', previewBox: 'preview-box',
       previewVideo: 'preview-video', previewOverlay: 'preview-overlay', btnPreviewPlay: 'btn-preview-play',
-      btnPreviewClose: 'btn-preview-close', previewTime: 'preview-time',
+      btnPreviewClose: 'btn-preview-close', btnPreviewNow: 'btn-preview-now', previewTime: 'preview-time',
       heatTabs: 'heat-tabs', court: 'court',
       playerStats: 'player-stats', toast: 'toast', shuttleToggle: 'shuttle-toggle', shuttleStatus: 'shuttle-status',
       maskOutside: 'mask-outside',
@@ -2478,6 +2519,7 @@
     });
 
     els.timeline.addEventListener('click', onTimelineClick);
+    if (els.btnPreviewNow) els.btnPreviewNow.addEventListener('click', previewAnalyzedNow);
     els.btnPreviewPlay.addEventListener('click', togglePreviewPlay);
     els.btnPreviewClose.addEventListener('click', closePreview);
     els.previewVideo.addEventListener('play', () => { els.btnPreviewPlay.textContent = '⏸ 暫停'; });
