@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-10-28
-  Version: 1.7.12
+  Version: 1.7.13
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -124,7 +124,8 @@
     .live-rhythm[data-kind="殺球"] { color: #fb7185; }
     .live-rhythm[data-kind="進攻"] { color: #facc15; }
     .live-rhythm[data-kind="控球"] { color: #86efac; }
-    .live-shot { font-size: 16px; color: #e2e8f0; }
+    .player-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 0 0 8px; font-size: 13px; font-weight: 700; }
+    .player-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
     #court { display: block; width: auto; height: auto; max-width: 100%; max-height: min(52dvh, calc(100dvh - 330px)); object-fit: contain; border-radius: 10px; }
     .shot-log { max-height: 180px; overflow: auto; display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
     .shot-row { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); }
@@ -207,8 +208,8 @@
             <button type="button" id="mode-singles" class="seg-btn active">單打</button>
             <button type="button" id="mode-doubles" class="seg-btn">雙打</button>
           </div>
-          <div class="inline">骨架
-            <span class="seg" role="group" aria-label="骨架分析範圍">
+          <div class="inline">人物
+            <span class="seg" role="group" aria-label="要圈出的人">
               <button type="button" id="pose-near" class="seg-btn">近端</button>
               <button type="button" id="pose-far" class="seg-btn">遠端</button>
               <button type="button" id="pose-both" class="seg-btn active">兩端</button>
@@ -221,7 +222,7 @@
               <option value="15">15 張（較精細）</option>
             </select>
           </label>
-          <label class="inline" title="每一格畫面都要分析，需要顯示卡（WebGPU），速度會比只分析骨架慢">
+          <label class="inline" title="每一格畫面都要分析，需要顯示卡（WebGPU），速度會比只圈人慢">
             <input type="checkbox" id="shuttle-toggle" checked> 追蹤羽球軌跡
           </label>
         </div>
@@ -255,7 +256,7 @@
           <button type="button" id="btn-analyze" class="btn btn-primary btn-big">▶ 開始分析</button>
           <button type="button" id="btn-play-result" class="btn" disabled>▶ 播放結果</button>
           <button type="button" id="btn-detect" class="btn">🔍 偵測目前畫面</button>
-          <button type="button" id="btn-export-video" class="btn" title="把骨架、球場線、球路和右側俯視球場做進影片，存在你的電腦，不會上傳。輸出時以原速播放一次，請留在這個分頁。">⬇ 下載分析影片</button>
+          <button type="button" id="btn-export-video" class="btn" title="把人物色圈、球場線、球路和右側俯視球場做進影片，存在你的電腦，不會上傳。輸出時以原速播放一次，請留在這個分頁。">⬇ 下載分析影片</button>
           <button type="button" id="btn-reset" class="btn btn-ghost">清除結果</button>
         </div>
         <div id="timeline" class="timeline" title="亮色是已分析完成的部分，點一下就能看那個時間點的結果">
@@ -325,6 +326,7 @@
               <span id="live-shot" class="live-val live-shot">—</span>
             </div>
           </div>
+          <div id="player-legend" class="player-legend"></div>
           <div class="panel-title">俯視球場</div>
           <div id="heat-tabs" class="seg small hidden"></div>
           <div class="court-fit">
@@ -343,13 +345,13 @@
 
   <footer class="footer">
     <p>縮小視窗或切到其他分頁時會改成逐格分析並繼續跑，速度會稍慢；回到這個視窗後恢復原速。</p>
-    <p>骨架模型：Ultralytics YOLO26x-pose（AGPL-3.0）· 追球模型：TrackNetV3（MIT）· 推論引擎：ONNX Runtime Web · 分析與下載的影片都在你的電腦上完成，不會上傳到伺服器</p>
+    <p>人物偵測：Ultralytics YOLO26x-pose（AGPL-3.0）· 追球模型：TrackNetV3（MIT）· 推論引擎：ONNX Runtime Web · 分析與下載的影片都在你的電腦上完成，不會上傳到伺服器</p>
   </footer>
 
   <div id="toast" class="toast hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
   <script src="ai_pose_core.js?v=20261028q"></script>
-  <script src="ai_analysis.js?v=20261028s"></script>
+  <script src="ai_analysis.js?v=20261028t"></script>
 </body>
 </html>

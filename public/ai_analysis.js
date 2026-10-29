@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.12
+ * Version: 1.7.13
  */
 (function () {
   'use strict';
@@ -991,33 +991,29 @@
     });
   }
 
-  function drawSkeleton(ctx, kp, color, lw) {
-    const ok = (i) => kp[i * 3 + 2] >= KEYPOINT_MIN_SCORE;
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = lw;
-    ctx.lineCap = 'round';
-    for (const [a, b] of Core.SKELETON) {
-      if (!ok(a) || !ok(b)) continue;
-      ctx.beginPath();
-      ctx.moveTo(kp[a * 3], kp[a * 3 + 1]);
-      ctx.lineTo(kp[b * 3], kp[b * 3 + 1]);
-      ctx.stroke();
-    }
-    for (let i = 0; i < Core.NUM_KEYPOINTS; i++) {
-      if (!ok(i)) continue;
-      ctx.beginPath();
-      ctx.arc(kp[i * 3], kp[i * 3 + 1], lw * 1.2, 0, Math.PI * 2);
-      ctx.fill();
+  function drawFrameDets(ctx, dets, lw) {
+    for (const d of dets) {
+      if (!d.id || !PLAYER_STYLE[d.id] || !d.box) continue;
+      drawPersonRing(ctx, d.box, PLAYER_STYLE[d.id].color, lw);
     }
   }
 
-  function drawFrameDets(ctx, dets, lw) {
-    for (const d of dets) {
-      const color = d.id ? PLAYER_STYLE[d.id].color : 'rgba(226, 232, 240, 0.55)';
-      drawSkeleton(ctx, d.kp, color, d.id ? lw * 1.5 : lw);
-      if (d.id) drawLabel(ctx, d, PLAYER_STYLE[d.id].label, color, lw);
-    }
+  // 只用顏色把人圈起來，不畫骨架、不在畫面上寫名字
+  function drawPersonRing(ctx, box, color, lw) {
+    const w = Math.max(8, box.x2 - box.x1);
+    const h = Math.max(8, box.y2 - box.y1);
+    const cx = (box.x1 + box.x2) / 2;
+    const cy = (box.y1 + box.y2) / 2;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, w * 0.55, h * 0.52, 0, 0, Math.PI * 2);
+    ctx.lineWidth = Math.max(4, lw * 2.2);
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.8)';
+    ctx.stroke();
+    ctx.lineWidth = Math.max(2.5, lw * 1.35);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.restore();
   }
 
   function findPoseFrame(t) {
@@ -1052,19 +1048,21 @@
     paintResults(ctx, t, Math.max(2, canvas.width / 640));
   }
 
-  function drawLabel(ctx, det, text, color, lw) {
-    const fs = Math.round(lw * 9);
-    ctx.font = `bold ${fs}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
-    const pad = Math.round(fs * 0.4);
-    const boxH = fs + pad;
-    const w = ctx.measureText(text).width + pad * 2;
-    const x = det.box.x1;
-    const y = Math.max(0, det.box.y1 - boxH - 2);
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, w, boxH);
-    ctx.fillStyle = '#ffffff';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, x + pad, y + boxH / 2);
+  function playerLegendIds() {
+    return Core.slotsFor(state.mode).map((s) => s.id).filter((id) => {
+      if (state.poseSide === 'both') return true;
+      const near = id === 'near' || id === 'near1' || id === 'near2';
+      return state.poseSide === 'near' ? near : !near;
+    });
+  }
+
+  function paintPlayerLegend() {
+    const box = document.getElementById('player-legend');
+    if (!box) return;
+    box.innerHTML = playerLegendIds().map((id) => {
+      const st = PLAYER_STYLE[id];
+      return `<span><i style="background:${st.color}"></i>${st.label}</span>`;
+    }).join('');
   }
 
   function drawCourtOnVideo(ctx, lw, calib) {
@@ -1873,6 +1871,7 @@
     state.mode = mode;
     els.modeSingles.classList.toggle('active', mode === 'singles');
     els.modeDoubles.classList.toggle('active', mode === 'doubles');
+    paintPlayerLegend();
     resetTracking();
   }
 
@@ -1890,6 +1889,7 @@
     els.poseNear.classList.toggle('active', side === 'near');
     els.poseFar.classList.toggle('active', side === 'far');
     els.poseBoth.classList.toggle('active', side === 'both');
+    paintPlayerLegend();
     resetTracking();
   }
 
@@ -1991,7 +1991,7 @@
     ];
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(x, 0, L.panelW, L.readH);
-    const rowH = L.readH / 3;
+    const rowH = L.readH / 4;
     const fs = Math.max(18, Math.round(rowH * 0.46));
     ctx.font = `700 ${fs}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
     ctx.textBaseline = 'middle';
@@ -2007,6 +2007,23 @@
       const maxW = Math.max(20, L.panelW - labelW - 24);
       while (text.length > 1 && ctx.measureText(text).width > maxW) text = text.slice(0, -1);
       ctx.fillText(text, x + L.panelW - 12, y);
+    });
+    const legendY = rowH * 3 + rowH / 2;
+    let lx = x + 12;
+    const dot = Math.max(10, Math.round(rowH * 0.28));
+    ctx.textAlign = 'left';
+    ctx.font = `700 ${Math.max(13, Math.round(rowH * 0.36))}px "Noto Sans TC", "Microsoft JhengHei", sans-serif`;
+    playerLegendIds().forEach((id) => {
+      const st = PLAYER_STYLE[id];
+      const short = { near: '近端', far: '遠端', near1: '近A', near2: '近B', far1: '遠A', far2: '遠B' }[id] || st.label;
+      if (lx + dot + ctx.measureText(short).width + 16 > x + L.panelW) return;
+      ctx.fillStyle = st.color;
+      ctx.beginPath();
+      ctx.arc(lx + dot / 2, legendY, dot / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillText(short, lx + dot + 4, legendY);
+      lx += dot + ctx.measureText(short).width + 16;
     });
     ctx.textAlign = 'left';
   }
@@ -2446,6 +2463,7 @@
     els.court.width = Math.round((COURT.width + 2 * BOUNDS.side) * PPM);
     els.court.height = Math.round((COURT.length + 2 * BOUNDS.back) * PPM);
     drawCourt();
+    paintPlayerLegend();
     updateButtons();
     const gpuOk = await checkEnvironment();
     try {
