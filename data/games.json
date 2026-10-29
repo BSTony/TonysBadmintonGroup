@@ -12549,7 +12549,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793284486079,
+    "lastActiveTime": 1793284742260,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12582,7 +12582,8 @@
       "陳文凱": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12612,12 +12613,20 @@
           "江こう 洋々",
           "Mike",
           "楊程鈞",
-          "小扉"
+          "小扉",
+          "林煥杰"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/29 22:39",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/29 22:34",
         "name": "小扉",
