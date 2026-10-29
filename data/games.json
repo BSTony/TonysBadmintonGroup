@@ -12549,7 +12549,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793284298478,
+    "lastActiveTime": 1793284312654,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12608,12 +12608,20 @@
           "小白",
           "蘑菇",
           "momota",
-          "江こう 洋々"
+          "江こう 洋々",
+          "Mike"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/29 22:31",
+        "name": "Mike",
+        "operator": "李智揚 Mike",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/29 22:31",
         "name": "江こう 洋々",
