@@ -11381,7 +11381,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418777969,
-    "lastActiveTime": 1793293430466,
+    "lastActiveTime": 1793294219043,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11409,7 +11409,8 @@
       "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Sharon": "U2f34481ad7c75487414b97ec63623fba",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "簡任欣": "U5a28cd3f38cea267b2b79ef7cd6e2422"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11432,13 +11433,21 @@
           "賴柚子",
           "花花",
           "Sharon",
-          "Gary"
+          "Gary",
+          "簡任欣"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "10/30 01:16",
+        "name": "簡任欣",
+        "operator": "簡任欣",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/30 01:03",
         "name": "Gary",
