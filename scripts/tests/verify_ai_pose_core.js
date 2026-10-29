@@ -186,6 +186,19 @@ function testShuttlePace() {
   const airborne = PoseCore.shuttlePace(air, () => null, { metersPerPixel: () => 0.05 });
   close(airborne.max, 8 / (1 / 30) * 0.05 * 3.6, 8, 'screen motion still has a speed when the ground projection is unusable');
   assert.ok(airborne.points.length > 8, 'airborne samples are not dropped');
+  assert.ok(airborne.flights[0].exit > 0, 'exit speed is the leave-racket speed');
+
+  // 離拍瞬間快、後面變慢：球速要抓開頭，不是飛行中段
+  const fade = [];
+  for (let i = 0; i <= 18; i++) {
+    const t = i / 30;
+    const u = Math.min(1, t / 0.5);
+    const speed = (220 - 160 * u) / 3.6;
+    fade.push({ t, x: i === 0 ? 0 : fade[i - 1].x + speed / 30, y: 0 });
+  }
+  const faded = PoseCore.shuttlePace(fade, (x, y) => ({ x, y }));
+  assert.ok(faded.flights[0].exit > faded.flights[0].end + 40, 'exit is much faster than late-flight speed');
+  assert.ok(faded.flights[0].exit > 150, 'exit stays near the leave-racket peak, got ' + faded.flights[0].exit);
 
   const smooth = [];
   for (let i = 0; i <= 10; i++) smooth.push({ t: i / 30, x: 100 + i * 20, y: 200 });

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.21
+ * Version: 1.7.22
  */
 (function () {
   'use strict';
@@ -1347,11 +1347,11 @@
     return { kmh: best.kmh, rhythm: Core.shuttleRhythm(best.kmh), peak: flight ? flight.peak : best.kmh };
   }
 
-  // 這一拍離拍後的速度。BWF 賽事測速量的是球離開球拍的速度，不是整段飛行的平均。
+  // 擊球時速 = 球剛離開球拍那一瞬間。不是飛行途中、也不是整段平均。
   function shotSpeedAt(t) {
-    if (rallyIsDead(t)) return null;
+    if (rallyIsDead(t) || typeof t !== 'number') return null;
     const pace = shuttlePaceData();
-    if (!pace || !pace.points.length || typeof t !== 'number') return null;
+    if (!pace || !pace.flights.length) return null;
     const report = rallyData();
     let shot = null;
     if (report) {
@@ -1361,22 +1361,24 @@
         else break;
       }
     }
+    let flight = null;
     if (shot) {
-      const earlyEnd = shot.t0 + 0.12;
-      const early = [];
-      let later = 0;
-      for (let i = 0; i < pace.points.length; i++) {
-        const p = pace.points[i];
-        if (p.t < shot.t0 - 0.02) continue;
-        if (p.t > shot.t1 + 0.08) break;
-        if (p.t <= earlyEnd) early.push(p.kmh);
-        else if (!early.length && p.kmh > later) later = p.kmh;
+      let bestDt = 0.35;
+      for (let i = 0; i < pace.flights.length; i++) {
+        const f = pace.flights[i];
+        const dt = Math.abs(f.t0 - shot.t0);
+        if (dt < bestDt) { bestDt = dt; flight = f; }
       }
-      const kmh = early.length ? early.slice().sort((a, b) => a - b)[early.length >> 1] : later;
-      if (kmh > 0) return Math.round(kmh);
     }
-    const live = paceAtTime(t);
-    return live && live.kmh > 0 ? Math.round(live.kmh) : null;
+    if (!flight) {
+      for (let i = 0; i < pace.flights.length; i++) {
+        const f = pace.flights[i];
+        if (f.t0 <= t + 0.05) flight = f;
+        else break;
+      }
+    }
+    const kmh = flight && (flight.exit || flight.peak);
+    return kmh > 0 ? Math.round(kmh) : null;
   }
 
   function rallyIsDead(t) {
@@ -1676,14 +1678,14 @@
     if (state.calib && pace && pace.points.length) {
       paceHtml = `
         <div class="pc-grid">
-          <div><span class="pc-val">${Math.round(pace.max)}</span><span class="pc-unit">km/h</span><div class="pc-label">最快球速</div></div>
-          <div><span class="pc-val">${Math.round(pace.avg)}</span><span class="pc-unit">km/h</span><div class="pc-label">平均球速</div></div>
+          <div><span class="pc-val">${Math.round(pace.max)}</span><span class="pc-unit">km/h</span><div class="pc-label">最快離拍</div></div>
+          <div><span class="pc-val">${Math.round(pace.avg)}</span><span class="pc-unit">km/h</span><div class="pc-label">平均離拍</div></div>
         </div>
         <div class="pc-grid">
           <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>
           <div><span class="pc-val">${pace.flights.length}</span><span class="pc-unit">段</span><div class="pc-label">飛行段數</div></div>
         </div>
-        <div class="zone-legend">擊球時速取這一拍離拍後約 0.12 秒的中間值。來回是這一回合的擊球次數，球停下來之後會歸零。</div>`;
+        <div class="zone-legend">擊球時速是球剛離開球拍那一瞬間，不是飛行途中的速度。來回是這一回合的擊球次數，球停下來之後會歸零。</div>`;
     } else if (state.calib) {
       paceHtml = '<div class="zone-legend">這段還沒有足夠的連續球點來估計球速。</div>';
     }

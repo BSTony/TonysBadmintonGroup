@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.7
+ * Version: 1.2.8
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -640,9 +640,11 @@
   // 單格跳到畫面另一頭的點先拿掉，避免出現一千多公里。
   function shuttlePace(samples, project, opts) {
     const GAP = 0.2;
-    const BASE_DT = 0.08;
-    const MAX_DT = 0.18;
-    const MAX_KMH = 400;
+    // 離拍瞬間要短一點的位移；太長會變成飛行中段的速度
+    const BASE_DT = 0.04;
+    const MAX_DT = 0.12;
+    const EXIT_WINDOW = 0.08;
+    const MAX_KMH = 420;
     const groups = [];
     let cur = [];
     const closeCur = () => {
@@ -721,13 +723,15 @@
       flights.push(null);
     });
 
+    // 離拍速度用原始短窗位移；畫面顯示的瞬時速再做一點平滑，避免單一格抖動
     const rawKmh = points.map((p) => p.kmh);
     for (let i = 0; i < points.length; i++) {
       const bucket = [];
       const id = points[i].flight;
-      for (let j = i; j >= 0 && points[i].t - points[j].t <= 0.08 && points[j].flight === id; j--) bucket.push(rawKmh[j]);
-      for (let j = i + 1; j < points.length && points[j].t - points[i].t <= 0.08 && points[j].flight === id; j++) bucket.push(rawKmh[j]);
+      for (let j = i; j >= 0 && points[i].t - points[j].t <= 0.05 && points[j].flight === id; j--) bucket.push(rawKmh[j]);
+      for (let j = i + 1; j < points.length && points[j].t - points[i].t <= 0.05 && points[j].flight === id; j++) bucket.push(rawKmh[j]);
       points[i].kmh = medianOf(bucket);
+      points[i].raw = rawKmh[i];
     }
     let built = 0;
     const byFlight = [];
@@ -741,14 +745,24 @@
       group.forEach((p) => { p.flight = built; });
       const speeds = group.map((p) => p.kmh);
       const peak = speeds.reduce((m, v) => Math.max(m, v), 0);
-      const head = speeds.slice(0, Math.min(3, speeds.length));
-      const start = head.reduce((a, b) => a + b, 0) / head.length;
+      // 離拍瞬間：這一拍開始後約 0.08 秒內的最快速度（球離開球拍那一下）
+      const t0 = group[0].t;
+      const exitSamples = group.filter((p) => p.t - t0 <= EXIT_WINDOW).map((p) => p.raw > 0 ? p.raw : p.kmh);
+      const exit = exitSamples.length ? exitSamples.reduce((m, v) => Math.max(m, v), 0) : peak;
       const end = speeds[speeds.length - 1];
-      packed.push({ t0: group[0].t, t1: group[group.length - 1].t, peak, start, end, hold: peak > 1 ? end / peak : 0 });
+      packed.push({
+        t0,
+        t1: group[group.length - 1].t,
+        peak,
+        exit,
+        start: exit,
+        end,
+        hold: exit > 1 ? end / exit : 0
+      });
       built++;
     });
-    const max = packed.reduce((m, f) => Math.max(m, f.peak), 0);
-    const avg = points.length ? points.reduce((a, p) => a + p.kmh, 0) / points.length : 0;
+    const max = packed.reduce((m, f) => Math.max(m, f.exit || f.peak), 0);
+    const avg = packed.length ? packed.reduce((a, f) => a + (f.exit || f.peak), 0) / packed.length : 0;
     const hold = packed.length ? packed.reduce((a, f) => a + f.hold, 0) / packed.length : 0;
     return { points, flights: packed, max, avg, hold };
   }
