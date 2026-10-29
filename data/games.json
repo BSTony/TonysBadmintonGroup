@@ -12549,7 +12549,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793284274335,
+    "lastActiveTime": 1793284279972,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12603,12 +12603,20 @@
           "周則鼎",
           "喻心平",
           "陳文凱",
-          "Tank Lin"
+          "Tank Lin",
+          "小白"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "10/29 22:31",
+        "name": "小白",
+        "operator": "小白 (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "10/29 22:31",
         "name": "Tank Lin",
