@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.14
+ * Version: 1.7.15
  */
 (function () {
   'use strict';
@@ -369,7 +369,7 @@
     const warm = await withOrt(() => state.session.run({ [state.inputName]: new ort.Tensor('float32', new Float32Array(3 * size * size), [1, 3, size, size]) }));
     disposeOutputs(warm);
     console.log(`[AI] backend=${state.backend} warmup=${(performance.now() - t0).toFixed(0)}ms`);
-    setChip(els.modelStatus, `YOLO26x 就緒（${state.backend === 'webgpu' ? '顯示卡' : 'CPU'}）`, 'ok');
+    setChip(els.modelStatus, state.backend === 'webgpu' ? '追人物模型 就緒' : '追人物模型 就緒（CPU）', 'ok');
     if (state.backend !== 'webgpu' && preferGpu) {
       showError('顯示卡初始化失敗，已改用 CPU 計算，速度會比較慢。');
     }
