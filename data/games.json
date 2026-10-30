@@ -11523,7 +11523,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793372379713,
+    "lastActiveTime": 1793372386414,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11566,8 +11566,7 @@
         "label": "",
         "list": [
           "AddieWang",
-          "AK",
-          "政達"
+          "AK"
         ]
       },
       {
@@ -11611,6 +11610,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/30 22:59",
+        "name": "政達",
+        "operator": "政達",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "10/30 22:59",
         "name": "政達",
