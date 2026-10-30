@@ -11523,7 +11523,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793372296400,
+    "lastActiveTime": 1793372379713,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11552,7 +11552,8 @@
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
       "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "政達": "Ub3fbddfc79aa3e5533b06da553d5bdce"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11565,7 +11566,8 @@
         "label": "",
         "list": [
           "AddieWang",
-          "AK"
+          "AK",
+          "政達"
         ]
       },
       {
@@ -11609,6 +11611,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/30 22:59",
+        "name": "政達",
+        "operator": "政達",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "10/30 22:58",
         "name": "Ray",
