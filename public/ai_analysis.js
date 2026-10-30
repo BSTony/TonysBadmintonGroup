@@ -1,18 +1,19 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.24
+ * Version: 1.8.0
  */
 (function () {
   'use strict';
 
   const ORT_VERSION = '1.31.1';
-  // 模型從 jsDelivr 依 commit 鎖定版本下載，不佔用伺服器流量；CDN 失敗才改由伺服器提供
+  // 人物改輕量偵測後模型變小，優先走本機／伺服器；CDN 當備援（追球仍可用舊 commit）
   const MODEL_SOURCES = [
-    'https://cdn.jsdelivr.net/gh/BSTony/TonysBadmintonGroup@9fd45aef1c23d1581a633d134c05ee28f3dd263c/public/models/',
-    '/models/'
+    '/models/',
+    'https://cdn.jsdelivr.net/gh/BSTony/TonysBadmintonGroup@9fd45aef1c23d1581a633d134c05ee28f3dd263c/public/models/'
   ];
-  const POSE_MODEL_FILES = ['yolo26x-pose.onnx.part0', 'yolo26x-pose.onnx.part1', 'yolo26x-pose.onnx.part2', 'yolo26x-pose.onnx.part3', 'yolo26x-pose.onnx.part4', 'yolo26x-pose.onnx.part5'];
+  // 輕量人物偵測（約 12MB），用框底當腳位算跑動；不再下載 220MB 骨架
+  const POSE_MODEL_FILES = ['yolov8n.onnx'];
   const TRACKNET_MODEL_FILES = ['tracknetv3.onnx.part0', 'tracknetv3.onnx.part1', 'tracknetv3.onnx.part2', 'tracknetv3.onnx.part3'];
   const PLAYBACK_RATE = 2;
   // TrackNet 以 30fps 訓練：60fps 影片隔一格取一格
@@ -228,7 +229,7 @@
     const isMobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
     state.deviceKind = isMobile ? 'phone' : 'pc';
     if (isMobile) {
-      warnings.push('這版骨架是 YOLO26x，約 220MB，請用有顯示卡的電腦。手機記憶體不夠，可能載入失敗。');
+      warnings.push('人物偵測已改成輕量模型，但追球仍建議用有顯示卡的電腦（Chrome／Edge）。');
     }
 
     let gpuOk = false;
@@ -345,9 +346,9 @@
     ort.env.wasm.wasmPaths = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`;
     ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1;
 
-    setChip(els.modelStatus, '下載 YOLO26x 骨架 0%');
-    const bytes = await fetchModelFiles(POSE_MODEL_FILES, (p) => setChip(els.modelStatus, `下載 YOLO26x 骨架 ${Math.round(p * 100)}%`));
-    setChip(els.modelStatus, '初始化模型…');
+    setChip(els.modelStatus, '下載人物偵測 0%');
+    const bytes = await fetchModelFiles(POSE_MODEL_FILES, (p) => setChip(els.modelStatus, `下載人物偵測 ${Math.round(p * 100)}%`));
+    setChip(els.modelStatus, '初始化人物偵測…');
 
     const providers = preferGpu ? ['webgpu', 'wasm'] : ['wasm'];
     let lastErr = null;
@@ -371,7 +372,7 @@
     const warm = await withOrt(() => state.session.run({ [state.inputName]: new ort.Tensor('float32', new Float32Array(3 * size * size), [1, 3, size, size]) }));
     disposeOutputs(warm);
     console.log(`[AI] backend=${state.backend} warmup=${(performance.now() - t0).toFixed(0)}ms`);
-    setChip(els.modelStatus, state.backend === 'webgpu' ? '追人物模型 就緒' : '追人物模型 就緒（CPU）', 'ok');
+    setChip(els.modelStatus, state.backend === 'webgpu' ? '人物偵測就緒' : '人物偵測就緒（CPU）', 'ok');
     if (state.backend !== 'webgpu' && preferGpu) {
       showError('顯示卡初始化失敗，已改用 CPU 計算，速度會比較慢。');
     }
@@ -980,13 +981,20 @@
 
   // ---------- 繪圖 ----------
 
-  // 每格只留框與 17 點（x, y, 分數）的 Float32Array，長影片也不會吃太多記憶體
+  // 每格只留框；若模型有關鍵點再一併存（輕量偵測沒有骨架）
   function packDets(dets, assigned) {
     const owner = new Map();
     for (const id of Object.keys(assigned || {})) owner.set(assigned[id].det, id);
     return dets.map((d) => {
       const kp = new Float32Array(Core.NUM_KEYPOINTS * 3);
-      d.keypoints.forEach((k, i) => { kp[i * 3] = k.x; kp[i * 3 + 1] = k.y; kp[i * 3 + 2] = k.score; });
+      const src = d.keypoints || [];
+      for (let i = 0; i < Core.NUM_KEYPOINTS; i++) {
+        const k = src[i];
+        if (!k) continue;
+        kp[i * 3] = k.x;
+        kp[i * 3 + 1] = k.y;
+        kp[i * 3 + 2] = k.score;
+      }
       return { box: d.box, kp, id: owner.get(d) || '' };
     });
   }
@@ -1751,7 +1759,8 @@
   }
 
   const TIMING_KEY = 'aiAnalysis.timing.v1';
-  const DEFAULT_POSE_MS = 170;
+  // 輕量偵測預估每格耗時（毫秒）；實際會在跑過幾幀後改用量測值
+  const DEFAULT_POSE_MS = 45;
   const DEFAULT_SHUTTLE_BATCH_MS = 3200;
 
   function loadTiming() {
@@ -1815,7 +1824,7 @@
     const est = estimateAnalysis();
     if (!est) return '按「開始分析」';
     const parts = [];
-    if (est.poseSeconds >= 45) parts.push(`骨架 ${fmtEstimate(est.poseSeconds)}`);
+    if (est.poseSeconds >= 45) parts.push(`人物 ${fmtEstimate(est.poseSeconds)}`);
     if (est.shuttleSeconds >= 45) parts.push(`追球 ${fmtEstimate(est.shuttleSeconds)}`);
     const detail = parts.length ? `（${parts.join('、')}）` : '';
     const basis = est.measured ? '依這台電腦目前的速度' : '粗估，開始後會依這台電腦修正';

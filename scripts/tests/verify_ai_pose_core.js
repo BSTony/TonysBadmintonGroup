@@ -37,7 +37,21 @@ function testDecode() {
   close(d.keypoints[16].x, (320 + 16) / 0.5 + 100, 1e-6, 'keypoint x');
   close(d.keypoints[16].y, (320 + 16 - 140) / 0.5 + 50, 1e-6, 'keypoint y');
   close(d.keypoints[16].score, 0.66, 1e-6, 'keypoint score');
-  assert.throws(() => PoseCore.decodePose(data, [1, 84, n], lb, null), /模型輸出維度不符/);
+
+  // 輕量偵測 [1, 84, N]：只要 person（類別 0），腳位用框底
+  const detN = 3;
+  const det = new Float32Array(84 * detN);
+  const setDet = (ch, i, v) => { det[ch * detN + i] = v; };
+  setDet(0, 0, 320); setDet(1, 0, 320); setDet(2, 0, 100); setDet(3, 0, 200); setDet(4, 0, 0.91);
+  setDet(0, 1, 325); setDet(1, 1, 322); setDet(2, 1, 100); setDet(3, 1, 200); setDet(4, 1, 0.8);
+  setDet(0, 2, 100); setDet(1, 2, 300); setDet(2, 2, 40); setDet(3, 2, 80); setDet(5, 2, 0.95);
+  const people = PoseCore.decodePose(det, [1, 84, detN], lb, crop, { confThreshold: 0.3, iouThreshold: 0.5 });
+  assert.strictEqual(people.length, 1, 'detect keeps person and suppresses overlap / other class');
+  close(people[0].score, 0.91, 1e-6, 'detect person score');
+  const foot = PoseCore.footPoint(people[0]);
+  assert.strictEqual(foot.fromAnkles, false, 'detect uses box bottom as foot');
+  close(foot.x, (people[0].box.x1 + people[0].box.x2) / 2, 1e-6, 'foot x');
+  close(foot.y, people[0].box.y2, 1e-6, 'foot y');
 
   const cols = 57;
   const e2e = new Float32Array(2 * cols);

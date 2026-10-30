@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.9
+ * Version: 1.3.0
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -71,13 +71,21 @@
     return union > 0 ? inter / union : 0;
   }
 
-  // 解析骨架模型輸出。YOLOv8 是 [1, 56, N]；YOLO26 端到端是 [1, 人數, 57]
+  // 解析人物／骨架輸出。偵測模型是 [1, 84, N] 或端到端 [1, 人數, 6]；骨架仍支援舊格式。
   function decodePose(data, dims, lb, crop, opts = {}) {
     const confThreshold = opts.confThreshold ?? 0.3;
     const iouThreshold = opts.iouThreshold ?? 0.5;
     const maxDetections = opts.maxDetections ?? 30;
     const d1 = dims[1];
     const d2 = dims[2];
+    // COCO 偵測：4 框 + 80 類
+    if (d1 === 84 || d2 === 84) {
+      return decodeDetect(data, dims, lb, crop, opts);
+    }
+    // 端到端偵測：x1,y1,x2,y2,分數,類別
+    if (d1 === 6 || d2 === 6) {
+      return decodeDetectEnd2End(data, dims, lb, crop, opts);
+    }
     const e2eCols = 6 + NUM_KEYPOINTS * 3;
     if (d2 === e2eCols || d1 === e2eCols) {
       const rowMajor = d2 === e2eCols;
@@ -150,8 +158,78 @@
     return kept.map((c) => ({
       score: c.score,
       box: { x1: toX(c.x1), y1: toY(c.y1), x2: toX(c.x2), y2: toY(c.y2) },
-      keypoints: keypointsOf(c, toX, toY)
+      keypoints: keypointsOf ? keypointsOf(c, toX, toY) : emptyKeypoints()
     }));
+  }
+
+  function emptyKeypoints() {
+    const keypoints = new Array(NUM_KEYPOINTS);
+    for (let k = 0; k < NUM_KEYPOINTS; k++) keypoints[k] = { x: 0, y: 0, score: 0 };
+    return keypoints;
+  }
+
+  // YOLOv8/11 偵測輸出 [1, 84, N]：只要 person（類別 0）
+  function decodeDetect(data, dims, lb, crop, opts = {}) {
+    const confThreshold = opts.confThreshold ?? 0.3;
+    const iouThreshold = opts.iouThreshold ?? 0.5;
+    const maxDetections = opts.maxDetections ?? 30;
+    const personClass = opts.personClass ?? 0;
+    const d1 = dims[1];
+    const d2 = dims[2];
+    const channelsFirst = d1 === 84;
+    const channels = channelsFirst ? d1 : d2;
+    const n = channelsFirst ? d2 : d1;
+    if (channels !== 84) throw new Error(`偵測模型輸出維度不符：${dims.join('x')}`);
+    const at = channelsFirst
+      ? (ch, i) => data[ch * n + i]
+      : (ch, i) => data[i * channels + ch];
+    const cands = [];
+    for (let i = 0; i < n; i++) {
+      let bestCls = 0;
+      let bestScore = -1;
+      for (let c = 0; c < 80; c++) {
+        const s = at(4 + c, i);
+        if (s > bestScore) { bestScore = s; bestCls = c; }
+      }
+      if (bestCls !== personClass || !(bestScore >= confThreshold)) continue;
+      const cx = at(0, i);
+      const cy = at(1, i);
+      const w = at(2, i);
+      const h = at(3, i);
+      cands.push({
+        i,
+        score: bestScore,
+        x1: cx - w / 2,
+        y1: cy - h / 2,
+        x2: cx + w / 2,
+        y2: cy + h / 2
+      });
+    }
+    return finishPoseCandidates(cands, null, lb, crop, iouThreshold, maxDetections);
+  }
+
+  // 端到端偵測 [1, 人數, 6] 或 [1, 6, 人數]
+  function decodeDetectEnd2End(data, dims, lb, crop, opts = {}) {
+    const confThreshold = opts.confThreshold ?? 0.3;
+    const iouThreshold = opts.iouThreshold ?? 0.5;
+    const maxDetections = opts.maxDetections ?? 30;
+    const personClass = opts.personClass ?? 0;
+    const d1 = dims[1];
+    const d2 = dims[2];
+    const rowMajor = d2 === 6;
+    const count = rowMajor ? d1 : d2;
+    const cols = 6;
+    const at = rowMajor
+      ? (det, col) => data[det * cols + col]
+      : (det, col) => data[col * count + det];
+    const cands = [];
+    for (let i = 0; i < count; i++) {
+      const score = at(i, 4);
+      const cls = Math.round(at(i, 5));
+      if (cls !== personClass || !(score >= confThreshold)) continue;
+      cands.push({ i, score, x1: at(i, 0), y1: at(i, 1), x2: at(i, 2), y2: at(i, 3) });
+    }
+    return finishPoseCandidates(cands, null, lb, crop, iouThreshold, maxDetections);
   }
 
   function solveLinear(A, b) {
@@ -302,16 +380,22 @@
     return kept;
   }
 
+  // 有骨架時用腳踝；輕量偵測只有框時，用框底邊中點當腳位
   function footPoint(det, minScore = 0.3) {
-    const ankles = [det.keypoints[15], det.keypoints[16]].filter((k) => k.score >= minScore);
-    if (ankles.length) {
-      return {
-        x: ankles.reduce((sum, k) => sum + k.x, 0) / ankles.length,
-        y: ankles.reduce((sum, k) => sum + k.y, 0) / ankles.length,
-        fromAnkles: true
-      };
+    const kps = det && det.keypoints;
+    if (kps && kps.length >= 17) {
+      const ankles = [kps[15], kps[16]].filter((k) => k && k.score >= minScore);
+      if (ankles.length) {
+        return {
+          x: ankles.reduce((sum, k) => sum + k.x, 0) / ankles.length,
+          y: ankles.reduce((sum, k) => sum + k.y, 0) / ankles.length,
+          fromAnkles: true
+        };
+      }
     }
-    return { x: (det.box.x1 + det.box.x2) / 2, y: det.box.y2, fromAnkles: false };
+    const box = det && det.box;
+    if (!box) return { x: 0, y: 0, fromAnkles: false };
+    return { x: (box.x1 + box.x2) / 2, y: box.y2, fromAnkles: false };
   }
 
   function inCourtArea(p, bounds = DEFAULT_BOUNDS) {
@@ -1169,6 +1253,8 @@
     rgbaToTensor,
     iou,
     decodePose,
+    decodeDetect,
+    decodeDetectEnd2End,
     computeHomography,
     applyHomography,
     orderCorners,
