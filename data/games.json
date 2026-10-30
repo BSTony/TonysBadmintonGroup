@@ -11523,7 +11523,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793273802192,
+    "lastActiveTime": 1793321572823,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11551,7 +11551,8 @@
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
-      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -11606,11 +11607,19 @@
           "Jojo2",
           "John",
           "Chris Chen",
-          "小羅"
+          "小羅",
+          "Gary"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/30 08:52",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "10/29 19:36",
         "name": "Sean柏宏",
