@@ -11523,7 +11523,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793366576159,
+    "lastActiveTime": 1793372296400,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11599,7 +11599,6 @@
           "吳霆竣 Chad Wu",
           "顏鎧霖",
           "Sammy Su",
-          "Ray",
           "陳呈",
           "康",
           "Jojo",
@@ -11610,6 +11609,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/30 22:58",
+        "name": "Ray",
+        "operator": "Raymond 權權",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "10/30 21:22",
         "name": "小羅",
