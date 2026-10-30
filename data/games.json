@@ -11367,9 +11367,9 @@
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
       "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C73ead06e46f4c3a00a3f87d946c7d18a",
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-      "C73ead06e46f4c3a00a3f87d946c7d18a"
+      "C073dd061239f9bc2df13af0a1ecb4bdb"
     ],
     "gameId": "1792418777963397",
     "title": "週一港中 下次是11/16",
@@ -11417,7 +11417,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 19,
+        "limit": 20,
         "backupLimit": 5,
         "label": "",
         "list": [
