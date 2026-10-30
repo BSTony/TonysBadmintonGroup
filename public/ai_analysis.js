@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.7.23
+ * Version: 1.7.24
  */
 (function () {
   'use strict';
@@ -1678,8 +1678,8 @@
     if (state.calib && pace && pace.points.length) {
       paceHtml = `
         <div class="pc-grid">
-          <div><span class="pc-val">${Math.round(pace.max)}</span><span class="pc-unit">km/h</span><div class="pc-label">最快離拍</div></div>
-          <div><span class="pc-val">${Math.round(pace.avg)}</span><span class="pc-unit">km/h</span><div class="pc-label">平均離拍</div></div>
+          <div><span class="pc-val">${Math.round(pace.max)}</span><span class="pc-unit">km/h</span><div class="pc-label">最快離拍(5幀)</div></div>
+          <div><span class="pc-val">${Math.round(pace.avg)}</span><span class="pc-unit">km/h</span><div class="pc-label">平均離拍(5幀)</div></div>
         </div>
         <div class="pc-grid">
           <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>

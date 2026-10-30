@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-28
- * Version: 1.2.8
+ * Version: 1.2.9
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -636,14 +636,14 @@
   }
 
   // 用畫面上的移動乘上該處的球場比例來估計球速。
-  // 球在空中時不能直接拿地面投影的位移，否則高球會被丟光，只剩下很慢的落地段。
-  // 單格跳到畫面另一頭的點先拿掉，避免出現一千多公里。
+  // 擊球瞬間：球路方向明顯反轉（例如往左變往右）時切成新的一拍，
+  // 再取之後約 5 幀的平均速度當「離拍時速」。
   function shuttlePace(samples, project, opts) {
     const GAP = 0.2;
-    // 離拍瞬間要短一點的位移；太長會變成飛行中段的速度
-    const BASE_DT = 0.04;
-    const MAX_DT = 0.12;
-    const EXIT_WINDOW = 0.08;
+    const EXIT_FRAMES = Math.max(2, (opts && opts.exitFrames) || 5);
+    // 相鄰兩段速度夾角接近反向（cos 接近 -1）就算擊球
+    const HIT_DOT = (opts && opts.hitDot != null) ? opts.hitDot : -0.2;
+    const MIN_HIT_PX_S = 40;
     const MAX_KMH = 420;
     const groups = [];
     let cur = [];
@@ -662,7 +662,6 @@
     closeCur();
 
     const points = [];
-    const flights = [];
     const medianOf = (vals) => {
       const sorted = vals.slice().sort((a, b) => a - b);
       return sorted[sorted.length >> 1];
@@ -678,12 +677,24 @@
       const b = project(x1, y1);
       if (!a || !b || !isFinite(a.x) || !isFinite(b.x)) return null;
       const img = Math.hypot(x1 - x0, y1 - y0);
-      if (!(img >= 0.5)) return null;
+      if (!(img >= 0.05)) return null;
       const mpp = Math.hypot(b.x - a.x, b.y - a.y) / img;
       if (!(mpp > 0.001 && mpp < 2)) return null;
       return mpp;
     };
-    // 前後都跳很遠、但前後兩點彼此很近，就是單格追錯
+    const stepKmh = (a, b) => {
+      const dt = b.t - a.t;
+      if (!(dt > 0) || dt > 0.2) return null;
+      const imgDist = Math.hypot(b.ix - a.ix, b.iy - a.iy);
+      if (!(imgDist >= 0.05)) return null;
+      const mpp = scaleAt(a.ix, a.iy, b.ix, b.iy);
+      if (!mpp) return null;
+      const kmh = imgDist / dt * mpp * 3.6;
+      if (!(kmh > 0) || kmh > MAX_KMH) return null;
+      return kmh;
+    };
+    // 前後都跳很遠、但前後兩點彼此很近，就是單格追錯。
+    // 真正擊球折返後會繼續往新方向飛，那種轉折要留著。
     const dropSpikes = (raw) => {
       if (raw.length < 3) return raw;
       const keep = raw.map(() => true);
@@ -695,72 +706,104 @@
         const jumpIn = Math.hypot(p.ix - prev.ix, p.iy - prev.iy);
         const jumpOut = Math.hypot(next.ix - p.ix, next.iy - p.iy);
         const bridge = Math.hypot(next.ix - prev.ix, next.iy - prev.iy);
-        if (jumpIn > 8 && jumpOut > 8 && bridge < Math.min(jumpIn, jumpOut) * 0.5) keep[i] = false;
+        if (!(jumpIn > 8 && jumpOut > 8 && bridge < Math.min(jumpIn, jumpOut) * 0.5)) continue;
+        let bounceContinues = false;
+        if (i + 2 < raw.length && raw[i + 2].t - next.t <= 0.12) {
+          const n2 = raw[i + 2];
+          const bx = next.ix - p.ix;
+          const by = next.iy - p.iy;
+          const cx = n2.ix - next.ix;
+          const cy = n2.iy - next.iy;
+          const bs = Math.hypot(bx, by);
+          const cs = Math.hypot(cx, cy);
+          if (bs > 1 && cs > 1 && (bx * cx + by * cy) / (bs * cs) > 0.5) bounceContinues = true;
+        }
+        if (!bounceContinues) keep[i] = false;
       }
       return raw.filter((_, i) => keep[i]);
     };
+    // 找出方向反轉的點：前一段往左、後一段往右之類
+    const findHitStarts = (cleaned) => {
+      const starts = [0];
+      for (let i = 2; i < cleaned.length; i++) {
+        const a = cleaned[i - 2];
+        const b = cleaned[i - 1];
+        const c = cleaned[i];
+        const dt1 = b.t - a.t;
+        const dt2 = c.t - b.t;
+        if (!(dt1 > 0) || !(dt2 > 0) || dt1 > 0.15 || dt2 > 0.15) continue;
+        const v1x = (b.ix - a.ix) / dt1;
+        const v1y = (b.iy - a.iy) / dt1;
+        const v2x = (c.ix - b.ix) / dt2;
+        const v2y = (c.iy - b.iy) / dt2;
+        const s1 = Math.hypot(v1x, v1y);
+        const s2 = Math.hypot(v2x, v2y);
+        if (s1 < MIN_HIT_PX_S || s2 < MIN_HIT_PX_S) continue;
+        const den = s1 * s2;
+        if (!(den > 0)) continue;
+        const dot = (v1x * v2x + v1y * v2y) / den;
+        if (dot > HIT_DOT) continue;
+        const hitAt = i - 1;
+        if (starts[starts.length - 1] !== hitAt) starts.push(hitAt);
+      }
+      return starts;
+    };
+    // 離拍時速：擊球後最多 EXIT_FRAMES 幀的平均速度
+    const exitAverage = (cleaned, startIdx, endIdx) => {
+      const last = Math.min(endIdx, startIdx + EXIT_FRAMES);
+      const samples = [];
+      for (let i = startIdx + 1; i <= last; i++) {
+        const kmh = stepKmh(cleaned[i - 1], cleaned[i]);
+        if (kmh != null) samples.push(kmh);
+      }
+      if (!samples.length) return 0;
+      return samples.reduce((a, v) => a + v, 0) / samples.length;
+    };
+
+    const packed = [];
     groups.forEach((raw) => {
       const cleaned = dropSpikes(raw);
-      const speeds = [];
-      cleaned.forEach((p, i) => {
-        let anchor = null;
-        for (let j = i - 1; j >= 0; j--) {
-          const dt = p.t - cleaned[j].t;
-          if (dt > MAX_DT) break;
-          if (dt + 1e-6 >= BASE_DT) { anchor = cleaned[j]; break; }
+      if (cleaned.length < 2) return;
+      const starts = findHitStarts(cleaned);
+      for (let s = 0; s < starts.length; s++) {
+        const startIdx = starts[s];
+        const endIdx = (s + 1 < starts.length ? starts[s + 1] : cleaned.length - 1);
+        if (endIdx <= startIdx) continue;
+        const flightId = packed.length;
+        const speeds = [];
+        for (let i = startIdx + 1; i <= endIdx; i++) {
+          const kmh = stepKmh(cleaned[i - 1], cleaned[i]);
+          if (kmh == null) continue;
+          speeds.push(kmh);
+          points.push({ t: cleaned[i].t, kmh, flight: flightId, raw: kmh });
         }
-        if (!anchor) return;
-        const dt = p.t - anchor.t;
-        const imgDist = Math.hypot(p.ix - anchor.ix, p.iy - anchor.iy);
-        const mpp = scaleAt(anchor.ix, anchor.iy, p.ix, p.iy);
-        if (!mpp) return;
-        const kmh = imgDist / dt * mpp * 3.6;
-        if (!(kmh > 0) || kmh > MAX_KMH) return;
-        speeds.push(kmh);
-        points.push({ t: p.t, kmh, flight: flights.length });
-      });
-      if (!speeds.length) return;
-      flights.push(null);
+        if (!speeds.length) continue;
+        const exit = exitAverage(cleaned, startIdx, endIdx);
+        const peak = speeds.reduce((m, v) => Math.max(m, v), 0);
+        const end = speeds[speeds.length - 1];
+        const exitVal = exit > 0 ? exit : peak;
+        packed.push({
+          t0: cleaned[startIdx].t,
+          t1: cleaned[endIdx].t,
+          peak,
+          exit: exitVal,
+          start: exitVal,
+          end,
+          hold: exitVal > 1 ? end / exitVal : 0,
+          frames: Math.min(EXIT_FRAMES, endIdx - startIdx)
+        });
+      }
     });
 
-    // 離拍速度用原始短窗位移；畫面顯示的瞬時速再做一點平滑，避免單一格抖動
-    const rawKmh = points.map((p) => p.kmh);
+    // 畫面瞬時速再做一點平滑，避免單一格抖動；離拍時速仍用上面的 5 幀平均
+    const rawKmh = points.map((p) => p.raw);
     for (let i = 0; i < points.length; i++) {
       const bucket = [];
       const id = points[i].flight;
       for (let j = i; j >= 0 && points[i].t - points[j].t <= 0.05 && points[j].flight === id; j--) bucket.push(rawKmh[j]);
       for (let j = i + 1; j < points.length && points[j].t - points[i].t <= 0.05 && points[j].flight === id; j++) bucket.push(rawKmh[j]);
       points[i].kmh = medianOf(bucket);
-      points[i].raw = rawKmh[i];
     }
-    let built = 0;
-    const byFlight = [];
-    points.forEach((p) => {
-      if (!byFlight[p.flight]) byFlight[p.flight] = [];
-      byFlight[p.flight].push(p);
-    });
-    const packed = [];
-    byFlight.forEach((group) => {
-      if (!group || !group.length) return;
-      group.forEach((p) => { p.flight = built; });
-      const speeds = group.map((p) => p.kmh);
-      const peak = speeds.reduce((m, v) => Math.max(m, v), 0);
-      // 離拍瞬間：這一拍開始後約 0.08 秒內的最快速度（球離開球拍那一下）
-      const t0 = group[0].t;
-      const exitSamples = group.filter((p) => p.t - t0 <= EXIT_WINDOW).map((p) => p.raw > 0 ? p.raw : p.kmh);
-      const exit = exitSamples.length ? exitSamples.reduce((m, v) => Math.max(m, v), 0) : peak;
-      const end = speeds[speeds.length - 1];
-      packed.push({
-        t0,
-        t1: group[group.length - 1].t,
-        peak,
-        exit,
-        start: exit,
-        end,
-        hold: exit > 1 ? end / exit : 0
-      });
-      built++;
-    });
     const max = packed.reduce((m, f) => Math.max(m, f.exit || f.peak), 0);
     const avg = packed.length ? packed.reduce((a, f) => a + (f.exit || f.peak), 0) / packed.length : 0;
     const hold = packed.length ? packed.reduce((a, f) => a + f.hold, 0) / packed.length : 0;

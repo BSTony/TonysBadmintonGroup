@@ -188,7 +188,7 @@ function testShuttlePace() {
   assert.ok(airborne.points.length > 8, 'airborne samples are not dropped');
   assert.ok(airborne.flights[0].exit > 0, 'exit speed is the leave-racket speed');
 
-  // 離拍瞬間快、後面變慢：球速要抓開頭，不是飛行中段
+  // 離拍瞬間快、後面變慢：球速要抓開頭 5 幀平均，不是飛行中段
   const fade = [];
   for (let i = 0; i <= 18; i++) {
     const t = i / 30;
@@ -198,7 +198,17 @@ function testShuttlePace() {
   }
   const faded = PoseCore.shuttlePace(fade, (x, y) => ({ x, y }));
   assert.ok(faded.flights[0].exit > faded.flights[0].end + 40, 'exit is much faster than late-flight speed');
-  assert.ok(faded.flights[0].exit > 150, 'exit stays near the leave-racket peak, got ' + faded.flights[0].exit);
+  assert.ok(faded.flights[0].exit > 150, 'exit stays near the leave-racket average, got ' + faded.flights[0].exit);
+
+  // 往右飛再突然往左：方向反轉當成擊球，新一拍用後 5 幀平均當離拍時速
+  const reverse = [];
+  for (let i = 0; i <= 10; i++) reverse.push({ t: i / 30, x: 100 + i * 37, y: 200 });
+  for (let i = 1; i <= 8; i++) reverse.push({ t: (10 + i) / 30, x: 470 - i * 37, y: 200 });
+  const reversed = PoseCore.shuttlePace(reverse, () => null, { metersPerPixel: () => 0.05 });
+  assert.ok(reversed.flights.length >= 2, 'a direction reverse starts a new flight, got ' + reversed.flights.length);
+  const afterHit = reversed.flights[reversed.flights.length - 1];
+  close(afterHit.exit, 37 / (1 / 30) * 0.05 * 3.6, 20, 'exit uses ~5-frame average after the hit');
+  assert.ok(afterHit.frames <= 5, 'exit window is capped at 5 frames');
 
   const smooth = [];
   for (let i = 0; i <= 10; i++) smooth.push({ t: i / 30, x: 100 + i * 20, y: 200 });
