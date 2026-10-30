@@ -172,8 +172,8 @@ function testShuttlePace() {
   const pace = PoseCore.shuttlePace(samples, (x, y) => ({ x, y }));
   assert.strictEqual(pace.flights.length, 2, 'a time gap starts a new flight');
   close(pace.flights[0].peak, 360, 0.1, '10 m in 0.1 s is 360 km/h');
-  close(pace.max, 360, 0.1, 'max speed');
-  assert.strictEqual(PoseCore.shuttleRhythm(pace.flights[0].peak), '殺球');
+  assert.ok(pace.max >= 360 && pace.max <= 420, 'exit speed stays in the smash cap, got ' + pace.max);
+  assert.strictEqual(PoseCore.shuttleRhythm(pace.max), '殺球');
   assert.strictEqual(PoseCore.shuttleRhythm(36), '控球');
   assert.strictEqual(PoseCore.shuttlePace([{ t: 0, x: null, y: null }], (x, y) => ({ x, y })).points.length, 0);
 
@@ -193,7 +193,8 @@ function testShuttlePace() {
   const drive = [];
   for (let i = 0; i <= 15; i++) drive.push({ t: i / 30, x: i * (200 / 3.6) / 30, y: 0 });
   const kept = PoseCore.shuttlePace(drive, (x, y) => ({ x, y }));
-  close(kept.max, 200, 15, 'a real 200 km/h segment is kept');
+  close(kept.flights[0].peak, 200, 15, 'a real 200 km/h segment is kept');
+  assert.ok(kept.max > kept.flights[0].peak && kept.max <= 420, 'exit is the faster leave-racket speed, got ' + kept.max);
 
   const air = [];
   for (let i = 0; i <= 12; i++) air.push({ t: i / 30, x: 100 + i * 8, y: 40 });
@@ -221,8 +222,18 @@ function testShuttlePace() {
   const reversed = PoseCore.shuttlePace(reverse, () => null, { metersPerPixel: () => 0.05 });
   assert.ok(reversed.flights.length >= 2, 'a direction reverse starts a new flight, got ' + reversed.flights.length);
   const afterHit = reversed.flights[reversed.flights.length - 1];
-  close(afterHit.exit, 37 / (1 / 30) * 0.05 * 3.6, 20, 'exit uses ~5-frame average after the hit');
+  assert.ok(afterHit.exit > 250 && afterHit.exit <= 420, 'exit reconstructs the leave-racket speed, got ' + afterHit.exit);
   assert.ok(afterHit.frames <= 5, 'exit window is capped at 5 frames');
+
+  // 業餘殺球：畫面約 150 km/h 的前幾格，回推後要落在 200～400；慢球不能被放大成殺球
+  const amateur = [];
+  for (let i = 0; i <= 12; i++) amateur.push({ t: i / 30, x: 80 + i * 12, y: 40 });
+  const amateurPace = PoseCore.shuttlePace(amateur, () => null, { metersPerPixel: () => 0.1157 });
+  assert.ok(amateurPace.max >= 200 && amateurPace.max <= 400, 'amateur smash lands in 200-400, got ' + amateurPace.max);
+  const soft = [];
+  for (let i = 0; i <= 10; i++) soft.push({ t: i / 30, x: i * 10, y: 0 });
+  const softPace = PoseCore.shuttlePace(soft, () => null, { metersPerPixel: () => 0.0463 });
+  assert.ok(softPace.max < 90, 'a slow shot stays below smash speed, got ' + softPace.max);
 
   const smooth = [];
   for (let i = 0; i <= 10; i++) smooth.push({ t: i / 30, x: 100 + i * 20, y: 200 });
