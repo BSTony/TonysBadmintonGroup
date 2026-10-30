@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-28
- * Version: 1.3.0
+ * Date: 2026-10-30
+ * Version: 1.3.1
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -670,10 +670,30 @@
       const step = Math.hypot(p.x - anchor.x, p.y - anchor.y);
       const speed = Math.hypot(anchor.vx, anchor.vy);
       const expect = speed * dt;
-      const maxStep = Math.min(160, Math.max(48, expect * 2.3));
+      const maxStep = Math.min(220, Math.max(48, expect * 2.3));
+      const nextPoint = (from) => {
+        for (let j = from + 1; j < out.length; j++) {
+          const q = out[j];
+          if (q && q.x != null && q.y != null) return q;
+        }
+        return null;
+      };
+      // 前一拍很慢時，殺球的第一格會超過預期步長。若下一格還沿著新方向飛，就是真的擊球，不能當跳點丟掉。
+      const smashContinues = () => {
+        const next = nextPoint(i);
+        if (!next) return false;
+        const ndt = next.t - p.t;
+        if (!(ndt > 0) || ndt > 0.15) return false;
+        const jx = p.x - anchor.x;
+        const jy = p.y - anchor.y;
+        const nx = next.x - p.x;
+        const ny = next.y - p.y;
+        if (Math.hypot(nx, ny) < 6) return false;
+        return turnOf(jx, jy, nx, ny) < 0.8;
+      };
       if (anchor.n < 2) {
-        if (step > 120) { kill(i); continue; }
-      } else if (step > maxStep) {
+        if (step > 120 && !smashContinues()) { kill(i); continue; }
+      } else if (step > maxStep && !smashContinues()) {
         kill(i);
         continue;
       }
@@ -832,16 +852,26 @@
       }
       return starts;
     };
-    // 離拍時速：擊球後最多 EXIT_FRAMES 幀的平均速度
+    // 離拍時速：擊球後不久的連續幀裡，取最高的一段 5 幀平均。
+    // 轉折那一格常常幾乎沒位移，不能拿它把殺球平均拉低。
     const exitAverage = (cleaned, startIdx, endIdx) => {
-      const last = Math.min(endIdx, startIdx + EXIT_FRAMES);
-      const samples = [];
+      const look = Math.max(EXIT_FRAMES + 3, 8);
+      const last = Math.min(endIdx, startIdx + look);
+      const steps = [];
       for (let i = startIdx + 1; i <= last; i++) {
         const kmh = stepKmh(cleaned[i - 1], cleaned[i]);
-        if (kmh != null) samples.push(kmh);
+        if (kmh != null) steps.push(kmh);
       }
-      if (!samples.length) return 0;
-      return samples.reduce((a, v) => a + v, 0) / samples.length;
+      if (steps.length >= 3 && steps[0] < steps[1] * 0.45 && steps[0] < steps[2] * 0.45) steps.shift();
+      if (!steps.length) return 0;
+      const win = Math.min(EXIT_FRAMES, steps.length);
+      let best = 0;
+      for (let i = 0; i + win <= steps.length; i++) {
+        let sum = 0;
+        for (let k = 0; k < win; k++) sum += steps[i + k];
+        if (sum > best) best = sum;
+      }
+      return best / win;
     };
 
     const packed = [];

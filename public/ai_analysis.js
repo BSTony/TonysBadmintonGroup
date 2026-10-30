@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-28
- * Version: 1.8.0
+ * Date: 2026-10-30
+ * Version: 1.8.1
  */
 (function () {
   'use strict';
@@ -1279,10 +1279,13 @@
         const px = Core.applyHomography(state.calib.Hinv, x + dx, y);
         const py = Core.applyHomography(state.calib.Hinv, x, y + dy);
         if (!p || !px || !py) continue;
-        const pix = (Math.hypot(px.x - p.x, px.y - p.y) + Math.hypot(py.x - p.x, py.y - p.y)) / 2;
-        if (!(pix > 0.5)) continue;
-        const mpp = 0.25 / pix;
-        if (mpp > 0.0015 && mpp < 0.35) cells.push({ x: p.x, y: p.y, mpp });
+        const pixX = Math.hypot(px.x - p.x, px.y - p.y);
+        const pixY = Math.hypot(py.x - p.x, py.y - p.y);
+        if (!(pixX > 0.5) || !(pixY > 0.5)) continue;
+        const mppX = Math.abs(dx) / pixX;
+        const mppY = Math.abs(dy) / pixY;
+        const mpp = (mppX + mppY) / 2;
+        if (mpp > 0.0015 && mpp < 0.35) cells.push({ x: p.x, y: p.y, mpp, mppX, mppY });
       }
     }
     state.calib.scaleCells = cells;
@@ -1296,20 +1299,30 @@
     return vals[vals.length >> 1];
   }
 
-  // 兩端都落在球場內時，用這一段的實際公尺數；球在畫面球場外時地面投影不可靠，改用全場中位比例。
+  function nearestScale(cells, x, y) {
+    let best = null;
+    let bestD = Infinity;
+    for (let i = 0; i < cells.length; i++) {
+      const c = cells[i];
+      const d = (c.x - x) * (c.x - x) + (c.y - y) * (c.y - y);
+      if (d < bestD) { bestD = d; best = c; }
+    }
+    return best;
+  }
+
+  // 球在空中，不能拿兩個畫面點的地面投影距離（殺球會被縮成幾十公里）。
+  // 改用該處球場的橫向／縱向每像素公尺，依這一段的畫面方向合成。
   function courtMetersPerPixel(x0, y0, x1, y1) {
     const cells = courtScaleCells();
     if (!cells.length || !state.calib) return null;
-    const g0 = Core.applyHomography(state.calib.H, x0, y0);
-    const g1 = Core.applyHomography(state.calib.H, x1, y1);
-    const margin = { side: 0.4, back: 0.4 };
-    if (g0 && g1 && Core.inCourtArea(g0, margin) && Core.inCourtArea(g1, margin)) {
-      const img = Math.hypot(x1 - x0, y1 - y0);
-      if (img >= 1) {
-        const mpp = Math.hypot(g1.x - g0.x, g1.y - g0.y) / img;
-        if (mpp > 0.0015 && mpp < 0.2) return mpp;
-      }
-    }
+    const mid = nearestScale(cells, (x0 + x1) / 2, (y0 + y1) / 2);
+    if (!mid || !(mid.mppX > 0) || !(mid.mppY > 0)) return cells.fallbackMpp || null;
+    const du = x1 - x0;
+    const dv = y1 - y0;
+    const pix = Math.hypot(du, dv);
+    if (!(pix >= 0.05)) return mid.mpp;
+    const mpp = Math.hypot(du * mid.mppX, dv * mid.mppY) / pix;
+    if (mpp > 0.0015 && mpp < 0.35) return mpp;
     return cells.fallbackMpp || null;
   }
 

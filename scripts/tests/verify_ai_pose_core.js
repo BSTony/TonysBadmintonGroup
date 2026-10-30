@@ -230,6 +230,13 @@ function testShuttlePace() {
   const turned = PoseCore.cleanShuttleTrack(smooth);
   assert.ok(turned.every((p) => p.x != null), 'a straight flight that turns once on a hit is kept');
 
+  // 前一段很慢、擊出後連續大步：是殺球，不能把最快那幾格當跳點刪掉
+  const smash = [];
+  for (let i = 0; i <= 8; i++) smash.push({ t: i / 30, x: 100 + i * 4, y: 200 });
+  for (let i = 1; i <= 6; i++) smash.push({ t: (8 + i) / 30, x: 132 + i * 70, y: 200 });
+  const keptSmash = PoseCore.cleanShuttleTrack(smash);
+  assert.ok(keptSmash[9].x != null && keptSmash[12].x != null, 'a continuing smash is kept');
+
   const bolt = [];
   for (let i = 0; i <= 8; i++) bolt.push({ t: i / 30, x: 100 + i * 15, y: 300 });
   bolt.push({ t: 9 / 30, x: 520, y: 40 });
