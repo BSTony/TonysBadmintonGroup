@@ -11523,7 +11523,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793345793399,
+    "lastActiveTime": 1793358467604,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11607,12 +11607,18 @@
           "John",
           "Chris Chen",
           "小羅",
-          "Gary",
           "元睿睿"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/30 19:07",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "10/30 15:36",
         "name": "JoeLin",
