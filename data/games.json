@@ -11523,7 +11523,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793321593686,
+    "lastActiveTime": 1793345793399,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11565,8 +11565,7 @@
         "label": "",
         "list": [
           "AddieWang",
-          "AK",
-          "JoeLin"
+          "AK"
         ]
       },
       {
@@ -11614,6 +11613,13 @@
       }
     ],
     "history": [
+      {
+        "time": "10/30 15:36",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "10/30 08:53",
         "name": "元睿睿",
