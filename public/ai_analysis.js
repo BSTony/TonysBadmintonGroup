@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-30
- * Version: 1.8.1
+ * Version: 1.8.3
  */
 (function () {
   'use strict';
@@ -1368,7 +1368,7 @@
     return { kmh: best.kmh, rhythm: Core.shuttleRhythm(best.kmh), peak: flight ? flight.peak : best.kmh };
   }
 
-  // 擊球時速 = 球剛離開球拍那一瞬間。不是飛行途中、也不是整段平均。
+  // 擊球時速 = 轉向後最多 5 格的實測平均（位移 × 球場比例 ÷ 時間）
   function shotSpeedAt(t) {
     if (rallyIsDead(t) || typeof t !== 'number') return null;
     const pace = shuttlePaceData();
@@ -1699,14 +1699,14 @@
     if (state.calib && pace && pace.points.length) {
       paceHtml = `
         <div class="pc-grid">
-          <div><span class="pc-val">${Math.round(pace.max)}</span><span class="pc-unit">km/h</span><div class="pc-label">最快離拍(5幀)</div></div>
+          <div><span class="pc-val">${Math.round(pace.max)}</span><span class="pc-unit">km/h</span><div class="pc-label">最快實測</div></div>
           <div><span class="pc-val">${Math.round(pace.avg)}</span><span class="pc-unit">km/h</span><div class="pc-label">平均離拍(5幀)</div></div>
         </div>
         <div class="pc-grid">
           <div><span class="pc-val">${Math.round(pace.hold * 100)}%</span><div class="pc-label">速度維持</div></div>
           <div><span class="pc-val">${pace.flights.length}</span><span class="pc-unit">段</span><div class="pc-label">飛行段數</div></div>
         </div>
-        <div class="zone-legend">擊球時速是球剛離開球拍那一瞬間，不是飛行途中的速度。來回是這一回合的擊球次數，球停下來之後會歸零。</div>`;
+        <div class="zone-legend">球速是擊球後約 5 格的實測：畫面位移 × 校正比例 ÷ 時間。單支鏡頭看不到前後深度，所以會低於雷達。來回是這一回合的擊球次數，球停下來之後會歸零。</div>`;
     } else if (state.calib) {
       paceHtml = '<div class="zone-legend">這段還沒有足夠的連續球點來估計球速。</div>';
     }

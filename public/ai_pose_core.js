@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-10-30
- * Version: 1.3.2
+ * Version: 1.3.3
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -852,37 +852,18 @@
       }
       return starts;
     };
-    // 離拍時速：先取擊球後最快的一段約 5 幀平均（這是已經減速的速度），
-    // 再用羽球阻力 dv/dt = -b v^2 回推剛離開球拍的速度。
-    // b = 0.15 /m：控球仍是幾十公里；畫面約 120～180 的殺球會回推到大約 200～400。
-    const DRAG_B = 0.15;
+    // 離拍時速＝擊球後最多 5 格的實測平均：位移 × 該處球場比例 ÷ 時間。
+    // 不套阻力係數，也不把數字推到某個範圍。單鏡頭看不到的深度不會被補上。
     const exitAverage = (cleaned, startIdx, endIdx) => {
-      const look = Math.max(EXIT_FRAMES + 3, 8);
-      const last = Math.min(endIdx, startIdx + look);
+      const last = Math.min(endIdx, startIdx + EXIT_FRAMES);
       const steps = [];
       for (let i = startIdx + 1; i <= last; i++) {
         const kmh = stepKmh(cleaned[i - 1], cleaned[i]);
-        if (kmh == null) continue;
-        steps.push({ kmh, dt: cleaned[i].t - cleaned[i - 1].t });
+        if (kmh != null) steps.push(kmh);
       }
-      if (steps.length >= 3 && steps[0].kmh < steps[1].kmh * 0.45 && steps[0].kmh < steps[2].kmh * 0.45) steps.shift();
+      if (steps.length >= 3 && steps[0] < steps[1] * 0.45 && steps[0] < steps[2] * 0.45) steps.shift();
       if (!steps.length) return 0;
-      const win = Math.min(EXIT_FRAMES, steps.length);
-      let best = -1;
-      let bestI = 0;
-      for (let i = 0; i + win <= steps.length; i++) {
-        let sum = 0;
-        for (let k = 0; k < win; k++) sum += steps[i + k].kmh;
-        if (sum > best) { best = sum; bestI = i; }
-      }
-      const avg = best / win;
-      let sec = 0;
-      for (let k = 0; k < win; k++) sec += Math.max(0, steps[bestI + k].dt);
-      const T = Math.max(1 / 60, Math.min(0.25, sec || 0.12));
-      const v = avg / 3.6;
-      const bT = DRAG_B * T;
-      const v0 = (Math.exp(Math.min(4, bT * v)) - 1) / bT;
-      return Math.min(MAX_KMH, v0 * 3.6);
+      return steps.reduce((a, v) => a + v, 0) / steps.length;
     };
 
     const packed = [];
@@ -1200,8 +1181,8 @@
   // 殺球／進攻／控球只依估計球速粗分，方便看這拍的節奏
   function shuttleRhythm(kmh) {
     if (!(kmh > 0)) return '';
-    if (kmh >= 200) return '殺球';
-    if (kmh >= 90) return '進攻';
+    if (kmh >= 140) return '殺球';
+    if (kmh >= 80) return '進攻';
     return '控球';
   }
 
