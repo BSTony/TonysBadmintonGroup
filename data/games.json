@@ -11523,7 +11523,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793358470986,
+    "lastActiveTime": 1793366576159,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11605,12 +11605,18 @@
           "Jojo",
           "Jojo2",
           "John",
-          "Chris Chen",
-          "小羅"
+          "Chris Chen"
         ]
       }
     ],
     "history": [
+      {
+        "time": "10/30 21:22",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "10/30 19:07",
         "name": "元睿睿",
