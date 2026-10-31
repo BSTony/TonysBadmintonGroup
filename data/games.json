@@ -12611,7 +12611,7 @@
     "tag": "中階以上/爆汗多拍來回💦",
     "active": true,
     "startTime": 1793194561233,
-    "lastActiveTime": 1793486420332,
+    "lastActiveTime": 1793486426620,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12622,7 +12622,8 @@
     "uidMap": {
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0"
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12639,13 +12640,21 @@
           "©️張CC～©️",
           "Gary",
           "陳呈",
-          "謝東霖 Tony"
+          "謝東霖 Tony",
+          "Kay"
         ],
         "fee": "260"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "11/01 06:40",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/01 06:40",
         "name": "謝東霖 Tony",
