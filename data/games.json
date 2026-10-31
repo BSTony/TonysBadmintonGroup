@@ -12870,5 +12870,73 @@
         "section": "報名名單"
       }
     ]
+  },
+  "1793460219124844": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1793460219124844",
+    "title": "週六 港中 8-12",
+    "date": "11/14 (六)",
+    "time": "08:00~12:00",
+    "location": "南港高中",
+    "fee": "",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1793460219130,
+    "lastActiveTime": 1793460219130,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "謝東霖 Tony": true,
+      "Kay": true,
+      "©️張CC～©️": true
+    },
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "8-12",
+        "limit": 12,
+        "backupLimit": 5,
+        "fee": "300",
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay",
+          "©️張CC～©️"
+        ]
+      },
+      {
+        "title": "8-10",
+        "limit": 10,
+        "backupLimit": 5,
+        "fee": "150",
+        "label": "",
+        "list": []
+      },
+      {
+        "title": "10-12",
+        "limit": 10,
+        "backupLimit": 5,
+        "fee": "190",
+        "label": "",
+        "list": []
+      }
+    ]
   }
 }
