@@ -13494,7 +13494,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 431,
+    "viewCount": 432,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13519,8 +13519,8 @@
       "Ua698eb94f633310ce3b6cf6f34265adb": {
         "displayName": "煜翔Sean",
         "firstVisit": 1783345881855,
-        "count": 47,
-        "lastVisit": 1793145241601,
+        "count": 48,
+        "lastVisit": 1793457220424,
         "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
       },
       "U532d12783f207181c2d0f9d9ecc8724a": {
@@ -13697,6 +13697,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1793457220424,
+        "userId": "Ua698eb94f633310ce3b6cf6f34265adb",
+        "displayName": "煜翔Sean",
+        "pictureUrl": "https://profile.line-scdn.net/0hPj6pcnEJD0UbCR0i25VxOmtZDC84eFZXMGcQd3kPBX12bB9GND8SJS5aAyYmP09HNjtBIywIBnIXGngjBV_zcRw5UnQmOE0bMWdFpg"
+      },
       {
         "time": 1793339302469,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
