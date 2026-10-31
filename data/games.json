@@ -11523,7 +11523,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418962846,
-    "lastActiveTime": 1793415845829,
+    "lastActiveTime": 1793415849712,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11542,7 +11542,8 @@
       "林淑惠Sophia": true,
       "康": true,
       "Chen H.R.": true,
-      "楊程鈞": true
+      "楊程鈞": true,
+      "Andrew Kuo": true
     },
     "uidMap": {
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
