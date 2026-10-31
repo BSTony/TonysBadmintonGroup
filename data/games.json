@@ -12465,7 +12465,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793106234508,
-    "lastActiveTime": 1793336666206,
+    "lastActiveTime": 1793463605020,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12518,13 +12518,19 @@
           "wei",
           "海棠",
           "Leo Hu",
-          "Vincent",
-          "kevin"
+          "Vincent"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/01 00:20",
+        "name": "kevin",
+        "operator": "陳文凱",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/30 13:04",
         "name": "kevin",
