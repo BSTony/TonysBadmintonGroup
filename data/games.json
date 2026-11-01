@@ -12935,7 +12935,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793539029720,
+    "lastActiveTime": 1793539102511,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12956,7 +12956,8 @@
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
-      "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc"
+      "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
+      "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12986,7 +12987,8 @@
         "list": [
           "AddieWang",
           "Sean柏宏",
-          "JoeLin"
+          "JoeLin",
+          "(AK) Seth Hu"
         ]
       },
       {
@@ -12999,6 +13001,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/01 21:18",
+        "name": "(AK) Seth Hu",
+        "operator": "(AK) Seth Hu",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "11/01 21:17",
         "name": "林淑惠",
