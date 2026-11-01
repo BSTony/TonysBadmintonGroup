@@ -12925,7 +12925,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793483980438,
+    "lastActiveTime": 1793504673855,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12941,7 +12941,8 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1"
+      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12956,7 +12957,8 @@
           "謝東霖 Tony",
           "Kay",
           "©️張CC～©️",
-          "Chris Chen"
+          "Chris Chen",
+          "楊程鈞"
         ]
       },
       {
@@ -12977,6 +12979,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/01 11:44",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/01 05:59",
         "name": "Chris Chen",
