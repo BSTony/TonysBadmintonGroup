@@ -12935,7 +12935,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793542653647,
+    "lastActiveTime": 1793542866226,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12976,8 +12976,7 @@
           "Chris Chen",
           "楊程鈞",
           "林淑惠Sophia",
-          "林淑惠",
-          "林煥杰"
+          "林淑惠"
         ]
       },
       {
@@ -13003,6 +13002,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/01 22:21",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "11/01 22:17",
         "name": "林煥杰",
