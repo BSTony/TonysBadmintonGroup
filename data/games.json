@@ -12935,7 +12935,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793505577699,
+    "lastActiveTime": 1793530285660,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12954,7 +12954,8 @@
       "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
-      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12"
+      "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12981,7 +12982,8 @@
         "label": "",
         "list": [
           "AddieWang",
-          "Sean柏宏"
+          "Sean柏宏",
+          "JoeLin"
         ]
       },
       {
@@ -12994,6 +12996,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/01 18:51",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "11/01 11:59",
         "name": "Sean柏宏",
