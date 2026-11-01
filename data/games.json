@@ -12935,7 +12935,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793530285660,
+    "lastActiveTime": 1793538480545,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12955,7 +12955,8 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
-      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137",
+      "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12971,7 +12972,8 @@
           "Kay",
           "©️張CC～©️",
           "Chris Chen",
-          "楊程鈞"
+          "楊程鈞",
+          "林淑惠Sophia"
         ]
       },
       {
@@ -12996,6 +12998,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/01 21:08",
+        "name": "林淑惠Sophia",
+        "operator": "林淑惠Sophia",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/01 18:51",
         "name": "JoeLin",
