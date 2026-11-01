@@ -12935,7 +12935,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793542866226,
+    "lastActiveTime": 1793542870278,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12989,7 +12989,8 @@
           "AddieWang",
           "Sean柏宏",
           "JoeLin",
-          "(AK) Seth Hu"
+          "(AK) Seth Hu",
+          "林煥杰"
         ]
       },
       {
@@ -13002,6 +13003,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/01 22:21",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "11/01 22:21",
         "name": "林煥杰",
