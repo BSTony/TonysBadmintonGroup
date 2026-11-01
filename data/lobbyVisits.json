@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 5960,
+    "viewCount": 5961,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -24,8 +24,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 1053,
-        "lastVisit": 1793486383552,
+        "count": 1054,
+        "lastVisit": 1793524792976,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -1491,6 +1491,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1793524792976,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1793520591045,
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
@@ -13484,12 +13490,6 @@
         "userId": "U8359dca0b543da49dab9a0215b90c137",
         "displayName": "JoeLin",
         "pictureUrl": "https://profile.line-scdn.net/0hWPG6b8r0CH9qTyJyYSZ2ABofCxVJPlFtQHlCSVgdXxoAdh0sQ3oXGAxNUkpRLEh5RH1OSVpHX0dmXH8ZdBn0S21_VU5XfkohQCFCnA"
-      },
-      {
-        "time": 1788533654088,
-        "userId": "Ub064417033c16920c8adeae18d2c3c50",
-        "displayName": "尸比尸比",
-        "pictureUrl": "https://profile.line-scdn.net/0hRNLCR6igDWFhOh5zx9FzHhFqDgtCS1RzT18RAF07VQYJWk9nTlhCBFBoVVFfCkk3SllEBgY-VgJtKXoHf2zxVWYKUFBcC08_S1RHgg"
       }
     ]
   },
