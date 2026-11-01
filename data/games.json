@@ -12465,7 +12465,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793106234508,
-    "lastActiveTime": 1793507329596,
+    "lastActiveTime": 1793507347494,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12477,7 +12477,6 @@
     "paidMap": {
       "謝東霖 Tony": true,
       "Kay": true,
-      "Ong": true,
       "憲": true,
       "Robert": true,
       "陳呈": true
@@ -12506,7 +12505,6 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "Ong",
           "憲",
           "Robert",
           "陳呈",
@@ -12522,6 +12520,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/01 12:29",
+        "name": "Ong",
+        "operator": "Ong",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/01 12:28",
         "name": "Jet",
