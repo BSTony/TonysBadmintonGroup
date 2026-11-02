@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.32
+  Version: 1.2.33
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -490,7 +490,7 @@ html.christmas .xm-runner.xm-evil {
   animation-name: xm-evil-roam;
   animation-duration: 9s;
   animation-timing-function: linear;
-  filter: drop-shadow(0 0 12px rgba(255, 40, 40, 0.85));
+  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.95));
 }
 html.christmas .xm-evil svg { aspect-ratio: 180 / 130; pointer-events: none; }
 html.christmas .xm-evil.is-shot {

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.3.43
+ * Version: 1.3.44
  */
 const express = require('express');
 const compression = require('compression');
@@ -4332,6 +4332,7 @@ app.get('/api/easter_egg/status', (req, res) => {
     christmasEvent: !!easterEggSettings.christmasEvent,
     myKills: player ? player.kills : 0,
     myPrize: player ? (player.prize || null) : null,
+    bossCleared: !!(player && player.bossCleared),
     teaLeft: christmasPrizeLeft('tea'),
     gripLeft: christmasPrizeLeft('grip')
   });
@@ -4354,7 +4355,11 @@ app.post('/api/easter_egg/evil_santa', express.json(), async (req, res) => {
   if (player.prize) {
     return res.json({ success: false, alreadyPrize: true, prize: player.prize, kills: player.kills });
   }
-  if (action === 'prize') {
+  if (action === 'boss') {
+    if (player.kills < 3) return res.json({ success: false, message: '還沒擊落第三隻' });
+    player.bossCleared = true;
+    player.updatedAt = Date.now();
+  } else if (action === 'prize') {
     if (player.kills < 3) return res.json({ success: false, message: '還沒打完邪惡聖誕老人' });
     const prize = req.body.prize === 'grip' ? 'grip' : (req.body.prize === 'tea' ? 'tea' : '');
     if (!prize) return res.json({ success: false, message: '請選擇禮物' });
@@ -4380,6 +4385,7 @@ app.post('/api/easter_egg/evil_santa', express.json(), async (req, res) => {
     success: true,
     kills: player.kills,
     boss: player.kills >= 3 && !player.prize,
+    bossCleared: !!player.bossCleared,
     prize: player.prize,
     teaLeft: christmasPrizeLeft('tea'),
     gripLeft: christmasPrizeLeft('grip')

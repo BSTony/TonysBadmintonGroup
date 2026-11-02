@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.2.51
+ * Version: 1.2.53
  */
 let globalLobbyUsers = [];
 
@@ -391,10 +391,11 @@ let globalAiAnalysisPublic = false;
 let lastKnownSuperAdminUid = '';
 let easterEggEnabled = false;
 let easterEggActiveGame = 'piggy_run';
-let christmasEventOn = false;
+let christmasEventOn = document.documentElement.classList.contains('christmas');
 let evilSantaDown = false;
 let myEvilKills = 0;
 let myEvilPrize = null;
+let myBossCleared = false;
 let bossHp = 50;
 let evilWaveCount = 0;
 try { evilWaveCount = Number(sessionStorage.getItem('xmEvilWaves') || 0) || 0; } catch (e) {}
@@ -6134,10 +6135,14 @@ function closeBoss() {
   if (boss) boss.remove();
 }
 
-function openBoss() {
-  if (document.getElementById('xm-boss') || myEvilPrize) return;
+function openBoss(showGifts) {
+  if (myEvilPrize) return;
   removeEvilSanta();
-  bossHp = 50;
+  if (document.getElementById('xm-boss')) {
+    if (showGifts) revealBossGifts();
+    return;
+  }
+  bossHp = showGifts ? 0 : 50;
   const overlay = document.createElement('div');
   overlay.id = 'xm-boss';
   overlay.className = 'xm-boss';
@@ -6147,6 +6152,16 @@ function openBoss() {
   overlay.querySelectorAll('[data-prize]').forEach((btn) => {
     btn.addEventListener('click', () => chooseChristmasGift(btn.getAttribute('data-prize'), btn));
   });
+  if (showGifts) revealBossGifts();
+}
+
+function revealBossGifts() {
+  const santa = document.getElementById('xm-boss-santa');
+  const gifts = document.getElementById('xm-boss-gifts');
+  const fill = document.querySelector('#xm-boss .xm-boss-hp-fill');
+  if (fill) fill.style.width = '0%';
+  if (santa) santa.hidden = true;
+  if (gifts) gifts.hidden = false;
 }
 
 function onBossClick() {
@@ -6155,10 +6170,15 @@ function onBossClick() {
   const fill = document.querySelector('#xm-boss .xm-boss-hp-fill');
   if (fill) fill.style.width = ((bossHp / 50) * 100) + '%';
   if (bossHp > 0) return;
-  const santa = document.getElementById('xm-boss-santa');
-  const gifts = document.getElementById('xm-boss-gifts');
-  if (santa) santa.hidden = true;
-  if (gifts) gifts.hidden = false;
+  myBossCleared = true;
+  revealBossGifts();
+  const uid = (currentUser && currentUser.userId) || (typeof getOrCreateGuestUid === 'function' ? getOrCreateGuestUid() : 'U_GUEST');
+  const name = (currentUser && currentUser.displayName) || '訪客';
+  fetch('/api/easter_egg/evil_santa', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uid, name, action: 'boss' })
+  }).catch(() => {});
 }
 
 async function chooseChristmasGift(prize, btn) {
@@ -6185,19 +6205,28 @@ async function chooseChristmasGift(prize, btn) {
   if (btn) btn.disabled = false;
 }
 
+function bindEvilSanta(el) {
+  if (!el || el.dataset.bound === '1') return;
+  el.dataset.bound = '1';
+  el.addEventListener('click', onEvilSantaClick);
+}
+
 function maybeSpawnEvilSanta() {
-  if (!christmasEventOn || myEvilPrize || myEvilKills >= 3) {
-    if (!christmasEventOn || myEvilPrize || myEvilKills >= 3) removeEvilSanta();
-    if (christmasEventOn && myEvilKills >= 3 && !myEvilPrize) openBoss();
+  const existing = document.getElementById('xm-evil-santa');
+  if (!christmasEventOn || evilWaveCount < 2 || myEvilPrize || myEvilKills >= 3 || myBossCleared) {
+    if (!christmasEventOn || myEvilPrize || myEvilKills >= 3 || myBossCleared || evilWaveCount < 2) removeEvilSanta();
+    if (christmasEventOn && evilWaveCount >= 2 && myEvilKills >= 3 && !myEvilPrize) openBoss(myBossCleared);
     return;
   }
-  if (document.getElementById('xm-evil-santa')) return;
+  if (existing) {
+    bindEvilSanta(existing);
+    return;
+  }
   const el = document.createElement('span');
   el.id = 'xm-evil-santa';
   el.className = 'xm-runner xm-evil';
-  el.style.setProperty('--w', '210px');
   el.innerHTML = '<svg viewBox="0 0 180 130"><use href="#xm-evil-santa"/></svg>';
-  el.addEventListener('click', onEvilSantaClick);
+  bindEvilSanta(el);
   document.body.appendChild(el);
 }
 
@@ -6244,9 +6273,11 @@ function applyEasterStatus(data) {
   const eeData = data || {};
   easterEggEnabled = !!eeData.enabled;
   if (eeData.activeGame) easterEggActiveGame = eeData.activeGame;
-  christmasEventOn = !!eeData.christmasEvent;
+  if (typeof eeData.christmasEvent === 'boolean') christmasEventOn = eeData.christmasEvent;
+  else christmasEventOn = document.documentElement.classList.contains('christmas');
   myEvilKills = Number(eeData.myKills) || 0;
   myEvilPrize = eeData.myPrize || null;
+  myBossCleared = !!eeData.bossCleared;
   if (myEvilPrize) closeBoss();
   maybeSpawnEvilSanta();
 }
@@ -6265,13 +6296,13 @@ async function refreshChristmasHunt() {
 function startChristmasWaveClock() {
   if (window.__xmEvilArmed) return;
   window.__xmEvilArmed = true;
-  const markSecondWaveDone = () => {
+  const markSecondWave = () => {
     evilWaveCount = Math.max(evilWaveCount, 2);
     try { sessionStorage.setItem('xmEvilWaves', String(evilWaveCount)); } catch (e) {}
     refreshChristmasHunt();
   };
-  if (evilWaveCount >= 2) markSecondWaveDone();
-  else setTimeout(markSecondWaveDone, 27000);
+  if (evilWaveCount >= 2) markSecondWave();
+  else setTimeout(markSecondWave, 20000);
   setInterval(refreshChristmasHunt, 8000);
 }
 
