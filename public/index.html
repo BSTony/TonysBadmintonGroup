@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.63
+  Version: 1.2.64
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -69,7 +69,7 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="style.css?v=20261102e">
+  <link rel="stylesheet" href="style.css?v=20261102f">
 </head>
 <body>
   <div class="dt-scene" aria-hidden="true">
@@ -152,6 +152,29 @@
         <path fill="#E5394A" d="M112 42c10-28 44-30 52-4-14 5-28 9-36 8-6 0-12-2-16-4z"/>
         <ellipse cx="128" cy="44" rx="22" ry="7" fill="#FFF8F2"/>
         <circle cx="166" cy="30" r="9" fill="#FFF8F2"/>
+      </symbol>
+      <symbol id="xm-evil-santa" viewBox="0 0 180 130">
+        <path fill="#4A2A22" d="M34 70c-16 4-20 28-6 36 14 8 30 2 34-12 2-8-4-16-12-20 8-2 10-12 2-16-10-4-14 4-18 12z"/>
+        <path fill="#2A1814" d="M24 72c12-10 28-4 30 8-12 2-22-2-30-8z"/>
+        <path fill="#1A1210" d="M64 98c0 8-6 14-2 18 10 2 18-4 16-14-1-6-8-8-14-4z"/>
+        <ellipse cx="74" cy="116" rx="15" ry="6" fill="#1A1210"/>
+        <ellipse cx="98" cy="88" rx="38" ry="30" fill="#6B1020"/>
+        <ellipse cx="98" cy="108" rx="32" ry="12" fill="#3A0C14"/>
+        <rect x="66" y="84" width="60" height="10" rx="5" fill="#1A1210"/>
+        <rect x="90" y="82" width="14" height="14" rx="3" fill="#F2C14E"/>
+        <path fill="#1A1210" d="M120 100c8 8 22 8 26 2 3 6-6 12-16 11-9-1-14-7-12-13z"/>
+        <ellipse cx="146" cy="112" rx="16" ry="6.5" fill="#1A1210"/>
+        <path fill="#6B1020" d="M112 72c16-4 26 4 24 14-10-2-18-8-22-14z"/>
+        <circle cx="138" cy="84" r="7" fill="#2A1814"/>
+        <circle cx="132" cy="54" r="24" fill="#E7B89A"/>
+        <path d="M122 42l8 6M150 42l-8 6" stroke="#1A1210" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <circle cx="126" cy="50" r="3.2" fill="#FF2A2A"/>
+        <circle cx="146" cy="50" r="3.2" fill="#FF2A2A"/>
+        <path d="M126 66c6-5 14-5 20 0" stroke="#6B1020" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path fill="#4A0C16" d="M112 42c10-28 44-30 52-4-14 5-28 9-36 8-6 0-12-2-16-4z"/>
+        <ellipse cx="128" cy="44" rx="22" ry="7" fill="#2A1814"/>
+        <circle cx="166" cy="30" r="9" fill="#3A0C14"/>
+        <path d="M118 28c-4-10 2-14 6-8M150 24c6-8 12-2 8 6" stroke="#2A1814" stroke-width="3" fill="none" stroke-linecap="round"/>
       </symbol>
       <symbol id="xm-deer" viewBox="0 0 180 120">
         <circle cx="32" cy="72" r="9" fill="#F6D7B0"/>
@@ -629,6 +652,14 @@
             <input type="checkbox" id="ee-enabled" style="width:20px; height:20px;">
             <span>開啟大廳豬豬彩蛋</span>
           </div>
+        </div>
+        <div class="form-group">
+          <label>聖誕節活動</label>
+          <div style="display:flex; align-items:center; gap: 10px;">
+            <input type="checkbox" id="ee-christmas" style="width:20px; height:20px;">
+            <span>聖誕節活動（第二波之後可擊落邪惡聖誕老人）</span>
+          </div>
+          <div id="ee-evil-hit" style="margin-top: 8px; font-size: 14px; color: #333;">還沒有人擊落</div>
         </div>
         <div class="form-group">
           <label>彩蛋模式</label>
@@ -1406,7 +1437,7 @@
   <script defer src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script defer src="lottery.js?v=20260711_15"></script>
   <script defer src="pinball_v2.js?v=20260902_pure60fps"></script>
-  <script defer src="app.js?v=V20261102_schedule"></script>
+  <script defer src="app.js?v=V20261102_evil_santa"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>

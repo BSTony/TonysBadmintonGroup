@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.3.38
+ * Version: 1.3.40
  */
 const express = require('express');
 const compression = require('compression');
@@ -474,7 +474,19 @@ function isWeakVisitUserId(userId) {
   if (!userId) return true;
   return userId === 'U_LOCAL_TEST' || String(userId).startsWith('U_GUEST_') || String(userId).startsWith('U_LOCAL') || String(userId).startsWith('P_');
 }
-let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [] };
+let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [], christmasEvent: false, evilSantaFirstHit: null };
+
+function normalizeEasterEggSettings() {
+  if (!easterEggSettings || typeof easterEggSettings !== 'object') {
+    easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [], christmasEvent: false, evilSantaFirstHit: null };
+  }
+  if (!easterEggSettings.activeGame) easterEggSettings.activeGame = 'piggy_run';
+  if (!Array.isArray(easterEggSettings.bulletHellLeaderboard)) easterEggSettings.bulletHellLeaderboard = [];
+  if (!Array.isArray(easterEggSettings.winners)) easterEggSettings.winners = [];
+  easterEggSettings.christmasEvent = !!easterEggSettings.christmasEvent;
+  const hit = easterEggSettings.evilSantaFirstHit;
+  if (!hit || typeof hit !== 'object' || !hit.shotAt) easterEggSettings.evilSantaFirstHit = null;
+}
 // 功能開關：未公開時，AI 影片分析給超級管理員、指定的人，以及指定群組裡曾打開過大廳的人
 let featureSettings = { aiAnalysisPublic: false, aiAnalysisUsers: [], aiAnalysisGroups: [] };
 // 群組管理員可看到的名單：{ uid: { templates: [名單名稱], name } }；沒有設定 templates 的人沿用「依管理的群組」舊規則
@@ -538,8 +550,7 @@ async function loadData() {
   if (fs.existsSync(EASTER_EGG_FILE)) {
     try {
       easterEggSettings = JSON.parse(fs.readFileSync(EASTER_EGG_FILE, 'utf8'));
-      if (!easterEggSettings.activeGame) easterEggSettings.activeGame = 'piggy_run';
-      if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
+      normalizeEasterEggSettings();
     } catch(e) {}
   }
   if (fs.existsSync(FEATURE_SETTINGS_FILE)) {
@@ -648,8 +659,7 @@ async function loadData() {
       if (eeRes.content) {
         easterEggSha = eeRes.sha;
         easterEggSettings = JSON.parse(Buffer.from(eeRes.content, 'base64').toString('utf8'));
-        if (!easterEggSettings.activeGame) easterEggSettings.activeGame = 'piggy_run';
-        if (!easterEggSettings.bulletHellLeaderboard) easterEggSettings.bulletHellLeaderboard = [];
+        normalizeEasterEggSettings();
       }
     } catch(e) { console.error('無法從 GitHub 讀取 easterEggSettings.json:', e.message); }
 
@@ -3289,42 +3299,93 @@ function sessionHintMatches(game, hint) {
   return hint.includes(`${date[1]}/${date[2]}`) || hint.includes(`${date[1]}月${date[2]}`) || hint.includes(`${date[1]}-${date[2]}`);
 }
 
-// 產生完整名單字串的輔助函式
-function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
-  // 雙十 10/1–10/12、萬聖節 10/13–11/1、聖誕 11/2–1/6（台北時間），與大廳網頁同一段期間
-  const taipeiMonthDay = (now = new Date()) => {
-    try {
-      const parts = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'Asia/Taipei',
-        month: 'numeric',
-        day: 'numeric'
-      }).formatToParts(now);
-      let month = 0;
-      let day = 0;
-      for (const part of parts) {
-        if (part.type === 'month') month = Number(part.value);
-        if (part.type === 'day') day = Number(part.value);
-      }
-      return { month, day };
-    } catch (e) {
-      return { month: 0, day: 0 };
+// 雙十 10/1–10/12、萬聖節 10/13–11/1、聖誕 11/2–1/6（台北時間）
+function getFlexCardTheme(now = new Date()) {
+  let month = 0;
+  let day = 0;
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Taipei',
+      month: 'numeric',
+      day: 'numeric'
+    }).formatToParts(now);
+    for (const part of parts) {
+      if (part.type === 'month') month = Number(part.value);
+      if (part.type === 'day') day = Number(part.value);
     }
-  };
-  const { month, day } = taipeiMonthDay();
+  } catch (e) {}
   const doubleTenth = month === 10 && day >= 1 && day <= 12;
   const halloween = (month === 10 && day >= 13) || (month === 11 && day <= 1);
   const christmas = (month === 11 && day >= 2) || month === 12 || (month === 1 && day <= 6);
-  const brand = christmas ? '#C8102E' : halloween ? '#7C3AED' : doubleTenth ? '#1F57B8' : '#1DB446';
-  const actionColor = christmas ? '#1F7A4D' : halloween ? '#F97316' : doubleTenth ? '#D62538' : '#1DB446';
-  const openBadgeBg = christmas ? '#E8F6EE' : halloween ? '#F3E8FF' : doubleTenth ? '#E7F0FF' : '#e8f5e9';
-  const openBadgeText = christmas ? '#146C43' : halloween ? '#6D28D9' : doubleTenth ? '#1A4EAE' : '#1DB446';
-  const fullBadgeBg = christmas ? '#FDE8EA' : halloween ? '#FFEDD5' : doubleTenth ? '#FDE8EA' : '#ffebee';
-  const fullBadgeText = christmas ? '#C8102E' : halloween ? '#C2410C' : doubleTenth ? '#D62538' : '#ff4c4c';
-  const rowText = christmas ? '#1C2B24' : halloween ? '#2A1840' : doubleTenth ? '#163A78' : '#333333';
-  const sepColor = christmas ? '#E6F2EB' : halloween ? '#EDE4F7' : doubleTenth ? '#E6EEF8' : '#f4f4f4';
-  const headerSep = christmas ? '#F6D5D8' : halloween ? '#E9D5FF' : doubleTenth ? '#D5E2F7' : '#eeeeee';
-  const chevron = christmas ? '#E8B8BE' : halloween ? '#C4B5FD' : doubleTenth ? '#B7C6DE' : '#cccccc';
-  const lobbyTitle = christmas ? '🎄 羽球接龍大廳' : halloween ? '🎃 羽球接龍大廳' : '🏸 羽球接龍大廳';
+  const base = {
+    highlightBg: '#FFF6D8',
+    highlightEdge: '#F6C445',
+    noticeBg: '#FDECEC'
+  };
+  if (christmas) {
+    return Object.assign(base, {
+      brand: '#C8102E', actionColor: '#1F7A4D',
+      openBadgeBg: '#E7F8EF', openBadgeText: '#146C43',
+      fullBadgeBg: '#FDECEC', fullBadgeText: '#C8102E',
+      rowText: '#3A2A2E', chevron: '#E8B4BC',
+      lobbyTitle: '🎄 羽球接龍大廳', headerHint: '點一列就能報名，雪地見 ♡',
+      headerBg: '#FFF4F6', bodyBg: '#FFF9F7', cardBg: '#FFFFFF', cardEdge: '#F6D5DC',
+      chipBg: '#E9F8EF', chipText: '#215C45', backupBg: '#FFF1E4', backupText: '#9A5B24',
+      sectionText: '#A06A78', ribbon: ['#C8102E', '#F7F3EA', '#1F7A4D'], ribbonFlex: [34, 12, 54],
+      noticeBg: '#FDECEC'
+    });
+  }
+  if (halloween) {
+    return Object.assign(base, {
+      brand: '#7C3AED', actionColor: '#F97316',
+      openBadgeBg: '#F3E8FF', openBadgeText: '#6D28D9',
+      fullBadgeBg: '#FFEDD5', fullBadgeText: '#C2410C',
+      rowText: '#2A1840', chevron: '#C4B5FD',
+      lobbyTitle: '🎃 羽球接龍大廳', headerHint: '點一列就能報名',
+      headerBg: '#FFF7ED', bodyBg: '#FBF7FF', cardBg: '#FFFFFF', cardEdge: '#E4D4F7',
+      chipBg: '#F3E8FF', chipText: '#5B21B6', backupBg: '#FFEDD5', backupText: '#C2410C',
+      sectionText: '#7C6A92', ribbon: ['#F97316', '#7C3AED', '#1A1024'], ribbonFlex: [34, 33, 33],
+      noticeBg: '#F3E8FF'
+    });
+  }
+  if (doubleTenth) {
+    return Object.assign(base, {
+      brand: '#1F57B8', actionColor: '#D62538',
+      openBadgeBg: '#E7F0FF', openBadgeText: '#1A4EAE',
+      fullBadgeBg: '#FDE8EA', fullBadgeText: '#D62538',
+      rowText: '#163A78', chevron: '#B7C6DE',
+      lobbyTitle: '🏸 羽球接龍大廳', headerHint: '點一列就能報名',
+      headerBg: '#F4F8FF', bodyBg: '#F8FBFF', cardBg: '#FFFFFF', cardEdge: '#D5E2F7',
+      chipBg: '#E7F0FF', chipText: '#1A4EAE', backupBg: '#FDE8EA', backupText: '#D62538',
+      sectionText: '#6D7E99', ribbon: ['#1F57B8', '#FFFFFF', '#D62538'], ribbonFlex: [34, 10, 56],
+      noticeBg: '#E7F0FF'
+    });
+  }
+  return Object.assign(base, {
+    brand: '#1F8A5B', actionColor: '#E26A8D',
+    openBadgeBg: '#E7F8EF', openBadgeText: '#1B6B48',
+    fullBadgeBg: '#FDECEC', fullBadgeText: '#C8102E',
+    rowText: '#3A2A2E', chevron: '#E7B7C3',
+    lobbyTitle: '🏸 羽球接龍大廳', headerHint: '點一列就能報名 ♡',
+    headerBg: '#FFF5F7', bodyBg: '#FFFBFB', cardBg: '#FFFFFF', cardEdge: '#F3D5DE',
+    chipBg: '#FDEFF3', chipText: '#8A3E58', backupBg: '#FFF3E6', backupText: '#9A5B24',
+    sectionText: '#A06A78', ribbon: ['#E26A8D', '#FFF8F4', '#1F8A5B'], ribbonFlex: [34, 12, 54],
+    noticeBg: '#FDEFF3'
+  });
+}
+
+// 產生完整名單字串的輔助函式
+function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
+  const theme = getFlexCardTheme();
+  const brand = theme.brand;
+  const actionColor = theme.actionColor;
+  const openBadgeBg = theme.openBadgeBg;
+  const openBadgeText = theme.openBadgeText;
+  const fullBadgeBg = theme.fullBadgeBg;
+  const fullBadgeText = theme.fullBadgeText;
+  const rowText = theme.rowText;
+  const chevron = theme.chevron;
+  const lobbyTitle = theme.lobbyTitle;
   const flexContents = [];
   targetGames.forEach((g, index) => {
     if (index >= 15) return;
@@ -3399,7 +3460,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
               flex: 0,
               height: "18px",
               width: sIsFull ? (sLimit > 0 ? (sBackupCount > 0 ? "58px" : "46px") : (sBackupCount > 0 ? "36px" : "28px")) : "36px",
-              cornerRadius: "sm",
+              cornerRadius: "xl",
               backgroundColor: sIsFull ? fullBadgeBg : openBadgeBg,
               justifyContent: "center",
               alignItems: "center",
@@ -3426,7 +3487,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
           flex: 0,
           height: "22px",
           width: isFull ? (limit > 0 ? (backupCount > 0 ? "70px" : "56px") : (backupCount > 0 ? "46px" : "36px")) : "48px",
-          cornerRadius: "sm",
+          cornerRadius: "xl",
           backgroundColor: isFull ? fullBadgeBg : openBadgeBg,
           justifyContent: "center",
           alignItems: "center",
@@ -3450,23 +3511,13 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       };
     }
 
-    if (isTarget) {
-      finalBox.backgroundColor = "#FFF3CD";
-      finalBox.cornerRadius = "md";
-    }
-
-    if (index > 0 && !isTarget) {
-      flexContents.push({ type: "separator", color: sepColor });
-    }
-    if (index > 0 && isTarget) {
-      flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
-    }
+    finalBox.backgroundColor = isTarget ? theme.highlightBg : theme.cardBg;
+    finalBox.cornerRadius = "lg";
+    finalBox.margin = index === 0 ? "none" : "sm";
+    finalBox.borderWidth = "light";
+    finalBox.borderColor = isTarget ? theme.highlightEdge : theme.cardEdge;
 
     flexContents.push(finalBox);
-
-    if (isTarget) {
-      flexContents.push({ type: "box", layout: "vertical", height: "4px", contents: [{ type: "filler" }] });
-    }
   });
 
 
@@ -3477,7 +3528,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       layout: "horizontal",
       margin: "md",
       paddingAll: "10px",
-      backgroundColor: christmas ? "#FDECEC" : halloween ? "#F3E8FF" : doubleTenth ? "#E7F0FF" : "#e8f5e9",
+      backgroundColor: theme.noticeBg,
       cornerRadius: "md",
       alignItems: "center",
       contents: [
@@ -3503,62 +3554,61 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       }
     ]
   };
-  const festive = doubleTenth || halloween || christmas;
-  const header = festive ? {
+  const header = {
     type: "box",
     layout: "vertical",
     paddingAll: "0px",
-    backgroundColor: christmas ? "#FFF8F6" : halloween ? "#FFF7ED" : "#F4F8FF",
+    backgroundColor: theme.headerBg,
     contents: [
       {
         type: "box",
         layout: "horizontal",
-        height: "6px",
-        contents: christmas ? [
-          { type: "box", layout: "vertical", flex: 34, backgroundColor: "#C8102E", contents: [{ type: "filler" }] },
-          { type: "box", layout: "vertical", flex: 12, backgroundColor: "#F7F3EA", contents: [{ type: "filler" }] },
-          { type: "box", layout: "vertical", flex: 54, backgroundColor: "#1F7A4D", contents: [{ type: "filler" }] }
-        ] : halloween ? [
-          { type: "box", layout: "vertical", flex: 34, backgroundColor: "#F97316", contents: [{ type: "filler" }] },
-          { type: "box", layout: "vertical", flex: 33, backgroundColor: "#7C3AED", contents: [{ type: "filler" }] },
-          { type: "box", layout: "vertical", flex: 33, backgroundColor: "#1A1024", contents: [{ type: "filler" }] }
-        ] : [
-          { type: "box", layout: "vertical", flex: 34, backgroundColor: "#1F57B8", contents: [{ type: "filler" }] },
-          { type: "box", layout: "vertical", flex: 10, backgroundColor: "#FFFFFF", contents: [{ type: "filler" }] },
-          { type: "box", layout: "vertical", flex: 56, backgroundColor: "#D62538", contents: [{ type: "filler" }] }
-        ]
+        height: "8px",
+        contents: theme.ribbon.map((color, idx) => ({
+          type: "box",
+          layout: "vertical",
+          flex: theme.ribbonFlex[idx],
+          backgroundColor: color,
+          contents: [{ type: "filler" }]
+        }))
       },
       {
         type: "box",
         layout: "vertical",
         paddingStart: "16px",
         paddingEnd: "16px",
-        paddingTop: "12px",
-        paddingBottom: "4px",
-        contents: [titleRow, { type: "separator", margin: "md", color: headerSep }]
+        paddingTop: "14px",
+        paddingBottom: "12px",
+        contents: [
+          titleRow,
+          { type: "text", text: theme.headerHint, size: "xxs", color: theme.sectionText, margin: "sm" }
+        ]
       }
     ]
-  } : {
-    type: "box",
-    layout: "vertical",
-    paddingBottom: "none",
-    contents: [titleRow, { type: "separator", margin: "md", color: headerSep }]
   };
 
   return {
     type: "bubble",
     size: "mega",
     header,
+    styles: {
+      header: { backgroundColor: theme.headerBg, separator: false },
+      body: { backgroundColor: theme.bodyBg, separator: false }
+    },
     body: {
       type: "box",
       layout: "vertical",
-      paddingAll: "16px",
-      contents: flexContents
+      paddingAll: "14px",
+      backgroundColor: theme.bodyBg,
+      contents: flexContents.length ? flexContents : [
+        { type: "text", text: "目前沒有場次", size: "sm", color: theme.sectionText, align: "center" }
+      ]
     }
   };
 }
 
 async function generatePushMentionMessages(groupGames, targetGid, isMentionPush, nameToUidMap, statusBubble) {
+      const theme = getFlexCardTheme();
       const flexBubbles = (statusBubble && !isMentionPush) ? [statusBubble] : [];
       const liffBaseUrl = process.env.LIFF_ID ? `https://liff.line.me/${process.env.LIFF_ID}?gid=${targetGid}` : '';
       
@@ -3571,15 +3621,17 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
           const listBoxes = [];
           rows.forEach((row, rIdx) => {
               if (row.type === 'gameHeader') {
-                  if (rIdx > 0) listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
+                  if (rIdx > 0) listBoxes.push({ type: "box", layout: "vertical", height: "8px", contents: [{ type: "filler" }] });
                   const headerContents = [
-                      { type: "text", text: row.text, weight: "bold", size: "md", color: "#1DB446", wrap: true, flex: 1 }
+                      { type: "text", text: row.text, weight: "bold", size: "md", color: theme.brand, wrap: true, flex: 1 }
                   ];
                   if (row.rightText) {
-                      headerContents.push({ type: "text", text: row.rightText, size: "sm", color: "#666666", align: "end", flex: 0, weight: "bold" });
+                      headerContents.push({ type: "text", text: row.rightText, size: "xs", color: theme.openBadgeText, align: "center", flex: 0, weight: "bold" });
                   }
                   const headerBox = {
                       type: "box", layout: "horizontal", margin: "sm", alignItems: "center",
+                      backgroundColor: theme.headerBg, cornerRadius: "lg",
+                      paddingStart: "12px", paddingEnd: "12px", paddingTop: "10px", paddingBottom: "10px",
                       contents: headerContents
                   };
                   if (row.gameUri) {
@@ -3587,12 +3639,11 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
                   }
                   listBoxes.push(headerBox);
               } else if (row.type === 'header') {
-                  if (rIdx > 0 && rows[rIdx-1].type !== 'gameHeader') listBoxes.push({ type: "separator", margin: "md", color: "#eeeeee" });
                   const secBox = {
-                      type: "box", layout: "horizontal", margin: "sm",
+                      type: "box", layout: "horizontal", margin: "md",
                       contents: [
-                          { type: "text", text: row.text, size: "sm", color: "#1DB446", weight: "bold", flex: 1 },
-                          { type: "text", text: row.rightText, size: "xs", color: "#666666", align: "end", flex: 0 }
+                          { type: "text", text: row.text, size: "sm", color: theme.brand, weight: "bold", flex: 1 },
+                          { type: "text", text: row.rightText, size: "xs", color: theme.sectionText, align: "end", flex: 0 }
                       ]
                   };
                   if (row.gameUri) {
@@ -3602,21 +3653,21 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               } else if (row.type === 'backupHeader') {
                   listBoxes.push({
                       type: "box", layout: "horizontal", margin: "sm",
-                      contents: [{ type: "text", text: row.text || "⌛ 候補", size: "xs", color: "#FF9800", weight: "bold", flex: 1 }]
+                      contents: [{ type: "text", text: row.text || "⌛ 候補", size: "xs", color: theme.backupText, weight: "bold", flex: 1 }]
                   });
               } else if (row.type === 'main_dyn') {
                   const boxes = row.items.map(item => ({
-                      type: "box", layout: "vertical", flex: 0, backgroundColor: "#f2f8f2", cornerRadius: "md",
-                      paddingStart: "6px", paddingEnd: "6px", paddingTop: "4px", paddingBottom: "4px", margin: "3px",
-                      contents: [{ type: "text", text: item.text, size: "xxs", color: "#333333", align: "center", wrap: false }]
+                      type: "box", layout: "vertical", flex: 0, backgroundColor: theme.chipBg, cornerRadius: "xl",
+                      paddingStart: "8px", paddingEnd: "8px", paddingTop: "5px", paddingBottom: "5px", margin: "3px",
+                      contents: [{ type: "text", text: item.text, size: "xxs", color: theme.chipText, align: "center", wrap: false, weight: "bold" }]
                   }));
                   boxes.push({ type: "filler", flex: 1 });
                   listBoxes.push({ type: "box", layout: "horizontal", margin: "none", contents: boxes });
               } else if (row.type === 'backup_dyn') {
                   const boxes = row.items.map(item => ({
-                      type: "box", layout: "vertical", flex: 0, backgroundColor: "#fff8e1", cornerRadius: "md",
-                      paddingStart: "6px", paddingEnd: "6px", paddingTop: "4px", paddingBottom: "4px", margin: "3px",
-                      contents: [{ type: "text", text: item.text, size: "xxs", color: "#555555", align: "center", wrap: false }]
+                      type: "box", layout: "vertical", flex: 0, backgroundColor: theme.backupBg, cornerRadius: "xl",
+                      paddingStart: "8px", paddingEnd: "8px", paddingTop: "5px", paddingBottom: "5px", margin: "3px",
+                      contents: [{ type: "text", text: item.text, size: "xxs", color: theme.backupText, align: "center", wrap: false, weight: "bold" }]
                   }));
                   boxes.push({ type: "filler", flex: 1 });
                   listBoxes.push({ type: "box", layout: "horizontal", margin: "none", contents: boxes });
@@ -3632,7 +3683,11 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
           });
           const bubble = {
               type: "bubble", size: "mega",
-              body: { type: "box", layout: "vertical", paddingAll: "16px", contents: [{ type: "box", layout: "vertical", margin: "md", contents: listBoxes }] }
+              styles: { body: { backgroundColor: theme.bodyBg, separator: false } },
+              body: {
+                type: "box", layout: "vertical", paddingAll: "14px", backgroundColor: theme.bodyBg,
+                contents: [{ type: "box", layout: "vertical", contents: listBoxes }]
+              }
           };
           if (gameUri) {
               bubble.action = { type: "uri", label: "報名頁面", uri: gameUri };
@@ -4237,7 +4292,37 @@ let pinballRoom = {
 
 // --- 彩蛋功能 API ---
 app.get('/api/easter_egg/status', (req, res) => {
-  res.json({ enabled: easterEggSettings.enabled, activeGame: easterEggSettings.activeGame || 'piggy_run' });
+  const hit = easterEggSettings.evilSantaFirstHit;
+  res.json({
+    enabled: easterEggSettings.enabled,
+    activeGame: easterEggSettings.activeGame || 'piggy_run',
+    christmasEvent: !!easterEggSettings.christmasEvent,
+    evilSantaDown: !!(hit && hit.shotAt)
+  });
+});
+
+app.post('/api/easter_egg/evil_santa', express.json(), async (req, res) => {
+  if (!easterEggSettings.christmasEvent) {
+    return res.json({ success: false, message: '聖誕節活動未開啟' });
+  }
+  const existing = easterEggSettings.evilSantaFirstHit;
+  if (existing && existing.shotAt) {
+    return res.json({ success: false, already: true, hit: existing });
+  }
+  const uid = req.body && req.body.uid ? String(req.body.uid) : '';
+  const name = req.body && req.body.name ? String(req.body.name).trim() : '';
+  if (!uid) return res.status(400).json({ success: false, message: 'Missing uid' });
+  easterEggSettings.evilSantaFirstHit = {
+    uid,
+    name: name || '訪客',
+    shotAt: Date.now()
+  };
+  try {
+    await saveEasterEggSettings();
+  } catch (e) {
+    console.error('save evil santa hit failed:', e);
+  }
+  return res.json({ success: true, hit: easterEggSettings.evilSantaFirstHit });
 });
 
 app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
@@ -4332,6 +4417,10 @@ app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
     if (Array.isArray(settings.winners)) easterEggSettings.winners = settings.winners;
     if (typeof settings.activeGame === 'string') easterEggSettings.activeGame = settings.activeGame;
     if (Array.isArray(settings.bulletHellLeaderboard)) easterEggSettings.bulletHellLeaderboard = settings.bulletHellLeaderboard;
+    if (typeof settings.christmasEvent === 'boolean') easterEggSettings.christmasEvent = settings.christmasEvent;
+    if (Object.prototype.hasOwnProperty.call(settings, 'evilSantaFirstHit')) {
+      easterEggSettings.evilSantaFirstHit = settings.evilSantaFirstHit || null;
+    }
     
     try {
       await Promise.race([
@@ -7802,20 +7891,30 @@ async function sendLobbyLink(token, gid, prefix = "") {
 
 function getLobbyCard(gid) {
   if (!process.env.LIFF_ID) return null;
+  const theme = getFlexCardTheme();
   return {
     type: 'flex',
     altText: '點我進大廳',
     contents: {
       type: 'bubble',
       size: 'kilo',
+      styles: {
+        body: { backgroundColor: theme.bodyBg, separator: false }
+      },
       body: {
         type: 'box',
         layout: 'vertical',
+        paddingAll: '16px',
+        backgroundColor: theme.bodyBg,
         contents: [
+          { type: 'text', text: theme.lobbyTitle, weight: 'bold', size: 'md', color: theme.brand },
+          { type: 'text', text: theme.headerHint, size: 'xs', color: theme.sectionText, margin: 'sm', wrap: true },
           {
             type: 'button',
             style: 'primary',
             height: 'sm',
+            color: theme.actionColor,
+            margin: 'lg',
             action: {
               type: 'uri',
               label: '進入大廳',

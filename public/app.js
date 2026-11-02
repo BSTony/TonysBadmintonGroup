@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.2.46
+ * Version: 1.2.47
  */
 let globalLobbyUsers = [];
 
@@ -391,6 +391,10 @@ let globalAiAnalysisPublic = false;
 let lastKnownSuperAdminUid = '';
 let easterEggEnabled = false;
 let easterEggActiveGame = 'piggy_run';
+let christmasEventOn = false;
+let evilSantaDown = false;
+let evilWaveCount = 0;
+try { evilWaveCount = Number(sessionStorage.getItem('xmEvilWaves') || 0) || 0; } catch (e) {}
 let piggyClicks = 0;
 let piggyRunning = false;
 let piggyBaseSpeed = 3;
@@ -862,6 +866,8 @@ const confettiContainer = document.getElementById('confetti-container');
 const easterEggModal = document.getElementById('easter-egg-modal');
 const easterEggMsg = document.getElementById('easter-egg-msg');
 const eeActiveGameSelect = document.getElementById('ee-active-game');
+const eeChristmasCheckbox = document.getElementById('ee-christmas');
+const eeEvilHit = document.getElementById('ee-evil-hit');
 const bhContainer = document.getElementById('bh-container');
 const bhTimer = document.getElementById('bh-timer');
 const bhEntities = document.getElementById('bh-entities');
@@ -2091,7 +2097,7 @@ async function loadGamesLobby(silent = false) {
         const eeRes = await fetch('/api/easter_egg/status');
         if (eeRes.ok) {
           const eeData = await eeRes.json();
-          easterEggEnabled = !!eeData.enabled;
+          applyEasterStatus(eeData);
         }
       } catch (e) {}
     })());
@@ -6055,6 +6061,135 @@ function renderLeaderboard(leaderboardData, quota) {
 }
 
 // --- Admin Easter Egg View ---
+function formatEvilShotTime(ts) {
+  const d = new Date(Number(ts));
+  if (isNaN(d.getTime())) return '';
+  try {
+    return new Intl.DateTimeFormat('zh-TW', {
+      timeZone: 'Asia/Taipei',
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23'
+    }).format(d);
+  } catch (e) {
+    return '';
+  }
+}
+
+function renderEvilSantaHit(hit) {
+  if (!eeEvilHit) return;
+  if (hit && hit.shotAt) {
+    const when = formatEvilShotTime(hit.shotAt);
+    eeEvilHit.textContent = `第一位擊落：${hit.name || '訪客'}${when ? '　' + when : ''}`;
+  } else {
+    eeEvilHit.textContent = '還沒有人擊落';
+  }
+}
+
+function showEvilToast(text) {
+  let toast = document.getElementById('xm-evil-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'xm-evil-toast';
+    toast.style.cssText = 'position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:10020;background:#1a1210;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;pointer-events:none;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = text;
+  toast.style.display = 'block';
+  clearTimeout(showEvilToast._timer);
+  showEvilToast._timer = setTimeout(() => { toast.style.display = 'none'; }, 2200);
+}
+
+function removeEvilSanta() {
+  const el = document.getElementById('xm-evil-santa');
+  if (el) el.remove();
+}
+
+function maybeSpawnEvilSanta() {
+  if (!christmasEventOn || evilSantaDown || evilWaveCount < 2) {
+    if (!christmasEventOn || evilSantaDown) removeEvilSanta();
+    return;
+  }
+  if (document.getElementById('xm-evil-santa')) return;
+  const scene = document.querySelector('.xm-scene');
+  if (!scene) return;
+  const el = document.createElement('span');
+  el.id = 'xm-evil-santa';
+  el.className = 'xm-runner xm-evil';
+  el.style.setProperty('--y', '36%');
+  el.style.setProperty('--x', '0');
+  el.style.setProperty('--w', '176px');
+  el.style.setProperty('--dur', '20s');
+  el.style.setProperty('--delay', '0s');
+  el.style.setProperty('--step', '.22s');
+  el.innerHTML = '<svg viewBox="0 0 180 130"><use href="#xm-evil-santa"/></svg>';
+  el.addEventListener('click', onEvilSantaClick);
+  scene.appendChild(el);
+}
+
+async function onEvilSantaClick(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  const el = event.currentTarget;
+  if (!el || el.dataset.shot === '1' || evilSantaDown) return;
+  el.dataset.shot = '1';
+  const uid = (currentUser && currentUser.userId) || (typeof getOrCreateGuestUid === 'function' ? getOrCreateGuestUid() : 'U_GUEST');
+  const name = (currentUser && currentUser.displayName) || '訪客';
+  try {
+    const res = await fetch('/api/easter_egg/evil_santa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid, name })
+    });
+    const data = await res.json();
+    if (data.success) {
+      evilSantaDown = true;
+      el.classList.add('is-shot');
+      setTimeout(() => el.remove(), 800);
+      showEvilToast('你擊落了邪惡聖誕老人！');
+      return;
+    }
+    if (data.already) {
+      evilSantaDown = true;
+      el.remove();
+      showEvilToast(`邪惡聖誕老人已被 ${data.hit && data.hit.name ? data.hit.name : '別人'} 先擊落`);
+      return;
+    }
+    el.dataset.shot = '';
+    showEvilToast(data.message || '現在還不能擊落');
+  } catch (e) {
+    el.dataset.shot = '';
+  }
+}
+
+function applyEasterStatus(data) {
+  const eeData = data || {};
+  easterEggEnabled = !!eeData.enabled;
+  if (eeData.activeGame) easterEggActiveGame = eeData.activeGame;
+  christmasEventOn = !!eeData.christmasEvent;
+  evilSantaDown = !!eeData.evilSantaDown;
+  maybeSpawnEvilSanta();
+}
+
+function startChristmasWaveClock() {
+  if (window.__xmWaveClock) return;
+  window.__xmWaveClock = setInterval(async () => {
+    evilWaveCount += 1;
+    try { sessionStorage.setItem('xmEvilWaves', String(evilWaveCount)); } catch (e) {}
+    try {
+      const res = await fetch('/api/easter_egg/status');
+      if (res.ok) {
+        applyEasterStatus(await res.json());
+        return;
+      }
+    } catch (e) {}
+    maybeSpawnEvilSanta();
+  }, 20000);
+}
+
 function fillEasterEggSettingsForm(data) {
   const settings = data || {};
   if (eeEnabledCheckbox) eeEnabledCheckbox.checked = !!settings.enabled;
@@ -6063,6 +6198,8 @@ function fillEasterEggSettingsForm(data) {
   if (eeActiveGameSelect && settings.activeGame) {
     eeActiveGameSelect.value = settings.activeGame;
   }
+  if (eeChristmasCheckbox) eeChristmasCheckbox.checked = !!settings.christmasEvent;
+  renderEvilSantaHit(settings.evilSantaFirstHit);
 
   const isBulletHell = eeActiveGameSelect && eeActiveGameSelect.value === 'bullet_hell';
   const listData = isBulletHell ? (settings.bulletHellLeaderboard || []) : (settings.winners || []);
@@ -6327,13 +6464,16 @@ if (btnSaveEasterEgg) {
             enabled: !!(eeEnabledCheckbox && eeEnabledCheckbox.checked),
             message: eeMessageInput ? eeMessageInput.value : '',
             quota: Number.isFinite(quota) && quota > 0 ? quota : 3,
-            activeGame: eeActiveGameSelect ? eeActiveGameSelect.value : 'piggy_run'
+            activeGame: eeActiveGameSelect ? eeActiveGameSelect.value : 'piggy_run',
+            christmasEvent: !!(eeChristmasCheckbox && eeChristmasCheckbox.checked)
           }
         })
       }, 12000, '彩蛋設定儲存逾時');
       alert('儲存成功');
       easterEggEnabled = !!(eeEnabledCheckbox && eeEnabledCheckbox.checked);
       easterEggActiveGame = eeActiveGameSelect ? eeActiveGameSelect.value : 'piggy_run';
+      christmasEventOn = !!(eeChristmasCheckbox && eeChristmasCheckbox.checked);
+      maybeSpawnEvilSanta();
       renderLobby();
     } catch(e) {
       alert(e && e.message ? e.message : '儲存失敗');
@@ -6344,10 +6484,10 @@ if (btnSaveEasterEgg) {
 
 if (btnClearWinners) {
   btnClearWinners.addEventListener('click', async () => {
-    if (!confirm('確定要清除名單？')) return;
+    if (!confirm('確定要清除獲獎名單和邪惡聖誕老人擊落紀錄？')) return;
     try {
       const isBulletHell = eeActiveGameSelect && eeActiveGameSelect.value === 'bullet_hell';
-      const settingsPayload = isBulletHell ? { bulletHellLeaderboard: [] } : { winners: [] };
+      const settingsPayload = isBulletHell ? { bulletHellLeaderboard: [], evilSantaFirstHit: null } : { winners: [], evilSantaFirstHit: null };
       
       const res = await fetch('/api/admin/easter_egg', {
         method: 'POST',
@@ -6360,6 +6500,9 @@ if (btnClearWinners) {
       if (res.ok) {
         eeWinnersCount.innerText = 0;
         eeWinnersList.innerHTML = '';
+        evilSantaDown = false;
+        renderEvilSantaHit(null);
+        maybeSpawnEvilSanta();
         alert('已清除名單');
       }
     } catch(e) { alert('清除失敗'); }
@@ -6454,6 +6597,8 @@ if (piggyIcon) {
     }
   });
 }
+
+startChristmasWaveClock();
 
 function resetPiggy() {
   removePiggyOverlay(); // Remove block when done

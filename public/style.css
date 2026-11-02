@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.26
+  Version: 1.2.27
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -456,6 +456,21 @@ html.christmas .xm-runner svg {
 }
 html.christmas .xm-runner.santa svg { aspect-ratio: 180 / 130; }
 html.christmas .xm-runner.deer svg { aspect-ratio: 180 / 120; }
+html.christmas .xm-evil {
+  opacity: 0;
+  z-index: 5;
+  pointer-events: auto;
+  cursor: pointer;
+  animation-name: xm-pass-ltr;
+}
+html.christmas .xm-evil svg { aspect-ratio: 180 / 130; pointer-events: none; }
+html.christmas .xm-evil.is-shot {
+  pointer-events: none;
+  animation: xm-evil-fall 0.7s ease-in forwards;
+}
+@keyframes xm-evil-fall {
+  to { transform: translate3d(0, 36vh, 0) rotate(70deg) scale(0.25); opacity: 0; }
+}
 @keyframes xm-pass-ltr {
   0% { transform: translate3d(-40vw, 0, 0); opacity: 0; }
   4% { opacity: 1; }
