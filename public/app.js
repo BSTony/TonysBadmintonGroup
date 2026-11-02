@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.2.53
+ * Version: 1.2.66
  */
 let globalLobbyUsers = [];
 
@@ -396,6 +396,7 @@ let evilSantaDown = false;
 let myEvilKills = 0;
 let myEvilPrize = null;
 let myBossCleared = false;
+let myBossDismissed = false;
 let bossHp = 50;
 let evilWaveCount = 0;
 try { evilWaveCount = Number(sessionStorage.getItem('xmEvilWaves') || 0) || 0; } catch (e) {}
@@ -6098,7 +6099,7 @@ function renderEvilSantaHit(settings) {
   ];
   if (!players.length) lines.push('還沒有人遊玩');
   players.forEach((player) => {
-    const prize = player.prize === 'tea' ? '珍奶' : (player.prize === 'grip' ? '握把布' : '尚未選禮物');
+    const prize = player.prize === 'tea' ? '抽中珍奶' : (player.prize === 'grip' ? '抽中握把布' : (player.bossDismissed ? '已離開' : '尚未抽獎'));
     const when = formatEvilShotTime(player.prizeAt || player.updatedAt);
     lines.push(`${player.name || '訪客'}　擊落 ${player.kills || 0}/3　${prize}${when ? '　' + when : ''}`);
   });
@@ -6135,6 +6136,24 @@ function closeBoss() {
   if (boss) boss.remove();
 }
 
+function dismissBoss() {
+  const boss = document.getElementById('xm-boss');
+  if (boss && boss.dataset.waitConfirm === '1') {
+    closeBoss();
+    return;
+  }
+  myBossDismissed = true;
+  closeBoss();
+  removeEvilSanta();
+  const uid = (currentUser && currentUser.userId) || (typeof getOrCreateGuestUid === 'function' ? getOrCreateGuestUid() : 'U_GUEST');
+  const name = (currentUser && currentUser.displayName) || '訪客';
+  fetch('/api/easter_egg/evil_santa', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uid, name, action: 'dismiss' })
+  }).catch(() => {});
+}
+
 function openBoss(showGifts) {
   if (myEvilPrize) return;
   removeEvilSanta();
@@ -6146,32 +6165,85 @@ function openBoss(showGifts) {
   const overlay = document.createElement('div');
   overlay.id = 'xm-boss';
   overlay.className = 'xm-boss';
-  overlay.innerHTML = '<div class="xm-boss-hp"><div class="xm-boss-hp-fill"></div></div><button type="button" class="xm-boss-santa" id="xm-boss-santa"><svg viewBox="0 0 180 130"><use href="#xm-evil-santa"/></svg></button><div class="xm-boss-gifts" id="xm-boss-gifts" hidden><button type="button" data-prize="tea">珍奶一杯</button><button type="button" data-prize="grip">握把布一條</button></div>';
+  overlay.innerHTML = '<button type="button" class="xm-boss-close" id="xm-boss-close" aria-label="關閉">×</button><div class="xm-boss-hp"><div class="xm-boss-hp-fill"></div></div><button type="button" class="xm-boss-santa" id="xm-boss-santa"><svg viewBox="0 0 220 280"><use href="#xm-evil-shape"/></svg><svg class="xm-boss-wounds" viewBox="0 0 220 280"><g class="xm-wound xm-wound-1"><path d="M68 122l18 8M74 130l12-5" stroke="#6B1424" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M86 206l16-7" stroke="#3F0D18" stroke-width="3" fill="none" stroke-linecap="round"/></g><g class="xm-wound xm-wound-2"><path d="M64 168l78 34" stroke="#3F0D18" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M68 164l74 32" stroke="#F8FAFC" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M74 106l24 14" stroke="#F8FAFC" stroke-width="2.2" fill="none" stroke-linecap="round"/></g><g class="xm-wound xm-wound-3"><path d="M118 208c12 8 22 2 16-8-8 6-16 8-16 8z" fill="#5C1220"/><path d="M122 204l16 8" stroke="#F8FAFC" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M96 146l26 14M102 158l18-8" stroke="#4A1020" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M146 126l14 8M150 134l8-6" stroke="#6B1424" stroke-width="3" fill="none" stroke-linecap="round"/></g></svg></button><div class="xm-boss-defeat" id="xm-boss-defeat" hidden><p class="xm-boss-defeat-title">戰敗</p><svg viewBox="0 0 220 280"><use href="#xm-evil-down"/></svg></div><div class="xm-boss-prize" id="xm-boss-prize" hidden><div class="xm-gift-box is-drawing" id="xm-boss-giftbox"></div><p id="xm-boss-prize-name"></p><button type="button" class="xm-boss-confirm" id="xm-boss-confirm" hidden>確認</button></div>';
   document.body.appendChild(overlay);
-  document.getElementById('xm-boss-santa').addEventListener('click', onBossClick);
-  overlay.querySelectorAll('[data-prize]').forEach((btn) => {
-    btn.addEventListener('click', () => chooseChristmasGift(btn.getAttribute('data-prize'), btn));
+  const bossSanta = document.getElementById('xm-boss-santa');
+  bossSanta.addEventListener('click', onBossClick);
+  bossSanta.addEventListener('animationend', (event) => {
+    if (event.animationName === 'xm-boss-flinch') bossSanta.classList.remove('is-hit');
   });
+  document.getElementById('xm-boss-confirm').addEventListener('click', closeBoss);
+  document.getElementById('xm-boss-close').addEventListener('click', dismissBoss);
   if (showGifts) revealBossGifts();
 }
 
-function revealBossGifts() {
+function showBossDefeat() {
+  const boss = document.getElementById('xm-boss');
+  if (!boss || boss.dataset.finale) return;
+  boss.dataset.finale = 'defeat';
   const santa = document.getElementById('xm-boss-santa');
-  const gifts = document.getElementById('xm-boss-gifts');
-  const fill = document.querySelector('#xm-boss .xm-boss-hp-fill');
+  const defeat = document.getElementById('xm-boss-defeat');
+  const fill = boss.querySelector('.xm-boss-hp-fill');
   if (fill) fill.style.width = '0%';
   if (santa) santa.hidden = true;
-  if (gifts) gifts.hidden = false;
+  if (defeat) defeat.hidden = false;
+  setTimeout(revealBossGifts, 1800);
+}
+
+function revealBossGifts() {
+  const boss = document.getElementById('xm-boss');
+  if (!boss || boss.dataset.finale === 'prize') return;
+  boss.dataset.finale = 'prize';
+  const santa = document.getElementById('xm-boss-santa');
+  const defeat = document.getElementById('xm-boss-defeat');
+  const hp = boss.querySelector('.xm-boss-hp');
+  const prize = document.getElementById('xm-boss-prize');
+  if (santa) santa.hidden = true;
+  if (defeat) defeat.hidden = true;
+  if (hp) hp.hidden = true;
+  if (prize) prize.hidden = false;
+  drawChristmasGift();
+}
+
+function showPrizeResult(text) {
+  const box = document.getElementById('xm-boss-giftbox');
+  const name = document.getElementById('xm-boss-prize-name');
+  const confirmBtn = document.getElementById('xm-boss-confirm');
+  const boss = document.getElementById('xm-boss');
+  if (box) {
+    box.classList.remove('is-drawing');
+    box.classList.add('is-open');
+  }
+  if (name) name.textContent = text;
+  if (confirmBtn) confirmBtn.hidden = false;
+  if (boss) boss.dataset.waitConfirm = '1';
 }
 
 function onBossClick() {
   if (bossHp <= 0) return;
   bossHp -= 1;
+  const santa = document.getElementById('xm-boss-santa');
+  if (santa) {
+    santa.classList.remove('is-hit');
+    void santa.offsetWidth;
+    santa.classList.add('is-hit');
+    const spark = document.createElement('span');
+    spark.className = 'xm-boss-spark';
+    spark.textContent = '✦';
+    const rect = santa.getBoundingClientRect();
+    spark.style.left = (rect.left + rect.width * (0.3 + Math.random() * 0.4)) + 'px';
+    spark.style.top = (rect.top + rect.height * (0.22 + Math.random() * 0.4)) + 'px';
+    document.body.appendChild(spark);
+    setTimeout(() => spark.remove(), 500);
+    santa.classList.toggle('is-cut', bossHp <= 35);
+    santa.classList.toggle('is-scar', bossHp <= 20);
+    santa.classList.toggle('is-torn', bossHp <= 8);
+  }
   const fill = document.querySelector('#xm-boss .xm-boss-hp-fill');
   if (fill) fill.style.width = ((bossHp / 50) * 100) + '%';
   if (bossHp > 0) return;
   myBossCleared = true;
-  revealBossGifts();
+  showBossDefeat();
   const uid = (currentUser && currentUser.userId) || (typeof getOrCreateGuestUid === 'function' ? getOrCreateGuestUid() : 'U_GUEST');
   const name = (currentUser && currentUser.displayName) || '訪客';
   fetch('/api/easter_egg/evil_santa', {
@@ -6181,53 +6253,108 @@ function onBossClick() {
   }).catch(() => {});
 }
 
-async function chooseChristmasGift(prize, btn) {
-  if (btn) btn.disabled = true;
+async function drawChristmasGift() {
+  if (drawChristmasGift._busy) return;
+  drawChristmasGift._busy = true;
   const uid = (currentUser && currentUser.userId) || (typeof getOrCreateGuestUid === 'function' ? getOrCreateGuestUid() : 'U_GUEST');
   const name = (currentUser && currentUser.displayName) || '訪客';
   try {
     const res = await fetch('/api/easter_egg/evil_santa', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uid, name, action: 'prize', prize })
+      body: JSON.stringify({ uid, name, action: 'prize' })
     });
     const data = await res.json();
-    if (data.success) {
+    if (data.success && data.prize) {
       myEvilPrize = data.prize;
-      closeBoss();
-      showEvilToast(data.prize === 'tea' ? '領到珍奶一杯，打球時可以領取' : '領到握把布一條，打球時可以領取');
+      showPrizeResult(data.prize === 'tea' ? '珍奶一杯\n打球時可以領取' : '握把布一條\n打球時可以領取');
       return;
     }
-    showEvilToast(data.message || '這個禮物發完了');
+    if (data.alreadyPrize && data.prize) {
+      myEvilPrize = data.prize;
+      showPrizeResult(data.prize === 'tea' ? '你已經抽中珍奶' : '你已經抽中握把布');
+      return;
+    }
+    showPrizeResult(data.message || '禮物已發完');
   } catch (e) {
-    showEvilToast('網路不穩，請再選一次');
+    showPrizeResult('網路不穩，請再打開一次');
+    drawChristmasGift._busy = false;
   }
-  if (btn) btn.disabled = false;
 }
 
 function bindEvilSanta(el) {
   if (!el || el.dataset.bound === '1') return;
   el.dataset.bound = '1';
   el.addEventListener('click', onEvilSantaClick);
+  el.addEventListener('animationstart', onEvilWaveStart);
+  el.addEventListener('animationiteration', onEvilWaveStart);
+}
+
+function findEvilSanta() {
+  return document.querySelector('span.xm-runner.xm-evil');
+}
+
+function armEvilPass(el, wait) {
+  const key = wait === 0 ? '_arm0' : '_arm20';
+  clearTimeout(el[key]);
+  el[key] = setTimeout(() => {
+    if (!el.isConnected) return;
+    if (myEvilPrize || myBossDismissed || myEvilKills >= 3 || myBossCleared) {
+      el.remove();
+      return;
+    }
+    el.dataset.shot = '';
+    el.classList.remove('xm-evil-hit');
+    el.classList.add('xm-evil-live');
+    clearTimeout(el._liveTimer);
+    el._liveTimer = setTimeout(() => el.classList.remove('xm-evil-live'), 7600);
+  }, wait);
+}
+
+function onEvilWaveStart(event) {
+  if (!event || event.animationName !== 'xm-pass-both') return;
+  const el = event.currentTarget;
+  if (!el || !el.classList.contains('xm-evil')) return;
+  armEvilPass(el, 0);
+  armEvilPass(el, 20000);
+}
+
+function showEvilShot(el) {
+  const rect = el.getBoundingClientRect();
+  const ghost = document.createElement('span');
+  ghost.className = 'xm-evil-ghost';
+  ghost.innerHTML = el.innerHTML;
+  ghost.style.left = rect.left + 'px';
+  ghost.style.top = rect.top + 'px';
+  ghost.style.width = Math.max(rect.width, 120) + 'px';
+  document.body.appendChild(ghost);
+  el.classList.add('xm-evil-hit');
+  el.classList.remove('xm-evil-live');
+  setTimeout(() => ghost.remove(), 1300);
 }
 
 function maybeSpawnEvilSanta() {
-  const existing = document.getElementById('xm-evil-santa');
-  if (!christmasEventOn || evilWaveCount < 2 || myEvilPrize || myEvilKills >= 3 || myBossCleared) {
-    if (!christmasEventOn || myEvilPrize || myEvilKills >= 3 || myBossCleared || evilWaveCount < 2) removeEvilSanta();
-    if (christmasEventOn && evilWaveCount >= 2 && myEvilKills >= 3 && !myEvilPrize) openBoss(myBossCleared);
+  const existing = findEvilSanta();
+  const finished = myEvilPrize || myBossDismissed || myEvilKills >= 3 || myBossCleared;
+  if (!christmasEventOn || finished) {
+    if (existing) existing.remove();
+    if (christmasEventOn && !myBossDismissed && myEvilKills >= 3 && !myEvilPrize) openBoss(myBossCleared);
     return;
   }
-  if (existing) {
-    bindEvilSanta(existing);
-    return;
+  let el = existing;
+  if (!el) {
+    el = document.createElement('span');
+    el.id = 'xm-evil-santa';
+    el.className = 'xm-runner xm-evil';
+    el.style.setProperty('--y', '27%');
+    el.style.setProperty('--w', '108px');
+    el.style.setProperty('--dur', '20s');
+    el.style.setProperty('--delay', '20.35s');
+    el.innerHTML = '<svg viewBox="0 0 220 280"><use href="#xm-evil-shape"/></svg>';
+    const scene = document.querySelector('.xm-scene') || document.body;
+    scene.appendChild(el);
   }
-  const el = document.createElement('span');
-  el.id = 'xm-evil-santa';
-  el.className = 'xm-runner xm-evil';
-  el.innerHTML = '<svg viewBox="0 0 180 130"><use href="#xm-evil-santa"/></svg>';
   bindEvilSanta(el);
-  document.body.appendChild(el);
 }
 
 async function onEvilSantaClick(event) {
@@ -6235,7 +6362,9 @@ async function onEvilSantaClick(event) {
   event.stopPropagation();
   const el = event.currentTarget;
   if (!el || el.dataset.shot === '1' || myEvilPrize) return;
+  if (!el.classList.contains('xm-evil-live')) return;
   el.dataset.shot = '1';
+  showEvilShot(el);
   const uid = (currentUser && currentUser.userId) || (typeof getOrCreateGuestUid === 'function' ? getOrCreateGuestUid() : 'U_GUEST');
   const name = (currentUser && currentUser.displayName) || '訪客';
   try {
@@ -6253,19 +6382,21 @@ async function onEvilSantaClick(event) {
     }
     if (data.success) {
       myEvilKills = data.kills || myEvilKills;
-      el.classList.add('is-shot');
-      showEvilToast(data.boss ? '第三隻倒下了' : ('擊落 ' + myEvilKills + '/3'));
-      setTimeout(() => {
-        el.remove();
-        if (data.boss) openBoss();
-        else maybeSpawnEvilSanta();
-      }, 700);
+      showEvilToast('擊落');
+      if (data.boss) {
+        setTimeout(() => {
+          el.remove();
+          openBoss();
+        }, 900);
+      }
       return;
     }
     el.dataset.shot = '';
+    el.classList.remove('xm-evil-hit');
     showEvilToast(data.message || '現在還不能擊落');
   } catch (e) {
     el.dataset.shot = '';
+    el.classList.remove('xm-evil-hit');
   }
 }
 
@@ -6278,7 +6409,9 @@ function applyEasterStatus(data) {
   myEvilKills = Number(eeData.myKills) || 0;
   myEvilPrize = eeData.myPrize || null;
   myBossCleared = !!eeData.bossCleared;
-  if (myEvilPrize) closeBoss();
+  myBossDismissed = !!eeData.bossDismissed;
+  const waitingBoss = document.getElementById('xm-boss');
+  if (myEvilPrize && !(waitingBoss && waitingBoss.dataset.waitConfirm === '1')) closeBoss();
   maybeSpawnEvilSanta();
 }
 
@@ -6296,6 +6429,7 @@ async function refreshChristmasHunt() {
 function startChristmasWaveClock() {
   if (window.__xmEvilArmed) return;
   window.__xmEvilArmed = true;
+  maybeSpawnEvilSanta();
   const markSecondWave = () => {
     evilWaveCount = Math.max(evilWaveCount, 2);
     try { sessionStorage.setItem('xmEvilWaves', String(evilWaveCount)); } catch (e) {}
@@ -6604,6 +6738,35 @@ if (btnSaveEasterEgg) {
   });
 }
 
+const btnClearChristmas = document.getElementById('btn-clear-christmas');
+if (btnClearChristmas) {
+  btnClearChristmas.addEventListener('click', async () => {
+    if (!confirm('確定要清除聖誕節活動的擊落與抽獎紀錄？')) return;
+    try {
+      const res = await fetch('/api/admin/easter_egg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: (typeof getSystemLogsUid === 'function' ? getSystemLogsUid() : (currentUser && currentUser.userId)) || '',
+          settings: { evilSantaFirstHit: null, christmasPlayers: [] }
+        })
+      });
+      if (!res.ok) throw new Error('清除失敗');
+      myEvilKills = 0;
+      myEvilPrize = null;
+      myBossCleared = false;
+      myBossDismissed = false;
+      bossHp = 50;
+      closeBoss();
+      renderEvilSantaHit({ christmasPlayers: [], christmasStock: { tea: parseInt(eeTeaStock && eeTeaStock.value, 10) || 0, grip: parseInt(eeGripStock && eeGripStock.value, 10) || 0 } });
+      maybeSpawnEvilSanta();
+      alert('已清除聖誕節紀錄');
+    } catch (e) {
+      alert('清除失敗');
+    }
+  });
+}
+
 if (btnClearWinners) {
   btnClearWinners.addEventListener('click', async () => {
     if (!confirm('確定要清除獲獎名單和邪惡聖誕老人擊落紀錄？')) return;
@@ -6625,6 +6788,9 @@ if (btnClearWinners) {
         evilSantaDown = false;
         myEvilKills = 0;
         myEvilPrize = null;
+        myBossCleared = false;
+        myBossDismissed = false;
+        bossHp = 50;
         closeBoss();
         renderEvilSantaHit({ christmasPlayers: [], christmasStock: { tea: parseInt(eeTeaStock && eeTeaStock.value, 10) || 0, grip: parseInt(eeGripStock && eeGripStock.value, 10) || 0 } });
         maybeSpawnEvilSanta();

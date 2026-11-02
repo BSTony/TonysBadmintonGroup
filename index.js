@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.3.44
+ * Version: 1.3.47
  */
 const express = require('express');
 const compression = require('compression');
@@ -504,6 +504,16 @@ function christmasPrizeLeft(kind) {
   const stock = easterEggSettings.christmasStock || { tea: 5, grip: 10 };
   const limit = kind === 'tea' ? stock.tea : stock.grip;
   return Math.max(0, (Number(limit) || 0) - christmasPrizeUsed(kind));
+}
+
+function drawChristmasPrize() {
+  const pool = [];
+  const teaLeft = christmasPrizeLeft('tea');
+  const gripLeft = christmasPrizeLeft('grip');
+  for (let i = 0; i < teaLeft; i++) pool.push('tea');
+  for (let i = 0; i < gripLeft; i++) pool.push('grip');
+  if (!pool.length) return '';
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 // 功能開關：未公開時，AI 影片分析給超級管理員、指定的人，以及指定群組裡曾打開過大廳的人
 let featureSettings = { aiAnalysisPublic: false, aiAnalysisUsers: [], aiAnalysisGroups: [] };
@@ -1573,6 +1583,7 @@ let games = {};
 let systemLogs = [];
 
 let cachedIndexHtml = null;
+let cachedIndexMtime = 0;
 
 function isPersonalLobbyGid(gid) {
   if (!gid || gid === 'default' || gid === 'all') return true;
@@ -1648,19 +1659,23 @@ function sendIndexHtml(req, res) {
     res.send(out);
   };
 
-  if (cachedIndexHtml) {
-    send(cachedIndexHtml);
-  } else {
-    const indexPath = path.join(__dirname, 'public', 'index.html');
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  fs.stat(indexPath, (statErr, stat) => {
+    if (!statErr && cachedIndexHtml && stat.mtimeMs === cachedIndexMtime) {
+      send(cachedIndexHtml);
+      return;
+    }
     fs.readFile(indexPath, 'utf8', (err, html) => {
       if (err) {
+        if (cachedIndexHtml) return send(cachedIndexHtml);
         console.error('讀取 index.html 失敗:', err.message);
         return res.status(500).send('頁面載入失敗');
       }
       cachedIndexHtml = html;
+      cachedIndexMtime = (stat && stat.mtimeMs) || Date.now();
       send(html);
     });
-  }
+  });
 }
 
 app.get('/', sendIndexHtml);
@@ -4333,6 +4348,7 @@ app.get('/api/easter_egg/status', (req, res) => {
     myKills: player ? player.kills : 0,
     myPrize: player ? (player.prize || null) : null,
     bossCleared: !!(player && player.bossCleared),
+    bossDismissed: !!(player && player.bossDismissed),
     teaLeft: christmasPrizeLeft('tea'),
     gripLeft: christmasPrizeLeft('grip')
   });
@@ -4355,16 +4371,19 @@ app.post('/api/easter_egg/evil_santa', express.json(), async (req, res) => {
   if (player.prize) {
     return res.json({ success: false, alreadyPrize: true, prize: player.prize, kills: player.kills });
   }
-  if (action === 'boss') {
+  if (action === 'dismiss') {
+    if (player.kills < 3) return res.json({ success: false, message: '還沒召喚魔王' });
+    player.bossDismissed = true;
+    player.updatedAt = Date.now();
+  } else if (action === 'boss') {
     if (player.kills < 3) return res.json({ success: false, message: '還沒擊落第三隻' });
     player.bossCleared = true;
     player.updatedAt = Date.now();
   } else if (action === 'prize') {
     if (player.kills < 3) return res.json({ success: false, message: '還沒打完邪惡聖誕老人' });
-    const prize = req.body.prize === 'grip' ? 'grip' : (req.body.prize === 'tea' ? 'tea' : '');
-    if (!prize) return res.json({ success: false, message: '請選擇禮物' });
-    if (christmasPrizeLeft(prize) <= 0) {
-      return res.json({ success: false, soldOut: true, message: prize === 'tea' ? '珍奶已發完' : '握把布已發完', teaLeft: christmasPrizeLeft('tea'), gripLeft: christmasPrizeLeft('grip') });
+    const prize = drawChristmasPrize();
+    if (!prize) {
+      return res.json({ success: false, soldOut: true, message: '禮物已發完', teaLeft: 0, gripLeft: 0 });
     }
     player.prize = prize;
     player.prizeAt = Date.now();
@@ -4386,6 +4405,7 @@ app.post('/api/easter_egg/evil_santa', express.json(), async (req, res) => {
     kills: player.kills,
     boss: player.kills >= 3 && !player.prize,
     bossCleared: !!player.bossCleared,
+    bossDismissed: !!player.bossDismissed,
     prize: player.prize,
     teaLeft: christmasPrizeLeft('tea'),
     gripLeft: christmasPrizeLeft('grip')

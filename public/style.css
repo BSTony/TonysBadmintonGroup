@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.33
+  Version: 1.2.46
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -460,9 +460,12 @@ html.christmas .xm-runner.santa,
 html.christmas .xm-runner.deer {
   opacity: 0;
 }
-html.christmas .xm-runner.xm-pass-ltr,
-html.christmas .xm-runner.santa:not(.xm-pass-rtl) { animation-name: xm-pass-ltr; }
-html.christmas .xm-runner.xm-pass-rtl { animation-name: xm-pass-rtl; }
+html.christmas .xm-runner.santa,
+html.christmas .xm-runner.deer,
+html.christmas .xm-runner.xm-evil {
+  animation-name: xm-pass-both;
+  animation-duration: 40s;
+}
 html.christmas .xm-go-ltr { animation-name: xm-ltr; }
 html.christmas .xm-go-rtl { animation-name: xm-rtl; }
 html.christmas .xm-go-ltrw { animation-name: xm-ltr-wave; }
@@ -479,33 +482,69 @@ html.christmas .xm-runner svg {
 html.christmas .xm-runner.santa svg { aspect-ratio: 180 / 130; }
 html.christmas .xm-runner.deer svg { aspect-ratio: 180 / 120; }
 html.christmas .xm-runner.xm-evil {
-  position: fixed;
-  opacity: 1;
-  top: 0;
-  left: 0;
-  z-index: 30;
-  width: min(46vw, 210px);
-  pointer-events: auto;
-  cursor: pointer;
-  animation-name: xm-evil-roam;
-  animation-duration: 9s;
-  animation-timing-function: linear;
-  filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.95));
-}
-html.christmas .xm-evil svg { aspect-ratio: 180 / 130; pointer-events: none; }
-html.christmas .xm-evil.is-shot {
+  z-index: 5;
+  opacity: 0;
   pointer-events: none;
-  animation: xm-evil-fall 0.7s ease-in forwards;
+  cursor: pointer;
+  filter: drop-shadow(0 0 12px rgba(226, 59, 59, 0.8));
 }
-@keyframes xm-evil-roam {
-  0% { transform: translate3d(18vw, 28vh, 0) scale(1.05); }
-  25% { transform: translate3d(48vw, 22vh, 0) scale(1.05); }
-  50% { transform: translate3d(36vw, 52vh, 0) scaleX(-1.05) scaleY(1.05); }
-  75% { transform: translate3d(8vw, 42vh, 0) scaleX(-1.05) scaleY(1.05); }
-  100% { transform: translate3d(18vw, 28vh, 0) scale(1.05); }
+html.christmas .xm-runner.xm-evil.xm-evil-live,
+html.christmas .xm-runner.xm-evil.xm-evil-live svg,
+html.christmas .xm-runner.xm-evil.xm-evil-live svg * {
+  pointer-events: auto !important;
+}
+html.christmas .xm-runner.xm-evil.xm-evil-hit {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+html.christmas .xm-evil svg { aspect-ratio: 220 / 280; }
+@keyframes xm-pass-both {
+  0% { transform: translate3d(-46vw, 0, 0) scaleX(1); opacity: 0; }
+  2% { transform: translate3d(-28vw, 0, 0) scaleX(1); opacity: 1; }
+  6% { transform: translate3d(-2vw, -14px, 0) scaleX(1); opacity: 1; }
+  10% { transform: translate3d(26vw, 3px, 0) scaleX(1); opacity: 1; }
+  14% { transform: translate3d(56vw, -16px, 0) scaleX(1); opacity: 1; }
+  17% { transform: translate3d(120vw, -6px, 0) scaleX(1); opacity: 1; }
+  19%, 49% { transform: translate3d(146vw, 0, 0) scaleX(1); opacity: 0; }
+  50% { transform: translate3d(146vw, 0, 0) scaleX(-1); opacity: 0; }
+  52% { transform: translate3d(112vw, 0, 0) scaleX(-1); opacity: 1; }
+  56% { transform: translate3d(76vw, -14px, 0) scaleX(-1); opacity: 1; }
+  60% { transform: translate3d(44vw, 3px, 0) scaleX(-1); opacity: 1; }
+  64% { transform: translate3d(12vw, -16px, 0) scaleX(-1); opacity: 1; }
+  67% { transform: translate3d(-42vw, -6px, 0) scaleX(-1); opacity: 1; }
+  69%, 100% { transform: translate3d(-58vw, 0, 0) scaleX(-1); opacity: 0; }
+}
+.xm-evil-ghost {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  animation: xm-evil-fall 1.25s ease-in forwards;
+}
+.xm-evil-ghost svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 0 16px rgba(246, 196, 69, 0.9));
+}
+.xm-evil-ghost::after {
+  content: '✦';
+  position: absolute;
+  left: 42%;
+  top: 18%;
+  font-size: 46px;
+  color: #f6c445;
+  text-shadow: 0 0 12px #e23b3b;
+  animation: xm-evil-burst 1.25s ease-out forwards;
 }
 @keyframes xm-evil-fall {
-  to { transform: translate3d(0, 36vh, 0) rotate(70deg) scale(0.25); opacity: 0; }
+  0% { transform: translate3d(0, 0, 0) rotate(-6deg) scale(1.08); opacity: 1; }
+  22% { transform: translate3d(0, -1vh, 0) rotate(10deg) scale(1.16); opacity: 1; }
+  100% { transform: translate3d(0, 48vh, 0) rotate(92deg) scale(0.16); opacity: 0; }
+}
+@keyframes xm-evil-burst {
+  0% { transform: scale(0.2); opacity: 0; }
+  25% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1.6) translateY(-18px); opacity: 0; }
 }
 .xm-boss {
   position: fixed;
@@ -515,6 +554,20 @@ html.christmas .xm-evil.is-shot {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.xm-boss-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
 }
 .xm-boss-hp {
   width: min(92vw, 520px);
@@ -531,43 +584,188 @@ html.christmas .xm-evil.is-shot {
   border-radius: 999px;
 }
 .xm-boss-santa {
-  margin-top: 6vh;
-  width: min(78vw, 420px);
+  margin-top: 2vh;
+  width: min(72vw, 320px);
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
+  transform-origin: 50% 88%;
+  animation: xm-boss-dance 1.35s ease-in-out infinite;
 }
-.xm-boss-santa svg { width: 100%; height: auto; display: block; }
+.xm-boss-santa.is-hit { animation: xm-boss-flinch 0.16s ease-out; }
+.xm-boss-santa { position: relative; }
+.xm-boss-wounds {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.xm-wound { opacity: 0; transition: opacity 0.25s linear; }
+.xm-boss-santa.is-cut .xm-wound-1,
+.xm-boss-santa.is-scar .xm-wound-1,
+.xm-boss-santa.is-scar .xm-wound-2,
+.xm-boss-santa.is-torn .xm-wound-1,
+.xm-boss-santa.is-torn .xm-wound-2,
+.xm-boss-santa.is-torn .xm-wound-3 { opacity: 1; }
+.xm-boss-santa svg,
+.xm-boss-defeat svg { width: 100%; height: auto; display: block; }
+.xm-boss-santa svg {
+  transform-origin: 50% 100%;
+  animation: xm-boss-bob 0.42s ease-in-out infinite;
+}
+@keyframes xm-boss-dance {
+  0%, 100% { transform: translate3d(0, 10px, 0) rotate(-4deg) scale(1.04, 0.96); }
+  18% { transform: translate3d(-34px, -8px, 0) rotate(8deg) scale(0.96, 1.06); }
+  40% { transform: translate3d(-6px, 14px, 0) rotate(-2deg) scale(1.06, 0.94); }
+  62% { transform: translate3d(32px, -22px, 0) rotate(-9deg) scale(0.95, 1.07); }
+  82% { transform: translate3d(8px, 6px, 0) rotate(4deg) scale(1.03, 0.97); }
+}
+@keyframes xm-boss-bob {
+  0%, 100% { transform: translateY(0) scale(1, 1) rotate(0deg); }
+  50% { transform: translateY(-12px) scale(1.05, 0.94) rotate(1deg); }
+}
+@keyframes xm-boss-flinch {
+  0% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+  40% { transform: translate3d(-6px, 12px, 0) scale(0.86, 1.14) rotate(-12deg); }
+  100% { transform: translate3d(4px, -4px, 0) scale(1.06) rotate(6deg); }
+}
+.xm-boss-spark {
+  position: fixed;
+  z-index: 10040;
+  pointer-events: none;
+  color: #f6c445;
+  font-size: 32px;
+  text-shadow: 0 0 10px #fff;
+  animation: xm-boss-spark 0.48s ease-out forwards;
+}
+@keyframes xm-boss-spark {
+  0% { transform: translate(-50%, -50%) scale(0.2) rotate(0deg); opacity: 1; }
+  100% { transform: translate(-50%, -36px) scale(1.5) rotate(20deg); opacity: 0; }
+}
+.xm-boss-hp[hidden],
+.xm-boss-santa[hidden],
+.xm-boss-defeat[hidden],
+.xm-boss-prize[hidden],
+.xm-boss-confirm[hidden] { display: none !important; }
+.xm-boss-defeat {
+  margin-top: 2vh;
+  width: min(72vw, 320px);
+  text-align: center;
+}
+.xm-boss-defeat-title {
+  margin: 0 0 6px;
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: 0.28em;
+  color: #f6c445;
+  text-shadow: 0 4px 0 #9b1020, 0 0 18px rgba(246, 196, 69, 0.7);
+}
+.xm-boss-defeat svg { animation: xm-defeat-slump 1.6s ease forwards; }
+@keyframes xm-defeat-slump {
+  0% { transform: scale(1.08) rotate(0deg); }
+  30% { transform: scale(1) rotate(-6deg); }
+  55% { transform: scale(0.98) rotate(5deg); }
+  100% { transform: scale(0.94) translateY(10px) rotate(-3deg); }
+}
+.xm-boss-prize {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8vh;
+  color: #fff;
+}
+.xm-gift-box {
+  width: 132px;
+  height: 112px;
+  border-radius: 18px;
+  background: #e23b3b;
+  box-shadow: 0 12px 0 #9b1020;
+  position: relative;
+}
+.xm-gift-box::before,
+.xm-gift-box::after {
+  content: '';
+  position: absolute;
+  background: #f6c445;
+}
+.xm-gift-box::before {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 22px;
+  transform: translateX(-50%);
+}
+.xm-gift-box::after {
+  left: 0;
+  right: 0;
+  top: 40px;
+  height: 22px;
+}
+.xm-gift-box.is-drawing { animation: xm-gift-shake 0.12s linear infinite; }
+.xm-gift-box.is-open { box-shadow: 0 0 0 4px #f6c445, 0 12px 0 #9b1020; }
+#xm-boss-prize-name {
+  margin: 16px 0 0;
+  font-size: 28px;
+  font-weight: 900;
+  text-align: center;
+  white-space: pre-line;
+}
+.xm-boss-confirm {
+  margin-top: 22px;
+  padding: 12px 42px;
+  border: none;
+  border-radius: 999px;
+  background: #f6c445;
+  color: #6b1020;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
 .xm-boss-gifts {
   display: flex;
   gap: 14px;
   margin-top: 28px;
 }
 .xm-boss-gifts[hidden] { display: none; }
-.xm-boss-gifts button {
+.xm-boss-gifts div {
   min-width: 132px;
   padding: 14px 16px;
-  border: none;
   border-radius: 16px;
   background: #fff8f4;
   color: #6b1020;
   font-weight: 800;
   font-size: 16px;
-  cursor: pointer;
+  text-align: center;
 }
-.xm-boss-gifts button:disabled { opacity: 0.45; cursor: not-allowed; }
+.xm-boss-gifts.is-drawing div { animation: xm-gift-shake 0.12s linear infinite; }
+.xm-boss-gifts .is-lost { opacity: 0.28; }
+.xm-boss-gifts .is-won { outline: 3px solid #f6c445; transform: scale(1.06); }
+@keyframes xm-gift-shake {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
 @keyframes xm-pass-ltr {
   0% { transform: translate3d(-40vw, 0, 0); opacity: 0; }
-  4% { opacity: 1; }
-  34% { transform: translate3d(120vw, 0, 0); opacity: 1; }
-  38%, 100% { transform: translate3d(120vw, 0, 0); opacity: 0; }
+  4% { transform: translate3d(-24vw, 0, 0); opacity: 1; }
+  10% { transform: translate3d(0, -12px, 0); opacity: 1; }
+  16% { transform: translate3d(26vw, 2px, 0); opacity: 1; }
+  22% { transform: translate3d(52vw, -14px, 0); opacity: 1; }
+  28% { transform: translate3d(82vw, 0, 0); opacity: 1; }
+  34% { transform: translate3d(120vw, -8px, 0); opacity: 1; }
+  38%, 100% { transform: translate3d(140vw, 0, 0); opacity: 0; }
 }
 @keyframes xm-pass-rtl {
   0% { transform: translate3d(120vw, 0, 0) scaleX(-1); opacity: 0; }
-  4% { opacity: 1; }
-  34% { transform: translate3d(-40vw, 0, 0) scaleX(-1); opacity: 1; }
-  38%, 100% { transform: translate3d(-40vw, 0, 0) scaleX(-1); opacity: 0; }
+  4% { transform: translate3d(104vw, 0, 0) scaleX(-1); opacity: 1; }
+  10% { transform: translate3d(78vw, -12px, 0) scaleX(-1); opacity: 1; }
+  16% { transform: translate3d(50vw, 2px, 0) scaleX(-1); opacity: 1; }
+  22% { transform: translate3d(22vw, -14px, 0) scaleX(-1); opacity: 1; }
+  28% { transform: translate3d(-6vw, 0, 0) scaleX(-1); opacity: 1; }
+  34% { transform: translate3d(-40vw, -8px, 0) scaleX(-1); opacity: 1; }
+  38%, 100% { transform: translate3d(-50vw, 0, 0) scaleX(-1); opacity: 0; }
 }
 @keyframes xm-ltr {
   0% { transform: translate3d(-32vw, 0, 0); }
@@ -589,8 +787,8 @@ html.christmas .xm-evil.is-shot {
   100% { transform: translate3d(-34vw, -4vh, 0) scaleX(-1); }
 }
 @keyframes xm-bob {
-  0%, 100% { transform: translateY(0) rotate(-7deg); }
-  50% { transform: translateY(-8px) rotate(6deg); }
+  0%, 100% { transform: translateY(0) rotate(-8deg) scale(1, 1); }
+  50% { transform: translateY(-12px) rotate(8deg) scale(1.06, 0.94); }
 }
 @keyframes xm-fall {
   0% { transform: translate3d(0, -8vh, 0); opacity: 0; }
