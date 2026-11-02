@@ -13097,7 +13097,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793589938412,
-    "lastActiveTime": 1793589938412,
+    "lastActiveTime": 1793589953928,
     "scheduleTime": 1793589960000,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13114,8 +13114,19 @@
         "limit": 2,
         "backupLimit": 5,
         "label": "",
-        "list": [],
+        "list": [
+          "11"
+        ],
         "fee": ""
+      }
+    ],
+    "history": [
+      {
+        "time": "11/02 11:25",
+        "name": "11",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
