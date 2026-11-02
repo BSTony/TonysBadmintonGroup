@@ -48,5 +48,10 @@
     }
   ],
   "christmasEvent": true,
-  "evilSantaFirstHit": null
+  "evilSantaFirstHit": null,
+  "christmasPlayers": [],
+  "christmasStock": {
+    "tea": 3,
+    "grip": 5
+  }
 }
