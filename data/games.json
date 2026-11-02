@@ -13081,52 +13081,5 @@
         "section": "8-12"
       }
     ]
-  },
-  "1793589938408450": {
-    "gid": "C73ead06e46f4c3a00a3f87d946c7d18a",
-    "targetGids": [
-      "C73ead06e46f4c3a00a3f87d946c7d18a"
-    ],
-    "gameId": "1793589938408450",
-    "title": "test",
-    "date": "11/17 (二)",
-    "time": "18:00~20:00",
-    "location": "test",
-    "fee": "",
-    "note": "",
-    "tag": "",
-    "active": true,
-    "startTime": 1793589938412,
-    "lastActiveTime": 1793589953928,
-    "reminderTime": null,
-    "scheduleInput": null,
-    "anonymous": [],
-    "anonymousCount": 0,
-    "levelMap": {},
-    "paidMap": {},
-    "uidMap": {},
-    "noteMap": {},
-    "allowUserNoteEdit": true,
-    "sections": [
-      {
-        "title": "報名名單",
-        "limit": 2,
-        "backupLimit": 5,
-        "label": "",
-        "list": [
-          "11"
-        ],
-        "fee": ""
-      }
-    ],
-    "history": [
-      {
-        "time": "11/02 11:25",
-        "name": "11",
-        "operator": "謝東霖 Tony",
-        "action": "+1",
-        "section": "報名名單"
-      }
-    ]
   }
 }
