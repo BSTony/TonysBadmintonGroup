@@ -48,8 +48,21 @@
     }
   ],
   "christmasEvent": true,
-  "evilSantaFirstHit": null,
-  "christmasPlayers": [],
+  "evilSantaFirstHit": {
+    "uid": "U49e2484c80056990b759e9039a74e1a6",
+    "name": "Kay",
+    "shotAt": 1793614261912
+  },
+  "christmasPlayers": [
+    {
+      "uid": "U49e2484c80056990b759e9039a74e1a6",
+      "name": "Kay",
+      "kills": 1,
+      "prize": null,
+      "prizeAt": null,
+      "updatedAt": 1793614261912
+    }
+  ],
   "christmasStock": {
     "tea": 3,
     "grip": 5
