@@ -48,8 +48,21 @@
     }
   ],
   "christmasEvent": true,
-  "evilSantaFirstHit": null,
-  "christmasPlayers": [],
+  "evilSantaFirstHit": {
+    "uid": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+    "name": "謝東霖 Tony",
+    "shotAt": 1793604291842
+  },
+  "christmasPlayers": [
+    {
+      "uid": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "name": "謝東霖 Tony",
+      "kills": 1,
+      "prize": null,
+      "prizeAt": null,
+      "updatedAt": 1793604291842
+    }
+  ],
   "christmasStock": {
     "tea": 3,
     "grip": 5
