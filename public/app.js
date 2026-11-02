@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-28
- * Version: 1.2.45
+ * Date: 2026-11-02
+ * Version: 1.2.46
  */
 let globalLobbyUsers = [];
 
@@ -2161,6 +2161,125 @@ function isGameExpired(game) {
   return !!game.isManualEnded;
 }
 
+function scheduleRemainMs(game) {
+  const sched = Number(game && game.scheduleTime);
+  if (!Number.isFinite(sched) || sched <= 0) return 0;
+  const remain = sched - Date.now();
+  return remain > 0 ? remain : 0;
+}
+
+function formatScheduleWhen(ts) {
+  const d = new Date(Number(ts));
+  if (isNaN(d.getTime())) return '';
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Taipei',
+      month: 'numeric',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23'
+    }).formatToParts(d);
+    const pick = (type) => {
+      const part = parts.find(item => item.type === type);
+      return part ? part.value : '';
+    };
+    return `${pick('month')}/${pick('day')} ${pick('hour')}:${pick('minute')}`;
+  } catch (e) {
+    return '';
+  }
+}
+
+function formatRemainClock(ms) {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  const mm = String(minutes).padStart(2, '0');
+  const ss = String(seconds).padStart(2, '0');
+  if (hours > 0) return `${hours}:${mm}:${ss}`;
+  return `${mm}:${ss}`;
+}
+
+function scheduleBannerHtml(game) {
+  const remain = scheduleRemainMs(game);
+  if (remain <= 0) return '';
+  const when = formatScheduleWhen(game.scheduleTime);
+  return `
+    <div class="schedule-banner" data-schedule="${Number(game.scheduleTime)}">
+      <div class="schedule-banner-kicker">預約開團</div>
+      <div class="schedule-clock" data-role="clock">${formatRemainClock(remain)}</div>
+      <div class="schedule-sub">時間到才能按 +1</div>
+    </div>
+  `;
+}
+
+function scheduleNoteHtml(game) {
+  const remain = scheduleRemainMs(game);
+  if (remain <= 0) return '';
+  const when = formatScheduleWhen(game.scheduleTime);
+  return `<div class="schedule-note" data-schedule-note="${Number(game.scheduleTime)}">預計 ${escapeHTML(when)} 可以開始報名</div>`;
+}
+
+function plusButtonHtml(game, onclick, hardDisabled) {
+  const remain = scheduleRemainMs(game);
+  if (remain > 0) {
+    const sec = Math.ceil(remain / 1000);
+    const counting = sec <= 60;
+    const label = counting ? String(sec) : '待';
+    const cls = counting ? (sec <= 5 ? ' is-counting is-final' : ' is-counting') : '';
+    return `<button type="button" class="btn btn-primary btn-square schedule-plus${cls}" data-schedule="${Number(game.scheduleTime)}" data-hard-disabled="${hardDisabled ? '1' : '0'}" disabled onclick="${onclick}">${label}</button>`;
+  }
+  const disabled = hardDisabled ? 'disabled style="opacity:0.5"' : '';
+  return `<button type="button" class="btn btn-primary btn-square" ${disabled} onclick="${onclick}">+1</button>`;
+}
+
+function ensureScheduleTicker() {
+  if (window.__scheduleTicker) return;
+  window.__scheduleTicker = setInterval(() => {
+    const now = Date.now();
+    document.querySelectorAll('.schedule-banner[data-schedule]').forEach((node) => {
+      const remain = Number(node.getAttribute('data-schedule')) - now;
+      const clock = node.querySelector('[data-role="clock"]');
+      if (remain <= 0) {
+        node.remove();
+        return;
+      }
+      if (clock) clock.textContent = formatRemainClock(remain);
+    });
+    document.querySelectorAll('.schedule-note[data-schedule-note]').forEach((node) => {
+      if (Number(node.getAttribute('data-schedule-note')) - now <= 0) node.remove();
+    });
+    document.querySelectorAll('.schedule-plus[data-schedule]').forEach((node) => {
+      const remain = Number(node.getAttribute('data-schedule')) - now;
+      if (remain <= 0) {
+        node.disabled = node.getAttribute('data-hard-disabled') === '1';
+        node.textContent = '+1';
+        node.classList.remove('schedule-plus', 'is-counting', 'is-final');
+        node.removeAttribute('data-schedule');
+        if (node.getAttribute('data-hard-disabled') === '1') node.style.opacity = '0.5';
+        const card = node.closest('.game-card');
+        const badge = card && card.querySelector('.card-badges .badge');
+        if (badge && badge.textContent.indexOf('預約') !== -1) {
+          badge.textContent = '✓ 開放報名';
+          badge.className = 'badge open';
+          badge.removeAttribute('style');
+        }
+        return;
+      }
+      const sec = Math.ceil(remain / 1000);
+      if (sec <= 60) {
+        node.textContent = String(sec);
+        node.classList.add('is-counting');
+        node.classList.toggle('is-final', sec <= 5);
+      } else {
+        node.textContent = '待';
+        node.classList.remove('is-counting', 'is-final');
+      }
+    });
+  }, 250);
+}
+
 
 
 document.addEventListener('click', (e) => {
@@ -2428,6 +2547,9 @@ function renderLobby(forceCards = true) {
       if (isExpired) {
          badgeStyle = 'background-color: #666; color: #FFF;';
          badgeText = '已結束';
+      } else if (scheduleRemainMs(game) > 0) {
+         badgeStyle = 'background-color: #E8F4FF; color: #0F4C81;';
+         badgeText = '預約開團';
       } else if (isFull) {
          badgeStyle = 'background-color: #E0E0E0; color: #888888;';
          badgeText = '已額滿';
@@ -2456,6 +2578,7 @@ function renderLobby(forceCards = true) {
 
       
       card.innerHTML = `
+        ${scheduleBannerHtml(game)}
         <div class="card-badges" onclick="showDetail('${game.gameId}')" style="cursor: pointer; flex-wrap: wrap;">
           <div class="badge ${isFull || isExpired ? 'full' : 'open'}" style="${badgeStyle}">
             ${badgeText}
@@ -2534,14 +2657,14 @@ function renderLobby(forceCards = true) {
             actionRowHtml = `
               <div class="action-row" style="margin-top: 10px;">
                   <button class="btn btn-primary" style="width: 100%; border-radius: 8px; padding: 12px; font-size: 16px; background-color: #03c75a; border: none; box-shadow: 0 2px 4px rgba(3,199,90,0.3);" onclick="showDetail('${game.gameId}')">
-                     👉 此場次包含多時段，點擊進入報名
+                     ${scheduleRemainMs(game) > 0 ? '⏳ 預約開團，點擊查看倒數' : '👉 此場次包含多時段，點擊進入報名'}
                   </button>
               </div>
             `;
         } else {
             actionRowHtml = `
               <div class="action-row" style="flex-wrap: wrap;">
-                <button type="button" class="btn btn-primary btn-square" ${(isFull || isExpired) && !effIsSuperAdmin ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register')">+1</button>
+                ${plusButtonHtml(game, `handleActionWithInput(event, '${game.gameId}', 'register')`, (isFull || isExpired) && !effIsSuperAdmin)}
                 <button type="button" class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel')">-1</button>
                 <input type="text" id="name-input-${game.gameId}" class="name-input" placeholder="請輸入暱稱" ${credentialSaveBlockAttrs('player_nickname_' + game.gameId)} ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
                 <input type="text" id="level-input-${game.gameId}" class="name-input" placeholder="備註" ${credentialSaveBlockAttrs('player_note_' + game.gameId)} ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
@@ -2550,7 +2673,7 @@ function renderLobby(forceCards = true) {
             `;
         }
         
-        card.innerHTML += actionRowHtml;
+        card.innerHTML += actionRowHtml + scheduleNoteHtml(game);
       return card;
     };
     
@@ -2611,6 +2734,7 @@ function renderLobby(forceCards = true) {
     });
   }
   if (typeof bindAllNameInputEnterHandlers === 'function') bindAllNameInputEnterHandlers();
+  ensureScheduleTicker();
   } catch (err) {
     console.error('renderLobby failed', err);
     try { reportSystemLog('大廳', '渲染大廳失敗', { message: err && err.message ? err.message : String(err) }); } catch (e) {}
@@ -2913,7 +3037,7 @@ function renderDetail(gameId, preserveScroll = false) {
 
   actionRowHtml += `
     <div class="action-row" style="flex-wrap: wrap; margin-top: ${isMultiSection ? '5px' : '15px'}; margin-bottom: 10px;">
-      <button type="button" class="btn btn-primary btn-square" ${(isFullSingle || isExpired) && !effIsSuperAdmin ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'register', '-detail')">+1</button>
+      ${plusButtonHtml(game, `handleActionWithInput(event, '${game.gameId}', 'register', '-detail')`, (isFullSingle || isExpired) && !effIsSuperAdmin)}
       <button type="button" class="btn btn-danger btn-square" ${isExpired ? 'disabled style="opacity:0.5"' : ''} onclick="handleActionWithInput(event, '${game.gameId}', 'cancel', '-detail')">-1</button>
       <input type="text" id="name-input-${game.gameId}-detail" class="name-input" placeholder="請輸入暱稱" ${credentialSaveBlockAttrs('player_nickname_' + game.gameId + '_detail')} ${isExpired ? 'disabled' : ''} style="flex: 2; min-width: 100px; font-weight: bold; color: #333;" />
       <input type="text" id="level-input-${game.gameId}-detail" class="name-input" placeholder="備註" ${credentialSaveBlockAttrs('player_note_' + game.gameId + '_detail')} ${isExpired ? 'disabled' : ''} style="flex: 1; min-width: 60px; margin-left: 8px; font-weight: bold;" />
@@ -2921,7 +3045,8 @@ function renderDetail(gameId, preserveScroll = false) {
     <div id="error-msg-${game.gameId}-detail" class="error-msg"></div>
   `;
   
-  detailList.innerHTML = actionRowHtml;
+  detailList.innerHTML = scheduleBannerHtml(game) + actionRowHtml + scheduleNoteHtml(game);
+  ensureScheduleTicker();
   
   if (effIsSuperAdmin) {
     let pushListBtn = document.getElementById('admin-push-list-btn');
@@ -3758,6 +3883,10 @@ async function handleActionWithInput(event, gameId, action, suffix = '') {
   }
 
   const game = gamesList.find(g => g.gameId === gameId);
+  if (action === 'register' && scheduleRemainMs(game) > 0) {
+    if (errorEl) errorEl.innerText = '還沒到預約時間，時間到才能報名';
+    return;
+  }
   const gameTitle = game ? game.title : gameId;
   const operatorName = prodInfo.displayName;
   const operatorUid = prodInfo.userId;
@@ -4818,7 +4947,9 @@ document.getElementById('btn-submit-create').onclick = async () => {
     } else {
       // 開團成功，自動推撥已關閉，請管理者在詳細頁手動按「推播名單」以節省 LINE 額度
       let alertMsg = '✅ 開團成功！';
-      if (result.pushErrors && result.pushErrors.length > 0) {
+      if (result.scheduledAt) {
+        alertMsg = '✅ 已建立預約團！\n時間到才會開放 +1，並推播到群組。';
+      } else if (result.pushErrors && result.pushErrors.length > 0) {
         alertMsg += '\n\n⚠️ 機器人推播失敗:\n' + result.pushErrors.join('\n');
       } else {
         alertMsg += '\n\n💡 如需通知群組，請進入場次詳細頁點「推播名單」。';
@@ -4835,6 +4966,41 @@ document.getElementById('btn-submit-create').onclick = async () => {
     statusMsg.style.display = 'none';
   }
 };
+
+function formatPublishInputLabel(value) {
+  const matched = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!matched) return '';
+  return `${Number(matched[2])}/${Number(matched[3])} ${matched[4]}:${matched[5]}`;
+}
+
+function syncPublishHint(inputId, hintId) {
+  const input = document.getElementById(inputId);
+  const ids = Array.isArray(hintId) ? hintId : [hintId];
+  const label = input ? formatPublishInputLabel(input.value) : '';
+  ids.forEach((id) => {
+    const hint = document.getElementById(id);
+    if (!hint) return;
+    if (!label) {
+      hint.textContent = '';
+      hint.classList.add('hidden');
+    } else {
+      hint.textContent = `預計 ${label} 可以開始報名`;
+      hint.classList.remove('hidden');
+    }
+  });
+}
+
+function bindPublishHint(inputId, hintIds) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const sync = () => syncPublishHint(inputId, hintIds);
+  input.addEventListener('input', sync);
+  input.addEventListener('change', sync);
+  sync();
+}
+
+bindPublishHint('cg-publish', ['cg-publish-hint', 'cg-publish-hint-bottom']);
+bindPublishHint('eg-publish', 'eg-publish-hint');
 
 // ================= Edit Game UI =================
 const editGameView = document.getElementById('edit-game-view');
@@ -4948,6 +5114,7 @@ function showEditGameForm(gameId) {
   };
   document.getElementById('eg-publish').value = fmt(game.scheduleTime);
   document.getElementById('eg-reminder').value = fmt(game.reminderTime);
+  syncPublishHint('eg-publish', 'eg-publish-hint');
 }
 
 let egSections = [];

@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
- * Date: 2026-10-28
- * Version: 1.3.36
+ * Date: 2026-11-02
+ * Version: 1.3.38
  */
 const express = require('express');
 const compression = require('compression');
@@ -2236,6 +2236,39 @@ async function flushFileSave() {
   }
 }
 
+function parseTaipeiDateTime(value) {
+  if (value == null) return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+  if (/^\d{13}$/.test(raw)) {
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+  }
+  let matched = raw.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})[T\s](\d{1,2}):(\d{2})/);
+  if (matched) {
+    const iso = `${matched[1]}-${String(matched[2]).padStart(2, '0')}-${String(matched[3]).padStart(2, '0')}T${String(matched[4]).padStart(2, '0')}:${matched[5]}:00+08:00`;
+    const dt = new Date(iso);
+    return isNaN(dt.getTime()) ? null : dt.getTime();
+  }
+  matched = raw.match(/(\d{1,2})[\/月](\d{1,2})(?:日|號)?\s+(\d{1,2}):(\d{2})/);
+  if (matched) {
+    let year = new Date().getFullYear();
+    try {
+      year = Number(new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Taipei', year: 'numeric' }).format(new Date()));
+    } catch (e) {}
+    const iso = `${year}-${String(matched[1]).padStart(2, '0')}-${String(matched[2]).padStart(2, '0')}T${String(matched[3]).padStart(2, '0')}:${matched[4]}:00+08:00`;
+    const dt = new Date(iso);
+    return isNaN(dt.getTime()) ? null : dt.getTime();
+  }
+  return null;
+}
+
+function futureTaipeiTime(value) {
+  const parsed = parseTaipeiDateTime(value);
+  if (!parsed || parsed <= Date.now()) return null;
+  return parsed;
+}
+
 async function checkSchedules() {
   const now = Date.now();
   const gameIds = Object.keys(games);
@@ -2380,8 +2413,7 @@ checkExpiredGames().catch(console.error); // 啟動時確保資料完整性
 // 排程檢查的執行鎖，避免重入
 let checkingSchedules = false;
 
-// 定時推播檢查 (已合併至上方 checkSchedules 實作中)
-// 每分鐘的00秒時檢查一次排程
+// 預約發布檢查：每 5 秒看一次，讓開放報名貼近設定的時間
 function startMinuteCheck() {
   const executeCheck = async () => {
   if (checkingSchedules) return;
@@ -2395,16 +2427,10 @@ function startMinuteCheck() {
   }
   };
   
-  // 計算到下一個整分鐘的延遲時間
-  const now = new Date();
-  const msUntilNextMinute = ((60 - now.getSeconds()) * 1000) - now.getMilliseconds();
-  const delay = msUntilNextMinute > 0 ? msUntilNextMinute : 60 * 1000;
-  
   setTimeout(() => {
     executeCheck();
-    // 之後每60秒執行一次（對齊每分鐘00秒）
-    setInterval(executeCheck, 60 * 1000);
-  }, delay);
+    setInterval(executeCheck, 5000);
+  }, 1000);
 }
 
 // 待載入完成後立即檢查一次，以恢復並觸發在停機期間已到期或保留的排程
@@ -3265,7 +3291,7 @@ function sessionHintMatches(game, hint) {
 
 // 產生完整名單字串的輔助函式
 function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) {
-  // 雙十 10/1–10/12、萬聖節 10/13–11/2（台北時間），與大廳網頁同一段期間
+  // 雙十 10/1–10/12、萬聖節 10/13–11/1、聖誕 11/2–1/6（台北時間），與大廳網頁同一段期間
   const taipeiMonthDay = (now = new Date()) => {
     try {
       const parts = new Intl.DateTimeFormat('en-US', {
@@ -3286,18 +3312,19 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
   };
   const { month, day } = taipeiMonthDay();
   const doubleTenth = month === 10 && day >= 1 && day <= 12;
-  const halloween = (month === 10 && day >= 13) || (month === 11 && day <= 2);
-  const brand = halloween ? '#7C3AED' : doubleTenth ? '#1F57B8' : '#1DB446';
-  const actionColor = halloween ? '#F97316' : doubleTenth ? '#D62538' : '#1DB446';
-  const openBadgeBg = halloween ? '#F3E8FF' : doubleTenth ? '#E7F0FF' : '#e8f5e9';
-  const openBadgeText = halloween ? '#6D28D9' : doubleTenth ? '#1A4EAE' : '#1DB446';
-  const fullBadgeBg = halloween ? '#FFEDD5' : doubleTenth ? '#FDE8EA' : '#ffebee';
-  const fullBadgeText = halloween ? '#C2410C' : doubleTenth ? '#D62538' : '#ff4c4c';
-  const rowText = halloween ? '#2A1840' : doubleTenth ? '#163A78' : '#333333';
-  const sepColor = halloween ? '#EDE4F7' : doubleTenth ? '#E6EEF8' : '#f4f4f4';
-  const headerSep = halloween ? '#E9D5FF' : doubleTenth ? '#D5E2F7' : '#eeeeee';
-  const chevron = halloween ? '#C4B5FD' : doubleTenth ? '#B7C6DE' : '#cccccc';
-  const lobbyTitle = halloween ? '🎃 羽球接龍大廳' : '🏸 羽球接龍大廳';
+  const halloween = (month === 10 && day >= 13) || (month === 11 && day <= 1);
+  const christmas = (month === 11 && day >= 2) || month === 12 || (month === 1 && day <= 6);
+  const brand = christmas ? '#C8102E' : halloween ? '#7C3AED' : doubleTenth ? '#1F57B8' : '#1DB446';
+  const actionColor = christmas ? '#1F7A4D' : halloween ? '#F97316' : doubleTenth ? '#D62538' : '#1DB446';
+  const openBadgeBg = christmas ? '#E8F6EE' : halloween ? '#F3E8FF' : doubleTenth ? '#E7F0FF' : '#e8f5e9';
+  const openBadgeText = christmas ? '#146C43' : halloween ? '#6D28D9' : doubleTenth ? '#1A4EAE' : '#1DB446';
+  const fullBadgeBg = christmas ? '#FDE8EA' : halloween ? '#FFEDD5' : doubleTenth ? '#FDE8EA' : '#ffebee';
+  const fullBadgeText = christmas ? '#C8102E' : halloween ? '#C2410C' : doubleTenth ? '#D62538' : '#ff4c4c';
+  const rowText = christmas ? '#1C2B24' : halloween ? '#2A1840' : doubleTenth ? '#163A78' : '#333333';
+  const sepColor = christmas ? '#E6F2EB' : halloween ? '#EDE4F7' : doubleTenth ? '#E6EEF8' : '#f4f4f4';
+  const headerSep = christmas ? '#F6D5D8' : halloween ? '#E9D5FF' : doubleTenth ? '#D5E2F7' : '#eeeeee';
+  const chevron = christmas ? '#E8B8BE' : halloween ? '#C4B5FD' : doubleTenth ? '#B7C6DE' : '#cccccc';
+  const lobbyTitle = christmas ? '🎄 羽球接龍大廳' : halloween ? '🎃 羽球接龍大廳' : '🏸 羽球接龍大廳';
   const flexContents = [];
   targetGames.forEach((g, index) => {
     if (index >= 15) return;
@@ -3450,7 +3477,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       layout: "horizontal",
       margin: "md",
       paddingAll: "10px",
-      backgroundColor: halloween ? "#F3E8FF" : doubleTenth ? "#E7F0FF" : "#e8f5e9",
+      backgroundColor: christmas ? "#FDECEC" : halloween ? "#F3E8FF" : doubleTenth ? "#E7F0FF" : "#e8f5e9",
       cornerRadius: "md",
       alignItems: "center",
       contents: [
@@ -3476,18 +3503,22 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       }
     ]
   };
-  const festive = doubleTenth || halloween;
+  const festive = doubleTenth || halloween || christmas;
   const header = festive ? {
     type: "box",
     layout: "vertical",
     paddingAll: "0px",
-    backgroundColor: halloween ? "#FFF7ED" : "#F4F8FF",
+    backgroundColor: christmas ? "#FFF8F6" : halloween ? "#FFF7ED" : "#F4F8FF",
     contents: [
       {
         type: "box",
         layout: "horizontal",
         height: "6px",
-        contents: halloween ? [
+        contents: christmas ? [
+          { type: "box", layout: "vertical", flex: 34, backgroundColor: "#C8102E", contents: [{ type: "filler" }] },
+          { type: "box", layout: "vertical", flex: 12, backgroundColor: "#F7F3EA", contents: [{ type: "filler" }] },
+          { type: "box", layout: "vertical", flex: 54, backgroundColor: "#1F7A4D", contents: [{ type: "filler" }] }
+        ] : halloween ? [
           { type: "box", layout: "vertical", flex: 34, backgroundColor: "#F97316", contents: [{ type: "filler" }] },
           { type: "box", layout: "vertical", flex: 33, backgroundColor: "#7C3AED", contents: [{ type: "filler" }] },
           { type: "box", layout: "vertical", flex: 33, backgroundColor: "#1A1024", contents: [{ type: "filler" }] }
@@ -5419,20 +5450,10 @@ app.post('/api/action', express.json(), async (req, res) => {
       
       // 定時發布與提醒都會用到推播額度，只保留給超級管理員
       let pPublish = null;
-      if (publish && isSuperAdminUser) {
-         let ptStr = publish.replace('T', ' ');
-         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
-         const dt = new Date(ptStr);
-         if (!isNaN(dt.getTime())) pPublish = dt.getTime();
-      }
+      if (publish && isSuperAdminUser) pPublish = futureTaipeiTime(publish);
       
       let pReminder = null;
-      if (reminder && isSuperAdminUser) {
-         let rtStr = reminder.replace('T', ' ');
-         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
-         const dt = new Date(rtStr);
-         if (!isNaN(dt.getTime())) pReminder = dt.getTime();
-      }
+      if (reminder && isSuperAdminUser) pReminder = futureTaipeiTime(reminder);
       
       let initialLists = [];
       let currentInitialList = [];
@@ -5538,7 +5559,7 @@ app.post('/api/action', express.json(), async (req, res) => {
           }
       }
       
-      return res.json({ success: true, gameId: newGameId, pushErrors: pushErrors });
+      return res.json({ success: true, gameId: newGameId, pushErrors: pushErrors, scheduledAt: pPublish });
     }
     
     if (action === 'closeGame') {
@@ -5656,23 +5677,8 @@ app.post('/api/action', express.json(), async (req, res) => {
         game.sections = [game.sections[0]];
       }
       
-      let pPublish = null;
-      if (publish) {
-         let ptStr = publish.replace('T', ' ');
-         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
-         const dt = new Date(ptStr);
-         if (!isNaN(dt.getTime())) pPublish = dt.getTime();
-      }
-      if (isSuperAdminUser) game.scheduleTime = pPublish;
-      
-      let pReminder = null;
-      if (reminder) {
-         let rtStr = reminder.replace('T', ' ');
-         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
-         const dt = new Date(rtStr);
-         if (!isNaN(dt.getTime())) pReminder = dt.getTime();
-      }
-      if (isSuperAdminUser) game.reminderTime = pReminder;
+      if (isSuperAdminUser) game.scheduleTime = publish ? futureTaipeiTime(publish) : null;
+      if (isSuperAdminUser) game.reminderTime = reminder ? futureTaipeiTime(reminder) : null;
       
       try {
         await saveGame(gameId, true);
@@ -5796,6 +5802,10 @@ app.post('/api/action', express.json(), async (req, res) => {
     const c = count || 1;
     
     if (action === 'register') {
+      const sched = Number(game.scheduleTime);
+      if (Number.isFinite(sched) && sched > Date.now()) {
+        return res.status(400).json({ error: '還沒到預約發布時間，時間到才能報名' });
+      }
       const targetSecIdx = (typeof req.body.sectionIdx === 'number' && req.body.sectionIdx < game.sections.length) ? req.body.sectionIdx : 0;
       const targetSection = game.sections[targetSecIdx];
       affectedSectionName = targetSection.title;
@@ -6359,20 +6369,10 @@ async function handleEvent(event) {
       const pTag = tagMatch ? (tagMatch[1] || tagMatch[2]).trim() : '';
       
       let pPublish = null;
-      if (publishMatch) {
-         let ptStr = (publishMatch[1] || publishMatch[2]).trim();
-         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
-         const dt = new Date(ptStr);
-         if (!isNaN(dt.getTime())) pPublish = dt.getTime();
-      }
+      if (publishMatch) pPublish = futureTaipeiTime((publishMatch[1] || publishMatch[2] || '').trim());
       
       let pReminder = null;
-      if (reminderMatch) {
-         let rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
-         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
-         const dt = new Date(rtStr);
-         if (!isNaN(dt.getTime())) pReminder = dt.getTime();
-      }
+      if (reminderMatch) pReminder = futureTaipeiTime((reminderMatch[1] || reminderMatch[2] || '').trim());
       
       let title = '羽球接龍';
       if (titleMatch) {
@@ -7102,18 +7102,8 @@ async function handleEvent(event) {
              for(let i=0; i<anons.length; i++) targetGame.sections[0].list.push('__ANON__');
          }
       }
-      if (publishMatch) {
-         let ptStr = (publishMatch[1] || publishMatch[2]).trim();
-         if (!ptStr.match(/[Z\+\-]/)) ptStr += ' +08:00';
-         const dt = new Date(ptStr);
-         if (!isNaN(dt.getTime())) targetGame.scheduleTime = dt.getTime();
-      }
-      if (reminderMatch) {
-         let rtStr = (reminderMatch[1] || reminderMatch[2]).trim();
-         if (!rtStr.match(/[Z\+\-]/)) rtStr += ' +08:00';
-         const dt = new Date(rtStr);
-         if (!isNaN(dt.getTime())) targetGame.reminderTime = dt.getTime();
-      }
+      if (publishMatch) targetGame.scheduleTime = futureTaipeiTime((publishMatch[1] || publishMatch[2] || '').trim());
+      if (reminderMatch) targetGame.reminderTime = futureTaipeiTime((reminderMatch[1] || reminderMatch[2] || '').trim());
       
       await saveGame(targetGame.gameId, true);
       return await sendLobbyLink(event.replyToken, gid, `✏️ 已成功修改場次：${targetGame.title}`);
