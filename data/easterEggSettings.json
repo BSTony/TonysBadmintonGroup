@@ -68,7 +68,8 @@
       "kills": 3,
       "prize": null,
       "prizeAt": null,
-      "updatedAt": 1793614179512
+      "updatedAt": 1793614190091,
+      "bossCleared": true
     }
   ],
   "christmasStock": {
