@@ -46,5 +46,7 @@
       "name": "林俊佑",
       "survivalTime": 1.5
     }
-  ]
+  ],
+  "christmasEvent": true,
+  "evilSantaFirstHit": null
 }
