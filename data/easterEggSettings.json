@@ -48,30 +48,8 @@
     }
   ],
   "christmasEvent": true,
-  "evilSantaFirstHit": {
-    "uid": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-    "name": "謝東霖 Tony",
-    "shotAt": 1793614104676
-  },
-  "christmasPlayers": [
-    {
-      "uid": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "name": "謝東霖 Tony",
-      "kills": 1,
-      "prize": null,
-      "prizeAt": null,
-      "updatedAt": 1793614104676
-    },
-    {
-      "uid": "U49e2484c80056990b759e9039a74e1a6",
-      "name": "Kay",
-      "kills": 3,
-      "prize": "grip",
-      "prizeAt": 1793614191879,
-      "updatedAt": 1793614191879,
-      "bossCleared": true
-    }
-  ],
+  "evilSantaFirstHit": null,
+  "christmasPlayers": [],
   "christmasStock": {
     "tea": 3,
     "grip": 5
