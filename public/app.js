@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.2.50
+ * Version: 1.2.51
  */
 let globalLobbyUsers = [];
 
@@ -6186,26 +6186,19 @@ async function chooseChristmasGift(prize, btn) {
 }
 
 function maybeSpawnEvilSanta() {
-  if (!christmasEventOn || evilWaveCount < 2 || myEvilPrize || myEvilKills >= 3) {
+  if (!christmasEventOn || myEvilPrize || myEvilKills >= 3) {
     if (!christmasEventOn || myEvilPrize || myEvilKills >= 3) removeEvilSanta();
     if (christmasEventOn && myEvilKills >= 3 && !myEvilPrize) openBoss();
     return;
   }
   if (document.getElementById('xm-evil-santa')) return;
-  const scene = document.querySelector('.xm-scene');
-  if (!scene) return;
   const el = document.createElement('span');
   el.id = 'xm-evil-santa';
   el.className = 'xm-runner xm-evil';
-  el.style.setProperty('--y', '36%');
-  el.style.setProperty('--x', '0');
-  el.style.setProperty('--w', '176px');
-  el.style.setProperty('--dur', '20s');
-  el.style.setProperty('--delay', '0s');
-  el.style.setProperty('--step', '.22s');
+  el.style.setProperty('--w', '210px');
   el.innerHTML = '<svg viewBox="0 0 180 130"><use href="#xm-evil-santa"/></svg>';
   el.addEventListener('click', onEvilSantaClick);
-  scene.appendChild(el);
+  document.body.appendChild(el);
 }
 
 async function onEvilSantaClick(event) {

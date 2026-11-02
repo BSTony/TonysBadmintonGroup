@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.3.42
+ * Version: 1.3.43
  */
 const express = require('express');
 const compression = require('compression');
@@ -3392,25 +3392,14 @@ function getFlexCardTheme(now = new Date()) {
   });
 }
 
-function flexSnowLine() {
-  return { type: 'text', text: '❄     ·     ❄          ·        ❄     ·', size: 'xxs', color: '#C5D8EA', align: 'center' };
-}
-
 function flexSnowflakes() {
-  return [
-    ['1px', '12px', 'xs', '#FFFFFF'],
-    ['0px', '78px', 'xxs', '#F4FBFF'],
-    ['2px', '156px', 'xxs', '#FFFFFF'],
-    ['0px', '236px', 'xs', '#F7F3EA'],
-    ['34px', '6px', 'xxs', '#D5E6F4'],
-    ['38px', '250px', 'xs', '#C9DFF0']
-  ].map(([top, start, size, color]) => ({
+  return ['14px', '92px', '168px', '246px'].map((start) => ({
     type: 'text',
     text: '❄',
-    size,
-    color,
+    size: 'xxs',
+    color: '#FFFFFF',
     position: 'absolute',
-    offsetTop: top,
+    offsetTop: '0px',
     offsetStart: start
   }));
 }
@@ -3466,9 +3455,9 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       const titleRowBox = {
         type: "box",
         layout: "horizontal",
-        paddingTop: "8px",
-        paddingBottom: "4px",
-        paddingStart: isTarget ? "10px" : "4px",
+        paddingTop: "2px",
+        paddingBottom: "2px",
+        paddingStart: isTarget ? "8px" : "2px",
         paddingEnd: "4px",
         alignItems: "center",
         contents: titleRowContents
@@ -3542,9 +3531,9 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       finalBox = {
         type: "box",
         layout: "horizontal",
-        paddingTop: "8px",
-        paddingBottom: "8px",
-        paddingStart: isTarget ? "10px" : "4px",
+        paddingTop: "4px",
+        paddingBottom: "4px",
+        paddingStart: isTarget ? "8px" : "2px",
         paddingEnd: "4px",
         alignItems: "center",
         action: { type: "uri", label: "查看名單", uri: `${liffBaseUrl}&gameId=${g.gameId}` },
@@ -3553,8 +3542,8 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     }
 
     finalBox.backgroundColor = isTarget ? theme.highlightBg : theme.cardBg;
-    finalBox.cornerRadius = "lg";
-    finalBox.margin = index === 0 ? "none" : "sm";
+    finalBox.cornerRadius = "md";
+    finalBox.margin = index === 0 ? "none" : "xs";
     finalBox.borderWidth = "light";
     finalBox.borderColor = isTarget ? theme.highlightEdge : theme.cardEdge;
 
@@ -3617,15 +3606,11 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       {
         type: "box",
         layout: "vertical",
-        paddingStart: "16px",
-        paddingEnd: "16px",
-        paddingTop: "14px",
-        paddingBottom: "12px",
-        contents: [
-          titleRow,
-          { type: "text", text: theme.headerHint, size: "xxs", color: theme.sectionText, margin: "sm" },
-          ...(theme.snow ? [flexSnowLine()] : [])
-        ]
+        paddingStart: "12px",
+        paddingEnd: "12px",
+        paddingTop: "8px",
+        paddingBottom: "8px",
+        contents: [titleRow]
       },
       ...(theme.snow ? flexSnowflakes() : [])
     ]
@@ -3642,9 +3627,9 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     body: {
       type: "box",
       layout: "vertical",
-      paddingAll: "14px",
+      paddingAll: "10px",
       backgroundColor: theme.bodyBg,
-      contents: (theme.snow ? [flexSnowLine()] : []).concat(flexContents.length ? flexContents : [
+      contents: (flexContents.length ? flexContents : [
         { type: "text", text: "目前沒有場次", size: "sm", color: theme.sectionText, align: "center" }
       ])
     }
@@ -3731,7 +3716,7 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               body: {
                 type: "box", layout: "vertical", paddingAll: "14px", backgroundColor: theme.bodyBg, position: "relative",
                 contents: [
-                  ...(theme.snow ? [flexSnowLine(), ...flexSnowflakes()] : []),
+                  ...(theme.snow ? flexSnowflakes() : []),
                   { type: "box", layout: "vertical", contents: listBoxes }
                 ]
               }
@@ -7989,13 +7974,12 @@ function getLobbyCard(gid) {
       body: {
         type: 'box',
         layout: 'vertical',
-        paddingAll: '16px',
+        paddingAll: '12px',
         backgroundColor: theme.bodyBg,
         position: 'relative',
         contents: [
-          ...(theme.snow ? [flexSnowLine(), ...flexSnowflakes()] : []),
+          ...(theme.snow ? flexSnowflakes() : []),
           { type: 'text', text: theme.lobbyTitle, weight: 'bold', size: 'md', color: theme.brand },
-          { type: 'text', text: theme.headerHint, size: 'xs', color: theme.sectionText, margin: 'sm', wrap: true },
           {
             type: 'button',
             style: 'primary',

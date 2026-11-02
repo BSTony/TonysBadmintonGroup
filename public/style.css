@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.31
+  Version: 1.2.32
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -479,16 +479,18 @@ html.christmas .xm-runner svg {
 html.christmas .xm-runner.santa svg { aspect-ratio: 180 / 130; }
 html.christmas .xm-runner.deer svg { aspect-ratio: 180 / 120; }
 html.christmas .xm-runner.xm-evil {
+  position: fixed;
   opacity: 1;
   top: 0;
   left: 0;
-  z-index: 6;
-  width: 168px;
+  z-index: 30;
+  width: min(46vw, 210px);
   pointer-events: auto;
   cursor: pointer;
   animation-name: xm-evil-roam;
-  animation-duration: 12s;
+  animation-duration: 9s;
   animation-timing-function: linear;
+  filter: drop-shadow(0 0 12px rgba(255, 40, 40, 0.85));
 }
 html.christmas .xm-evil svg { aspect-ratio: 180 / 130; pointer-events: none; }
 html.christmas .xm-evil.is-shot {
@@ -496,11 +498,11 @@ html.christmas .xm-evil.is-shot {
   animation: xm-evil-fall 0.7s ease-in forwards;
 }
 @keyframes xm-evil-roam {
-  0% { transform: translate3d(6vw, 16vh, 0); }
-  25% { transform: translate3d(58vw, 22vh, 0); }
-  50% { transform: translate3d(42vw, 58vh, 0) scaleX(-1); }
-  75% { transform: translate3d(10vw, 46vh, 0) scaleX(-1); }
-  100% { transform: translate3d(6vw, 16vh, 0); }
+  0% { transform: translate3d(18vw, 28vh, 0) scale(1.05); }
+  25% { transform: translate3d(48vw, 22vh, 0) scale(1.05); }
+  50% { transform: translate3d(36vw, 52vh, 0) scaleX(-1.05) scaleY(1.05); }
+  75% { transform: translate3d(8vw, 42vh, 0) scaleX(-1.05) scaleY(1.05); }
+  100% { transform: translate3d(18vw, 28vh, 0) scale(1.05); }
 }
 @keyframes xm-evil-fall {
   to { transform: translate3d(0, 36vh, 0) rotate(70deg) scale(0.25); opacity: 0; }
