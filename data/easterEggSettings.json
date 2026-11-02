@@ -66,9 +66,9 @@
       "uid": "U49e2484c80056990b759e9039a74e1a6",
       "name": "Kay",
       "kills": 3,
-      "prize": null,
-      "prizeAt": null,
-      "updatedAt": 1793614190091,
+      "prize": "grip",
+      "prizeAt": 1793614191879,
+      "updatedAt": 1793614191879,
       "bossCleared": true
     }
   ],
