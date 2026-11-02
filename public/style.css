@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.27
+  Version: 1.2.28
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -424,6 +424,28 @@ html.christmas .xm-flake {
   animation: xm-fall var(--dur, 14s) linear infinite;
   animation-delay: var(--delay, 0s);
 }
+html.christmas .xm-prop {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: var(--w);
+  opacity: 0.92;
+  pointer-events: none;
+  transform-origin: 50% 12%;
+  animation: xm-sway 3.8s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+html.christmas .xm-prop svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 6px 6px rgba(6, 16, 32, 0.22));
+}
+@keyframes xm-sway {
+  0%, 100% { transform: rotate(-7deg) translateY(0); }
+  50% { transform: rotate(8deg) translateY(-7px); }
+}
 html.christmas .xm-runner {
   position: absolute;
   top: var(--y);
@@ -543,6 +565,7 @@ html.christmas .empty-state p { color: #fff6ee; }
 html.christmas .empty-state .hint { color: #d7f3e4; }
 @media (max-width: 760px) {
   html.christmas .xm-runner { width: calc(var(--w) * 0.72); }
+  html.christmas .xm-prop { width: calc(var(--w) * 0.78); }
 }
 @media (min-width: 900px) {
   html.christmas .xm-runner { width: calc(var(--w) * 1.28); }
@@ -550,7 +573,8 @@ html.christmas .empty-state .hint { color: #d7f3e4; }
 @media (prefers-reduced-motion: reduce) {
   html.christmas .xm-runner,
   html.christmas .xm-runner svg,
-  html.christmas .xm-flake { animation: none; }
+  html.christmas .xm-flake,
+  html.christmas .xm-prop { animation: none; }
 }
 
 #app {
