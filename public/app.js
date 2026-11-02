@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.2.47
+ * Version: 1.2.50
  */
 let globalLobbyUsers = [];
 
@@ -393,6 +393,9 @@ let easterEggEnabled = false;
 let easterEggActiveGame = 'piggy_run';
 let christmasEventOn = false;
 let evilSantaDown = false;
+let myEvilKills = 0;
+let myEvilPrize = null;
+let bossHp = 50;
 let evilWaveCount = 0;
 try { evilWaveCount = Number(sessionStorage.getItem('xmEvilWaves') || 0) || 0; } catch (e) {}
 let piggyClicks = 0;
@@ -868,6 +871,8 @@ const easterEggMsg = document.getElementById('easter-egg-msg');
 const eeActiveGameSelect = document.getElementById('ee-active-game');
 const eeChristmasCheckbox = document.getElementById('ee-christmas');
 const eeEvilHit = document.getElementById('ee-evil-hit');
+const eeTeaStock = document.getElementById('ee-tea-stock');
+const eeGripStock = document.getElementById('ee-grip-stock');
 const bhContainer = document.getElementById('bh-container');
 const bhTimer = document.getElementById('bh-timer');
 const bhEntities = document.getElementById('bh-entities');
@@ -2094,7 +2099,7 @@ async function loadGamesLobby(silent = false) {
 
     extras.push((async () => {
       try {
-        const eeRes = await fetch('/api/easter_egg/status');
+        const eeRes = await fetch(easterStatusUrl());
         if (eeRes.ok) {
           const eeData = await eeRes.json();
           applyEasterStatus(eeData);
@@ -6079,14 +6084,25 @@ function formatEvilShotTime(ts) {
   }
 }
 
-function renderEvilSantaHit(hit) {
+function renderEvilSantaHit(settings) {
   if (!eeEvilHit) return;
-  if (hit && hit.shotAt) {
-    const when = formatEvilShotTime(hit.shotAt);
-    eeEvilHit.textContent = `第一位擊落：${hit.name || '訪客'}${when ? '　' + when : ''}`;
-  } else {
-    eeEvilHit.textContent = '還沒有人擊落';
-  }
+  const data = settings || {};
+  const players = Array.isArray(data.christmasPlayers) ? data.christmasPlayers : [];
+  const stock = data.christmasStock || { tea: 5, grip: 10 };
+  const teaUsed = players.filter(player => player.prize === 'tea').length;
+  const gripUsed = players.filter(player => player.prize === 'grip').length;
+  const lines = [
+    `剩餘珍奶 ${Math.max(0, (stock.tea || 0) - teaUsed)} / ${stock.tea || 0}`,
+    `剩餘握把布 ${Math.max(0, (stock.grip || 0) - gripUsed)} / ${stock.grip || 0}`
+  ];
+  if (!players.length) lines.push('還沒有人遊玩');
+  players.forEach((player) => {
+    const prize = player.prize === 'tea' ? '珍奶' : (player.prize === 'grip' ? '握把布' : '尚未選禮物');
+    const when = formatEvilShotTime(player.prizeAt || player.updatedAt);
+    lines.push(`${player.name || '訪客'}　擊落 ${player.kills || 0}/3　${prize}${when ? '　' + when : ''}`);
+  });
+  eeEvilHit.textContent = lines.join('\n');
+  eeEvilHit.style.whiteSpace = 'pre-line';
 }
 
 function showEvilToast(text) {
@@ -6108,9 +6124,71 @@ function removeEvilSanta() {
   if (el) el.remove();
 }
 
+function easterStatusUrl() {
+  const uid = (currentUser && currentUser.userId) || '';
+  return '/api/easter_egg/status' + (uid ? ('?uid=' + encodeURIComponent(uid)) : '');
+}
+
+function closeBoss() {
+  const boss = document.getElementById('xm-boss');
+  if (boss) boss.remove();
+}
+
+function openBoss() {
+  if (document.getElementById('xm-boss') || myEvilPrize) return;
+  removeEvilSanta();
+  bossHp = 50;
+  const overlay = document.createElement('div');
+  overlay.id = 'xm-boss';
+  overlay.className = 'xm-boss';
+  overlay.innerHTML = '<div class="xm-boss-hp"><div class="xm-boss-hp-fill"></div></div><button type="button" class="xm-boss-santa" id="xm-boss-santa"><svg viewBox="0 0 180 130"><use href="#xm-evil-santa"/></svg></button><div class="xm-boss-gifts" id="xm-boss-gifts" hidden><button type="button" data-prize="tea">珍奶一杯</button><button type="button" data-prize="grip">握把布一條</button></div>';
+  document.body.appendChild(overlay);
+  document.getElementById('xm-boss-santa').addEventListener('click', onBossClick);
+  overlay.querySelectorAll('[data-prize]').forEach((btn) => {
+    btn.addEventListener('click', () => chooseChristmasGift(btn.getAttribute('data-prize'), btn));
+  });
+}
+
+function onBossClick() {
+  if (bossHp <= 0) return;
+  bossHp -= 1;
+  const fill = document.querySelector('#xm-boss .xm-boss-hp-fill');
+  if (fill) fill.style.width = ((bossHp / 50) * 100) + '%';
+  if (bossHp > 0) return;
+  const santa = document.getElementById('xm-boss-santa');
+  const gifts = document.getElementById('xm-boss-gifts');
+  if (santa) santa.hidden = true;
+  if (gifts) gifts.hidden = false;
+}
+
+async function chooseChristmasGift(prize, btn) {
+  if (btn) btn.disabled = true;
+  const uid = (currentUser && currentUser.userId) || (typeof getOrCreateGuestUid === 'function' ? getOrCreateGuestUid() : 'U_GUEST');
+  const name = (currentUser && currentUser.displayName) || '訪客';
+  try {
+    const res = await fetch('/api/easter_egg/evil_santa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid, name, action: 'prize', prize })
+    });
+    const data = await res.json();
+    if (data.success) {
+      myEvilPrize = data.prize;
+      closeBoss();
+      showEvilToast(data.prize === 'tea' ? '領到珍奶一杯，打球時可以領取' : '領到握把布一條，打球時可以領取');
+      return;
+    }
+    showEvilToast(data.message || '這個禮物發完了');
+  } catch (e) {
+    showEvilToast('網路不穩，請再選一次');
+  }
+  if (btn) btn.disabled = false;
+}
+
 function maybeSpawnEvilSanta() {
-  if (!christmasEventOn || evilSantaDown || evilWaveCount < 2) {
-    if (!christmasEventOn || evilSantaDown) removeEvilSanta();
+  if (!christmasEventOn || evilWaveCount < 2 || myEvilPrize || myEvilKills >= 3) {
+    if (!christmasEventOn || myEvilPrize || myEvilKills >= 3) removeEvilSanta();
+    if (christmasEventOn && myEvilKills >= 3 && !myEvilPrize) openBoss();
     return;
   }
   if (document.getElementById('xm-evil-santa')) return;
@@ -6134,7 +6212,7 @@ async function onEvilSantaClick(event) {
   event.preventDefault();
   event.stopPropagation();
   const el = event.currentTarget;
-  if (!el || el.dataset.shot === '1' || evilSantaDown) return;
+  if (!el || el.dataset.shot === '1' || myEvilPrize) return;
   el.dataset.shot = '1';
   const uid = (currentUser && currentUser.userId) || (typeof getOrCreateGuestUid === 'function' ? getOrCreateGuestUid() : 'U_GUEST');
   const name = (currentUser && currentUser.displayName) || '訪客';
@@ -6142,20 +6220,24 @@ async function onEvilSantaClick(event) {
     const res = await fetch('/api/easter_egg/evil_santa', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uid, name })
+      body: JSON.stringify({ uid, name, action: 'kill' })
     });
     const data = await res.json();
-    if (data.success) {
-      evilSantaDown = true;
-      el.classList.add('is-shot');
-      setTimeout(() => el.remove(), 800);
-      showEvilToast('你擊落了邪惡聖誕老人！');
+    if (data.alreadyPrize) {
+      myEvilPrize = data.prize;
+      el.remove();
+      showEvilToast('你已經領過禮物');
       return;
     }
-    if (data.already) {
-      evilSantaDown = true;
-      el.remove();
-      showEvilToast(`邪惡聖誕老人已被 ${data.hit && data.hit.name ? data.hit.name : '別人'} 先擊落`);
+    if (data.success) {
+      myEvilKills = data.kills || myEvilKills;
+      el.classList.add('is-shot');
+      showEvilToast(data.boss ? '第三隻倒下了' : ('擊落 ' + myEvilKills + '/3'));
+      setTimeout(() => {
+        el.remove();
+        if (data.boss) openBoss();
+        else maybeSpawnEvilSanta();
+      }, 700);
       return;
     }
     el.dataset.shot = '';
@@ -6170,24 +6252,34 @@ function applyEasterStatus(data) {
   easterEggEnabled = !!eeData.enabled;
   if (eeData.activeGame) easterEggActiveGame = eeData.activeGame;
   christmasEventOn = !!eeData.christmasEvent;
-  evilSantaDown = !!eeData.evilSantaDown;
+  myEvilKills = Number(eeData.myKills) || 0;
+  myEvilPrize = eeData.myPrize || null;
+  if (myEvilPrize) closeBoss();
+  maybeSpawnEvilSanta();
+}
+
+async function refreshChristmasHunt() {
+  try {
+    const res = await fetch(easterStatusUrl());
+    if (res.ok) {
+      applyEasterStatus(await res.json());
+      return;
+    }
+  } catch (e) {}
   maybeSpawnEvilSanta();
 }
 
 function startChristmasWaveClock() {
-  if (window.__xmWaveClock) return;
-  window.__xmWaveClock = setInterval(async () => {
-    evilWaveCount += 1;
+  if (window.__xmEvilArmed) return;
+  window.__xmEvilArmed = true;
+  const markSecondWaveDone = () => {
+    evilWaveCount = Math.max(evilWaveCount, 2);
     try { sessionStorage.setItem('xmEvilWaves', String(evilWaveCount)); } catch (e) {}
-    try {
-      const res = await fetch('/api/easter_egg/status');
-      if (res.ok) {
-        applyEasterStatus(await res.json());
-        return;
-      }
-    } catch (e) {}
-    maybeSpawnEvilSanta();
-  }, 20000);
+    refreshChristmasHunt();
+  };
+  if (evilWaveCount >= 2) markSecondWaveDone();
+  else setTimeout(markSecondWaveDone, 27000);
+  setInterval(refreshChristmasHunt, 8000);
 }
 
 function fillEasterEggSettingsForm(data) {
@@ -6199,7 +6291,9 @@ function fillEasterEggSettingsForm(data) {
     eeActiveGameSelect.value = settings.activeGame;
   }
   if (eeChristmasCheckbox) eeChristmasCheckbox.checked = !!settings.christmasEvent;
-  renderEvilSantaHit(settings.evilSantaFirstHit);
+  if (eeTeaStock) eeTeaStock.value = settings.christmasStock && settings.christmasStock.tea != null ? settings.christmasStock.tea : 5;
+  if (eeGripStock) eeGripStock.value = settings.christmasStock && settings.christmasStock.grip != null ? settings.christmasStock.grip : 10;
+  renderEvilSantaHit(settings);
 
   const isBulletHell = eeActiveGameSelect && eeActiveGameSelect.value === 'bullet_hell';
   const listData = isBulletHell ? (settings.bulletHellLeaderboard || []) : (settings.winners || []);
@@ -6465,7 +6559,11 @@ if (btnSaveEasterEgg) {
             message: eeMessageInput ? eeMessageInput.value : '',
             quota: Number.isFinite(quota) && quota > 0 ? quota : 3,
             activeGame: eeActiveGameSelect ? eeActiveGameSelect.value : 'piggy_run',
-            christmasEvent: !!(eeChristmasCheckbox && eeChristmasCheckbox.checked)
+            christmasEvent: !!(eeChristmasCheckbox && eeChristmasCheckbox.checked),
+            christmasStock: {
+              tea: Math.max(0, parseInt(eeTeaStock && eeTeaStock.value, 10) || 0),
+              grip: Math.max(0, parseInt(eeGripStock && eeGripStock.value, 10) || 0)
+            }
           }
         })
       }, 12000, '彩蛋設定儲存逾時');
@@ -6487,7 +6585,7 @@ if (btnClearWinners) {
     if (!confirm('確定要清除獲獎名單和邪惡聖誕老人擊落紀錄？')) return;
     try {
       const isBulletHell = eeActiveGameSelect && eeActiveGameSelect.value === 'bullet_hell';
-      const settingsPayload = isBulletHell ? { bulletHellLeaderboard: [], evilSantaFirstHit: null } : { winners: [], evilSantaFirstHit: null };
+      const settingsPayload = isBulletHell ? { bulletHellLeaderboard: [], evilSantaFirstHit: null, christmasPlayers: [] } : { winners: [], evilSantaFirstHit: null, christmasPlayers: [] };
       
       const res = await fetch('/api/admin/easter_egg', {
         method: 'POST',
@@ -6501,7 +6599,10 @@ if (btnClearWinners) {
         eeWinnersCount.innerText = 0;
         eeWinnersList.innerHTML = '';
         evilSantaDown = false;
-        renderEvilSantaHit(null);
+        myEvilKills = 0;
+        myEvilPrize = null;
+        closeBoss();
+        renderEvilSantaHit({ christmasPlayers: [], christmasStock: { tea: parseInt(eeTeaStock && eeTeaStock.value, 10) || 0, grip: parseInt(eeGripStock && eeGripStock.value, 10) || 0 } });
         maybeSpawnEvilSanta();
         alert('已清除名單');
       }

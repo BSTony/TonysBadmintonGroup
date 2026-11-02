@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.28
+  Version: 1.2.31
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -429,7 +429,7 @@ html.christmas .xm-prop {
   top: var(--y);
   left: var(--x);
   width: var(--w);
-  opacity: 0.92;
+  opacity: 0.36;
   pointer-events: none;
   transform-origin: 50% 12%;
   animation: xm-sway 3.8s ease-in-out infinite;
@@ -478,21 +478,83 @@ html.christmas .xm-runner svg {
 }
 html.christmas .xm-runner.santa svg { aspect-ratio: 180 / 130; }
 html.christmas .xm-runner.deer svg { aspect-ratio: 180 / 120; }
-html.christmas .xm-evil {
-  opacity: 0;
-  z-index: 5;
+html.christmas .xm-runner.xm-evil {
+  opacity: 1;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  width: 168px;
   pointer-events: auto;
   cursor: pointer;
-  animation-name: xm-pass-ltr;
+  animation-name: xm-evil-roam;
+  animation-duration: 12s;
+  animation-timing-function: linear;
 }
 html.christmas .xm-evil svg { aspect-ratio: 180 / 130; pointer-events: none; }
 html.christmas .xm-evil.is-shot {
   pointer-events: none;
   animation: xm-evil-fall 0.7s ease-in forwards;
 }
+@keyframes xm-evil-roam {
+  0% { transform: translate3d(6vw, 16vh, 0); }
+  25% { transform: translate3d(58vw, 22vh, 0); }
+  50% { transform: translate3d(42vw, 58vh, 0) scaleX(-1); }
+  75% { transform: translate3d(10vw, 46vh, 0) scaleX(-1); }
+  100% { transform: translate3d(6vw, 16vh, 0); }
+}
 @keyframes xm-evil-fall {
   to { transform: translate3d(0, 36vh, 0) rotate(70deg) scale(0.25); opacity: 0; }
 }
+.xm-boss {
+  position: fixed;
+  inset: 0;
+  z-index: 10030;
+  background: rgba(8, 12, 24, 0.86);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.xm-boss-hp {
+  width: min(92vw, 520px);
+  height: 16px;
+  margin-top: 22px;
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.xm-boss-hp-fill {
+  height: 100%;
+  width: 100%;
+  background: #22c55e;
+  border-radius: 999px;
+}
+.xm-boss-santa {
+  margin-top: 6vh;
+  width: min(78vw, 420px);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.xm-boss-santa svg { width: 100%; height: auto; display: block; }
+.xm-boss-gifts {
+  display: flex;
+  gap: 14px;
+  margin-top: 28px;
+}
+.xm-boss-gifts[hidden] { display: none; }
+.xm-boss-gifts button {
+  min-width: 132px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 16px;
+  background: #fff8f4;
+  color: #6b1020;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+}
+.xm-boss-gifts button:disabled { opacity: 0.45; cursor: not-allowed; }
 @keyframes xm-pass-ltr {
   0% { transform: translate3d(-40vw, 0, 0); opacity: 0; }
   4% { opacity: 1; }

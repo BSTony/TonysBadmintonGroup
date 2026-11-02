@@ -1,7 +1,7 @@
 /**
  * Author: Tony Hsieh
  * Date: 2026-11-02
- * Version: 1.3.40
+ * Version: 1.3.42
  */
 const express = require('express');
 const compression = require('compression');
@@ -474,18 +474,36 @@ function isWeakVisitUserId(userId) {
   if (!userId) return true;
   return userId === 'U_LOCAL_TEST' || String(userId).startsWith('U_GUEST_') || String(userId).startsWith('U_LOCAL') || String(userId).startsWith('P_');
 }
-let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [], christmasEvent: false, evilSantaFirstHit: null };
+let easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [], christmasEvent: false, evilSantaFirstHit: null, christmasPlayers: [], christmasStock: { tea: 5, grip: 10 } };
 
 function normalizeEasterEggSettings() {
   if (!easterEggSettings || typeof easterEggSettings !== 'object') {
-    easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [], christmasEvent: false, evilSantaFirstHit: null };
+    easterEggSettings = { enabled: false, message: '出示此畫面給Tony可以獲得一條握把布', quota: 3, winners: [], activeGame: 'piggy_run', bulletHellLeaderboard: [], christmasEvent: false, evilSantaFirstHit: null, christmasPlayers: [], christmasStock: { tea: 5, grip: 10 } };
   }
   if (!easterEggSettings.activeGame) easterEggSettings.activeGame = 'piggy_run';
   if (!Array.isArray(easterEggSettings.bulletHellLeaderboard)) easterEggSettings.bulletHellLeaderboard = [];
   if (!Array.isArray(easterEggSettings.winners)) easterEggSettings.winners = [];
+  if (!Array.isArray(easterEggSettings.christmasPlayers)) easterEggSettings.christmasPlayers = [];
+  const stock = easterEggSettings.christmasStock || {};
+  const tea = parseInt(stock.tea, 10);
+  const grip = parseInt(stock.grip, 10);
+  easterEggSettings.christmasStock = {
+    tea: Number.isFinite(tea) && tea >= 0 ? tea : 5,
+    grip: Number.isFinite(grip) && grip >= 0 ? grip : 10
+  };
   easterEggSettings.christmasEvent = !!easterEggSettings.christmasEvent;
   const hit = easterEggSettings.evilSantaFirstHit;
   if (!hit || typeof hit !== 'object' || !hit.shotAt) easterEggSettings.evilSantaFirstHit = null;
+}
+
+function christmasPrizeUsed(kind) {
+  return easterEggSettings.christmasPlayers.filter(player => player && player.prize === kind).length;
+}
+
+function christmasPrizeLeft(kind) {
+  const stock = easterEggSettings.christmasStock || { tea: 5, grip: 10 };
+  const limit = kind === 'tea' ? stock.tea : stock.grip;
+  return Math.max(0, (Number(limit) || 0) - christmasPrizeUsed(kind));
 }
 // 功能開關：未公開時，AI 影片分析給超級管理員、指定的人，以及指定群組裡曾打開過大廳的人
 let featureSettings = { aiAnalysisPublic: false, aiAnalysisUsers: [], aiAnalysisGroups: [] };
@@ -3332,7 +3350,7 @@ function getFlexCardTheme(now = new Date()) {
       headerBg: '#FFF4F6', bodyBg: '#FFF9F7', cardBg: '#FFFFFF', cardEdge: '#F6D5DC',
       chipBg: '#E9F8EF', chipText: '#215C45', backupBg: '#FFF1E4', backupText: '#9A5B24',
       sectionText: '#A06A78', ribbon: ['#C8102E', '#F7F3EA', '#1F7A4D'], ribbonFlex: [34, 12, 54],
-      noticeBg: '#FDECEC'
+      noticeBg: '#FDECEC', snow: true
     });
   }
   if (halloween) {
@@ -3372,6 +3390,29 @@ function getFlexCardTheme(now = new Date()) {
     sectionText: '#A06A78', ribbon: ['#E26A8D', '#FFF8F4', '#1F8A5B'], ribbonFlex: [34, 12, 54],
     noticeBg: '#FDEFF3'
   });
+}
+
+function flexSnowLine() {
+  return { type: 'text', text: '❄     ·     ❄          ·        ❄     ·', size: 'xxs', color: '#C5D8EA', align: 'center' };
+}
+
+function flexSnowflakes() {
+  return [
+    ['1px', '12px', 'xs', '#FFFFFF'],
+    ['0px', '78px', 'xxs', '#F4FBFF'],
+    ['2px', '156px', 'xxs', '#FFFFFF'],
+    ['0px', '236px', 'xs', '#F7F3EA'],
+    ['34px', '6px', 'xxs', '#D5E6F4'],
+    ['38px', '250px', 'xs', '#C9DFF0']
+  ].map(([top, start, size, color]) => ({
+    type: 'text',
+    text: '❄',
+    size,
+    color,
+    position: 'absolute',
+    offsetTop: top,
+    offsetStart: start
+  }));
 }
 
 // 產生完整名單字串的輔助函式
@@ -3559,6 +3600,7 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
     layout: "vertical",
     paddingAll: "0px",
     backgroundColor: theme.headerBg,
+    position: "relative",
     contents: [
       {
         type: "box",
@@ -3581,9 +3623,11 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
         paddingBottom: "12px",
         contents: [
           titleRow,
-          { type: "text", text: theme.headerHint, size: "xxs", color: theme.sectionText, margin: "sm" }
+          { type: "text", text: theme.headerHint, size: "xxs", color: theme.sectionText, margin: "sm" },
+          ...(theme.snow ? [flexSnowLine()] : [])
         ]
-      }
+      },
+      ...(theme.snow ? flexSnowflakes() : [])
     ]
   };
 
@@ -3600,9 +3644,9 @@ function generateStatusBubble(targetGames, liffBaseUrl, cleanText, isPlusMinus) 
       layout: "vertical",
       paddingAll: "14px",
       backgroundColor: theme.bodyBg,
-      contents: flexContents.length ? flexContents : [
+      contents: (theme.snow ? [flexSnowLine()] : []).concat(flexContents.length ? flexContents : [
         { type: "text", text: "目前沒有場次", size: "sm", color: theme.sectionText, align: "center" }
-      ]
+      ])
     }
   };
 }
@@ -3685,8 +3729,11 @@ async function generatePushMentionMessages(groupGames, targetGid, isMentionPush,
               type: "bubble", size: "mega",
               styles: { body: { backgroundColor: theme.bodyBg, separator: false } },
               body: {
-                type: "box", layout: "vertical", paddingAll: "14px", backgroundColor: theme.bodyBg,
-                contents: [{ type: "box", layout: "vertical", contents: listBoxes }]
+                type: "box", layout: "vertical", paddingAll: "14px", backgroundColor: theme.bodyBg, position: "relative",
+                contents: [
+                  ...(theme.snow ? [flexSnowLine(), ...flexSnowflakes()] : []),
+                  { type: "box", layout: "vertical", contents: listBoxes }
+                ]
               }
           };
           if (gameUri) {
@@ -4292,12 +4339,16 @@ let pinballRoom = {
 
 // --- 彩蛋功能 API ---
 app.get('/api/easter_egg/status', (req, res) => {
-  const hit = easterEggSettings.evilSantaFirstHit;
+  const uid = req.query.uid ? String(req.query.uid) : '';
+  const player = uid ? easterEggSettings.christmasPlayers.find(item => item.uid === uid) : null;
   res.json({
     enabled: easterEggSettings.enabled,
     activeGame: easterEggSettings.activeGame || 'piggy_run',
     christmasEvent: !!easterEggSettings.christmasEvent,
-    evilSantaDown: !!(hit && hit.shotAt)
+    myKills: player ? player.kills : 0,
+    myPrize: player ? (player.prize || null) : null,
+    teaLeft: christmasPrizeLeft('tea'),
+    gripLeft: christmasPrizeLeft('grip')
   });
 });
 
@@ -4305,24 +4356,49 @@ app.post('/api/easter_egg/evil_santa', express.json(), async (req, res) => {
   if (!easterEggSettings.christmasEvent) {
     return res.json({ success: false, message: '聖誕節活動未開啟' });
   }
-  const existing = easterEggSettings.evilSantaFirstHit;
-  if (existing && existing.shotAt) {
-    return res.json({ success: false, already: true, hit: existing });
-  }
   const uid = req.body && req.body.uid ? String(req.body.uid) : '';
   const name = req.body && req.body.name ? String(req.body.name).trim() : '';
+  const action = req.body && req.body.action ? String(req.body.action) : 'kill';
   if (!uid) return res.status(400).json({ success: false, message: 'Missing uid' });
-  easterEggSettings.evilSantaFirstHit = {
-    uid,
-    name: name || '訪客',
-    shotAt: Date.now()
-  };
+  let player = easterEggSettings.christmasPlayers.find(item => item.uid === uid);
+  if (!player) {
+    player = { uid, name: name || '訪客', kills: 0, prize: null, prizeAt: null, updatedAt: Date.now() };
+    easterEggSettings.christmasPlayers.push(player);
+  }
+  if (name) player.name = name;
+  if (player.prize) {
+    return res.json({ success: false, alreadyPrize: true, prize: player.prize, kills: player.kills });
+  }
+  if (action === 'prize') {
+    if (player.kills < 3) return res.json({ success: false, message: '還沒打完邪惡聖誕老人' });
+    const prize = req.body.prize === 'grip' ? 'grip' : (req.body.prize === 'tea' ? 'tea' : '');
+    if (!prize) return res.json({ success: false, message: '請選擇禮物' });
+    if (christmasPrizeLeft(prize) <= 0) {
+      return res.json({ success: false, soldOut: true, message: prize === 'tea' ? '珍奶已發完' : '握把布已發完', teaLeft: christmasPrizeLeft('tea'), gripLeft: christmasPrizeLeft('grip') });
+    }
+    player.prize = prize;
+    player.prizeAt = Date.now();
+    player.updatedAt = player.prizeAt;
+  } else if (player.kills < 3) {
+    player.kills += 1;
+    player.updatedAt = Date.now();
+    if (!easterEggSettings.evilSantaFirstHit) {
+      easterEggSettings.evilSantaFirstHit = { uid, name: player.name, shotAt: player.updatedAt };
+    }
+  }
   try {
     await saveEasterEggSettings();
   } catch (e) {
     console.error('save evil santa hit failed:', e);
   }
-  return res.json({ success: true, hit: easterEggSettings.evilSantaFirstHit });
+  return res.json({
+    success: true,
+    kills: player.kills,
+    boss: player.kills >= 3 && !player.prize,
+    prize: player.prize,
+    teaLeft: christmasPrizeLeft('tea'),
+    gripLeft: christmasPrizeLeft('grip')
+  });
 });
 
 app.post('/api/easter_egg/claim', express.json(), async (req, res) => {
@@ -4420,6 +4496,15 @@ app.post('/api/admin/easter_egg', express.json(), async (req, res) => {
     if (typeof settings.christmasEvent === 'boolean') easterEggSettings.christmasEvent = settings.christmasEvent;
     if (Object.prototype.hasOwnProperty.call(settings, 'evilSantaFirstHit')) {
       easterEggSettings.evilSantaFirstHit = settings.evilSantaFirstHit || null;
+    }
+    if (Array.isArray(settings.christmasPlayers)) easterEggSettings.christmasPlayers = settings.christmasPlayers;
+    if (settings.christmasStock && typeof settings.christmasStock === 'object') {
+      const tea = parseInt(settings.christmasStock.tea, 10);
+      const grip = parseInt(settings.christmasStock.grip, 10);
+      easterEggSettings.christmasStock = {
+        tea: Number.isFinite(tea) && tea >= 0 ? tea : easterEggSettings.christmasStock.tea,
+        grip: Number.isFinite(grip) && grip >= 0 ? grip : easterEggSettings.christmasStock.grip
+      };
     }
     
     try {
@@ -7906,7 +7991,9 @@ function getLobbyCard(gid) {
         layout: 'vertical',
         paddingAll: '16px',
         backgroundColor: theme.bodyBg,
+        position: 'relative',
         contents: [
+          ...(theme.snow ? [flexSnowLine(), ...flexSnowflakes()] : []),
           { type: 'text', text: theme.lobbyTitle, weight: 'bold', size: 'md', color: theme.brand },
           { type: 'text', text: theme.headerHint, size: 'xs', color: theme.sectionText, margin: 'sm', wrap: true },
           {

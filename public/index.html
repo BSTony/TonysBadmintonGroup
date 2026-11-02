@@ -1,7 +1,7 @@
 <!--
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.65
+  Version: 1.2.68
 -->
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -69,7 +69,7 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="style.css?v=20261102g">
+  <link rel="stylesheet" href="style.css?v=20261102j">
 </head>
 <body>
   <div class="dt-scene" aria-hidden="true">
@@ -700,9 +700,19 @@
           <label>聖誕節活動</label>
           <div style="display:flex; align-items:center; gap: 10px;">
             <input type="checkbox" id="ee-christmas" style="width:20px; height:20px;">
-            <span>聖誕節活動（第二波之後可擊落邪惡聖誕老人）</span>
+            <span>聖誕節活動（擊落第三隻後與巨大聖誕老人戰鬥）</span>
           </div>
-          <div id="ee-evil-hit" style="margin-top: 8px; font-size: 14px; color: #333;">還沒有人擊落</div>
+          <div class="form-row" style="margin-top: 10px;">
+            <div class="form-group">
+              <label>珍奶數量</label>
+              <input type="number" id="ee-tea-stock" min="0" value="5">
+            </div>
+            <div class="form-group">
+              <label>握把布數量</label>
+              <input type="number" id="ee-grip-stock" min="0" value="10">
+            </div>
+          </div>
+          <div id="ee-evil-hit" style="margin-top: 8px; font-size: 14px; color: #333;">還沒有人遊玩</div>
         </div>
         <div class="form-group">
           <label>彩蛋模式</label>
@@ -1480,7 +1490,7 @@
   <script defer src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script defer src="lottery.js?v=20260711_15"></script>
   <script defer src="pinball_v2.js?v=20260902_pure60fps"></script>
-  <script defer src="app.js?v=V20261102_evil_santa"></script>
+  <script defer src="app.js?v=V20261102_boss"></script>
 
   <datalist id="lobby-users"></datalist>
 </body>
