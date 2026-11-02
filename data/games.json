@@ -12465,7 +12465,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793106234508,
-    "lastActiveTime": 1793592703485,
+    "lastActiveTime": 1793592745675,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12513,12 +12513,20 @@
           "Sean",
           "海棠",
           "Leo Hu",
-          "Vincent"
+          "Vincent",
+          "Ray"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/02 12:12",
+        "name": "Ray",
+        "operator": "Raymond 權權",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/02 12:11",
         "name": "wei",
