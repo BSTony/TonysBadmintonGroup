@@ -1,7 +1,7 @@
 /*
   Author: Tony Hsieh
   Date: 2026-11-02
-  Version: 1.2.23
+  Version: 1.2.24
  */
 :root {
   --bg-color: #F8F9FA; /* Light grey background */
@@ -434,6 +434,10 @@ html.christmas .xm-runner {
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
+html.christmas .xm-runner.santa {
+  opacity: 0;
+  animation-name: xm-santa-once;
+}
 html.christmas .xm-go-ltr { animation-name: xm-ltr; }
 html.christmas .xm-go-rtl { animation-name: xm-rtl; }
 html.christmas .xm-go-ltrw { animation-name: xm-ltr-wave; }
@@ -449,6 +453,12 @@ html.christmas .xm-runner svg {
 }
 html.christmas .xm-runner.santa svg { aspect-ratio: 128 / 92; }
 html.christmas .xm-runner.deer svg { aspect-ratio: 150 / 96; }
+@keyframes xm-santa-once {
+  0% { transform: translate3d(-40vw, 0, 0); opacity: 0; }
+  2% { opacity: 1; }
+  21% { transform: translate3d(120vw, 0, 0); opacity: 1; }
+  23%, 100% { transform: translate3d(120vw, 0, 0); opacity: 0; }
+}
 @keyframes xm-ltr {
   0% { transform: translate3d(-32vw, 0, 0); }
   100% { transform: translate3d(118vw, 0, 0); }
