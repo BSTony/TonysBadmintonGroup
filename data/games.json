@@ -12853,7 +12853,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793594224464,
+    "lastActiveTime": 1793667808256,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12877,7 +12877,8 @@
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
       "(AK) Seth Hu": "U82cf8acdc2735b2ff6e5a97104a154b7",
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
-      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12896,7 +12897,8 @@
           "楊程鈞",
           "林淑惠Sophia",
           "林淑惠",
-          "Chen H.R."
+          "Chen H.R.",
+          "陳呈"
         ]
       },
       {
@@ -12923,6 +12925,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/03 09:03",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/02 12:37",
         "name": "Chen H.R.",
