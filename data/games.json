@@ -12640,7 +12640,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793291385118,
+    "lastActiveTime": 1793703062902,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12705,7 +12705,6 @@
           "江こう 洋々",
           "Mike",
           "楊程鈞",
-          "小扉",
           "林煥杰",
           "gary",
           "賴柚子",
@@ -12716,6 +12715,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/03 18:51",
+        "name": "小扉",
+        "operator": "小扉 (輸入框)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "10/30 00:29",
         "name": "雪倫",
