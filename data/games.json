@@ -13052,7 +13052,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1793710961286,
+    "lastActiveTime": 1793712213096,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13097,9 +13097,19 @@
           "Robert",
           "偉舫",
           "Jet",
-          "陳呈"
+          "陳呈",
+          "kevin"
         ],
         "fee": "280"
+      }
+    ],
+    "history": [
+      {
+        "time": "11/03 21:23",
+        "name": "kevin",
+        "operator": "Jet",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
