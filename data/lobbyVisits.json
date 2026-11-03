@@ -13494,13 +13494,13 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 439,
+    "viewCount": 441,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783233676150,
-        "count": 61,
-        "lastVisit": 1793711065191,
+        "count": 62,
+        "lastVisit": 1793714749371,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U5640de569b97f16342b7e1875f88599c": {
@@ -13526,8 +13526,8 @@
       "U532d12783f207181c2d0f9d9ecc8724a": {
         "displayName": "林俊佑",
         "firstVisit": 1783346238347,
-        "count": 6,
-        "lastVisit": 1790516692014,
+        "count": 7,
+        "lastVisit": 1793717795000,
         "pictureUrl": "https://profile.line-scdn.net/0hz8wiwhEyJRdaEDQI9I5baCpAJn15YXwFIXZudmcWfyNlJDdGcnc9IjxDKHBkJ2UUc3E_cjsQe3RWA1JxREbZI10geCZnIWdJcH5v9A"
       },
       "Uf339b049e09a02f0796afb22f5de2e7e": {
@@ -13697,6 +13697,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1793717795000,
+        "userId": "U532d12783f207181c2d0f9d9ecc8724a",
+        "displayName": "林俊佑",
+        "pictureUrl": "https://profile.line-scdn.net/0hz8wiwhEyJRdaEDQI9I5baCpAJn15YXwFIXZudmcWfyNlJDdGcnc9IjxDKHBkJ2UUc3E_cjsQe3RWA1JxREbZI10geCZnIWdJcH5v9A"
+      },
+      {
+        "time": 1793714749371,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
       {
         "time": 1793712403791,
         "userId": "U0134503a2d79a5bb7f92d876393b2fd8",
