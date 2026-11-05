@@ -12876,7 +12876,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793879317736,
+    "lastActiveTime": 1793883252973,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12902,7 +12902,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12925,7 +12926,8 @@
           "陳呈",
           "Andrew Kuo",
           "JOJO",
-          "JOJO2"
+          "JOJO2",
+          "John"
         ]
       },
       {
@@ -12951,6 +12953,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/05 20:54",
+        "name": "John",
+        "operator": "John",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/05 19:48",
         "name": "JOJO2",
