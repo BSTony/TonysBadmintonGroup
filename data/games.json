@@ -12641,7 +12641,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793284250080,
-    "lastActiveTime": 1793852987534,
+    "lastActiveTime": 1793852990530,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12708,13 +12708,19 @@
           "楊程鈞",
           "林煥杰",
           "gary",
-          "花花",
           "雪倫"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/05 12:29",
+        "name": "花花",
+        "operator": "賴柚子",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/05 12:29",
         "name": "賴柚子",
