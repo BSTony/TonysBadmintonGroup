@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793883252973,
+    "lastActiveTime": 1793891788686,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12911,7 +12911,8 @@
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12957,10 +12958,19 @@
         "backupLimit": 5,
         "fee": "190",
         "label": "",
-        "list": []
+        "list": [
+          "Sammy Su"
+        ]
       }
     ],
     "history": [
+      {
+        "time": "11/05 23:16",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/05 20:54",
         "name": "John",
