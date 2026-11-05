@@ -12874,7 +12874,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793879306564,
+    "lastActiveTime": 1793879317736,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12922,7 +12922,8 @@
           "Chen H.R.",
           "陳呈",
           "Andrew Kuo",
-          "JOJO"
+          "JOJO",
+          "JOJO2"
         ]
       },
       {
@@ -12948,6 +12949,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/05 19:48",
+        "name": "JOJO2",
+        "operator": "JOJO👆✌️🖖🤘👐💪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/05 19:48",
         "name": "JOJO",
