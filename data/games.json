@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793937809251,
+    "lastActiveTime": 1793937830881,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12937,7 +12937,8 @@
           "JOJO",
           "JOJO2",
           "John",
-          "Mia"
+          "Mia",
+          "Kevin"
         ]
       },
       {
@@ -12965,6 +12966,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/06 12:03",
+        "name": "Kevin",
+        "operator": "蕭庭易",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/06 12:03",
         "name": "Mia",
