@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793891788686,
+    "lastActiveTime": 1793937809251,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12936,7 +12936,8 @@
           "Andrew Kuo",
           "JOJO",
           "JOJO2",
-          "John"
+          "John",
+          "Mia"
         ]
       },
       {
@@ -12964,6 +12965,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/06 12:03",
+        "name": "Mia",
+        "operator": "蕭庭易",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/05 23:16",
         "name": "Sammy Su",
