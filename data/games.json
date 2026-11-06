@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793937830881,
+    "lastActiveTime": 1793984190565,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12912,7 +12912,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
-      "Sammy Su": "U092196c10fe7e15591482c6b7942a147"
+      "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12938,7 +12939,8 @@
           "JOJO2",
           "John",
           "Mia",
-          "Kevin"
+          "Kevin",
+          "King"
         ]
       },
       {
@@ -12966,6 +12968,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/07 00:56",
+        "name": "King",
+        "operator": "King",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/06 12:03",
         "name": "Kevin",
