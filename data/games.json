@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793984190565,
+    "lastActiveTime": 1793984198134,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12940,7 +12940,8 @@
           "John",
           "Mia",
           "Kevin",
-          "King"
+          "King",
+          "Alice"
         ]
       },
       {
@@ -12968,6 +12969,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/07 00:56",
+        "name": "Alice",
+        "operator": "King",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/07 00:56",
         "name": "King",
