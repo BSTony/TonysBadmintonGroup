@@ -13212,7 +13212,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793888743926,
-    "lastActiveTime": 1793890705901,
+    "lastActiveTime": 1793931832607,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13228,7 +13228,6 @@
       "曾Jim凱": true,
       "Ashely": true,
       "陳呈": true,
-      "杜威霖 Andy": true,
       "周則鼎": true
     },
     "uidMap": {
@@ -13264,7 +13263,6 @@
           "曾Jim凱",
           "Ashely",
           "陳呈",
-          "杜威霖 Andy",
           "周則鼎",
           "詩韻",
           "Win Shu",
@@ -13285,6 +13283,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/06 10:23",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/05 22:58",
         "name": "小黑",
