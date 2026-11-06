@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1793984198134,
+    "lastActiveTime": 1794008811586,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12953,7 +12953,6 @@
         "list": [
           "AddieWang",
           "Sean柏宏",
-          "JoeLin",
           "林煥杰"
         ]
       },
@@ -12963,12 +12962,24 @@
         "backupLimit": 5,
         "fee": "190",
         "label": "",
-        "list": [
-          "Sammy Su"
-        ]
+        "list": []
       }
     ],
     "history": [
+      {
+        "time": "11/07 07:46",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "-1",
+        "section": "8-10"
+      },
+      {
+        "time": "11/07 07:09",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "-1",
+        "section": "10-12"
+      },
       {
         "time": "11/07 00:56",
         "name": "Alice",
