@@ -12870,9 +12870,9 @@
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
     "targetGids": [
       "Cf6e94fdd7c4183eda46be86fccb4bfe0",
-      "C73ead06e46f4c3a00a3f87d946c7d18a",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
-      "C073dd061239f9bc2df13af0a1ecb4bdb"
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
     ],
     "gameId": "1793460219124844",
     "title": "週六 港中 8-12",
@@ -12919,7 +12919,7 @@
     "sections": [
       {
         "title": "8-12",
-        "limit": 15,
+        "limit": 17,
         "backupLimit": 5,
         "fee": "300",
         "label": "",
@@ -12943,7 +12943,7 @@
       },
       {
         "title": "8-10",
-        "limit": 7,
+        "limit": 5,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
@@ -12956,7 +12956,7 @@
       },
       {
         "title": "10-12",
-        "limit": 7,
+        "limit": 5,
         "backupLimit": 5,
         "fee": "190",
         "label": "",
