@@ -13134,7 +13134,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1793723071625,
+    "lastActiveTime": 1793961218846,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13182,7 +13182,6 @@
           "偉舫",
           "Jet",
           "陳呈",
-          "kevin",
           "afrahuang",
           "Sharon"
         ],
@@ -13190,6 +13189,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/06 18:33",
+        "name": "kevin",
+        "operator": "陳文凱",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/04 00:24",
         "name": "Sharon",
