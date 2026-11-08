@@ -13167,7 +13167,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794116441284,
+    "lastActiveTime": 1794147350662,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13216,12 +13216,20 @@
           "Chris Chen",
           "FB 羅吉",
           "FB yui lee",
-          "FB 美惠"
+          "FB 美惠",
+          "FB Tina"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/08 22:15",
+        "name": "FB Tina",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/08 13:40",
         "name": "FB 美惠",
