@@ -13167,7 +13167,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794103088604,
+    "lastActiveTime": 1794112382733,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13212,7 +13212,6 @@
           "Robert",
           "Jet",
           "陳呈",
-          "afrahuang",
           "Sharon",
           "Chris Chen"
         ],
@@ -13220,6 +13219,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/08 12:33",
+        "name": "afrahuang",
+        "operator": "afrahuang",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/08 09:58",
         "name": "偉舫",
