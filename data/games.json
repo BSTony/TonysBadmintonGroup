@@ -13167,7 +13167,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794112382733,
+    "lastActiveTime": 1794114895777,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13213,12 +13213,20 @@
           "Jet",
           "陳呈",
           "Sharon",
-          "Chris Chen"
+          "Chris Chen",
+          "FB 羅吉"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/08 13:14",
+        "name": "FB 羅吉",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/08 12:33",
         "name": "afrahuang",
