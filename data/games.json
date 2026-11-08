@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794008811586,
+    "lastActiveTime": 1794100178884,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12893,7 +12893,6 @@
     "levelMap": {},
     "paidMap": {
       "謝東霖 Tony": true,
-      "Kay": true,
       "©️張CC～©️": true
     },
     "uidMap": {
@@ -12926,7 +12925,6 @@
         "label": "",
         "list": [
           "謝東霖 Tony",
-          "Kay",
           "©️張CC～©️",
           "Chris Chen",
           "楊程鈞",
@@ -12966,6 +12964,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/08 09:09",
+        "name": "Kay",
+        "operator": "謝東霖 Tony",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "11/07 07:46",
         "name": "JoeLin",
