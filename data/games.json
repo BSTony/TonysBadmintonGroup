@@ -13167,7 +13167,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794114895777,
+    "lastActiveTime": 1794115649971,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13214,12 +13214,20 @@
           "陳呈",
           "Sharon",
           "Chris Chen",
-          "FB 羅吉"
+          "FB 羅吉",
+          "FB yui lee"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/08 13:27",
+        "name": "FB yui lee",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/08 13:14",
         "name": "FB 羅吉",
