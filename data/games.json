@@ -13167,7 +13167,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794147350662,
+    "lastActiveTime": 1794148140336,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13179,7 +13179,6 @@
     "paidMap": {
       "謝東霖 Tony": true,
       "Kay": true,
-      "憲": true,
       "Robert": true,
       "Jet": true,
       "陳呈": true
@@ -13208,7 +13207,6 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "憲",
           "Robert",
           "Jet",
           "陳呈",
@@ -13223,6 +13221,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/08 22:29",
+        "name": "憲",
+        "operator": "莎莎",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/08 22:15",
         "name": "FB Tina",
