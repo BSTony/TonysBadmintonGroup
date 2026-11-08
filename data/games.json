@@ -13167,7 +13167,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794148140336,
+    "lastActiveTime": 1794148371471,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13215,12 +13215,20 @@
           "FB 羅吉",
           "FB yui lee",
           "FB 美惠",
-          "FB Tina"
+          "FB Tina",
+          "Sean"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/08 22:32",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/08 22:29",
         "name": "憲",
