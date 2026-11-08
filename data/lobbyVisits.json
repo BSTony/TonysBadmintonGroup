@@ -13501,7 +13501,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 455,
+    "viewCount": 457,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13651,8 +13651,8 @@
       "Ufa8dba5febf9f719da07f7e507391a21": {
         "displayName": "海棠",
         "firstVisit": 1785219366699,
-        "count": 27,
-        "lastVisit": 1793783663913,
+        "count": 28,
+        "lastVisit": 1794131330848,
         "pictureUrl": "https://profile.line-scdn.net/0hfZ2I34STOXUfMCiEe0hHCm9gOh88QWBnYwF2RiNjYUcnAHglYwUiEH5nb0AjVS12M1B3ECliYUQTI04TAWbFQRgAZEQiAXsrNV5zlg"
       },
       "U7f77be92586dcd1fc68a033961662de3": {
@@ -13670,8 +13670,8 @@
       "Ua871dc0011b1e136c14173739cf88645": {
         "displayName": "Vicky Lin",
         "firstVisit": 1785855054952,
-        "count": 15,
-        "lastVisit": 1793106773507,
+        "count": 16,
+        "lastVisit": 1794128467660,
         "pictureUrl": "https://profile.line-scdn.net/0hwUD3XXNkKHppSjfu2PRWRBkaKxBKO3FoRChlTg9IdBpTKWooFi41FF5JcU8Bej0uQCluGQ5PIx1LeAh_Fyw4YQM8PjkPKmlfBkIEQDUCDiguOy4pInsZeFQrdRAwHg1vR1U6Wx0dERACBDdUIUgjdycWEDMBBmZNMh1ELGx4RvkGSF8vRCxmGVRMfk_R"
       },
       "Ub66f54da98299c4d5d8c721187df90db": {
@@ -13704,6 +13704,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1794131330848,
+        "userId": "Ufa8dba5febf9f719da07f7e507391a21",
+        "displayName": "海棠",
+        "pictureUrl": "https://profile.line-scdn.net/0hfZ2I34STOXUfMCiEe0hHCm9gOh88QWBnYwF2RiNjYUcnAHglYwUiEH5nb0AjVS12M1B3ECliYUQTI04TAWbFQRgAZEQiAXsrNV5zlg"
+      },
+      {
+        "time": 1794128467660,
+        "userId": "Ua871dc0011b1e136c14173739cf88645",
+        "displayName": "Vicky Lin",
+        "pictureUrl": "https://profile.line-scdn.net/0hwUD3XXNkKHppSjfu2PRWRBkaKxBKO3FoRChlTg9IdBpTKWooFi41FF5JcU8Bej0uQCluGQ5PIx1LeAh_Fyw4YQM8PjkPKmlfBkIEQDUCDiguOy4pInsZeFQrdRAwHg1vR1U6Wx0dERACBDdUIUgjdycWEDMBBmZNMh1ELGx4RvkGSF8vRCxmGVRMfk_R"
+      },
       {
         "time": 1794114471566,
         "userId": "Uf35f2dc9288c3434a5a19186f900402a",
