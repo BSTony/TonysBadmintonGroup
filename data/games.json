@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794100178884,
+    "lastActiveTime": 1794154516027,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12950,7 +12950,6 @@
         "label": "",
         "list": [
           "AddieWang",
-          "Sean柏宏",
           "林煥杰"
         ]
       },
@@ -12964,6 +12963,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/09 00:15",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "11/08 09:09",
         "name": "Kay",
