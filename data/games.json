@@ -13167,7 +13167,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794148537317,
+    "lastActiveTime": 1794149005064,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13195,7 +13195,8 @@
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
       "Sharon": "U2f34481ad7c75487414b97ec63623fba",
       "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
-      "憲(派瑞-Perry)": "Uf339b049e09a02f0796afb22f5de2e7e"
+      "憲(派瑞-Perry)": "Uf339b049e09a02f0796afb22f5de2e7e",
+      "喻心平": "U0220a13b4aec2dec044ce073925f0df9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13218,12 +13219,20 @@
           "FB 美惠",
           "FB Tina",
           "憲(派瑞-Perry)",
-          "Sean"
+          "Sean",
+          "喻心平"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/08 22:43",
+        "name": "喻心平",
+        "operator": "喻心平",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/08 22:35",
         "name": "憲(派瑞-Perry)",
