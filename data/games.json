@@ -13195,14 +13195,15 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794196154217,
+    "lastActiveTime": 1794223840335,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
     "levelMap": {
-      "憲": "派瑞-Perry"
+      "憲": "派瑞-Perry",
+      "ken嘿嘿": "候補？"
     },
     "paidMap": {
       "謝東霖 Tony": true,
@@ -13246,12 +13247,20 @@
           "FB 美惠",
           "FB Tina",
           "憲(派瑞-Perry)",
-          "Sean"
+          "Sean",
+          "ken嘿嘿"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/09 19:30",
+        "name": "ken嘿嘿",
+        "operator": "Ken",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/09 11:49",
         "name": "Sharon",
