@@ -13592,7 +13592,7 @@
         "fee": "260"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "history": [
       {
         "time": "11/09 16:49",
