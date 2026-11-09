@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794206414254,
+    "lastActiveTime": 1794207386248,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12950,7 +12950,8 @@
         "label": "",
         "list": [
           "AddieWang",
-          "林煥杰"
+          "林煥杰",
+          "小金"
         ]
       },
       {
@@ -12963,6 +12964,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/09 14:56",
+        "name": "小金",
+        "operator": "小金(Chen Pei Hung)",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "11/09 14:40",
         "name": "(AK) Seth Hu",
