@@ -13530,5 +13530,48 @@
       }
     ],
     "isManualEnded": false
+  },
+  "1794208377756158": {
+    "gid": "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+    "targetGids": [
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
+    ],
+    "gameId": "1794208377756158",
+    "title": "⭐️週一 中山星耀樓 630-830",
+    "date": "11/10 (二)",
+    "time": "18:30~20:30",
+    "location": "中山國中星耀樓 (C 場)",
+    "fee": "260",
+    "note": "",
+    "tag": "",
+    "active": true,
+    "startTime": 1794208377756,
+    "lastActiveTime": 1794208377756,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {},
+    "uidMap": {},
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 8,
+        "backupLimit": 2,
+        "label": "",
+        "list": [
+          "Tank Lin",
+          "曾Jim凱",
+          "Ashley",
+          "Lee",
+          "©️張CC～©️"
+        ],
+        "fee": "260"
+      }
+    ]
   }
 }
