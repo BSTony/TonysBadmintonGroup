@@ -13402,7 +13402,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793888743926,
-    "lastActiveTime": 1794061815703,
+    "lastActiveTime": 1794206775247,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13436,7 +13436,8 @@
       "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5",
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
-      "Jet": "U94d0fd3752c6d2521d871658f63822b7"
+      "Jet": "U94d0fd3752c6d2521d871658f63822b7",
+      "吳霆竣 Chad Wu": "Ue1594129b605feab81c213ba981fc0fd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13470,12 +13471,20 @@
           "賴柚子",
           "花花",
           "小黑",
-          "Jet"
+          "Jet",
+          "吳霆竣 Chad Wu"
         ],
         "fee": "200"
       }
     ],
     "history": [
+      {
+        "time": "11/09 14:46",
+        "name": "吳霆竣 Chad Wu",
+        "operator": "吳霆竣 Chad Wu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/07 22:30",
         "name": "Jet",
