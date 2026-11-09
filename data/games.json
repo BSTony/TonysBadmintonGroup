@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794201382481,
+    "lastActiveTime": 1794206414254,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12950,8 +12950,7 @@
         "label": "",
         "list": [
           "AddieWang",
-          "林煥杰",
-          "(AK) Seth Hu"
+          "林煥杰"
         ]
       },
       {
@@ -12964,6 +12963,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/09 14:40",
+        "name": "(AK) Seth Hu",
+        "operator": "(AK) Seth Hu",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "11/09 13:16",
         "name": "(AK) Seth Hu",
