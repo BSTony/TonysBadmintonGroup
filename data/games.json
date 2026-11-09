@@ -13546,7 +13546,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794208377756,
-    "lastActiveTime": 1794214173872,
+    "lastActiveTime": 1794214184009,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13571,13 +13571,21 @@
           "Ashley",
           "Lee",
           "©️張CC～©️",
-          "Gary Lin"
+          "Gary Lin",
+          "花花"
         ],
         "fee": "260"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "11/09 16:49",
+        "name": "花花",
+        "operator": "Tank Lin",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/09 16:49",
         "name": "Gary Lin",
