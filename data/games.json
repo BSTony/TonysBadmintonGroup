@@ -13546,13 +13546,15 @@
     "tag": "",
     "active": true,
     "startTime": 1794208377756,
-    "lastActiveTime": 1794208377756,
+    "lastActiveTime": 1794214173872,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
     "anonymous": [],
     "anonymousCount": 0,
-    "levelMap": {},
+    "levelMap": {
+      "Gary Lin": "Tank同事"
+    },
     "paidMap": {},
     "uidMap": {},
     "noteMap": {},
@@ -13568,11 +13570,21 @@
           "曾Jim凱",
           "Ashley",
           "Lee",
-          "©️張CC～©️"
+          "©️張CC～©️",
+          "Gary Lin"
         ],
         "fee": "260"
       }
     ],
-    "isManualEnded": false
+    "isManualEnded": false,
+    "history": [
+      {
+        "time": "11/09 16:49",
+        "name": "Gary Lin",
+        "operator": "Tank Lin",
+        "action": "+1",
+        "section": "報名名單"
+      }
+    ]
   }
 }
