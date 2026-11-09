@@ -13375,6 +13375,7 @@
   "179388874392488": {
     "gid": "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
     "targetGids": [
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
       "C7dbe1bfbc6a87f5842bdd39b63f7ef9e"
     ],
     "gameId": "179388874392488",
@@ -13496,6 +13497,7 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
