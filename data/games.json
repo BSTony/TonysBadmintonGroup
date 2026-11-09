@@ -13419,7 +13419,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793888743926,
-    "lastActiveTime": 1794206775247,
+    "lastActiveTime": 1794229791556,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13488,13 +13488,19 @@
           "賴柚子",
           "花花",
           "小黑",
-          "Jet",
-          "吳霆竣 Chad Wu"
+          "Jet"
         ],
         "fee": "200"
       }
     ],
     "history": [
+      {
+        "time": "11/09 21:09",
+        "name": "吳霆竣 Chad Wu",
+        "operator": "吳霆竣 Chad Wu",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/09 14:46",
         "name": "吳霆竣 Chad Wu",
