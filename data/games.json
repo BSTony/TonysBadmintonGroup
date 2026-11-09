@@ -13173,7 +13173,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793710961286,
-    "lastActiveTime": 1794149008029,
+    "lastActiveTime": 1794196154217,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13218,7 +13218,6 @@
           "Robert",
           "Jet",
           "陳呈",
-          "Sharon",
           "Chris Chen",
           "FB 羅吉",
           "FB yui lee",
@@ -13231,6 +13230,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/09 11:49",
+        "name": "Sharon",
+        "operator": "Sharon",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/08 22:43",
         "name": "喻心平",
