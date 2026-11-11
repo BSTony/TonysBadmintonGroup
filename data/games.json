@@ -13667,7 +13667,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794315047323,
-    "lastActiveTime": 1794354523909,
+    "lastActiveTime": 1794382295715,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13695,7 +13695,8 @@
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "Sharon": "U2f34481ad7c75487414b97ec63623fba"
+      "Sharon": "U2f34481ad7c75487414b97ec63623fba",
+      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13715,12 +13716,20 @@
           "Jet",
           "陳呈",
           "kevin",
-          "Sharon"
+          "Sharon",
+          "周則鼎"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/11 15:31",
+        "name": "周則鼎",
+        "operator": "周則鼎",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/11 07:48",
         "name": "Sharon",
