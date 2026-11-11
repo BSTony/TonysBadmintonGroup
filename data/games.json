@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794207386248,
+    "lastActiveTime": 1794386809745,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12912,7 +12912,8 @@
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
-      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12960,10 +12961,19 @@
         "backupLimit": 5,
         "fee": "190",
         "label": "",
-        "list": []
+        "list": [
+          "周哲儁"
+        ]
       }
     ],
     "history": [
+      {
+        "time": "11/11 16:46",
+        "name": "周哲儁",
+        "operator": "周哲儁",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/09 14:56",
         "name": "小金",
