@@ -13420,7 +13420,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793888743926,
-    "lastActiveTime": 1794361565067,
+    "lastActiveTime": 1794381933576,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13456,7 +13456,8 @@
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "吳霆竣 Chad Wu": "Ue1594129b605feab81c213ba981fc0fd",
-      "訪客": "U17eaf2f1e1b41288876d992044d9bdf9"
+      "訪客": "U17eaf2f1e1b41288876d992044d9bdf9",
+      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13490,12 +13491,20 @@
           "賴柚子",
           "花花",
           "小黑",
-          "Jet"
+          "Jet",
+          "張建發"
         ],
         "fee": "200"
       }
     ],
     "history": [
+      {
+        "time": "11/11 15:25",
+        "name": "張建發",
+        "operator": "張建發",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/11 09:46",
         "name": "Robert",
