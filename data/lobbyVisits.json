@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6337,
+    "viewCount": 6340,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -212,8 +212,8 @@
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
         "displayName": "John",
         "firstVisit": 1783234049549,
-        "count": 43,
-        "lastVisit": 1794011523267,
+        "count": 44,
+        "lastVisit": 1794395139763,
         "pictureUrl": "https://profile.line-scdn.net/0hgE71bnyJOGoaSCnunEtGVGoYOwA5OWF4ZClyWylMZFggKis7MicjDn9PMw4kf307Ni10XClANVk4DCdaXXs1a1Q1OSp0PA9LblgqTCs3Zy9DDitCYV4lC3EjYB1BHQlsTC8VdkYsGyZFJis-dnYfWkdUOFh5GXY5QR9UPB96Vul1Sk8_Ny52CSdObl-i"
       },
       "U4f877c526e048afcda3730edce9ba746": {
@@ -253,8 +253,8 @@
       "Ua158cf62dfd0ee9c8171a29263d9da11": {
         "displayName": "曾Jim凱",
         "firstVisit": 1783331916444,
-        "count": 114,
-        "lastVisit": 1794379545632,
+        "count": 115,
+        "lastVisit": 1794395471513,
         "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
       },
       "Ud33e6f76c7549fb90abe4440b1735805": {
@@ -623,8 +623,8 @@
       "Ua4c9b87ae0f49f0e264f14642944a52e": {
         "displayName": "Chen H.R.",
         "firstVisit": 1783822652122,
-        "count": 116,
-        "lastVisit": 1794061870286,
+        "count": 117,
+        "lastVisit": 1794396918492,
         "pictureUrl": "https://profile.line-scdn.net/0ht-ExTO7jKwJoATcw3mhVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
       },
       "U3d8fd8b2d2271e0f6f2f4f50e1475c12": {
@@ -1520,6 +1520,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1794396918492,
+        "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
+        "displayName": "Chen H.R.",
+        "pictureUrl": "https://profile.line-scdn.net/0ht-ExTO7jKwJoATcw3mhVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
+      },
+      {
+        "time": 1794395471513,
+        "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
+        "displayName": "曾Jim凱",
+        "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
+      },
+      {
+        "time": 1794395139763,
+        "userId": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+        "displayName": "John",
+        "pictureUrl": "https://profile.line-scdn.net/0hgE71bnyJOGoaSCnunEtGVGoYOwA5OWF4ZClyWylMZFggKis7MicjDn9PMw4kf307Ni10XClANVk4DCdaXXs1a1Q1OSp0PA9LblgqTCs3Zy9DDitCYV4lC3EjYB1BHQlsTC8VdkYsGyZFJis-dnYfWkdUOFh5GXY5QR9UPB96Vul1Sk8_Ny52CSdObl-i"
+      },
       {
         "time": 1794394001544,
         "userId": "Ue1594129b605feab81c213ba981fc0fd",
@@ -13501,24 +13519,6 @@
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
         "displayName": "賴柚子",
         "pictureUrl": "https://profile.line-scdn.net/0hQ3AjIa4gDhxsExHwjmNwIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
-      },
-      {
-        "time": 1789143350884,
-        "userId": "U82cf8acdc2735b2ff6e5a97104a154b7",
-        "displayName": "(AK) Seth Hu",
-        "pictureUrl": "https://profile.line-scdn.net/0haqivChwIPl5EDyDTTENAYDRfPTRnfmdMb2kmPSUJYm95PX9fbWtwbSRbZjt-OHwIPWkma3gNYT5mWSEKFC53QCpvYTopVx91PWg4PhZ8YRIlOCFyCRwZPR9oAAgFbHF-FAAhXnNSExB4NiVWNnUVfChdCDIifSReFFhSCEE9UN0rDUkLaWlwPXkJaGv8"
-      },
-      {
-        "time": 1789142614907,
-        "userId": "U203b76fe44ff1d74c53c21e5547aea27",
-        "displayName": "登登登登～",
-        "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
-      },
-      {
-        "time": 1789142163678,
-        "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
-        "displayName": "Wang",
-        "pictureUrl": "https://profile.line-scdn.net/0hNECa5TMdEWpuGAcCpKBvFR5IEgBNaUh4SnxfDl0RT1MHKFVsRSleCgkZHQpaelc9RX4JClwdS1piC2YMcE7tXmkoTFtTKVM0RHZbiQ"
       }
     ]
   },
