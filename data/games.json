@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794393829477,
+    "lastActiveTime": 1794393840157,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12965,11 +12965,19 @@
         "label": "",
         "list": [
           "周哲儁",
-          "King"
+          "King",
+          "Alice"
         ]
       }
     ],
     "history": [
+      {
+        "time": "11/11 18:44",
+        "name": "Alice",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/11 18:43",
         "name": "King",
