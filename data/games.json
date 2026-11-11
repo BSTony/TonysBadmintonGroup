@@ -13483,7 +13483,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793888743926,
-    "lastActiveTime": 1794400474663,
+    "lastActiveTime": 1794400479582,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13555,13 +13555,19 @@
           "賴柚子",
           "花花",
           "小黑",
-          "張建發",
-          "Edwardエドワード 에드워드 Ëd"
+          "張建發"
         ],
         "fee": "200"
       }
     ],
     "history": [
+      {
+        "time": "11/11 20:34",
+        "name": "Edwardエドワード 에드워드 Ëd",
+        "operator": "Edwardエドワード 에드워드 Ëd",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/11 20:34",
         "name": "Edwardエドワード 에드워드 Ëd",
