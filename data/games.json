@@ -13483,7 +13483,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793888743926,
-    "lastActiveTime": 1794388204384,
+    "lastActiveTime": 1794400474663,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13520,7 +13520,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "吳霆竣 Chad Wu": "Ue1594129b605feab81c213ba981fc0fd",
       "訪客": "U17eaf2f1e1b41288876d992044d9bdf9",
-      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9"
+      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9",
+      "Edwardエドワード 에드워드 Ëd": "U646a57fec28a946a131cfc7b872ca8c8"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13554,12 +13555,20 @@
           "賴柚子",
           "花花",
           "小黑",
-          "張建發"
+          "張建發",
+          "Edwardエドワード 에드워드 Ëd"
         ],
         "fee": "200"
       }
     ],
     "history": [
+      {
+        "time": "11/11 20:34",
+        "name": "Edwardエドワード 에드워드 Ëd",
+        "operator": "Edwardエドワード 에드워드 Ëd",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/11 17:10",
         "name": "Jet",
