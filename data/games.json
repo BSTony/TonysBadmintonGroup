@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794393416520,
+    "lastActiveTime": 1794393785970,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12940,7 +12940,6 @@
           "John",
           "Mia",
           "Kevin",
-          "King",
           "Alice",
           "黃政豪",
           "Sammy Su",
@@ -12971,6 +12970,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/11 18:43",
+        "name": "King",
+        "operator": "King",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "11/11 18:36",
         "name": "登登",
