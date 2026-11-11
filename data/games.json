@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794386878995,
+    "lastActiveTime": 1794388103535,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12942,7 +12942,8 @@
           "Kevin",
           "King",
           "Alice",
-          "黃政豪"
+          "黃政豪",
+          "Sammy Su"
         ]
       },
       {
@@ -12969,6 +12970,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/11 17:08",
+        "name": "Sammy Su",
+        "operator": "Sammy Su",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/11 16:47",
         "name": "黃政豪",
