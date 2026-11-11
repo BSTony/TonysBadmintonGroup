@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794388103535,
+    "lastActiveTime": 1794393416520,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12943,7 +12943,8 @@
           "King",
           "Alice",
           "黃政豪",
-          "Sammy Su"
+          "Sammy Su",
+          "登登"
         ]
       },
       {
@@ -12970,6 +12971,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/11 18:36",
+        "name": "登登",
+        "operator": "登登登登～",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/11 17:08",
         "name": "Sammy Su",
