@@ -13420,7 +13420,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793888743926,
-    "lastActiveTime": 1794361541593,
+    "lastActiveTime": 1794361565067,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13490,13 +13490,19 @@
           "賴柚子",
           "花花",
           "小黑",
-          "Jet",
-          "Robert"
+          "Jet"
         ],
         "fee": "200"
       }
     ],
     "history": [
+      {
+        "time": "11/11 09:46",
+        "name": "Robert",
+        "operator": "Robert (輸入框)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/11 09:45",
         "name": "訪客",
