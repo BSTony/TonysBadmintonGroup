@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794386809745,
+    "lastActiveTime": 1794386878995,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12913,7 +12913,8 @@
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "Sammy Su": "U092196c10fe7e15591482c6b7942a147",
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
-      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12940,7 +12941,8 @@
           "Mia",
           "Kevin",
           "King",
-          "Alice"
+          "Alice",
+          "黃政豪"
         ]
       },
       {
@@ -12967,6 +12969,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/11 16:47",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/11 16:46",
         "name": "周哲儁",
