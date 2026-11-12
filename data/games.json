@@ -13894,7 +13894,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794490776745,
+    "lastActiveTime": 1794490783484,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13922,7 +13922,8 @@
       "曾Jim凱": "Ua158cf62dfd0ee9c8171a29263d9da11",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
-      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582"
+      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
+      "喻心平": "U0220a13b4aec2dec044ce073925f0df9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13942,9 +13943,19 @@
           "Ashely",
           "陳呈",
           "杜威霖 Andy",
-          "周則鼎"
+          "周則鼎",
+          "喻心平"
         ],
         "fee": "230"
+      }
+    ],
+    "history": [
+      {
+        "time": "11/12 21:39",
+        "name": "喻心平",
+        "operator": "喻心平",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
