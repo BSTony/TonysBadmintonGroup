@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794446436300,
+    "lastActiveTime": 1794451590184,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12954,7 +12954,6 @@
         "label": "",
         "list": [
           "AddieWang",
-          "林煥杰",
           "小金"
         ]
       },
@@ -12972,6 +12971,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/12 10:46",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "11/12 09:20",
         "name": "小羅",
