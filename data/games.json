@@ -13903,7 +13903,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794497126912,
+    "lastActiveTime": 1794498756371,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13968,7 +13968,6 @@
           "Bravo(小白）",
           "小黑",
           "珊珊",
-          "Jet",
           "Sharon",
           "賴柚子",
           "花花",
@@ -13979,6 +13978,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/12 23:52",
+        "name": "Jet",
+        "operator": "Jet",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/12 23:25",
         "name": "Gary",
