@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794393840157,
+    "lastActiveTime": 1794446436300,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12942,7 +12942,8 @@
           "Kevin",
           "黃政豪",
           "Sammy Su",
-          "登登"
+          "登登",
+          "小羅"
         ]
       },
       {
@@ -12971,6 +12972,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/12 09:20",
+        "name": "小羅",
+        "operator": "羅小羅🦝",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/11 18:44",
         "name": "Alice",
