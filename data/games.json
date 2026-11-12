@@ -13903,7 +13903,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794491415332,
+    "lastActiveTime": 1794491895610,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13937,7 +13937,8 @@
       "蘑菇": "Uc43566842467f11722b3ce7a8b6d5746",
       "Bravo(小白）": "Ucfe77916ae6fa86c19895f6f8cac5aca",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "Sharon": "U2f34481ad7c75487414b97ec63623fba"
+      "Sharon": "U2f34481ad7c75487414b97ec63623fba",
+      "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13966,12 +13967,20 @@
           "小黑",
           "珊珊",
           "Jet",
-          "Sharon"
+          "Sharon",
+          "賴柚子"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/12 21:58",
+        "name": "賴柚子",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/12 21:50",
         "name": "Sharon",
