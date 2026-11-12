@@ -13903,7 +13903,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794491895610,
+    "lastActiveTime": 1794491907457,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13968,12 +13968,20 @@
           "珊珊",
           "Jet",
           "Sharon",
-          "賴柚子"
+          "賴柚子",
+          "花花"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/12 21:58",
+        "name": "花花",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/12 21:58",
         "name": "賴柚子",
