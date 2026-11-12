@@ -13903,7 +13903,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794491907457,
+    "lastActiveTime": 1794493116528,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13938,7 +13938,8 @@
       "Bravo(小白）": "Ucfe77916ae6fa86c19895f6f8cac5aca",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "Sharon": "U2f34481ad7c75487414b97ec63623fba",
-      "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5"
+      "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5",
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13969,12 +13970,20 @@
           "Jet",
           "Sharon",
           "賴柚子",
-          "花花"
+          "花花",
+          "江こう 洋々"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/12 22:18",
+        "name": "江こう 洋々",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/12 21:58",
         "name": "花花",
