@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794451590184,
+    "lastActiveTime": 1794451596321,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12943,7 +12943,8 @@
           "黃政豪",
           "Sammy Su",
           "登登",
-          "小羅"
+          "小羅",
+          "林煥杰"
         ]
       },
       {
@@ -12971,6 +12972,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/12 10:46",
+        "name": "林煥杰",
+        "operator": "林煥杰",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/12 10:46",
         "name": "林煥杰",
