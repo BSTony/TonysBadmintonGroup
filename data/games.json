@@ -13903,7 +13903,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794490807563,
+    "lastActiveTime": 1794490824172,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13934,7 +13934,8 @@
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "喻心平": "U0220a13b4aec2dec044ce073925f0df9",
       "陳文凱": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-      "蘑菇": "Uc43566842467f11722b3ce7a8b6d5746"
+      "蘑菇": "Uc43566842467f11722b3ce7a8b6d5746",
+      "Bravo(小白）": "Ucfe77916ae6fa86c19895f6f8cac5aca"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13958,12 +13959,20 @@
           "喻心平",
           "陳文凱",
           "momota",
-          "蘑菇"
+          "蘑菇",
+          "Bravo(小白）"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/12 21:40",
+        "name": "Bravo(小白）",
+        "operator": "Bravo(小白）",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/12 21:40",
         "name": "蘑菇",
