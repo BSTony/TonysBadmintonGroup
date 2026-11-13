@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6433,
+    "viewCount": 6436,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -287,8 +287,8 @@
       "Ueab389b7ed59afb14651d8449997efec": {
         "displayName": "黃建榮",
         "firstVisit": 1783339111867,
-        "count": 12,
-        "lastVisit": 1791826253036,
+        "count": 13,
+        "lastVisit": 1794560816290,
         "pictureUrl": "https://profile.line-scdn.net/ch/v2/p/u16fa8d01bf7059c7802e863bc8537b83/1352457785269"
       },
       "U2ea89b78f1546c61adda03c7dd8704d5": {
@@ -409,8 +409,8 @@
       "U82cf8acdc2735b2ff6e5a97104a154b7": {
         "displayName": "(AK) Seth Hu",
         "firstVisit": 1783498883719,
-        "count": 25,
-        "lastVisit": 1794206409853,
+        "count": 26,
+        "lastVisit": 1794561715847,
         "pictureUrl": "https://profile.line-scdn.net/0haqivChwIPl5EDyDTTENAYDRfPTRnfmdMb2kmPSUJYm95PX9fbWtwbSRbZjt-OHwIPWkma3gNYT5mWSEKFC53QCpvYTopVx91PWg4PhZ8YRIlOCFyCRwZPR9oAAgFbHF-FAAhXnNSExB4NiVWNnUVfChdCDIifSReFFhSCEE9UN0rDUkLaWlwPXkJaGv8"
       },
       "U4b697f748229b4804aa652c06b3fd285": {
@@ -885,8 +885,8 @@
       "U884f25cb569121f0e477efdda4471fd7": {
         "displayName": "佘俊頡",
         "firstVisit": 1785054197779,
-        "count": 12,
-        "lastVisit": 1794560233179,
+        "count": 13,
+        "lastVisit": 1794562354068,
         "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
       },
       "U6e12f69c73073fcdc89f3b719e44cb54": {
@@ -1520,6 +1520,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1794562354068,
+        "userId": "U884f25cb569121f0e477efdda4471fd7",
+        "displayName": "佘俊頡",
+        "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
+      },
+      {
+        "time": 1794561715847,
+        "userId": "U82cf8acdc2735b2ff6e5a97104a154b7",
+        "displayName": "(AK) Seth Hu",
+        "pictureUrl": "https://profile.line-scdn.net/0haqivChwIPl5EDyDTTENAYDRfPTRnfmdMb2kmPSUJYm95PX9fbWtwbSRbZjt-OHwIPWkma3gNYT5mWSEKFC53QCpvYTopVx91PWg4PhZ8YRIlOCFyCRwZPR9oAAgFbHF-FAAhXnNSExB4NiVWNnUVfChdCDIifSReFFhSCEE9UN0rDUkLaWlwPXkJaGv8"
+      },
+      {
+        "time": 1794560816290,
+        "userId": "Ueab389b7ed59afb14651d8449997efec",
+        "displayName": "黃建榮",
+        "pictureUrl": "https://profile.line-scdn.net/ch/v2/p/u16fa8d01bf7059c7802e863bc8537b83/1352457785269"
+      },
       {
         "time": 1794560233179,
         "userId": "U884f25cb569121f0e477efdda4471fd7",
@@ -13501,24 +13519,6 @@
         "userId": "U532d12783f207181c2d0f9d9ecc8724a",
         "displayName": "林俊佑",
         "pictureUrl": "https://profile.line-scdn.net/0hz8wiwhEyJRdaEDQI9I5baCpAJn15YXwFIXZudmcWfyNlJDdGcnc9IjxDKHBkJ2UUc3E_cjsQe3RWA1JxREbZI10geCZnIWdJcH5v9A"
-      },
-      {
-        "time": 1789274305118,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1789274213803,
-        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
-        "displayName": "©️張CC～©️",
-        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
-      },
-      {
-        "time": 1789272476029,
-        "userId": "U4f877c526e048afcda3730edce9ba746",
-        "displayName": "楊程鈞",
-        "pictureUrl": "https://profile.line-scdn.net/0hC85nNh2uHBcYFwLgmt5iKWhHH307ZkUFNnEDdn1DRSV2c1sVNSFUI34QFSdwIFJEYyRRdX0RRi86YCc_fzE6JVJDS0J5elkmfQk6BWkXIy57QwQUTiQgdUVyGlhBbAgSdQgqDUYRN3ttL0cndig2CXQTHWVkJQs6XEBwQR0lcpR3FWtCNXFSdCURSiKg"
       }
     ]
   },
