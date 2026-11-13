@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794558564726,
+    "lastActiveTime": 1794558598869,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12962,8 +12962,7 @@
           "AddieWang",
           "小金",
           "Kevin 何榮煌",
-          "鈞",
-          "王志成"
+          "鈞"
         ]
       },
       {
@@ -12980,6 +12979,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/13 16:29",
+        "name": "王志成",
+        "operator": "王志成",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "11/13 16:29",
         "name": "王志成",
