@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794554773745,
+    "lastActiveTime": 1794558564726,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12917,7 +12917,8 @@
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "Kevin 何榮煌": "Ude1132beecd5ae53606bf1a04f22167b",
       "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
-      "佘俊頡": "U884f25cb569121f0e477efdda4471fd7"
+      "佘俊頡": "U884f25cb569121f0e477efdda4471fd7",
+      "王志成": "U1473353b8a73287cdf22605c5d95f353"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12961,7 +12962,8 @@
           "AddieWang",
           "小金",
           "Kevin 何榮煌",
-          "鈞"
+          "鈞",
+          "王志成"
         ]
       },
       {
@@ -12978,6 +12980,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/13 16:29",
+        "name": "王志成",
+        "operator": "王志成",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "11/13 15:26",
         "name": "佘俊頡",
