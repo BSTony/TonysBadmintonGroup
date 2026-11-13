@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794464789510,
+    "lastActiveTime": 1794554773745,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12916,7 +12916,8 @@
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "Kevin 何榮煌": "Ude1132beecd5ae53606bf1a04f22167b",
-      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38"
+      "鈞": "U6bfcb714aca447e0c3d2a103c0290f38",
+      "佘俊頡": "U884f25cb569121f0e477efdda4471fd7"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -12946,7 +12947,8 @@
           "Sammy Su",
           "登登",
           "小羅",
-          "林煥杰"
+          "林煥杰",
+          "佘俊頡"
         ]
       },
       {
@@ -12976,6 +12978,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/13 15:26",
+        "name": "佘俊頡",
+        "operator": "佘俊頡",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/12 14:26",
         "name": "鈞",
