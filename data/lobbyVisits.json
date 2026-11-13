@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6447,
+    "viewCount": 6451,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -122,8 +122,8 @@
       "U7977ee57751b21a1fb17ddbb180444b3": {
         "displayName": "賴鈺臻",
         "firstVisit": 1783228766307,
-        "count": 82,
-        "lastVisit": 1794455857601,
+        "count": 83,
+        "lastVisit": 1794585690819,
         "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
       },
       "Uf2f63c157d1e4f7e5d289d377c568582": {
@@ -814,8 +814,8 @@
       "U6d9e099c518efa25fd881c87e6e72dd7": {
         "displayName": "羅小羅🦝",
         "firstVisit": 1784444475682,
-        "count": 37,
-        "lastVisit": 1794447666428,
+        "count": 38,
+        "lastVisit": 1794588525201,
         "pictureUrl": "https://profile.line-scdn.net/0hwdj_OKKIKEtHJjRu_NBWdTd2KyFkV3FZY0M1LHIgdnxyE29NaUViJCV2dXt7EW8caBBkenYnJnpldCZZIz4xLi5ALzw4ZDJoLBYAViREMHlmXjB_KgAwZgFcGAQObg1AKAlnXxp5PxAJYitPNyk4LCV6GBMbdjRjDXFEHUIURsgoJF8eakBmKHogfn7_"
       },
       "Uc90c5085f43d2298a8f3e71d5e4010a3": {
@@ -885,8 +885,8 @@
       "U884f25cb569121f0e477efdda4471fd7": {
         "displayName": "佘俊頡",
         "firstVisit": 1785054197779,
-        "count": 15,
-        "lastVisit": 1794579930893,
+        "count": 16,
+        "lastVisit": 1794585971459,
         "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
       },
       "U6e12f69c73073fcdc89f3b719e44cb54": {
@@ -1451,8 +1451,8 @@
       "Ude1132beecd5ae53606bf1a04f22167b": {
         "displayName": "Kevin 何榮煌",
         "firstVisit": 1792492379646,
-        "count": 6,
-        "lastVisit": 1794492335286,
+        "count": 7,
+        "lastVisit": 1794586972743,
         "pictureUrl": "https://profile.line-scdn.net/0m01b593797251f6cff9ad935da48e64019b571f88684d"
       },
       "U25072e535431b2a5f5171da879630958": {
@@ -1520,6 +1520,30 @@
       }
     },
     "logs": [
+      {
+        "time": 1794588525201,
+        "userId": "U6d9e099c518efa25fd881c87e6e72dd7",
+        "displayName": "羅小羅🦝",
+        "pictureUrl": "https://profile.line-scdn.net/0hwdj_OKKIKEtHJjRu_NBWdTd2KyFkV3FZY0M1LHIgdnxyE29NaUViJCV2dXt7EW8caBBkenYnJnpldCZZIz4xLi5ALzw4ZDJoLBYAViREMHlmXjB_KgAwZgFcGAQObg1AKAlnXxp5PxAJYitPNyk4LCV6GBMbdjRjDXFEHUIURsgoJF8eakBmKHogfn7_"
+      },
+      {
+        "time": 1794586972743,
+        "userId": "Ude1132beecd5ae53606bf1a04f22167b",
+        "displayName": "Kevin 何榮煌",
+        "pictureUrl": "https://profile.line-scdn.net/0m01b593797251f6cff9ad935da48e64019b571f88684d"
+      },
+      {
+        "time": 1794585971459,
+        "userId": "U884f25cb569121f0e477efdda4471fd7",
+        "displayName": "佘俊頡",
+        "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
+      },
+      {
+        "time": 1794585690819,
+        "userId": "U7977ee57751b21a1fb17ddbb180444b3",
+        "displayName": "賴鈺臻",
+        "pictureUrl": "https://profile.line-scdn.net/0h-4n701x4chtDTmaTM58MZDMecXFgPysJbiBve3RKLn8pLDNFbX9ueiRKeygqfmFMaXhteiFKK35PXQV9XRiOL0R-Lyp-fzBFaSA4-A"
+      },
       {
         "time": 1794585429453,
         "userId": "U203b76fe44ff1d74c53c21e5547aea27",
@@ -13495,30 +13519,6 @@
         "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
         "displayName": "曾Jim凱",
         "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
-      },
-      {
-        "time": 1789294828538,
-        "userId": "U8359dca0b543da49dab9a0215b90c137",
-        "displayName": "JoeLin",
-        "pictureUrl": "https://profile.line-scdn.net/0hWPG6b8r0CH9qTyJyYSZ2ABofCxVJPlFtQHlCSVgdXxoAdh0sQ3oXGAxNUkpRLEh5RH1OSVpHX0dmXH8ZdBn0S21_VU5XfkohQCFCnA"
-      },
-      {
-        "time": 1789290731924,
-        "userId": "U3c633bac1ead8ca7a7def805e6f58248",
-        "displayName": "小蔡",
-        "pictureUrl": ""
-      },
-      {
-        "time": 1789289167855,
-        "userId": "U532d12783f207181c2d0f9d9ecc8724a",
-        "displayName": "林俊佑",
-        "pictureUrl": "https://profile.line-scdn.net/0hz8wiwhEyJRdaEDQI9I5baCpAJn15YXwFIXZudmcWfyNlJDdGcnc9IjxDKHBkJ2UUc3E_cjsQe3RWA1JxREbZI10geCZnIWdJcH5v9A"
-      },
-      {
-        "time": 1789288484965,
-        "userId": "Ub2e84850d9446141bcb1ae89ec450821",
-        "displayName": "林煥杰",
-        "pictureUrl": "https://profile.line-scdn.net/0hxdPS2trOJ0t9KjRJ6D1ZNA16JCFeW35ZUE9oLEAocHIVSmdKBR87K08icX8TSjceUklrJU8if35xOVAtY3zbf3oaenpAG2UVV0RtqA"
       }
     ]
   },
