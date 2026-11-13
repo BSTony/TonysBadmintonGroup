@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6424,
+    "viewCount": 6428,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -205,8 +205,8 @@
       "U203b76fe44ff1d74c53c21e5547aea27": {
         "displayName": "登登登登～",
         "firstVisit": 1783233886945,
-        "count": 104,
-        "lastVisit": 1794493133938,
+        "count": 105,
+        "lastVisit": 1794555560480,
         "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
       },
       "Uf954376c19d71cbc21ae2a7a2dc4ca84": {
@@ -885,9 +885,9 @@
       "U884f25cb569121f0e477efdda4471fd7": {
         "displayName": "佘俊頡",
         "firstVisit": 1785054197779,
-        "count": 9,
-        "lastVisit": 1787920044309,
-        "pictureUrl": "https://profile.line-scdn.net/0hxvxEqMvCJ1lVPDRakHxZJiVsJDN2TX5LLV89b2hufzlsXzVdLQ1hNjI7LWxuDGNceFo9bWE4fzxZL1A_S2rbbVIMemhoDWUHf1Jtug"
+        "count": 11,
+        "lastVisit": 1794554794329,
+        "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
       },
       "U6e12f69c73073fcdc89f3b719e44cb54": {
         "displayName": "Sandy Huang",
@@ -1116,8 +1116,8 @@
       "U911c6faae5ae99cb4c24cbe5c22ac5e7": {
         "displayName": "陳文凱",
         "firstVisit": 1787096229677,
-        "count": 80,
-        "lastVisit": 1794492144471,
+        "count": 81,
+        "lastVisit": 1794555857743,
         "pictureUrl": "https://profile.line-scdn.net/0hHYlydU1zF3ZBAAiI9CVpSDFQFBxicU5kaGMIRXZSQE55Y1YkP2EMGXEFTkB_NVIgOmBbQHYJHkBjdRh_KTMrQB9JCicgQBJ8BhhZTgYDJxV4Rz4pZGctbChDDDMMQgdQJCEubS9BHS4JSVl2Oh45dQtuFyAEUhlSJFd7IEQyefUuAmAjbGZZFXwGQUP5"
       },
       "U1920cbbd7be6a8816939be44d4d0e1f2": {
@@ -1520,6 +1520,30 @@
       }
     },
     "logs": [
+      {
+        "time": 1794555857743,
+        "userId": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
+        "displayName": "陳文凱",
+        "pictureUrl": "https://profile.line-scdn.net/0hHYlydU1zF3ZBAAiI9CVpSDFQFBxicU5kaGMIRXZSQE55Y1YkP2EMGXEFTkB_NVIgOmBbQHYJHkBjdRh_KTMrQB9JCicgQBJ8BhhZTgYDJxV4Rz4pZGctbChDDDMMQgdQJCEubS9BHS4JSVl2Oh45dQtuFyAEUhlSJFd7IEQyefUuAmAjbGZZFXwGQUP5"
+      },
+      {
+        "time": 1794555560480,
+        "userId": "U203b76fe44ff1d74c53c21e5547aea27",
+        "displayName": "登登登登～",
+        "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
+      },
+      {
+        "time": 1794554794329,
+        "userId": "U884f25cb569121f0e477efdda4471fd7",
+        "displayName": "佘俊頡",
+        "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
+      },
+      {
+        "time": 1794554733633,
+        "userId": "U884f25cb569121f0e477efdda4471fd7",
+        "displayName": "佘俊頡",
+        "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
+      },
       {
         "time": 1794538079254,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -13492,30 +13516,6 @@
       },
       {
         "time": 1789266462299,
-        "userId": "U49e2484c80056990b759e9039a74e1a6",
-        "displayName": "Kay",
-        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
-      },
-      {
-        "time": 1789264848026,
-        "userId": "U49e2484c80056990b759e9039a74e1a6",
-        "displayName": "Kay",
-        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
-      },
-      {
-        "time": 1789264765209,
-        "userId": "U49e2484c80056990b759e9039a74e1a6",
-        "displayName": "Kay",
-        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
-      },
-      {
-        "time": 1789264559202,
-        "userId": "U49e2484c80056990b759e9039a74e1a6",
-        "displayName": "Kay",
-        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
-      },
-      {
-        "time": 1789263440241,
         "userId": "U49e2484c80056990b759e9039a74e1a6",
         "displayName": "Kay",
         "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
