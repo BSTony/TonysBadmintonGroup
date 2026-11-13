@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6440,
+    "viewCount": 6441,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -885,8 +885,8 @@
       "U884f25cb569121f0e477efdda4471fd7": {
         "displayName": "佘俊頡",
         "firstVisit": 1785054197779,
-        "count": 14,
-        "lastVisit": 1794572488225,
+        "count": 15,
+        "lastVisit": 1794579930893,
         "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
       },
       "U6e12f69c73073fcdc89f3b719e44cb54": {
@@ -1520,6 +1520,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1794579930893,
+        "userId": "U884f25cb569121f0e477efdda4471fd7",
+        "displayName": "佘俊頡",
+        "pictureUrl": "https://profile.line-scdn.net/0hS2EkAq9DDB1oEhDUxDxyIxhCD3dLY1UPEHEWK1VAVH1RcR4ZECNKcg8VBihTIkgYRXQWKVwWVHhKZCUqOhJEPFVyV2UmJiU0KjMzCCATBEUGaSgWPBw-cg9LCCsqRggNPQEWPF52D0YBKwlJExEjZx10WywtXDhPHkVgS20gYp4HEHtIRXRCflUUWijQ"
+      },
       {
         "time": 1794572488225,
         "userId": "U884f25cb569121f0e477efdda4471fd7",
@@ -13513,12 +13519,6 @@
         "userId": "U9d06cac35df59cb7e460b83e88d303cf",
         "displayName": "ALAN LIU",
         "pictureUrl": "https://profile.line-scdn.net/0haxDLakDfPldpNSFnCTlAaRllPT1KRGdFRAAkZQhnaTNQUH0FRQd1ZF5iY2JQUH0ITVQlOFwzNG9LbCB5GVMiQTR3aQcPYwVdOgQjalxnOBwrQRwCRSklZjcxIBpIDA52MDstSg5oPhcSWg9JMQM4aBtLACMAVxpyHmJSAWwHUNQGN0kCRFNwNFQzaGLR"
-      },
-      {
-        "time": 1789284124929,
-        "userId": "Uc608f165fc93c9affa9b9d721d6d0efd",
-        "displayName": "YANG 阿傑",
-        "pictureUrl": "https://profile.line-scdn.net/0hxqkHySt6J15GMTkKU79ZYDZhJDRlQH5MaQQ_OXtkej0rAzcJYlJtMXZhLG4sUWMIYwRpPXM4emdkR2dpMAI9QTMzDhUMZTVJLhcwcyVmGAgJYgdAOVIzcxFTOhwuVQtRKks6SCA5K24tdGB4azRtTihSIzMFdghzLmZLCEMDSd0pM1ALa1dpPXs3cWv-"
       }
     ]
   },
