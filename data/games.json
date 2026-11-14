@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794616992051,
+    "lastActiveTime": 1794618046389,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12900,7 +12900,8 @@
       "Kevin 何榮煌": true,
       "Chen H.R.": true,
       "小羅": true,
-      "John": false
+      "John": false,
+      "林淑惠": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
