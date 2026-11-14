@@ -14163,7 +14163,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1794639943176,
+    "lastActiveTime": 1794646005789,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14203,7 +14203,8 @@
           "Chris Chen",
           "楊程鈞",
           "Mia",
-          "Kevin"
+          "Kevin",
+          "Ray"
         ]
       },
       {
@@ -14224,6 +14225,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/14 16:46",
+        "name": "Ray",
+        "operator": "Raymond 權權",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/14 15:05",
         "name": "Kevin",
