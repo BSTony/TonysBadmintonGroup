@@ -14163,7 +14163,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1794639932423,
+    "lastActiveTime": 1794639943176,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14202,7 +14202,8 @@
           "林淑惠Sophia2",
           "Chris Chen",
           "楊程鈞",
-          "Mia"
+          "Mia",
+          "Kevin"
         ]
       },
       {
@@ -14223,6 +14224,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/14 15:05",
+        "name": "Kevin",
+        "operator": "賴鈺臻",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/14 15:05",
         "name": "Mia",
