@@ -11381,7 +11381,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418777969,
-    "lastActiveTime": 1794637333479,
+    "lastActiveTime": 1794637341534,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11434,13 +11434,21 @@
           "花花",
           "Sharon",
           "Gary",
-          "FB 鄭毅凡1"
+          "FB 鄭毅凡1",
+          "FB 鄭毅凡2"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "11/14 14:22",
+        "name": "FB 鄭毅凡2",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/14 14:22",
         "name": "FB 鄭毅凡1",
