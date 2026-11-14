@@ -14163,7 +14163,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1794631419363,
+    "lastActiveTime": 1794637452571,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14181,7 +14181,8 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
-      "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc"
+      "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
+      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14197,7 +14198,8 @@
           "Kay",
           "©️張CC～©️",
           "林淑惠Sophia",
-          "林淑惠Sophia2"
+          "林淑惠Sophia2",
+          "Chris Chen"
         ]
       },
       {
@@ -14215,6 +14217,15 @@
         "fee": "190",
         "label": "",
         "list": []
+      }
+    ],
+    "history": [
+      {
+        "time": "11/14 14:24",
+        "name": "Chris Chen",
+        "operator": "Chris Chen",
+        "action": "+1",
+        "section": "8-12"
       }
     ]
   }
