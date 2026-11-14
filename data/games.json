@@ -14158,7 +14158,7 @@
     "date": "11/21 (六)",
     "time": "08:00~12:00",
     "location": "南港高中",
-    "fee": "",
+    "fee": "300",
     "note": "",
     "tag": "",
     "active": true,
@@ -14192,7 +14192,7 @@
     "sections": [
       {
         "title": "8-12",
-        "limit": 12,
+        "limit": 15,
         "backupLimit": 5,
         "fee": "300",
         "label": "",
@@ -14212,7 +14212,7 @@
       },
       {
         "title": "8-10",
-        "limit": 10,
+        "limit": 7,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
@@ -14222,7 +14222,7 @@
       },
       {
         "title": "10-12",
-        "limit": 10,
+        "limit": 7,
         "backupLimit": 5,
         "fee": "190",
         "label": "",
@@ -14279,6 +14279,7 @@
         "action": "+1",
         "section": "8-12"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
