@@ -12884,7 +12884,7 @@
     "tag": "",
     "active": true,
     "startTime": 1793460219130,
-    "lastActiveTime": 1794618046389,
+    "lastActiveTime": 1794621701397,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -12901,7 +12901,9 @@
       "Chen H.R.": true,
       "小羅": true,
       "John": false,
-      "林淑惠": true
+      "林淑惠": true,
+      "林淑惠Sophia": true,
+      "AddieWang": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
