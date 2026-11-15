@@ -14281,5 +14281,54 @@
       }
     ],
     "isManualEnded": false
+  },
+  "1794711529433209": {
+    "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+    "targetGids": [
+      "Cf6e94fdd7c4183eda46be86fccb4bfe0",
+      "C073dd061239f9bc2df13af0a1ecb4bdb",
+      "C7dbe1bfbc6a87f5842bdd39b63f7ef9e",
+      "C73ead06e46f4c3a00a3f87d946c7d18a"
+    ],
+    "gameId": "1794711529433209",
+    "title": "週日 港中 8-10 （臨租",
+    "date": "11/22 (日)",
+    "time": "08:00~10:00",
+    "location": "南港高中",
+    "fee": "150",
+    "note": "隔壁打籃球 會有噪音",
+    "tag": "",
+    "active": true,
+    "startTime": 1794711529436,
+    "lastActiveTime": 1794711529436,
+    "scheduleTime": null,
+    "reminderTime": null,
+    "scheduleInput": null,
+    "anonymous": [],
+    "anonymousCount": 0,
+    "levelMap": {},
+    "paidMap": {
+      "謝東霖 Tony": true,
+      "Kay": true
+    },
+    "uidMap": {
+      "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+      "Kay": "U49e2484c80056990b759e9039a74e1a6"
+    },
+    "noteMap": {},
+    "allowUserNoteEdit": true,
+    "sections": [
+      {
+        "title": "報名名單",
+        "limit": 12,
+        "backupLimit": 5,
+        "label": "",
+        "list": [
+          "謝東霖 Tony",
+          "Kay"
+        ],
+        "fee": "150"
+      }
+    ]
   }
 }
