@@ -13887,7 +13887,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794315047323,
-    "lastActiveTime": 1794560001918,
+    "lastActiveTime": 1794736035470,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13936,12 +13936,20 @@
           "Jet",
           "陳呈",
           "kevin",
-          "Sharon"
+          "Sharon",
+          "周則鼎"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/15 17:47",
+        "name": "周則鼎",
+        "operator": "周則鼎",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/13 16:53",
         "name": "周則鼎",
