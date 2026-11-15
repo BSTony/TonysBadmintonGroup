@@ -14309,7 +14309,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1794711529436,
+    "lastActiveTime": 1794712867250,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14334,9 +14334,19 @@
         "label": "",
         "list": [
           "謝東霖 Tony",
-          "Kay"
+          "Kay",
+          "wayne"
         ],
         "fee": "150"
+      }
+    ],
+    "history": [
+      {
+        "time": "11/15 11:21",
+        "name": "wayne",
+        "operator": "Wayne",
+        "action": "+1",
+        "section": "報名名單"
       }
     ]
   }
