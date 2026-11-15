@@ -13990,7 +13990,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794498756371,
+    "lastActiveTime": 1794736011688,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14006,8 +14006,7 @@
       "曾Jim凱": true,
       "Ashely": true,
       "陳呈": true,
-      "杜威霖 Andy": true,
-      "周則鼎": true
+      "杜威霖 Andy": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -14047,7 +14046,6 @@
           "Ashely",
           "陳呈",
           "杜威霖 Andy",
-          "周則鼎",
           "喻心平",
           "陳文凱",
           "momota",
@@ -14065,6 +14063,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/15 17:46",
+        "name": "周則鼎",
+        "operator": "周則鼎",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/12 23:52",
         "name": "Jet",
