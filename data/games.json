@@ -11381,7 +11381,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418777969,
-    "lastActiveTime": 1794828636643,
+    "lastActiveTime": 1794828868020,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11398,7 +11398,8 @@
       "John": true,
       "FB 鄭毅凡1": true,
       "FB 鄭毅凡2": true,
-      "李老師": true
+      "李老師": true,
+      "FB 明道": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
