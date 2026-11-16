@@ -14440,7 +14440,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1794712867250,
+    "lastActiveTime": 1794844458375,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14453,7 +14453,8 @@
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "Kay": "U49e2484c80056990b759e9039a74e1a6"
+      "Kay": "U49e2484c80056990b759e9039a74e1a6",
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14466,12 +14467,20 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "wayne"
+          "wayne",
+          "江こう 洋々"
         ],
         "fee": "150"
       }
     ],
     "history": [
+      {
+        "time": "11/16 23:54",
+        "name": "江こう 洋々",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/15 11:21",
         "name": "wayne",
