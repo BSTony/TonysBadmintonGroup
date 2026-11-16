@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6566,
+    "viewCount": 6569,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -45,8 +45,8 @@
       "U49e2484c80056990b759e9039a74e1a6": {
         "displayName": "Kay",
         "firstVisit": 1783209148916,
-        "count": 392,
-        "lastVisit": 1794829075097,
+        "count": 393,
+        "lastVisit": 1794834949976,
         "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
       },
       "U532d12783f207181c2d0f9d9ecc8724a": {
@@ -219,8 +219,8 @@
       "U4f877c526e048afcda3730edce9ba746": {
         "displayName": "楊程鈞",
         "firstVisit": 1783234301758,
-        "count": 47,
-        "lastVisit": 1794639528702,
+        "count": 48,
+        "lastVisit": 1794837018976,
         "pictureUrl": "https://profile.line-scdn.net/0hC85nNh2uHBcYFwLgmt5iKWhHH307ZkUFNnEDdn1DRSV2c1sVNSFUI34QFSdwIFJEYyRRdX0RRi86YCc_fzE6JVJDS0J5elkmfQk6BWkXIy57QwQUTiQgdUVyGlhBbAgSdQgqDUYRN3ttL0cndig2CXQTHWVkJQs6XEBwQR0lcpR3FWtCNXFSdCURSiKg"
       },
       "U4cbba92203148484d06d213547203e35": {
@@ -814,8 +814,8 @@
       "U6d9e099c518efa25fd881c87e6e72dd7": {
         "displayName": "羅小羅🦝",
         "firstVisit": 1784444475682,
-        "count": 38,
-        "lastVisit": 1794588525201,
+        "count": 39,
+        "lastVisit": 1794836021745,
         "pictureUrl": "https://profile.line-scdn.net/0hwdj_OKKIKEtHJjRu_NBWdTd2KyFkV3FZY0M1LHIgdnxyE29NaUViJCV2dXt7EW8caBBkenYnJnpldCZZIz4xLi5ALzw4ZDJoLBYAViREMHlmXjB_KgAwZgFcGAQObg1AKAlnXxp5PxAJYitPNyk4LCV6GBMbdjRjDXFEHUIURsgoJF8eakBmKHogfn7_"
       },
       "Uc90c5085f43d2298a8f3e71d5e4010a3": {
@@ -1520,6 +1520,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1794837018976,
+        "userId": "U4f877c526e048afcda3730edce9ba746",
+        "displayName": "楊程鈞",
+        "pictureUrl": "https://profile.line-scdn.net/0hC85nNh2uHBcYFwLgmt5iKWhHH307ZkUFNnEDdn1DRSV2c1sVNSFUI34QFSdwIFJEYyRRdX0RRi86YCc_fzE6JVJDS0J5elkmfQk6BWkXIy57QwQUTiQgdUVyGlhBbAgSdQgqDUYRN3ttL0cndig2CXQTHWVkJQs6XEBwQR0lcpR3FWtCNXFSdCURSiKg"
+      },
+      {
+        "time": 1794836021745,
+        "userId": "U6d9e099c518efa25fd881c87e6e72dd7",
+        "displayName": "羅小羅🦝",
+        "pictureUrl": "https://profile.line-scdn.net/0hwdj_OKKIKEtHJjRu_NBWdTd2KyFkV3FZY0M1LHIgdnxyE29NaUViJCV2dXt7EW8caBBkenYnJnpldCZZIz4xLi5ALzw4ZDJoLBYAViREMHlmXjB_KgAwZgFcGAQObg1AKAlnXxp5PxAJYitPNyk4LCV6GBMbdjRjDXFEHUIURsgoJF8eakBmKHogfn7_"
+      },
+      {
+        "time": 1794834949976,
+        "userId": "U49e2484c80056990b759e9039a74e1a6",
+        "displayName": "Kay",
+        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
+      },
       {
         "time": 1794829075097,
         "userId": "U49e2484c80056990b759e9039a74e1a6",
@@ -13501,24 +13519,6 @@
         "userId": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
         "displayName": "Sean柏宏",
         "pictureUrl": "https://profile.line-scdn.net/0hd72UYDUgOxgfLC839a5FZ298OHI8XWIKYR8nei98Y393FHhMN04gfn0oYnohGH1JZEJxfHovYHgTP0x-AXrHLBgcZikiHXlGNUJx-w"
-      },
-      {
-        "time": 1789595712137,
-        "userId": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
-        "displayName": "Sean柏宏",
-        "pictureUrl": "https://profile.line-scdn.net/0hd72UYDUgOxgfLC839a5FZ298OHI8XWIKYR8nei98Y393FHhMN04gfn0oYnohGH1JZEJxfHovYHgTP0x-AXrHLBgcZikiHXlGNUJx-w"
-      },
-      {
-        "time": 1789584290387,
-        "userId": "Uf077846a21900f6e03afdf8e678bc1ab",
-        "displayName": "Tank Lin",
-        "pictureUrl": "https://profile.line-scdn.net/0hsLMHfiD_LGNgMTAEASNSXRBhLwlDQHVxGwVhB1UwcVZeBG5gHARmUlM1elAPBjk2RANrV1E1dgNCRiMxLA0RbAhlGyEjSHdHLi0XYylEIj0ndDdICB8cbCNFBw0JXDg9DFNjfxBVOzo1Aip2SCkNRxZpJTgceAVASGZANWUDQuAPM1s2TVdiAF03elbY"
-      },
-      {
-        "time": 1789581472691,
-        "userId": "Uf077846a21900f6e03afdf8e678bc1ab",
-        "displayName": "Tank Lin",
-        "pictureUrl": "https://profile.line-scdn.net/0hsLMHfiD_LGNgMTAEASNSXRBhLwlDQHVxGwVhB1UwcVZeBG5gHARmUlM1elAPBjk2RANrV1E1dgNCRiMxLA0RbAhlGyEjSHdHLi0XYylEIj0ndDdICB8cbCNFBw0JXDg9DFNjfxBVOzo1Aip2SCkNRxZpJTgceAVASGZANWUDQuAPM1s2TVdiAF03elbY"
       }
     ]
   },
