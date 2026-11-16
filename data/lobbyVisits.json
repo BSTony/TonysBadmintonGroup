@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6544,
+    "viewCount": 6549,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -24,8 +24,8 @@
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
         "firstVisit": 1783205078509,
-        "count": 1139,
-        "lastVisit": 1794731798331,
+        "count": 1140,
+        "lastVisit": 1794790557016,
         "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       },
       "U092196c10fe7e15591482c6b7942a147": {
@@ -38,8 +38,8 @@
       "Uec617dedcd37cd4c4e1d6afb526819d1": {
         "displayName": "Chris Chen",
         "firstVisit": 1783208020463,
-        "count": 73,
-        "lastVisit": 1794637425603,
+        "count": 74,
+        "lastVisit": 1794790676696,
         "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
       },
       "U49e2484c80056990b759e9039a74e1a6": {
@@ -108,8 +108,8 @@
       "Ue1d19fdc4f72d6fc04484fdc8c32b189": {
         "displayName": "小金(Chen Pei Hung)",
         "firstVisit": 1783225954849,
-        "count": 130,
-        "lastVisit": 1794716723032,
+        "count": 131,
+        "lastVisit": 1794790633274,
         "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
       },
       "Ub2e84850d9446141bcb1ae89ec450821": {
@@ -143,8 +143,8 @@
       "U04307fbd1087e54ce656086b653a60fd": {
         "displayName": "黃政豪",
         "firstVisit": 1783229231612,
-        "count": 153,
-        "lastVisit": 1794754461703,
+        "count": 154,
+        "lastVisit": 1794788040277,
         "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
       },
       "U9a1ff0a8477529c49db5bca1e7313bd0": {
@@ -1514,12 +1514,42 @@
       "U390a4c915ac3c0192c0ef4d3ecf2094d": {
         "displayName": "住商不動產-陳家慧",
         "firstVisit": 1794229947938,
-        "count": 1,
-        "lastVisit": 1794229947938,
+        "count": 2,
+        "lastVisit": 1794790600202,
         "pictureUrl": "https://profile.line-scdn.net/0hIeE69PlGFkpoTwPC1AtoNRgfFSBLPk9YF3sJfwlNHXlWflQaRCxdKQoYT3JVflcVE35YJFxHGilkXGEsdhnqfm9_S3tVflQUQiFcqQ"
       }
     },
     "logs": [
+      {
+        "time": 1794790676696,
+        "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
+        "displayName": "Chris Chen",
+        "pictureUrl": "https://profile.line-scdn.net/0huQcEKHnsKn5OPAdGh6xUAT5sKRRtTXNsNVgxTHg1cEtzDDl6MVlnES45JkdzDzl4MV9tTSk6cx5CL10YUGrWSkkMd09zDWggZFJgnQ"
+      },
+      {
+        "time": 1794790633274,
+        "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
+        "displayName": "小金(Chen Pei Hung)",
+        "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
+      },
+      {
+        "time": 1794790600202,
+        "userId": "U390a4c915ac3c0192c0ef4d3ecf2094d",
+        "displayName": "住商不動產-陳家慧",
+        "pictureUrl": "https://profile.line-scdn.net/0hIeE69PlGFkpoTwPC1AtoNRgfFSBLPk9YF3sJfwlNHXlWflQaRCxdKQoYT3JVflcVE35YJFxHGilkXGEsdhnqfm9_S3tVflQUQiFcqQ"
+      },
+      {
+        "time": 1794790557016,
+        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
+        "displayName": "謝東霖 Tony",
+        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
+      },
+      {
+        "time": 1794788040277,
+        "userId": "U04307fbd1087e54ce656086b653a60fd",
+        "displayName": "黃政豪",
+        "pictureUrl": "https://profile.line-scdn.net/0hzk0M6sseJUQdNDCcqMZbO21kJi4-RXxWOAJsIyphfSMjDGcTNFBidX9me3ElBmBFNAdjciAyeXURJ1IiA2LZcBoEeHUgBWcaN1pvpw"
+      },
       {
         "time": 1794758565862,
         "userId": "U07e425412c114771e65bce53eaf032cb",
@@ -13489,36 +13519,6 @@
         "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
         "displayName": "Wang",
         "pictureUrl": "https://profile.line-scdn.net/0hNECa5TMdEWpuGAcCpKBvFR5IEgBNaUh4SnxfDl0RT1MHKFVsRSleCgkZHQpaelc9RX4JClwdS1piC2YMcE7tXmkoTFtTKVM0RHZbiQ"
-      },
-      {
-        "time": 1789563428663,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
-      },
-      {
-        "time": 1789549410338,
-        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
-        "displayName": "賴柚子",
-        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjdbHzDhxsExLTY01wIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
-      },
-      {
-        "time": 1789548620485,
-        "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-        "displayName": "腳皮",
-        "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
-      },
-      {
-        "time": 1789548545768,
-        "userId": "U646a57fec28a946a131cfc7b872ca8c8",
-        "displayName": "Edwardエドワード 에드워드 Ëd",
-        "pictureUrl": "https://profile.line-scdn.net/0hf0SnZfaUOR9-FyVFEZtHIQ5HOnVdZmANAXMjKkgSZnpEISocViZ3fBsfbnhDInoeWiElKU4fMHxcXB4CCCYeBxdWD0YQdT1IGy4BJT9hB3Y5WQBPFS8BHj9rPX0DWyUxJzQDPEsSDm0aZR9BDjQrDlcQbywERT43OUBVSXslV5wRFU5KU3F3fEMRbyrG"
-      },
-      {
-        "time": 1789548444033,
-        "userId": "U88ae9c79ca7f2ef9d91e7678fecf4416",
-        "displayName": "腳皮",
-        "pictureUrl": "https://profile.line-scdn.net/0hUfh8CEE4CklFQSdEqAp0NjURCSNmMFNbPC4WKnJHA3p6Ih8ZaHdMKCcVVy5_JRlNbiVGf3QVUC1JUn0vWxf2fUJxV3h4cEgXby9Aqg"
       }
     ]
   },
