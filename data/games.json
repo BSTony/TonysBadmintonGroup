@@ -11446,7 +11446,7 @@
         "fee": "230"
       }
     ],
-    "isManualEnded": false,
+    "isManualEnded": true,
     "history": [
       {
         "time": "11/16 17:38",
