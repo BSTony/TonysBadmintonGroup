@@ -14271,7 +14271,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1794872392079,
+    "lastActiveTime": 1794872404364,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14281,8 +14281,7 @@
     "paidMap": {
       "謝東霖 Tony": true,
       "Kay": true,
-      "©️張CC～©️": true,
-      "林淑惠Sophia": true
+      "©️張CC～©️": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -14309,7 +14308,6 @@
           "謝東霖 Tony",
           "Kay",
           "©️張CC～©️",
-          "林淑惠Sophia",
           "Chris Chen",
           "楊程鈞",
           "Mia",
@@ -14340,6 +14338,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/17 07:40",
+        "name": "林淑惠Sophia",
+        "operator": "林淑惠Sophia",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "11/17 07:39",
         "name": "林淑惠Sophia2",
