@@ -13903,7 +13903,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794315047323,
-    "lastActiveTime": 1794817889185,
+    "lastActiveTime": 1794819672954,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13931,7 +13931,8 @@
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "Sharon": "U2f34481ad7c75487414b97ec63623fba",
-      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582"
+      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
+      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -13953,12 +13954,20 @@
           "Sharon",
           "周則鼎",
           "FB shih",
-          "FB 羅吉"
+          "FB 羅吉",
+          "張建發"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/16 17:01",
+        "name": "張建發",
+        "operator": "張建發",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/16 16:31",
         "name": "FB 羅吉",
