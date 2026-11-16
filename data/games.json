@@ -11381,7 +11381,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418777969,
-    "lastActiveTime": 1794790568387,
+    "lastActiveTime": 1794821880804,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11436,13 +11436,21 @@
           "FB 鄭毅凡2",
           "wayne",
           "阿豪",
-          "李老師"
+          "李老師",
+          "FB 明道"
         ],
         "fee": "230"
       }
     ],
     "isManualEnded": false,
     "history": [
+      {
+        "time": "11/16 17:38",
+        "name": "FB 明道",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/16 08:56",
         "name": "李老師",
