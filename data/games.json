@@ -11381,7 +11381,7 @@
     "tag": "",
     "active": true,
     "startTime": 1792418777969,
-    "lastActiveTime": 1794828633749,
+    "lastActiveTime": 1794828636643,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -11396,7 +11396,9 @@
       "Andrew Kuo": true,
       "黃政豪": true,
       "John": true,
-      "FB 鄭毅凡1": true
+      "FB 鄭毅凡1": true,
+      "FB 鄭毅凡2": true,
+      "李老師": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
