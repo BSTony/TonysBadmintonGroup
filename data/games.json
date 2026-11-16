@@ -13903,7 +13903,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794315047323,
-    "lastActiveTime": 1794809700854,
+    "lastActiveTime": 1794817889185,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -13952,12 +13952,20 @@
           "kevin",
           "Sharon",
           "周則鼎",
-          "FB shih"
+          "FB shih",
+          "FB 羅吉"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/16 16:31",
+        "name": "FB 羅吉",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/16 14:15",
         "name": "FB shih",
