@@ -14044,7 +14044,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794745599840,
+    "lastActiveTime": 1794821460393,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14080,7 +14080,8 @@
       "Sharon": "U2f34481ad7c75487414b97ec63623fba",
       "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14112,12 +14113,20 @@
           "花花",
           "江こう 洋々",
           "Gary",
-          "matt"
+          "matt",
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/16 17:31",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/15 20:26",
         "name": "matt",
