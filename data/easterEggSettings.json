@@ -69,6 +69,14 @@
       "prize": null,
       "prizeAt": null,
       "updatedAt": 1794059391556
+    },
+    {
+      "uid": "U_GUEST_mtvm839epfefxz",
+      "name": "訪客",
+      "kills": 1,
+      "prize": null,
+      "prizeAt": null,
+      "updatedAt": 1794928126612
     }
   ],
   "christmasStock": {
