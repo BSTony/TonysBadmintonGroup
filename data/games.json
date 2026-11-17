@@ -14293,7 +14293,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1794931932508,
+    "lastActiveTime": 1794950480791,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14350,7 +14350,8 @@
         "list": [
           "AddieWang",
           "Sean柏宏",
-          "小金(Chen Pei Hung)"
+          "小金(Chen Pei Hung)",
+          "阿宏"
         ]
       },
       {
@@ -14363,6 +14364,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/18 05:21",
+        "name": "阿宏",
+        "operator": "Tony Wei",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "11/18 00:12",
         "name": "Andrew Kuo",
