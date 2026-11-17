@@ -14542,7 +14542,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794838085789,
-    "lastActiveTime": 1794844821364,
+    "lastActiveTime": 1794922783585,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14565,7 +14565,8 @@
       "林煥杰": "Ub2e84850d9446141bcb1ae89ec450821",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14585,12 +14586,20 @@
           "John",
           "FB 偉翔1",
           "FB 偉翔2",
-          "小黑"
+          "小黑",
+          "楊程鈞"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/17 21:39",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/17 00:00",
         "name": "小黑",
