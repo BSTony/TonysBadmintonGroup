@@ -14609,7 +14609,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794918438722,
-    "lastActiveTime": 1794919979387,
+    "lastActiveTime": 1794920440336,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14635,7 +14635,8 @@
       "Robert": "Uf35f2dc9288c3434a5a19186f900402a",
       "偉舫": "U9904ed725b1f420b8718791594e3756b",
       "Jet": "U94d0fd3752c6d2521d871658f63822b7",
-      "陳呈": "U24c3b63e1d18834db9830f243aedaeae"
+      "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
+      "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14653,12 +14654,20 @@
           "偉舫",
           "Jet",
           "陳呈",
-          "凱文"
+          "凱文",
+          "周則鼎"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/17 21:00",
+        "name": "周則鼎",
+        "operator": "周則鼎",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/17 20:52",
         "name": "Ong",
