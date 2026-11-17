@@ -77,6 +77,14 @@
       "prize": null,
       "prizeAt": null,
       "updatedAt": 1794928126612
+    },
+    {
+      "uid": "Ufa8dba5febf9f719da07f7e507391a21",
+      "name": "海棠",
+      "kills": 1,
+      "prize": null,
+      "prizeAt": null,
+      "updatedAt": 1794956027180
     }
   ],
   "christmasStock": {
