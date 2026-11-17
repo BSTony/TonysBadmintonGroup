@@ -14277,7 +14277,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1794872404364,
+    "lastActiveTime": 1794904490472,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14319,7 +14319,8 @@
           "Mia",
           "Kevin",
           "Ray",
-          "Chen H.R."
+          "Chen H.R.",
+          "龍"
         ]
       },
       {
@@ -14344,6 +14345,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/17 16:34",
+        "name": "龍",
+        "operator": "龍 (輸入框)",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/17 07:40",
         "name": "林淑惠Sophia",
