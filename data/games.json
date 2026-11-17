@@ -14636,7 +14636,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794918438722,
-    "lastActiveTime": 1794925106638,
+    "lastActiveTime": 1794925198101,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14686,12 +14686,20 @@
           "凱文",
           "周則鼎",
           "afrahuang",
-          "FiFi"
+          "FiFi",
+          "wayne"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/17 22:19",
+        "name": "wayne",
+        "operator": "Wayne",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/17 22:18",
         "name": "FiFi",
