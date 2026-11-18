@@ -14312,7 +14312,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795013565988,
+    "lastActiveTime": 1795013576920,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14359,7 +14359,8 @@
           "Chen H.R.",
           "龍",
           "Andrew Kuo",
-          "腳皮"
+          "腳皮",
+          "宇軒"
         ]
       },
       {
@@ -14385,6 +14386,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/18 22:52",
+        "name": "宇軒",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/18 22:52",
         "name": "腳皮",
