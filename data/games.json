@@ -14497,7 +14497,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1794844458375,
+    "lastActiveTime": 1794961106256,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14525,12 +14525,20 @@
           "謝東霖 Tony",
           "Kay",
           "wayne",
-          "江こう 洋々"
+          "江こう 洋々",
+          "凱文"
         ],
         "fee": "150"
       }
     ],
     "history": [
+      {
+        "time": "11/18 08:18",
+        "name": "凱文",
+        "operator": "江こう 洋々",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/16 23:54",
         "name": "江こう 洋々",
