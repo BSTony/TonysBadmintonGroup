@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6652,
+    "viewCount": 6653,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -513,8 +513,8 @@
       "U6828d5fa68c1c92cf8a000b9b253a66d": {
         "displayName": "Hsin",
         "firstVisit": 1783573015272,
-        "count": 20,
-        "lastVisit": 1794016839873,
+        "count": 21,
+        "lastVisit": 1795008816382,
         "pictureUrl": "https://profile.line-scdn.net/0h_QmJQsWwAH5AMxH11GB-ATBjAxRjQllsZQYfGXU7DkZ7UUN_aVBHGXdhVk8qBEF_O1ZMHnQ3DExMIHcYXmX8SkcDXU99AkIgal1KnQ"
       },
       "U27f23a1855894c45cf1e7898369224c1": {
@@ -1536,6 +1536,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1795008816382,
+        "userId": "U6828d5fa68c1c92cf8a000b9b253a66d",
+        "displayName": "Hsin",
+        "pictureUrl": "https://profile.line-scdn.net/0h_QmJQsWwAH5AMxH11GB-ATBjAxRjQllsZQYfGXU7DkZ7UUN_aVBHGXdhVk8qBEF_O1ZMHnQ3DExMIHcYXmX8SkcDXU99AkIgal1KnQ"
+      },
       {
         "time": 1795006721671,
         "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -13529,12 +13535,6 @@
         "userId": "U203b76fe44ff1d74c53c21e5547aea27",
         "displayName": "登登登登～",
         "pictureUrl": "https://profile.line-scdn.net/0hCvR_Ol1kHFl_Jgx-6hJiJg92HzNcV0VLB0NVah9zRWhAEVIGARVUbBkjQD0WFF8PVBcENkIuFj1zNWs_YXDgbXgWQWhCF14HVUhWug"
-      },
-      {
-        "time": 1789730307316,
-        "userId": "Ueab389b7ed59afb14651d8449997efec",
-        "displayName": "黃建榮",
-        "pictureUrl": "https://profile.line-scdn.net/ch/v2/p/u16fa8d01bf7059c7802e863bc8537b83/1352457785269"
       }
     ]
   },
