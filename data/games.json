@@ -14312,7 +14312,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795013668107,
+    "lastActiveTime": 1795019811929,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14374,7 +14374,8 @@
           "AddieWang",
           "Sean柏宏",
           "小金(Chen Pei Hung)",
-          "阿宏"
+          "阿宏",
+          "兔兔"
         ]
       },
       {
@@ -14387,6 +14388,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/19 00:36",
+        "name": "兔兔",
+        "operator": "兔兔(玉儒)",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "11/18 22:54",
         "name": "sammy",
