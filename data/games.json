@@ -14312,7 +14312,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1794950480791,
+    "lastActiveTime": 1795013565988,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14335,7 +14335,8 @@
       "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
-      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1"
+      "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14357,7 +14358,8 @@
           "Ray",
           "Chen H.R.",
           "龍",
-          "Andrew Kuo"
+          "Andrew Kuo",
+          "腳皮"
         ]
       },
       {
@@ -14383,6 +14385,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/18 22:52",
+        "name": "腳皮",
+        "operator": "腳皮",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/18 05:21",
         "name": "阿宏",
