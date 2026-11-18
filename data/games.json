@@ -14312,7 +14312,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795013576920,
+    "lastActiveTime": 1795013668107,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14360,7 +14360,8 @@
           "龍",
           "Andrew Kuo",
           "腳皮",
-          "宇軒"
+          "宇軒",
+          "sammy"
         ]
       },
       {
@@ -14386,6 +14387,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/18 22:54",
+        "name": "sammy",
+        "operator": "sammy (輸入框)",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/18 22:52",
         "name": "宇軒",
