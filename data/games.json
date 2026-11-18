@@ -14057,7 +14057,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1794926846928,
+    "lastActiveTime": 1794961804975,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14072,7 +14072,6 @@
       "Wayne": true,
       "曾Jim凱": true,
       "Ashely": true,
-      "陳呈": true,
       "杜威霖 Andy": true
     },
     "uidMap": {
@@ -14113,7 +14112,6 @@
           "Wayne",
           "曾Jim凱",
           "Ashely",
-          "陳呈",
           "杜威霖 Andy",
           "喻心平",
           "陳文凱",
@@ -14133,6 +14131,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/18 08:30",
+        "name": "陳呈",
+        "operator": "陳呈",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/17 22:47",
         "name": "King",
