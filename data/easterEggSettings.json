@@ -2,33 +2,7 @@
   "enabled": true,
   "message": "恭喜過關 靜待下次活動",
   "quota": 3,
-  "winners": [
-    {
-      "uid": "U2dbb95e75cba905a0fc98dac27a26211",
-      "name": "Buffy",
-      "timeTaken": 4479
-    },
-    {
-      "uid": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-      "name": "謝東霖 Tony",
-      "timeTaken": 6922
-    },
-    {
-      "uid": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
-      "name": "陳文凱",
-      "timeTaken": 16336
-    },
-    {
-      "uid": "U3c44f145460b5671baec6a3f62309c23",
-      "name": "Wayne 吳瑋翔 위상",
-      "timeTaken": 16672
-    },
-    {
-      "uid": "U04307fbd1087e54ce656086b653a60fd",
-      "name": "黃政豪",
-      "timeTaken": 19069
-    }
-  ],
+  "winners": [],
   "activeGame": "piggy_run",
   "bulletHellLeaderboard": [
     {
@@ -48,45 +22,8 @@
     }
   ],
   "christmasEvent": true,
-  "evilSantaFirstHit": {
-    "uid": "U49e2484c80056990b759e9039a74e1a6",
-    "name": "Kay",
-    "shotAt": 1793614261912
-  },
-  "christmasPlayers": [
-    {
-      "uid": "U49e2484c80056990b759e9039a74e1a6",
-      "name": "Kay",
-      "kills": 2,
-      "prize": null,
-      "prizeAt": null,
-      "updatedAt": 1794829322592
-    },
-    {
-      "uid": "Udcd911cf1eca1dd7ae1f9cedce18fbb0",
-      "name": "蘇桂平",
-      "kills": 2,
-      "prize": null,
-      "prizeAt": null,
-      "updatedAt": 1794059391556
-    },
-    {
-      "uid": "U_GUEST_mtvm839epfefxz",
-      "name": "訪客",
-      "kills": 1,
-      "prize": null,
-      "prizeAt": null,
-      "updatedAt": 1794928126612
-    },
-    {
-      "uid": "Ufa8dba5febf9f719da07f7e507391a21",
-      "name": "海棠",
-      "kills": 1,
-      "prize": null,
-      "prizeAt": null,
-      "updatedAt": 1794956027180
-    }
-  ],
+  "evilSantaFirstHit": null,
+  "christmasPlayers": [],
   "christmasStock": {
     "tea": 5,
     "grip": 0
