@@ -14971,7 +14971,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795099509611,
+    "lastActiveTime": 1795100340390,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14983,7 +14983,6 @@
       "Kay": true,
       "Iven": true,
       "Mina": true,
-      "Wayne": true,
       "曾Jim凱": true,
       "Ashely": true,
       "陳呈": true,
@@ -15023,7 +15022,6 @@
           "Kay",
           "Iven",
           "Mina",
-          "Wayne",
           "曾Jim凱",
           "Ashely",
           "陳呈",
@@ -15047,6 +15045,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:59",
+        "name": "Wayne",
+        "operator": "Wayne",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:45",
         "name": "Tank Lin",
