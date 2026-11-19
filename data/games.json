@@ -14906,7 +14906,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795097945421,
+    "lastActiveTime": 1795097953844,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14956,12 +14956,20 @@
           "陳呈",
           "杜威霖 Andy",
           "周則鼎",
-          "喻心平"
+          "喻心平",
+          "momota"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:19",
+        "name": "momota",
+        "operator": "喻心平",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:19",
         "name": "喻心平",
