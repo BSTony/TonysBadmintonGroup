@@ -14906,7 +14906,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795097958006,
+    "lastActiveTime": 1795097962548,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14936,7 +14936,9 @@
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "喻心平": "U0220a13b4aec2dec044ce073925f0df9",
-      "Bravo(小白）": "Ucfe77916ae6fa86c19895f6f8cac5aca"
+      "Bravo(小白）": "Ucfe77916ae6fa86c19895f6f8cac5aca",
+      "陳文凱": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
+      "蘑菇": "Uc43566842467f11722b3ce7a8b6d5746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14959,12 +14961,28 @@
           "周則鼎",
           "喻心平",
           "momota",
-          "Bravo(小白）"
+          "Bravo(小白）",
+          "陳文凱",
+          "蘑菇"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:19",
+        "name": "蘑菇",
+        "operator": "蘑菇",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "11/19 22:19",
+        "name": "陳文凱",
+        "operator": "陳文凱",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:19",
         "name": "Bravo(小白）",
