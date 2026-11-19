@@ -14971,7 +14971,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795100580235,
+    "lastActiveTime": 1795100590362,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15041,12 +15041,20 @@
           "allen",
           "win",
           "Tank Lin",
-          "賴柚子"
+          "賴柚子",
+          "king"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 23:03",
+        "name": "king",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 23:03",
         "name": "賴柚子",
