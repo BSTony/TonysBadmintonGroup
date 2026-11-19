@@ -14350,7 +14350,7 @@
     "sections": [
       {
         "title": "8-12",
-        "limit": 15,
+        "limit": 17,
         "backupLimit": 5,
         "fee": "300",
         "label": "",
@@ -14374,7 +14374,7 @@
       },
       {
         "title": "8-10",
-        "limit": 7,
+        "limit": 5,
         "backupLimit": 5,
         "fee": "150",
         "label": "",
@@ -14388,7 +14388,7 @@
       },
       {
         "title": "10-12",
-        "limit": 7,
+        "limit": 5,
         "backupLimit": 5,
         "fee": "190",
         "label": "",
