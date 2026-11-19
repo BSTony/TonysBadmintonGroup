@@ -14971,7 +14971,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795100340390,
+    "lastActiveTime": 1795100580235,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15007,7 +15007,8 @@
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "劉櫂弘": "U09a1aa508e86556361cca6333ee4190e",
-      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
+      "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -15039,12 +15040,20 @@
           "小黑",
           "allen",
           "win",
-          "Tank Lin"
+          "Tank Lin",
+          "賴柚子"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 23:03",
+        "name": "賴柚子",
+        "operator": "賴柚子",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:59",
         "name": "Wayne",
