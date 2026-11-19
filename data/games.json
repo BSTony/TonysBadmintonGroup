@@ -14549,7 +14549,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1794961106256,
+    "lastActiveTime": 1795047688378,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14563,7 +14563,8 @@
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
-      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f"
+      "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
+      "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14578,12 +14579,20 @@
           "Kay",
           "wayne",
           "江こう 洋々",
-          "凱文"
+          "凱文",
+          "小金(Chen Pei Hung)"
         ],
         "fee": "150"
       }
     ],
     "history": [
+      {
+        "time": "11/19 08:21",
+        "name": "小金(Chen Pei Hung)",
+        "operator": "小金(Chen Pei Hung)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/18 08:18",
         "name": "凱文",
