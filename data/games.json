@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795098295837,
+    "lastActiveTime": 1795098304413,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14408,11 +14408,19 @@
         "fee": "190",
         "label": "",
         "list": [
-          "宇哲"
+          "宇哲",
+          "宇哲妻"
         ]
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:25",
+        "name": "宇哲妻",
+        "operator": "宇哲妻 (輸入框)",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/19 22:24",
         "name": "宇哲妻",
@@ -14945,7 +14953,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795098104954,
+    "lastActiveTime": 1795098304961,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15012,12 +15020,20 @@
           "Gary",
           "winnie",
           "小黑",
-          "allen"
+          "allen",
+          "win"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:25",
+        "name": "win",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:21",
         "name": "劉櫂弘",
