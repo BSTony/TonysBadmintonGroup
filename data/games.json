@@ -14906,7 +14906,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795097953844,
+    "lastActiveTime": 1795097958006,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14935,7 +14935,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "杜威霖 Andy": "U8b4e160fd2505afd265b09e8f651ebab",
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
-      "喻心平": "U0220a13b4aec2dec044ce073925f0df9"
+      "喻心平": "U0220a13b4aec2dec044ce073925f0df9",
+      "Bravo(小白）": "Ucfe77916ae6fa86c19895f6f8cac5aca"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14957,12 +14958,20 @@
           "杜威霖 Andy",
           "周則鼎",
           "喻心平",
-          "momota"
+          "momota",
+          "Bravo(小白）"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:19",
+        "name": "Bravo(小白）",
+        "operator": "Bravo(小白）",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:19",
         "name": "momota",
