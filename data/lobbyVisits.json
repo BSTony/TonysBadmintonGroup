@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6683,
+    "viewCount": 6684,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -486,8 +486,8 @@
       "Ua803eeb7a6e406e3fab93ee1e322a7c6": {
         "displayName": "Wang",
         "firstVisit": 1783566997371,
-        "count": 51,
-        "lastVisit": 1795017843685,
+        "count": 52,
+        "lastVisit": 1795068354129,
         "pictureUrl": "https://profile.line-scdn.net/0hNECa5TMdEWpuGAcCpKBvFR5IEgBNaUh4SnxfDl0RT1MHKFVsRSleCgkZHQpaelc9RX4JClwdS1piC2YMcE7tXmkoTFtTKVM0RHZbiQ"
       },
       "Ufa8dba5febf9f719da07f7e507391a21": {
@@ -1543,6 +1543,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1795068354129,
+        "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
+        "displayName": "Wang",
+        "pictureUrl": "https://profile.line-scdn.net/0hNECa5TMdEWpuGAcCpKBvFR5IEgBNaUh4SnxfDl0RT1MHKFVsRSleCgkZHQpaelc9RX4JClwdS1piC2YMcE7tXmkoTFtTKVM0RHZbiQ"
+      },
       {
         "time": 1795067431162,
         "userId": "U3c633bac1ead8ca7a7def805e6f58248",
@@ -13536,12 +13542,6 @@
         "userId": "Ubd1a0b5beefb2dc573ebff053671dc21",
         "displayName": "仁世觀-李佳豪🏸",
         "pictureUrl": "https://profile.line-scdn.net/0hvnUQu9V_KUF4KDW4--dXfwh4KitbWXBTXB5mLkUqd3FHGjtHAE0zIRosdiVCSD0QXEY2Iksoc3laSBl-ACszT0pAFTQVbwpOEyolZgZWLndAYhRINk84LkhaEQowTGsLIEoRO1FYAyFZSmdQAighfSQsAhRER21HJH9FF30aR8IXKl4UVU5nIkUuf3TA"
-      },
-      {
-        "time": 1789786212393,
-        "userId": "U092196c10fe7e15591482c6b7942a147",
-        "displayName": "Sammy Su",
-        "pictureUrl": "https://profile.line-scdn.net/0hLDaGz3uSE2tMPgxb931tFDxuEAFvT0p5aVhYD3A7H192WlI6YFtZCHFrSll2XF1qZFBdCX4_RAhALWQNUmjvX0sOTlpxD1E1ZlBZiA"
       }
     ]
   },
