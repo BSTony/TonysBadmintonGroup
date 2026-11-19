@@ -14057,7 +14057,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794490776745,
-    "lastActiveTime": 1795012465853,
+    "lastActiveTime": 1795050260018,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14124,13 +14124,19 @@
           "賴柚子",
           "花花",
           "江こう 洋々",
-          "Gary",
-          "Win Shu"
+          "Gary"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 09:04",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/18 22:34",
         "name": "Robert",
