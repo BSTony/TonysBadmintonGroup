@@ -14906,7 +14906,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795098097428,
+    "lastActiveTime": 1795098098487,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14941,7 +14941,8 @@
       "蘑菇": "Uc43566842467f11722b3ce7a8b6d5746",
       "Sharon": "U2f34481ad7c75487414b97ec63623fba",
       "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
-      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
+      "劉櫂弘": "U09a1aa508e86556361cca6333ee4190e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14972,12 +14973,20 @@
           "Gary",
           "winnie",
           "小黑",
-          "allen"
+          "allen",
+          "劉櫂弘"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:21",
+        "name": "劉櫂弘",
+        "operator": "劉櫂弘",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:21",
         "name": "allen",
