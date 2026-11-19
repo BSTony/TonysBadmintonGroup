@@ -14743,7 +14743,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794918438722,
-    "lastActiveTime": 1795059815356,
+    "lastActiveTime": 1795061235627,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14773,7 +14773,8 @@
       "周則鼎": "Uf2f63c157d1e4f7e5d289d377c568582",
       "afrahuang": "U0134503a2d79a5bb7f92d876393b2fd8",
       "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
-      "海棠": "Ufa8dba5febf9f719da07f7e507391a21"
+      "海棠": "Ufa8dba5febf9f719da07f7e507391a21",
+      "Max嵇膺龍": "Ua5fa18774b70a213af61b3b0225188c9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14795,12 +14796,20 @@
           "afrahuang",
           "FiFi",
           "wayne",
-          "海棠"
+          "海棠",
+          "Max嵇膺龍"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/19 12:07",
+        "name": "Max嵇膺龍",
+        "operator": "Max嵇膺龍",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 11:43",
         "name": "凱文",
