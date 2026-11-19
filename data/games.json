@@ -14906,7 +14906,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795097966328,
+    "lastActiveTime": 1795097974244,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14939,7 +14939,8 @@
       "Bravo(小白）": "Ucfe77916ae6fa86c19895f6f8cac5aca",
       "陳文凱": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "蘑菇": "Uc43566842467f11722b3ce7a8b6d5746",
-      "Sharon": "U2f34481ad7c75487414b97ec63623fba"
+      "Sharon": "U2f34481ad7c75487414b97ec63623fba",
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14965,12 +14966,20 @@
           "Bravo(小白）",
           "陳文凱",
           "蘑菇",
-          "Sharon"
+          "Sharon",
+          "Emily🙈🙉🙊"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:19",
+        "name": "Emily🙈🙉🙊",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:19",
         "name": "Sharon",
