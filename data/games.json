@@ -14318,7 +14318,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795019811929,
+    "lastActiveTime": 1795053188759,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14342,7 +14342,8 @@
       "Sean柏宏": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
       "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
       "Andrew Kuo": "Uef488c50ca6ba6bd1d36dc30086b92b1",
-      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416"
+      "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
+      "黃政豪": "U04307fbd1087e54ce656086b653a60fd"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14367,7 +14368,8 @@
           "Andrew Kuo",
           "腳皮",
           "宇軒",
-          "sammy"
+          "sammy",
+          "黃政豪"
         ]
       },
       {
@@ -14394,6 +14396,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/19 09:53",
+        "name": "黃政豪",
+        "operator": "黃政豪",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/19 00:36",
         "name": "兔兔",
