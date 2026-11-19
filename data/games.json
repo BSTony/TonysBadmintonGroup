@@ -14743,7 +14743,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794918438722,
-    "lastActiveTime": 1794956003853,
+    "lastActiveTime": 1795059815356,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14791,7 +14791,6 @@
           "偉舫",
           "Jet",
           "陳呈",
-          "凱文",
           "周則鼎",
           "afrahuang",
           "FiFi",
@@ -14802,6 +14801,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/19 11:43",
+        "name": "凱文",
+        "operator": "凱文 (輸入框)",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/18 06:53",
         "name": "海棠",
