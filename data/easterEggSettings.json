@@ -36,6 +36,14 @@
       "prizeAt": 1795045738587,
       "updatedAt": 1795045738587,
       "bossCleared": true
+    },
+    {
+      "uid": "U_GUEST_mvak6jhkwxj1bc",
+      "name": "訪客",
+      "kills": 1,
+      "prize": null,
+      "prizeAt": null,
+      "updatedAt": 1795067391445
     }
   ],
   "christmasStock": {
