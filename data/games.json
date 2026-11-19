@@ -15025,7 +15025,7 @@
       {
         "title": "報名名單",
         "limit": 20,
-        "backupLimit": 5,
+        "backupLimit": 10,
         "label": "",
         "list": [
           "謝東霖 Tony",
@@ -15191,6 +15191,7 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
