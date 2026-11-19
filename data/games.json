@@ -14906,7 +14906,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795097982439,
+    "lastActiveTime": 1795098097428,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14971,12 +14971,20 @@
           "Emily🙈🙉🙊",
           "Gary",
           "winnie",
-          "小黑"
+          "小黑",
+          "allen"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:21",
+        "name": "allen",
+        "operator": "劉櫂弘",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:19",
         "name": "小黑",
