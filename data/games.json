@@ -14906,7 +14906,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795098098487,
+    "lastActiveTime": 1795098104954,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14973,13 +14973,19 @@
           "Gary",
           "winnie",
           "小黑",
-          "allen",
-          "劉櫂弘"
+          "allen"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:21",
+        "name": "劉櫂弘",
+        "operator": "劉櫂弘",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:21",
         "name": "劉櫂弘",
