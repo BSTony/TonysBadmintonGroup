@@ -14640,7 +14640,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1795047688378,
+    "lastActiveTime": 1795099436473,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14655,7 +14655,8 @@
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
-      "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189"
+      "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
+      "L": "Uc85aca08d5834bad3d829179ce81db1e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14671,12 +14672,20 @@
           "wayne",
           "江こう 洋々",
           "凱文",
-          "小金(Chen Pei Hung)"
+          "小金(Chen Pei Hung)",
+          "L"
         ],
         "fee": "150"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:43",
+        "name": "L",
+        "operator": "L",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 08:21",
         "name": "小金(Chen Pei Hung)",
