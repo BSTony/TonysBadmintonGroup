@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795099277234,
+    "lastActiveTime": 1795100796052,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14356,7 +14356,8 @@
       "腳皮": "U88ae9c79ca7f2ef9d91e7678fecf4416",
       "黃政豪": "U04307fbd1087e54ce656086b653a60fd",
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
-      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed"
+      "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
+      "奕翔": "U07e425412c114771e65bce53eaf032cb"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14411,11 +14412,19 @@
         "list": [
           "宇哲",
           "宇哲妻",
-          "周哲儁"
+          "周哲儁",
+          "奕翔"
         ]
       }
     ],
     "history": [
+      {
+        "time": "11/19 23:06",
+        "name": "奕翔",
+        "operator": "奕翔",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/19 22:41",
         "name": "周哲儁",
