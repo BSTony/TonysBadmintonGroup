@@ -14906,7 +14906,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795097974244,
+    "lastActiveTime": 1795097982439,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14940,7 +14940,8 @@
       "陳文凱": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
       "蘑菇": "Uc43566842467f11722b3ce7a8b6d5746",
       "Sharon": "U2f34481ad7c75487414b97ec63623fba",
-      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06"
+      "Emily🙈🙉🙊": "U1cb334975d37ef2d2ef6b7598dc2ea06",
+      "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14967,12 +14968,36 @@
           "陳文凱",
           "蘑菇",
           "Sharon",
-          "Emily🙈🙉🙊"
+          "Emily🙈🙉🙊",
+          "Gary",
+          "winnie",
+          "小黑"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:19",
+        "name": "小黑",
+        "operator": "陳宜蓁",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "11/19 22:19",
+        "name": "winnie",
+        "operator": "Emily🙈🙉🙊",
+        "action": "+1",
+        "section": "報名名單"
+      },
+      {
+        "time": "11/19 22:19",
+        "name": "Gary",
+        "operator": "Gary",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 22:19",
         "name": "Emily🙈🙉🙊",
