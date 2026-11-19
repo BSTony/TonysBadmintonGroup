@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795067129419,
+    "lastActiveTime": 1795098256670,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14405,10 +14405,19 @@
         "backupLimit": 5,
         "fee": "190",
         "label": "",
-        "list": []
+        "list": [
+          "宇哲"
+        ]
       }
     ],
     "history": [
+      {
+        "time": "11/19 22:24",
+        "name": "宇哲",
+        "operator": "宇哲 (輸入框)",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/19 13:45",
         "name": "陳呈",
