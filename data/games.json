@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795100796052,
+    "lastActiveTime": 1795135059809,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14338,8 +14338,7 @@
     "levelMap": {},
     "paidMap": {
       "謝東霖 Tony": true,
-      "Kay": true,
-      "©️張CC～©️": true
+      "Kay": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
@@ -14371,7 +14370,6 @@
         "list": [
           "謝東霖 Tony",
           "Kay",
-          "©️張CC～©️",
           "Chris Chen",
           "楊程鈞",
           "Mia",
@@ -14418,6 +14416,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/20 08:37",
+        "name": "©️張CC～©️",
+        "operator": "©️張CC～©️",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "11/19 23:06",
         "name": "奕翔",
