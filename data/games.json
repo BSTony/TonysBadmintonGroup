@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795167709242,
+    "lastActiveTime": 1795173339273,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14374,7 +14374,6 @@
           "Chris Chen",
           "楊程鈞",
           "Mia",
-          "Kevin",
           "Ray",
           "Andrew Kuo",
           "腳皮",
@@ -14416,6 +14415,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/20 19:15",
+        "name": "Kevin",
+        "operator": "蕭庭易",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "11/20 17:41",
         "name": "John",
