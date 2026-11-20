@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795173377089,
+    "lastActiveTime": 1795173387395,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14410,11 +14410,19 @@
           "宇哲",
           "宇哲妻",
           "周哲儁",
-          "奕翔"
+          "奕翔",
+          "Kevin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "11/20 19:16",
+        "name": "Kevin",
+        "operator": "蕭庭易",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/20 19:16",
         "name": "Kevin",
