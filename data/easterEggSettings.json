@@ -45,6 +45,14 @@
       "prizeAt": null,
       "updatedAt": 1795067479314,
       "bossDismissed": true
+    },
+    {
+      "uid": "U67b22ebdc3975e7637bdcf02b431a62f",
+      "name": "傳軒",
+      "kills": 1,
+      "prize": null,
+      "prizeAt": null,
+      "updatedAt": 1795173836588
     }
   ],
   "christmasStock": {
