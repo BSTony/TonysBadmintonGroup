@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6751,
+    "viewCount": 6754,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -108,8 +108,8 @@
       "Ue1d19fdc4f72d6fc04484fdc8c32b189": {
         "displayName": "小金(Chen Pei Hung)",
         "firstVisit": 1783225954849,
-        "count": 132,
-        "lastVisit": 1795047643858,
+        "count": 133,
+        "lastVisit": 1795139727047,
         "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
       },
       "Ub2e84850d9446141bcb1ae89ec450821": {
@@ -1118,8 +1118,8 @@
       "U911c6faae5ae99cb4c24cbe5c22ac5e7": {
         "displayName": "陳文凱",
         "firstVisit": 1787096229677,
-        "count": 82,
-        "lastVisit": 1795097953443,
+        "count": 83,
+        "lastVisit": 1795137484779,
         "pictureUrl": "https://profile.line-scdn.net/0hHYlydU1zF3ZBAAiI9CVpSDFQFBxicU5kaGMIRXZSQE55Y1YkP2EMGXEFTkB_NVIgOmBbQHYJHkBjdRh_KTMrQB9JCicgQBJ8BhhZTgYDJxV4Rz4pZGctbChDDDMMQgdQJCEubS9BHS4JSVl2Oh45dQtuFyAEUhlSJFd7IEQyefUuAmAjbGZZFXwGQUP5"
       },
       "U1920cbbd7be6a8816939be44d4d0e1f2": {
@@ -1488,8 +1488,8 @@
       "Uc43566842467f11722b3ce7a8b6d5746": {
         "displayName": "蘑菇",
         "firstVisit": 1793284306294,
-        "count": 13,
-        "lastVisit": 1795097955883,
+        "count": 14,
+        "lastVisit": 1795139582118,
         "pictureUrl": "https://profile.line-scdn.net/0hJQQ2pF7oFX58Sz6ayVFrAQwbFhRfOkxsAy4KSkhCSRxIewd_UCUKEBtNHhlJKQF7ByxSEU4cH0xwWGIYYh3pSnt7SE9BelcgViVfnQ"
       },
       "Udcd911cf1eca1dd7ae1f9cedce18fbb0": {
@@ -1550,6 +1550,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1795139727047,
+        "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
+        "displayName": "小金(Chen Pei Hung)",
+        "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
+      },
+      {
+        "time": 1795139582118,
+        "userId": "Uc43566842467f11722b3ce7a8b6d5746",
+        "displayName": "蘑菇",
+        "pictureUrl": "https://profile.line-scdn.net/0hJQQ2pF7oFX58Sz6ayVFrAQwbFhRfOkxsAy4KSkhCSRxIewd_UCUKEBtNHhlJKQF7ByxSEU4cH0xwWGIYYh3pSnt7SE9BelcgViVfnQ"
+      },
+      {
+        "time": 1795137484779,
+        "userId": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
+        "displayName": "陳文凱",
+        "pictureUrl": "https://profile.line-scdn.net/0hHYlydU1zF3ZBAAiI9CVpSDFQFBxicU5kaGMIRXZSQE55Y1YkP2EMGXEFTkB_NVIgOmBbQHYJHkBjdRh_KTMrQB9JCicgQBJ8BhhZTgYDJxV4Rz4pZGctbChDDDMMQgdQJCEubS9BHS4JSVl2Oh45dQtuFyAEUhlSJFd7IEQyefUuAmAjbGZZFXwGQUP5"
+      },
       {
         "time": 1795135508703,
         "userId": "U3d8fd8b2d2271e0f6f2f4f50e1475c12",
@@ -13531,24 +13549,6 @@
         "userId": "U3b87de2ad6e01470255c644bb960ed91",
         "displayName": "鼎函",
         "pictureUrl": "https://profile.line-scdn.net/0hlug030zbM1pKSST99XlNJToZMDBpOGpIYSx4aX8ZbTkgLXUNMnosO3sZaz10fXUIb39-bnhBa2hGWkQ8VB_Pbk15bmt3eHEEYCd5uQ"
-      },
-      {
-        "time": 1789865884885,
-        "userId": "U49e2484c80056990b759e9039a74e1a6",
-        "displayName": "Kay",
-        "pictureUrl": "https://profile.line-scdn.net/0hdM2Kz1FVO2IfMhPyXFNFHW9iOAg8Q2JwZwMjAi9nZgZ1VngxNwQmVn0wNlAqAnw2NFF1Vy8zYFATIUwEAWTHVhgCZlMiA3k8NVxxgQ"
-      },
-      {
-        "time": 1789865199906,
-        "userId": "Ua5ba1a0ad7f4687b4075563e722331c5",
-        "displayName": "©️張CC～©️",
-        "pictureUrl": "https://profile.line-scdn.net/0m03ab1eba725116ff358c02c14c1eecf7c4e36c39e8fa"
-      },
-      {
-        "time": 1789865054225,
-        "userId": "U9904ed725b1f420b8718791594e3756b",
-        "displayName": "偉舫",
-        "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
       }
     ]
   },
