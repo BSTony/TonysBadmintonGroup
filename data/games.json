@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795135059809,
+    "lastActiveTime": 1795136391581,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14376,7 +14376,6 @@
           "Kevin",
           "Ray",
           "Chen H.R.",
-          "龍",
           "Andrew Kuo",
           "腳皮",
           "宇軒",
@@ -14416,6 +14415,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/20 08:59",
+        "name": "龍",
+        "operator": "龍 (輸入框)",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "11/20 08:37",
         "name": "©️張CC～©️",
