@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795173387395,
+    "lastActiveTime": 1795185337564,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14394,7 +14394,6 @@
         "label": "",
         "list": [
           "AddieWang",
-          "Sean柏宏",
           "小金(Chen Pei Hung)",
           "阿宏",
           "兔兔"
@@ -14416,6 +14415,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/20 22:35",
+        "name": "Sean柏宏",
+        "operator": "Sean柏宏",
+        "action": "-1",
+        "section": "8-10"
+      },
       {
         "time": "11/20 19:16",
         "name": "Kevin",
