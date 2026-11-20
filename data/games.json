@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795173342451,
+    "lastActiveTime": 1795173345621,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14357,7 +14357,8 @@
       "陳呈": "U24c3b63e1d18834db9830f243aedaeae",
       "周哲儁": "Ud9c980235866b4402d34cdfa250b9aed",
       "奕翔": "U07e425412c114771e65bce53eaf032cb",
-      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84"
+      "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
+      "蕭庭易": "U8d58c3197905c06e069820d10dd45b49"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14382,7 +14383,8 @@
           "陳呈",
           "J o j o",
           "Jojo2",
-          "John"
+          "John",
+          "蕭庭易"
         ]
       },
       {
@@ -14414,6 +14416,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/20 19:15",
+        "name": "蕭庭易",
+        "operator": "蕭庭易",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/20 19:15",
         "name": "Mia",
