@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795173364323,
+    "lastActiveTime": 1795173377089,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14383,8 +14383,7 @@
           "陳呈",
           "J o j o",
           "Jojo2",
-          "John",
-          "Kevin"
+          "John"
         ]
       },
       {
@@ -14416,6 +14415,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/20 19:16",
+        "name": "Kevin",
+        "operator": "蕭庭易",
+        "action": "-1",
+        "section": "8-12"
+      },
       {
         "time": "11/20 19:16",
         "name": "Kevin",
