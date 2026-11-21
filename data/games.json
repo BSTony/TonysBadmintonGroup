@@ -14848,7 +14848,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794838085789,
-    "lastActiveTime": 1794922919298,
+    "lastActiveTime": 1795255421224,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14895,12 +14895,20 @@
           "FB 偉翔2",
           "小黑",
           "楊程鈞",
-          "FiFi"
+          "FiFi",
+          "FB Wan-Chen Ling"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/21 18:03",
+        "name": "FB Wan-Chen Ling",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/17 21:41",
         "name": "FiFi",
