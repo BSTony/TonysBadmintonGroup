@@ -14942,7 +14942,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794918438722,
-    "lastActiveTime": 1795104706134,
+    "lastActiveTime": 1795241125007,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14994,12 +14994,20 @@
           "FiFi",
           "wayne",
           "海棠",
-          "Max嵇膺龍"
+          "Max嵇膺龍",
+          "wei"
         ],
         "fee": "280"
       }
     ],
     "history": [
+      {
+        "time": "11/21 14:05",
+        "name": "wei",
+        "operator": "Wei",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/20 00:11",
         "name": "憲",
