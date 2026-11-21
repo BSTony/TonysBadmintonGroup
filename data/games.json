@@ -14746,7 +14746,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1795270700722,
+    "lastActiveTime": 1795305007443,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14755,7 +14755,8 @@
     "levelMap": {},
     "paidMap": {
       "謝東霖 Tony": true,
-      "Kay": true
+      "Kay": true,
+      "凱文": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
