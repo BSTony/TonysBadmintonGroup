@@ -14771,7 +14771,7 @@
     "sections": [
       {
         "title": "報名名單",
-        "limit": 12,
+        "limit": 18,
         "backupLimit": 5,
         "label": "",
         "list": [
@@ -14854,7 +14854,8 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": false
   },
   "17948380857892": {
     "gid": "Cf6e94fdd7c4183eda46be86fccb4bfe0",
