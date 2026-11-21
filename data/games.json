@@ -15106,7 +15106,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795100598926,
+    "lastActiveTime": 1795259211349,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15177,13 +15177,19 @@
           "win",
           "Tank Lin",
           "賴柚子",
-          "king",
-          "花花"
+          "king"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/21 19:06",
+        "name": "花花",
+        "operator": "賴柚子",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/19 23:03",
         "name": "花花",
