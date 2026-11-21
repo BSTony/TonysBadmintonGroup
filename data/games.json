@@ -14746,7 +14746,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1795264039325,
+    "lastActiveTime": 1795266367742,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14763,7 +14763,8 @@
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
       "L": "Uc85aca08d5834bad3d829179ce81db1e",
-      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e",
+      "JoeLin": "U8359dca0b543da49dab9a0215b90c137"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14782,12 +14783,20 @@
           "小金(Chen Pei Hung)",
           "L",
           "圈圈",
-          "Chen H.R."
+          "Chen H.R.",
+          "JoeLin"
         ],
         "fee": "150"
       }
     ],
     "history": [
+      {
+        "time": "11/21 21:06",
+        "name": "JoeLin",
+        "operator": "JoeLin",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/21 20:27",
         "name": "Chen H.R.",
