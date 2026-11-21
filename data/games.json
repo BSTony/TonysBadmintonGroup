@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795185337564,
+    "lastActiveTime": 1795219340070,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14338,7 +14338,8 @@
     "levelMap": {},
     "paidMap": {
       "謝東霖 Tony": true,
-      "Kay": true
+      "Kay": true,
+      "小金(Chen Pei Hung)": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
