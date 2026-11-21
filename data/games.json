@@ -14746,7 +14746,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1795266367742,
+    "lastActiveTime": 1795270700722,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14784,12 +14784,20 @@
           "L",
           "圈圈",
           "Chen H.R.",
-          "JoeLin"
+          "JoeLin",
+          "小可愛"
         ],
         "fee": "150"
       }
     ],
     "history": [
+      {
+        "time": "11/21 22:18",
+        "name": "小可愛",
+        "operator": "林俊佑",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/21 21:06",
         "name": "JoeLin",
