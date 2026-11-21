@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795231386390,
+    "lastActiveTime": 1795231387719,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14348,7 +14348,8 @@
       "sammy": true,
       "Kevin": false,
       "奕翔": true,
-      "宇哲妻": true
+      "宇哲妻": true,
+      "宇哲": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
