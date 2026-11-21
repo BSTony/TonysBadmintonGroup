@@ -14329,7 +14329,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794631406836,
-    "lastActiveTime": 1795225330172,
+    "lastActiveTime": 1795227473577,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14344,7 +14344,8 @@
       "阿宏": true,
       "Chris Chen": true,
       "Ray": true,
-      "AddieWang": true
+      "AddieWang": true,
+      "sammy": true
     },
     "uidMap": {
       "謝東霖 Tony": "U9dc6c7ab7d49487c4dcb70caf20195b0",
