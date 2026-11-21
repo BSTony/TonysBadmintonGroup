@@ -14746,7 +14746,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794711529436,
-    "lastActiveTime": 1795185965453,
+    "lastActiveTime": 1795264039325,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14762,7 +14762,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "江こう 洋々": "U46f13b9a4833cb5c866e5b8d76bc6a3f",
       "小金(Chen Pei Hung)": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
-      "L": "Uc85aca08d5834bad3d829179ce81db1e"
+      "L": "Uc85aca08d5834bad3d829179ce81db1e",
+      "Chen H.R.": "Ua4c9b87ae0f49f0e264f14642944a52e"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14780,12 +14781,20 @@
           "凱文",
           "小金(Chen Pei Hung)",
           "L",
-          "圈圈"
+          "圈圈",
+          "Chen H.R."
         ],
         "fee": "150"
       }
     ],
     "history": [
+      {
+        "time": "11/21 20:27",
+        "name": "Chen H.R.",
+        "operator": "Chen H.R.",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/20 22:46",
         "name": "圈圈",
