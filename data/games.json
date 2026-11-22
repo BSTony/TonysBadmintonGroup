@@ -14983,7 +14983,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794918438722,
-    "lastActiveTime": 1795241125007,
+    "lastActiveTime": 1795359619896,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15033,7 +15033,6 @@
           "周則鼎",
           "afrahuang",
           "FiFi",
-          "wayne",
           "海棠",
           "Max嵇膺龍",
           "wei"
@@ -15042,6 +15041,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/22 23:00",
+        "name": "wayne",
+        "operator": "Wayne",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/21 14:05",
         "name": "wei",
