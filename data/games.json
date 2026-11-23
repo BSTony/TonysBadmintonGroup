@@ -15457,7 +15457,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795239812987,
-    "lastActiveTime": 1795442647377,
+    "lastActiveTime": 1795442655314,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15511,11 +15511,19 @@
         "fee": "190",
         "label": "",
         "list": [
-          "King"
+          "King",
+          "alice"
         ]
       }
     ],
     "history": [
+      {
+        "time": "11/23 22:04",
+        "name": "alice",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/23 22:04",
         "name": "alice",
