@@ -15145,7 +15145,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795259211349,
+    "lastActiveTime": 1795392573370,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15182,7 +15182,8 @@
       "Gary": "Ua7b3a92ec9d3c578d6a6711ca3353d71",
       "劉櫂弘": "U09a1aa508e86556361cca6333ee4190e",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
-      "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5"
+      "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5",
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -15216,12 +15217,20 @@
           "win",
           "Tank Lin",
           "賴柚子",
-          "king"
+          "king",
+          "Win Shu"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/23 08:09",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/21 19:06",
         "name": "花花",
