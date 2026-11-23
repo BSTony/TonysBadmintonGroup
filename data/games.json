@@ -15457,7 +15457,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795239812987,
-    "lastActiveTime": 1795244459226,
+    "lastActiveTime": 1795442609694,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15475,7 +15475,8 @@
       "Kay": "U49e2484c80056990b759e9039a74e1a6",
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -15509,10 +15510,19 @@
         "backupLimit": 5,
         "fee": "190",
         "label": "",
-        "list": []
+        "list": [
+          "King"
+        ]
       }
     ],
     "history": [
+      {
+        "time": "11/23 22:03",
+        "name": "King",
+        "operator": "King",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/21 15:00",
         "name": "楊程鈞",
