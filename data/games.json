@@ -15145,7 +15145,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795392573370,
+    "lastActiveTime": 1795397318104,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15217,13 +15217,19 @@
           "win",
           "Tank Lin",
           "賴柚子",
-          "king",
-          "Win Shu"
+          "king"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/23 09:28",
+        "name": "Win Shu",
+        "operator": "Win Shu",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/23 08:09",
         "name": "Win Shu",
