@@ -15194,7 +15194,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795397318104,
+    "lastActiveTime": 1795440819640,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15232,7 +15232,8 @@
       "劉櫂弘": "U09a1aa508e86556361cca6333ee4190e",
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5",
-      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1"
+      "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -15266,12 +15267,20 @@
           "win",
           "Tank Lin",
           "賴柚子",
-          "king"
+          "king",
+          "楊程鈞"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/23 21:33",
+        "name": "楊程鈞",
+        "operator": "楊程鈞",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/23 09:28",
         "name": "Win Shu",
