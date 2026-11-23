@@ -14881,7 +14881,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794838085789,
-    "lastActiveTime": 1795414231810,
+    "lastActiveTime": 1795419274348,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14930,12 +14930,20 @@
           "楊程鈞",
           "FiFi",
           "FB Wan-Chen Ling",
-          "FB Wei Jhih Liou"
+          "FB Wei Jhih Liou",
+          "FB dylan"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/23 15:34",
+        "name": "FB dylan",
+        "operator": "謝東霖 Tony",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/23 14:10",
         "name": "FB Wei Jhih Liou",
