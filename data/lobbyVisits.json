@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6857,
+    "viewCount": 6860,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -108,8 +108,8 @@
       "Ue1d19fdc4f72d6fc04484fdc8c32b189": {
         "displayName": "小金(Chen Pei Hung)",
         "firstVisit": 1783225954849,
-        "count": 133,
-        "lastVisit": 1795139727047,
+        "count": 134,
+        "lastVisit": 1795392690739,
         "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
       },
       "Ub2e84850d9446141bcb1ae89ec450821": {
@@ -322,8 +322,8 @@
       "Uda2b484d86f6dcbfd1c31f792fd95ae1": {
         "displayName": "Win Shu",
         "firstVisit": 1783391708973,
-        "count": 31,
-        "lastVisit": 1795050259289,
+        "count": 32,
+        "lastVisit": 1795392569410,
         "pictureUrl": "https://profile.line-scdn.net/0hZ3t2-_2KBRxZSxmentR7IikbBnZ6OlwOfHhOfz9OXChtKEBKIC9PKm9CXXsxckAfJX1Mf2VPXi97PEAjNlIdFCQyB1Y2ZyFMLlsKPm4dDloPHwZKLEw3MjIvIXlnFRUdcSQ0eGw0KEk3BSwCHGYYJDpKH0gUK0MxcBxpSlx5a582SXJJdC1Lf2RNUynh"
       },
       "U262bec0c4b86143110a6502613fa47c5": {
@@ -1544,12 +1544,30 @@
       "U2759d401267c5bcb56a298927643aab6": {
         "displayName": "語謙 ᴋᴀʀᴛɪɴᴀ¨̮",
         "firstVisit": 1795100644995,
-        "count": 2,
-        "lastVisit": 1795100707563,
+        "count": 3,
+        "lastVisit": 1795394366569,
         "pictureUrl": "https://profile.line-scdn.net/0hkltExr94NENZPCv3jYpKfSlsNyl6TW1RfVgoJm44Ono3CyBFclkvJjw8bCBjXyYXJw9yJGs_aCd7RBMTEAkAJDA6EA0sXnVtfQolLTM_aQACXCZDIyIAXQc9CzYCfA0TMyQiYTpALTQgdnJJFQAwRCQ4CisNXwl-IGtYFVwOWsA2PkMWdFp6IGQ6Ynbh"
       }
     },
     "logs": [
+      {
+        "time": 1795394366569,
+        "userId": "U2759d401267c5bcb56a298927643aab6",
+        "displayName": "語謙 ᴋᴀʀᴛɪɴᴀ¨̮",
+        "pictureUrl": "https://profile.line-scdn.net/0hkltExr94NENZPCv3jYpKfSlsNyl6TW1RfVgoJm44Ono3CyBFclkvJjw8bCBjXyYXJw9yJGs_aCd7RBMTEAkAJDA6EA0sXnVtfQolLTM_aQACXCZDIyIAXQc9CzYCfA0TMyQiYTpALTQgdnJJFQAwRCQ4CisNXwl-IGtYFVwOWsA2PkMWdFp6IGQ6Ynbh"
+      },
+      {
+        "time": 1795392690739,
+        "userId": "Ue1d19fdc4f72d6fc04484fdc8c32b189",
+        "displayName": "小金(Chen Pei Hung)",
+        "pictureUrl": "https://profile.line-scdn.net/0hwwcA1nKLKFhOODeA9NpWZj5oKzJtSXFKYg5mP3g6dW53DzgJZV9lbS49dTohCGcMZV5vPn5sIWBseDF7YQM9dwhYcx4gUQhJFzYQS35BAmsDWjxzF1sjQ3JmATxyWxtRZycdfQ1zBjgEdmh8ICFuYjA-CxM0fw1wZ29EDksKRtshOl8NY15mO3M-fm32"
+      },
+      {
+        "time": 1795392569410,
+        "userId": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
+        "displayName": "Win Shu",
+        "pictureUrl": "https://profile.line-scdn.net/0hZ3t2-_2KBRxZSxmentR7IikbBnZ6OlwOfHhOfz9OXChtKEBKIC9PKm9CXXsxckAfJX1Mf2VPXi97PEAjNlIdFCQyB1Y2ZyFMLlsKPm4dDloPHwZKLEw3MjIvIXlnFRUdcSQ0eGw0KEk3BSwCHGYYJDpKH0gUK0MxcBxpSlx5a582SXJJdC1Lf2RNUynh"
+      },
       {
         "time": 1795362780135,
         "userId": "Ua803eeb7a6e406e3fab93ee1e322a7c6",
@@ -13531,24 +13549,6 @@
         "userId": "U911c6faae5ae99cb4c24cbe5c22ac5e7",
         "displayName": "陳文凱",
         "pictureUrl": "https://profile.line-scdn.net/0hHYlydU1zF3ZBAAiI9CVpSDFQFBxicU5kaGMIRXZSQE55Y1YkP2EMGXEFTkB_NVIgOmBbQHYJHkBjdRh_KTMrQB9JCicgQBJ8BhhZTgYDJxV4Rz4pZGctbChDDDMMQgdQJCEubS9BHS4JSVl2Oh45dQtuFyAEUhlSJFd7IEQyefUuAmAjbGZZFXwGQUP5"
-      },
-      {
-        "time": 1790212348287,
-        "userId": "Ua4c9b87ae0f49f0e264f14642944a52e",
-        "displayName": "Chen H.R.",
-        "pictureUrl": "https://profile.line-scdn.net/0ht-ExTO7jKwJoATcw3mhVPBhRKGhLcHIQQW8wM1wJcDdWZW9UQzcwY15WIDJQOGpXTTQ0Ng0IfTVKdQtUP2IZHztvci41NSkjOA4hMDR2PTMjMT4HGiwFMxsHPGgocCtdOAU-LBp1Ejc0MToTBj46bQJ_LWBQNAoTM1ZHVG0zRYEHA1xXRWdlYVUHfTfQ"
-      },
-      {
-        "time": 1790190994868,
-        "userId": "Ufb12bb922c93c69d206c9a6fc3b07510",
-        "displayName": "卡比",
-        "pictureUrl": "https://profile.line-scdn.net/0h7BU593AnaG14THjarNUWEggcawdbPTF_BCgvAxlJNF8SdXhsAC4gWU1NNFhHfyk6Vi0iWB4bP1V0Xx8LZhqUWX98NVxFfSozUiIijg"
-      },
-      {
-        "time": 1790190934837,
-        "userId": "Ufb12bb922c93c69d206c9a6fc3b07510",
-        "displayName": "卡比",
-        "pictureUrl": "https://profile.line-scdn.net/0h7BU593AnaG14THjarNUWEggcawdbPTF_BCgvAxlJNF8SdXhsAC4gWU1NNFhHfyk6Vi0iWB4bP1V0Xx8LZhqUWX98NVxFfSozUiIijg"
       }
     ]
   },
