@@ -14881,7 +14881,7 @@
     "tag": "",
     "active": true,
     "startTime": 1794838085789,
-    "lastActiveTime": 1795427313529,
+    "lastActiveTime": 1795427709152,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -14907,7 +14907,8 @@
       "John": "Uf954376c19d71cbc21ae2a7a2dc4ca84",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "FiFi": "U1920cbbd7be6a8816939be44d4d0e1f2",
-      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5"
+      "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
+      "張建發": "U17eaf2f1e1b41288876d992044d9bdf9"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -14934,12 +14935,20 @@
           "FB Wei Jhih Liou",
           "FB dylan",
           "FB YT lin",
-          "©️張CC～©️"
+          "©️張CC～©️",
+          "張建發"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/23 17:55",
+        "name": "張建發",
+        "operator": "張建發",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/23 17:48",
         "name": "©️張CC～©️",
