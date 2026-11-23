@@ -15457,7 +15457,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795239812987,
-    "lastActiveTime": 1795442609694,
+    "lastActiveTime": 1795442618712,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15493,7 +15493,8 @@
           "©️張CC～©️",
           "林淑惠Sophia",
           "林淑惠Sophia2",
-          "楊程鈞"
+          "楊程鈞",
+          "alice"
         ]
       },
       {
@@ -15516,6 +15517,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/23 22:03",
+        "name": "alice",
+        "operator": "King",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/23 22:03",
         "name": "King",
