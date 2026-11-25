@@ -15462,7 +15462,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795239812987,
-    "lastActiveTime": 1795442655314,
+    "lastActiveTime": 1795594516075,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15481,7 +15481,8 @@
       "©️張CC～©️": "Ua5ba1a0ad7f4687b4075563e722331c5",
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
-      "King": "U1302ddcec82bfd0d9b9eba641676ea0a"
+      "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
+      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -15498,7 +15499,8 @@
           "©️張CC～©️",
           "林淑惠Sophia",
           "林淑惠Sophia2",
-          "楊程鈞"
+          "楊程鈞",
+          "Chris Chen"
         ]
       },
       {
@@ -15522,6 +15524,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/25 16:15",
+        "name": "Chris Chen",
+        "operator": "Chris Chen",
+        "action": "+1",
+        "section": "8-12"
+      },
       {
         "time": "11/23 22:04",
         "name": "alice",
