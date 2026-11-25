@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6931,
+    "viewCount": 6933,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -472,8 +472,8 @@
       "U9904ed725b1f420b8718791594e3756b": {
         "displayName": "偉舫",
         "firstVisit": 1783565275973,
-        "count": 18,
-        "lastVisit": 1790046128046,
+        "count": 19,
+        "lastVisit": 1795561685935,
         "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
       },
       "Uef488c50ca6ba6bd1d36dc30086b92b1": {
@@ -1378,8 +1378,8 @@
       "U2f34481ad7c75487414b97ec63623fba": {
         "displayName": "Sharon",
         "firstVisit": 1791289739220,
-        "count": 55,
-        "lastVisit": 1795534591848,
+        "count": 56,
+        "lastVisit": 1795561359983,
         "pictureUrl": "https://profile.line-scdn.net/0hpwggfWLGL1hKHjMQDptRZjpOLDJpb3ZKY3FkbSodc25we29bZX80ansZdm5yJ2paYys3aXwadTxoZTxNBwcHdSZ6LWsART9wIXkAeC1qBQZ1KBtyZz8hXXhrORZ0azRUIg07ahdmEW8IXgoSJTl8fRtWBToDSh1YeklDDk8sQdslHFgNZ3hhO3cYeW3y"
       },
       "Uf7da4aefac728b8a08dabe0a7078323c": {
@@ -1578,6 +1578,18 @@
       }
     },
     "logs": [
+      {
+        "time": 1795561685935,
+        "userId": "U9904ed725b1f420b8718791594e3756b",
+        "displayName": "偉舫",
+        "pictureUrl": "https://profile.line-scdn.net/0m0531aa1d72510e3eb9b2b306f42a234fb72ef10fed3a"
+      },
+      {
+        "time": 1795561359983,
+        "userId": "U2f34481ad7c75487414b97ec63623fba",
+        "displayName": "Sharon",
+        "pictureUrl": "https://profile.line-scdn.net/0hpwggfWLGL1hKHjMQDptRZjpOLDJpb3ZKY3FkbSodc25we29bZX80ansZdm5yJ2paYys3aXwadTxoZTxNBwcHdSZ6LWsART9wIXkAeC1qBQZ1KBtyZz8hXXhrORZ0azRUIg07ahdmEW8IXgoSJTl8fRtWBToDSh1YeklDDk8sQdslHFgNZ3hhO3cYeW3y"
+      },
       {
         "time": 1795555625051,
         "userId": "Uec617dedcd37cd4c4e1d6afb526819d1",
@@ -13565,23 +13577,11 @@
         "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
         "displayName": "賴柚子",
         "pictureUrl": "https://profile.line-scdn.net/0hQ3AjdbHzDhxsExLTY01wIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
-      },
-      {
-        "time": 1791276047885,
-        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
-        "displayName": "賴柚子",
-        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjdbHzDhxsExLTY01wIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
-      },
-      {
-        "time": 1791274899834,
-        "userId": "U9dc6c7ab7d49487c4dcb70caf20195b0",
-        "displayName": "謝東霖 Tony",
-        "pictureUrl": "https://profile.line-scdn.net/0hkD2koqA2NGsfEiZx26pKFG9CNwE8Y215NnN8WCoUOg8gJ3Q5YXB5XnlAblggcHE8YXB5WCMQb1gTAUMNAUTIXxgiaVoiI3Y1NXx-iA"
       }
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 527,
+    "viewCount": 528,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13668,8 +13668,8 @@
       "Uf35f2dc9288c3434a5a19186f900402a": {
         "displayName": "Robert",
         "firstVisit": 1783433164456,
-        "count": 47,
-        "lastVisit": 1795105556005,
+        "count": 48,
+        "lastVisit": 1795561517867,
         "pictureUrl": "https://profile.line-scdn.net/0hIqo_ip_nFl5CJgCKawhoITJ2FTRhV09MbxBYPXMiH2x_QQRaO0ZbOyAnS2ovQ1kKahJQbSUuSj1ONWE4XHDqakUWS29_F1QAaEhcvQ"
       },
       "U0134503a2d79a5bb7f92d876393b2fd8": {
@@ -13798,6 +13798,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1795561517867,
+        "userId": "Uf35f2dc9288c3434a5a19186f900402a",
+        "displayName": "Robert",
+        "pictureUrl": "https://profile.line-scdn.net/0hIqo_ip_nFl5CJgCKawhoITJ2FTRhV09MbxBYPXMiH2x_QQRaO0ZbOyAnS2ovQ1kKahJQbSUuSj1ONWE4XHDqakUWS29_F1QAaEhcvQ"
+      },
       {
         "time": 1795532636815,
         "userId": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
