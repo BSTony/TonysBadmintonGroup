@@ -15677,7 +15677,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795525910113,
-    "lastActiveTime": 1795532554554,
+    "lastActiveTime": 1795596739015,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15726,12 +15726,20 @@
           "Jet",
           "陳呈",
           "Sharon",
-          "海棠"
+          "海棠",
+          "Sean"
         ],
         "fee": ""
       }
     ],
     "history": [
+      {
+        "time": "11/25 16:52",
+        "name": "Sean",
+        "operator": "煜翔Sean",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/24 23:02",
         "name": "海棠",
