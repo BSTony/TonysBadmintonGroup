@@ -15577,7 +15577,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795442166127,
-    "lastActiveTime": 1795571488921,
+    "lastActiveTime": 1795571493750,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15620,12 +15620,20 @@
           "黃政豪",
           "John",
           "楊程鈞",
-          "丁丁"
+          "丁丁",
+          "Wei"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/25 09:51",
+        "name": "Wei",
+        "operator": "Wei (輸入框)",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/25 09:51",
         "name": "丁丁",
