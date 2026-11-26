@@ -15462,7 +15462,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795239812987,
-    "lastActiveTime": 1795667291731,
+    "lastActiveTime": 1795674947454,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15483,7 +15483,8 @@
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
       "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
-      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc",
+      "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -15522,11 +15523,19 @@
         "label": "",
         "list": [
           "King",
-          "alice"
+          "alice",
+          "Tank Lin"
         ]
       }
     ],
     "history": [
+      {
+        "time": "11/26 14:35",
+        "name": "Tank Lin",
+        "operator": "Tank Lin",
+        "action": "+1",
+        "section": "10-12"
+      },
       {
         "time": "11/26 12:28",
         "name": "AddieWang",
