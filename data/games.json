@@ -15462,7 +15462,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795239812987,
-    "lastActiveTime": 1795594516075,
+    "lastActiveTime": 1795667291731,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15482,7 +15482,8 @@
       "林淑惠Sophia": "U6372f83bb2d5405d07e25ef2aa038abc",
       "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
       "King": "U1302ddcec82bfd0d9b9eba641676ea0a",
-      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1"
+      "Chris Chen": "Uec617dedcd37cd4c4e1d6afb526819d1",
+      "AddieWang": "Ua25db9888517a9033e5dad6f843ff9bc"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -15509,7 +15510,9 @@
         "backupLimit": 5,
         "fee": "150",
         "label": "",
-        "list": []
+        "list": [
+          "AddieWang"
+        ]
       },
       {
         "title": "10-12",
@@ -15524,6 +15527,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/26 12:28",
+        "name": "AddieWang",
+        "operator": "AddieWang",
+        "action": "+1",
+        "section": "8-10"
+      },
       {
         "time": "11/25 16:15",
         "name": "Chris Chen",
