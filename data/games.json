@@ -15699,7 +15699,7 @@
     "date": "12/1 (二)",
     "time": "18:00~20:00",
     "location": "南港運動中心",
-    "fee": "",
+    "fee": "280",
     "note": "",
     "tag": "",
     "active": true,
@@ -15758,7 +15758,7 @@
           "Sean",
           "周則鼎"
         ],
-        "fee": ""
+        "fee": "280"
       }
     ],
     "history": [
@@ -15790,6 +15790,7 @@
         "action": "+1",
         "section": "報名名單"
       }
-    ]
+    ],
+    "isManualEnded": false
   }
 }
