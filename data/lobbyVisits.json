@@ -13581,7 +13581,7 @@
     ]
   },
   "C073dd061239f9bc2df13af0a1ecb4bdb": {
-    "viewCount": 534,
+    "viewCount": 535,
     "uniqueViewers": {
       "U9dc6c7ab7d49487c4dcb70caf20195b0": {
         "displayName": "謝東霖 Tony",
@@ -13744,8 +13744,9 @@
       "U09e4f0126678f203e0b139a474c17637": {
         "displayName": "詹敬智(胞弟)",
         "firstVisit": 1785232643306,
-        "count": 1,
-        "lastVisit": 1785232643306
+        "count": 2,
+        "lastVisit": 1795773653432,
+        "pictureUrl": "https://profile.line-scdn.net/0hz3QOSLMUJRx8NjRT4J9bYwxmJnZfR3wOBQc4f05ieHtBVmVNUwRrKh01e3sRATZDVgc4KR00cnhwJVJ6YmDZKHsGeC1BB2dCVlhv_w"
       },
       "Ua871dc0011b1e136c14173739cf88645": {
         "displayName": "Vicky Lin",
@@ -13798,6 +13799,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1795773653432,
+        "userId": "U09e4f0126678f203e0b139a474c17637",
+        "displayName": "詹敬智(胞弟)",
+        "pictureUrl": "https://profile.line-scdn.net/0hz3QOSLMUJRx8NjRT4J9bYwxmJnZfR3wOBQc4f05ieHtBVmVNUwRrKh01e3sRATZDVgc4KR00cnhwJVJ6YmDZKHsGeC1BB2dCVlhv_w"
+      },
       {
         "time": 1795668011989,
         "userId": "U94d0fd3752c6d2521d871658f63822b7",
