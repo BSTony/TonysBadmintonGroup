@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6960,
+    "viewCount": 6961,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -561,9 +561,9 @@
       "U98e70298aa928f28a3cbf5daa199273f": {
         "displayName": "Evan",
         "firstVisit": 1783661329295,
-        "count": 5,
-        "lastVisit": 1792154420463,
-        "pictureUrl": "https://profile.line-scdn.net/0hlZpltSaaM3VdFS_emVdNSy1FMB9-ZGpnInp1F2gWa0VpdnwlIXt7Em0Ta0YzI3xxIXp7FjhHbhB_ZTNqeQEOYRMQMEwAZhFfMjoSbx8QMTMneBNjCgwoTyp2CDsbJytlCTc6VhFjBkcaOTYldjUicCxXZThlUStlckJfI1gnXfYyF0QgcHN9FmATZUDl"
+        "count": 6,
+        "lastVisit": 1795763247535,
+        "pictureUrl": "https://profile.line-scdn.net/0hlZplpSqzM3VdFS_7lmdNSy1FMB9-ZGpnInp1F2gWa0VpdnwlIXt7Em0Ta0YzI3xxIXp7FjhHbhB_ZTNqeQEOYRMQMEwAZhFfMjoSbx8QMTMneBNjCgwoTyp2CDsbJytlCTc6VhFjBkcaOTYldjUicCxXZThlUStlckJfI1gnXfYyF0QgcHN9FmATZUDl"
       },
       "U56cdc57d716e6130e50fc29a02347ca9": {
         "displayName": "TU",
@@ -1578,6 +1578,12 @@
       }
     },
     "logs": [
+      {
+        "time": 1795763247535,
+        "userId": "U98e70298aa928f28a3cbf5daa199273f",
+        "displayName": "Evan",
+        "pictureUrl": "https://profile.line-scdn.net/0hlZplpSqzM3VdFS_7lmdNSy1FMB9-ZGpnInp1F2gWa0VpdnwlIXt7Em0Ta0YzI3xxIXp7FjhHbhB_ZTNqeQEOYRMQMEwAZhFfMjoSbx8QMTMneBNjCgwoTyp2CDsbJytlCTc6VhFjBkcaOTYldjUicCxXZThlUStlckJfI1gnXfYyF0QgcHN9FmATZUDl"
+      },
       {
         "time": 1795762463913,
         "userId": "Uef488c50ca6ba6bd1d36dc30086b92b1",
@@ -13571,12 +13577,6 @@
         "userId": "Uf077846a21900f6e03afdf8e678bc1ab",
         "displayName": "Tank Lin",
         "pictureUrl": "https://profile.line-scdn.net/0hsLMHfiD_LGNgMTAEASNSXRBhLwlDQHVxGwVhB1UwcVZeBG5gHARmUlM1elAPBjk2RANrV1E1dgNCRiMxLA0RbAhlGyEjSHdHLi0XYylEIj0ndDdICB8cbCNFBw0JXDg9DFNjfxBVOzo1Aip2SCkNRxZpJTgceAVASGZANWUDQuAPM1s2TVdiAF03elbY"
-      },
-      {
-        "time": 1791293991972,
-        "userId": "Uab37cdfbcee7c3c2fe61df8a7b09d3cb",
-        "displayName": "Ong",
-        "pictureUrl": "https://profile.line-scdn.net/0hQX53XLkfDncYShq8j7ZwCGgaDR07O1dlMy5GE35PUkYgeEtzMSwSRSxOVBJyfRkkNCoSF3keVEQUWXkRBhzyQx96U0Yle0wpMiRElA"
       }
     ]
   },
