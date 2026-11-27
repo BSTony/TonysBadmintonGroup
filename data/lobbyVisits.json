@@ -1,6 +1,6 @@
 {
   "C7dbe1bfbc6a87f5842bdd39b63f7ef9e": {
-    "viewCount": 6954,
+    "viewCount": 6957,
     "uniqueViewers": {
       "U8b602a8c930802b2cc6b4cc78606a943": {
         "displayName": "Queena娟",
@@ -253,8 +253,8 @@
       "Ua158cf62dfd0ee9c8171a29263d9da11": {
         "displayName": "曾Jim凱",
         "firstVisit": 1783331916444,
-        "count": 126,
-        "lastVisit": 1795680998391,
+        "count": 127,
+        "lastVisit": 1795758762742,
         "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
       },
       "Ud33e6f76c7549fb90abe4440b1735805": {
@@ -295,8 +295,8 @@
       "U2ea89b78f1546c61adda03c7dd8704d5": {
         "displayName": "賴柚子",
         "firstVisit": 1783341633415,
-        "count": 166,
-        "lastVisit": 1795441265181,
+        "count": 167,
+        "lastVisit": 1795759169784,
         "pictureUrl": "https://profile.line-scdn.net/0hQ3AjdbHzDhxsExLTY01wIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
       },
       "Uc8b0e0ef7ca58b387136a28642742b7d": {
@@ -377,8 +377,8 @@
       "U8fb6700edaa07248cd4d89a684a551d3": {
         "displayName": "Chris",
         "firstVisit": 1783473037031,
-        "count": 2,
-        "lastVisit": 1787822984017,
+        "count": 3,
+        "lastVisit": 1795758493428,
         "pictureUrl": "https://profile.line-scdn.net/0hVf3xZ3t_CUkeARhbWOx3Nm5RCiM9cFBbZjcWK35WUXh2Y04eZ2FCen4GU3onN0kWMWISeiMJX3wSEn4vAFf1fRkxVHgjMEsXNG9Dqg"
       },
       "Ud9c980235866b4402d34cdfa250b9aed": {
@@ -1578,6 +1578,24 @@
       }
     },
     "logs": [
+      {
+        "time": 1795759169784,
+        "userId": "U2ea89b78f1546c61adda03c7dd8704d5",
+        "displayName": "賴柚子",
+        "pictureUrl": "https://profile.line-scdn.net/0hQ3AjdbHzDhxsExLTY01wIhxDDXZPYlcOSXQSLlwaAyhUdk0YRiZAel0aBCtYJ0sZEnQWLl0TA3xOJjUfQDUJeQR7KCVYfDkeFQs3ChxxLXMRUVUIPgEKGzBNUEwXZzsSQDEBIVBXOVoafkwaNio-MylRO1BNVRYPHERiSmkhYJ8DEXlJQXVAf1EVWCnU"
+      },
+      {
+        "time": 1795758762742,
+        "userId": "Ua158cf62dfd0ee9c8171a29263d9da11",
+        "displayName": "曾Jim凱",
+        "pictureUrl": "https://profile.line-scdn.net/0h5-fiC6LKagJLEHQVLBYUPDtAaWhoYTMQbnJxM3oYZDd_cCldMnZ1Yi0RZzR3IypcNSQhMXpCYWJpWCkfOTZRASNKVWBqU0RcBX9XZSJIdFogQi0GDAl6DyxtVTV1IF8WDyJ7eD9zNmgLXk4ubnN9LCZFbXUgYWU9OUcGVE4iBIEkEh1XZnYkYXYWPDfz"
+      },
+      {
+        "time": 1795758493428,
+        "userId": "U8fb6700edaa07248cd4d89a684a551d3",
+        "displayName": "Chris",
+        "pictureUrl": "https://profile.line-scdn.net/0hVf3xZ3t_CUkeARhbWOx3Nm5RCiM9cFBbZjcWK35WUXh2Y04eZ2FCen4GU3onN0kWMWISeiMJX3wSEn4vAFf1fRkxVHgjMEsXNG9Dqg"
+      },
       {
         "time": 1795751678907,
         "userId": "U1302ddcec82bfd0d9b9eba641676ea0a",
@@ -13556,24 +13574,6 @@
       },
       {
         "time": 1791289992602,
-        "userId": "Uf7da4aefac728b8a08dabe0a7078323c",
-        "displayName": "田震寰",
-        "pictureUrl": "https://profile.line-scdn.net/0m04bf271372511cdbf4ec4f89397dc1065c3878d0b577"
-      },
-      {
-        "time": 1791289915410,
-        "userId": "Uf7da4aefac728b8a08dabe0a7078323c",
-        "displayName": "田震寰",
-        "pictureUrl": "https://profile.line-scdn.net/0m04bf271372511cdbf4ec4f89397dc1065c3878d0b577"
-      },
-      {
-        "time": 1791289885236,
-        "userId": "U2f34481ad7c75487414b97ec63623fba",
-        "displayName": "Sharon",
-        "pictureUrl": "https://profile.line-scdn.net/0hpwggfWLGL1hKHjMQDptRZjpOLDJpb3ZKY3FkbSodc25we29bZX80ansZdm5yJ2paYys3aXwadTxoZTxNBwcHdSZ6LWsART9wIXkAeC1qBQZ1KBtyZz8hXXhrORZ0azRUIg07ahdmEW8IXgoSJTl8fRtWBToDSh1YeklDDk8sQdslHFgNZ3hhO3cYeW3y"
-      },
-      {
-        "time": 1791289847974,
         "userId": "Uf7da4aefac728b8a08dabe0a7078323c",
         "displayName": "田震寰",
         "pictureUrl": "https://profile.line-scdn.net/0m04bf271372511cdbf4ec4f89397dc1065c3878d0b577"
