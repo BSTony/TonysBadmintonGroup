@@ -15200,7 +15200,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795758505310,
+    "lastActiveTime": 1795758506712,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15275,13 +15275,19 @@
           "Tank Lin",
           "賴柚子",
           "king",
-          "楊程鈞",
-          "Chris"
+          "楊程鈞"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/27 13:48",
+        "name": "Chris",
+        "operator": "Chris",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/27 13:48",
         "name": "Chris",
