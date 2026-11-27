@@ -15200,7 +15200,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795785082255,
+    "lastActiveTime": 1795788920498,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15214,7 +15214,6 @@
       "Mina": true,
       "曾Jim凱": true,
       "Ashely": true,
-      "杜威霖 Andy": true,
       "周則鼎": true
     },
     "uidMap": {
@@ -15256,7 +15255,6 @@
           "Mina",
           "曾Jim凱",
           "Ashely",
-          "杜威霖 Andy",
           "周則鼎",
           "喻心平",
           "momota",
@@ -15279,6 +15277,13 @@
       }
     ],
     "history": [
+      {
+        "time": "11/27 22:15",
+        "name": "杜威霖 Andy",
+        "operator": "杜威霖 Andy",
+        "action": "-1",
+        "section": "報名名單"
+      },
       {
         "time": "11/27 21:11",
         "name": "陳呈",
