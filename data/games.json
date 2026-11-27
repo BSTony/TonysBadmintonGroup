@@ -15200,7 +15200,7 @@
     "tag": "",
     "active": true,
     "startTime": 1795097675243,
-    "lastActiveTime": 1795440819640,
+    "lastActiveTime": 1795758505310,
     "scheduleTime": null,
     "reminderTime": null,
     "scheduleInput": null,
@@ -15239,7 +15239,8 @@
       "Tank Lin": "Uf077846a21900f6e03afdf8e678bc1ab",
       "賴柚子": "U2ea89b78f1546c61adda03c7dd8704d5",
       "Win Shu": "Uda2b484d86f6dcbfd1c31f792fd95ae1",
-      "楊程鈞": "U4f877c526e048afcda3730edce9ba746"
+      "楊程鈞": "U4f877c526e048afcda3730edce9ba746",
+      "Chris": "U8fb6700edaa07248cd4d89a684a551d3"
     },
     "noteMap": {},
     "allowUserNoteEdit": true,
@@ -15274,12 +15275,20 @@
           "Tank Lin",
           "賴柚子",
           "king",
-          "楊程鈞"
+          "楊程鈞",
+          "Chris"
         ],
         "fee": "230"
       }
     ],
     "history": [
+      {
+        "time": "11/27 13:48",
+        "name": "Chris",
+        "operator": "Chris",
+        "action": "+1",
+        "section": "報名名單"
+      },
       {
         "time": "11/23 21:33",
         "name": "楊程鈞",
